@@ -427,7 +427,10 @@ export async function getSpotPrice(asset: DDO): Promise<number> {
 
 export async function getAssetsBestPrices(
   assets: DDO[],
-  filterByTypes?: BestPrice['type'][]
+  filterByTypes?: {
+    filterType: 'whitelist' | 'blacklist'
+    priceTypes: BestPrice['type'][]
+  }
 ): Promise<AssetListPrices[]> {
   const assetsWithPrice: AssetListPrices[] = []
 
@@ -467,7 +470,9 @@ export async function getAssetsBestPrices(
 
   return filterByTypes
     ? assetsWithPrice.filter((asset) =>
-        filterByTypes.includes(asset.price.type)
+        filterByTypes.filterType === 'blacklist'
+          ? !filterByTypes.priceTypes.includes(asset.price.type)
+          : filterByTypes.priceTypes.includes(asset.price.type)
       )
     : assetsWithPrice
 }
