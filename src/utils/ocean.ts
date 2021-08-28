@@ -20,6 +20,7 @@ export function getOceanConfig(network: string | number): ConfigHelperConfig {
     ? {
         ...config,
         nodeUri: 'https://rpc.gaiaxtestnet.oceanprotocol.com/',
+        metadataCacheUri: 'https://aquarius.gaiax.delta-dao.com',
         providerUri: 'https://provider.gaiax.delta-dao.com'
       }
     : config
