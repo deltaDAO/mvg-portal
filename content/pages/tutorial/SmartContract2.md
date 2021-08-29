@@ -18,7 +18,7 @@ Ocean Protocol provides a complete toolbox for data scientists and developers to
 
 **Visual of a Simple Data Exchange**
 
-![Data Exchange](https://raw.githubusercontent.com/deltaDAO/files/main/data_exchange.png)
+![Data Exchange](https://github.com/deltaDAO/files/blob/main/MonetizePrivateData.png)
 
 The Ocean Protocol toolbox offers:
 
@@ -33,7 +33,7 @@ The Ocean Protocol toolbox offers:
 5. **Web3 access control.** Traditional access control uses centralized intermediaries, where data owners risk losing control of their data. Ocean Protocol restores control and privacy by replacing the centralized intermediaries with a decentralized distributed ledger. Web3 provides a seamless experience across services using the same key, their wallet (e.g., MetaMask).
 
 **Visual of a Full Market Place**
-![Ocean Marketplace](https://raw.githubusercontent.com/deltaDAO/files/main/ocean_market.jpg)
+![Ocean Marketplace](https://github.com/deltaDAO/files/blob/main/OceanProtocolEcosystemAndNetwork.png)
 
 The Ocean Protocol technology stack provides high-level functionalities to facilitate data exchanges for users in an easy way:
 
