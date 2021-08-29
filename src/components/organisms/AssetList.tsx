@@ -48,7 +48,10 @@ const AssetList: React.FC<AssetListProps> = ({
     isLoading && setLoading(true)
     getAssetsBestPrices(
       assets,
-      appConfig.allowDynamicPricing !== 'true' && ['exchange', 'free']
+      appConfig.allowDynamicPricing !== 'true' && {
+        filterType: 'blacklist',
+        priceTypes: ['pool']
+      }
     ).then((asset) => {
       setAssetWithPrices(asset)
       setLoading(false)
