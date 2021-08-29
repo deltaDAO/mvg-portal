@@ -7,8 +7,9 @@ import removeMarkdown from 'remove-markdown'
 import Publisher from '../atoms/Publisher'
 import AssetType from '../atoms/AssetType'
 import NetworkName from '../atoms/NetworkName'
-import { useOcean } from '../../providers/Ocean'
 import styles from './AssetTeaser.module.css'
+import { useSiteMetadata } from '../../hooks/useSiteMetadata'
+import { ReactComponent as External } from '../../images/external.svg'
 
 declare type AssetTeaserProps = {
   ddo: DDO
@@ -25,6 +26,9 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
   const isCompute = Boolean(ddo?.findServiceByType('compute'))
   const accessType = isCompute ? 'compute' : 'access'
   const { owner } = ddo.publicKey[0]
+  const { appConfig } = useSiteMetadata()
+
+  const serviceEndpoint = ddo.findServiceByType(accessType)?.serviceEndpoint
 
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
@@ -56,7 +60,12 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
 
         <footer className={styles.foot}>
           <Price price={price} small />
-          <NetworkName networkId={ddo.chainId} className={styles.network} />
+          <div className={styles.network}>
+            {serviceEndpoint !== appConfig.providerUri && (
+              <External className={styles.external} />
+            )}
+            <NetworkName networkId={ddo.chainId} />
+          </div>
         </footer>
       </Link>
     </article>

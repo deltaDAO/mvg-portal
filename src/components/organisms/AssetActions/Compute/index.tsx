@@ -148,7 +148,7 @@ export default function Compute({
   ): SearchQuery {
     let algoQuerry = ''
     trustedAlgorithmList.forEach((trusteAlgo) => {
-      algoQuerry += `id:"${trusteAlgo.did}" OR `
+      algoQuerry += trusteAlgo && `id:"${trusteAlgo.did}" OR `
     })
     if (trustedAlgorithmList.length >= 1) {
       algoQuerry = algoQuerry.substring(0, algoQuerry.length - 3)

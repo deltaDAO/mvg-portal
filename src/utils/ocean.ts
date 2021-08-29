@@ -2,6 +2,7 @@ import { ConfigHelper, ConfigHelperConfig, Logger } from '@oceanprotocol/lib'
 import contractAddresses from '@oceanprotocol/contracts/artifacts/address.json'
 import { AbiItem } from 'web3-utils/types'
 import Web3 from 'web3'
+import { metadataCacheUri, providerUri } from '../../app.config'
 
 export function getOceanConfig(network: string | number): ConfigHelperConfig {
   const config = new ConfigHelper().getConfig(
@@ -15,9 +16,16 @@ export function getOceanConfig(network: string | number): ConfigHelperConfig {
       network === 2021000
       ? undefined
       : process.env.GATSBY_INFURA_PROJECT_ID
-  )
+  ) as ConfigHelperConfig
 
-  return config as ConfigHelperConfig
+  return network === 'gaiaxtestnet' || network === 2021000
+    ? {
+        ...config,
+        nodeUri: 'https://rpc.gaiaxtestnet.oceanprotocol.com/',
+        metadataCacheUri: metadataCacheUri,
+        providerUri: providerUri
+      }
+    : config
 }
 
 export function getDevelopmentConfig(): Partial<ConfigHelperConfig> {
