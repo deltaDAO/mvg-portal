@@ -109,7 +109,10 @@ export default function Bookmarks(): ReactElement {
         )
         const pinnedAssets: AssetListPrices[] = await getAssetsBestPrices(
           resultPinned?.results,
-          appConfig.allowDynamicPricing !== 'true' && ['exchange', 'free']
+          appConfig.allowDynamicPricing !== 'true' && {
+            filterType: 'blacklist',
+            priceTypes: ['pool']
+          }
         )
         setPinned(pinnedAssets)
       } catch (error) {
@@ -130,7 +133,7 @@ export default function Bookmarks(): ReactElement {
       columns={columns}
       data={pinned}
       isLoading={isLoading}
-      emptyMessage="You can bookmark your favorite assets to pin them here."
+      emptyMessage="You can bookmark your favorite data services to pin them here."
       noTableHead
     />
   )
