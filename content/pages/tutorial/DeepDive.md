@@ -1,6 +1,7 @@
 ---
 title: Deep Dive
 chapter: 6
+videoUrl: https://youtu.be/gdL-lfY-OOI
 ---
 
 Ocean Protocol makes it easy to publish data services, provide accurate pricing for the data, discover data, purchase data, and consume data services. Our Gaia-X Portal powered by Ocean Protocol supports fixed pricing and automatic price discovery for data services.

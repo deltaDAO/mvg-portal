@@ -7,7 +7,7 @@ The Web3 is a mesh network of blockchains and smart contracts that interact with
 
 It&#39;s called Web 3.0 because it&#39;s an evolution of the internet since its beginning. The Web3 internet is built on a fundamentally different infrastructure, utilizing blockchains and distributed peer-to-peer networks, compared to the current existing internet which relies on server-client relationships.
 
-![Web 3](https://raw.githubusercontent.com/deltaDAO/files/main/web3.png)
+![Web 3](https://raw.githubusercontent.com/deltaDAO/files/main/web3.JPG)
 
 Web3 enables full liberalization of networks, removing the need for central intermediaries. Just like TCP/IP are communication protocols that define how information is sent between clients and servers over the web, Ocean Protocol is a protocol that defines how data assets are exchanged in Web3.
 

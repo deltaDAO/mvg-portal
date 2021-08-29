@@ -15,6 +15,7 @@ import PublishMetadata from './Interactives/PublishMetadata'
 import EditMetadata from './Interactives/EditMetadata'
 import ConsumeData from './Interactives/ConsumeData'
 import ViewHistory from './Interactives/ViewHistory'
+import TableOfContents from './TableOfContents'
 
 interface TutorialChapterNode {
   node: {
@@ -110,23 +111,6 @@ export default function PageTutorial({
     }
   ]
 
-  const data = useStaticQuery(query)
-  const [isOpen, setOpen] = useState(false)
-  const chapterNodes = data.content.edges as TutorialChapterNode[]
-  const chapters: TutorialChapterProps[] = chapterNodes.map((edge, i) => ({
-    title: edge.node.frontmatter.title,
-    markdown: edge.node.rawMarkdownBody,
-    chapter: edge.node.frontmatter?.chapter,
-    id: slugify(edge.node.frontmatter.title),
-    titlePrefix: `Chapter ${i + 1}:`,
-    videoUrl: edge.node.frontmatter?.videoUrl
-  }))
-
-  const [scrollPosition, setScrollPosition] = useState(0)
-  useScrollPosition(({ prevPos, currPos }) => {
-    prevPos.y !== currPos.y && setScrollPosition(currPos.y * -1)
-  })
-
   const findInteractiveComponent = (
     arr: {
       chapter: number
@@ -138,56 +122,38 @@ export default function PageTutorial({
     return arr.find((e) => e.chapter === chapterNumber)?.component
   }
 
-  const handleBurgerClose = () => {
-    if (isOpen) setOpen(false)
-  }
+  const data = useStaticQuery(query)
+  const chapterNodes = data.content.edges as TutorialChapterNode[]
+  const chapters: TutorialChapterProps[] = chapterNodes.map((edge, i) => ({
+    title: edge.node.frontmatter.title,
+    markdown: edge.node.rawMarkdownBody,
+    chapter: edge.node.frontmatter?.chapter,
+    id: slugify(edge.node.frontmatter.title),
+    titlePrefix: `Chapter ${i + 1}:`,
+    videoUrl: edge.node.frontmatter?.videoUrl,
+    interactiveComponent: findInteractiveComponent(
+      interactivity,
+      edge.node.frontmatter?.chapter
+    )
+  }))
+
+  const [scrollPosition, setScrollPosition] = useState(0)
+  useScrollPosition(({ prevPos, currPos }) => {
+    prevPos.y !== currPos.y && setScrollPosition(currPos.y * -1)
+  })
 
   return (
     <>
       <div className={styles.wrapper}>
-        <div className={styles.hamburger}>
-          <Hamburger toggled={isOpen} toggle={setOpen} />
-          <div className={`${styles.toc} ${isOpen && styles.open}`}>
-            {isOpen && (
-              <>
-                <h3>Table of contents</h3>
-                <ul>
-                  {chapters.map((chapter, i) => (
-                    <li key={i}>
-                      <a href={`#${chapter.id}`} onClick={handleBurgerClose}>
-                        {chapter.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className={styles.tocDesktop}>
-          <h3>Table of contents</h3>
-          <ul>
-            {chapters.map((chapter, i) => (
-              <li key={i}>
-                <a href={`#${chapter.id}`}>{chapter.title}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <TableOfContents chapters={chapters} />
 
         <div className={styles.tutorial}>
           {chapters.map((chapter, i) => {
             return (
               <TutorialChapter
-                chapter={chapter}
                 key={i}
                 pageProgress={scrollPosition}
-                videoUrl={chapter.videoUrl}
-                interactiveComponent={findInteractiveComponent(
-                  interactivity,
-                  chapter.chapter
-                )}
+                chapter={chapter}
               />
             )
           })}

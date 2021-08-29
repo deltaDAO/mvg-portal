@@ -5,6 +5,7 @@ import Loader from '../../../atoms/Loader'
 import { useAsset } from '../../../../providers/Asset'
 import AssetActions from '../../../organisms/AssetActions'
 import styles from '../../../organisms/AssetContent/index.module.css'
+import PageHeader from '../../../molecules/PageHeader'
 
 export default function ConsumeData({
   showPriceTutorial,
@@ -26,26 +27,32 @@ export default function ConsumeData({
   }, [ddo, error, isInPurgatory, title])
 
   return (
-    <>
+    <div className={styles.wrapper}>
       {showPriceTutorial &&
       showComputeTutorial &&
       ddo &&
       pageTitle !== undefined &&
       !loading ? (
-        <Page title={pageTitle} uri="/tutorial">
+        <>
+          <PageHeader title={pageTitle} center />
           <div className={styles.actions}>
             <AssetActions />
           </div>
-        </Page>
+        </>
       ) : error ? (
-        <Page title={pageTitle} noPageHeader uri="/tutorial">
-          <Alert title={pageTitle} text={error} state="error" />
-        </Page>
-      ) : (
-        <Page title={undefined} uri="/tutorial">
+        <Alert title={pageTitle} text={error} state="error" />
+      ) : loading ? (
+        <>
+          <PageHeader title={pageTitle} center />
           <Loader />
-        </Page>
+        </>
+      ) : (
+        <Alert
+          title="Consumption of a Data Service"
+          text="Please finish the above chapters first."
+          state="info"
+        />
       )}
-    </>
+    </div>
   )
 }

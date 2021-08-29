@@ -13,20 +13,17 @@ export interface TutorialChapterProps {
   markdown: string
   titlePrefix?: string
   videoUrl?: string
+  interactiveComponent?: ReactElement
 }
 
 const cx = classNames.bind(styles)
 
 export default function TutorialChapter({
   chapter,
-  pageProgress,
-  videoUrl,
-  interactiveComponent
+  pageProgress
 }: {
   chapter: TutorialChapterProps
   pageProgress: number
-  videoUrl?: string
-  interactiveComponent?: ReactElement
 }): ReactElement {
   return (
     <>
@@ -40,9 +37,11 @@ export default function TutorialChapter({
           {chapter.title}
         </h3>
         <Markdown text={chapter.markdown} />
-        {videoUrl && <VideoPlayer videoUrl={videoUrl} />}
-        {interactiveComponent && (
-          <div className={styles.interactive}>{interactiveComponent}</div>
+        {chapter.videoUrl && <VideoPlayer videoUrl={chapter.videoUrl} />}
+        {chapter.interactiveComponent && (
+          <div className={styles.interactive}>
+            {chapter.interactiveComponent}
+          </div>
         )}
       </section>
     </>

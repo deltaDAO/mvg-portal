@@ -4,11 +4,12 @@ import Loader from '../../../atoms/Loader'
 import SuccessConfetti from '../../../atoms/SuccessConfetti'
 import AssetTeaser from '../../../molecules/AssetTeaser'
 import Pricing from '../../../organisms/AssetContent/Pricing'
-import Page from '../../../templates/Page'
 import PagePublish from '../../Publish'
 import StylesTeaser from '../../../molecules/MetadataFeedback.module.css'
 import { DDO } from '@oceanprotocol/lib'
 import { useAsset } from '../../../../providers/Asset'
+import PageHeader from '../../../molecules/PageHeader'
+import styles from './PublishMetadata.module.css'
 
 export default function PublishMetadata({
   showPriceTutorial,
@@ -30,16 +31,15 @@ export default function PublishMetadata({
   }, [showPriceTutorial])
 
   return (
-    <Page
-      title="Publish"
-      description="Highlight the important features of your data set or algorithm to make it more discoverable and catch the interest of data consumers."
-      uri="/tutorial"
-    >
+    <div className={styles.wrapper}>
+      <PageHeader
+        title="Publish"
+        description="You are able to publish your dataset within the tutorial. Feel free to use our demo dataset linked below."
+      />
       {!showPriceTutorial && (
         <PagePublish
           content={{
-            warning:
-              'Given the beta status, publishing on Ropsten or Rinkeby first is strongly recommended. Please familiarize yourself with [the market](https://oceanprotocol.com/technology/marketplaces), [the risks](https://blog.oceanprotocol.com/on-staking-on-data-in-ocean-market-3d8e09eb0a13), and the [Terms of Use](/terms).'
+            warning: ''
           }}
           datasetOnly
           tutorial
@@ -49,8 +49,8 @@ export default function PublishMetadata({
         />
       )}
       {ddo && !showPriceTutorial && !loading && (
-        <>
-          <h3>Set price</h3>
+        <div className={styles.price}>
+          <h3>Set a price for your published dataset</h3>
           <p>Set a price for your data asset</p>
           <Pricing
             ddo={ddo}
@@ -58,7 +58,7 @@ export default function PublishMetadata({
             setShowPriceTutorial={setShowPriceTutorial}
             refreshDdo={refreshDdo}
           />
-        </>
+        </div>
       )}
       {ddo && showPriceTutorial && loading && (
         <div className={StylesTeaser.feedback} ref={confettiRef}>
@@ -73,7 +73,7 @@ export default function PublishMetadata({
             <div className={StylesTeaser.box}>
               <h3>🎉 Congratulations 🎉</h3>
               <SuccessConfetti
-                success="You successfully set the price to your data set."
+                success="You successfully set the price for your dataset."
                 action={
                   <div className={StylesTeaser.teaser}>
                     <AssetTeaser ddo={ddo} price={price} />
@@ -84,6 +84,6 @@ export default function PublishMetadata({
           </div>
         </>
       )}
-    </Page>
+    </div>
   )
 }

@@ -1,6 +1,7 @@
 import React from 'react'
 import { ReactElement } from 'react-markdown'
-import Page from '../../../templates/Page'
+import styles from './ViewHistory.module.css'
+import PageHeader from '../../../molecules/PageHeader'
 import PageHistory from '../../History'
 
 export default function ViewHistory({
@@ -13,13 +14,14 @@ export default function ViewHistory({
   return (
     <>
       {showPriceTutorial && showComputeTutorial && (
-        <Page
-          title="History"
-          description="Find the data sets and jobs that you previously accessed."
-          uri="/tutorial"
-        >
+        <div className={styles.wrapper}>
+          <PageHeader
+            title="History"
+            description="Find the Data Services that you previously accessed."
+            center
+          />
           <PageHistory />
-        </Page>
+        </div>
       )}
     </>
   )
