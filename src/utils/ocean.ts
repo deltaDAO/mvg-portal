@@ -2,6 +2,7 @@ import { ConfigHelper, ConfigHelperConfig, Logger } from '@oceanprotocol/lib'
 import contractAddresses from '@oceanprotocol/contracts/artifacts/address.json'
 import { AbiItem } from 'web3-utils/types'
 import Web3 from 'web3'
+import { metadataCacheUri, providerUri } from '../../app.config'
 
 export function getOceanConfig(network: string | number): ConfigHelperConfig {
   const config = new ConfigHelper().getConfig(
@@ -20,8 +21,8 @@ export function getOceanConfig(network: string | number): ConfigHelperConfig {
     ? {
         ...config,
         nodeUri: 'https://rpc.gaiaxtestnet.oceanprotocol.com/',
-        metadataCacheUri: 'https://aquarius.gaiax.delta-dao.com',
-        providerUri: 'https://provider.gaiax.delta-dao.com'
+        metadataCacheUri: metadataCacheUri,
+        providerUri: providerUri
       }
     : config
 }
