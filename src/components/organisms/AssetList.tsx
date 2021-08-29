@@ -50,7 +50,7 @@ const AssetList: React.FC<AssetListProps> = ({
       assets,
       appConfig.allowDynamicPricing !== 'true' && {
         filterType: 'blacklist',
-        priceTypes: ['free']
+        priceTypes: ['pool']
       }
     ).then((asset) => {
       setAssetWithPrices(asset)
