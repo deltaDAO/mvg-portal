@@ -12,7 +12,7 @@ It&#39;s a vendor-neutral reference data marketplace for use by the Gaia-X commu
 
 The consumer interacts with the frontends including **Gaia-X Portal** , or with any independent third-party markets connected to the network. Applications (interfaces), usually running in the browser, are connected to the Ocean Protocol backend using Ocean JS library. The decentralized backend are smart contracts running on the Gaia-X distributed ledger, which includes the libraries and tools we covered before like access smart contracts and the on-chain metadata store.
 
-![Layers](https://github.com/deltaDAO/files/blob/main/OceanArchitecture.png)
+![Layers](https://raw.githubusercontent.com/deltaDAO/files/main/OceanArchitecture.png)
 
 **Layer 3 — Apps ecosystem (Gaia-X Portal, marketplaces, data management platforms)** This is effectively the services and the UI that people interact with for their data exchanges. A marketplace/publisher app, typically running in a web browser.
 
