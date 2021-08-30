@@ -1,9 +1,7 @@
-```
 ---
 title: Gaia-X as a Decentralized Autonomos Organization (DAO)
 chapter: 14
 ---
-```
 
 An organization structures and coordinates people, material resources, and information based on specialization to achieve a goal. A DAO is an organization form expressed as software. Its purpose is to facilitate coordination via collective ownership. It services pre-defined goals, and groups use it to reduce coordination failure.
 
@@ -11,14 +9,8 @@ An organization structures and coordinates people, material resources, and infor
 
 **Treasury Management**. A built-in treasury protected by smart contracts with transparent rules defines how funds can be spent. Each transaction is logged in a transparent and tamper-proof way on a decentralized ledger. Any spending is governed by software code. This means that funds can be locked to be used only for specific purposes. Transactions that meet certain requirements might need the approval of the group to happen. DAOs allow a native implementation of these features.
 
-| **DAO**                                                      | **Traditional Organization**                                 |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Lose, flat, democratic.                                      | Hierarchical.                                                |
-| Requires voting from its members for any changes  (rules and details). | Usually from a sole party or a small group.                  |
-| Votes and result systems are built-in.                       | Voting is optional and done manually and/or via  third party software. |
-| Fully global.                                                | Usually restricted to small areas/offices.                   |
-| Fully transparent, public and open.                          | Usually non-transparent, private and closed.                 |
-| Fully updatable and scalable.                                | Updating and scaling is slow and time consuming.             |
+![image](https://user-images.githubusercontent.com/75223088/131270674-d9fcc842-0d7c-4caf-82a9-f87c2142b6bf.png)
+
 
 The Gaia-X Operating Model has defined a set of Critical Success Factors (CSFs).  A DAO is capable of implementing these factors:
 
