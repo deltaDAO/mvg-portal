@@ -16,6 +16,7 @@ import EditMetadata from './Interactives/EditMetadata'
 import ConsumeData from './Interactives/ConsumeData'
 import ViewHistory from './Interactives/ViewHistory'
 import TableOfContents from './TableOfContents'
+import { queryDemonstrators } from '../../organisms/HomeIntro'
 
 interface TutorialChapterNode {
   node: {
@@ -46,18 +47,6 @@ const query = graphql`
     }
   }
 `
-
-const queryDemonstrators = {
-  page: 1,
-  offset: 2,
-  query: {
-    query_string: {
-      query:
-        'id:did\\:op\\:Dd64fD4Ff847A2FBEC2596E7A58fbB439654acB5 id:did\\:op\\:55D7212b58a04D8D24a2B302D749ADEF83B4a7d3'
-    }
-  },
-  sort: { created: -1 }
-}
 
 export default function PageTutorial({
   setTutorialDdo

@@ -30,13 +30,13 @@ const query = graphql`
   }
 `
 
-const queryDemonstrators = {
+export const queryDemonstrators = {
   page: 1,
   offset: 2,
   query: {
     query_string: {
       query:
-        'id:did\\:op\\:Dd64fD4Ff847A2FBEC2596E7A58fbB439654acB5 id:did\\:op\\:55D7212b58a04D8D24a2B302D749ADEF83B4a7d3'
+        'id:did\\:op\\:b3F2d84acEfb6aB4e850cb66dA2D9008E3f1A643 id:did\\:op\\:87152E582e3B05Cc6940E9763b9e0c22eA812448'
     }
   },
   sort: { created: -1 }
