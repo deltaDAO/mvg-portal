@@ -1,8 +1,7 @@
-import styles from '../index.module.css'
+import styles from './ConnectWallet.module.css'
 import React from 'react'
 import { ReactElement } from 'react-markdown'
 import EditComputeDataset from '../../../organisms/AssetActions/Edit/EditComputeDataset'
-import Page from '../../../templates/Page'
 import PageTemplateAssetDetails from '../../../templates/PageAssetDetails'
 import { useAsset } from '../../../../providers/Asset'
 import PageHeader from '../../../molecules/PageHeader'
@@ -22,7 +21,7 @@ export default function EditMetadata({
       {ddo && showPriceTutorial && (
         <>
           {!showComputeTutorial && (
-            <>
+            <div className={styles.wrapper}>
               <PageHeader
                 title="Choose the algorithm here"
                 description="Only selected algorithms are allowed to run on this dataset. Updating these settings will create an on-chain transaction you have to approve with your wallet."
@@ -33,7 +32,7 @@ export default function EditMetadata({
                   setShowEdit={setShowComputeTutorial}
                 />
               </div>
-            </>
+            </div>
           )}
           {showComputeTutorial && (
             <PageTemplateAssetDetails

@@ -40,10 +40,10 @@ export default function FormEditComputeDataset({
   ): Promise<AssetSelectionAsset[]> {
     const source = axios.CancelToken.source()
     const query = {
-      offset: 500,
+      offset: tutorial ? 9 : 500,
       query: {
         query_string: {
-          query: `service.attributes.main.type:algorithm AND chainId:${ddo.chainId} -isInPurgatory:true`
+          query: `id:did:op:b3F2d84acEfb6aB4e850cb66dA2D9008E3f1A643 AND service.attributes.main.type:algorithm AND chainId:${ddo.chainId} -isInPurgatory:true`
         }
       },
       sort: { created: -1 }
