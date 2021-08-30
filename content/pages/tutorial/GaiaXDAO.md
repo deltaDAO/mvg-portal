@@ -1,6 +1,6 @@
 ---
 title: Gaia-X as a Decentralized Autonomos Organization (DAO)
-chapter: 14
+chapter: 15
 ---
 
 An organization structures and coordinates people, material resources, and information based on specialization to achieve a goal. A DAO is an organization form expressed as software. Its purpose is to facilitate coordination via collective ownership. It services pre-defined goals, and groups use it to reduce coordination failure.
