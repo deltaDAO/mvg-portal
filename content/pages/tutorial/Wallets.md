@@ -10,7 +10,7 @@ videoUrl: https://youtu.be/voKIVfpV34o
 - [3box](https://3boxlabs.com/)
 - **Network name**: Gaia-X Test Network
 - **RPC**: [https://rpc.gaiaxtestnet.oceanprotocol.com](https://rpc.gaiaxtestnet.oceanprotocol.com)
-- **Chain ID**: 202100
+- **Chain ID**: 2021000
 - **Currency symbol**: GX
 - **Block explorer** [https://blockscout.gaiaxtestnet.oceanprotocol.com](https://blockscout.gaiaxtestnet.oceanprotocol.com)
 - [MVG Portal](https://portal.minimal-gaia-x.eu)
