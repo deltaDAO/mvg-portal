@@ -8,7 +8,6 @@ import { SectionQueryResult } from '../Home'
 import TutorialChapter, {
   TutorialChapterProps
 } from '../../molecules/TutorialChapter'
-import { Spin as Hamburger } from 'hamburger-react'
 import { DDO } from '@oceanprotocol/lib'
 import ConnectWallet from './Interactives/ConnectWallet'
 import PublishMetadata from './Interactives/PublishMetadata'
@@ -32,7 +31,7 @@ interface TutorialChapterNode {
 
 const query = graphql`
   query {
-    content: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/.+\/pages\/tutorial\/.+\\.md/"}}, sort: { fields: frontmatter___chapter}) {
+    chapters: allMarkdownRemark(filter: {fileAbsolutePath: {regex: "/.+\/pages\/tutorial\/.+\\.md/"}}, sort: { fields: frontmatter___chapter}) {
       edges {
         node {
           frontmatter {
@@ -45,6 +44,13 @@ const query = graphql`
         }
       }
     }
+    content: tutorialJson {
+      congratulations {
+        title
+        tagline
+        body
+      }
+    }
   }
 `
 
@@ -55,6 +61,7 @@ export default function PageTutorial({
 }): ReactElement {
   const [showPriceTutorial, setShowPriceTutorial] = useState(false)
   const [showComputeTutorial, setShowComputeTutorial] = useState(false)
+
   const interactivity = [
     {
       chapter: 2,
@@ -100,19 +107,17 @@ export default function PageTutorial({
     }
   ]
 
-  const findInteractiveComponent = (
-    arr: {
-      chapter: number
-      component: ReactElement
-    }[],
-    chapterNumber: number
-  ) => {
+  const findInteractiveComponent = (chapterNumber: number) => {
     if (!chapterNumber) return
-    return arr.find((e) => e.chapter === chapterNumber)?.component
+    return interactivity.find(
+      (interactive) => interactive.chapter === chapterNumber
+    )?.component
   }
 
   const data = useStaticQuery(query)
-  const chapterNodes = data.content.edges as TutorialChapterNode[]
+  const chapterNodes = data.chapters.edges as TutorialChapterNode[]
+  const { content } = data
+
   const chapters: TutorialChapterProps[] = chapterNodes.map((edge, i) => ({
     title: edge.node.frontmatter.title,
     markdown: edge.node.rawMarkdownBody,
@@ -121,7 +126,6 @@ export default function PageTutorial({
     titlePrefix: `Chapter ${i + 1}:`,
     videoUrl: edge.node.frontmatter?.videoUrl,
     interactiveComponent: findInteractiveComponent(
-      interactivity,
       edge.node.frontmatter?.chapter
     )
   }))
@@ -146,23 +150,18 @@ export default function PageTutorial({
               />
             )
           })}
-          <Permission eventType="browse">
-            <>
-              {/* !TODO: query content from json? */}
-              <h3>Congratulations!</h3>
-              <h5>Go ahead and try it yourself</h5>
-              <p>
-                Feel free to start your journey into the new european data
-                economy right away. You can use our demonstrator assets listed
-                below to experience what this data economy could feel like.
-              </p>
+          <>
+            <h3>{content.congratulations.title}</h3>
+            <h5>{content.congratulations.tagline}</h5>
+            <p>{content.congratulations.body}</p>
+            <Permission eventType="browse">
               <SectionQueryResult
                 className="demo"
                 title=""
                 query={queryDemonstrators}
               />
-            </>
-          </Permission>
+            </Permission>
+          </>
         </div>
       </div>
     </>
