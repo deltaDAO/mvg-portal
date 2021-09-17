@@ -1,5 +1,4 @@
 import React, { useState, useEffect, ReactElement } from 'react'
-import Page from '../../../templates/Page'
 import Alert from '../../../atoms/Alert'
 import Loader from '../../../atoms/Loader'
 import { useAsset } from '../../../../providers/Asset'

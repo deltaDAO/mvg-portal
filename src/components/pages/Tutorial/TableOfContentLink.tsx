@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react'
 import { TutorialChapterProps } from '../../molecules/TutorialChapter'
 import TableOfContentLinkIcon from './TableOfContentLinkIcon'
-import TableOfContents from './TableOfContents'
 
 export default function TableOfContentLink({
   chapter,
