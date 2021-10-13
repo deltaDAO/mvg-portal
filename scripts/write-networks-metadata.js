@@ -23,5 +23,21 @@ axios(chainDataUrl).then((response) => {
     chainId: 2021000,
     networkId: 2021000
   })
+  response.data.push({
+    name: 'Catena-X Testnet',
+    chain: 'CX',
+    network: 'testnet',
+    rpc: ['https://rpc.catenaxtestnet.oceanprotocol.com'],
+    faucets: [],
+    nativeCurrency: {
+      name: 'Catena-X',
+      symbol: 'CX',
+      decimals: 18
+    },
+    infoURL: 'https://catena-x.net',
+    shortName: 'CX',
+    chainId: 2021001,
+    networkId: 2021001
+  })
   process.stdout.write(JSON.stringify(response.data, null, '  '))
 })

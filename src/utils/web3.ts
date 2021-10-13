@@ -56,7 +56,10 @@ export function getNetworkDisplayName(
       displayName = 'Development'
       break
     case 2021000:
-      displayName = 'GAIA-X'
+      displayName = 'GAIA-X Testnet'
+      break
+    case 2021001:
+      displayName = 'CATENA-X Testnet'
       break
     default:
       displayName = data

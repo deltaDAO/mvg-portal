@@ -24,6 +24,13 @@ export function getOceanConfig(network: string | number): ConfigHelperConfig {
         metadataCacheUri: metadataCacheUri,
         providerUri: providerUri
       }
+    : network === 'catenaxtestnet' || network === 2021001
+    ? {
+        ...config,
+        nodeUri: 'https://rpc.catenaxtestnet.oceanprotocol.com/',
+        metadataCacheUri: metadataCacheUri,
+        providerUri: providerUri
+      }
     : config
 }
 
