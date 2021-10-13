@@ -8,8 +8,6 @@ module.exports = {
   metadataCacheUri:
     process.env.GATSBY_METADATACACHE_URI ||
     'https://aquarius.gaiax.delta-dao.com',
-  providerUri:
-    process.env.GATSBY_PROVIDER_URI || 'https://provider.gaiax.delta-dao.com',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
