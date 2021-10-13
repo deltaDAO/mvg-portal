@@ -8,8 +8,6 @@ import AssetType from '../atoms/AssetType'
 import NetworkName from '../atoms/NetworkName'
 import styles from './AssetTeaser.module.css'
 import LinkOpener from '../molecules/LinkOpener'
-import { useSiteMetadata } from '../../hooks/useSiteMetadata'
-import { ReactComponent as External } from '../../images/external.svg'
 
 declare type AssetTeaserProps = {
   ddo: DDO
@@ -26,9 +24,6 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
   const isCompute = Boolean(ddo?.findServiceByType('compute'))
   const accessType = isCompute ? 'compute' : 'access'
   const { owner } = ddo.publicKey[0]
-  const { appConfig } = useSiteMetadata()
-
-  const serviceEndpoint = ddo.findServiceByType(accessType)?.serviceEndpoint
 
   const url = new URL(window.location.href)
   const tutorial = url.pathname === '/tutorial'
@@ -66,9 +61,6 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
           <footer className={styles.foot}>
             <Price price={price} small />
             <div className={styles.network}>
-              {serviceEndpoint !== appConfig.providerUri && (
-                <External className={styles.external} />
-              )}
               <NetworkName networkId={ddo.chainId} />
             </div>
           </footer>
