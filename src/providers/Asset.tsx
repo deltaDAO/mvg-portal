@@ -7,7 +7,7 @@ import React, {
   useCallback,
   ReactNode
 } from 'react'
-import { Logger, DDO, BestPrice, MetadataMain } from '@oceanprotocol/lib'
+import { Logger, DDO, MetadataMain } from '@oceanprotocol/lib'
 import { PurgatoryData } from '@oceanprotocol/lib/dist/node/ddo/interfaces/PurgatoryData'
 import getAssetPurgatoryData from '../utils/purgatory'
 import axios, { CancelToken } from 'axios'
@@ -17,6 +17,8 @@ import { MetadataMarket } from '../@types/MetaData'
 import { useWeb3 } from './Web3'
 import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
+import { BestPrice } from '../models/BestPrice'
+import { useCancelToken } from '../hooks/useCancelToken'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -62,7 +64,7 @@ function AssetProvider({
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
-
+  const newCancelToken = useCancelToken()
   const fetchDdo = async (token?: CancelToken) => {
     Logger.log('[asset] Init asset, get DDO')
     setLoading(true)
@@ -97,11 +99,10 @@ function AssetProvider({
   useEffect(() => {
     if (!asset || !appConfig.metadataCacheUri) return
 
-    const source = axios.CancelToken.source()
     let isMounted = true
 
     async function init() {
-      const ddo = await fetchDdo(source.token)
+      const ddo = await fetchDdo(newCancelToken())
       if (!isMounted) return
       Logger.debug('[asset] Got DDO', ddo)
       setDDO(ddo)
@@ -110,7 +111,6 @@ function AssetProvider({
     init()
     return () => {
       isMounted = false
-      source.cancel()
     }
   }, [asset, appConfig.metadataCacheUri])
 

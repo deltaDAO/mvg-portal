@@ -2,14 +2,16 @@ import React from 'react'
 import { ReactElement } from 'react-markdown'
 import styles from './ViewHistory.module.css'
 import PageHeader from '../../../molecules/PageHeader'
-import PageHistory from '../../History'
+import PageHistory from '../../Profile/History'
 
 export default function ViewHistory({
   showPriceTutorial,
-  showComputeTutorial
+  showComputeTutorial,
+  accountId
 }: {
   showPriceTutorial: boolean
   showComputeTutorial: boolean
+  accountId: string
 }): ReactElement {
   return (
     <>
@@ -20,7 +22,7 @@ export default function ViewHistory({
             description="Find the Data Services that you previously accessed."
             center
           />
-          <PageHistory />
+          <PageHistory accountIdentifier={accountId} />
         </div>
       )}
     </>

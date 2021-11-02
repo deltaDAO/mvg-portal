@@ -33,10 +33,9 @@ interface UseSiteMetadata {
     allowFreePricing: string
     allowAdvancedSettings: string
     credentialType: string
-    allowAdvancedPublishSettings: string
-    displayWarning: boolean
     defaultPrivacyPolicySlug: string
-    privacyPreferenceCenter: boolean
+    privacyPreferenceCenter: string
+    allowAdvancedPublishSettings: string
   }
 }
 
@@ -76,7 +75,6 @@ const query = graphql`
           allowAdvancedSettings
           allowAdvancedPublishSettings
           credentialType
-          displayWarning
           defaultPrivacyPolicySlug
           privacyPreferenceCenter
         }

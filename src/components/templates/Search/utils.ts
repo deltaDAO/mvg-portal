@@ -1,47 +1,21 @@
-import { QueryResult } from '@oceanprotocol/lib/dist/node/metadatacache/MetadataCache'
-import { MetadataCache, Logger } from '@oceanprotocol/lib'
+import { Logger } from '@oceanprotocol/lib'
 import {
-  getDynamicPricingQuery,
-  getWhitelistedSearchQuery,
-  queryMetadata,
-  transformChainIdsListToQuery
+  generateBaseQuery,
+  getFilterTerm,
+  queryMetadata
 } from '../../../utils/aquarius'
 import queryString from 'query-string'
-import axios from 'axios'
-import appConfig from '../../../../app.config'
+import { CancelToken } from 'axios'
+import { BaseQueryParams } from '../../../models/aquarius/BaseQueryParams'
+import { SearchQuery } from '../../../models/aquarius/SearchQuery'
+import { FilterTerm } from '../../../models/aquarius/FilterTerm'
+import {
+  SortDirectionOptions,
+  SortTermOptions
+} from '../../../models/SortAndFilters'
 
-export const SortTermOptions = {
-  Created: 'created',
-  Relevance: '_score'
-} as const
-type SortTermOptions = typeof SortTermOptions[keyof typeof SortTermOptions]
-
-export const SortElasticTerm = {
-  Liquidity: 'price.ocean',
-  Price: 'price.value',
-  Created: 'created'
-} as const
-type SortElasticTerm = typeof SortElasticTerm[keyof typeof SortElasticTerm]
-
-export const SortValueOptions = {
-  Ascending: 'asc',
-  Descending: 'desc'
-} as const
-type SortValueOptions = typeof SortValueOptions[keyof typeof SortValueOptions]
-
-export const FilterByTypeOptions = {
-  Data: 'dataset',
-  Algorithm: 'algorithm'
-} as const
-type FilterByTypeOptions =
-  typeof FilterByTypeOptions[keyof typeof FilterByTypeOptions]
-
-function getSortType(sortParam: string): string {
-  const sortTerm =
-    sortParam === SortTermOptions.Created
-      ? SortTermOptions.Created
-      : SortTermOptions.Relevance
-  return sortTerm
+export function escapeESReservedChars(text: string): string {
+  return text?.replace(/([!*+\-=<>&|()\\[\]{}^~?:\\/"])/g, '\\$1')
 }
 
 export function getSearchQuery(
@@ -53,12 +27,13 @@ export function getSearchQuery(
   page?: string,
   offset?: string,
   sort?: string,
-  sortOrder?: string,
-  serviceType?: string
-): any {
-  const sortTerm = getSortType(sort)
-  const sortValue = sortOrder === SortValueOptions.Ascending ? 1 : -1
+  sortDirection?: string,
+  serviceType?: string,
+  accessType?: string
+): SearchQuery {
+  text = escapeESReservedChars(text)
   const emptySearchTerm = text === undefined || text === ''
+
   let searchTerm = owner
     ? `(publicKey.owner:${owner})`
     : tags
@@ -90,77 +65,70 @@ export function getSearchQuery(
     'service.attributes.additionalInformation.description',
     'service.attributes.additionalInformation.tags'
   ]
-  return getWhitelistedSearchQuery({
-    page: Number(page) || 1,
-    offset: Number(offset) || 21,
-    query: {
-      bool: {
-        must: [
-          {
-            bool: {
-              should: [
-                {
-                  query_string: {
-                    query: `${modifiedSearchTerm}`,
-                    fields: searchFields,
-                    minimum_should_match: '2<75%',
-                    phrase_slop: 2,
-                    boost: 5
-                  }
-                },
-                {
-                  query_string: {
-                    query: `${noSpaceSearchTerm}*`,
-                    fields: searchFields,
-                    boost: 5,
-                    lenient: true
-                  }
-                },
-                {
-                  match_phrase: {
-                    content: {
-                      query: `${searchTerm}`,
-                      boost: 10
-                    }
-                  }
-                },
-                {
-                  query_string: {
-                    query: `${prefixedSearchTerm}`,
-                    fields: searchFields,
-                    default_operator: 'AND'
-                  }
+
+  const nestedQuery = {
+    must: [
+      {
+        bool: {
+          should: [
+            {
+              query_string: {
+                query: `${modifiedSearchTerm}`,
+                fields: searchFields,
+                minimum_should_match: '2<75%',
+                phrase_slop: 2,
+                boost: 5
+              }
+            },
+            {
+              query_string: {
+                query: `${noSpaceSearchTerm}*`,
+                fields: searchFields,
+                boost: 5,
+                lenient: true
+              }
+            },
+            {
+              match_phrase: {
+                content: {
+                  query: `${searchTerm}`,
+                  boost: 10
                 }
-              ]
+              }
+            },
+            {
+              query_string: {
+                query: `${prefixedSearchTerm}`,
+                fields: searchFields,
+                default_operator: 'AND'
+              }
             }
-          },
-          {
-            match: {
-              'service.attributes.main.type':
-                serviceType === undefined
-                  ? 'dataset OR algorithm'
-                  : `${serviceType}`
-            }
-          },
-          {
-            query_string: {
-              query: `${transformChainIdsListToQuery(
-                chainIds
-              )} ${getDynamicPricingQuery()}`
-            }
-          },
-          {
-            term: {
-              isInPurgatory: false
-            }
-          }
-        ]
+          ]
+        }
       }
+    ]
+  }
+
+  const filters: FilterTerm[] = []
+  accessType !== undefined &&
+    filters.push(getFilterTerm('service.type', accessType))
+  serviceType !== undefined &&
+    filters.push(getFilterTerm('service.attributes.main.type', serviceType))
+
+  const baseQueryParams = {
+    chainIds,
+    nestedQuery,
+    esPaginationOptions: {
+      from: (Number(page) - 1 || 0) * (Number(offset) || 21),
+      size: Number(offset) || 21
     },
-    sort: {
-      [sortTerm]: sortValue
-    }
-  })
+    sortOptions: { sortBy: sort, sortDirection: sortDirection },
+    filters
+  } as BaseQueryParams
+
+  const query = generateBaseQuery(baseQueryParams)
+
+  return query
 }
 
 export async function getResults(
@@ -174,10 +142,11 @@ export async function getResults(
     sort?: string
     sortOrder?: string
     serviceType?: string
+    accessType?: string
   },
-  metadataCacheUri: string,
-  chainIds: number[]
-): Promise<QueryResult> {
+  chainIds: number[],
+  cancelToken?: CancelToken
+): Promise<any> {
   const {
     text,
     owner,
@@ -187,7 +156,8 @@ export async function getResults(
     offset,
     sort,
     sortOrder,
-    serviceType
+    serviceType,
+    accessType
   } = params
 
   const searchQuery = getSearchQuery(
@@ -200,11 +170,10 @@ export async function getResults(
     offset,
     sort,
     sortOrder,
-    serviceType
+    serviceType,
+    accessType
   )
-  const source = axios.CancelToken.source()
-  // const queryResult = await metadataCache.queryMetadata(searchQuery)
-  const queryResult = await queryMetadata(searchQuery, source.token)
+  const queryResult = await queryMetadata(searchQuery, cancelToken)
   return queryResult
 }
 
@@ -228,8 +197,8 @@ export async function addExistingParamsToUrl(
   } else {
     // sort should be relevance when fixed in aqua
     urlLocation = `${urlLocation}sort=${encodeURIComponent(
-      SortTermOptions.Created
-    )}&sortOrder=${SortValueOptions.Descending}&`
+      SortTermOptions.Relevance
+    )}&sortOrder=${SortDirectionOptions.Descending}&`
   }
   urlLocation = urlLocation.slice(0, -1)
   return urlLocation

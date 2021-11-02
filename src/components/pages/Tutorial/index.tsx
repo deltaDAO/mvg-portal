@@ -16,6 +16,7 @@ import ConsumeData from './Interactives/ConsumeData'
 import ViewHistory from './Interactives/ViewHistory'
 import TableOfContents from './TableOfContents'
 import { queryDemonstrators } from '../../organisms/HomeIntro'
+import { useWeb3 } from '../../../providers/Web3'
 
 interface TutorialChapterNode {
   node: {
@@ -59,6 +60,7 @@ export default function PageTutorial({
 }: {
   setTutorialDdo: (ddo: DDO) => void
 }): ReactElement {
+  const { accountId } = useWeb3()
   const [showPriceTutorial, setShowPriceTutorial] = useState(false)
   const [showComputeTutorial, setShowComputeTutorial] = useState(false)
 
@@ -102,6 +104,7 @@ export default function PageTutorial({
         <ViewHistory
           showPriceTutorial={showPriceTutorial}
           showComputeTutorial={showComputeTutorial}
+          accountId={accountId}
         />
       )
     }
@@ -155,11 +158,7 @@ export default function PageTutorial({
             <h5>{content.congratulations.tagline}</h5>
             <p>{content.congratulations.body}</p>
             <Permission eventType="browse">
-              <SectionQueryResult
-                className="demo"
-                title=""
-                query={queryDemonstrators}
-              />
+              <SectionQueryResult title="" query={queryDemonstrators} />
             </Permission>
           </>
         </div>

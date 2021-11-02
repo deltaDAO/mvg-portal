@@ -44,7 +44,7 @@ export default function App({
   return (
     <Styles>
       <div className={styles.app}>
-        {appConfig.displayWarning && (props as PageProps).uri === '/' && (
+        {(props as PageProps).uri === '/' && (
           <AnnouncementBanner text={warning.main} />
         )}
         <Header />
@@ -60,7 +60,9 @@ export default function App({
         <main className={styles.main}>{children}</main>
         <Footer />
 
-        {appConfig.privacyPreferenceCenter && <PrivacyPreferenceCenter />}
+        {appConfig.privacyPreferenceCenter === 'true' && (
+          <PrivacyPreferenceCenter style="small" />
+        )}
       </div>
     </Styles>
   )

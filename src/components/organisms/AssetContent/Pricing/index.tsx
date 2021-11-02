@@ -1,7 +1,7 @@
 import React, { FormEvent, ReactElement, useRef, useState } from 'react'
 import { Formik } from 'formik'
 import { initialValues, validationSchema } from '../../../../models/FormPricing'
-import { BestPrice, DDO, Logger } from '@oceanprotocol/lib'
+import { DDO, Logger } from '@oceanprotocol/lib'
 import { PriceOptionsMarket } from '../../../../@types/MetaData'
 import Alert from '../../../atoms/Alert'
 import FormPricing from './FormPricing'
@@ -12,6 +12,7 @@ import { usePricing } from '../../../../hooks/usePricing'
 import styles from './index.module.css'
 import { CancelToken } from 'axios'
 import { useSiteMetadata } from '../../../../hooks/useSiteMetadata'
+import { useAsset } from '../../../../providers/Asset'
 
 const query = graphql`
   query PricingQuery {
@@ -82,6 +83,7 @@ export default function Pricing({
 
   const { createPricing, pricingIsLoading, pricingError, pricingStepText } =
     usePricing()
+  const { isAssetNetwork } = useAsset()
 
   const hasFeedback = pricingIsLoading || typeof success !== 'undefined'
 
@@ -164,6 +166,7 @@ export default function Pricing({
             text={content.empty.info}
             action={{
               name: content.empty.action.name,
+              disabled: !isAssetNetwork,
               handleAction: handleShowPricingForm
             }}
           />

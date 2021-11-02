@@ -48,7 +48,7 @@ export default function PriceUnit({
         <>
           <div>
             {Number.isNaN(Number(price)) ? '-' : formatPrice(price, locale)}{' '}
-            <span className={styles.symbol}>{symbol || 'OCEAN'}</span>
+            <span className={styles.symbol}>{symbol}</span>
             {type && type === 'pool' && (
               <Badge label="pool" className={styles.badge} />
             )}

@@ -6,15 +6,19 @@ import { AssetSelectionAsset } from '../../../molecules/FormFields/AssetSelectio
 import stylesIndex from './index.module.css'
 import styles from './FormEditMetadata.module.css'
 import {
+  generateBaseQuery,
+  getFilterTerm,
   queryMetadata,
   transformDDOToAssetSelection
 } from '../../../../utils/aquarius'
 import { useAsset } from '../../../../providers/Asset'
 import { ComputePrivacyForm } from '../../../../models/FormEditComputeDataset'
 import { publisherTrustedAlgorithm as PublisherTrustedAlgorithm } from '@oceanprotocol/lib'
-import axios from 'axios'
 import { useSiteMetadata } from '../../../../hooks/useSiteMetadata'
 import FormActions from './FormActions'
+import { useCancelToken } from '../../../../hooks/useCancelToken'
+import { BaseQueryParams } from '../../../../models/aquarius/BaseQueryParams'
+import { SortTermOptions } from '../../../../models/SortAndFilters'
 
 export default function FormEditComputeDataset({
   data,
@@ -31,29 +35,27 @@ export default function FormEditComputeDataset({
   const { ddo } = useAsset()
   const { values }: FormikContextType<ComputePrivacyForm> = useFormikContext()
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
-
+  const newCancelToken = useCancelToken()
   const { publisherTrustedAlgorithms } =
     ddo?.findServiceByType('compute').attributes.main.privacy
 
   async function getAlgorithmList(
     publisherTrustedAlgorithms: PublisherTrustedAlgorithm[]
   ): Promise<AssetSelectionAsset[]> {
-    const source = axios.CancelToken.source()
-    const query = {
-      offset: tutorial ? 9 : 500,
-      query: {
-        query_string: {
-          query: `id:did:op:b3F2d84acEfb6aB4e850cb66dA2D9008E3f1A643 AND service.attributes.main.type:algorithm AND chainId:${ddo.chainId} -isInPurgatory:true`
-        }
-      },
-      sort: { created: -1 }
-    }
-    const querryResult = await queryMetadata(query, source.token)
+    const baseParams = {
+      chainIds: [ddo.chainId],
+      sort: { sortBy: SortTermOptions.Created },
+      filters: [getFilterTerm('service.attributes.main.type', 'algorithm')]
+    } as BaseQueryParams
+
+    const query = generateBaseQuery(baseParams)
+    const querryResult = await queryMetadata(query, newCancelToken())
     const datasetComputeService = ddo.findServiceByType('compute')
     const algorithmSelectionList = await transformDDOToAssetSelection(
       datasetComputeService?.serviceEndpoint,
       querryResult.results,
-      publisherTrustedAlgorithms
+      publisherTrustedAlgorithms,
+      newCancelToken()
     )
     return algorithmSelectionList
   }

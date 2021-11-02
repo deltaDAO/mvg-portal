@@ -126,14 +126,12 @@ import { QueryResult } from '@oceanprotocol/lib/dist/node/metadatacache/Metadata
 import { queryMetadata } from '../../utils/aquarius'
 
 const queryLatest = {
-  page: 1,
-  offset: 9,
   query: {
     // https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-query-string-query.html
 
     query_string: { query: `-isInPurgatory:true` }
   },
-  sort: { created: -1 }
+  sort: { created: 'desc' }
 }
 
 function Component() {
@@ -399,11 +397,7 @@ Feel free to adopt our provided privacy policies to your needs. Per default we c
 
 ### Privacy Preference Center
 
-Additionally, Ocean Market provides a privacy preference center for you to use. This feature is disabled per default since we do not use any cookies on our deployment of the market. However, if you need to add some functionality depending on cookies, you can simply enable this feature by changing the value of the `privacyPreferenceCenter` variable in the `app.config.js` config file. This will enable a simple cookie banner stating the use of necessary cookies. The content of this banner can be adjusted within the `content/gdpr.json` file. The `gdpr.json` file contains the minimum required values to configure the preference center. However, if you need more customizability for example to configure optional cookies for your market, you can also add these here. To find out how to configure this, we provide an example within the `content` directory. To quickly preview the example you can enable it with the following command:
-
-```
-cd content && mv gdpr.json gdpr_essential.json && cp gdpr.example.json gdpr.json
-```
+Additionally, Ocean Market provides a privacy preference center for you to use. This feature is disabled per default since we do not use cookies requiring consent on our deployment of the market. However, if you need to add some functionality depending on cookies, you can simply enable this feature by changing the value of the `GATSBY_PRIVACY_PREFERENCE_CENTER` environmental variable to `"true"` in your `.env` file. This will enable a customizable cookie banner stating the use of your individual cookies. The content of this banner can be adjusted within the `content/gdpr.json` file. If no `optionalCookies` are provided, the privacy preference center will be set to a simpler version displaying only the `title`, `text` and `close`-button. This can be used to inform the user about the use of essential cookies, where no consent is needed. The privacy preference center supports two different styling options: `'small'` and `'default'`. Setting the style propertie to `'small'` will display a smaller cookie banner to the user at first, only showing the default styled privacy preference center upon the user's customization request.
 
 Now your market users will be provided with additional options to toggle the use of your configured cookie consent categories. You can always retrieve the current consent status per category with the provided `useConsent()` hook. See below, how you can set your own custom cookies depending on the market user's consent. Feel free to adjust the provided utility functions for cookie usage provided in the `src/utils/cookies.ts` file to your needs.
 
@@ -432,6 +426,16 @@ cookies.map((cookie) => {
       break
   }
 })
+```
+
+#### Privacy Preference Centre Styling
+
+The privacy preference centre has two styling options `default` and `small`. The default view shows all of the customization options on a full-height side banner. When the `small` setting is used, a much smaller banner is shown which only reveals all of the customization options when the user clicks "Customize".
+
+The style can be changed by altering the `style` prop in the `PrivacyPreferenceCenter` component in `src/components/App.tsx`. For example:
+
+```Typescript
+<PrivacyPreferenceCenter style="small" />
 ```
 
 ## 🏛 License

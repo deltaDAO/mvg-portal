@@ -1,42 +1,47 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import styles from './Home.module.css'
 import AssetList from '../organisms/AssetList'
-import {
-  QueryResult,
-  SearchQuery
-} from '@oceanprotocol/lib/dist/node/metadatacache/MetadataCache'
 import Button from '../atoms/Button'
-import axios from 'axios'
-import {
-  queryMetadata,
-  transformChainIdsListToQuery,
-  getDynamicPricingQuery
-} from '../../utils/aquarius'
 import Permission from '../organisms/Permission'
+import {
+  generateBaseQuery,
+  getFilterTerm,
+  queryMetadata
+} from '../../utils/aquarius'
+import { getHighestLiquidityDatatokens } from '../../utils/subgraph'
 import { DDO, Logger } from '@oceanprotocol/lib'
-import { useSiteMetadata } from '../../hooks/useSiteMetadata'
 import { useUserPreferences } from '../../providers/UserPreferences'
-import Container from '../atoms/Container'
+import { useIsMounted } from '../../hooks/useIsMounted'
+import { useCancelToken } from '../../hooks/useCancelToken'
+import { SearchQuery } from '../../models/aquarius/SearchQuery'
+import { SortOptions, SortTermOptions } from '../../models/SortAndFilters'
+import { BaseQueryParams } from '../../models/aquarius/BaseQueryParams'
+import { PagedAssets } from '../../models/PagedAssets'
 import HomeIntro from '../organisms/HomeIntro'
+import Container from '../atoms/Container'
 
-function getQueryLatest(chainIds: number[]): SearchQuery {
-  return {
-    page: 1,
-    offset: 9,
-    query: {
-      query_string: {
-        query: `(${transformChainIdsListToQuery(
-          chainIds
-        )}) ${getDynamicPricingQuery()} AND -isInPurgatory:true `
-      }
+async function getQueryHighest(
+  chainIds: number[]
+): Promise<[SearchQuery, string[]]> {
+  const dtList = await getHighestLiquidityDatatokens(chainIds)
+  const baseQueryParams = {
+    chainIds,
+    esPaginationOptions: {
+      size: dtList.length > 0 ? dtList.length : 1
     },
-    sort: { created: -1 }
-  }
+    filters: [getFilterTerm('dataToken', dtList)]
+  } as BaseQueryParams
+  const queryHighest = generateBaseQuery(baseQueryParams)
+
+  return [queryHighest, dtList]
 }
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
-    return sorted.indexOf(a.dataToken) - sorted.indexOf(b.dataToken)
+    return (
+      sorted.indexOf(a.dataToken.toLowerCase()) -
+      sorted.indexOf(b.dataToken.toLowerCase())
+    )
   })
   return items
 }
@@ -52,22 +57,19 @@ export function SectionQueryResult({
   title: ReactElement | string
   query: SearchQuery
   action?: ReactElement
-  queryData?: string
+  queryData?: string[]
   className?: string
   assetListClassName?: string
 }): ReactElement {
-  const { appConfig } = useSiteMetadata()
   const { chainIds } = useUserPreferences()
-  const [result, setResult] = useState<QueryResult>()
+  const [result, setResult] = useState<any>()
   const [loading, setLoading] = useState<boolean>()
-
+  const isMounted = useIsMounted()
+  const newCancelToken = useCancelToken()
   useEffect(() => {
-    if (!appConfig.metadataCacheUri) return
-    const source = axios.CancelToken.source()
-
     async function init() {
       if (chainIds.length === 0) {
-        const result: QueryResult = {
+        const result: PagedAssets = {
           results: [],
           page: 0,
           totalPages: 0,
@@ -78,10 +80,10 @@ export function SectionQueryResult({
       } else {
         try {
           setLoading(true)
-          const result = await queryMetadata(query, source.token)
-          if (queryData && result.totalResults > 0) {
-            const searchDIDs = queryData.split(' ')
-            const sortedAssets = sortElements(result.results, searchDIDs)
+          const result = await queryMetadata(query, newCancelToken())
+          if (!isMounted()) return
+          if (queryData && result?.totalResults > 0) {
+            const sortedAssets = sortElements(result.results, queryData)
             const overflow = sortedAssets.length - 9
             sortedAssets.splice(sortedAssets.length - overflow, overflow)
             result.results = sortedAssets
@@ -94,11 +96,7 @@ export function SectionQueryResult({
       }
     }
     init()
-
-    return () => {
-      source.cancel()
-    }
-  }, [appConfig.metadataCacheUri, query, queryData])
+  }, [chainIds.length, isMounted, newCancelToken, query, queryData])
 
   return (
     <section className={className || styles.section}>
@@ -115,30 +113,44 @@ export function SectionQueryResult({
 }
 
 export default function HomePage(): ReactElement {
+  const [queryAndDids, setQueryAndDids] = useState<[SearchQuery, string[]]>()
+  const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
+
+  useEffect(() => {
+    getQueryHighest(chainIds).then((results) => {
+      setQueryAndDids(results)
+    })
+
+    const baseParams = {
+      chainIds: chainIds,
+      esPaginationOptions: { size: 9 },
+      sortOptions: {
+        sortBy: SortTermOptions.Created
+      } as SortOptions
+    } as BaseQueryParams
+
+    setQueryLatest(generateBaseQuery(baseParams))
+  }, [chainIds])
 
   return (
     <Permission eventType="browse">
       <>
-        {/* <Container>
-          <section className={styles.section}>
-            <h3>Bookmarks</h3>
-            <Bookmarks />
-          </section>
-        </Container> */}
         <section className={styles.intro}>
           <HomeIntro />
         </section>
         <Container>
-          <SectionQueryResult
-            title="Recently Published"
-            query={getQueryLatest(chainIds)}
-            action={
-              <Button style="text" to="/search?sort=created&sortOrder=desc">
-                All data sets and algorithms →
-              </Button>
-            }
-          />
+          {queryLatest && (
+            <SectionQueryResult
+              title="Recently Published"
+              query={queryLatest}
+              action={
+                <Button style="text" to="/search?sort=created&sortOrder=desc">
+                  All data sets and algorithms →
+                </Button>
+              }
+            />
+          )}
         </Container>
       </>
     </Permission>
