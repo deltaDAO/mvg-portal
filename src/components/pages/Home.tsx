@@ -3,12 +3,7 @@ import styles from './Home.module.css'
 import AssetList from '../organisms/AssetList'
 import Button from '../atoms/Button'
 import Permission from '../organisms/Permission'
-import {
-  generateBaseQuery,
-  getFilterTerm,
-  queryMetadata
-} from '../../utils/aquarius'
-import { getHighestLiquidityDatatokens } from '../../utils/subgraph'
+import { generateBaseQuery, queryMetadata } from '../../utils/aquarius'
 import { DDO, Logger } from '@oceanprotocol/lib'
 import { useUserPreferences } from '../../providers/UserPreferences'
 import { useIsMounted } from '../../hooks/useIsMounted'

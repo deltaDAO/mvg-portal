@@ -1,5 +1,4 @@
 import React, { ReactElement, useEffect, useState } from 'react'
-import axios from 'axios'
 import { ComputeJobMetaData } from '../../../../../@types/ComputeJobMetaData'
 import Time from '../../../../atoms/Time'
 import Button from '../../../../atoms/Button'
