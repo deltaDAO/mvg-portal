@@ -38,9 +38,8 @@ export const queryDemonstrators = {
       query:
         'id:did\\:op\\:b3F2d84acEfb6aB4e850cb66dA2D9008E3f1A643 id:did\\:op\\:87152E582e3B05Cc6940E9763b9e0c22eA812448'
     }
-  }
-  // TODO : find correct syntax for sorting
-  // sort: { created: 'desc' }
+  },
+  sort: { [SortTermOptions.Created]: SortDirectionOptions.Descending }
 }
 
 interface HomeIntroData {
