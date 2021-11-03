@@ -20,22 +20,6 @@ import { PagedAssets } from '../../models/PagedAssets'
 import HomeIntro from '../organisms/HomeIntro'
 import Container from '../atoms/Container'
 
-async function getQueryHighest(
-  chainIds: number[]
-): Promise<[SearchQuery, string[]]> {
-  const dtList = await getHighestLiquidityDatatokens(chainIds)
-  const baseQueryParams = {
-    chainIds,
-    esPaginationOptions: {
-      size: dtList.length > 0 ? dtList.length : 1
-    },
-    filters: [getFilterTerm('dataToken', dtList)]
-  } as BaseQueryParams
-  const queryHighest = generateBaseQuery(baseQueryParams)
-
-  return [queryHighest, dtList]
-}
-
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
     return (
@@ -113,15 +97,10 @@ export function SectionQueryResult({
 }
 
 export default function HomePage(): ReactElement {
-  const [queryAndDids, setQueryAndDids] = useState<[SearchQuery, string[]]>()
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
 
   useEffect(() => {
-    getQueryHighest(chainIds).then((results) => {
-      setQueryAndDids(results)
-    })
-
     const baseParams = {
       chainIds: chainIds,
       esPaginationOptions: { size: 9 },
