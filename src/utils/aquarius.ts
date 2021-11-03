@@ -56,7 +56,7 @@ export function generateBaseQuery(
         filter: [
           ...(baseQueryParams.filters || []),
           getFilterTerm('chainId', baseQueryParams.chainIds),
-          getFilterTerm('_index', 'aquarius'),
+          getFilterTerm('_index', 'ocean'),
           ...(baseQueryParams.ignorePurgatory
             ? []
             : [getFilterTerm('isInPurgatory', 'false')])
