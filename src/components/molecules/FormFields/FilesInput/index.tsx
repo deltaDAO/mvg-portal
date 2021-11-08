@@ -17,6 +17,8 @@ export default function FilesInput(props: InputProps): ReactElement {
   const { chainId } = useWeb3()
   const newCancelToken = useCancelToken()
 
+  console.log('Got props:', props)
+
   function loadFileInfo() {
     const config = getOceanConfig(chainId || 1)
 

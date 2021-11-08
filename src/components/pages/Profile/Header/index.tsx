@@ -5,6 +5,7 @@ import Stats from './Stats'
 import Account from './Account'
 import styles from './index.module.css'
 import { useProfile } from '../../../../providers/Profile'
+import { useWeb3 } from '../../../../providers/Web3'
 
 const isDescriptionTextClamped = () => {
   const el = document.getElementById('description')
@@ -30,6 +31,7 @@ export default function AccountHeader({
   const toogleShowMore = () => {
     setIsShowMore(!isShowMore)
   }
+  const account = useWeb3().accountId
 
   return (
     <div className={styles.grid}>
