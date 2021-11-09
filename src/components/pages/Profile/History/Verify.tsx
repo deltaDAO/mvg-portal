@@ -6,7 +6,7 @@ import * as Yup from 'yup'
 import { useWeb3 } from '../../../../providers/Web3'
 import { toast } from 'react-toastify'
 import { vpStorageUri } from '../../../../../app.config'
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
 import { reject } from 'lodash'
 
@@ -25,6 +25,41 @@ const validationSchema = Yup.object().shape({
     .nullable()
 })
 
+const updateVp = async (
+  accountId: string,
+  vp: File[],
+  cancelToken: CancelToken,
+  create?: boolean
+): Promise<void> => {
+  try {
+    const url = `${vpStorageUri}/vp${create ? '' : `/${accountId}`}`
+    const method: AxiosRequestConfig['method'] = create ? 'POST' : 'PUT'
+    const data = {
+      address: create ? accountId : undefined,
+      vp: vp[0].url
+    }
+
+    const response = await axios.request({
+      method,
+      url,
+      data,
+      cancelToken
+    })
+
+    toast.success(
+      `Verifiable Presentation succesfully ${response.data.message}!`
+    )
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      toast.error('isCancel')
+      Logger.log(error.message)
+    } else {
+      toast.error('Oops! Something went wrong. Please try again later.')
+      Logger.error(error.message)
+    }
+  }
+}
+
 export default function Verify({
   accountIdentifier
 }: {
@@ -32,54 +67,40 @@ export default function Verify({
 }): ReactElement {
   const { accountId } = useWeb3()
 
-  const handleSubmit = async (
-    values: VerifyFormData,
-    resetForm: (
-      nextState?: Partial<FormikState<Partial<VerifyFormData>>>
-    ) => void
-  ): Promise<void> => {
+  const handleSubmit = async (values: VerifyFormData): Promise<void> => {
+    if (!accountId || accountIdentifier !== accountId) {
+      toast.error('Could not submit. Please log in with your wallet first')
+      return
+    }
+    const cancelTokenSource = axios.CancelToken.source()
+
     try {
-      if (!accountId || accountIdentifier !== accountId) {
-        toast.error('Could not submit. Please log in with your wallet first')
-        return
-      }
+      const response = await axios.get(`${vpStorageUri}/vp/${accountId}`)
 
-      console.log(vpStorageUri)
-
-      axios
-        .put(`${vpStorageUri}/vp/${accountId}`, {
-          vp: (values.vp as File[])[0].url
-        })
-        .then(() => {
-          toast.success('Verifiable Presentation succesfully updated!')
-        })
-        .catch((error) => {
-          if (error.response && error.response.status === 409) {
-            // VP is not yet stored
-            return axios
-              .post(`${vpStorageUri}/vp`, {
-                address: accountId,
-                vp: (values.vp as File[])[0].url
-              })
-              .then(() => {
-                toast.success('Verifiable Presentation succesfully added!')
-              })
-          } else throw error
-        })
-        .catch(() => {
-          toast.error('Oops! Something went wrong. Please try again later.')
-        })
+      // VP already exists
+      if (response.status === 200)
+        await updateVp(accountId, values.vp as File[], cancelTokenSource.token)
     } catch (error) {
-      Logger.error(error.message)
+      if (error.response?.status === 409)
+        await updateVp(
+          accountId,
+          values.vp as File[],
+          cancelTokenSource.token,
+          true
+        )
+      else Logger.error(error.message)
+    } finally {
+      cancelTokenSource.cancel()
     }
   }
+
   return (
     <Formik
       initialValues={initialValues}
       initialStatus="empty"
       validationSchema={validationSchema}
-      onSubmit={async (values, { resetForm }) => {
-        await handleSubmit(values, resetForm)
+      onSubmit={async (values) => {
+        await handleSubmit(values)
       }}
     >
       <VerifyForm accountIdentifier={accountIdentifier} />
