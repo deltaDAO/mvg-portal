@@ -2,8 +2,8 @@ import axios from 'axios'
 import { Field, Form, useFormikContext } from 'formik'
 import { graphql, useStaticQuery } from 'gatsby'
 import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react'
-import { vpStorageUri } from '../../../../../app.config'
 import { FormContent, FormFieldProps } from '../../../../@types/Form'
+import { useSiteMetadata } from '../../../../hooks/useSiteMetadata'
 
 import { useWeb3 } from '../../../../providers/Web3'
 import Button from '../../../atoms/Button'
@@ -37,6 +37,8 @@ export default function VerifyForm({
   const data = useStaticQuery(query)
   const content: FormContent = data.content.childPagesJson.verify
 
+  const { vpRegistryUri } = useSiteMetadata().appConfig
+
   const {
     status,
     setStatus,
@@ -59,7 +61,7 @@ export default function VerifyForm({
   const { accountId } = useWeb3()
   const [addOrUpdate, setAddOrUpdate] = useState('Add')
   useEffect(() => {
-    axios.get(`${vpStorageUri}/vp/${accountId}`).then((res) => {
+    axios.get(`${vpRegistryUri}/vp/${accountId}`).then((res) => {
       console.log('Set value:', [{ url: res.data.data.vp }])
       if (res.data?.data?.vp) {
         setFieldValue('vp', [{ url: res.data.data.vp }])

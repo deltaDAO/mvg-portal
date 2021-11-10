@@ -5,10 +5,9 @@ import VerifyForm from './VerifyForm'
 import * as Yup from 'yup'
 import { useWeb3 } from '../../../../providers/Web3'
 import { toast } from 'react-toastify'
-import { vpStorageUri } from '../../../../../app.config'
-import axios, { AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios'
-import { useCancelToken } from '../../../../hooks/useCancelToken'
-import { reject } from 'lodash'
+import axios, { AxiosRequestConfig, CancelToken } from 'axios'
+import { useSiteMetadata } from '../../../../hooks/useSiteMetadata'
+import { vpRegistryUri } from '../../../../../app.config'
 
 interface VerifyFormData {
   vp: string | File[]
@@ -26,13 +25,14 @@ const validationSchema = Yup.object().shape({
 })
 
 const updateVp = async (
+  vpRegistryUri: string,
   accountId: string,
   vp: File[],
   cancelToken: CancelToken,
   create?: boolean
 ): Promise<void> => {
   try {
-    const url = `${vpStorageUri}/vp${create ? '' : `/${accountId}`}`
+    const url = `${vpRegistryUri}/vp${create ? '' : `/${accountId}`}`
     const method: AxiosRequestConfig['method'] = create ? 'POST' : 'PUT'
     const data = {
       address: create ? accountId : undefined,
@@ -65,6 +65,7 @@ export default function Verify({
   accountIdentifier: string
 }): ReactElement {
   const { accountId } = useWeb3()
+  const { vpRegistryUri } = useSiteMetadata().appConfig
 
   const handleSubmit = async (values: VerifyFormData): Promise<void> => {
     if (!accountId || accountIdentifier !== accountId) {
@@ -74,14 +75,20 @@ export default function Verify({
     const cancelTokenSource = axios.CancelToken.source()
 
     try {
-      const response = await axios.get(`${vpStorageUri}/vp/${accountId}`)
+      const response = await axios.get(`${vpRegistryUri}/vp/${accountId}`)
 
       // VP already exists
       if (response.status === 200)
-        await updateVp(accountId, values.vp as File[], cancelTokenSource.token)
+        await updateVp(
+          vpRegistryUri,
+          accountId,
+          values.vp as File[],
+          cancelTokenSource.token
+        )
     } catch (error) {
       if (error.response?.status === 409)
         await updateVp(
+          vpRegistryUri,
           accountId,
           values.vp as File[],
           cancelTokenSource.token,

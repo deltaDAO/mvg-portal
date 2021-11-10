@@ -8,7 +8,9 @@ module.exports = {
   metadataCacheUri:
     process.env.GATSBY_METADATACACHE_URI || 'https://aquarius.delta-dao.com',
 
-  vpStorageUri: process.env.GATSBY_VP_STORAGE_URI || 'http://localhost:3000',
+  vpRegistryUri:
+    process.env.GATSBY_VP_REGISTRY_URI ||
+    'https://vp-registry.gaiax.delta-dao.com',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
