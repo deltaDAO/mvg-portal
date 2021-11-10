@@ -50,11 +50,10 @@ const updateVp = async (
       `Verifiable Presentation succesfully ${response.data.message}!`
     )
   } catch (error) {
+    toast.error('Oops! Something went wrong. Please try again later.')
     if (axios.isCancel(error)) {
-      toast.error('isCancel')
       Logger.log(error.message)
     } else {
-      toast.error('Oops! Something went wrong. Please try again later.')
       Logger.error(error.message)
     }
   }
@@ -88,7 +87,10 @@ export default function Verify({
           cancelTokenSource.token,
           true
         )
-      else Logger.error(error.message)
+      else {
+        toast.error('Oops! Something went wrong. Please try again later.')
+        Logger.error(error.message)
+      }
     } finally {
       cancelTokenSource.cancel()
     }
