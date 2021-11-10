@@ -1,12 +1,16 @@
 import { Logger, Ocean } from '@oceanprotocol/lib'
+import { TransactionReceipt } from 'web3-core'
 
 export async function setMinterToPublisher(
   ocean: Ocean,
   dataTokenAddress: string,
   accountId: string,
   setError: (msg: string) => void
-): Promise<any> {
+): Promise<TransactionReceipt> {
   // free pricing v3 workaround part1
+  const status = await ocean.OceanDispenser.status(dataTokenAddress)
+  if (!status?.minterApproved) return
+
   const response = await ocean.OceanDispenser.cancelMinter(
     dataTokenAddress,
     accountId
@@ -23,7 +27,7 @@ export async function setMinterToDispenser(
   dataTokenAddress: string,
   accountId: string,
   setError: (msg: string) => void
-): Promise<any> {
+): Promise<TransactionReceipt> {
   // free pricing v3 workaround part2
   const response = await ocean.OceanDispenser.makeMinter(
     dataTokenAddress,

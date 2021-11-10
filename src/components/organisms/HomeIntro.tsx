@@ -8,6 +8,10 @@ import { ReactComponent as Globe } from '../../images/network-globe.svg'
 import Permission from '../organisms/Permission'
 import { SectionQueryResult } from '../pages/Home'
 import Markdown from '../atoms/Markdown'
+import {
+  SortDirectionOptions,
+  SortTermOptions
+} from '../../models/SortAndFilters'
 
 const query = graphql`
 {
@@ -31,15 +35,15 @@ const query = graphql`
 `
 
 export const queryDemonstrators = {
-  page: 1,
-  offset: 2,
+  from: 0,
+  size: 9,
   query: {
     query_string: {
       query:
         'id:did\\:op\\:b3F2d84acEfb6aB4e850cb66dA2D9008E3f1A643 id:did\\:op\\:87152E582e3B05Cc6940E9763b9e0c22eA812448'
     }
   },
-  sort: { created: 1 }
+  sort: { [SortTermOptions.Created]: SortDirectionOptions.Descending }
 }
 
 interface HomeIntroData {

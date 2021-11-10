@@ -5,7 +5,7 @@ import Container from '../atoms/Container'
 
 export interface PageProps {
   children: ReactNode
-  title: string
+  title?: string
   uri: string
   description?: string
   noPageHeader?: boolean
@@ -27,7 +27,6 @@ export default function Page({
           title={title}
           description={description}
           center={headerCenter}
-          powered={uri === '/'}
         />
       )}
       {children}

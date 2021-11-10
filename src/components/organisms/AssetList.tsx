@@ -8,6 +8,7 @@ import { getAssetsBestPrices, AssetListPrices } from '../../utils/subgraph'
 import Loader from '../atoms/Loader'
 import { useUserPreferences } from '../../providers/UserPreferences'
 import { useSiteMetadata } from '../../hooks/useSiteMetadata'
+import { useIsMounted } from '../../hooks/useIsMounted'
 
 const cx = classNames.bind(styles)
 
@@ -27,6 +28,7 @@ declare type AssetListProps = {
   isLoading?: boolean
   onPageChange?: React.Dispatch<React.SetStateAction<number>>
   className?: string
+  noPublisher?: boolean
 }
 
 const AssetList: React.FC<AssetListProps> = ({
@@ -36,26 +38,26 @@ const AssetList: React.FC<AssetListProps> = ({
   totalPages,
   isLoading,
   onPageChange,
-  className
+  className,
+  noPublisher
 }) => {
   const { appConfig } = useSiteMetadata()
   const { chainIds } = useUserPreferences()
   const [assetsWithPrices, setAssetWithPrices] = useState<AssetListPrices[]>()
   const [loading, setLoading] = useState<boolean>(true)
-
+  const isMounted = useIsMounted()
   useEffect(() => {
     if (!assets) return
     isLoading && setLoading(true)
-    getAssetsBestPrices(
-      assets,
-      appConfig.allowDynamicPricing !== 'true' && {
-        filterType: 'blacklist',
-        priceTypes: ['pool']
-      }
-    ).then((asset) => {
+
+    async function fetchPrices() {
+      const asset = await getAssetsBestPrices(assets)
+      if (!isMounted()) return
       setAssetWithPrices(asset)
       setLoading(false)
-    })
+    }
+
+    fetchPrices()
   }, [assets])
 
   // // This changes the page field inside the query
@@ -68,7 +70,11 @@ const AssetList: React.FC<AssetListProps> = ({
     [className]: className
   })
 
-  return assetsWithPrices && !loading ? (
+  return chainIds.length === 0 ? (
+    <div className={styleClasses}>
+      <div className={styles.empty}>No network selected</div>
+    </div>
+  ) : assetsWithPrices && !loading ? (
     <>
       <div className={styleClasses}>
         {assetsWithPrices.length > 0 ? (
@@ -77,12 +83,11 @@ const AssetList: React.FC<AssetListProps> = ({
               ddo={assetWithPrice.ddo}
               price={assetWithPrice.price}
               key={assetWithPrice.ddo.id}
+              noPublisher={noPublisher}
             />
           ))
-        ) : chainIds.length === 0 ? (
-          <div className={styles.empty}>No network selected.</div>
         ) : (
-          <div className={styles.empty}>No results found.</div>
+          <div className={styles.empty}>No results found</div>
         )}
       </div>
 

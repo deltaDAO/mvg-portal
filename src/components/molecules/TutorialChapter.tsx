@@ -1,8 +1,6 @@
-import React, { ReactElement, useState, useRef, useEffect } from 'react'
+import React, { ReactElement } from 'react'
 import slugify from 'slugify'
-import Progressbar from '../atoms/Progressbar'
 import Markdown from '../atoms/Markdown'
-import classNames from 'classnames/bind'
 import styles from './TutorialChapter.module.css'
 import VideoPlayer from './VideoPlayer'
 
@@ -16,14 +14,10 @@ export interface TutorialChapterProps {
   interactiveComponent?: ReactElement
 }
 
-const cx = classNames.bind(styles)
-
 export default function TutorialChapter({
-  chapter,
-  pageProgress
+  chapter
 }: {
   chapter: TutorialChapterProps
-  pageProgress: number
 }): ReactElement {
   return (
     <>

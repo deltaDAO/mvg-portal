@@ -12,12 +12,8 @@
         "link": "/publish"
       },
       {
-        "name": "History",
-        "link": "/history"
-      },
-      {
-        "name": "Bookmarks",
-        "link": "/bookmarks"
+        "name": "Profile",
+        "link": "/profile"
       }
     ],
     "warning": {

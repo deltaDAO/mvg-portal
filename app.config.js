@@ -6,12 +6,11 @@ module.exports = {
   // const { appConfig } = useSiteMetadata()
   // return appConfig.metadataCacheUri
   metadataCacheUri:
-    process.env.GATSBY_METADATACACHE_URI ||
-    'https://aquarius.gaiax.delta-dao.com',
+    process.env.GATSBY_METADATACACHE_URI || 'https://aquarius.delta-dao.com',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
-  chainIds: [2021000],
+  chainIds: [2021000, 2021001],
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
   chainIdsSupported: [2021000, 2021001],
@@ -23,7 +22,7 @@ module.exports = {
   // The ETH address the marketplace fee will be sent to.
   marketFeeAddress:
     process.env.GATSBY_MARKET_FEE_ADDRESS ||
-    '0x98E87C0e258eb9BFc2a614A9585BfB5201D105BD',
+    '0x9984b2453eC7D99a73A5B3a46Da81f197B753C8d',
 
   // Used for conversion display, can be whatever coingecko API supports
   // see: https://api.coingecko.com/api/v3/simple/supported_vs_currencies
@@ -74,8 +73,6 @@ module.exports = {
   // If set to true a gdpr.json file inside the content directory
   // is used to create and show a privacy preference center / cookie banner
   // To learn more about how to configure and use this, please refer to the readme
-  // https://github.com/deltaDAO/Ocean-Market/tree/main#-gdpr-compliance
-  privacyPreferenceCenter: false,
-
-  displayWarning: false
+  privacyPreferenceCenter:
+    process.env.GATSBY_PRIVACY_PREFERENCE_CENTER || 'false'
 }
