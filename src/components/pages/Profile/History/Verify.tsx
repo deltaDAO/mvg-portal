@@ -7,7 +7,6 @@ import { useWeb3 } from '../../../../providers/Web3'
 import { toast } from 'react-toastify'
 import axios, { AxiosRequestConfig, CancelToken } from 'axios'
 import { useSiteMetadata } from '../../../../hooks/useSiteMetadata'
-import { vpRegistryUri } from '../../../../../app.config'
 
 interface VerifyFormData {
   vp: string | File[]
