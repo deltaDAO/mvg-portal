@@ -27,7 +27,7 @@
   --font-color-heading: var(--brand-black);
   --background-body: var(--brand-white);
   --background-content: var(--brand-white);
-  --background-body-transparent: rgba(255, 255, 255, 0.8);
+  --background-body-transparent: rgba(255, 255, 255, 0.85);
   --background-highlight: var(--brand-grey-dimmed);
   --border-color: var(--brand-grey-lighter);
   --box-shadow-color: rgba(0, 0, 0, 0.05);

@@ -5,7 +5,6 @@ import styles from './index.module.css'
 import Currency from './Currency'
 import Debug from './Debug'
 import { ReactComponent as Caret } from '../../../images/caret.svg'
-import TokenApproval from './TokenApproval'
 
 export default function UserPreferences(): ReactElement {
   return (
@@ -13,7 +12,6 @@ export default function UserPreferences(): ReactElement {
       content={
         <ul className={styles.preferencesDetails}>
           <Currency />
-          <TokenApproval />
           <Debug />
         </ul>
       }
