@@ -86,7 +86,7 @@ export default function Verify({
           cancelTokenSource.token
         )
     } catch (error) {
-      if (error.response?.status === 409)
+      if (error.response?.status === 409) {
         await updateVp(
           vpRegistryUri,
           accountId,
@@ -94,7 +94,7 @@ export default function Verify({
           cancelTokenSource.token,
           true
         )
-      else {
+      } else {
         toast.error('Oops! Something went wrong. Please try again later.')
         Logger.error(error.message)
       }

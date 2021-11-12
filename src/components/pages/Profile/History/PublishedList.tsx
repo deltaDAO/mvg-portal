@@ -8,6 +8,7 @@ import { useUserPreferences } from '../../../../providers/UserPreferences'
 import styles from './PublishedList.module.css'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
 import { PagedAssets } from '../../../../models/PagedAssets'
+import VerifiedPublisher from '../../../atoms/VerifiedPublisher'
 
 export default function PublishedList({
   accountId
@@ -67,13 +68,16 @@ export default function PublishedList({
 
   return accountId ? (
     <>
-      <Filters
-        serviceType={service}
-        setServiceType={setServiceType}
-        accessType={access}
-        setAccessType={setAccsesType}
-        className={styles.filters}
-      />
+      <div className={styles.header}>
+        <Filters
+          serviceType={service}
+          setServiceType={setServiceType}
+          accessType={access}
+          setAccessType={setAccsesType}
+          className={styles.filters}
+        />
+        <VerifiedPublisher address={accountId} />
+      </div>
       <AssetList
         assets={queryResult?.results}
         isLoading={isLoading}
