@@ -80,8 +80,8 @@
     {
       "name": "termsAndConditions",
       "label": "Terms & Conditions",
-      "type": "terms",
-      "options": ["I agree to these Terms and Conditions"],
+      "type": "checkbox",
+      "options": ["I accept the [Terms and Conditions.](/terms)"],
       "required": true
     }
   ],
