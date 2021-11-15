@@ -40,15 +40,15 @@ export default function VerifyForm({
   const { vpRegistryUri } = useSiteMetadata().appConfig
 
   const {
-    status,
-    setStatus,
     isValid,
-    values,
-    setErrors,
-    setTouched,
     resetForm,
+    setErrors,
+    setFieldValue,
+    setStatus,
+    setTouched,
+    status,
     validateField,
-    setFieldValue
+    values
   } = useFormikContext()
 
   useEffect(() => {
