@@ -1,7 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 import styles from './index.module.css'
 import { graphql, useStaticQuery } from 'gatsby'
-import { useScrollPosition } from '@n8tb1t/use-scroll-position'
 import slugify from 'slugify'
 import Permission from '../../organisms/Permission'
 import { SectionQueryResult } from '../Home'
