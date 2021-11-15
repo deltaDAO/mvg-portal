@@ -1,7 +1,7 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import styles from './VerifiedPublisher.module.css'
 import { ReactComponent as VerifiedPatch } from '../../images/patch_check.svg'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import Loader from './Loader'
 import { Logger } from '@oceanprotocol/lib'
 import { useSiteMetadata } from '../../hooks/useSiteMetadata'
@@ -17,18 +17,24 @@ export default function VerifiedPublisher({
   const { vpRegistryUri } = useSiteMetadata().appConfig
 
   useEffect(() => {
-    if (address) {
-      setLoading(true)
-      axios
-        .get(`${vpRegistryUri}/vp/${address}/verify`)
-        .then((response) => {
+    const verify = async () => {
+      if (address) {
+        setLoading(true)
+        try {
+          const response: AxiosResponse<any> = await axios.get(
+            `${vpRegistryUri}/vp/${address}/verify`
+          )
           Logger.debug('[Verification] publisher verification:', response.data)
           setVerified(response.data?.data?.verified)
-        })
-        .finally(() => {
+        } catch (err) {
+          Logger.error('[Verification] verification error:', err.message)
+          setVerified(false)
+        } finally {
           setLoading(false)
-        })
+        }
+      }
     }
+    verify()
   }, [address])
 
   return loading ? (
