@@ -51,18 +51,23 @@ export default function Verify({
     }
   }, [networkId, ocean, connect])
 
-  const signMessage = async (): Promise<string> => {
+  const signMessage = async (): Promise<{
+    message: string
+    signature: string
+  }> => {
     const url = `${vpRegistryUri}/signature/message`
     try {
       const response: RegistryApiResponse<SignatureMessageBody> =
         await axios.get(url)
 
-      const signature = await ocean.utils.signature.signText(
-        response.data.data.message,
-        accountId
-      )
+      const { message } = response.data.data
 
-      return signature
+      const signature = await ocean.utils.signature.signText(message, accountId)
+
+      return {
+        message,
+        signature
+      }
     } catch (error) {
       Logger.error(error.message)
       if (error.code === 4001) {
@@ -76,6 +81,7 @@ export default function Verify({
 
   const registerVp = async (
     file: File[],
+    message: string,
     signature: string,
     cancelTokenSource: CancelTokenSource
   ): Promise<void> => {
@@ -84,6 +90,7 @@ export default function Verify({
       const method: AxiosRequestConfig['method'] = 'POST'
       const data: RegisterVPPayload = {
         signature: signature,
+        hashedMessage: message,
         fileUrl: file[0].url
       }
 
@@ -122,11 +129,16 @@ export default function Verify({
     const cancelTokenSource = axios.CancelToken.source()
 
     // Get signature from user to register VP
-    const signature = await signMessage()
+    const { signature, message } = await signMessage()
 
     // Register VP with the registry
     signature &&
-      (await registerVp(values.file as File[], signature, cancelTokenSource))
+      (await registerVp(
+        values.file as File[],
+        message,
+        signature,
+        cancelTokenSource
+      ))
   }
 
   return (
