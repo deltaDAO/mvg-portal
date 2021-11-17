@@ -1,8 +1,13 @@
+import { Logger } from '@oceanprotocol/lib'
 import axios from 'axios'
 import { Field, Form, useFormikContext } from 'formik'
 import { graphql, useStaticQuery } from 'gatsby'
 import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react'
 import { FormContent, FormFieldProps } from '../../../../@types/Form'
+import {
+  RegistryApiResponse,
+  VpDataBody
+} from '../../../../@types/Verification'
 import { useSiteMetadata } from '../../../../hooks/useSiteMetadata'
 
 import { useWeb3 } from '../../../../providers/Web3'
@@ -41,14 +46,12 @@ export default function VerifyForm({
 
   const {
     isValid,
-    resetForm,
     setErrors,
     setFieldValue,
     setStatus,
     setTouched,
     status,
-    validateField,
-    values
+    validateField
   } = useFormikContext()
 
   useEffect(() => {
@@ -61,13 +64,20 @@ export default function VerifyForm({
   const { accountId } = useWeb3()
   const [addOrUpdate, setAddOrUpdate] = useState('Add')
   useEffect(() => {
-    axios.get(`${vpRegistryUri}/vp/${accountId}`).then((res) => {
-      console.log('Set value:', [{ url: res.data.data.vp }])
-      if (res.data?.data?.vp) {
-        setFieldValue('vp', [{ url: res.data.data.vp }])
+    const initFileData = async () => {
+      try {
+        const response: RegistryApiResponse<VpDataBody> = await axios.get(
+          `${vpRegistryUri}/vp/${accountId}`
+        )
+
+        setFieldValue('file', [{ url: response.data.data.fileUrl }])
         setAddOrUpdate('Update')
+      } catch (error) {
+        setAddOrUpdate('Add')
+        Logger.error(error.message)
       }
-    })
+    }
+    initFileData()
   }, [])
 
   // Manually handle change events instead of using `handleChange` from Formik.
@@ -81,29 +91,22 @@ export default function VerifyForm({
     setFieldValue(field.name, value)
   }
 
-  console.log('acc:', accountId)
-  console.log('valid:', isValid)
-  console.log('status:', status)
-
   return (
     <Form onChange={() => status === 'empty' && setStatus(null)}>
       <h2 className={styles.title}>
         {addOrUpdate} Verifiable Presentation Registry
       </h2>
 
-      {content.data.map(
-        (field: FormFieldProps) =>
-          field.advanced !== true && (
-            <Field
-              key={field.name}
-              {...field}
-              component={Input}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleFieldChange(e, field)
-              }
-            />
-          )
-      )}
+      {content.data.map((field: FormFieldProps) => (
+        <Field
+          key={field.name}
+          {...field}
+          component={Input}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            handleFieldChange(e, field)
+          }
+        />
+      ))}
 
       <Button
         style="primary"

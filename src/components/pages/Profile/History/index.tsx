@@ -10,8 +10,6 @@ import styles from './index.module.css'
 import OceanProvider from '../../../../providers/Ocean'
 import { useWeb3 } from '../../../../providers/Web3'
 import Verify from './Verify'
-import { Formik, FormikState } from 'formik'
-import { Logger } from '@oceanprotocol/lib'
 
 interface HistoryTab {
   title: string
@@ -40,7 +38,11 @@ function getTabs(accountId: string, userAccountId: string): HistoryTab[] {
     },
     {
       title: 'Verify',
-      content: <Verify accountIdentifier={accountId} />
+      content: (
+        <OceanProvider>
+          <Verify accountIdentifier={accountId} />
+        </OceanProvider>
+      )
     }
   ]
   if (accountId === userAccountId) {

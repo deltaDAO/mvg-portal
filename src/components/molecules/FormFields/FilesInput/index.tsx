@@ -1,5 +1,4 @@
 import React, { ReactElement, useState, useEffect } from 'react'
-import axios from 'axios'
 import { useField } from 'formik'
 import { toast } from 'react-toastify'
 import FileInfo from './Info'
@@ -16,8 +15,6 @@ export default function FilesInput(props: InputProps): ReactElement {
   const [fileUrl, setFileUrl] = useState<string>()
   const { chainId } = useWeb3()
   const newCancelToken = useCancelToken()
-
-  console.log('Got props:', props)
 
   function loadFileInfo() {
     const config = getOceanConfig(chainId || 1)

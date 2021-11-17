@@ -1,105 +1,132 @@
-import React, { ReactElement, useEffect, useState } from 'react'
-import { Formik, FormikState } from 'formik'
+import React, { ReactElement, useEffect } from 'react'
+import { Formik } from 'formik'
 import { File, Logger } from '@oceanprotocol/lib'
 import VerifyForm from './VerifyForm'
 import * as Yup from 'yup'
-import { useWeb3 } from '../../../../providers/Web3'
 import { toast } from 'react-toastify'
-import axios, { AxiosRequestConfig, CancelToken } from 'axios'
+import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios'
 import { useSiteMetadata } from '../../../../hooks/useSiteMetadata'
+import {
+  RegisterVPPayload,
+  RegistryApiResponse,
+  SignatureMessageBody,
+  VpDataBody
+} from '../../../../@types/Verification'
+import { useOcean } from '../../../../providers/Ocean'
+import { getOceanConfig } from '../../../../utils/ocean'
+import { useWeb3 } from '../../../../providers/Web3'
 
 interface VerifyFormData {
-  vp: string | File[]
+  file: string | File[]
 }
 
 const initialValues = {
-  vp: ''
+  file: ''
 }
 
 const validationSchema = Yup.object().shape({
   // ---- required fields ----
-  vp: Yup.array<File>()
+  file: Yup.array<File>()
     .required('Enter a valid URL and click "ADD FILE"')
     .nullable()
 })
-
-const updateVp = async (
-  vpRegistryUri: string,
-  accountId: string,
-  vp: File[],
-  cancelToken: CancelToken,
-  create?: boolean
-): Promise<void> => {
-  try {
-    const url = `${vpRegistryUri}/vp${create ? '' : `/${accountId}`}`
-    const method: AxiosRequestConfig['method'] = create ? 'POST' : 'PUT'
-    const data = {
-      address: create ? accountId : undefined,
-      vp: vp[0].url
-    }
-
-    const response = await axios.request({
-      method,
-      url,
-      data,
-      cancelToken
-    })
-
-    toast.success(
-      `Verifiable Presentation succesfully ${response.data.message}!`
-    )
-  } catch (error) {
-    toast.error('Oops! Something went wrong. Please try again later.')
-    if (axios.isCancel(error)) {
-      Logger.log(error.message)
-    } else {
-      Logger.error(error.message)
-    }
-  }
-}
 
 export default function Verify({
   accountIdentifier
 }: {
   accountIdentifier: string
 }): ReactElement {
-  const { accountId } = useWeb3()
+  const { ocean, connect } = useOcean()
+  const { accountId, networkId } = useWeb3()
+
   const { vpRegistryUri } = useSiteMetadata().appConfig
 
+  useEffect(() => {
+    async function initOcean() {
+      const oceanInitialConfig = getOceanConfig(networkId)
+      await connect(oceanInitialConfig)
+    }
+    if (ocean === undefined) {
+      initOcean()
+    }
+  }, [networkId, ocean, connect])
+
+  const signMessage = async (): Promise<string> => {
+    const url = `${vpRegistryUri}/signature/message`
+    try {
+      const response: RegistryApiResponse<SignatureMessageBody> =
+        await axios.get(url)
+
+      const signature = await ocean.utils.signature.signText(
+        response.data.data.message,
+        accountId
+      )
+
+      return signature
+    } catch (error) {
+      Logger.error(error.message)
+      if (error.code === 4001) {
+        // User rejected signature (4001)
+        toast.error(error.message)
+      } else {
+        toast.error('Error requesting message from the registry.')
+      }
+    }
+  }
+
+  const registerVp = async (
+    file: File[],
+    signature: string,
+    cancelTokenSource: CancelTokenSource
+  ): Promise<void> => {
+    try {
+      const url = `${vpRegistryUri}/vp`
+      const method: AxiosRequestConfig['method'] = 'POST'
+      const data: RegisterVPPayload = {
+        signature: signature,
+        fileUrl: file[0].url
+      }
+
+      const response: RegistryApiResponse<VpDataBody> = await axios.request({
+        method,
+        url,
+        data,
+        cancelToken: cancelTokenSource.token
+      })
+
+      Logger.log(
+        'Registered a Verifiable Presentation. Explore at blockscout:',
+        response.data.data.transactionHash
+      )
+      toast.success(`Verifiable Presentation succesfully registered!`)
+    } catch (error) {
+      // TODO: improve error messages for user?
+      toast.error(
+        'Error registering Verifiable Presentation with the registry.'
+      )
+      if (axios.isCancel(error)) {
+        cancelTokenSource.cancel()
+        Logger.log(error.message)
+      } else {
+        Logger.error(error.message)
+      }
+    }
+  }
+
   const handleSubmit = async (values: VerifyFormData): Promise<void> => {
+    console.log(ocean)
     if (!accountId || accountIdentifier !== accountId) {
-      toast.error('Could not submit. Please log in with your wallet first')
+      toast.error('Could not submit. Please log in with your wallet first.')
       return
     }
     const cancelTokenSource = axios.CancelToken.source()
 
-    try {
-      const response = await axios.get(`${vpRegistryUri}/vp/${accountId}`)
+    // Get signature from user to register VP
+    const signature = await signMessage()
 
-      // VP already exists
-      if (response.status === 200)
-        await updateVp(
-          vpRegistryUri,
-          accountId,
-          values.vp as File[],
-          cancelTokenSource.token
-        )
-    } catch (error) {
-      if (error.response?.status === 409) {
-        await updateVp(
-          vpRegistryUri,
-          accountId,
-          values.vp as File[],
-          cancelTokenSource.token,
-          true
-        )
-      } else {
-        toast.error('Oops! Something went wrong. Please try again later.')
-        Logger.error(error.message)
-      }
-    } finally {
-      cancelTokenSource.cancel()
-    }
+    // Register VP with the registry
+    signature &&
+      (await registerVp(values.file as File[], signature, cancelTokenSource))
   }
 
   return (
