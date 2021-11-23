@@ -2,21 +2,8 @@ import { ConfigHelper, ConfigHelperConfig, Logger } from '@oceanprotocol/lib'
 import contractAddresses from '@oceanprotocol/contracts/artifacts/address.json'
 import { AbiItem } from 'web3-utils/types'
 import Web3 from 'web3'
-import { metadataCacheUri } from '../../app.config'
-
-const gaiaxtestnetConfig = {
-  nodeUri: 'https://rpc.gaiaxtestnet.oceanprotocol.com/',
-  metadataCacheUri: metadataCacheUri,
-  providerUri: 'https://provider.gaiax.delta-dao.com/',
-  explorerUri: 'https://blockscout.gaiaxtestnet.oceanprotocol.com/'
-}
-
-const catenaxtestnetConfig = {
-  nodeUri: 'https://rpc.catenaxtestnet.oceanprotocol.com/',
-  metadataCacheUri: metadataCacheUri,
-  providerUri: 'https://provider.catenax.delta-dao.com/',
-  explorerUri: 'https://blockscout.catenaxtestnet.oceanprotocol.com/'
-}
+import chains from '../../chains.config'
+import { ConfigHelperConfigOverwrite } from '../@types/Chains'
 
 export function getOceanConfig(network: string | number): ConfigHelperConfig {
   const config = new ConfigHelper().getConfig(
@@ -33,15 +20,14 @@ export function getOceanConfig(network: string | number): ConfigHelperConfig {
       : process.env.GATSBY_INFURA_PROJECT_ID
   ) as ConfigHelperConfig
 
-  return network === 'gaiaxtestnet' || network === 2021000
+  const configOverwrite = Object.entries(
+    chains as { [name: string]: ConfigHelperConfigOverwrite }
+  ).find(([alias, chainConfig]) => chainConfig.networkId === config.networkId)
+
+  return configOverwrite
     ? {
         ...config,
-        ...gaiaxtestnetConfig
-      }
-    : network === 'catenaxtestnet' || network === 2021001
-    ? {
-        ...config,
-        ...catenaxtestnetConfig
+        ...configOverwrite
       }
     : config
 }
