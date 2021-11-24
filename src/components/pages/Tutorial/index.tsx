@@ -1,7 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 import styles from './index.module.css'
 import { graphql, useStaticQuery } from 'gatsby'
-import { useScrollPosition } from '@n8tb1t/use-scroll-position'
 import slugify from 'slugify'
 import Permission from '../../organisms/Permission'
 import { SectionQueryResult } from '../Home'
@@ -133,11 +132,6 @@ export default function PageTutorial({
     )
   }))
 
-  const [scrollPosition, setScrollPosition] = useState(0)
-  useScrollPosition(({ prevPos, currPos }) => {
-    prevPos.y !== currPos.y && setScrollPosition(currPos.y * -1)
-  })
-
   return (
     <>
       <div className={styles.wrapper}>
@@ -145,13 +139,7 @@ export default function PageTutorial({
 
         <div className={styles.tutorial}>
           {chapters.map((chapter, i) => {
-            return (
-              <TutorialChapter
-                key={i}
-                pageProgress={scrollPosition}
-                chapter={chapter}
-              />
-            )
+            return <TutorialChapter key={i} chapter={chapter} />
           })}
           <>
             <h3>{content.congratulations.title}</h3>
