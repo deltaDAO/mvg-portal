@@ -1,17 +1,14 @@
-import { useStaticQuery, graphql } from 'gatsby'
-
 import React, { ReactElement } from 'react'
-import Button from '../atoms/Button'
+import { useStaticQuery, graphql } from 'gatsby'
 import Container from '../atoms/Container'
 import styles from './HomeIntro.module.css'
-import { ReactComponent as Globe } from '../../images/network-globe.svg'
-import Permission from '../organisms/Permission'
-import { SectionQueryResult } from '../pages/Home'
+import { ReactComponent as Play } from '../../images/play.svg'
 import Markdown from '../atoms/Markdown'
 import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../models/SortAndFilters'
+import Img, { FluidObject } from 'gatsby-image'
 
 const query = graphql`
 {
@@ -19,21 +16,23 @@ const query = graphql`
       childIndexJson {
         intro {
           teaser {
+            pre
             title
             text
-            cta
             ctaTo
-          }
-          paragraphs {
-            title
-            body
           }
         }
       }
     }
+    waves: file(relativePath: { eq: "waves_trans.png" }) {
+      childImageSharp {
+      fluid {
+          ...GatsbyImageSharpFluid
+          }
+      }
+  }
   }
 `
-
 export const queryDemonstrators = {
   from: 0,
   size: 9,
@@ -51,52 +50,46 @@ interface HomeIntroData {
     childIndexJson: {
       intro: {
         teaser: {
+          pre: string
           title: string
           text: string
-          cta: string
           ctaTo: string
         }
-        paragraphs: {
-          title: string
-          body: string
-        }[]
       }
     }
   }
+  waves: { childImageSharp: { fluid: FluidObject } }
 }
 
 export default function HomeIntro(): ReactElement {
   const data: HomeIntroData = useStaticQuery(query)
-  const { paragraphs, teaser } = data.file.childIndexJson.intro
+  const { teaser } = data.file.childIndexJson.intro
+  const waves = data.waves.childImageSharp.fluid
 
   return (
     <div className={styles.introWrapper}>
       <Container>
         <div className={styles.intro}>
-          <div className={styles.left}>
-            {paragraphs.map((paragraph) => (
-              <div key={paragraph.title} className={styles.paragraph}>
-                <h2>{paragraph.title}</h2>
-                <Markdown text={paragraph.body} />
+          <div className={styles.playButtonWrapper}>
+            <a
+              href="https://academy.delta-dao.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className={styles.playButton}>
+                <div className={styles.circle} />
               </div>
-            ))}
+              <h2 className={styles.circleText}>start now</h2>
+              <Play className={styles.play} />
+            </a>
           </div>
-          <div className={styles.spacer} />
-          <div className={styles.right}>
-            <Globe className={styles.globe} />
-            <Permission eventType="browse">
-              <SectionQueryResult
-                className="demonstrators"
-                title=""
-                query={queryDemonstrators}
-                assetListClassName={styles.demonstrators}
-              />
-            </Permission>
+          <div className={styles.waves}>
+            <Img fluid={waves} />
+          </div>
+          <div className={styles.education}>
+            <h4>{teaser.pre}</h4>
             <h2>{teaser.title}</h2>
             <Markdown text={teaser.text} />
-            <Button style="primary" className={styles.button} to={teaser.ctaTo}>
-              {teaser.cta}
-            </Button>
           </div>
         </div>
       </Container>

@@ -2,8 +2,9 @@
 
 :root {
   --brand-pink: #46daff;
-  --brand-purple: #000071;
+  --brand-purple: #7300f3;
   --brand-violet: #b900ff;
+  --brand-cyan: #00ffff;
 
   --brand-black: #000046;
 
@@ -27,6 +28,12 @@
     to right bottom,
     var(--brand-violet),
     var(--brand-purple)
+  );
+
+  --gradient-purple-cyan: linear-gradient(
+    to right top,
+    var(--brand-purple),
+    var(--brand-cyan)
   );
 
   -brand-grey-darker: #0f183f;

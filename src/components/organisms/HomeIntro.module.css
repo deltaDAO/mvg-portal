@@ -1,83 +1,160 @@
 .introWrapper {
-  background-color: var(--color-primary);
+  transform: skewY(-9deg);
   overflow: hidden;
+  height: 850px;
+  background-color: var(--color-primary);
 }
 
 .intro {
-  position: relative;
-  padding: var(--spacer);
-  color: var(--brand-white);
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-}
-
-.intro h2 {
-  color: var(--brand-white);
-  margin-top: var(--spacer);
-}
-
-.left,
-.right {
-  padding: var(--spacer);
-}
-
-.left {
-  width: 100%;
-}
-.right {
-  width: 100%;
-}
-.spacer {
-  width: 0;
-}
-
-.globe {
-  position: absolute;
-  right: -20%;
-  bottom: -10%;
-}
-
-.demonstrators {
-  display: flex !important;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  flex-direction: column-reverse;
+  transform: skewY(9deg);
 }
-.demonstrators > * {
-  flex: 1 1 0px;
+
+.education {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  padding: var(--spacer);
+  margin-top: 10%;
+  color: var(--brand-white);
+  text-align: center;
+}
+
+.education h2 {
+  margin-top: 0;
+  color: var(--brand-white);
+}
+
+.education h4 {
+  margin-bottom: 0;
+  color: var(--brand-cyan);
+}
+
+.playButtonWrapper {
+  position: relative;
+  top: -340px;
+  height: 300px;
+  width: 300px;
+  z-index: 2;
+}
+
+.playButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 300px;
+  padding: 7px;
+  background-image: var(--gradient-purple-cyan);
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 50%;
+  border-width: 0px;
+  animation: rot 7s linear infinite;
+}
+
+.circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  height: 286px;
+  width: 286px;
+  border-style: solid;
+  border-color: transparent;
+  border-radius: 50%;
+  border-width: 7px;
+}
+
+@keyframes rot {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(90deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.circleText {
+  position: relative;
+  right: 0;
+  left: 0;
+  top: -165px;
+  margin: auto;
+  z-index: 3;
+  text-transform: uppercase;
+  text-align: center;
+  color: var(--brand-white);
+}
+
+.play {
+  position: relative;
+  right: 0;
+  left: 0;
+  top: -251px;
+  margin: auto;
+  max-width: 130px;
+  z-index: 2;
+}
+
+.waves {
+  transform: skewY(-9deg);
+  position: relative;
+  top: -300px;
+  width: 1600px;
 }
 
 @media screen and (min-width: 54rem) {
-  .left {
-    width: 40%;
+  .introWrapper {
+    height: 600px;
   }
-  .spacer {
-    width: var(--spacer);
+  .intro {
+    flex-direction: row;
   }
-  .right {
-    width: calc(60% - var(--spacer));
+  .education h4 {
+    font-size: var(--font-size-large);
   }
-  .button {
-    margin-bottom: var(--spacer);
+  .circleText {
+    top: -172px;
   }
-  .intro h2 {
-    margin-top: calc(var(--spacer) * 2);
+  .play {
+    top: -258px;
   }
-  .globe {
-    bottom: auto;
-    top: -10%;
-    right: -20%;
+  .education {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    max-width: 460px;
+    padding-left: 0;
+    padding-top: 7%;
+    margin-top: 0;
+    text-align: left;
+  }
+  .playButtonWrapper {
+    position: absolute;
+    top: 20%;
+    right: 55%;
+    padding-top: 7%;
+  }
+  .waves {
+    top: 280px;
   }
 }
 
-.button {
-  position: relative;
-  background: var(--brand-violet);
-  border-radius: var(--border-radius-menu);
-}
-.button:hover,
-.button:focus {
-  background: var(--brand-white);
-  color: var(--brand-violet);
+@media (max-width: 30rem) {
+  .play {
+    top: -244px;
+  }
 }
