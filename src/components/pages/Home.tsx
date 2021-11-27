@@ -3,17 +3,26 @@ import styles from './Home.module.css'
 import AssetList from '../organisms/AssetList'
 import Button from '../atoms/Button'
 import Permission from '../organisms/Permission'
-import { generateBaseQuery, queryMetadata } from '../../utils/aquarius'
+import {
+  generateBaseQuery,
+  getFilterTerm,
+  queryMetadata
+} from '../../utils/aquarius'
 import { DDO, Logger } from '@oceanprotocol/lib'
 import { useUserPreferences } from '../../providers/UserPreferences'
 import { useIsMounted } from '../../hooks/useIsMounted'
 import { useCancelToken } from '../../hooks/useCancelToken'
 import { SearchQuery } from '../../models/aquarius/SearchQuery'
-import { SortOptions, SortTermOptions } from '../../models/SortAndFilters'
+import {
+  SortDirectionOptions,
+  SortOptions,
+  SortTermOptions
+} from '../../models/SortAndFilters'
 import { BaseQueryParams } from '../../models/aquarius/BaseQueryParams'
 import { PagedAssets } from '../../models/PagedAssets'
 import HomeIntro from '../organisms/HomeIntro'
 import Container from '../atoms/Container'
+import { useAddressConfig } from '../../hooks/useAddressConfig'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -94,17 +103,29 @@ export function SectionQueryResult({
 export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
+  const { featured, hasFeaturedAssets } = useAddressConfig()
 
   useEffect(() => {
+    const queryParams = {
+      esPaginationOptions: {
+        size: hasFeaturedAssets() ? featured.length : 9
+      },
+      filters: hasFeaturedAssets() ? [getFilterTerm('id', featured)] : undefined
+    }
+
     const baseParams = {
+      ...queryParams,
       chainIds: chainIds,
       esPaginationOptions: { size: 9 },
       sortOptions: {
-        sortBy: SortTermOptions.Created
+        sortBy: SortTermOptions.Created,
+        sortDirection: SortDirectionOptions.Ascending
       } as SortOptions
     } as BaseQueryParams
 
-    setQueryLatest(generateBaseQuery(baseParams))
+    const latestOrFeaturedQuery = generateBaseQuery(baseParams)
+
+    setQueryLatest(latestOrFeaturedQuery)
   }, [chainIds])
 
   return (
@@ -116,7 +137,9 @@ export default function HomePage(): ReactElement {
         <Container>
           {queryLatest && (
             <SectionQueryResult
-              title="Recently Published"
+              title={
+                hasFeaturedAssets() ? 'Featured Assets' : 'Recently Published'
+              }
               query={queryLatest}
               action={
                 <Button style="text" to="/search?sort=created&sortOrder=desc">
