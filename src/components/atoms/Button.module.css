@@ -48,13 +48,13 @@
 
 .primary {
   background: var(--color-primary);
-  box-shadow: 0.3em 0.3em 0 0 var(--brand-cyan);
+  box-shadow: 3px 3px 0 0 var(--brand-cyan);
 }
 
 .primary:hover,
 .primary:focus,
 .primary:active {
-  box-shadow: 0.1em 0.1em 0 0 var(--brand-cyan);
+  box-shadow: 1px 1px 0 0 var(--brand-cyan);
 }
 
 .ghost,
