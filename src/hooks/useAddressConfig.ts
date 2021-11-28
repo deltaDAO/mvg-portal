@@ -56,7 +56,6 @@ export function useAddressConfig(): UseAddressConfig {
     if (!isWhitelistEnabled()) return true
     return (
       ddo &&
-      isWhitelistEnabled() &&
       (isAddressWhitelisted(ddo.dataTokenInfo.address, 'dataToken') ||
         ddo.publicKey
           .map((pk) => {
