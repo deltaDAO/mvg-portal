@@ -22,7 +22,7 @@
 }
 
 .verifiedBadge svg path {
-  fill: var(--brand-white) !important;
+  fill: var(--brand-white);
 }
 
 .loader span,

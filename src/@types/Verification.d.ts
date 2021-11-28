@@ -1,6 +1,6 @@
 export interface RegisterVPPayload {
   signature: string
-  hashedMessage: strng
+  hashedMessage: string
   fileUrl: string
 }
 

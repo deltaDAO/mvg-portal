@@ -57,8 +57,6 @@ export default function VerifyForm({
   useEffect(() => {
     setErrors({})
     setTouched({})
-
-    // setSubmitting(false)
   }, [setErrors, setTouched])
 
   const { accountId } = useWeb3()
