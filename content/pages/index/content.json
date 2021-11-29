@@ -1,0 +1,24 @@
+{
+  "content": {
+    "teaser": {
+      "title": "Gaia-X: Data Sovereignty for Europe",
+      "text": "Do you want to learn how a Gaia-X build on Distributed Ledger Technology can be utilized by your company? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    },
+    "paragraphs": [
+      {
+        "title": "A Minimal Viable Gaia-X on DLT",
+        "body": "Do you want to learn how a Gaia-X build on Distributed Ledger Technology can be utilized by your company? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "cta": "Learn More",
+        "ctaTo": "https://academy.delta-dao.com/",
+        "interactivity": "video"
+      },
+      {
+        "title": "Compute-to-Data and it’s benefits",
+        "body": "Do you want to learn how a Gaia-X build on Distributed Ledger Technology can be utilized by your company? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "cta": "Learn More",
+        "ctaTo": "https://academy.delta-dao.com/",
+        "interactivity": "image"
+      }
+    ]
+  }
+}

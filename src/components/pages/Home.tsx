@@ -21,6 +21,7 @@ import {
 import { BaseQueryParams } from '../../models/aquarius/BaseQueryParams'
 import { PagedAssets } from '../../models/PagedAssets'
 import HomeIntro from '../organisms/HomeIntro'
+import HomeContent from '../organisms/HomeContent'
 import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
 
@@ -133,6 +134,9 @@ export default function HomePage(): ReactElement {
       <>
         <section className={styles.intro}>
           <HomeIntro />
+        </section>
+        <section className={styles.content}>
+          <HomeContent />
         </section>
         <Container>
           {queryLatest && (
