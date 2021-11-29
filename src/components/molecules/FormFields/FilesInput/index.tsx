@@ -1,5 +1,4 @@
 import React, { ReactElement, useState, useEffect } from 'react'
-import axios from 'axios'
 import { useField } from 'formik'
 import { toast } from 'react-toastify'
 import FileInfo from './Info'

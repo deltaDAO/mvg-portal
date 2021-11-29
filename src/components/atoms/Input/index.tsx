@@ -103,7 +103,13 @@ export default function Input(props: Partial<InputProps>): ReactElement {
 
       {field && hasError && (
         <div className={styles.error}>
-          <ErrorMessage name={field.name} />
+          <ErrorMessage
+            name={field.name}
+            render={(msg) => {
+              console.log('ERROR:', msg)
+              return <>{msg.toString()}</>
+            }}
+          />
         </div>
       )}
 

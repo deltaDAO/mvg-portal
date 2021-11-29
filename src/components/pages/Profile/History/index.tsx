@@ -9,6 +9,7 @@ import { useLocation } from '@reach/router'
 import styles from './index.module.css'
 import OceanProvider from '../../../../providers/Ocean'
 import { useWeb3 } from '../../../../providers/Web3'
+import Verify from './Verify'
 
 interface HistoryTab {
   title: string
@@ -22,28 +23,30 @@ function getTabs(accountId: string, userAccountId: string): HistoryTab[] {
       content: <PublishedList accountId={accountId} />
     },
     {
-      title: 'Pool Shares',
-      content: <PoolShares accountId={accountId} />
-    },
-    {
-      title: 'Pool Transactions',
-      content: <PoolTransactions accountId={accountId} />
-    },
-    {
       title: 'Downloads',
       content: <Downloads accountId={accountId} />
     }
   ]
-  const computeTab: HistoryTab = {
-    title: 'Compute Jobs',
-    content: (
-      <OceanProvider>
-        <ComputeJobs />
-      </OceanProvider>
-    )
-  }
+  const userTabs: HistoryTab[] = [
+    {
+      title: 'Compute Jobs',
+      content: (
+        <OceanProvider>
+          <ComputeJobs />
+        </OceanProvider>
+      )
+    },
+    {
+      title: 'Verify',
+      content: (
+        <OceanProvider>
+          <Verify accountIdentifier={accountId} />
+        </OceanProvider>
+      )
+    }
+  ]
   if (accountId === userAccountId) {
-    defaultTabs.push(computeTab)
+    return defaultTabs.concat(userTabs)
   }
   return defaultTabs
 }

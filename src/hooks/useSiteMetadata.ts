@@ -22,6 +22,7 @@ interface UseSiteMetadata {
   badge: string
   appConfig: {
     metadataCacheUri: string
+    vpRegistryUri: string
     infuraProjectId: string
     chainIds: number[]
     chainIdsSupported: number[]
@@ -63,6 +64,7 @@ const query = graphql`
         badge
         appConfig {
           metadataCacheUri
+          vpRegistryUri
           infuraProjectId
           chainIds
           chainIdsSupported
