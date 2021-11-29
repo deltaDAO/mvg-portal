@@ -20,8 +20,6 @@ export interface SignatureMessageBody {
 export interface VpDataBody {
   _id: string
   address: string
-  created: number
-  updated: number
   transactionHash: string
   fileUrl: string
 }
