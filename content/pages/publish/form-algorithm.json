@@ -102,7 +102,7 @@
     {
       "name": "termsAndConditions",
       "label": "Terms & Conditions",
-      "type": "checkbox",
+      "type": "terms",
       "options": ["I accept the [Terms and Conditions.](/terms)"],
       "required": true
     }
