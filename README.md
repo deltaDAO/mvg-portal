@@ -41,7 +41,7 @@ To explore the generated GraphQL data structure fire up the accompanying GraphiQ
 
 ## 🧊 Important Components
 
-This portal uses Ocean Protocol under the hood. There are multiple Ocean components at work, for mor information please head to the [Ocean Market repository](https://github.com/oceanprotocol/market). To get a breif overview of important components at use in the MVG context let's have a look at some of them:
+This portal uses Ocean Protocol under the hood. There are multiple Ocean components at work, for mor information please head to the [Ocean Market repository](https://github.com/oceanprotocol/market). To get a brief overview of important components at use in the MVG context let's have a look at some of them:
 
 ### Environment variables
 
