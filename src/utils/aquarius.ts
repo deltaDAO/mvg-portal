@@ -96,8 +96,8 @@ export function generateBaseQuery(
   } as SearchQuery
 
   generatedQuery.sort = {
-    [baseQueryParams.sortOptions.sortBy || SortTermOptions.Created]:
-      baseQueryParams.sortOptions.sortDirection ||
+    [baseQueryParams.sortOptions?.sortBy || SortTermOptions.Created]:
+      baseQueryParams.sortOptions?.sortDirection ||
       SortDirectionOptions.Descending
   }
 

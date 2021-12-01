@@ -44,7 +44,7 @@ export default function FormEditComputeDataset({
   ): Promise<AssetSelectionAsset[]> {
     const baseParams = {
       chainIds: [ddo.chainId],
-      sort: { sortBy: SortTermOptions.Created },
+      sortOptions: { sortBy: SortTermOptions.Created },
       filters: [getFilterTerm('service.attributes.main.type', 'algorithm')]
     } as BaseQueryParams
 
