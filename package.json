@@ -1,9 +1,9 @@
 {
-  "name": "@oceanprotocol/market",
-  "description": "Data marketplace for ocean.",
-  "version": "1.0.0",
+  "name": "@deltaDAO/mvg-portal",
+  "description": "Minimal Viable Gaia-X Portal demonstrator",
+  "version": "1.1.0",
   "license": "Apache-2.0",
-  "homepage": "https://market.oceanprotocol.com",
+  "homepage": "https://portal.minimal-gaia-x.eu",
   "scripts": {
     "start": "gatsby develop --host 0.0.0.0",
     "build": "gatsby build && cp _redirects public/_redirects",
@@ -140,7 +140,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/oceanprotocol/market.git"
+    "url": "git+https://github.com/deltaDAO/mvg-portal.git"
   },
   "engines": {
     "node": ">=14"
@@ -152,7 +152,7 @@
     "not op_mini all"
   ],
   "bugs": {
-    "url": "https://github.com/oceanprotocol/market/issues"
+    "url": "https://github.com/deltaDAO/mvg-portal/issues"
   },
   "main": "apollo.config.js",
   "directories": {
