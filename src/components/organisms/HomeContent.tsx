@@ -72,7 +72,7 @@ export default function HomeContent(): ReactElement {
     ),
     image: (
       <>
-        <div onClick={() => setIsOpen(true)}>
+        <div className={styles.imagePreview} onClick={() => setIsOpen(true)}>
           <Img fluid={ctdBenefitsImage} />
         </div>
         <Modal isOpen={modalIsOpen} onRequestClose={() => setIsOpen(false)}>
