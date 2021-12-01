@@ -13,7 +13,7 @@
         "interactivity": "video"
       },
       {
-        "title": "Compute-to-Data and it’s benefits",
+        "title": "Compute-to-Data and its benefits",
         "body": "One core concept of Ocean Protocol is the **Compute-to-Data (CtD)** approach. Compute-to-Data is the functionality that solves the current trade-off between the benefits of using private data and the risks of exposing it. It allows data consumers to run compute jobs on private data while the data stays on-premise with the data provider.",
         "cta": "Learn More",
         "ctaTo": "https://www.youtube.com/watch?v=R49CXPTRamg",

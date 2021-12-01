@@ -32,6 +32,10 @@
   margin: auto;
 }
 
+.imagePreview {
+  cursor: zoom-in;
+}
+
 .content {
   padding: var(--spacer);
 }
@@ -48,6 +52,7 @@
   flex-direction: column;
   justify-content: center;
   height: 100%;
+  cursor: zoom-out;
 }
 
 #close {
