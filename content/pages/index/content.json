@@ -2,19 +2,19 @@
   "content": {
     "teaser": {
       "title": "Gaia-X: Data Sovereignty for Europe",
-      "text": "Do you want to learn how a Gaia-X build on Distributed Ledger Technology can be utilized by your company? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+      "text": "Gaia-X represents the next generation of data infrastructure: an **open, transparent and secure digital ecosystem**, where data and services can be made available, collated and shared in an environment of trust. The architecture of Gaia-X is based on the principle of decentralisation."
     },
     "paragraphs": [
       {
         "title": "A Minimal Viable Gaia-X on DLT",
-        "body": "Do you want to learn how a Gaia-X build on Distributed Ledger Technology can be utilized by your company? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "body": "The principle of decentralization is a perfect fit for **Distributed Ledger Technology**. [Ocean Protocol](https://oceanprotocol.com) is a fully open-source technology stack, leveraging DLT and decentralization, aiming to give control back to the owners of data services. This MVG demonstrator is built on top of Ocean Protocol showcasing how a Minimal Viable Gaia-X on DLT and Ocean Protocol can look like, already today.",
         "cta": "Learn More",
         "ctaTo": "https://academy.delta-dao.com/",
         "interactivity": "video"
       },
       {
         "title": "Compute-to-Data and it’s benefits",
-        "body": "Do you want to learn how a Gaia-X build on Distributed Ledger Technology can be utilized by your company? Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+        "body": "One core concept of Ocean Protocol is the **Compute-to-Data (CtD)** approach. Compute-to-Data is the functionality that solves the current trade-off between the benefits of using private data and the risks of exposing it. It allows data consumers to run compute jobs on private data while the data stays on-premise with the data provider.",
         "cta": "Learn More",
         "ctaTo": "https://academy.delta-dao.com/",
         "interactivity": "image"
