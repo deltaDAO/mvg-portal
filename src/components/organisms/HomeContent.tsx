@@ -74,7 +74,7 @@ export default function HomeContent(): ReactElement {
     image: (
       <>
         <div className={styles.imagePreview} onClick={() => setIsOpen(true)}>
-          <img src={ctdBenefitsImage} alt="Compute-to-Data and it's benefits" />
+          <img src={ctdBenefitsImage} alt="Compute-to-Data and its benefits" />
         </div>
         <Modal isOpen={modalIsOpen} onRequestClose={() => setIsOpen(false)}>
           <div className={styles.modal} onClick={() => setIsOpen(false)}>
@@ -83,7 +83,7 @@ export default function HomeContent(): ReactElement {
             </button>
             <img
               src={ctdBenefitsImage}
-              alt="Compute-to-Data and it's benefits"
+              alt="Compute-to-Data and its benefits"
             />
           </div>
         </Modal>
