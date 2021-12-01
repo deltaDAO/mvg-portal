@@ -14,6 +14,7 @@ import AssetSelection, {
   AssetSelectionAsset
 } from '../../molecules/FormFields/AssetSelection'
 import Credentials from '../../molecules/FormFields/Credential'
+import Markdown from '../Markdown'
 
 const cx = classNames.bind(styles)
 
@@ -63,6 +64,7 @@ export default function InputElement({
           id={name}
           className={styleClasses}
           {...props}
+          disabled={disabled}
           multiple={multiple}
         >
           {field !== undefined && field.value === '' && (
@@ -105,7 +107,7 @@ export default function InputElement({
                   className={cx({ [styles.radioLabel]: true, [size]: size })}
                   htmlFor={slugify(option)}
                 >
-                  {option}
+                  <Markdown text={option} />
                 </label>
               </div>
             ))}

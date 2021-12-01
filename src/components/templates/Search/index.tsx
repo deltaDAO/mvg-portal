@@ -1,80 +1,93 @@
-import React, { ReactElement, useState, useEffect } from 'react'
+import React, { ReactElement, useState, useEffect, useCallback } from 'react'
 import Permission from '../../organisms/Permission'
-import { QueryResult } from '@oceanprotocol/lib/dist/node/metadatacache/MetadataCache'
 import AssetList from '../../organisms/AssetList'
-import styles from './index.module.css'
 import queryString from 'query-string'
-import ServiceFilter from './filterService'
+import Filters from './Filters'
 import Sort from './sort'
 import { getResults } from './utils'
 import { navigate } from 'gatsby'
 import { updateQueryStringParameter } from '../../../utils'
-import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import { useUserPreferences } from '../../../providers/UserPreferences'
+import { useCancelToken } from '../../../hooks/useCancelToken'
+import styles from './index.module.css'
+import { PagedAssets } from '../../../models/PagedAssets'
 
 export default function SearchPage({
   location,
-  setTotalResults
+  setTotalResults,
+  setTotalPagesNumber
 }: {
   location: Location
   setTotalResults: (totalResults: number) => void
+  setTotalPagesNumber: (totalPagesNumber: number) => void
 }): ReactElement {
-  const { appConfig } = useSiteMetadata()
-  const parsed = queryString.parse(location.search)
-  const { text, owner, tags, page, sort, sortOrder, serviceType } = parsed
+  const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const { chainIds } = useUserPreferences()
-  const [queryResult, setQueryResult] = useState<QueryResult>()
+  const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [loading, setLoading] = useState<boolean>()
-  const [service, setServiceType] = useState<string>(serviceType as string)
-  const [sortType, setSortType] = useState<string>(sort as string)
-  const [sortDirection, setSortDirection] = useState<string>(
-    sortOrder as string
-  )
+  const [serviceType, setServiceType] = useState<string>()
+  const [accessType, setAccessType] = useState<string>()
+  const [sortType, setSortType] = useState<string>()
+  const [sortDirection, setSortDirection] = useState<string>()
+  const newCancelToken = useCancelToken()
 
   useEffect(() => {
-    if (!appConfig.metadataCacheUri) return
-    async function initSearch() {
+    const parsed = queryString.parse(location.search)
+    const { sort, sortOrder, serviceType, accessType } = parsed
+    setParsed(parsed)
+    setServiceType(serviceType as string)
+    setAccessType(accessType as string)
+    setSortDirection(sortOrder as string)
+    setSortType(sort as string)
+  }, [location])
+
+  const updatePage = useCallback(
+    (page: number) => {
+      const { pathname, search } = location
+      const newUrl = updateQueryStringParameter(
+        pathname + search,
+        'page',
+        `${page}`
+      )
+      return navigate(newUrl)
+    },
+    [location]
+  )
+
+  const fetchAssets = useCallback(
+    async (parsed: queryString.ParsedQuery<string>, chainIds: number[]) => {
       setLoading(true)
       setTotalResults(undefined)
-      const queryResult = await getResults(
-        parsed,
-        appConfig.metadataCacheUri,
-        chainIds
-      )
+      const queryResult = await getResults(parsed, chainIds, newCancelToken())
       setQueryResult(queryResult)
       setTotalResults(queryResult.totalResults)
+      setTotalPagesNumber(queryResult.totalPages)
       setLoading(false)
-    }
-    initSearch()
-  }, [
-    text,
-    owner,
-    tags,
-    sort,
-    page,
-    serviceType,
-    sortOrder,
-    appConfig.metadataCacheUri,
-    chainIds
-  ])
+    },
+    [newCancelToken, setTotalPagesNumber, setTotalResults]
+  )
+  useEffect(() => {
+    if (!parsed || !queryResult) return
+    const { page } = parsed
+    if (queryResult.totalPages < Number(page)) updatePage(1)
+  }, [parsed, queryResult, updatePage])
 
-  function setPage(page: number) {
-    const newUrl = updateQueryStringParameter(
-      location.pathname + location.search,
-      'page',
-      `${page}`
-    )
-    return navigate(newUrl)
-  }
+  useEffect(() => {
+    if (!parsed || !chainIds) return
+    fetchAssets(parsed, chainIds)
+  }, [parsed, chainIds, newCancelToken, fetchAssets])
 
   return (
     <Permission eventType="browse">
       <>
         <div className={styles.search}>
           <div className={styles.row}>
-            <ServiceFilter
-              serviceType={service}
+            <Filters
+              serviceType={serviceType}
+              accessType={accessType}
               setServiceType={setServiceType}
+              setAccessType={setAccessType}
+              addFiltersToUrl
             />
             <Sort
               sortType={sortType}
@@ -91,7 +104,7 @@ export default function SearchPage({
             isLoading={loading}
             page={queryResult?.page}
             totalPages={queryResult?.totalPages}
-            onPageChange={setPage}
+            onPageChange={updatePage}
           />
         </div>
       </>

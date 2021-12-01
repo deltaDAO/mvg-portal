@@ -20,6 +20,7 @@ import styles from './index.module.css'
 import EditAdvancedSettings from '../AssetActions/Edit/EditAdvancedSettings'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import NetworkName from '../../atoms/NetworkName'
+import VerifiedPublisher from '../../atoms/VerifiedPublisher'
 
 export interface AssetContentProps {
   path?: string
@@ -102,6 +103,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     <>
       <div className={styles.networkWrap}>
         <NetworkName networkId={ddo.chainId} className={styles.network} />
+        <VerifiedPublisher address={owner} className={styles.verified} />
       </div>
 
       <article className={tutorial ? styles.gridTutorial : styles.grid}>

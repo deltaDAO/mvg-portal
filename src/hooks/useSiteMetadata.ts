@@ -22,6 +22,7 @@ interface UseSiteMetadata {
   badge: string
   appConfig: {
     metadataCacheUri: string
+    vpRegistryUri: string
     infuraProjectId: string
     chainIds: number[]
     chainIdsSupported: number[]
@@ -33,10 +34,9 @@ interface UseSiteMetadata {
     allowFreePricing: string
     allowAdvancedSettings: string
     credentialType: string
-    allowAdvancedPublishSettings: string
-    displayWarning: boolean
     defaultPrivacyPolicySlug: string
-    privacyPreferenceCenter: boolean
+    privacyPreferenceCenter: string
+    allowAdvancedPublishSettings: string
   }
 }
 
@@ -64,6 +64,7 @@ const query = graphql`
         badge
         appConfig {
           metadataCacheUri
+          vpRegistryUri
           infuraProjectId
           chainIds
           chainIdsSupported
@@ -76,7 +77,6 @@ const query = graphql`
           allowAdvancedSettings
           allowAdvancedPublishSettings
           credentialType
-          displayWarning
           defaultPrivacyPolicySlug
           privacyPreferenceCenter
         }

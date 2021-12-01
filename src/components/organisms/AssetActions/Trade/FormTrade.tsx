@@ -1,5 +1,5 @@
 import React, { ReactElement, useState } from 'react'
-import { BestPrice, DDO, Logger } from '@oceanprotocol/lib'
+import { DDO, Logger } from '@oceanprotocol/lib'
 import * as Yup from 'yup'
 import { Formik } from 'formik'
 import Actions from '../Pool/Actions'
@@ -15,6 +15,7 @@ import Decimal from 'decimal.js'
 import { useOcean } from '../../../../providers/Ocean'
 import { useWeb3 } from '../../../../providers/Web3'
 import { useAsset } from '../../../../providers/Asset'
+import { BestPrice } from '../../../../models/BestPrice'
 
 const contentQuery = graphql`
   query TradeQuery {
@@ -53,6 +54,7 @@ export default function FormTrade({
   const { isAssetNetwork } = useAsset()
   const { debug } = useUserPreferences()
   const [txId, setTxId] = useState<string>()
+  const [coinFrom, setCoinFrom] = useState<string>('OCEAN')
 
   const [maximumOcean, setMaximumOcean] = useState(maxOcean)
   const [maximumDt, setMaximumDt] = useState(maxDt)
@@ -113,6 +115,7 @@ export default function FormTrade({
       toast.error(error.message)
     }
   }
+
   return (
     <Formik
       initialValues={initialValues}
@@ -123,7 +126,7 @@ export default function FormTrade({
         setSubmitting(false)
       }}
     >
-      {({ isSubmitting, submitForm, values }) => (
+      {({ isSubmitting, submitForm, values, isValid }) => (
         <>
           {isWarningAccepted ? (
             <Swap
@@ -132,6 +135,7 @@ export default function FormTrade({
               maxDt={maxDt}
               maxOcean={maxOcean}
               price={price}
+              setCoin={setCoinFrom}
               setMaximumOcean={setMaximumOcean}
               setMaximumDt={setMaximumDt}
             />
@@ -149,12 +153,28 @@ export default function FormTrade({
             </div>
           )}
           <Actions
-            isDisabled={!isWarningAccepted || !isAssetNetwork}
+            isDisabled={
+              !isValid ||
+              !isWarningAccepted ||
+              !isAssetNetwork ||
+              values.datatoken === undefined ||
+              values.ocean === undefined
+            }
             isLoading={isSubmitting}
             loaderMessage="Swapping tokens..."
             successMessage="Successfully swapped tokens."
             actionName={content.action}
+            amount={
+              values.type === 'sell'
+                ? values.datatoken
+                  ? `${values.datatoken}`
+                  : undefined
+                : values.ocean
+                ? `${values.ocean}`
+                : undefined
+            }
             action={submitForm}
+            coin={coinFrom}
             txId={txId}
           />
 

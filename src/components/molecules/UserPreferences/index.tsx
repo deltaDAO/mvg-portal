@@ -5,14 +5,8 @@ import styles from './index.module.css'
 import Currency from './Currency'
 import Debug from './Debug'
 import { ReactComponent as Caret } from '../../../images/caret.svg'
-import useDarkMode from 'use-dark-mode'
-import Appearance from './Appearance'
-import { darkModeConfig } from '../../../../app.config'
 
 export default function UserPreferences(): ReactElement {
-  // Calling this here because <Style /> is not mounted on first load
-  const darkMode = useDarkMode(false, darkModeConfig)
-
   return (
     <Tooltip
       content={

@@ -27,7 +27,7 @@
   --font-color-heading: var(--brand-black);
   --background-body: var(--brand-white);
   --background-content: var(--brand-white);
-  --background-body-transparent: rgba(255, 255, 255, 0.8);
+  --background-body-transparent: rgba(255, 255, 255, 0.85);
   --background-highlight: var(--brand-grey-dimmed);
   --border-color: var(--brand-grey-lighter);
   --box-shadow-color: rgba(0, 0, 0, 0.05);
@@ -67,14 +67,3 @@
   --break-point--large: 1140px;
   --break-point--huge: 1400px;
 }
-
-/* .dark {
-  --font-color-text: var(--brand-grey-lighter);
-  --font-color-heading: var(--brand-grey-dimmed);
-  --background-content: var(--brand-black);
-  --background-body: var(--brand-black);
-  --background-body-transparent: rgba(20, 20, 20, 0.9);
-  --background-highlight: var(--brand-grey-darker);
-  --border-color: var(--brand-grey-dark);
-  --box-shadow-color: rgba(0, 0, 0, 0.2);
-} */

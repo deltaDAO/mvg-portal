@@ -1,7 +1,6 @@
 import React, { ReactElement, useState } from 'react'
 import styles from './index.module.css'
 import { graphql, useStaticQuery } from 'gatsby'
-import { useScrollPosition } from '@n8tb1t/use-scroll-position'
 import slugify from 'slugify'
 import Permission from '../../organisms/Permission'
 import { SectionQueryResult } from '../Home'
@@ -16,6 +15,7 @@ import ConsumeData from './Interactives/ConsumeData'
 import ViewHistory from './Interactives/ViewHistory'
 import TableOfContents from './TableOfContents'
 import { queryDemonstrators } from '../../organisms/HomeIntro'
+import { useWeb3 } from '../../../providers/Web3'
 
 interface TutorialChapterNode {
   node: {
@@ -59,6 +59,7 @@ export default function PageTutorial({
 }: {
   setTutorialDdo: (ddo: DDO) => void
 }): ReactElement {
+  const { accountId } = useWeb3()
   const [showPriceTutorial, setShowPriceTutorial] = useState(false)
   const [showComputeTutorial, setShowComputeTutorial] = useState(false)
 
@@ -102,6 +103,7 @@ export default function PageTutorial({
         <ViewHistory
           showPriceTutorial={showPriceTutorial}
           showComputeTutorial={showComputeTutorial}
+          accountId={accountId}
         />
       )
     }
@@ -130,11 +132,6 @@ export default function PageTutorial({
     )
   }))
 
-  const [scrollPosition, setScrollPosition] = useState(0)
-  useScrollPosition(({ prevPos, currPos }) => {
-    prevPos.y !== currPos.y && setScrollPosition(currPos.y * -1)
-  })
-
   return (
     <>
       <div className={styles.wrapper}>
@@ -142,24 +139,14 @@ export default function PageTutorial({
 
         <div className={styles.tutorial}>
           {chapters.map((chapter, i) => {
-            return (
-              <TutorialChapter
-                key={i}
-                pageProgress={scrollPosition}
-                chapter={chapter}
-              />
-            )
+            return <TutorialChapter key={i} chapter={chapter} />
           })}
           <>
             <h3>{content.congratulations.title}</h3>
             <h5>{content.congratulations.tagline}</h5>
             <p>{content.congratulations.body}</p>
             <Permission eventType="browse">
-              <SectionQueryResult
-                className="demo"
-                title=""
-                query={queryDemonstrators}
-              />
+              <SectionQueryResult title="" query={queryDemonstrators} />
             </Permission>
           </>
         </div>

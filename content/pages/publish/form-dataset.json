@@ -81,7 +81,7 @@
       "name": "termsAndConditions",
       "label": "Terms & Conditions",
       "type": "terms",
-      "options": ["I agree to these Terms and Conditions"],
+      "options": ["I accept the [Terms and Conditions.](/terms)"],
       "required": true
     }
   ],

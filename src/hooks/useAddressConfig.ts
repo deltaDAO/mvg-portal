@@ -1,14 +1,23 @@
 import { DDO } from '@oceanprotocol/lib'
 import addressConfig from '../../address.config'
-const { whitelists } = addressConfig
+const {
+  whitelists,
+  featured
+}: {
+  whitelists: UseAddressConfig['whitelists']
+  featured: UseAddressConfig['featured']
+} = addressConfig
 
 export interface UseAddressConfig {
   whitelists: {
     'publicKey.owner': string[]
     dataToken: string[]
   }
+  featured: string[]
   isAddressWhitelisted: (address: string) => boolean
   isDDOWhitelisted: (ddo: DDO) => boolean
+  hasFeaturedAssets: () => boolean
+  isWhitelistEnabled: () => boolean
 }
 
 function isWhitelistEnabled() {
@@ -18,7 +27,17 @@ function isWhitelistEnabled() {
   )
 }
 
+function hasFeaturedAssets() {
+  return (Object.values(featured) as string[])?.length > 0
+}
+
 export function useAddressConfig(): UseAddressConfig {
+  const isAssetFeatured = function (address: string): boolean {
+    return hasFeaturedAssets()
+      ? (featured as string[]).find((feat) => feat === address) !== undefined
+      : false
+  }
+
   const isAddressWhitelisted = function (
     address: string,
     field?: keyof UseAddressConfig['whitelists']
@@ -37,7 +56,6 @@ export function useAddressConfig(): UseAddressConfig {
     if (!isWhitelistEnabled()) return true
     return (
       ddo &&
-      isWhitelistEnabled() &&
       (isAddressWhitelisted(ddo.dataTokenInfo.address, 'dataToken') ||
         ddo.publicKey
           .map((pk) => {
@@ -47,5 +65,12 @@ export function useAddressConfig(): UseAddressConfig {
     )
   }
 
-  return { whitelists, isAddressWhitelisted, isDDOWhitelisted }
+  return {
+    whitelists,
+    featured,
+    isAddressWhitelisted,
+    isDDOWhitelisted,
+    hasFeaturedAssets,
+    isWhitelistEnabled
+  }
 }

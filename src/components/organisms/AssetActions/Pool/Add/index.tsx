@@ -14,6 +14,7 @@ import Output from './Output'
 import DebugOutput from '../../../../atoms/DebugOutput'
 import { useOcean } from '../../../../../providers/Ocean'
 import { useWeb3 } from '../../../../../providers/Web3'
+import { useAsset } from '../../../../../providers/Asset'
 
 const contentQuery = graphql`
   query PoolAddQuery {
@@ -67,11 +68,13 @@ export default function Add({
 
   const { accountId, balance } = useWeb3()
   const { ocean } = useOcean()
+  const { isAssetNetwork } = useAsset()
   const { debug } = useUserPreferences()
   const [txId, setTxId] = useState<string>()
   const [coin, setCoin] = useState('OCEAN')
   const [dtBalance, setDtBalance] = useState<string>()
   const [amountMax, setAmountMax] = useState<string>()
+  const [amount, setAmount] = useState<string>('0')
   const [newPoolTokens, setNewPoolTokens] = useState('0')
   const [newPoolShare, setNewPoolShare] = useState('0')
   const [isWarningAccepted, setIsWarningAccepted] = useState(false)
@@ -90,7 +93,7 @@ export default function Add({
 
   // Get datatoken balance when datatoken selected
   useEffect(() => {
-    if (!ocean || coin === 'OCEAN') return
+    if (!ocean || !isAssetNetwork || coin === 'OCEAN') return
 
     async function getDtBalance() {
       const dtBalance = await ocean.datatokens.balance(dtAddress, accountId)
@@ -101,7 +104,7 @@ export default function Add({
 
   // Get maximum amount for either OCEAN or datatoken
   useEffect(() => {
-    if (!ocean || !poolAddress) return
+    if (!ocean || !isAssetNetwork || !poolAddress) return
 
     async function getMaximum() {
       const amountMaxPool =
@@ -117,7 +120,7 @@ export default function Add({
           : Number(dtBalance) > Number(amountMaxPool)
           ? amountMaxPool
           : dtBalance
-      setAmountMax(amountMax)
+      setAmountMax(Number(amountMax).toFixed(3))
     }
     getMaximum()
   }, [ocean, poolAddress, coin, dtBalance, balance.ocean])
@@ -146,7 +149,6 @@ export default function Add({
   return (
     <>
       <Header title={content.title} backAction={() => setShowAdd(false)} />
-
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -155,7 +157,7 @@ export default function Add({
           setSubmitting(false)
         }}
       >
-        {({ isSubmitting, submitForm, values }) => (
+        {({ isSubmitting, submitForm, values, isValid }) => (
           <>
             <div className={styles.addInput}>
               {isWarningAccepted ? (
@@ -165,6 +167,7 @@ export default function Add({
                   dtSymbol={dtSymbol}
                   amountMax={amountMax}
                   setCoin={setCoin}
+                  setAmount={setAmount}
                   totalPoolTokens={totalPoolTokens}
                   totalBalance={totalBalance}
                   poolAddress={poolAddress}
@@ -172,16 +175,18 @@ export default function Add({
                   setNewPoolShare={setNewPoolShare}
                 />
               ) : (
-                <Alert
-                  className={styles.warning}
-                  text={content.warning}
-                  state="info"
-                  action={{
-                    name: 'I understand',
-                    style: 'text',
-                    handleAction: () => setIsWarningAccepted(true)
-                  }}
-                />
+                content.warning && (
+                  <Alert
+                    className={styles.warning}
+                    text={content.warning.toString()}
+                    state="info"
+                    action={{
+                      name: 'I understand',
+                      style: 'text',
+                      handleAction: () => setIsWarningAccepted(true)
+                    }}
+                  />
+                )
               )}
             </div>
 
@@ -196,12 +201,19 @@ export default function Add({
             />
 
             <Actions
-              isDisabled={!isWarningAccepted}
+              isDisabled={
+                !isValid ||
+                !isWarningAccepted ||
+                amount === '' ||
+                amount === '0'
+              }
               isLoading={isSubmitting}
               loaderMessage="Adding Liquidity..."
               successMessage="Successfully added liquidity."
               actionName={content.action}
               action={submitForm}
+              amount={amount}
+              coin={coin}
               txId={txId}
             />
             {debug && <DebugOutput title="Collected values" output={values} />}
