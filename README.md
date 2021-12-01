@@ -1,4 +1,4 @@
-[![banner](https://github.com/deltaDAO/files/raw/main/github_header.png)](https://portal.minimal-gaia-x.eu)
+[![banner](https://github.com/deltaDAO/files/raw/main/github_banner.png)](https://portal.minimal-gaia-x.eu)
 
 <h1 align="center">Minimal Gaia-X Portal</h1>
 
