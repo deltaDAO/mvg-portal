@@ -52,7 +52,7 @@ interface HomeIntroData {
 
 export default function HomeIntro(): ReactElement {
   const data: HomeIntroData = useStaticQuery(query)
-  const { teaser } = data.file.childIndexJson.intro
+  const { teaser, ctaTo } = data.file.childIndexJson.intro
 
   return (
     <div className={styles.introWrapper}>
@@ -61,7 +61,7 @@ export default function HomeIntro(): ReactElement {
           <div className={styles.playButton}>
             <div className={styles.circle}>
               <a
-                href="https://academy.delta-dao.com/"
+                href={ctaTo}
                 target="_blank"
                 rel="noopener noreferrer"
               >
