@@ -1,4 +1,4 @@
-import { Logger } from '@oceanprotocol/lib'
+import { DDO, Logger } from '@oceanprotocol/lib'
 import React, { ReactElement, useState } from 'react'
 import Loader from '../../../../atoms/Loader'
 import { ComputeJobMetaData } from '../../../../../@types/ComputeJobMetaData'
@@ -26,9 +26,11 @@ export const contentQuery = graphql`
 `
 
 export default function Results({
-  job
+  job,
+  ddo
 }: {
   job: ComputeJobMetaData
+  ddo: DDO
 }): ReactElement {
   const data = useStaticQuery(contentQuery)
   const content = data.content.edges[0].node.childPagesJson
@@ -43,11 +45,12 @@ export default function Results({
 
     try {
       setIsLoading(true)
+      const computeService = ddo.findServiceByType('compute')
       const jobStatus = await ocean.compute.status(
         account,
         job.did,
-        undefined,
-        undefined,
+        ddo,
+        computeService,
         job.jobId
       )
       if (jobStatus?.length > 0) {

@@ -4,18 +4,6 @@
 // all other fields are first loaded from ocean.js and are optional
 const chains = [
   {
-    name: 'Ropsten',
-    networkId: 3,
-    providerUri: 'https://provider.ropsten.delta-dao.com',
-    isDefault: false
-  },
-  {
-    name: 'Rinkeby',
-    networkId: 4,
-    providerUri: 'https://provider.rinkeby.delta-dao.com',
-    isDefault: false
-  },
-  {
     name: 'Gaia-X',
     networkId: 2021000,
     nodeUri: 'https://rpc.gaiaxtestnet.oceanprotocol.com/',

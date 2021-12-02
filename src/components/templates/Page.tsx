@@ -20,6 +20,8 @@ export default function Page({
   noPageHeader,
   headerCenter
 }: PageProps): ReactElement {
+  const isHome = uri === '/'
+
   const childElements = (
     <>
       {title && !noPageHeader && (
@@ -27,7 +29,7 @@ export default function Page({
           title={title}
           description={description}
           center={headerCenter}
-          powered
+          powered={isHome}
         />
       )}
       {children}
@@ -37,7 +39,7 @@ export default function Page({
   return (
     <>
       <Seo title={title} description={description} uri={uri} />
-      {uri === '/' ? childElements : <Container>{childElements}</Container>}
+      {isHome ? childElements : <Container>{childElements}</Container>}
     </>
   )
 }

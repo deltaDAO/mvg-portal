@@ -52,7 +52,7 @@ interface HomeIntroData {
 
 export default function HomeIntro(): ReactElement {
   const data: HomeIntroData = useStaticQuery(query)
-  const { teaser, ctaTo } = data.file.childIndexJson.intro
+  const { teaser } = data.file.childIndexJson.intro
 
   return (
     <div className={styles.introWrapper}>
@@ -60,11 +60,7 @@ export default function HomeIntro(): ReactElement {
         <div className={styles.playButtonWrapper}>
           <div className={styles.playButton}>
             <div className={styles.circle}>
-              <a
-                href={ctaTo}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={teaser.ctaTo} target="_blank" rel="noopener noreferrer">
                 <h2 className={styles.circleText}>start now</h2>
               </a>
             </div>
