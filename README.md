@@ -30,7 +30,7 @@ cd mvg-portal
 nvm use
 
 
-# For MacOS with ARM
+# macOS with ARM
 # npm install --target_arch=x64
 npm install
 npm start
