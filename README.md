@@ -29,6 +29,9 @@ cd mvg-portal
 # when using nvm to manage Node.js versions
 nvm use
 
+
+# For MacOS with ARM
+# npm install --target_arch=x64
 npm install
 npm start
 ```
