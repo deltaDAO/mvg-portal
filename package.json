@@ -88,7 +88,7 @@
     "react-toastify": "^7.0.4",
     "remove-markdown": "^0.3.0",
     "shortid": "^2.2.16",
-    "slugify": "^1.5.3",
+    "slugify": "^1.6.3",
     "swr": "^0.5.6",
     "urql": "^2.0.3",
     "use-dark-mode": "^2.3.1",
