@@ -1,8 +1,9 @@
-import { DDO, Credentials, CredentialType } from '@oceanprotocol/lib'
+import { DDO, Credentials } from '@oceanprotocol/lib'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { AdvancedSettingsForm } from '../../../../models/FormEditCredential'
 import { useOcean } from '../../../../providers/Ocean'
 import DebugOutput from '../../../atoms/DebugOutput'
+import { CredentialType } from './EditAdvancedSettings'
 
 export interface AdvancedSettings {
   credentail: Credentials

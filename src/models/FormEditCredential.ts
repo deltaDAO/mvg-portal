@@ -2,10 +2,10 @@ import {
   CredentialAction,
   Credential,
   Credentials,
-  CredentialType,
   DDO
 } from '@oceanprotocol/lib'
 import * as Yup from 'yup'
+import { CredentialType } from '../components/organisms/AssetActions/Edit/EditAdvancedSettings'
 
 export interface AdvancedSettingsForm {
   allow: string[]
