@@ -5,7 +5,7 @@
     "siteUrl": "https://portal.minimal-gaia-x.eu",
     "siteIcon": "./src/images/siteIcon.png",
     "siteImage": "../src/images/share.png",
-    "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com). Customized and hosted by [deltaDAO](https://delta-dao.com).",
+    "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
     "menu": [
       {
         "name": "Publish",
@@ -17,7 +17,7 @@
       }
     ],
     "warning": {
-      "main": "Development build of the MVG portal for the Gaia-X hackathon #2.",
+      "main": "This MVG portal demonstrator was built for the 2nd Gaia-X hackathon.",
       "polygonPublish": "Only republish data sets with a pool from ETH Mainnet into Polygon/Matic if the liquidity is **less than or equal to 1000 OCEAN in the original pool**. Doing otherwise will lead to [purgatory](https://github.com/oceanprotocol/list-purgatory) for the data set in Polygon/Matic."
     },
     "announcement": {
