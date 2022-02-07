@@ -18,14 +18,15 @@ export default function PageGatsbyProfile(props: PageProps): ReactElement {
     async function init() {
       if (!props?.location?.pathname) return
 
-      // Path is root /profile, have web3 take over
-      if (props.location.pathname === '/profile') {
+      const pathAccount = props.location.pathname.split('/')[2]
+
+      // Path is root /profile or /profile/ without an ETH address
+      // (happens on manual page refresh) have web3 take over
+      if (props.location.pathname === '/profile' || pathAccount === '') {
         setFinalAccountEns(accountEns)
         setFinalAccountId(accountId)
         return
       }
-
-      const pathAccount = props.location.pathname.split('/')[2]
 
       // Path has ETH addreess
       if (ethereumAddress.isAddress(pathAccount)) {
