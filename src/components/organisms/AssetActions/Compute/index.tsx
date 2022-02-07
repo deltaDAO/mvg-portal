@@ -302,7 +302,7 @@ export default function Compute({
       if (!hasPreviousDatasetOrder && !hasDatatoken) {
         const tx = await buyDT('1', price, ddo)
         if (!tx) {
-          setError('Error buying datatoken.')
+          setError('Error buying datatoken. Please try again.')
           Logger.error('[compute] Error buying datatoken for data set ', ddo.id)
           return
         }
@@ -311,7 +311,7 @@ export default function Compute({
       if (!hasPreviousAlgorithmOrder && !hasAlgoAssetDatatoken) {
         const tx = await buyDT('1', algorithmPrice, selectedAlgorithmAsset)
         if (!tx) {
-          setError('Error buying datatoken.')
+          setError('Error buying datatoken. Please try again.')
           Logger.error(
             '[compute] Error buying datatoken for algorithm ',
             selectedAlgorithmAsset.id

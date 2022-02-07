@@ -97,7 +97,7 @@ export default function Results({
             Array.isArray(job.results) &&
             job.results.map((result, index) =>
               result ? (
-                <ListItem key={job.jobId}>
+                <ListItem key={`${job.jobId}-${index}`}>
                   <a
                     className={styles.result}
                     onClick={() => accessResult(result, index)}
