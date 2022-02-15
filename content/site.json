@@ -1,6 +1,6 @@
 {
   "site": {
-    "siteTitle": "MVG Portal Demonstrator",
+    "siteTitle": "Minimal Viable Gaia-X",
     "siteTagline": "A platform to find, publish and consume Data Services in the Gaia-X Test Network.",
     "siteUrl": "https://portal.minimal-gaia-x.eu",
     "siteIcon": "./src/images/siteIcon.png",
