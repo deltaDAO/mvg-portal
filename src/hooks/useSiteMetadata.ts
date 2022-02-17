@@ -54,7 +54,6 @@ const query = graphql`
           link
         }
         warning {
-          main
           polygonPublish
         }
         announcement {
