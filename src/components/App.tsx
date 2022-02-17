@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { graphql, PageProps, useStaticQuery } from 'gatsby'
+import { graphql, useStaticQuery } from 'gatsby'
 import Alert from './atoms/Alert'
 import Footer from './organisms/Footer'
 import Header from './organisms/Header'
