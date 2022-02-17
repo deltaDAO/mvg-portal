@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { graphql, useStaticQuery } from 'gatsby'
+import { graphql, PageProps, useStaticQuery } from 'gatsby'
 import Alert from './atoms/Alert'
 import Footer from './organisms/Footer'
 import Header from './organisms/Header'
@@ -7,6 +7,7 @@ import Styles from '../global/Styles'
 import { useWeb3 } from '../providers/Web3'
 import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAccountPurgatory } from '../hooks/useAccountPurgatory'
+import AnnouncementBanner from './atoms/AnnouncementBanner'
 import styles from './App.module.css'
 import PrivacyPreferenceCenter from './organisms/PrivacyPreferenceCenter'
 
@@ -28,20 +29,24 @@ const contentQuery = graphql`
 `
 
 export default function App({
-  children
+  children,
+  ...props
 }: {
   children: ReactElement
 }): ReactElement {
   const data = useStaticQuery(contentQuery)
   const purgatory = data.purgatory.edges[0].node.childContentJson.account
 
-  const { appConfig } = useSiteMetadata()
+  const { warning, appConfig } = useSiteMetadata()
   const { accountId } = useWeb3()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
 
   return (
     <Styles>
       <div className={styles.app}>
+        {(props as PageProps).uri === '/' && (
+          <AnnouncementBanner text={warning.main} />
+        )}
         <Header />
 
         {isInPurgatory && (
