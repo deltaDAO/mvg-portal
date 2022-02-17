@@ -23,13 +23,11 @@ import { SortTermOptions } from '../../../../models/SortAndFilters'
 export default function FormEditComputeDataset({
   data,
   title,
-  setShowEdit,
-  tutorial
+  setShowEdit
 }: {
   data: FormFieldProps[]
   title: string
   setShowEdit: (show: boolean) => void
-  tutorial?: boolean
 }): ReactElement {
   const { appConfig } = useSiteMetadata()
   const { ddo } = useAsset()
@@ -84,7 +82,6 @@ export default function FormEditComputeDataset({
               : false
           }
           component={Input}
-          tutorial={tutorial}
         />
       ))}
 

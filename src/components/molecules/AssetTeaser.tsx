@@ -28,16 +28,9 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
   const accessType = isCompute ? 'compute' : 'access'
   const { owner } = ddo.publicKey[0]
 
-  const url = new URL(window.location.href)
-  const tutorial = url.pathname === '/tutorial'
-
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
-      <LinkOpener
-        uri={`/asset/${ddo.id}`}
-        className={styles.link}
-        openNewTab={tutorial}
-      >
+      <LinkOpener uri={`/asset/${ddo.id}`} className={styles.link}>
         <>
           <header className={styles.header}>
             <div className={styles.symbol}>{dataTokenInfo?.symbol}</div>

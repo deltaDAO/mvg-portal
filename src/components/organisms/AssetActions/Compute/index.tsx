@@ -93,9 +93,6 @@ export default function Compute({
   const newCancelToken = useCancelToken()
   const hasDatatoken = Number(dtBalance) >= 1
 
-  const url = new URL(window.location.href)
-  const tutorial = url.pathname === '/tutorial'
-
   const isMounted = useIsMounted()
   const [isConsumablePrice, setIsConsumablePrice] = useState(true)
   const [isAlgoConsumablePrice, setIsAlgoConsumablePrice] = useState(true)
@@ -484,7 +481,7 @@ export default function Compute({
         {isPublished && (
           <SuccessConfetti
             success="Your job started successfully! Watch the progress below or on your profile."
-            action={!tutorial ? <SuccessAction /> : null}
+            action={<SuccessAction />}
           />
         )}
       </footer>

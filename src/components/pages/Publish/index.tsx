@@ -1,6 +1,6 @@
-import React, { ReactElement, useState, useEffect, useRef } from 'react'
+import React, { ReactElement, useState, useEffect } from 'react'
 import Permission from '../../organisms/Permission'
-import { Field, Formik, FormikState } from 'formik'
+import { Formik, FormikState } from 'formik'
 import { usePublish } from '../../../hooks/usePublish'
 import styles from './index.module.css'
 import FormPublish from './FormPublish'
@@ -30,7 +30,6 @@ import { useUserPreferences } from '../../../providers/UserPreferences'
 import { DDO, Logger, Metadata, MetadataMain } from '@oceanprotocol/lib'
 import { Persist } from '../../atoms/FormikPersist'
 import Debug from './Debug'
-import Alert from '../../atoms/Alert'
 import MetadataFeedback from '../../molecules/MetadataFeedback'
 import { useAccountPurgatory } from '../../../hooks/useAccountPurgatory'
 import { useWeb3 } from '../../../providers/Web3'
@@ -42,21 +41,14 @@ const formNameAlgorithms = 'ocean-publish-form-algorithms'
 
 function TabContent({
   publishType,
-  values,
-  tutorial
+  values
 }: {
   publishType: MetadataMain['type']
   values: Partial<MetadataPublishFormAlgorithm | MetadataPublishFormDataset>
-  tutorial?: boolean
 }) {
   return (
     <article className={styles.grid}>
-      {publishType === 'dataset' ? (
-        <FormPublish tutorial={tutorial} />
-      ) : (
-        <FormAlgoPublish />
-      )}
-
+      {publishType === 'dataset' ? <FormPublish /> : <FormAlgoPublish />}
       <aside>
         <div className={styles.sticky}>
           {publishType === 'dataset' ? (
@@ -74,16 +66,12 @@ function TabContent({
 export default function PublishPage({
   content,
   datasetOnly,
-  tutorial,
   ddo,
-  setTutorialDdo,
   loading
 }: {
   content: { warning: string }
   datasetOnly?: boolean
-  tutorial?: boolean
   ddo?: DDO
-  setTutorialDdo?: (value: DDO) => void
   loading?: boolean
 }): ReactElement {
   const { debug } = useUserPreferences()
@@ -134,15 +122,6 @@ export default function PublishPage({
       : setTitle('Publishing Algorithm')
   }, [publishType])
 
-  const publishRef = useRef(null)
-  const executeScroll = () =>
-    publishRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' })
-  useEffect(() => {
-    if (tutorial && isLoading) {
-      executeScroll()
-    }
-  }, [isLoading])
-
   async function handleSubmit(
     values: Partial<MetadataPublishFormDataset>,
     resetForm: (
@@ -177,7 +156,6 @@ export default function PublishPage({
         return
       }
       // Publish succeeded
-      if (tutorial) setTutorialDdo(ddo)
       setDid(ddo.id)
       setSuccess(
         '🎉 Successfully published. 🎉 Now create a price on your data set.'
@@ -187,9 +165,7 @@ export default function PublishPage({
         status: 'empty'
       })
       // move user's focus to top of screen
-      if (!tutorial) {
-        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
-      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     } catch (error) {
       setError(error.message)
       Logger.error(error.message)
@@ -275,13 +251,7 @@ export default function PublishPage({
           const tabs = [
             {
               title: 'Data Set',
-              content: (
-                <TabContent
-                  values={values}
-                  publishType={publishType}
-                  tutorial={tutorial}
-                />
-              )
+              content: <TabContent values={values} publishType={publishType} />
             },
             {
               title: 'Algorithm',
@@ -290,7 +260,7 @@ export default function PublishPage({
           ]
 
           return (
-            <div ref={publishRef}>
+            <div>
               <Persist
                 name={
                   publishType === 'dataset'
@@ -320,7 +290,6 @@ export default function PublishPage({
                       } →`,
                       to: `/asset/${did}`
                     }}
-                    tutorial={tutorial}
                     ddo={ddo}
                   />
                 </>
