@@ -1,8 +1,0 @@
-.icon {
-  padding-left: calc(var(--spacer) / 6);
-}
-
-.before {
-  padding-left: 0;
-  padding-right: calc(var(--spacer) / 6);
-}
