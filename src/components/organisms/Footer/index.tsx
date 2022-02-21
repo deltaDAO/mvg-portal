@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react'
 import styles from './index.module.css'
 import Markdown from '../../atoms/Markdown'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
-import { ReactComponent as FooterLogo } from '../../../images/FooterLogo.svg'
+import { ReactComponent as Hashtag } from '../../../images/Hashtag.svg'
 import Links from './Links'
 
 export default function Footer(): ReactElement {
@@ -14,7 +14,7 @@ export default function Footer(): ReactElement {
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.main}>
-          <FooterLogo />
+          <Hashtag />
           <p>{title}</p>
           <p>{subtitle}</p>
         </div>
