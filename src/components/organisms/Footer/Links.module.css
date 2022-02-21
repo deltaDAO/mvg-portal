@@ -13,6 +13,8 @@
 .title {
   margin-bottom: calc(var(--spacer) / 2);
   text-transform: uppercase;
+  font-weight: var(--font-weight-bold);
+  color: var(--brand-grey-light);
 }
 
 .links {
