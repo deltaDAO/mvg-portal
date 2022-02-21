@@ -1,0 +1,46 @@
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: calc(var(--spacer) * 2);
+  width: 100%;
+}
+
+.section {
+  text-align: left;
+}
+
+.title {
+  margin-bottom: calc(var(--spacer) / 2);
+  text-transform: uppercase;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: calc(var(--spacer) / 4);
+  text-transform: capitalize;
+}
+
+.links a {
+  color: var(--brand-white);
+}
+
+.links button {
+  transform: none !important;
+  color: inherit;
+  text-transform: capitalize;
+  font-weight: var(--font-weight-base);
+}
+
+.links a:hover,
+.links button:hover {
+  color: var(--brand-cyan);
+}
+
+@media screen and (min-width: 45rem) {
+  .container {
+    width: auto;
+  }
+}
