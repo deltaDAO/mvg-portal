@@ -1,0 +1,14 @@
+{
+  "portals": [
+    {
+      "title": "Portal number one",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "link": "somelink.com"
+    },
+    {
+      "title": "Portal number two",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "link": "somelink.com"
+    }
+  ]
+}

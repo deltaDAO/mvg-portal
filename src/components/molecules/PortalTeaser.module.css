@@ -1,0 +1,30 @@
+.teaser {
+  max-width: 40rem;
+  height: 100%;
+}
+
+.link {
+  composes: box from '../atoms/Box.module.css';
+  font-size: var(--font-size-small);
+  height: 100%;
+  color: var(--color-secondary);
+  background-color: var(--background-body);
+}
+
+.content {
+  margin-top: calc(var(--spacer) / 2);
+  overflow-wrap: break-word;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.content p {
+  margin-bottom: calc(var(--spacer) / 4);
+}
+
+.title {
+  font-size: var(--font-size-large);
+  margin: 0;
+  padding-bottom: calc(var(--spacer) / 6);
+  overflow-wrap: break-word;
+}
