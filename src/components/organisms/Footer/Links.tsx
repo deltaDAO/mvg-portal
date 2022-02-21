@@ -28,11 +28,11 @@ export default function Links(): ReactElement {
         </div>
       ))}
       <div className={styles.section}>
-        <p className={styles.title}>PRIVACY</p>
+        <p className={styles.title}>{privacyTitle}</p>
         <div className={styles.links}>
           <Link to="/imprint">Imprint</Link>
           <Link to="/terms">Terms</Link>
-          <Link to={privacyPolicySlug}>{privacyTitle}</Link>
+          <Link to={privacyPolicySlug}>Privacy</Link>
           {appConfig.privacyPreferenceCenter === 'true' && (
             <Button
               style="text"
