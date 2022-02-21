@@ -9,7 +9,7 @@ import styles from './Links.module.css'
 export default function Links(): ReactElement {
   const { appConfig, footer } = useSiteMetadata()
   const { setShowPPC, privacyPolicySlug } = useUserPreferences()
-  const { content } = footer
+  const { content, privacyTitle } = footer
 
   const cookies = useGdprMetadata()
 
@@ -32,7 +32,7 @@ export default function Links(): ReactElement {
         <div className={styles.links}>
           <Link to="/imprint">Imprint</Link>
           <Link to="/terms">Terms</Link>
-          <Link to={privacyPolicySlug}>Privacy</Link>
+          <Link to={privacyPolicySlug}>{privacyTitle}</Link>
           {appConfig.privacyPreferenceCenter === 'true' && (
             <Button
               style="text"

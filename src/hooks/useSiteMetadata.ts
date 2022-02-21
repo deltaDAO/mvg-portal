@@ -23,6 +23,7 @@ interface UseSiteMetadata {
     title: string
     subtitle: string
     copyright: string
+    privacyTitle: string
     content: {
       title: string
       links: {
@@ -76,6 +77,7 @@ const query = graphql`
           title
           subtitle
           copyright
+          privacyTitle
           content {
             title
             links {
