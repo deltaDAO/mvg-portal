@@ -1,30 +1,39 @@
-.teaser {
-  max-width: 40rem;
-  height: 100%;
-}
-
-.link {
+.card {
   composes: box from '../atoms/Box.module.css';
   font-size: var(--font-size-small);
   height: 100%;
+  min-height: 15rem;
+  padding: 0;
   color: var(--color-secondary);
   background-color: var(--background-body);
+  overflow: hidden;
 }
 
-.content {
-  margin-top: calc(var(--spacer) / 2);
-  overflow-wrap: break-word;
-  -webkit-hyphens: auto;
-  hyphens: auto;
+.thumb {
+  width: auto;
+  height: 75%;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
 }
 
-.content p {
-  margin-bottom: calc(var(--spacer) / 4);
+.infos {
+  display: grid;
+  width: auto;
+  height: 100%;
+  padding: calc(var(--spacer) / 2) var(--spacer);
+  background-color: var(--background-body);
+  transition: 0.4s 0.15s cubic-bezier(0.17, 0.67, 0.5, 1.03);
 }
 
 .title {
   font-size: var(--font-size-large);
   margin: 0;
-  padding-bottom: calc(var(--spacer) / 6);
+  padding-bottom: var(--spacer);
   overflow-wrap: break-word;
+}
+
+.card:hover .infos,
+.isOpen .infos {
+  transform: translateY(-76%);
 }

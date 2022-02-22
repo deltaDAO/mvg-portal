@@ -49,6 +49,8 @@ const thirdPartyPortalsQuery = graphql`
               title
               desc
               link
+              logo
+              backgroundColor
             }
           }
         }
