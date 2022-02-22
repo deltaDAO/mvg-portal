@@ -33,7 +33,46 @@
   overflow-wrap: break-word;
 }
 
-.card:hover .infos,
 .isOpen .infos {
   transform: translateY(-76%);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+button {
+  margin-top: 0 !important;
+  height: min-content;
+}
+
+/* only visible for screen readers */
+.srOnly:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.caret {
+  display: inline;
+  width: 1rem;
+  fill: var(--color-secondary);
+  margin-left: calc(var(--spacer) / 4);
+  transition: transform 0.4s ease-out;
+}
+
+.isOpen svg {
+  transform: rotate(180deg);
+}
+
+.link,
+.link h3 {
+  width: -moz-fit-content;
+  width: fit-content;
 }
