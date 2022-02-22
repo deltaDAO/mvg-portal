@@ -6,7 +6,6 @@ interface UseSiteMetadata {
   siteUrl: string
   siteIcon: string
   siteImage: { childImageSharp: { original: { src: string } } }
-  copyright: string
   menu: {
     name: string
     link: string
@@ -20,6 +19,19 @@ interface UseSiteMetadata {
     polygon: string
   }
   badge: string
+  footer: {
+    title: string
+    subtitle: string
+    copyright: string
+    privacyTitle: string
+    content: {
+      title: string
+      links: {
+        name: string
+        link: string
+      }[]
+    }[]
+  }
   appConfig: {
     metadataCacheUri: string
     vpRegistryUri: string
@@ -48,7 +60,6 @@ const query = graphql`
         siteTagline
         siteUrl
         siteIcon
-        copyright
         menu {
           name
           link
@@ -62,6 +73,19 @@ const query = graphql`
           polygon
         }
         badge
+        footer {
+          title
+          subtitle
+          copyright
+          privacyTitle
+          content {
+            title
+            links {
+              name
+              link
+            }
+          }
+        }
         appConfig {
           metadataCacheUri
           vpRegistryUri
