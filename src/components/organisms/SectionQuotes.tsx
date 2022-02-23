@@ -3,6 +3,7 @@ import styles from './SectionQuotes.module.css'
 import { graphql, useStaticQuery } from 'gatsby'
 import { nanoid } from 'nanoid'
 import classNames from 'classnames/bind'
+import Container from '../atoms/Container'
 
 const cx = classNames.bind(styles)
 
@@ -101,27 +102,29 @@ export default function SectionQuotes(): ReactElement {
   }, [fullQuotes, currentQuote])
 
   return (
-    <div className={styles.container}>
-      <div className={styles.images}>
-        {fullQuotes.map((e, i) => (
-          <img
-            key={e.id}
-            className={cx({
-              profilePicture: true,
-              active: e.id === fullQuotes?.[currentQuote].id
-            })}
-            alt="profile-picture"
-            src={e.profilePicture}
-            onClick={() => setCurrentQuote(i)}
-          />
-        ))}
+    <Container>
+      <div className={styles.container}>
+        <div className={styles.images}>
+          {fullQuotes.map((e, i) => (
+            <img
+              key={e.id}
+              className={cx({
+                profilePicture: true,
+                active: e.id === fullQuotes?.[currentQuote].id
+              })}
+              alt="profile-picture"
+              src={e.profilePicture}
+              onClick={() => setCurrentQuote(i)}
+            />
+          ))}
+        </div>
+        <div className={styles.quote}>
+          <h3
+            className={styles.text}
+          >{`"${fullQuotes[currentQuote]?.quote}"`}</h3>
+          <p className={styles.name}>{fullQuotes[currentQuote]?.name}</p>
+        </div>
       </div>
-      <div className={styles.quote}>
-        <h3
-          className={styles.text}
-        >{`"${fullQuotes[currentQuote]?.quote}"`}</h3>
-        <p className={styles.name}>{fullQuotes[currentQuote]?.name}</p>
-      </div>
-    </div>
+    </Container>
   )
 }
