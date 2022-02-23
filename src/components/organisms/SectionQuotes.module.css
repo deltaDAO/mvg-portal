@@ -6,6 +6,12 @@
   margin: calc(var(--spacer) * 2) auto;
 }
 
+.sectionTitle {
+  place-self: baseline;
+  font-size: var(--font-size-large);
+  color: var(--color-secondary);
+}
+
 .profilePicture {
   display: none;
   width: 5rem;

@@ -11,6 +11,7 @@ const query = graphql`
   query QuotesQuery {
     file(relativePath: { eq: "quotes.json" }) {
       childContentJson {
+        title
         quotes {
           name
           profilePicture
@@ -40,6 +41,7 @@ const query = graphql`
 interface QuotesContentData {
   file: {
     childContentJson: {
+      title: string
       quotes: {
         name: string
         profilePicture: string
@@ -66,6 +68,7 @@ interface Quote {
 
 export default function SectionQuotes(): ReactElement {
   const data: QuotesContentData = useStaticQuery(query)
+  const { title } = data.file.childContentJson
   const [fullQuotes, setFullQuotes] = useState<Quote[]>([])
   const [currentQuote, setCurrentQuote] = useState(0)
 
@@ -104,6 +107,7 @@ export default function SectionQuotes(): ReactElement {
   return (
     <Container>
       <div className={styles.container}>
+        <h3 className={styles.sectionTitle}>{title}</h3>
         <div className={styles.images}>
           {fullQuotes.map((e, i) => (
             <img
