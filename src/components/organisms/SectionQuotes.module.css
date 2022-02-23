@@ -3,10 +3,12 @@
   flex-direction: column;
   align-items: center;
   gap: calc(var(--spacer) * 2);
-  margin: calc(var(--spacer) * 4) 0;
+  margin: calc(var(--spacer) * 4) auto;
+  max-width: var(--break-point--small);
 }
 
 .profilePicture {
+  display: none;
   width: 7rem;
   height: 7rem;
   margin: 0;
@@ -16,25 +18,43 @@
 }
 
 .active {
+  display: block;
   filter: none;
-  transform: scale(1.5);
+  transform: scale(1.6);
   margin: 0 var(--spacer);
 }
 
 .quote {
-  max-width: var(--break-point--medium);
-  text-align: center;
+  margin: 0 var(--spacer);
 }
 
 .text {
+  text-align: center;
   font-style: italic;
 }
 
-@media screen and (min-width: 30rem) {
+.name {
+  text-align: center;
+}
+
+@media screen and (min-width: 50rem) {
+  .container {
+    max-width: var(--break-point--medium);
+  }
   .images {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: calc(var(--spacer) / 2);
+  }
+  .profilePicture {
+    display: block;
+  }
+  .text {
+    font-size: var(--font-size-h2);
+  }
+  .name {
+    text-align: end;
+    font-size: var(--font-size-large);
   }
 }
