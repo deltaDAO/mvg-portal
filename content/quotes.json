@@ -1,0 +1,29 @@
+{
+  "quotes": [
+    {
+      "name": "Cute Puppy 1",
+      "profilePicture": "profile1",
+      "quote": "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias aut, repellat ipsum facere voluptate dicta obcaecati deserunt nobis suscipit eaque?"
+    },
+    {
+      "name": "Cute Puppy 2",
+      "profilePicture": "profile2",
+      "quote": "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias aut, repellat ipsum facere voluptate dicta obcaecati deserunt nobis suscipit eaque?"
+    },
+    {
+      "name": "Cute Puppy 3",
+      "profilePicture": "profile3",
+      "quote": "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias aut, repellat ipsum facere voluptate dicta obcaecati deserunt nobis suscipit eaque?"
+    },
+    {
+      "name": "Cute Puppy 4",
+      "profilePicture": "profile4",
+      "quote": "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias aut, repellat ipsum facere voluptate dicta obcaecati deserunt nobis suscipit eaque?"
+    },
+    {
+      "name": "Cute Puppy 5",
+      "profilePicture": "profile5",
+      "quote": "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestias aut, repellat ipsum facere voluptate dicta obcaecati deserunt nobis suscipit eaque?"
+    }
+  ]
+}

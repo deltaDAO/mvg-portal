@@ -23,6 +23,7 @@ import { PagedAssets } from '../../models/PagedAssets'
 import HomeContent from '../organisms/HomeContent'
 import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
+import SectionQuotes from '../organisms/SectionQuotes'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -133,6 +134,9 @@ export default function HomePage(): ReactElement {
       <>
         <section className={styles.content}>
           <HomeContent />
+        </section>
+        <section className={styles.quotes}>
+          <SectionQuotes />
         </section>
         <Container>
           {queryLatest && (
