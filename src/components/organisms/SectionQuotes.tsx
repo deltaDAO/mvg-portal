@@ -71,6 +71,8 @@ export default function SectionQuotes(): ReactElement {
   const currentQuoteRef = useRef(currentQuote)
   currentQuoteRef.current = currentQuote
 
+  const nextQuoteTimer = useRef(null)
+
   useEffect(() => {
     if (!data) return
     setFullQuotes(
@@ -88,20 +90,20 @@ export default function SectionQuotes(): ReactElement {
   }, [data])
 
   useEffect(() => {
-    if (fullQuotes.length === 0) return
-    const nextQuoteTimer = setTimeout(() => {
+    if (nextQuoteTimer) clearTimeout(nextQuoteTimer.current)
+    nextQuoteTimer.current = setTimeout(() => {
       setCurrentQuote((currentQuoteRef.current + 1) % fullQuotes.length)
     }, 5000)
 
     return () => {
-      clearTimeout(nextQuoteTimer)
+      clearTimeout(nextQuoteTimer.current)
     }
   }, [fullQuotes, currentQuote])
 
   return (
     <div className={styles.container}>
       <div className={styles.images}>
-        {fullQuotes.map((e) => (
+        {fullQuotes.map((e, i) => (
           <img
             key={e.id}
             className={cx({
@@ -110,6 +112,7 @@ export default function SectionQuotes(): ReactElement {
             })}
             alt="profile-picture"
             src={e.profilePicture}
+            onClick={() => setCurrentQuote(i)}
           />
         ))}
       </div>
