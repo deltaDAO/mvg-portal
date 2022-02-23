@@ -136,8 +136,6 @@ export default function HomePage(): ReactElement {
     portals: ThirdPartyPortal[]
   } = data.content.edges[0].node.childContentJson
 
-  console.log(portals)
-
   useEffect(() => {
     const queryParams = {
       esPaginationOptions: {

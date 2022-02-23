@@ -23,7 +23,7 @@
   height: 100%;
   padding: calc(var(--spacer) / 2) var(--spacer);
   background-color: var(--background-body);
-  transition: 0.4s 0.15s cubic-bezier(0.17, 0.67, 0.5, 1.03);
+  transition: 0.4s 0.15s ease-in-out;
 }
 
 .title {
