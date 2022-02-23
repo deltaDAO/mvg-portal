@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--spacer) * 2);
+  margin: calc(var(--spacer) * 4) 0;
+}
+
+.profilePicture {
+  width: 7rem;
+  height: 7rem;
+  margin: 0;
+  border-radius: 50%;
+  filter: grayscale(1) opacity(0.8);
+  transition: transform 0.4s ease, margin 0.4s ease;
+}
+
+.active {
+  filter: none;
+  transform: scale(1.5);
+  margin: 0 var(--spacer);
+}
+
+.quote {
+  max-width: var(--break-point--medium);
+  text-align: center;
+}
+
+.text {
+  font-style: italic;
+}
+
+@media screen and (min-width: 30rem) {
+  .images {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: calc(var(--spacer) / 2);
+  }
+}
