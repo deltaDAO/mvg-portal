@@ -125,7 +125,7 @@ export default function SectionQuotes(): ReactElement {
         <div className={styles.quote}>
           <h3
             className={styles.text}
-          >{`"${fullQuotes[currentQuote]?.quote}"`}</h3>
+          >{`“${fullQuotes[currentQuote]?.quote}”`}</h3>
           <p className={styles.name}>{fullQuotes[currentQuote]?.name}</p>
         </div>
       </div>
