@@ -54,11 +54,9 @@ export default function PortalTeaser({
             <Caret aria-hidden="true" className={cx({ caret: true, isOpen })} />
           </Button>
         </div>
-        <p className={styles.content}>
-          <Dotdotdot tagName="p" clamp={4}>
-            {desc}
-          </Dotdotdot>
-        </p>
+        <Dotdotdot tagName="p" clamp={4} className={styles.content}>
+          {desc}
+        </Dotdotdot>
         <LinkOpener uri={link} className={styles.link} openNewTab>
           <h3>Visit the portal</h3>
         </LinkOpener>
