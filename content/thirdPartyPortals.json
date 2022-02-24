@@ -1,0 +1,18 @@
+{
+  "portals": [
+    {
+      "title": "Universitat de Lleida",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "link": "https://www.somelink.com",
+      "logo": "udl",
+      "backgroundColor": "#831453"
+    },
+    {
+      "title": "safeFBDC",
+      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "link": "https://www.somelink.com",
+      "logo": "safeFBDC",
+      "backgroundColor": "#283278"
+    }
+  ]
+}

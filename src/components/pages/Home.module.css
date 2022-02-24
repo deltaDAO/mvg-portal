@@ -17,3 +17,17 @@
 .section [class*='button'] {
   margin-top: var(--spacer);
 }
+
+.portals {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: calc(var(--spacer) / 2);
+}
+
+@media screen and (min-width: 25rem) {
+  .portals {
+    grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+    gap: var(--spacer);
+    justify-items: center;
+  }
+}
