@@ -14,25 +14,14 @@ const query = graphql`
         title
         quotes {
           name
-          profilePicture
-          quote
-        }
-      }
-    }
-    profilePictures: allFile(
-      filter: {
-        extension: { regex: "/(jpg)|(jpeg)|(png)/" }
-        relativeDirectory: { eq: "quotes" }
-      }
-    ) {
-      edges {
-        node {
-          name
-          childImageSharp {
-            original {
-              src
+          profilePicture {
+            childImageSharp {
+              original {
+                src
+              }
             }
           }
+          quote
         }
       }
     }
@@ -44,18 +33,12 @@ interface QuotesContentData {
       title: string
       quotes: {
         name: string
-        profilePicture: string
+        profilePicture: {
+          childImageSharp: { original: { src: string } }
+        }
         quote: string
       }[]
     }
-  }
-  profilePictures: {
-    edges: {
-      node: {
-        name: string
-        childImageSharp: { original: { src: string } }
-      }
-    }[]
   }
 }
 
@@ -69,7 +52,7 @@ interface Quote {
 export default function SectionQuotes(): ReactElement {
   const data: QuotesContentData = useStaticQuery(query)
   const { title } = data.file.childContentJson
-  const [fullQuotes, setFullQuotes] = useState<Quote[]>([])
+  const [quotes, setQuotes] = useState<Quote[]>([])
   const [currentQuote, setCurrentQuote] = useState(0)
 
   const currentQuoteRef = useRef(currentQuote)
@@ -79,42 +62,37 @@ export default function SectionQuotes(): ReactElement {
 
   useEffect(() => {
     if (!data) return
-    setFullQuotes(
-      data.file.childContentJson.quotes.map((quote) => {
-        const picture = data.profilePictures.edges.find(
-          (e) => e.node.name === quote.profilePicture
-        )
-        return {
-          ...quote,
-          profilePicture: picture.node.childImageSharp.original.src,
-          id: nanoid()
-        }
-      })
+    setQuotes(
+      data.file.childContentJson.quotes.map((quote) => ({
+        ...quote,
+        id: nanoid(),
+        profilePicture: quote.profilePicture.childImageSharp.original.src
+      }))
     )
   }, [data])
 
   useEffect(() => {
     if (nextQuoteTimer) clearTimeout(nextQuoteTimer.current)
     nextQuoteTimer.current = setTimeout(() => {
-      setCurrentQuote((currentQuoteRef.current + 1) % fullQuotes.length)
+      setCurrentQuote((currentQuoteRef.current + 1) % quotes.length)
     }, 5000)
 
     return () => {
       clearTimeout(nextQuoteTimer.current)
     }
-  }, [fullQuotes, currentQuote])
+  }, [quotes, currentQuote])
 
   return (
     <Container>
       <div className={styles.container}>
         <h3 className={styles.sectionTitle}>{title}</h3>
         <div className={styles.images}>
-          {fullQuotes.map((e, i) => (
+          {quotes.map((e, i) => (
             <img
               key={e.id}
               className={cx({
                 profilePicture: true,
-                active: e.id === fullQuotes?.[currentQuote].id
+                active: e.id === quotes?.[currentQuote].id
               })}
               alt="profile-picture"
               src={e.profilePicture}
@@ -123,10 +101,8 @@ export default function SectionQuotes(): ReactElement {
           ))}
         </div>
         <div className={styles.quote}>
-          <h3
-            className={styles.text}
-          >{`“${fullQuotes[currentQuote]?.quote}”`}</h3>
-          <p className={styles.name}>{fullQuotes[currentQuote]?.name}</p>
+          <h3 className={styles.text}>{`“${quotes[currentQuote]?.quote}”`}</h3>
+          <p className={styles.name}>{quotes[currentQuote]?.name}</p>
         </div>
       </div>
     </Container>
