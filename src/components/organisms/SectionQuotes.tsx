@@ -94,7 +94,7 @@ export default function SectionQuotes(): ReactElement {
                 profilePicture: true,
                 active: e.id === quotes?.[currentQuote].id
               })}
-              alt="profile-picture"
+              alt={`Profile picture ${e.name}`}
               src={e.profilePicture}
               onClick={() => setCurrentQuote(i)}
             />
