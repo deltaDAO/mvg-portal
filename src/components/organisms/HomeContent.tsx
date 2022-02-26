@@ -23,18 +23,17 @@ const query = graphql`
           body
           cta
           ctaTo
-          interactivity
+          image {
+            childImageSharp {
+              original {
+                src
+              }
+            }
+          }
         }
       }
     }
   }
-    ctdBenefits: file(relativePath: { eq: "ctd_benefits.png" }) {
-        childImageSharp {
-            original {
-              src
-            }
-        }
-    }
 }
 `
 interface HomeContentData {
@@ -50,29 +49,18 @@ interface HomeContentData {
           body: string
           cta: string
           ctaTo: string
-          interactivity: 'image'
+          image: {
+            childImageSharp: { original: { src: string } }
+          }
         }[]
       }
     }
-  }
-  ctdBenefits: {
-    childImageSharp: { original: { src: string } }
   }
 }
 
 export default function HomeContent(): ReactElement {
   const data: HomeContentData = useStaticQuery(query)
   const { paragraphs, teaser } = data.file.childIndexJson.content
-  const ctdBenefitsImage = data.ctdBenefits.childImageSharp.original.src
-
-  const interactiveComponents = {
-    image: (
-      <InteractiveModalImage
-        src={ctdBenefitsImage}
-        alt="Compute-to-Data and its benefits"
-      />
-    )
-  }
 
   return (
     <Container>
@@ -92,7 +80,10 @@ export default function HomeContent(): ReactElement {
               }
             >
               <div className={styles.interactivity}>
-                {interactiveComponents[paragraph.interactivity]}
+                <InteractiveModalImage
+                  src={paragraph.image.childImageSharp.original.src}
+                  alt="Compute-to-Data and its benefits"
+                />
               </div>
               <div className={styles.content}>
                 <h2>{paragraph.title}</h2>
