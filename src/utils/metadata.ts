@@ -100,7 +100,7 @@ function getAlgorithmFileExtension(fileUrl: string): string {
 }
 
 function sanitizeUrl(url: string): string {
-  return url.replace('javascript:', '')
+  return url.replace(/javascript:/gm, '')
 }
 
 function transformFiles(files: string | File[]): File[] {
