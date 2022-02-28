@@ -9,7 +9,7 @@ import {
 import { toStringNoMS } from '.'
 import AssetModel from '../models/Asset'
 import slugify from '@sindresorhus/slugify'
-import { DDO, MetadataAlgorithm, Logger } from '@oceanprotocol/lib'
+import { DDO, MetadataAlgorithm, File, Logger } from '@oceanprotocol/lib'
 
 export function transformTags(value: string): string[] {
   const originalTags = value?.split(',')
@@ -99,6 +99,22 @@ function getAlgorithmFileExtension(fileUrl: string): string {
   return splitedFileUrl[splitedFileUrl.length - 1]
 }
 
+function sanitizeUrl(url: string): string {
+  return url.replace('javascript:', '')
+}
+
+function transformFiles(files: string | File[]): File[] {
+  return (
+    typeof files !== 'string' &&
+    files?.length && [
+      {
+        ...(files as File[])[0],
+        url: sanitizeUrl((files as File[])[0].url)
+      }
+    ]
+  )
+}
+
 export function transformPublishFormToMetadata(
   {
     name,
@@ -113,6 +129,9 @@ export function transformPublishFormToMetadata(
 ): MetadataMarket {
   const currentTime = toStringNoMS(new Date())
 
+  const transformedLinks = typeof links !== 'string' &&
+    links?.length && [{ ...links[0], url: sanitizeUrl(links[0].url) }]
+
   const metadata: MetadataMarket = {
     main: {
       ...AssetModel.main,
@@ -120,14 +139,14 @@ export function transformPublishFormToMetadata(
       author,
       dateCreated: ddo ? ddo.created : currentTime,
       datePublished: '',
-      files: typeof files !== 'string' && files,
+      files: transformFiles(files),
       license: 'https://market.oceanprotocol.com/terms'
     },
     additionalInformation: {
       ...AssetModel.additionalInformation,
       description,
       tags: transformTags(tags),
-      links: typeof links !== 'string' ? links : [],
+      links: transformedLinks,
       termsAndConditions
     }
   }
@@ -212,7 +231,7 @@ export function transformPublishAlgorithmFormToMetadata(
   ddo?: DDO
 ): MetadataMarket {
   const currentTime = toStringNoMS(new Date())
-  const fileUrl = typeof files !== 'string' && files[0].url
+  const fileUrl = typeof files !== 'string' && sanitizeUrl(files[0].url)
   const algorithmLanguage = getAlgorithmFileExtension(fileUrl)
   const algorithm = getAlgorithmComponent(
     image,
@@ -227,7 +246,7 @@ export function transformPublishAlgorithmFormToMetadata(
       type: 'algorithm',
       author,
       dateCreated: ddo ? ddo.created : currentTime,
-      files: typeof files !== 'string' && files,
+      files: transformFiles(files),
       license: 'https://market.oceanprotocol.com/terms',
       algorithm
     },
