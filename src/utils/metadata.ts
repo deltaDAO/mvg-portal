@@ -110,23 +110,23 @@ function sanitizeUrl(url: string): string {
   return url.replace(/javascript:/gm, '')
 }
 
-function transformFiles(files: File[]): File[] {
+function sanitizeUrlArray<T extends File | EditableMetadataLinks>(
+  array: T[]
+): T[] {
   return [
     {
-      ...(files as File[])[0],
-      url: sanitizeUrl((files as File[])[0].url)
+      ...array[0],
+      url: sanitizeUrl(array[0].url)
     }
   ]
 }
 
-function isNoStringAndNotEmpty(
-  value: string | (File | EditableMetadataLinks)[]
-): boolean {
-  return typeof value !== 'string' && value?.length > 0
-}
-
-function getValidFileArrayContent(files: string | File[]): File[] {
-  return isNoStringAndNotEmpty(files) && transformFiles(files as File[])
+function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
+  value: string | T[]
+): T[] {
+  return (
+    typeof value !== 'string' && value?.length > 0 && sanitizeUrlArray(value)
+  )
 }
 
 export function transformPublishFormToMetadata(
@@ -143,9 +143,7 @@ export function transformPublishFormToMetadata(
 ): MetadataMarket {
   const currentTime = toStringNoMS(new Date())
 
-  const transformedLinks = isNoStringAndNotEmpty(links) && [
-    { ...links[0], url: sanitizeUrl(links[0].url) }
-  ]
+  const transformedLinks = getValidUrlArrayContent(links)
 
   const metadata: MetadataMarket = {
     main: {
@@ -154,7 +152,7 @@ export function transformPublishFormToMetadata(
       author,
       dateCreated: ddo ? ddo.created : currentTime,
       datePublished: '',
-      files: getValidFileArrayContent(files),
+      files: getValidUrlArrayContent(files),
       license: 'https://market.oceanprotocol.com/terms'
     },
     additionalInformation: {
@@ -261,7 +259,7 @@ export function transformPublishAlgorithmFormToMetadata(
       type: 'algorithm',
       author,
       dateCreated: ddo ? ddo.created : currentTime,
-      files: getValidFileArrayContent(files),
+      files: getValidUrlArrayContent(files),
       license: 'https://market.oceanprotocol.com/terms',
       algorithm
     },
