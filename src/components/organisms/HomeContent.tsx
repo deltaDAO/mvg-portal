@@ -82,7 +82,7 @@ export default function HomeContent(): ReactElement {
               <div className={styles.interactivity}>
                 <InteractiveModalImage
                   src={paragraph.image.childImageSharp.original.src}
-                  alt="Compute-to-Data and its benefits"
+                  alt={paragraph.title}
                 />
               </div>
               <div className={styles.content}>
