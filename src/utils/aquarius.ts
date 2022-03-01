@@ -331,10 +331,12 @@ export async function getAlgorithmDatasetsForCompute(
   const baseQueryParams = {
     chainIds: [datasetChainId],
     filters: [
-      getFilterTerm(
-        'service.attributes.main.privacy.publisherTrustedAlgorithms.did',
-        algorithmId
-      )
+      {
+        match: {
+          'service.attributes.main.privacy.publisherTrustedAlgorithms.did':
+            algorithmId
+        }
+      }
     ],
     sortOptions: {
       sortBy: SortTermOptions.Created,
