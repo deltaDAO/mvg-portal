@@ -1,0 +1,78 @@
+.card {
+  composes: box from '../atoms/Box.module.css';
+  font-size: var(--font-size-small);
+  height: 100%;
+  min-height: 15rem;
+  padding: 0;
+  color: var(--color-secondary);
+  background-color: var(--background-body);
+  overflow: hidden;
+}
+
+.thumb {
+  width: auto;
+  height: 75%;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+
+.infos {
+  display: grid;
+  width: auto;
+  height: 100%;
+  padding: calc(var(--spacer) / 2) var(--spacer);
+  background-color: var(--background-body);
+  transition: 0.4s 0.15s ease-in-out;
+}
+
+.title {
+  font-size: var(--font-size-large);
+  margin: 0;
+  padding-bottom: var(--spacer);
+  overflow-wrap: break-word;
+}
+
+.isOpen .infos {
+  transform: translateY(-76%);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+button {
+  margin-top: 0 !important;
+  height: min-content;
+}
+
+/* only visible for screen readers */
+.srOnly:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.caret {
+  display: inline;
+  width: 1rem;
+  fill: var(--color-secondary);
+  margin-left: calc(var(--spacer) / 4);
+  transition: transform 0.4s ease-out;
+}
+
+.isOpen svg {
+  transform: rotate(180deg);
+}
+
+.link,
+.link h3 {
+  width: -moz-fit-content;
+  width: fit-content;
+}

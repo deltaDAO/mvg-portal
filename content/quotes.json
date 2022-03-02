@@ -1,0 +1,30 @@
+{
+  "title": "What people say about us",
+  "quotes": [
+    {
+      "name": "Cute Puppy 1",
+      "profilePicture": "../src/images/quotes/profile1.jpg",
+      "quote": "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large."
+    },
+    {
+      "name": "Cute Puppy 2",
+      "profilePicture": "../src/images/quotes/profile2.jpg",
+      "quote": "A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart. I am alone, and feel the charm of existence in this spot, which was."
+    },
+    {
+      "name": "Cute Puppy 3",
+      "profilePicture": "../src/images/quotes/profile3.jpg",
+      "quote": "One morning, when Gregor Samsa woke from troubled dreams, he found himself transformed in his bed into a horrible vermin. He lay on his armour-like back, and if he lifted his head a little he could se"
+    },
+    {
+      "name": "Cute Puppy 4",
+      "profilePicture": "../src/images/quotes/profile4.jpg",
+      "quote": "The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax quiz prog. Junk MTV quiz graced by fox whelps. Bawds jog, flick quartz, vex nymphs. Waltz, bad nymph, for quick jigs vex! Fox nymph"
+    },
+    {
+      "name": "Cute Puppy 5",
+      "profilePicture": "../src/images/quotes/profile5.jpg",
+      "quote": "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the gre"
+    }
+  ]
+}

@@ -23,6 +23,9 @@ import { PagedAssets } from '../../models/PagedAssets'
 import HomeContent from '../organisms/HomeContent'
 import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
+import SectionQuotes from '../organisms/SectionQuotes'
+import { graphql, useStaticQuery } from 'gatsby'
+import PortalTeaser, { ThirdPartyPortal } from '../molecules/PortalTeaser'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -33,6 +36,29 @@ function sortElements(items: DDO[], sorted: string[]) {
   })
   return items
 }
+
+// TODO: replace portals placeholder content
+const thirdPartyPortalsQuery = graphql`
+  query thirdPartyPortalsQuery {
+    content: allFile(
+      filter: { relativePath: { eq: "thirdPartyPortals.json" } }
+    ) {
+      edges {
+        node {
+          childContentJson {
+            portals {
+              title
+              desc
+              link
+              logo
+              backgroundColor
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 export function SectionQueryResult({
   title,
@@ -104,6 +130,12 @@ export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
+  const data = useStaticQuery(thirdPartyPortalsQuery)
+  const {
+    portals
+  }: {
+    portals: ThirdPartyPortal[]
+  } = data.content.edges[0].node.childContentJson
 
   useEffect(() => {
     const queryParams = {
@@ -134,7 +166,18 @@ export default function HomePage(): ReactElement {
         <section className={styles.content}>
           <HomeContent />
         </section>
+        <section className={styles.quotes}>
+          <SectionQuotes />
+        </section>
         <Container>
+          <div className={styles.section}>
+            <h3>Featured Portals</h3>
+            <div className={styles.portals}>
+              {portals?.map((portal, i) => (
+                <PortalTeaser {...portal} key={i} />
+              ))}
+            </div>
+          </div>
           {queryLatest && (
             <SectionQueryResult
               title={
