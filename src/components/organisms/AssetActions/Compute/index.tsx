@@ -169,21 +169,30 @@ export default function Compute({
     ) {
       algorithmSelectionList = []
     } else {
-      const gueryResults = await queryMetadata(
+      const queryResults = await queryMetadata(
         getQuerryString(
           computeService.attributes.main.privacy.publisherTrustedAlgorithms,
           ddo.chainId
         ),
         source.token
       )
-      setDdoAlgorithmList(gueryResults.results)
-      const datasetComputeService = ddo.findServiceByType('compute')
-      algorithmSelectionList = await transformDDOToAssetSelection(
-        undefined,
-        gueryResults.results,
-        [],
-        newCancelToken()
+      // verify if the algorithms in the trusted list share the same endpoint of the dataset
+      const sameProviderEndpointAlgorithms = queryResults.results.filter(
+        (algo) =>
+          algo.service[1].serviceEndpoint === computeService.serviceEndpoint
       )
+      setDdoAlgorithmList(sameProviderEndpointAlgorithms)
+
+      if (sameProviderEndpointAlgorithms.length === 0) {
+        algorithmSelectionList = []
+      } else {
+        algorithmSelectionList = await transformDDOToAssetSelection(
+          undefined,
+          sameProviderEndpointAlgorithms,
+          [],
+          newCancelToken()
+        )
+      }
     }
     return algorithmSelectionList
   }

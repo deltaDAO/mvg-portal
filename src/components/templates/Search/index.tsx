@@ -58,7 +58,11 @@ export default function SearchPage({
     async (parsed: queryString.ParsedQuery<string>, chainIds: number[]) => {
       setLoading(true)
       setTotalResults(undefined)
+      console.log(chainIds)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
+      getResults(parsed, chainIds, newCancelToken()).then((data) =>
+        console.log(data)
+      )
       setQueryResult(queryResult)
       setTotalResults(queryResult.totalResults)
       setTotalPagesNumber(queryResult.totalPages)
