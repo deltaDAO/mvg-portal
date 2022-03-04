@@ -1,7 +1,7 @@
 {
   "site": {
     "siteTitle": "Minimal Viable Gaia-X",
-    "siteTagline": "A platform to find, publish and consume Data Services in the Gaia-X Test Network.",
+    "siteTagline": "A portal to find, publish and consume data services offerings in a Gaia-X test network.",
     "siteUrl": "https://portal.minimal-gaia-x.eu",
     "siteIcon": "./src/images/siteIcon.png",
     "siteImage": "../src/images/share.png",
@@ -16,12 +16,10 @@
       }
     ],
     "warning": {
-      "main": "This MVG portal demonstrator was built for the 2nd Gaia-X hackathon.",
-      "polygonPublish": "Only republish data sets with a pool from ETH Mainnet into Polygon/Matic if the liquidity is **less than or equal to 1000 OCEAN in the original pool**. Doing otherwise will lead to [purgatory](https://github.com/oceanprotocol/list-purgatory) for the data set in Polygon/Matic."
+      "main": "This MVG portal demonstrator was built for the 2nd Gaia-X hackathon."
     },
     "announcement": {
-      "main": "Ocean Market is [available on Polygon](https://blog.oceanprotocol.com/ocean-on-polygon-network-8abad19cbf47).",
-      "polygon": "Polygon/Matic EVM support is in early stages. [Use the Polygon Bridge](https://docs.oceanprotocol.com/tutorials/polygon-bridge/) to get mOCEAN."
+      "main": "This prototype is used for demonstration and test purposes only. It should not be used in production environments. [Learn more](https://gitlab.com/groups/gaia-x/lab/-/wikis/home)"
     },
     "badge": "Powered by Ocean Protocol",
     "footer": {

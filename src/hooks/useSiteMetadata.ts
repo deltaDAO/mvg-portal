@@ -12,11 +12,9 @@ interface UseSiteMetadata {
   }[]
   warning: {
     main: string
-    polygonPublish: string
   }
   announcement: {
     main: string
-    polygon: string
   }
   badge: string
   footer: {
@@ -66,11 +64,9 @@ const query = graphql`
         }
         warning {
           main
-          polygonPublish
         }
         announcement {
           main
-          polygon
         }
         badge
         footer {

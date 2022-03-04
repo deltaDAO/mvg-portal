@@ -32,61 +32,64 @@ export default function Stats({
 }: {
   accountId: string
 }): ReactElement {
-  const { chainIds } = useUserPreferences()
+  /**
+   * Comments in this file should stay to easily reintroduce stats again when necessary
+   */
+  // const { chainIds } = useUserPreferences()
   const { poolShares, assets, assetsTotal, sales } = useProfile()
 
-  const [publisherLiquidity, setPublisherLiquidity] = useState<UserLiquidity>()
-  const [totalLiquidity, setTotalLiquidity] = useState(0)
+  // const [publisherLiquidity, setPublisherLiquidity] = useState<UserLiquidity>()
+  // const [totalLiquidity, setTotalLiquidity] = useState(0)
 
-  useEffect(() => {
-    if (!accountId || chainIds.length === 0) {
-      setPublisherLiquidity({ price: '0', oceanBalance: '0' })
-      setTotalLiquidity(0)
-    }
-  }, [accountId, chainIds])
+  // useEffect(() => {
+  //   if (!accountId || chainIds.length === 0) {
+  //     setPublisherLiquidity({ price: '0', oceanBalance: '0' })
+  //     setTotalLiquidity(0)
+  //   }
+  // }, [accountId, chainIds])
 
-  useEffect(() => {
-    if (!assets || !accountId || !chainIds) return
+  // useEffect(() => {
+  //   if (!assets || !accountId || !chainIds) return
 
-    async function getPublisherLiquidity() {
-      try {
-        const accountPoolAdresses: string[] = []
-        const assetsPrices = await getAssetsBestPrices(assets)
-        for (const priceInfo of assetsPrices) {
-          if (priceInfo.price.type === 'pool') {
-            accountPoolAdresses.push(priceInfo.price.address.toLowerCase())
-          }
-        }
-        const userLiquidity = await getAccountLiquidityInOwnAssets(
-          accountId,
-          chainIds,
-          accountPoolAdresses
-        )
-        setPublisherLiquidity(userLiquidity)
-      } catch (error) {
-        Logger.error(error.message)
-      }
-    }
-    getPublisherLiquidity()
-  }, [assets, accountId, chainIds])
+  //   async function getPublisherLiquidity() {
+  //     try {
+  //       const accountPoolAdresses: string[] = []
+  //       const assetsPrices = await getAssetsBestPrices(assets)
+  //       for (const priceInfo of assetsPrices) {
+  //         if (priceInfo.price.type === 'pool') {
+  //           accountPoolAdresses.push(priceInfo.price.address.toLowerCase())
+  //         }
+  //       }
+  //       const userLiquidity = await getAccountLiquidityInOwnAssets(
+  //         accountId,
+  //         chainIds,
+  //         accountPoolAdresses
+  //       )
+  //       setPublisherLiquidity(userLiquidity)
+  //     } catch (error) {
+  //       Logger.error(error.message)
+  //     }
+  //   }
+  //   getPublisherLiquidity()
+  // }, [assets, accountId, chainIds])
 
-  useEffect(() => {
-    if (!poolShares) return
+  // useEffect(() => {
+  //   if (!poolShares) return
 
-    async function getTotalLiquidity() {
-      try {
-        const totalLiquidity = await getPoolSharesLiquidity(poolShares)
-        setTotalLiquidity(totalLiquidity)
-      } catch (error) {
-        console.error('Error fetching pool shares: ', error.message)
-      }
-    }
-    getTotalLiquidity()
-  }, [poolShares])
+  //   async function getTotalLiquidity() {
+  //     try {
+  //       const totalLiquidity = await getPoolSharesLiquidity(poolShares)
+  //       setTotalLiquidity(totalLiquidity)
+  //     } catch (error) {
+  //       console.error('Error fetching pool shares: ', error.message)
+  //     }
+  //   }
+  //   getTotalLiquidity()
+  // }, [poolShares])
 
   return (
     <div className={styles.stats}>
-      <NumberUnit
+      {/* <NumberUnit
         label="Liquidity in Own Assets"
         value={
           <Conversion price={publisherLiquidity?.price} hideApproximateSymbol />
@@ -95,7 +98,7 @@ export default function Stats({
       <NumberUnit
         label="Total Liquidity"
         value={<Conversion price={`${totalLiquidity}`} hideApproximateSymbol />}
-      />
+      /> */}
       <NumberUnit label={`Sale${sales === 1 ? '' : 's'}`} value={sales} />
       <NumberUnit label="Published" value={assetsTotal} />
     </div>
