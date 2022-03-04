@@ -1,31 +1,32 @@
 import React, { ReactElement, useEffect, useState } from 'react'
-import styles from './Home.module.css'
-import AssetList from '../organisms/AssetList'
-import Button from '../atoms/Button'
-import Permission from '../organisms/Permission'
+import styles from './index.module.css'
+import AssetList from '../../organisms/AssetList'
+import Button from '../../atoms/Button'
+import Permission from '../../organisms/Permission'
 import {
   generateBaseQuery,
   getFilterTerm,
   queryMetadata
-} from '../../utils/aquarius'
+} from '../../../utils/aquarius'
 import { DDO, Logger } from '@oceanprotocol/lib'
-import { useUserPreferences } from '../../providers/UserPreferences'
-import { useIsMounted } from '../../hooks/useIsMounted'
-import { useCancelToken } from '../../hooks/useCancelToken'
-import { SearchQuery } from '../../models/aquarius/SearchQuery'
+import { useUserPreferences } from '../../../providers/UserPreferences'
+import { useIsMounted } from '../../../hooks/useIsMounted'
+import { useCancelToken } from '../../../hooks/useCancelToken'
+import { SearchQuery } from '../../../models/aquarius/SearchQuery'
 import {
   SortDirectionOptions,
   SortOptions,
   SortTermOptions
-} from '../../models/SortAndFilters'
-import { BaseQueryParams } from '../../models/aquarius/BaseQueryParams'
-import { PagedAssets } from '../../models/PagedAssets'
-import HomeContent from '../organisms/HomeContent'
-import Container from '../atoms/Container'
-import { useAddressConfig } from '../../hooks/useAddressConfig'
-import SectionQuotes from '../organisms/SectionQuotes'
+} from '../../../models/SortAndFilters'
+import { BaseQueryParams } from '../../../models/aquarius/BaseQueryParams'
+import { PagedAssets } from '../../../models/PagedAssets'
+import HomeContent from './Content'
+import Container from '../../atoms/Container'
+import { useAddressConfig } from '../../../hooks/useAddressConfig'
+import SectionQuotes from '../../organisms/SectionQuotes'
 import { graphql, useStaticQuery } from 'gatsby'
-import PortalTeaser, { ThirdPartyPortal } from '../molecules/PortalTeaser'
+import PortalTeaser, { ThirdPartyPortal } from '../../molecules/PortalTeaser'
+import HomeHero from './Hero'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -163,6 +164,9 @@ export default function HomePage(): ReactElement {
   return (
     <Permission eventType="browse">
       <>
+        <section className={styles.content}>
+          <HomeHero />
+        </section>
         <section className={styles.content}>
           <HomeContent />
         </section>

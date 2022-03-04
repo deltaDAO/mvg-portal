@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react'
 import { useStaticQuery, graphql } from 'gatsby'
-import Markdown from '../atoms/Markdown'
-import styles from './HomeContent.module.css'
+import Markdown from '../../atoms/Markdown'
+import styles from './Content.module.css'
 import classNames from 'classnames/bind'
-import Button from '../atoms/Button'
-import Container from '../atoms/Container'
-import InteractiveModalImage from '../molecules/InteractiveModalImage'
+import Button from '../../atoms/Button'
+import Container from '../../atoms/Container'
+import InteractiveModalImage from '../../molecules/InteractiveModalImage'
 
 const cx = classNames.bind(styles)
 
@@ -14,10 +14,6 @@ const query = graphql`
   file(absolutePath: {regex: "/content\\.json/"}) {
     childIndexJson {
       content {
-        teaser {
-          title
-          text
-        }
         paragraphs {
           title
           body
@@ -40,10 +36,6 @@ interface HomeContentData {
   file: {
     childIndexJson: {
       content: {
-        teaser: {
-          title: string
-          text: string
-        }
         paragraphs: {
           title: string
           body: string
@@ -60,15 +52,11 @@ interface HomeContentData {
 
 export default function HomeContent(): ReactElement {
   const data: HomeContentData = useStaticQuery(query)
-  const { paragraphs, teaser } = data.file.childIndexJson.content
+  const { paragraphs } = data.file.childIndexJson.content
 
   return (
     <Container>
       <div className={styles.container}>
-        <div className={styles.teaser}>
-          <h2>{teaser.title}</h2>
-          <Markdown text={teaser.text} />
-        </div>
         <div className={styles.paragraphs}>
           {paragraphs.map((paragraph, i) => (
             <div
