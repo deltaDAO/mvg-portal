@@ -66,12 +66,12 @@ We do not store your IP address beyond your visit.
 
 ## 4.2 Consume functionality
 
-When consuming a data service, we collect your wallet address and disclose it by transmitting it to a smart contract stored on the Gaia-X testnet, a public permissioned blockchain, that is redundantly stored on nodes located in the EU. Moreove, your public key is stored on-chain as soon as your transaction is signed and transmitted to the Gaia-X testnet by your wallet.
+When consuming a data service, we collect your wallet address and disclose it by transmitting it to a smart contract stored on the Gaia-X testnet, a public permissioned blockchain, that is redundantly stored on nodes located in the EU. Moreover, your public key is stored on-chain as soon as your transaction is signed and transmitted to the Gaia-X testnet by your wallet.
 
 **Purpose:**
 
 Gaia-X AISBL processes your wallet address and public key to enable you to sign blockchain transactions on the Gaia-X testnet. These transactions will be stored permanently on-chain on the Gaia-X testnet so that you and the data service provider can prove data service acquisition and consumption.
-So, the processing of your wallet address and public key is a technical requirement for signing blockchain transactions on the Gaia-X testnet and to enable an immutable audit trail.
+Therefore, the processing of your wallet address and public key is a technical requirement for signing blockchain transactions on the Gaia-X testnet and to enable an immutable audit trail.
 
 **Legal basis:**
 
@@ -125,9 +125,9 @@ Our legitimate interest is to enhance the user experience by improving the perfo
 
 Your wallet address and name are stored permanently on our metadata cache.
 
-## 4.5 History table
+## 4.5 Transaction overview
 
-The history table of our portal demonstrator is a transparency tool that you can use to overview your transactions relating to our portal demonstrator. When you use the history table, we collect your wallet address. Then we retrieve the respective and relevant transactions stored on the Gaia-X testnet (more precisely, from the metadata cache) and organize them in a table.
+The transaction overview in your profile is a transparency tool that you can use to overview your transactions relating to our portal demonstrator. When you visit your profile, we collect your wallet address. Then we retrieve the respective and relevant transactions stored on the Gaia-X testnet (more precisely, from the metadata cache) and organize them in a table.
 
 **Purpose:**
 
@@ -139,15 +139,15 @@ The legal basis for this processing is our legitimate interest, according to Art
 
 **Legitimate interests:**
 
-Our legitimate interest in providing the history table is to offer you the possibility to overview your transactions made on our portal demonstrator.
+Our legitimate interest in providing the transaction overview is to offer you the possibility to overview your transactions made on our portal demonstrator.
 
 **Retention period:**
 
-As soon as you disconnect your wallet, we will remove the history table entries from your browser.
+As soon as you disconnect your wallet, we will remove the transaction overview entries from your browser.
 
 ## 4.6 Contact via e-mail
 
-If you contact us via e-mail, Gaia-X AISBL will collect, use and store your e-mail address, and any other information you provide us is your message, such as your name.
+If you contact us via e-mail, Gaia-X AISBL will collect, use and store your e-mail address, and any other information you provide us in your message, such as your name.
 
 **Purposes:**
 
@@ -210,7 +210,7 @@ If you published a data service, you could overwrite your provided metadata with
 
 Note that it is not possible to erase the blockchain&#39;s transaction history due to technical reasons. But the current network state will no longer hold the former metadata.
 
-Moreover, due to technical reasons, you cannot erase your provided wallet address. The permanent storage of the wallet address protects you as a data services publisher as well as an data service consumer. Data services publishers can prove data service ownership and sales, while data service consumers can prove data service acquisition and consumption.
+Moreover, due to technical reasons, you cannot erase your provided wallet address. The permanent storage of the wallet address protects you as a data services publisher as well as a data service consumer. Data service publishers can prove data service ownership and sales, while data service consumers can prove data service acquisition and consumption.
 
 ## 7.4 Right to restriction (Art. 18 GDPR)
 
