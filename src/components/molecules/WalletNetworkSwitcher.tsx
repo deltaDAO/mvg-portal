@@ -38,7 +38,11 @@ export default function WalletNetworkSwitcher(): ReactElement {
         to {walletNetworkName}. Connect to {ddoNetworkName} to interact with
         this asset.
       </p>
-      <Button size="small" onClick={() => switchWalletNetwork()}>
+      <Button
+        style="primary"
+        size="small"
+        onClick={() => switchWalletNetwork()}
+      >
         Switch to {ddoNetworkName}
       </Button>
     </>
