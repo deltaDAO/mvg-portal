@@ -9,7 +9,7 @@
     "paragraphs": [
       {
         "title": "A Minimal Viable Gaia-X on DLT",
-        "body": "The principle of a federated data infrastructure is a perfect fit for Distributed Ledger Technology. [Ocean Protocol[(https://oceanprotocol.com) offers a free open-source technology stack, leveraging DLT and open-source components to give control to the consumers, service providers and federators of an ecosystem. This Minimal Viable Gaia-X demonstrator is built with the Ocean Protocol stack to showcase how a Minimal Viable Gaia-X and Federation Services on DLT can work, today.",
+        "body": "The principle of a federated data infrastructure is a perfect fit for Distributed Ledger Technology. [Ocean Protocol](https://oceanprotocol.com) offers a free open-source technology stack, leveraging DLT and open-source components to give control to the consumers, service providers and federators of an ecosystem. This Minimal Viable Gaia-X demonstrator is built with the Ocean Protocol stack to showcase how a Minimal Viable Gaia-X and Federation Services on DLT can work, today.",
         "image": "../../../src/images/architecture_mvg.png"
       },
       {
