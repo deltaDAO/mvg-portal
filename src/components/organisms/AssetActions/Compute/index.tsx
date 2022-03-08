@@ -179,7 +179,8 @@ export default function Compute({
       // verify if the algorithms in the trusted list share the same endpoint of the dataset
       const sameProviderEndpointAlgorithms = queryResults.results.filter(
         (algo) =>
-          algo.service[1].serviceEndpoint === computeService.serviceEndpoint
+          algo.findServiceByType('compute')?.serviceEndpoint ===
+          computeService.serviceEndpoint
       )
       setDdoAlgorithmList(sameProviderEndpointAlgorithms)
 
