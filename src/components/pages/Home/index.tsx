@@ -167,12 +167,11 @@ export default function HomePage(): ReactElement {
         <section className={styles.content}>
           <HomeHero />
         </section>
+
         <section className={styles.content}>
           <HomeContent />
         </section>
-        <section className={styles.quotes}>
-          <SectionQuotes />
-        </section>
+
         <Container>
           <div className={styles.section}>
             <h3>Featured Portals</h3>
@@ -192,12 +191,16 @@ export default function HomePage(): ReactElement {
               query={queryLatest}
               action={
                 <Button style="text" to="/search?sort=created&sortOrder=desc">
-                  All Data Services →
+                  All Data Service Offerings →
                 </Button>
               }
             />
           )}
         </Container>
+
+        <section className={styles.quotes}>
+          <SectionQuotes />
+        </section>
       </>
     </Permission>
   )

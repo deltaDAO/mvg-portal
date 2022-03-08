@@ -9,6 +9,7 @@ import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAccountPurgatory } from '../hooks/useAccountPurgatory'
 import styles from './App.module.css'
 import PrivacyPreferenceCenter from './organisms/PrivacyPreferenceCenter'
+import AnnouncementBanner from './atoms/AnnouncementBanner'
 
 const contentQuery = graphql`
   query AppQuery {
@@ -37,11 +38,16 @@ export default function App({
 
   const { appConfig } = useSiteMetadata()
   const { accountId } = useWeb3()
+  const {
+    announcement: { main }
+  } = useSiteMetadata()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
 
   return (
     <Styles>
       <div className={styles.app}>
+        <AnnouncementBanner text={main} />
+
         <Header />
 
         {isInPurgatory && (

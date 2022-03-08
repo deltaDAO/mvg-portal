@@ -2,17 +2,10 @@
   "portals": [
     {
       "title": "Universitat de Lleida",
-      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "link": "https://www.somelink.com",
+      "desc": "With the UDL Science portal, Universitat de Lleida aims to provide an open research and science platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability.",
+      "link": "https://udl.portal.minimal-gaia-x.eu",
       "logo": "udl",
       "backgroundColor": "#831453"
-    },
-    {
-      "title": "safeFBDC",
-      "desc": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      "link": "https://www.somelink.com",
-      "logo": "safeFBDC",
-      "backgroundColor": "#283278"
     }
   ]
 }
