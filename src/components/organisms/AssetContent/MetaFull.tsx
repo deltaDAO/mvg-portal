@@ -15,9 +15,6 @@ export default function MetaFull(): ReactElement {
 
   return (
     <div className={styles.metaFull}>
-      {!isInPurgatory && (
-        <MetaItem title="Data Author" content={metadata?.main.author} />
-      )}
       <MetaItem
         title="Owner"
         content={<Publisher account={ddo?.publicKey[0].owner} />}
