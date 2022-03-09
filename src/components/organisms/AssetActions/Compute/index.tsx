@@ -159,44 +159,43 @@ export default function Compute({
   async function getAlgorithmList(): Promise<AssetSelectionAsset[]> {
     const source = axios.CancelToken.source()
     const computeService = ddo.findServiceByType('compute')
-    let algorithmSelectionList: AssetSelectionAsset[]
+
     if (
       !computeService.attributes.main.privacy ||
       !computeService.attributes.main.privacy.publisherTrustedAlgorithms ||
       (computeService.attributes.main.privacy.publisherTrustedAlgorithms
         .length === 0 &&
         !computeService.attributes.main.privacy.allowAllPublishedAlgorithms)
-    ) {
-      algorithmSelectionList = []
-    } else {
-      const queryResults = await queryMetadata(
-        getQuerryString(
-          computeService.attributes.main.privacy.publisherTrustedAlgorithms,
-          ddo.chainId
-        ),
-        source.token
-      )
-      // verify if the algorithms in the trusted list share the same endpoint of the dataset
-      const sameProviderEndpointAlgorithms = queryResults.results.filter(
-        (algo) =>
-          (
-            algo.findServiceByType('compute') ||
-            algo.findServiceByType('access')
-          )?.serviceEndpoint === computeService.serviceEndpoint
-      )
-      setDdoAlgorithmList(sameProviderEndpointAlgorithms)
+    )
+      return []
 
-      if (sameProviderEndpointAlgorithms.length === 0) {
-        algorithmSelectionList = []
-      } else {
-        algorithmSelectionList = await transformDDOToAssetSelection(
-          undefined,
-          sameProviderEndpointAlgorithms,
-          [],
-          newCancelToken()
-        )
+    const queryResults = await queryMetadata(
+      getQuerryString(
+        computeService.attributes.main.privacy.publisherTrustedAlgorithms,
+        ddo.chainId
+      ),
+      source.token
+    )
+    // verify if the algorithms in the trusted list share the same endpoint of the dataset
+    const sameProviderEndpointAlgorithms = queryResults.results.filter(
+      (algo) => {
+        const algoService = algo.findServiceByType('compute')
+          ? algo.findServiceByType('compute')
+          : algo.findServiceByType('access')
+
+        return algoService?.serviceEndpoint === computeService.serviceEndpoint
       }
-    }
+    )
+    setDdoAlgorithmList(sameProviderEndpointAlgorithms)
+
+    if (sameProviderEndpointAlgorithms.length === 0) return []
+
+    const algorithmSelectionList = await transformDDOToAssetSelection(
+      undefined,
+      sameProviderEndpointAlgorithms,
+      [],
+      newCancelToken()
+    )
     return algorithmSelectionList
   }
 
@@ -312,6 +311,7 @@ export default function Compute({
       }
 
       if (!hasPreviousDatasetOrder && !hasDatatoken) {
+        console.log(price, ddo)
         const tx = await buyDT('1', price, ddo)
         if (!tx) {
           setError('Error buying datatoken. Please try again.')
@@ -321,6 +321,7 @@ export default function Compute({
       }
 
       if (!hasPreviousAlgorithmOrder && !hasAlgoAssetDatatoken) {
+        console.log(algorithmPrice, selectedAlgorithmAsset)
         const tx = await buyDT('1', algorithmPrice, selectedAlgorithmAsset)
         if (!tx) {
           setError('Error buying datatoken. Please try again.')
