@@ -17,6 +17,7 @@ import FormTitle from './FormTitle'
 import FormActions from './FormActions'
 import styles from './FormPublish.module.css'
 import AdvancedSettings from '../../molecules/FormFields/AdvancedSettings'
+import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 
 const query = graphql`
   query {
@@ -91,6 +92,8 @@ export default function FormPublish(): ReactElement {
 
   const computeTypeOptions = ['1 day', '1 week', '1 month', '1 year']
 
+  const { siteTitle } = useSiteMetadata()
+
   // Manually handle change events instead of using `handleChange` from Formik.
   // Workaround for default `validateOnChange` not kicking in
   function handleFieldChange(
@@ -127,7 +130,10 @@ export default function FormPublish(): ReactElement {
     <Form
       className={styles.form}
       // do we need this?
-      onChange={() => status === 'empty' && setStatus(null)}
+      onChange={() => {
+        status === 'empty' && setStatus(null)
+        if (values.author !== siteTitle) values.author = siteTitle
+      }}
     >
       <FormTitle title={content.title} />
 
