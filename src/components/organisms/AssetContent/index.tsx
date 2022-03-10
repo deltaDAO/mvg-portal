@@ -61,7 +61,7 @@ export default function AssetContent({
 
   useEffect(() => {
     if (!accountId || !owner) return
-    console.log(ddo)
+
     const isOwner = accountId.toLowerCase() === owner.toLowerCase()
     setIsOwner(isOwner)
     setShowPricing(isOwner && price.type === '')
