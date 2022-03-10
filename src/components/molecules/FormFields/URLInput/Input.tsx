@@ -43,7 +43,6 @@ export default function URLInput({
 
       <Button
         style="primary"
-        // size="small"
         onClick={(e: React.SyntheticEvent) => e.preventDefault()}
         disabled={buttonDisabled}
       >
