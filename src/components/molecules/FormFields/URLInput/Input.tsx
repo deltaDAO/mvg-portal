@@ -25,7 +25,7 @@ export default function URLInput({
   const [buttonDisabled, setButtonDisabled] = useState(true)
 
   useEffect(() => {
-    if (!field?.value) return
+    if (!field?.value || field?.value?.length === 0) return
 
     const isValueValid = isSanitizedUrl(field.value) && !meta.error
 
@@ -43,7 +43,7 @@ export default function URLInput({
 
       <Button
         style="primary"
-        size="small"
+        // size="small"
         onClick={(e: React.SyntheticEvent) => e.preventDefault()}
         disabled={buttonDisabled}
       >

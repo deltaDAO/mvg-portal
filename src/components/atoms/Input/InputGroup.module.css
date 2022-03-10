@@ -8,6 +8,7 @@
   border-top-right-radius: 0;
   margin-top: -1px;
   width: 100%;
+  box-shadow: none;
 }
 
 .inputGroup button:hover,
