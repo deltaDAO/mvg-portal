@@ -4,7 +4,6 @@ import styles from './InputElement.module.css'
 import { InputProps } from '.'
 import FilesInput from '../../molecules/FormFields/FilesInput'
 import CustomProvider from '../../molecules/FormFields/CustomProvider'
-import Terms from '../../molecules/FormFields/Terms'
 import BoxSelection, {
   BoxSelectionOption
 } from '../../molecules/FormFields/BoxSelection'
@@ -137,8 +136,6 @@ export default function InputElement({
       return <CustomProvider name={name} {...field} {...props} />
     case 'datatoken':
       return <Datatoken name={name} {...field} {...props} />
-    case 'terms':
-      return <Terms name={name} options={options} {...field} {...props} />
     case 'boxSelection':
       return (
         <BoxSelection
