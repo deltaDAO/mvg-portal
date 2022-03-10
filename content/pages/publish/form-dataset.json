@@ -69,13 +69,6 @@
       "label": "Tags",
       "placeholder": "e.g. logistics, ai",
       "help": "Separate tags with comma."
-    },
-    {
-      "name": "termsAndConditions",
-      "label": "Terms & Conditions",
-      "type": "terms",
-      "options": ["I accept the [Terms and Conditions.](/terms)"],
-      "required": true
     }
   ],
   "success": "Asset Created!"
