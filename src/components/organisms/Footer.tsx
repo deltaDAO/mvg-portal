@@ -24,8 +24,6 @@ export default function Footer(): ReactElement {
           <br />
           <Link to="/imprint">Imprint</Link>
           {' — '}
-          <Link to="/terms">Terms</Link>
-          {' — '}
           <Link to={privacyPolicySlug}>Privacy</Link>
           {appConfig.privacyPreferenceCenter === 'true' && (
             <>
