@@ -159,7 +159,6 @@ export default function Compute({
   async function getAlgorithmList(): Promise<AssetSelectionAsset[]> {
     const source = axios.CancelToken.source()
     const computeService = ddo.findServiceByType('compute')
-
     if (
       !computeService.attributes.main.privacy ||
       !computeService.attributes.main.privacy.publisherTrustedAlgorithms ||
@@ -169,33 +168,22 @@ export default function Compute({
     )
       return []
 
-    const queryResults = await queryMetadata(
+    const gueryResults = await queryMetadata(
       getQuerryString(
         computeService.attributes.main.privacy.publisherTrustedAlgorithms,
         ddo.chainId
       ),
       source.token
     )
-    // verify if the algorithms in the trusted list share the same endpoint of the dataset
-    const sameProviderEndpointAlgorithms = queryResults.results.filter(
-      (algo) => {
-        const algoService = algo.findServiceByType('compute')
-          ? algo.findServiceByType('compute')
-          : algo.findServiceByType('access')
-
-        return algoService?.serviceEndpoint === computeService.serviceEndpoint
-      }
-    )
-    setDdoAlgorithmList(sameProviderEndpointAlgorithms)
-
-    if (sameProviderEndpointAlgorithms.length === 0) return []
-
+    setDdoAlgorithmList(gueryResults.results)
+    const datasetComputeService = ddo.findServiceByType('compute')
     const algorithmSelectionList = await transformDDOToAssetSelection(
       undefined,
-      sameProviderEndpointAlgorithms,
+      gueryResults.results,
       [],
       newCancelToken()
     )
+
     return algorithmSelectionList
   }
 
