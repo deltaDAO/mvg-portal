@@ -12,13 +12,6 @@ const query = graphql`
         title
         subtitle
         body
-        image {
-          childImageSharp {
-            original {
-              src
-            }
-          }
-        }
       }
     }
   }
@@ -32,9 +25,6 @@ interface HomeHeroData {
         title: string
         subtitle: string
         body: string
-        image: {
-          childImageSharp: { original: { src: string } }
-        }
       }
     }
   }
@@ -42,13 +32,12 @@ interface HomeHeroData {
 
 export default function HomeHero(): ReactElement {
   const data: HomeHeroData = useStaticQuery(query)
-  const { title, subtitle, body, image } = data.file.childIndexJson.hero
+  const { title, subtitle, body } = data.file.childIndexJson.hero
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.background} />
       <Container className={styles.container}>
-        <img src={image.childImageSharp.original.src} alt={title} />
         <div className={styles.content}>
           <h5 className={styles.subtitle}>{subtitle}</h5>
           <h2 className={styles.title}>{title}</h2>
