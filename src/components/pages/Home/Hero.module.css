@@ -23,12 +23,9 @@
   height: var(--wrapper-height);
 }
 
-.container img {
-  display: none;
-}
-
 .content {
   padding: var(--spacer);
+  max-width: var(--break-point--small);
 }
 
 .subtitle,
@@ -46,8 +43,8 @@
 
 @media screen and (min-width: 60rem) {
   .wrapper {
-    /* Allocate 1/3 more space (height) on larger screens */
-    --wrapper-height-lg: calc(var(--wrapper-height) * 1.33);
+    /* Allocate 1/5 more space (height) on larger screens */
+    --wrapper-height-lg: calc(var(--wrapper-height) * 1.2);
     height: var(--wrapper-height-lg);
   }
 
@@ -55,13 +52,7 @@
     height: var(--wrapper-height-lg);
   }
 
-  .container img {
-    display: block;
-    max-width: min(60rem, 60%);
-  }
-
   .content {
-    margin-left: calc(var(--spacer) * -2);
     padding: 0;
   }
 }

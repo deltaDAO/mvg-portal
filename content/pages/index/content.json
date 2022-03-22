@@ -2,8 +2,7 @@
   "hero": {
     "subtitle": "Gaia-X: Data Sovereignty for Europe",
     "title": "A Federated and Secure Data Infrastructure",
-    "body": "Gaia-X represents the next generation of data infrastructure: an **open, transparent and secure digital ecosystem**, where data and services can be made available, collated and shared in an environment of trust. The architecture of Gaia-X is based on the principle of decentralisation.",
-    "image": "../../../src/images/data_infrastructure_transp.png"
+    "body": "Gaia-X represents the next generation of data infrastructure: an **open, transparent and secure digital ecosystem**, where data and services can be made available, collated and shared in an environment of trust. The architecture of Gaia-X is based on the principle of decentralisation."
   },
   "content": {
     "paragraphs": [
