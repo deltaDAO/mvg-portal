@@ -18,33 +18,28 @@ E-mail: [contact@delta-dao.com](mailto:contact@delta-dao.com)
 
 Personal data is any information that can be (directly or indirectly) related to you. deltaDAO processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
 
-**IP address** : Your IP address is processed when visiting our portal demonstrator.
+- **IP address**: Your IP address is processed when visiting our portal demonstrator.
+- **Your wallet address and public key**: Your wallet address is processed if you are publishing or consuming a data service. Moreover, your public key is stored on-chain as soon as a transaction is signed and transmitted to the Gaia-X testnet by your wallet.
+- **E-mail**: If you contact deltaDAO via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
 
-If you are using one of our portal demonstrator functionalities, deltaDAO also processes the following personal data.
-
-- **Your wallet address**: Your wallet address is processed if you are publishing or consuming a data service.
-- **Author name:** Your name is processed if you decide to publish a data service. Adding your real name is not required. You are welcome to publish a data service using a pseudonym.
-
-If you contact deltaDAO via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
-
-For detailed information about the processing operations, lawfulness, purposes, and how your personal data serves to reach these purposes, please take a look at the chapter &quot; Processing operations according to Article 13 GDPR&quot;.
+For detailed information about the processing operations, lawfulness, purposes, and how your personal data serves to reach these purposes, please take a look at the chapter &quot;Processing operations according to Article 13 GDPR&quot;.
 
 # 3. Recipients and cross-border data transfer
 
 **Visiting our portal demonstrator**
 
-When you visit our portal demonstrator, your IP address is processed by Netlify, a service provider that hosts our portal demonstrator. Netlify serves our portal demonstrator using a Content Delivery Network (a geographically distributed network) with servers located out of and within the European Economic Area (EEA). We use Standard Contractual Clauses (SCC) to provide appropriate safeguards to the processing of your personal data. You have the right to receive a copy of these SCC.
+When visiting our portal demonstrator, your IP address is processed by Netlify, a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Netlify using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely be processed on a Netlify server within the EEA. Even if this is not the case, your personal data is appropriately handled as defined in the Standard Contractual Clauses (SCC) between Netlify and us. You can make use of your right to receive a copy of these SCC by clicking on the link below.
 
 - Here you can find Netlify&#39;s [**SCC** &#8599;](https://www.netlify.com/v3/static/pdf/netlify-dpa.pdf).
 - Here you can find Netlify&#39;s [**privacy policy** &#8599;](https://www.netlify.com/gdpr-ccpa).
 
 **Using our portal demonstrator functionalities**
 
-If you use our portal demonstrator functionalities, we disclose your wallet address and author name (if applicable) by transmitting it to a smart contract. This smart contract is stored in machine-readable format on the Gaia-X testnet, a public permissioned blockchain, that is redundantly stored on nodes located in the European Union (EU).
+If you use our portal demonstrator functionalities, we disclose your wallet address by transmitting it to a smart contract. This smart contract is stored in machine-readable format on the Gaia-X testnet, a public permissioned blockchain, that is redundantly stored on nodes located in the EEA.
 
 **Contact via e-mail**
 
-When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the European Economic Area and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at contact@delta-dao.com.
+When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at contact@delta-dao.com.
 
 # 4. Processing operations according to Article 13 GDPR
 
@@ -74,12 +69,11 @@ We store your IP address for 30 days.
 
 ## 4.2 Consume functionality
 
-When consuming a data service, we collect your wallet address and disclose it by transmitting it to a smart contract stored on the Gaia-X testnet, a public permissioned blockchain, that is redundantly stored on nodes located in the EU.
+When consuming a data service, we collect your wallet address and disclose it by transmitting it to a smart contract stored on the Gaia-X testnet, a public permissioned blockchain, that is redundantly stored on nodes located in the EEA. Moreover, your public key is stored on-chain as soon as your transaction is signed and transmitted to the Gaia-X testnet by your wallet.
 
 **Purpose:**
 
-deltaDAO processes your wallet address to enable you to sign blockchain transactions on the Gaia-X testnet. The transaction containing your wallet address will be stored permanently on-chain on the Gaia-X testnet so that you and the data service provider can prove data service acquisition and consumption.
-So, the processing of your wallet address is a technical requirement for signing blockchain transactions on the Gaia-X testnet and to enable an immutable audit trail.
+deltaDAO processes your wallet address and public key to enable you to sign blockchain transactions on the Gaia-X testnet. These transactions will be stored permanently on-chain on the Gaia-X testnet so that you and the data service provider can prove data service acquisition and consumption. Therefore, the processing of your wallet address and public key is a technical requirement for signing blockchain transactions on the Gaia-X testnet and to enable an immutable audit trail.
 
 **Legal basis:**
 
@@ -91,15 +85,15 @@ Our legitimate interest is to provide the consume functionality to you.
 
 **Retention period:**
 
-deltaDAO discloses your wallet address by transmitting it to a smart contract stored in machine-readable format permanently on-chain on the Gaia-X testnet to enable an immutable audit trail.
+deltaDAO discloses your wallet address and public key by transmitting it to a smart contract stored in machine-readable format permanently on-chain on the Gaia-X testnet to enable an immutable audit trail.
 
 ## 4.3 Publish functionality
 
-When you publish a data service, we collect your wallet address and author name and disclose it by transmitting it to a smart contract stored on the Gaia-X testnet. Please note that your wallet address will be linked to your given name. Please also note that you can use a pseudonym as the author&#39;s name.
+When you publish a data service, we collect your wallet address and public key and disclose it by transmitting it to a smart contract stored on the Gaia-X testnet.
 
 **Purpose:**
 
-We need to process your wallet address to link your publication to your wallet address. We process your name to enable search and filtering functionality on our portal demonstrator. The transaction containing your wallet address and author name will be stored permanently on-chain on the Gaia-X testnet so that you can prove data service ownership and data service sales.
+We need to process your public key and wallet address to link your publication to your wallet address. The transaction containing your wallet address and public key will be stored permanently on-chain on the Gaia-X testnet so that you can prove data service ownership and data service sales.
 
 **Legal basis:**
 
@@ -111,15 +105,15 @@ Our legitimate interest is to provide the publish functionality to you.
 
 **Retention period:**
 
-deltaDAO discloses your wallet address and author name by transmitting it to a smart contract stored in machine-readable format permanently on-chain on the Gaia-X testnet to enable an audit trail.
+deltaDAO discloses your wallet address and public key by transmitting it to a smart contract stored in machine-readable format permanently on-chain on the Gaia-X testnet to enable an audit trail.
 
 ## 4.4 Caching and showing data services
 
-When you published a data service, we retrieve, organize, and store your wallet address and author name on a metadata cache operated by deltaDAO. Moreover, we show your data service on our portal demonstrator.
+When you published a data service, we retrieve, organize, and store your wallet address on a metadata cache operated by deltaDAO. Moreover, we show your data service on our portal demonstrator.
 
 **Purposes:**
 
-Retrieving data from the blockchain is time-consuming. Hence, we retrieve your personal data from the Gaia-X testnet and then organize and store it on a cache to improve the performance of our portal demonstrator. We show your data service including the wallet address, author name and description you provided on our portal demonstrator, so visitors can find and consume it.
+Retrieving data from the blockchain is time-consuming. Hence, we retrieve your personal data from the Gaia-X testnet and then organize and store it on a cache to improve the performance of our portal demonstrator. We show your data service including the wallet address and description you provided on our portal demonstrator, so visitors can find and consume it.
 
 **Legal basis:**
 
@@ -131,11 +125,11 @@ Our legitimate interest is to enhance the user experience by improving the perfo
 
 **Retention period:**
 
-Your wallet address and name are stored permanently on our metadata cache.
+Your wallet address is stored permanently on our metadata cache.
 
-## 4.5 History table
+## 4.5 Transaction overview
 
-The history table of our portal demonstrator is a transparency tool that you can use to overview your transactions relating to our portal demonstrator. When you use the history table, we collect your wallet address. Then we retrieve the respective and relevant transactions stored on the Gaia-X testnet (more precisely, from the metadata cache) and organize them in a table.
+The transaction overview in your profile is a transparency tool that you can use to overview your transactions relating to our portal demonstrator. When you visit your profile, we collect your wallet address. Then we retrieve the respective and relevant transactions stored on the Gaia-X testnet (more precisely, from the metadata cache) and organize them in a table.
 
 **Purpose:**
 
@@ -147,15 +141,15 @@ The legal basis for this processing is our legitimate interest, according to Art
 
 **Legitimate interests:**
 
-Our legitimate interest in providing the history table is to offer you the possibility to overview your transactions made on our portal demonstrator.
+Our legitimate interest in providing the transaction overview is to offer you the possibility to overview your transactions made on our portal demonstrator.
 
 **Retention period:**
 
-As soon as you disconnect your wallet, we will remove the history table entries from your browser.
+As soon as you disconnect your wallet, we will remove the transaction overview entries from your browser.
 
 ## 4.6 Contact via e-mail
 
-If you contact us via e-mail, deltaDAO will collect, use and store your e-mail address, and any other information you provide us is your message, such as your name.
+If you contact us via e-mail, deltaDAO will collect, use and store your e-mail address, and any other information you provide us in your message, such as your name.
 
 **Purposes:**
 
@@ -173,20 +167,18 @@ Our legitimate interest is to answer your inquiries.
 
 deltaDAO deletes your personal data as soon as we no longer require them for processing your inquiry, except deltaDAO is obliged to comply with legal retention periods or in case of legal disputes.
 <br/><i id="cookies"></i>
-
 # 5. Cookies and web storage
 
 A cookie is a small file that stores Internet settings. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content.
 
-Our portal demonstrator does not use cookies for analytics or marketing purposes. Instead, we use a functional first-party cookie that does not transmit personal data about you. This cookie is used to enhance your user experience and will be removed once you close your browser.
+Our portal demonstrator does not use cookies for analytics or marketing purposes.
 
-Our portal demonstrator also uses local storage and session storage, which have similar functionality to cookies. We use your web storage to remember your page preferences and to enhance your user experience. We also do not store personal data in the local storage and session storage. Your browser will remove the session storage once you close your browser.
-
-You have the option of disabling cookies and deleting cookies and web storage from your computer&#39;s hard disk at any time in your browser settings.
+We use local storage and session storage, which have similar functionality to cookies. We use your web storage to remember your page preferences, enable functionalities and to enhance your user experience. Your browser will remove the session storage once you close your browser.
+You have the option of disabling cookies and deleting cookies and web storage from your computer's hard disk at any time in your browser settings.
 
 # 6. External links
 
-Our portal demonstrator contains links to external websites that are beyond the control and responsibility of deltaDAO. We mark external links using this arrow: &#8599;.
+Our portal demonstrator contains links to external websites that are beyond the control and responsibility of deltaDAO.
 
 # 7. Your rights
 
@@ -200,7 +192,7 @@ You have the right to obtain confirmation as to whether deltaDAO processes perso
 
 You have the right to obtain without undue delay the rectification of inaccurate personal data about you. Additionally, you have the right that incomplete personal data about you are completed.
 
-If you published a data service, please note that you can modify your provided metadata (like the author&#39;s name) at any time by conducting the following steps.
+If you published a data service, please note that you can modify your provided metadata at any time by conducting the following steps.
 
 - Visit your published data service on our portal demonstrator ([portal.minimal-gaia-x.eu](https://portal.minimal-gaia-x.eu)).
 - Validate your identity with your private key.
@@ -214,36 +206,30 @@ Please note that you have to pay gas fees for the confirmation of the changes (a
 
 You have the right to obtain without undue delay the erasure of personal data about you, where the defined legal grounds in Art. 17 GDPR apply.
 
-If you published a data service, you could overwrite your provided author name with a placeholder by conducting the steps listed in chapter 7.2. If you want to disable displaying your data service on our portal demonstrator, please read chapter 7.4.
+If you published a data service, you could overwrite your provided metadata with a placeholder by conducting the steps listed in chapter 7.2. If you want to disable displaying your data service on our portal demonstrator, please read chapter 7.4.
 
-Note that it is not possible to erase the blockchain&#39;s transaction history due to technical reasons. But the current network state will no longer hold the former metadata.
+Note that it is not possible to erase the blockchain's transaction history due to technical reasons. But the current network state will no longer hold the former metadata.
 
-Moreover, due to technical reasons, you cannot erase your provided wallet address. The permanent storage of the wallet address protects you as an data service publisher as well as an data service consumer. Data service publishers can prove data service ownership and sales, while data service consumers can prove data service acquisition and consumption.
+Moreover, due to technical reasons, you cannot erase your provided wallet address. The permanent storage of the wallet address protects you as a data services publisher as well as a data service consumer. Data service publishers can prove data service ownership and sales, while data service consumers can prove data service acquisition and consumption.
 
 ## 7.4 Right to restriction (Art. 18 GDPR)
 
 Moreover, you have the right to obtain the restriction of processing your personal data where the defined legal grounds in Art. 18 GDPR apply.
 
-If you published a data service and have a GitHub account, you can use our Purgatory, a mechanism to hide any data service from our portal demonstrator, by conducting the following steps.
+If you published a data service and have a GitHub account, you can use our Self Description Lifecycle Management, a mechanism to hide any data service from our portal demonstrator, by conducting the following steps:
 
-- Visit [**Purgatory** &#8599;](https://github.com/oceanprotocol/list-purgatory/blob/main/list-assets.json).
+- Visit our [**Self Description Lifecycle Management** &#8599;](https://github.com/deltaDAO/Self-Description-Lifecycle-Management/blob/main/list-assets.json).
 - Sign in to your GitHub account.
 - Propose a change by inserting the DID of the concerned data service and state a reason like &quot;Sensitive data&quot;.
 - Commit your changes.
 
-deltaDAO will accept your changes as soon as possible. You can expect the changes to be processed within a week. For more information, please visit our [**Purgatory documentation** &#8599;](https://github.com/oceanprotocol/list-purgatory/blob/main/policies/README.md).
+deltaDAO will accept your changes as soon as possible. You can expect the changes to be processed within a week. For more information, please visit our [**documentation** &#8599;](https://github.com/deltaDAO/Self-Description-Lifecycle-Management).
 
-If you have questions about Purgatory or do not have a GitHub account and want us to disable displaying the data service, do not hesitate to contact us.
+If you have questions about our Self Description Lifecycle Management or do not have a GitHub account and want us to disable displaying the data service, do not hesitate to contact us.
 
 ## 7.5 Right to data portability (Art. 20 GDPR)
 
-You have the right to receive your personal data in a structured, commonly used, and machine-readable format. Additionally, you have the right to transmit those data to another controller without hindrance, where the defined legal grounds in Art. 20 GDPR apply.
-
-You can make use of your right to data portability either by contacting us or by conducting the following steps.
-
-- Visit the History Table on our portal demonstrator ([portal.minimal-gaia-x.eu/history](https://portal.minimal-gaia-x.eu/history)).
-- Validate your identity with your private key.
-- Click on the download button for each table of interest.
+You have the right to receive your personal data in a structured, commonly used, and machine-readable format. Additionally, you have the right to transmit those data to another controller without hindrance, where the defined legal grounds in Art. 20 GDPR apply. You can make use of your right to data portability by contacting us.
 
 ## 7.6 Right to object (Art. 21 GDPR)
 
@@ -260,3 +246,7 @@ You have the right to lodge a complaint with a supervisory authority if you cons
 # 8. Questions
 
 For any requests regarding our privacy policy, please send us an e-mail to [contact@delta-dao.com](mailto:contact@delta-dao.com).
+
+# 9. Changes to the Privacy Policy
+We adjust this policy from time to time, by publishing a new version on our portal demonstrator. You can find the date of the current version at the beginning of this policy.
+The latest version of this policy applies to the processing of your personal data.
