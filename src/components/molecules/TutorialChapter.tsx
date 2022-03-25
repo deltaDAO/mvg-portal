@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react'
 import slugify from 'slugify'
 import Markdown from '../atoms/Markdown'
 import styles from './TutorialChapter.module.css'
-import VideoPlayer from './VideoPlayer'
 
 export interface TutorialChapterProps {
   id: string
@@ -31,7 +30,6 @@ export default function TutorialChapter({
           {chapter.title}
         </h3>
         <Markdown text={chapter.markdown} />
-        {chapter.videoUrl && <VideoPlayer videoUrl={chapter.videoUrl} />}
         {chapter.interactiveComponent && (
           <div className={styles.interactive}>
             {chapter.interactiveComponent}
