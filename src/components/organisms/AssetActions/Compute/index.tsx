@@ -46,6 +46,7 @@ import { useIsMounted } from '../../../../hooks/useIsMounted'
 import { BaseQueryParams } from '../../../../models/aquarius/BaseQueryParams'
 import { SortTermOptions } from '../../../../models/SortAndFilters'
 import { SearchQuery } from '../../../../models/aquarius/SearchQuery'
+import { CredentialType } from '../Edit/EditAdvancedSettings'
 
 const SuccessAction = () => (
   <Button style="text" to="/profile?defaultTab=ComputeJobs" size="small">
@@ -406,7 +407,17 @@ export default function Compute({
     } catch (error) {
       await checkPreviousOrders(selectedAlgorithmAsset)
       await checkPreviousOrders(ddo)
-      setError('Failed to start job!')
+
+      const { message, result } = ocean.assets.checkCredential(
+        selectedAlgorithmAsset,
+        CredentialType.address,
+        accountId
+      )
+
+      result === false
+        ? setError(`Failed to start job: ${message.toLowerCase()}.`)
+        : setError(`Failed to start job!`)
+
       Logger.error('[compute] Failed to start job: ', error.message)
     } finally {
       setIsJobStarting(false)
