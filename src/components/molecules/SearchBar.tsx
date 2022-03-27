@@ -57,7 +57,6 @@ export default function SearchBar({
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setValue(e.target.value)
-    e.target.value === '' && emptySearch()
   }
 
   async function handleKeyPress(e: KeyboardEvent<HTMLInputElement>) {
