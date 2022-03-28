@@ -8,6 +8,12 @@
   justify-content: center;
   height: 100%;
   cursor: zoom-out;
+  z-index: 4;
+}
+
+.modal img {
+  max-height: 90%;
+  object-fit: contain;
 }
 
 #close {
@@ -17,8 +23,7 @@
   position: relative;
   border: none;
   padding: 0;
-  width: 2em;
-  height: 2em;
+  height: 10%;
   border-radius: 50%;
   background: transparent;
   color: var(--brand-grey);
@@ -31,10 +36,10 @@
 #close:after {
   position: absolute;
   top: 15%;
-  left: calc(50% - 0.0625em);
-  width: 0.125em;
+  left: calc(50% - 0.0625rem);
+  width: 0.125rem;
   height: 70%;
-  border-radius: 0.125em;
+  border-radius: 0.125rem;
   transform: rotate(45deg);
   background: currentcolor;
   content: '';
