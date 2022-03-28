@@ -61,7 +61,7 @@
   fill: var(--color-menu-active);
 }
 
-@media screen and (min-width: 30rem) {
+@media screen and (min-width: 35rem) {
   .search:focus-within .input {
     width: auto;
     position: relative;
