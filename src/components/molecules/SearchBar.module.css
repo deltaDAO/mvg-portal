@@ -13,6 +13,7 @@
   position: absolute;
   padding: calc(var(--spacer) / 4);
   width: 100%;
+  height: 100%;
   right: 1px;
   left: 1px;
   top: 1px;
@@ -37,7 +38,7 @@
   cursor: pointer;
 }
 
-.input:focus {
+.search:focus-within .input {
   width: calc(100% - var(--spacer));
   background-color: var(--background-content);
   position: fixed;
@@ -58,4 +59,23 @@
 
 .input:hover .searchIcon {
   fill: var(--color-menu-active);
+}
+
+@media screen and (min-width: 35rem) {
+  .search:focus-within .input {
+    width: auto;
+    position: relative;
+    left: initial;
+    right: initial;
+  }
+
+  .button {
+    width: auto;
+    left: auto;
+    background: none;
+  }
+
+  .search:focus-within .button {
+    z-index: 3;
+  }
 }
