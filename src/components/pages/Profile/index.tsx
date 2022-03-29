@@ -6,6 +6,7 @@ import axios, { AxiosResponse } from 'axios'
 import { Logger } from '@oceanprotocol/lib'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import { useWeb3 } from '../../../providers/Web3'
+import { navigate } from 'gatsby'
 
 export default function AccountPage({
   accountId,
@@ -37,13 +38,15 @@ export default function AccountPage({
           postOptions
         )
         Logger.debug('[Verification] publisher verification:', response.data)
+        navigate('/profile')
       } catch (err) {
         Logger.error('[Verification] verification error:', err.message)
+        navigate('/profile')
       }
     }
 
     signMessage()
-  }, [token, accountId, ocean])
+  }, [token, accountId, web3])
 
   return (
     <div className={styles.profile}>
