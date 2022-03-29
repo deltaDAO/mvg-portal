@@ -7,18 +7,14 @@ import { useWeb3 } from '../../providers/Web3'
 import ProfileProvider from '../../providers/Profile'
 import { getEnsAddress, getEnsName } from '../../utils/ens'
 import ethereumAddress from 'ethereum-address'
-import axios, { AxiosResponse } from 'axios'
-import { useOcean } from '../../providers/Ocean'
-import { useSiteMetadata } from '../../hooks/useSiteMetadata'
-import { Logger } from '@oceanprotocol/lib'
+import queryString from 'query-string'
 
 export default function PageGatsbyProfile(props: PageProps): ReactElement {
   const { accountId, accountEns } = useWeb3()
-  const { ocean } = useOcean()
   const [finalAccountId, setFinalAccountId] = useState<string>()
   const [finalAccountEns, setFinalAccountEns] = useState<string>()
 
-  const { vpRegistryUri } = useSiteMetadata().appConfig
+  const { token } = queryString.parse(props.location.search)
 
   // Have accountId in path take over, if not present fall back to web3
   useEffect(() => {
@@ -63,39 +59,10 @@ export default function PageGatsbyProfile(props: PageProps): ReactElement {
       navigate(newProfilePath, { replace: true })
   }, [props.location, finalAccountEns, accountId])
 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    const token = params.get('token')
-    if (!token || accountId || !ocean) return
-    const signMessage = async () => {
-      try {
-        const signedMessage = await ocean.utils.signature.signText(
-          token,
-          accountId
-        )
-
-        const postOptions = {
-          token: token,
-          signedMessage,
-          address: accountId
-        }
-        const response: AxiosResponse<any> = await axios.post(
-          `${vpRegistryUri}/api/v2/credential/claim'`,
-          postOptions
-        )
-        Logger.debug('[Verification] publisher verification:', response.data)
-      } catch (err) {
-        Logger.error('[Verification] verification error:', err.message)
-      }
-    }
-
-    signMessage()
-  }, [props.location.pathname, accountId, accountEns, ocean])
-
   return (
     <Page uri={props.uri} title={accountTruncate(finalAccountId)} noPageHeader>
       <ProfileProvider accountId={finalAccountId} accountEns={finalAccountEns}>
-        <ProfilePage accountId={finalAccountId} />
+        <ProfilePage accountId={finalAccountId} token={token as string} />
       </ProfileProvider>
     </Page>
   )
