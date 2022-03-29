@@ -25,10 +25,10 @@ export default function VerifiedPublisher({
         setLoading(true)
         try {
           const response: AxiosResponse<any> = await axios.get(
-            `${vpRegistryUri}/vp/${address}/verify`
+            `${vpRegistryUri}/api/v2/credential/verify?address=${address}`
           )
           Logger.debug('[Verification] publisher verification:', response.data)
-          setVerified(response.data?.data?.verified)
+          setVerified(response.data?.data?.valid)
         } catch (err) {
           Logger.error('[Verification] verification error:', err.message)
           setVerified(false)

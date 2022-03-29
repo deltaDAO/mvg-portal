@@ -23,10 +23,10 @@ export default function AccountPage({
     const signMessage = async () => {
       try {
         const requestChallenge: AxiosResponse<any> = await axios.post(
-          `${vpRegistryUri}/api/v2/credential/challenge'`,
+          `${vpRegistryUri}/api/v2/credential/challenge`,
           { token }
         )
-        const challenge = requestChallenge.data?.challenge
+        const { challenge } = requestChallenge?.data?.data
         console.log(challenge)
         const signedMessage = await web3.eth.personal.sign(
           challenge,
@@ -40,7 +40,7 @@ export default function AccountPage({
           address: accountId
         }
         const response: AxiosResponse<any> = await axios.post(
-          `${vpRegistryUri}/api/v2/credential/claim'`,
+          `${vpRegistryUri}/api/v2/credential/claim`,
           postOptions
         )
         Logger.debug('[Verification] publisher verification:', response.data)
