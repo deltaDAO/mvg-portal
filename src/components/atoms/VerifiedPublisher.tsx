@@ -50,7 +50,7 @@ export default function VerifiedPublisher({
       <VerifiedPatch /> <span>Verified Publisher</span>
     </div>
   ) : verifyOption ? (
-    <div className={styles.verify}>
+    <div className={styles.verifyButton}>
       <Button style="primary" href="https://onboarding-portal.lab.gaia-x.eu/">
         Verify Credentials
       </Button>
