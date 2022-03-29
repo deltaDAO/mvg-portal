@@ -51,7 +51,10 @@ export default function VerifiedPublisher({
     </div>
   ) : verifyOption ? (
     <div className={styles.verifyButton}>
-      <Button style="primary" href="https://onboarding-portal.lab.gaia-x.eu/">
+      <Button
+        style="primary"
+        href="https://onboarding-portal.lab.gaia-x.eu/verification/"
+      >
         Verify Credentials
       </Button>
     </div>
