@@ -22,8 +22,14 @@ export default function AccountPage({
     if (!token || !accountId || !web3) return
     const signMessage = async () => {
       try {
+        const requestChallenge: AxiosResponse<any> = await axios.post(
+          `${vpRegistryUri}/api/v2/credential/challenge'`,
+          { token }
+        )
+        const challenge = requestChallenge.data?.challenge
+        console.log(challenge)
         const signedMessage = await web3.eth.personal.sign(
-          token as string,
+          challenge,
           accountId,
           undefined
         )
