@@ -38,9 +38,9 @@ export default function AccountPage({
           postOptions
         )
         Logger.debug('[Verification] publisher verification:', response.data)
-        navigate('/profile')
       } catch (err) {
         Logger.error('[Verification] verification error:', err.message)
+      } finally {
         navigate('/profile')
       }
     }
