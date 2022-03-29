@@ -27,7 +27,6 @@ export default function AccountPage({
           { token }
         )
         const { challenge } = requestChallenge?.data?.data
-        console.log(challenge)
         const signedMessage = await web3.eth.personal.sign(
           challenge,
           accountId,

@@ -6,6 +6,8 @@ import Loader from './Loader'
 import { Logger } from '@oceanprotocol/lib'
 import { useSiteMetadata } from '../../hooks/useSiteMetadata'
 import Button from './Button'
+import queryString from 'query-string'
+import { useLocation } from '@reach/router'
 
 export default function VerifiedPublisher({
   address,
@@ -16,10 +18,15 @@ export default function VerifiedPublisher({
 }): ReactElement {
   const [verified, setVerified] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [claimingCredentials, setClaimingCredentials] = useState(false)
 
   const { vpRegistryUri } = useSiteMetadata().appConfig
+  const location = useLocation()
 
   useEffect(() => {
+    const { token } = queryString.parse(location.search)
+    setClaimingCredentials(!!token)
+
     const verify = async () => {
       if (address) {
         setLoading(true)
@@ -38,9 +45,9 @@ export default function VerifiedPublisher({
       }
     }
     verify()
-  }, [address])
+  }, [address, location])
 
-  return loading ? (
+  return loading || claimingCredentials ? (
     <div className={styles.loader}>
       <Loader />
       <span>verifying...</span>
