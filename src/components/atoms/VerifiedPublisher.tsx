@@ -5,11 +5,14 @@ import axios, { AxiosResponse } from 'axios'
 import Loader from './Loader'
 import { Logger } from '@oceanprotocol/lib'
 import { useSiteMetadata } from '../../hooks/useSiteMetadata'
+import Button from './Button'
 
 export default function VerifiedPublisher({
-  address
+  address,
+  verifyOption
 }: {
   address: string
+  verifyOption?: boolean
 }): ReactElement {
   const [verified, setVerified] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -45,6 +48,12 @@ export default function VerifiedPublisher({
   ) : verified ? (
     <div className={styles.verifiedBadge}>
       <VerifiedPatch /> <span>Verified Publisher</span>
+    </div>
+  ) : verifyOption ? (
+    <div className={styles.verify}>
+      <Button style="primary" href="https://onboarding-portal.lab.gaia-x.eu/">
+        Verify Credentials
+      </Button>
     </div>
   ) : null
 }

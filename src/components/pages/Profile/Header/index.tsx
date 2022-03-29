@@ -5,8 +5,6 @@ import Stats from './Stats'
 import Account from './Account'
 import styles from './index.module.css'
 import { useProfile } from '../../../../providers/Profile'
-import { useWeb3 } from '../../../../providers/Web3'
-import Button from '../../../atoms/Button'
 
 const isDescriptionTextClamped = () => {
   const el = document.getElementById('description')
@@ -32,7 +30,6 @@ export default function AccountHeader({
   const toogleShowMore = () => {
     setIsShowMore(!isShowMore)
   }
-  const account = useWeb3().accountId
 
   return (
     <div className={styles.grid}>
@@ -42,15 +39,6 @@ export default function AccountHeader({
       </div>
 
       <div>
-        <div className={styles.verify}>
-          <p>Verify your credentials</p>
-          <Button
-            style="primary"
-            href="https://onboarding-portal.lab.gaia-x.eu/"
-          >
-            Verify
-          </Button>
-        </div>
         <Markdown text={profile?.description} className={styles.description} />
         {isDescriptionTextClamped() ? (
           <span className={styles.more} onClick={toogleShowMore}>
