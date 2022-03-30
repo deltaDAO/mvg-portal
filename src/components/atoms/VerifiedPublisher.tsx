@@ -5,27 +5,37 @@ import axios, { AxiosResponse } from 'axios'
 import Loader from './Loader'
 import { Logger } from '@oceanprotocol/lib'
 import { useSiteMetadata } from '../../hooks/useSiteMetadata'
+import Button from './Button'
+import queryString from 'query-string'
+import { useLocation } from '@reach/router'
 
 export default function VerifiedPublisher({
-  address
+  address,
+  verifyOption
 }: {
   address: string
+  verifyOption?: boolean
 }): ReactElement {
   const [verified, setVerified] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [claimingCredentials, setClaimingCredentials] = useState(false)
 
   const { vpRegistryUri } = useSiteMetadata().appConfig
+  const location = useLocation()
 
   useEffect(() => {
+    const { token } = queryString.parse(location.search)
+    setClaimingCredentials(!!token)
+
     const verify = async () => {
       if (address) {
         setLoading(true)
         try {
           const response: AxiosResponse<any> = await axios.get(
-            `${vpRegistryUri}/vp/${address}/verify`
+            `${vpRegistryUri}/api/v2/credential/verify?address=${address}`
           )
           Logger.debug('[Verification] publisher verification:', response.data)
-          setVerified(response.data?.data?.verified)
+          setVerified(response.data?.data?.valid)
         } catch (err) {
           Logger.error('[Verification] verification error:', err.message)
           setVerified(false)
@@ -35,9 +45,9 @@ export default function VerifiedPublisher({
       }
     }
     verify()
-  }, [address])
+  }, [address, location])
 
-  return loading ? (
+  return loading || claimingCredentials ? (
     <div className={styles.loader}>
       <Loader />
       <span>verifying...</span>
@@ -45,6 +55,15 @@ export default function VerifiedPublisher({
   ) : verified ? (
     <div className={styles.verifiedBadge}>
       <VerifiedPatch /> <span>Verified Publisher</span>
+    </div>
+  ) : verifyOption ? (
+    <div className={styles.verifyButton}>
+      <Button
+        style="primary"
+        href="https://onboarding-portal.lab.gaia-x.eu/verification/"
+      >
+        Verify Credentials
+      </Button>
     </div>
   ) : null
 }
