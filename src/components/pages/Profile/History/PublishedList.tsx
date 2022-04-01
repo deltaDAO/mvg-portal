@@ -76,7 +76,7 @@ export default function PublishedList({
           setAccessType={setAccsesType}
           className={styles.filters}
         />
-        <VerifiedPublisher address={accountId} />
+        <VerifiedPublisher address={accountId} verifyOption />
       </div>
       <AssetList
         assets={queryResult?.results}
