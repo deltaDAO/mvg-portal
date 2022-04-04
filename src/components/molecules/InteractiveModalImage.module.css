@@ -34,12 +34,14 @@
 
 #close:before,
 #close:after {
+  --close-width: 0.125rem;
+
   position: absolute;
   top: 15%;
-  left: calc(50% - 0.0625rem);
-  width: 0.125rem;
+  left: calc(50% - (var(--close-width) / 2));
+  width: var(--close-width);
   height: 70%;
-  border-radius: 0.125rem;
+  border-radius: var(--close-width);
   transform: rotate(45deg);
   background: currentcolor;
   content: '';
