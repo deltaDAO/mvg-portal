@@ -8,7 +8,7 @@
     {
       "shortLabel": "MetaMask",
       "title": "Setup MetaMask",
-      "subtitle": "To interact with the portal, you need to install and create an account with MetaMask.",
+      "subtitle": "To interact with the portal, you need to install and create an account with MetaMask",
       "body": "Click on the button to download MetaMask from the official website.\n\n Once you've set up an account, you are ready to move to the next step.",
       "image": "../../../src/images/onboarding/metamask_download.png",
       "cta": [
@@ -21,7 +21,7 @@
     {
       "shortLabel": "Connect",
       "title": "Connect your account to the portal",
-      "subtitle": "Now that you created an account with MetaMask, you are ready to connect to the portal.",
+      "subtitle": "Now that you created an account with MetaMask, you are ready to connect to the portal",
       "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the portal confirm the request inside the popup.",
       "cta": [
         {
@@ -31,52 +31,54 @@
       ]
     },
     {
-      "shortLabel": "Connect",
-      "title": "Connect your account to the portal",
-      "subtitle": "Now that you created an account with MetaMask, you are ready to connect to the portal.",
-      "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the portal confirm the request inside the popup.",
+      "shortLabel": "Network",
+      "title": "Connect to the Gaia-X testnet",
+      "subtitle": "To interact with the assets in this portal you need to be connected to the correct network",
+      "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the Gaia-x testnet confirm the request inside the popup.",
       "cta": [
         {
-          "ctaLabel": "Connect Account",
-          "ctaAction": "connectAccount"
+          "ctaLabel": "Connect to Gaia-X testnet",
+          "ctaAction": "connectNetwork"
         }
       ]
     },
     {
-      "shortLabel": "Connect",
-      "title": "Connect your account to the portal",
-      "subtitle": "Now that you created an account with MetaMask, you are ready to connect to the portal.",
-      "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the portal confirm the request inside the popup.",
+      "shortLabel": "Tokens",
+      "title": "Import custom tokens",
+      "subtitle": "Before you can claim some tokens you need to import the tokens' contract addresses to MetaMask",
+      "body": "Click on the buttons below to import GX and OCEAN custom tokens.",
       "cta": [
         {
-          "ctaLabel": "Connect Account",
-          "ctaAction": "connectAccount"
+          "ctaLabel": "Import GX Token",
+          "ctaAction": "importGxToken"
+        },
+        {
+          "ctaLabel": "Import OCEAN Token",
+          "ctaAction": "importOceanToken"
         }
       ]
     },
     {
-      "shortLabel": "Connect",
-      "title": "Connect your account to the portal",
-      "subtitle": "Now that you created an account with MetaMask, you are ready to connect to the portal.",
-      "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the portal confirm the request inside the popup.",
+      "shortLabel": "Faucet",
+      "title": "Get some tokens",
+      "subtitle": "To publish or consume the assets in the portal you'll need some GX and OCEAN tokens to spend",
+      "body": "Click on the buttons below to claim your tokens.",
       "cta": [
         {
-          "ctaLabel": "Connect Account",
-          "ctaAction": "connectAccount"
+          "ctaLabel": "Claim 1 GX",
+          "ctaAction": "claimGxToken"
+        },
+        {
+          "ctaLabel": "Claim 100 OCEAN",
+          "ctaAction": "claimOceanTokens"
         }
       ]
     },
     {
-      "shortLabel": "Connect",
-      "title": "Connect your account to the portal",
-      "subtitle": "Now that you created an account with MetaMask, you are ready to connect to the portal.",
-      "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the portal confirm the request inside the popup.",
-      "cta": [
-        {
-          "ctaLabel": "Connect Account",
-          "ctaAction": "connectAccount"
-        }
-      ]
+      "shortLabel": "Ready",
+      "title": "Good job! You are ready to explore the portal, scroll down to see more.",
+      "subtitle": "",
+      "body": ""
     }
   ]
 }
