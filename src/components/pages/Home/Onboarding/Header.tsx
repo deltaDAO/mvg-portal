@@ -35,14 +35,12 @@ export default function Header(): ReactElement {
   const { title, subtitle, body } = data.file.childIndexJson.header
 
   return (
-    <div>
-      <Container className={styles.container}>
-        <div className={styles.content}>
-          <h5 className={styles.subtitle}>{subtitle}</h5>
-          <h2 className={styles.title}>{title}</h2>
-          <Markdown text={body} className={styles.paragraph} />
-        </div>
-      </Container>
-    </div>
+    <Container className={styles.container}>
+      <div className={styles.content}>
+        <h5 className={styles.subtitle}>{subtitle}</h5>
+        <h2 className={styles.title}>{title}</h2>
+        <Markdown text={body} className={styles.paragraph} />
+      </div>
+    </Container>
   )
 }

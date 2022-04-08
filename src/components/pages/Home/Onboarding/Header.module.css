@@ -1,17 +1,14 @@
 .container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   height: var(--wrapper-height);
+  margin-bottom: var(--spacer);
+  padding-left: 0;
 }
 
 .content {
   padding: var(--spacer);
-  max-width: var(--break-point--small);
-}
-
-.subtitle {
-  color: var(--brand-white);
 }
 
 .subtitle {
@@ -19,10 +16,9 @@
   padding: calc(var(--spacer) / 8) calc(var(--spacer) / 4) 0;
   background-color: var(--brand-violet);
   margin-bottom: 0;
+  color: var(--brand-white);
 }
 
-@media screen and (min-width: 60rem) {
-  .content {
-    padding: 0;
-  }
+.paragraph p {
+  margin-bottom: 0;
 }

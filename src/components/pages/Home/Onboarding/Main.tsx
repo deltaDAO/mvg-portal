@@ -51,7 +51,11 @@ interface OnboardingStep {
   }[]
 }
 
-export default function Main(): ReactElement {
+export default function Main({
+  currentStep = 0
+}: {
+  currentStep: number
+}): ReactElement {
   const data = useStaticQuery(onboardingMainQuery)
   const {
     steps
@@ -59,31 +63,37 @@ export default function Main(): ReactElement {
     steps: OnboardingStep[]
   } = data.content.edges[0].node.childIndexJson
 
-  console.log(steps)
   return (
-    <Container className={styles.container}>
-      <div className={styles.header}>
-        <h3 className={styles.title}>{steps?.[0].title}</h3>
-        <h5 className={styles.subtitle}>{steps?.[0].subtitle}</h5>
-      </div>
-      <div className={styles.content}>
-        <div className={styles.cardContainer}>
-          <div className={styles.card}>
-            <Markdown text={steps?.[0].body} className={styles.paragraph} />
-            <div className={styles.actions}>
-              {steps && [0] &&
-                steps[0].cta.map((e, i) => (
-                  <Button key={i} style="primary">
-                    {e.ctaLabel}
-                  </Button>
-                ))}
+    <Container className={styles.wrapper}>
+      <div className={styles.container}>
+        <div className={styles.header}>
+          <h3 className={styles.title}>{steps?.[currentStep].title}</h3>
+          <h5 className={styles.subtitle}>{steps?.[currentStep].subtitle}</h5>
+        </div>
+        <div className={styles.content}>
+          <div className={styles.cardContainer}>
+            <div className={styles.card}>
+              <Markdown
+                text={steps?.[currentStep].body}
+                className={styles.paragraph}
+              />
+              <div className={styles.actions}>
+                {steps && [currentStep] &&
+                  steps[currentStep].cta.map((e, i) => (
+                    <Button key={i} style="primary">
+                      {e.ctaLabel}
+                    </Button>
+                  ))}
+              </div>
             </div>
           </div>
+          {steps?.[currentStep]?.image && (
+            <img
+              src={steps?.[currentStep].image.childImageSharp.original.src}
+              className={styles.image}
+            />
+          )}
         </div>
-        <img
-          src={steps?.[0].image.childImageSharp.original.src}
-          className={styles.image}
-        />
       </div>
     </Container>
   )
