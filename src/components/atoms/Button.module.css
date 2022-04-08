@@ -1,4 +1,5 @@
 .button {
+  position: relative;
   border: 0;
   cursor: pointer;
   outline: 0;
@@ -64,6 +65,13 @@
 .ghost:active {
   color: var(--brand-grey);
   background: var(--brand-white);
+}
+
+.outline {
+  background-color: var(--brand-white);
+  color: var(--color-primary);
+  border: 2px solid var(--color-primary);
+  transition: none;
 }
 
 .text,

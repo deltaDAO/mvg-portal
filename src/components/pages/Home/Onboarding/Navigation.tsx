@@ -35,7 +35,7 @@ export default function Navigation({
         Previous Step
       </Button>
       <Button
-        style="primary"
+        style="outline"
         onClick={handleNextStep}
         className={cx({
           hide: currentStep === totalStepCount - 1
