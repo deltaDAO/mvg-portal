@@ -1,0 +1,28 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--wrapper-height);
+}
+
+.content {
+  padding: var(--spacer);
+  max-width: var(--break-point--small);
+}
+
+.subtitle {
+  color: var(--brand-white);
+}
+
+.subtitle {
+  display: inline-block;
+  padding: calc(var(--spacer) / 8) calc(var(--spacer) / 4) 0;
+  background-color: var(--brand-violet);
+  margin-bottom: 0;
+}
+
+@media screen and (min-width: 60rem) {
+  .content {
+    padding: 0;
+  }
+}
