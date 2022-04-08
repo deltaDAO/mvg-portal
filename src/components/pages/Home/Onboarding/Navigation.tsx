@@ -8,11 +8,11 @@ const cx = classNames.bind(styles)
 export default function Navigation({
   currentStep,
   setCurrentStep,
-  totalStepCount
+  totalStepsCount
 }: {
   currentStep: number
   setCurrentStep: (currentStep: number) => void
-  totalStepCount: number
+  totalStepsCount: number
 }): ReactElement {
   const handlePreviousStep = () => {
     if (currentStep === 0) return
@@ -20,7 +20,7 @@ export default function Navigation({
   }
 
   const handleNextStep = () => {
-    if (currentStep === totalStepCount - 1) return
+    if (currentStep === totalStepsCount - 1) return
     setCurrentStep(currentStep + 1)
   }
   return (
@@ -38,7 +38,7 @@ export default function Navigation({
         style="outline"
         onClick={handleNextStep}
         className={cx({
-          hide: currentStep === totalStepCount - 1
+          hide: currentStep === totalStepsCount - 1
         })}
       >
         Next Step

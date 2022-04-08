@@ -5,6 +5,7 @@ import Header from './Header'
 import Main from './Main'
 import Navigation from './Navigation'
 import Container from '../../../atoms/Container'
+import Stepper from './Stepper'
 
 const onboardingMainQuery = graphql`
   query onboardingMainQuery {
@@ -59,6 +60,7 @@ export default function OnboardingSection(): ReactElement {
   }: {
     steps: OnboardingStep[]
   } = data.content.edges[0].node.childIndexJson
+  const stepLabels = steps?.map((step) => step.shortLabel)
 
   const [currentStep, setCurrentStep] = useState(0)
 
@@ -68,11 +70,12 @@ export default function OnboardingSection(): ReactElement {
       {steps.length > 0 && (
         <Container className={styles.cardWrapper}>
           <div className={styles.cardContainer}>
+            <Stepper stepLabels={stepLabels} currentStep={currentStep} />
             <Main currentStep={currentStep} steps={steps} />
             <Navigation
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
-              totalStepCount={steps?.length}
+              totalStepsCount={steps?.length}
             />
           </div>
         </Container>
