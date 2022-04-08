@@ -25,18 +25,12 @@ export default function Seo({
     >
       <html lang="en" />
 
-      {isBrowser &&
-        window.location &&
-        window.location.hostname !== 'oceanprotocol.com' && (
-          <meta name="robots" content="noindex,nofollow" />
-        )}
-
       <link rel="canonical" href={canonical} />
 
       <meta name="description" content={description} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
-      <meta property="og:url" content={uri} />
+      <meta property="og:url" content={canonical} />
 
       <meta
         name="image"
@@ -48,7 +42,7 @@ export default function Seo({
       />
 
       <meta property="og:site_name" content={siteTitle} />
-      <meta name="twitter:creator" content="@oceanprotocol" />
+      <meta name="twitter:site" content="@deltaDAO" />
       <meta name="twitter:card" content="summary_large_image" />
     </Helmet>
   )
