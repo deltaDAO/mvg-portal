@@ -1,6 +1,12 @@
-:root {
+.step,
+.active {
   --circle-size: clamp(1.5rem, 5vw, 2.5rem);
   --spacing: clamp(0.25rem, 2vw, 0.5rem);
+  --background-gradient: linear-gradient(
+    to right,
+    var(--color-primary) 50%,
+    var(--brand-grey-light) 50%
+  );
 }
 
 .stepper {
@@ -15,6 +21,17 @@
   flex: 1;
   text-align: center;
 }
+
+.step .title {
+  color: var(--brand-grey-light);
+  transition: all 0.3s ease-out;
+}
+
+.active .title {
+  color: var(--brand-black);
+  transition-delay: 0.5s;
+}
+
 .step:before {
   --size: 3rem;
   content: '';
@@ -22,12 +39,16 @@
   width: var(--circle-size);
   height: var(--circle-size);
   border-radius: 50%;
-  background-color: var(--brand-grey-light);
+  background: var(--background-gradient);
+  background-size: 200% 100%;
+  background-position: bottom right;
+  transition: all 0.3s ease-out;
   margin: 0 auto 1rem;
 }
 
 .active:before {
-  background-color: var(--color-primary);
+  background-position: bottom left;
+  transition-delay: 0.5s;
 }
 
 .step:after {
@@ -37,7 +58,10 @@
   width: calc(100% - var(--circle-size) - calc(var(--spacing) * 2));
   right: calc(50% - calc(var(--circle-size) / 2 + var(--spacing)));
   height: 2px;
-  background-color: var(--brand-grey-light);
+  background: var(--background-gradient);
+  background-size: 200% 100%;
+  background-position: bottom right;
+  transition: all 0.5s ease-out 0.3s;
   order: -1;
 }
 
@@ -46,5 +70,6 @@
 }
 
 .active:after {
-  background-color: var(--color-primary);
+  background-position: bottom left;
+  transition-delay: 0s;
 }
