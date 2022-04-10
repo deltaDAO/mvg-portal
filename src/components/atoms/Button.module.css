@@ -68,10 +68,20 @@
 }
 
 .outline {
-  background-color: var(--brand-white);
-  color: var(--color-primary);
+  background: linear-gradient(
+    to right,
+    var(--color-primary) 50%,
+    var(--brand-white) 50%
+  );
+  background-size: 200% 100%;
+  background-position: bottom right;
   border: 2px solid var(--color-primary);
-  transition: none;
+  color: var(--color-primary);
+}
+
+.outline:hover {
+  background-position: bottom left;
+  color: var(--brand-white);
 }
 
 .text,
