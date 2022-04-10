@@ -35,12 +35,16 @@
   position: relative;
   top: calc(var(--circle-size) / 2);
   width: calc(100% - var(--circle-size) - calc(var(--spacing) * 2));
-  left: calc(50% + calc(var(--circle-size) / 2 + var(--spacing)));
+  right: calc(50% - calc(var(--circle-size) / 2 + var(--spacing)));
   height: 2px;
   background-color: var(--brand-grey-light);
   order: -1;
 }
 
-.step:last-child:after {
+.step:first-child:after {
   visibility: hidden;
+}
+
+.active:after {
+  background-color: var(--color-primary);
 }
