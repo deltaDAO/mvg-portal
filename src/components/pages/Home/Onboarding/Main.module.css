@@ -35,6 +35,11 @@
   display: flex;
   flex-direction: column;
   gap: calc(var(--spacer) / 2);
+  width: 100%;
+}
+
+.actions button {
+  width: 100%;
 }
 
 .card {
