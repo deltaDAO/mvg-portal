@@ -1,17 +1,63 @@
 import React, { ReactElement } from 'react'
 import Button from '../../../atoms/Button'
-import Container from '../../../atoms/Container'
 import Markdown from '../../../atoms/Markdown'
 import styles from './Main.module.css'
-import { OnboardingStep } from './index'
+import { CurrentStepStatus, OnboardingStep } from './index'
+import { useWeb3 } from '../../../../providers/Web3'
+import useNetworkMetadata from '../../../../hooks/useNetworkMetadata'
+import { addCustomNetwork, addTokenToWallet } from '../../../../utils/web3'
+import { getOceanConfig } from '../../../../utils/ocean'
+import axios from 'axios'
 
 export default function Main({
   currentStep = 0,
+  currentStepStatus,
+  setCurrentStepStatus,
   steps
 }: {
   currentStep: number
+  currentStepStatus: CurrentStepStatus
+  setCurrentStepStatus: (status: CurrentStepStatus) => void
   steps: OnboardingStep[]
 }): ReactElement {
+  const { accountId, connect, networkId, web3Provider } = useWeb3()
+  const { networksList } = useNetworkMetadata()
+
+  const mainActions = {
+    downloadMetaMask: () =>
+      window.open(
+        'https://metamask.io/download/',
+        '_blank',
+        'noopener noreferrer'
+      ),
+    connectAccount: async () => await connect(),
+    connectNetwork: async () => {
+      const networkNode = await networksList.find(
+        (data) => data.node.chainId === 2021000
+      ).node
+      addCustomNetwork(web3Provider, networkNode)
+    },
+    importOceanToken: async () => {
+      const oceanConfig = getOceanConfig(networkId)
+      await addTokenToWallet(
+        web3Provider,
+        oceanConfig?.oceanTokenAddress,
+        oceanConfig.oceanTokenSymbol,
+        'https://raw.githubusercontent.com/oceanprotocol/art/main/logo/token.png'
+      )
+    },
+    claimGxToken: async () => {
+      await axios.get('https://faucet.gx.gaiaxtestnet.oceanprotocol.com/send', {
+        params: { address: accountId }
+      })
+    },
+    claimOceanTokens: async () => {
+      await axios.get('https://faucet.gaiaxtestnet.oceanprotocol.com/send', {
+        params: { address: accountId }
+      })
+    }
+  }
+
   return (
     <>
       <div className={styles.header}>
@@ -28,7 +74,11 @@ export default function Main({
             <div className={styles.actions}>
               {steps && [currentStep] &&
                 steps[currentStep].cta.map((e, i) => (
-                  <Button key={i} style="primary">
+                  <Button
+                    key={i}
+                    style="primary"
+                    onClick={mainActions?.[e.ctaAction]}
+                  >
                     {e.ctaLabel}
                   </Button>
                 ))}

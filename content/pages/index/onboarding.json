@@ -46,12 +46,8 @@
       "shortLabel": "Tokens",
       "title": "Import custom tokens",
       "subtitle": "Before you can claim some tokens you need to import the tokens' contract addresses to MetaMask",
-      "body": "Click on the buttons below to import GX and OCEAN custom tokens.",
+      "body": "Click on the button below to import the OCEAN custom token.",
       "cta": [
-        {
-          "ctaLabel": "Import GX Token",
-          "ctaAction": "importGxToken"
-        },
         {
           "ctaLabel": "Import OCEAN Token",
           "ctaAction": "importOceanToken"

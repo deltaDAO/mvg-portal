@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { graphql, useStaticQuery } from 'gatsby'
 import styles from './index.module.css'
 import Header from './Header'
@@ -53,6 +53,13 @@ export interface OnboardingStep {
   }[]
 }
 
+export interface CurrentStepStatus {
+  [key: string]: {
+    loading: boolean
+    completed: boolean
+  }
+}
+
 export default function OnboardingSection(): ReactElement {
   const data = useStaticQuery(onboardingMainQuery)
   const {
@@ -63,6 +70,18 @@ export default function OnboardingSection(): ReactElement {
   const stepLabels = steps?.map((step) => step.shortLabel)
 
   const [currentStep, setCurrentStep] = useState(0)
+  const [currentStepStatus, setCurrentStepStatus] =
+    useState<CurrentStepStatus>()
+
+  useEffect(() => {
+    if (steps.length === 0) return
+    const status: CurrentStepStatus = {}
+    steps[currentStep].cta.forEach(
+      (action) =>
+        (status[action.ctaAction] = { loading: false, completed: false })
+    )
+    console.log(status)
+  }, [steps, currentStep])
 
   return (
     <div className={styles.wrapper}>
@@ -71,7 +90,12 @@ export default function OnboardingSection(): ReactElement {
         <Container className={styles.cardWrapper}>
           <div className={styles.cardContainer}>
             <Stepper stepLabels={stepLabels} currentStep={currentStep} />
-            <Main currentStep={currentStep} steps={steps} />
+            <Main
+              currentStep={currentStep}
+              currentStepStatus={currentStepStatus}
+              setCurrentStepStatus={setCurrentStepStatus}
+              steps={steps}
+            />
             <Navigation
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}
