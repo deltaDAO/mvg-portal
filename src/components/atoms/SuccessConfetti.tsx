@@ -3,7 +3,7 @@ import React, { ReactElement, ReactNode, useEffect } from 'react'
 import { confetti } from 'dom-confetti'
 import styles from './SuccessConfetti.module.css'
 
-const confettiConfig = {
+export const confettiConfig = {
   angle: 90,
   spread: 360,
   startVelocity: 40,

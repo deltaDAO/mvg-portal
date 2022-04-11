@@ -88,3 +88,8 @@ button.action {
   border-color: var(--brand-alert-orange);
   color: var(--brand-alert-orange);
 }
+
+.suggestion {
+  border-color: var(--brand-grey);
+  color: var(--brand-grey);
+}

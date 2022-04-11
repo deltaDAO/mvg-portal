@@ -1,3 +1,29 @@
+.finalStep {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--spacer);
+}
+
+.finalStep .header {
+  margin-bottom: 0;
+}
+
+.finalStep .cardContainer {
+  display: none;
+}
+
+.suggestion {
+  display: none;
+}
+
+.suggestion p {
+  margin-bottom: 0;
+}
+
+.finalStep .suggestion {
+  display: block;
+}
+
 .header {
   max-width: var(--break-point--small);
   margin: 0 auto;
