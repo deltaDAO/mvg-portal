@@ -10,10 +10,17 @@
 
 .suggestion {
   display: none;
+  width: fit-content;
+  margin: 0 auto;
 }
 
 .suggestion p {
   margin-bottom: 0;
+  color: var(--brand-grey);
+}
+
+.suggestion div {
+  border-color: var(--brand-grey);
 }
 
 .finalStep .suggestion {
@@ -51,6 +58,7 @@
 
 .image {
   object-fit: contain;
+  min-height: 20rem;
 }
 
 .actions {

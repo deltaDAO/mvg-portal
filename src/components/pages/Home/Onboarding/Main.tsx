@@ -7,6 +7,7 @@ import { CurrentStepStatus, OnboardingStep } from './index'
 import { toast } from 'react-toastify'
 import Loader from '../../../atoms/Loader'
 import Alert from '../../../atoms/Alert'
+import SuccessConfetti from '../../../atoms/SuccessConfetti'
 
 const cx = classNames.bind(styles)
 
@@ -46,7 +47,7 @@ export default function Main({
   }
 
   useEffect(() => {
-    if (steps.length === 0) return
+    if (steps.length === 0 || !steps?.[currentStep]?.cta) return
     if (
       steps?.[currentStep]?.cta?.every(
         (cta) => !stepStatus?.[cta.action].touched
@@ -91,7 +92,7 @@ export default function Main({
       const runningCheck: {
         [key: keyof typeof mainActions]: boolean
       } = {}
-      steps[currentStep]?.cta.forEach((cta) => {
+      steps[currentStep]?.cta?.forEach((cta) => {
         runningCheck[cta.action] = mainActions[cta.action].verify()
       })
       setCurrentStepChecks(runningCheck)
@@ -103,10 +104,6 @@ export default function Main({
   useEffect(() => {
     setCurrentStepChecks({})
   }, [currentStep])
-
-  useEffect(() => {
-    console.log(currentStepChecks)
-  }, [currentStepChecks])
 
   return (
     <div>
@@ -159,9 +156,8 @@ export default function Main({
               />
             )}
           </div>
-          <Alert
-            text={steps?.[currentStep]?.suggestion}
-            state="suggestion"
+          <SuccessConfetti
+            success={steps?.[currentStep]?.suggestion}
             className={styles.suggestion}
           />
         </div>

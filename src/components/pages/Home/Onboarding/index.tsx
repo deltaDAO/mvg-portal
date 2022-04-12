@@ -88,8 +88,10 @@ export default function OnboardingSection(): ReactElement {
     if (steps.length === 0) return
     const status: CurrentStepStatus = {}
     steps.forEach((step) => {
-      if (!step?.cta) return
-      step?.cta.forEach(
+      if (!step?.cta) {
+        return
+      }
+      step.cta.forEach(
         (action) =>
           (status[action.action] = {
             completed: false,
@@ -100,10 +102,6 @@ export default function OnboardingSection(): ReactElement {
     })
     setStepStatus(status)
   }, [steps])
-
-  useEffect(() => {
-    console.log(stepStatus)
-  }, [stepStatus])
 
   const { accountId, balance, connect, networkId, web3Provider } = useWeb3()
   const { networksList } = useNetworkMetadata()

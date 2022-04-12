@@ -19,7 +19,7 @@ export default function Alert({
   title?: string
   badge?: string
   text: string
-  state: 'error' | 'warning' | 'info' | 'success' | 'suggestion'
+  state: 'error' | 'warning' | 'info' | 'success'
   action?: {
     name: string
     style?: 'text' | 'primary' | 'ghost'
