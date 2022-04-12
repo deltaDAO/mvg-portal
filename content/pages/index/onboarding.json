@@ -24,6 +24,7 @@
       "title": "Connect your account to the portal",
       "subtitle": "Now that you created an account with MetaMask, you are ready to connect to the portal",
       "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the portal confirm the request inside the popup.",
+      "image": "../../../src/images/onboarding/connect_account.png",
       "cta": [
         {
           "label": "Connect Account",
@@ -38,6 +39,7 @@
       "title": "Connect to the Gaia-X testnet",
       "subtitle": "To interact with the assets in this portal you need to be connected to the correct network",
       "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the Gaia-x testnet confirm the request inside the popup.",
+      "image": "../../../src/images/onboarding/connect_network.png",
       "cta": [
         {
           "label": "Connect to Gaia-X testnet",
@@ -52,6 +54,7 @@
       "title": "Import custom tokens",
       "subtitle": "Before you can claim some tokens you need to import the tokens' contract addresses to MetaMask",
       "body": "Click on the button below to import the OCEAN custom token.",
+      "image": "../../../src/images/onboarding/import_ocean_token.png",
       "cta": [
         {
           "label": "Import OCEAN Token",
@@ -85,7 +88,7 @@
       "shortLabel": "Ready",
       "title": "Good job! You are ready to explore the portal, scroll down to see more.",
       "suggestion": "One last thing: we are never going to ask for your private key,\n\n remember to never share it with anyone!",
-      "image": "../../../src/images/onboarding/ready.jpg"
+      "image": "../../../src/images/onboarding/ready.png"
     }
   ]
 }
