@@ -34,8 +34,9 @@ const onboardingMainQuery = graphql`
                 }
               }
               cta {
-                ctaLabel
-                ctaAction
+                label
+                successMessage
+                action
               }
             }
           }
@@ -48,23 +49,24 @@ const onboardingMainQuery = graphql`
 export interface OnboardingStep {
   shortLabel: string
   title: string
-  subtitle: string
-  body: string
+  subtitle?: string
+  body?: string
   suggestion?: string
   image?: {
     childImageSharp: { original: { src: string } }
   }
   cta?: {
-    ctaLabel: string
-    ctaAction: string
+    label: string
+    successMessage?: string
+    action: string
   }[]
 }
 
 export interface CurrentStepStatus {
   [key: string]: {
-    loading: boolean
     completed: boolean
-    verifying: boolean
+    loading: boolean
+    touch: boolean
   }
 }
 
@@ -87,10 +89,10 @@ export default function OnboardingSection(): ReactElement {
       if (!step?.cta) return
       step?.cta.forEach(
         (action) =>
-          (status[action.ctaAction] = {
-            loading: false,
+          (status[action.action] = {
             completed: false,
-            verifying: false
+            loading: false,
+            touch: false
           })
       )
     })
@@ -160,7 +162,7 @@ export default function OnboardingSection(): ReactElement {
       },
       verify: () => {
         if (networkId !== 2021000) return false
-        return Number(balance?.eth) > 0
+        return Number(balance?.eth) === 0
       }
     },
     claimOceanTokens: {

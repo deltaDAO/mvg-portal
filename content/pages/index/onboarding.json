@@ -13,8 +13,8 @@
       "image": "../../../src/images/onboarding/metamask_download.png",
       "cta": [
         {
-          "ctaLabel": "Download MetaMask",
-          "ctaAction": "downloadMetaMask"
+          "label": "Download MetaMask",
+          "action": "downloadMetaMask"
         }
       ]
     },
@@ -25,8 +25,9 @@
       "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the portal confirm the request inside the popup.",
       "cta": [
         {
-          "ctaLabel": "Connect Account",
-          "ctaAction": "connectAccount"
+          "label": "Connect Account",
+          "successMessage": "Your account is now connected to the portal",
+          "action": "connectAccount"
         }
       ]
     },
@@ -37,8 +38,9 @@
       "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the Gaia-x testnet confirm the request inside the popup.",
       "cta": [
         {
-          "ctaLabel": "Connect to Gaia-X testnet",
-          "ctaAction": "connectNetwork"
+          "label": "Connect to Gaia-X testnet",
+          "successMessage": "Your account is now connected to the Gaia-X testnet",
+          "action": "connectNetwork"
         }
       ]
     },
@@ -49,8 +51,9 @@
       "body": "Click on the button below to import the OCEAN custom token.",
       "cta": [
         {
-          "ctaLabel": "Import OCEAN Token",
-          "ctaAction": "importOceanToken"
+          "label": "Import OCEAN Token",
+          "successMessage": "Successfully import OCEAN Token",
+          "action": "importOceanToken"
         }
       ]
     },
@@ -61,20 +64,20 @@
       "body": "Click on the buttons below to claim your tokens.",
       "cta": [
         {
-          "ctaLabel": "Claim 1 GX",
-          "ctaAction": "claimGxToken"
+          "label": "Claim 1 GX",
+          "successMessage": "Successfully claimed 1 GX",
+          "action": "claimGxToken"
         },
         {
-          "ctaLabel": "Claim 100 OCEAN",
-          "ctaAction": "claimOceanTokens"
+          "label": "Claim 100 OCEAN",
+          "successMessage": "Successfully claimed 100 OCEAN",
+          "action": "claimOceanTokens"
         }
       ]
     },
     {
       "shortLabel": "Ready",
       "title": "Good job! You are ready to explore the portal, scroll down to see more.",
-      "subtitle": "",
-      "body": "",
       "suggestion": "One last thing: we are never going to ask for your private key,\n\n remember to never share it with anyone!",
       "image": "../../../src/images/onboarding/ready.jpg"
     }

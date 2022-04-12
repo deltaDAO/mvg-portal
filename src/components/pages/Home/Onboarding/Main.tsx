@@ -7,6 +7,7 @@ import { CurrentStepStatus, OnboardingStep } from './index'
 import { toast } from 'react-toastify'
 import Loader from '../../../atoms/Loader'
 import Alert from '../../../atoms/Alert'
+import SuccessConfetti from '../../../atoms/SuccessConfetti'
 
 const cx = classNames.bind(styles)
 
@@ -27,20 +28,20 @@ export default function Main({
     [key: keyof typeof mainActions]: boolean
   }>({})
 
-  const handleClick = async (ctaAction: string) => {
+  const handleClick = async (action: string) => {
     setStepStatus({
       ...stepStatus,
-      [ctaAction]: { ...stepStatus[ctaAction], loading: true }
+      [action]: { ...stepStatus[action], loading: true }
     })
     try {
-      await mainActions[ctaAction as keyof typeof mainActions].run()
+      await mainActions[action as keyof typeof mainActions].run()
     } catch (error) {
       toast.error('Looks like something went wrong, please try again.')
       console.error(error.message)
     } finally {
       setStepStatus({
         ...stepStatus,
-        [ctaAction]: { ...stepStatus[ctaAction], loading: false }
+        [action]: { ...stepStatus[action], loading: false }
       })
     }
   }
@@ -50,7 +51,7 @@ export default function Main({
     if (
       Object.values(currentStepChecks).length > 0 &&
       Object.values(stepStatus).length > 0 &&
-      Object.values(currentStepChecks).every((check) => check)
+      Object.values(currentStepChecks).some((check) => check)
     ) {
       if (
         Object.keys(currentStepChecks).every(
@@ -59,7 +60,6 @@ export default function Main({
       ) {
         return
       }
-
       const updatedStepStatus = { ...stepStatus }
       for (const key in currentStepChecks) {
         updatedStepStatus[key] = {
@@ -76,7 +76,7 @@ export default function Main({
         [key: keyof typeof mainActions]: boolean
       } = {}
       steps[currentStep]?.cta.forEach((cta) => {
-        runningCheck[cta.ctaAction] = mainActions[cta.ctaAction].verify()
+        runningCheck[cta.action] = mainActions[cta.action].verify()
       })
       setCurrentStepChecks(runningCheck)
     }, 1000)
@@ -111,17 +111,23 @@ export default function Main({
                   <div className={styles.actions}>
                     {steps[currentStep]?.cta &&
                       steps[currentStep].cta.map((cta, i) =>
-                        stepStatus[cta.ctaAction].loading ? (
+                        stepStatus[cta.action].loading ? (
                           <Loader key={i} message="Loading..." />
+                        ) : cta?.successMessage &&
+                          stepStatus?.[cta.action]?.completed ? (
+                          <Alert
+                            key={i}
+                            text={cta?.successMessage}
+                            state="success"
+                            className={styles.success}
+                          />
                         ) : (
                           <Button
                             key={i}
                             style="primary"
-                            onClick={async () =>
-                              await handleClick(cta.ctaAction)
-                            }
+                            onClick={async () => await handleClick(cta.action)}
                           >
-                            {cta.ctaLabel}
+                            {cta.label}
                           </Button>
                         )
                       )}

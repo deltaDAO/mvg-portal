@@ -64,6 +64,10 @@
   width: 100%;
 }
 
+.success {
+  width: 100%;
+}
+
 .card {
   composes: box from '../../../atoms/Box.module.css';
   display: flex;

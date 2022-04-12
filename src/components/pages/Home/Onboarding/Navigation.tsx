@@ -32,7 +32,7 @@ export default function Navigation({
 
   const handleVerify = () => {
     const isValid = steps[currentStep]?.cta
-      .map((cta) => mainActions[cta.ctaAction].verify())
+      .map((cta) => mainActions[cta.action].verify())
       .every((e) => e)
 
     if (!isValid) {
