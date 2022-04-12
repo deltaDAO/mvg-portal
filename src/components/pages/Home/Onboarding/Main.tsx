@@ -19,7 +19,12 @@ export default function Main({
   steps
 }: {
   currentStep: number
-  mainActions: any
+  mainActions: {
+    [key: string]: {
+      run: () => void
+      verify: () => boolean
+    }
+  }
   stepStatus: CurrentStepStatus
   setStepStatus: (status: CurrentStepStatus) => void
   steps: OnboardingStep[]
