@@ -14,7 +14,8 @@
       "cta": [
         {
           "label": "Download MetaMask",
-          "action": "downloadMetaMask"
+          "action": "downloadMetaMask",
+          "touchRequired": false
         }
       ]
     },
@@ -27,7 +28,8 @@
         {
           "label": "Connect Account",
           "successMessage": "Your account is now connected to the portal",
-          "action": "connectAccount"
+          "action": "connectAccount",
+          "touchRequired": true
         }
       ]
     },
@@ -40,7 +42,8 @@
         {
           "label": "Connect to Gaia-X testnet",
           "successMessage": "Your account is now connected to the Gaia-X testnet",
-          "action": "connectNetwork"
+          "action": "connectNetwork",
+          "touchRequired": true
         }
       ]
     },
@@ -53,7 +56,8 @@
         {
           "label": "Import OCEAN Token",
           "successMessage": "Successfully import OCEAN Token",
-          "action": "importOceanToken"
+          "action": "importOceanToken",
+          "touchRequired": true
         }
       ]
     },
@@ -66,12 +70,14 @@
         {
           "label": "Claim 1 GX",
           "successMessage": "Successfully claimed 1 GX",
-          "action": "claimGxToken"
+          "action": "claimGxToken",
+          "touchRequired": false
         },
         {
           "label": "Claim 100 OCEAN",
           "successMessage": "Successfully claimed 100 OCEAN",
-          "action": "claimOceanTokens"
+          "action": "claimOceanTokens",
+          "touchRequired": false
         }
       ]
     },

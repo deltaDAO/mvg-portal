@@ -37,6 +37,7 @@ const onboardingMainQuery = graphql`
                 label
                 successMessage
                 action
+                touchRequired
               }
             }
           }
@@ -59,6 +60,7 @@ export interface OnboardingStep {
     label: string
     successMessage?: string
     action: string
+    touchRequired: boolean
   }[]
 }
 
@@ -92,7 +94,7 @@ export default function OnboardingSection(): ReactElement {
           (status[action.action] = {
             completed: false,
             loading: false,
-            touched: false
+            touched: !action.touchRequired
           })
       )
     })
@@ -196,6 +198,7 @@ export default function OnboardingSection(): ReactElement {
               currentStep={currentStep}
               mainActions={mainActions}
               setCurrentStep={setCurrentStep}
+              stepStatus={stepStatus}
               steps={steps}
               totalStepsCount={steps?.length}
             />

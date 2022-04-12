@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react'
 import classNames from 'classnames/bind'
 import styles from './Navigation.module.css'
 import Button from '../../../atoms/Button'
-import { OnboardingStep } from '.'
+import { CurrentStepStatus, OnboardingStep } from '.'
 import { toast } from 'react-toastify'
 
 const cx = classNames.bind(styles)
@@ -11,12 +11,14 @@ export default function Navigation({
   currentStep,
   mainActions,
   setCurrentStep,
+  stepStatus,
   steps,
   totalStepsCount
 }: {
   currentStep: number
   mainActions: any
   setCurrentStep: (currentStep: number) => void
+  stepStatus: CurrentStepStatus
   steps: OnboardingStep[]
   totalStepsCount: number
 }): ReactElement {
@@ -54,6 +56,11 @@ export default function Navigation({
         Previous Step
       </Button>
       <Button
+        disabled={
+          !steps?.[currentStep]?.cta?.every(
+            (cta) => stepStatus?.[cta.action].completed
+          )
+        }
         style="outline"
         onClick={() => {
           if (!handleVerify()) return

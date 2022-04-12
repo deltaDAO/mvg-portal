@@ -102,15 +102,6 @@ export default function Main({
 
   useEffect(() => {
     setCurrentStepChecks({})
-    const updatedStepStatus = { ...stepStatus }
-    steps?.[currentStep]?.cta?.forEach(
-      (cta) =>
-        (updatedStepStatus[cta.action] = {
-          ...updatedStepStatus?.[cta.action],
-          touched: false
-        })
-    )
-    setStepStatus(updatedStepStatus)
   }, [currentStep])
 
   useEffect(() => {
