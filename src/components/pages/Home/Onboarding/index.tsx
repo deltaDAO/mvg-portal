@@ -130,7 +130,6 @@ export default function OnboardingSection(): ReactElement {
         addCustomNetwork(web3Provider, networkNode)
       },
       verify: () => {
-        console.log(networkId === 2021000)
         return networkId === 2021000
       }
     },

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import classNames from 'classnames/bind'
 import Button from '../../../atoms/Button'
 import Markdown from '../../../atoms/Markdown'
@@ -23,6 +23,10 @@ export default function Main({
   setStepStatus: (status: CurrentStepStatus) => void
   steps: OnboardingStep[]
 }): ReactElement {
+  const [currentStepChecks, setCurrentStepChecks] = useState<{
+    [key: keyof typeof mainActions]: boolean
+  }>({})
+
   const handleClick = async (ctaAction: string) => {
     setStepStatus({
       ...stepStatus,
@@ -40,6 +44,54 @@ export default function Main({
       })
     }
   }
+
+  useEffect(() => {
+    if (steps.length === 0) return
+    if (
+      Object.values(currentStepChecks).length > 0 &&
+      Object.values(stepStatus).length > 0 &&
+      Object.values(currentStepChecks).every((check) => check)
+    ) {
+      if (
+        Object.keys(currentStepChecks).every(
+          (key) => stepStatus[key].completed === currentStepChecks[key]
+        )
+      ) {
+        return
+      }
+
+      const updatedStepStatus = { ...stepStatus }
+      for (const key in currentStepChecks) {
+        updatedStepStatus[key] = {
+          ...stepStatus[key],
+          completed: currentStepChecks[key]
+        }
+      }
+      setStepStatus(updatedStepStatus)
+      return
+    }
+
+    const executeChecksTimeout = setTimeout(() => {
+      const runningCheck: {
+        [key: keyof typeof mainActions]: boolean
+      } = {}
+      steps[currentStep]?.cta.forEach((cta) => {
+        runningCheck[cta.ctaAction] = mainActions[cta.ctaAction].verify()
+      })
+      setCurrentStepChecks(runningCheck)
+    }, 1000)
+
+    return () => clearTimeout(executeChecksTimeout)
+  }, [currentStep, stepStatus, currentStepChecks])
+
+  useEffect(() => {
+    setCurrentStepChecks({})
+  }, [currentStep])
+
+  useEffect(() => {
+    console.log(currentStepChecks)
+  }, [currentStepChecks])
+
   return (
     <div>
       {steps && stepStatus && (
