@@ -66,7 +66,7 @@ export interface CurrentStepStatus {
   [key: string]: {
     completed: boolean
     loading: boolean
-    touch: boolean
+    touched: boolean
   }
 }
 
@@ -92,7 +92,7 @@ export default function OnboardingSection(): ReactElement {
           (status[action.action] = {
             completed: false,
             loading: false,
-            touch: false
+            touched: false
           })
       )
     })
@@ -162,7 +162,7 @@ export default function OnboardingSection(): ReactElement {
       },
       verify: () => {
         if (networkId !== 2021000) return false
-        return Number(balance?.eth) === 0
+        return Number(balance?.eth) > 0
       }
     },
     claimOceanTokens: {

@@ -7,7 +7,6 @@ import { CurrentStepStatus, OnboardingStep } from './index'
 import { toast } from 'react-toastify'
 import Loader from '../../../atoms/Loader'
 import Alert from '../../../atoms/Alert'
-import SuccessConfetti from '../../../atoms/SuccessConfetti'
 
 const cx = classNames.bind(styles)
 
@@ -31,7 +30,7 @@ export default function Main({
   const handleClick = async (action: string) => {
     setStepStatus({
       ...stepStatus,
-      [action]: { ...stepStatus[action], loading: true }
+      [action]: { ...stepStatus[action], loading: true, touched: true }
     })
     try {
       await mainActions[action as keyof typeof mainActions].run()
@@ -41,7 +40,7 @@ export default function Main({
     } finally {
       setStepStatus({
         ...stepStatus,
-        [action]: { ...stepStatus[action], loading: false }
+        [action]: { ...stepStatus[action], loading: false, touched: true }
       })
     }
   }
@@ -49,23 +48,40 @@ export default function Main({
   useEffect(() => {
     if (steps.length === 0) return
     if (
+      steps?.[currentStep]?.cta?.every(
+        (cta) => !stepStatus?.[cta.action].touched
+      )
+    ) {
+      return
+    }
+
+    if (
       Object.values(currentStepChecks).length > 0 &&
       Object.values(stepStatus).length > 0 &&
-      Object.values(currentStepChecks).some((check) => check)
+      Object.keys(currentStepChecks).some(
+        (key) => stepStatus[key].touched && currentStepChecks[key]
+      )
     ) {
       if (
         Object.keys(currentStepChecks).every(
-          (key) => stepStatus[key].completed === currentStepChecks[key]
+          (key) =>
+            stepStatus[key].completed === currentStepChecks[key] &&
+            stepStatus[key].touched
         )
       ) {
         return
       }
       const updatedStepStatus = { ...stepStatus }
       for (const key in currentStepChecks) {
-        updatedStepStatus[key] = {
-          ...stepStatus[key],
-          completed: currentStepChecks[key]
+        if (stepStatus[key].touched && currentStepChecks[key]) {
+          updatedStepStatus[key] = {
+            ...stepStatus[key],
+            completed: currentStepChecks[key]
+          }
         }
+      }
+      if (JSON.stringify(updatedStepStatus) === JSON.stringify(stepStatus)) {
+        return
       }
       setStepStatus(updatedStepStatus)
       return
@@ -86,6 +102,15 @@ export default function Main({
 
   useEffect(() => {
     setCurrentStepChecks({})
+    const updatedStepStatus = { ...stepStatus }
+    steps?.[currentStep]?.cta?.forEach(
+      (cta) =>
+        (updatedStepStatus[cta.action] = {
+          ...updatedStepStatus?.[cta.action],
+          touched: false
+        })
+    )
+    setStepStatus(updatedStepStatus)
   }, [currentStep])
 
   useEffect(() => {
@@ -114,6 +139,7 @@ export default function Main({
                         stepStatus[cta.action].loading ? (
                           <Loader key={i} message="Loading..." />
                         ) : cta?.successMessage &&
+                          stepStatus?.[cta.action]?.touched &&
                           stepStatus?.[cta.action]?.completed ? (
                           <Alert
                             key={i}
