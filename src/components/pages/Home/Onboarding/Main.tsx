@@ -49,30 +49,34 @@ export default function Main({
             <h5 className={styles.subtitle}>{steps?.[currentStep].subtitle}</h5>
           </div>
           <div className={styles.content}>
-            <div className={styles.cardContainer}>
-              <div className={styles.card}>
-                <Markdown
-                  text={steps?.[currentStep].body}
-                  className={styles.paragraph}
-                />
-                <div className={styles.actions}>
-                  {steps[currentStep]?.cta &&
-                    steps[currentStep].cta.map((cta, i) =>
-                      stepStatus[cta.ctaAction].loading ? (
-                        <Loader key={i} message="Loading..." />
-                      ) : (
-                        <Button
-                          key={i}
-                          style="primary"
-                          onClick={async () => await handleClick(cta.ctaAction)}
-                        >
-                          {cta.ctaLabel}
-                        </Button>
-                      )
-                    )}
+            {currentStep < steps.length - 1 && (
+              <div className={styles.cardContainer}>
+                <div className={styles.card}>
+                  <Markdown
+                    text={steps?.[currentStep].body}
+                    className={styles.paragraph}
+                  />
+                  <div className={styles.actions}>
+                    {steps[currentStep]?.cta &&
+                      steps[currentStep].cta.map((cta, i) =>
+                        stepStatus[cta.ctaAction].loading ? (
+                          <Loader key={i} message="Loading..." />
+                        ) : (
+                          <Button
+                            key={i}
+                            style="primary"
+                            onClick={async () =>
+                              await handleClick(cta.ctaAction)
+                            }
+                          >
+                            {cta.ctaLabel}
+                          </Button>
+                        )
+                      )}
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
             {steps?.[currentStep]?.image && (
               <img
                 src={steps?.[currentStep].image.childImageSharp.original.src}
