@@ -28,7 +28,7 @@
       "cta": [
         {
           "label": "Connect Account",
-          "successMessage": "Your account is now connected to the portal",
+          "successMessage": "Your account is connected to the portal",
           "action": "connectAccount",
           "touchRequired": true
         }
@@ -58,7 +58,7 @@
       "cta": [
         {
           "label": "Import OCEAN Token",
-          "successMessage": "Successfully import OCEAN Token",
+          "successMessage": "Successfully imported OCEAN Token",
           "action": "importOceanToken",
           "touchRequired": true
         }
