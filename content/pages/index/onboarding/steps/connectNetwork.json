@@ -1,0 +1,8 @@
+{
+  "title": "Connect to the Gaia-X testnet",
+  "subtitle": "To interact with the assets in this portal you need to be connected to the correct network",
+  "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the Gaia-x testnet confirm the request inside the popup.",
+  "image": "../../../../../src/images/onboarding/connect_network.png",
+  "buttonLabel": "Connect to Gaia-X testnet",
+  "buttonSuccess": "Your account is now connected to the Gaia-X testnet"
+}

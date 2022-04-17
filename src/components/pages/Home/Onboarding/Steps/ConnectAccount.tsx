@@ -1,3 +1,4 @@
+import { graphql, useStaticQuery } from 'gatsby'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
@@ -6,12 +7,40 @@ import StepActions from '../../../../organisms/Onboarding/StepActions'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 
-export default function ConnectAccount({
-  title,
-  subtitle,
-  body,
-  image
-}: OnboardingStep): ReactElement {
+const query = graphql`
+  query ConnectAccountQuery {
+    file(
+      relativePath: { eq: "pages/index/onboarding/steps/connectAccount.json" }
+    ) {
+      childStepsJson {
+        title
+        subtitle
+        body
+        image {
+          childImageSharp {
+            original {
+              src
+            }
+          }
+        }
+        buttonLabel
+        buttonSuccess
+      }
+    }
+  }
+`
+
+export default function ConnectAccount(): ReactElement {
+  const data = useStaticQuery(query)
+  const {
+    title,
+    subtitle,
+    body,
+    image,
+    buttonLabel,
+    buttonSuccess
+  }: OnboardingStep = data.file.childStepsJson
+
   const { accountId, connect } = useWeb3()
   const [loading, setLoading] = useState(false)
   const [completed, setCompleted] = useState(false)
@@ -40,9 +69,9 @@ export default function ConnectAccount({
       <StepHeader title={title} subtitle={subtitle} />
       <StepBody body={body} image={image.childImageSharp.original.src}>
         <StepActions
-          buttonLabel="Connect Account"
+          buttonLabel={buttonLabel}
           buttonAction={async () => await connectAccount()}
-          successMessage="Your account is connected to the portal"
+          successMessage={buttonSuccess}
           loading={loading}
           completed={completed}
         />

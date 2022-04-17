@@ -1,3 +1,4 @@
+import { graphql, useStaticQuery } from 'gatsby'
 import axios from 'axios'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
@@ -7,12 +8,51 @@ import StepActions from '../../../../organisms/Onboarding/StepActions'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 
-export default function ClaimTokens({
-  title,
-  subtitle,
-  body,
-  image
-}: OnboardingStep): ReactElement {
+const query = graphql`
+  query ClaimTokensQuery {
+    file(
+      relativePath: { eq: "pages/index/onboarding/steps/claimTokens.json" }
+    ) {
+      childStepsJson {
+        title
+        subtitle
+        body
+        image {
+          childImageSharp {
+            original {
+              src
+            }
+          }
+        }
+        gxButtonLabel
+        gxSuccess
+        oceanButtonLabel
+        oceanSuccess
+      }
+    }
+  }
+`
+
+type ClaimTokensStep<T> = Partial<T> & {
+  gxButtonLabel: string
+  gxSuccess: string
+  oceanButtonLabel: string
+  oceanSuccess: string
+}
+
+export default function ClaimTokens(): ReactElement {
+  const data = useStaticQuery(query)
+  const {
+    title,
+    subtitle,
+    body,
+    image,
+    gxButtonLabel,
+    gxSuccess,
+    oceanButtonLabel,
+    oceanSuccess
+  }: ClaimTokensStep<OnboardingStep> = data.file.childStepsJson
+
   const { accountId, balance, networkId } = useWeb3()
   const [loading, setLoading] = useState({ gx: false, ocean: false })
   const [completed, setCompleted] = useState({ gx: false, ocean: false })
@@ -50,16 +90,16 @@ export default function ClaimTokens({
       <StepHeader title={title} subtitle={subtitle} />
       <StepBody body={body} image={image.childImageSharp.original.src}>
         <StepActions
-          buttonLabel="Claim 1 GX"
+          buttonLabel={gxButtonLabel}
           buttonAction={async () => await claimTokens(accountId, 'gx')}
-          successMessage="Successfully claimed 1 GX"
+          successMessage={gxSuccess}
           loading={loading?.gx}
           completed={completed?.gx}
         />
         <StepActions
-          buttonLabel="Claim 100 OCEAN"
+          buttonLabel={oceanButtonLabel}
           buttonAction={async () => await claimTokens(accountId, 'ocean')}
-          successMessage="Successfully claimed 100 OCEAN"
+          successMessage={oceanSuccess}
           loading={loading?.gx}
           completed={completed?.gx}
         />

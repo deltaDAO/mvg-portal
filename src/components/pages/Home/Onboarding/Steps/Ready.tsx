@@ -1,21 +1,41 @@
 import React, { ReactElement } from 'react'
 import styles from './Ready.module.css'
 import SuccessConfetti from '../../../../atoms/SuccessConfetti'
+import { graphql, useStaticQuery } from 'gatsby'
 
-export default function Ready({
-  title,
-  success,
-  image
-}: {
+const query = graphql`
+  query ReadyQuery {
+    file(relativePath: { eq: "pages/index/onboarding/steps/ready.json" }) {
+      childStepsJson {
+        title
+        suggestion
+        image {
+          childImageSharp {
+            original {
+              src
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+interface ReadyStep {
   title: string
-  success: string
+  suggestion: string
   image: {
     childImageSharp: { original: { src: string } }
   }
-}): ReactElement {
+}
+
+export default function Ready(): ReactElement {
+  const data = useStaticQuery(query)
+  const { title, suggestion, image }: ReadyStep = data.file.childStepsJson
+
   return (
     <div className={styles.container}>
-      <SuccessConfetti success={success} className={styles.suggestion} />
+      <SuccessConfetti success={suggestion} className={styles.suggestion} />
       <img src={image.childImageSharp.original.src} className={styles.image} />
       <div className={styles.footer}>
         <h3 className={styles.title}>{title}</h3>

@@ -6,13 +6,11 @@ import styles from './Header.module.css'
 
 const query = graphql`
   query OnboardingQuery {
-    file(relativePath: { eq: "pages/index/onboarding.json" }) {
-      childIndexJson {
-        header {
-          title
-          subtitle
-          body
-        }
+    file(relativePath: { eq: "pages/index/onboarding/index.json" }) {
+      childOnboardingJson {
+        title
+        subtitle
+        body
       }
     }
   }
@@ -20,19 +18,17 @@ const query = graphql`
 
 interface OnboardingHeaderData {
   file: {
-    childIndexJson: {
-      header: {
-        title: string
-        subtitle: string
-        body: string
-      }
+    childOnboardingJson: {
+      title: string
+      subtitle: string
+      body: string
     }
   }
 }
 
 export default function Header(): ReactElement {
   const data: OnboardingHeaderData = useStaticQuery(query)
-  const { title, subtitle, body } = data.file.childIndexJson.header
+  const { title, subtitle, body } = data.file.childOnboardingJson
 
   return (
     <Container className={styles.container}>

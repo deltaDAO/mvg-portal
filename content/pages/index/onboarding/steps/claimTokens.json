@@ -1,0 +1,9 @@
+{
+  "title": "Get some tokens",
+  "subtitle": "To publish or consume the assets in the portal you'll need some GX and OCEAN tokens to spend",
+  "body": "Click on the buttons below to claim your tokens.",
+  "gxButtonLabel": "Claim 1 GX",
+  "gxSuccess": "Successfully claimed 1 GX",
+  "oceanButtonLabel": "Claim 100 OCEAN",
+  "oceanSuccess": "Successfully claimed 100 OCEAN"
+}

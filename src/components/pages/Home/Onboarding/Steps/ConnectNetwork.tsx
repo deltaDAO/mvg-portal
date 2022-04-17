@@ -1,3 +1,4 @@
+import { graphql, useStaticQuery } from 'gatsby'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
@@ -8,12 +9,40 @@ import StepActions from '../../../../organisms/Onboarding/StepActions'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 
-export default function ConnectNetwork({
-  title,
-  subtitle,
-  body,
-  image
-}: OnboardingStep): ReactElement {
+const query = graphql`
+  query ConnectNetworkQuery {
+    file(
+      relativePath: { eq: "pages/index/onboarding/steps/connectNetwork.json" }
+    ) {
+      childStepsJson {
+        title
+        subtitle
+        body
+        image {
+          childImageSharp {
+            original {
+              src
+            }
+          }
+        }
+        buttonLabel
+        buttonSuccess
+      }
+    }
+  }
+`
+
+export default function ConnectNetwork(): ReactElement {
+  const data = useStaticQuery(query)
+  const {
+    title,
+    subtitle,
+    body,
+    image,
+    buttonLabel,
+    buttonSuccess
+  }: OnboardingStep = data.file.childStepsJson
+
   const { accountId, web3Provider } = useWeb3()
   const { networksList } = useNetworkMetadata()
   const [loading, setLoading] = useState(false)
@@ -46,9 +75,9 @@ export default function ConnectNetwork({
       <StepHeader title={title} subtitle={subtitle} />
       <StepBody body={body} image={image.childImageSharp.original.src}>
         <StepActions
-          buttonLabel="Connect to Gaia-X testnet"
+          buttonLabel={buttonLabel}
           buttonAction={async () => await connectNetwork()}
-          successMessage="Your account is now connected to the Gaia-X testnet"
+          successMessage={buttonSuccess}
           loading={loading}
           completed={completed}
         />
