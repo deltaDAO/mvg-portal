@@ -47,10 +47,11 @@ export default function OnboardingSection(): ReactElement {
         <Container className={styles.cardWrapper}>
           <div className={styles.cardContainer}>
             <Stepper stepLabels={stepLabels} currentStep={currentStep} />
-            <Main
+            {steps[currentStep].component}
+            {/* <Main
               currentStep={currentStep}
               steps={steps.map((step) => step.component)}
-            />
+            /> */}
             <Navigation
               currentStep={currentStep}
               setCurrentStep={setCurrentStep}

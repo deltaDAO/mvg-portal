@@ -9,7 +9,7 @@ export default function StepBody({
   children
 }: {
   body: string
-  image: string
+  image?: string
   children?: ReactNode
 }): ReactElement {
   return (
