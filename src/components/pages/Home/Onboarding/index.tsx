@@ -194,10 +194,7 @@ export default function OnboardingSection(): ReactElement {
             />
             <Navigation
               currentStep={currentStep}
-              mainActions={mainActions}
               setCurrentStep={setCurrentStep}
-              stepStatus={stepStatus}
-              steps={steps}
               totalStepsCount={steps?.length}
             />
           </div>
