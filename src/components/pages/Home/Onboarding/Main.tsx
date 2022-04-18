@@ -18,19 +18,19 @@ export default function Main({
   const transitions = useTransition(currentStep, {
     ref: transRef,
     keys: null,
-    initial: { opacity: 1, transform: 'translate3d(0%,0,0)' },
+    initial: { opacity: 1, transform: 'translate3d(0%,-50%,0)' },
     from: {
       opacity: 0,
       transform: `translate3d(${
         navigationDirection === 'prev' ? '-100%' : '100%'
-      },0,0)`
+      },-50%,0)`
     },
-    enter: { opacity: 1, transform: 'translate3d(0%,0,0)' },
+    enter: { opacity: 1, transform: 'translate3d(0%,-50%,0)' },
     leave: {
       opacity: 0,
       transform: `translate3d(${
         navigationDirection === 'prev' ? '50%' : '-50%'
-      },0,0)`
+      },-50%,0)`
     },
     config: { mass: 1, tension: 140, friction: 18 }
   })
