@@ -1,99 +1,16 @@
-.finalStep {
-  display: flex;
-  flex-direction: column-reverse;
-  gap: var(--spacer);
+.container {
+  position: relative;
+  height: 50rem;
 }
 
-.finalStep .header {
-  margin-bottom: 0;
-}
-
-.suggestion {
-  display: none;
-  width: fit-content;
-  margin: 0 auto;
-}
-
-.suggestion p {
-  margin-bottom: 0;
-  color: var(--brand-grey);
-}
-
-.suggestion div {
-  border-color: var(--brand-grey);
-}
-
-.finalStep .suggestion {
-  display: block;
-}
-
-.header {
-  max-width: var(--break-point--small);
-  margin: 0 auto;
-  margin-bottom: var(--spacer);
-}
-
-.title,
-.subtitle {
-  text-align: center;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+.step {
+  position: absolute;
+  top: 50%;
   width: 100%;
-}
-
-.cardContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.cardContainer,
-.image {
-  width: 100%;
-}
-
-.image {
-  object-fit: contain;
-  max-height: 25rem;
-}
-
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacer) / 2);
-  width: 100%;
-}
-
-.actions button {
-  width: 100%;
-}
-
-.success {
-  width: 100%;
-}
-
-.card {
-  composes: box from '../../../atoms/Box.module.css';
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 20rem;
-  min-height: 20rem;
-  height: 100%;
 }
 
 @media screen and (min-width: 60rem) {
-  .cardContainer,
-  .image {
-    width: 50%;
-  }
-  .content {
-    flex-direction: row;
-    justify-content: space-around;
+  .container {
+    height: 30rem;
   }
 }

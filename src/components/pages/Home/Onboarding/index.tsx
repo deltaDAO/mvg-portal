@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import styles from './index.module.css'
 import Header from './Header'
 import Main from './Main'
@@ -41,6 +41,10 @@ export default function OnboardingSection(): ReactElement {
   const { onboardingStep, setOnboardingStep } = useUserPreferences()
   const stepLabels = steps?.map((step) => step.shortLabel)
 
+  useEffect(() => {
+    if (onboardingStep > steps.length) setOnboardingStep(0)
+  }, [onboardingStep, setOnboardingStep])
+
   return (
     <div className={styles.wrapper}>
       <Header />
@@ -48,11 +52,7 @@ export default function OnboardingSection(): ReactElement {
         <Container className={styles.cardWrapper}>
           <div className={styles.cardContainer}>
             <Stepper stepLabels={stepLabels} currentStep={onboardingStep} />
-            {steps[onboardingStep].component}
-            {/* <Main
-              currentStep={currentStep}
-              steps={steps.map((step) => step.component)}
-            /> */}
+            <Main currentStep={onboardingStep} steps={steps} />
             <Navigation
               currentStep={onboardingStep}
               setCurrentStep={setOnboardingStep}
