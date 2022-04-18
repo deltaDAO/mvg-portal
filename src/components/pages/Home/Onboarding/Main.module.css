@@ -1,16 +1,17 @@
 .container {
   position: relative;
   height: 50rem;
+  overflow: hidden;
 }
 
 .step {
-  position: absolute;
-  top: 50%;
   width: 100%;
+  top: 0;
+  position: absolute;
 }
 
 @media screen and (min-width: 60rem) {
   .container {
-    height: 35rem;
+    height: 40rem;
   }
 }
