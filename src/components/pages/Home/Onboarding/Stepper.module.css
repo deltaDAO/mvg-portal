@@ -1,7 +1,7 @@
 .step,
 .active {
-  --circle-size: clamp(1.5rem, 5vw, 2.5rem);
-  --spacing: clamp(0.25rem, 2vw, 0.5rem);
+  --circle-size: clamp(1rem, 5vw, 2.5rem);
+  --spacing: clamp(0.35rem, 2vw, 0.5rem);
   --background-gradient: linear-gradient(
     to right,
     var(--color-primary) 50%,
@@ -20,6 +20,10 @@
   flex-direction: column;
   flex: 1;
   text-align: center;
+}
+
+.title {
+  display: none;
 }
 
 .step .title {
@@ -72,4 +76,10 @@
 .active:after {
   background-position: bottom left;
   transition-delay: 0s;
+}
+
+@media screen and (min-width: 40rem) {
+  .title {
+    display: block;
+  }
 }

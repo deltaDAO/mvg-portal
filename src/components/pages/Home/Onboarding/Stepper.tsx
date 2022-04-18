@@ -12,7 +12,7 @@ export default function Stepper({
   currentStep: number
 }): ReactElement {
   return (
-    <div className={styles.wrapper}>
+    <div>
       <ol className={styles.stepper}>
         {stepLabels.map((label, i) => (
           <li

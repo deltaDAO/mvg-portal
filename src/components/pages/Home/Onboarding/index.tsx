@@ -50,24 +50,22 @@ export default function OnboardingSection(): ReactElement {
   return (
     <div className={styles.wrapper}>
       <Header />
-      {steps.length > 0 && (
-        <Container className={styles.cardWrapper}>
-          <div className={styles.cardContainer}>
-            <Stepper stepLabels={stepLabels} currentStep={onboardingStep} />
-            <Main
-              currentStep={onboardingStep}
-              navigationDirection={navigationDirection}
-              steps={steps}
-            />
-            <Navigation
-              currentStep={onboardingStep}
-              setCurrentStep={setOnboardingStep}
-              setNavigationDirection={setNavigationDirection}
-              totalStepsCount={steps.length}
-            />
-          </div>
-        </Container>
-      )}
+      <Container className={styles.cardWrapper}>
+        <div className={styles.cardContainer}>
+          <Stepper stepLabels={stepLabels} currentStep={onboardingStep} />
+          <Main
+            currentStep={onboardingStep}
+            navigationDirection={navigationDirection}
+            steps={steps}
+          />
+          <Navigation
+            currentStep={onboardingStep}
+            setCurrentStep={setOnboardingStep}
+            setNavigationDirection={setNavigationDirection}
+            totalStepsCount={steps.length}
+          />
+        </div>
+      </Container>
     </div>
   )
 }
