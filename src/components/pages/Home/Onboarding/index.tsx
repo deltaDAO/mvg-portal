@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import React, { ReactElement } from 'react'
 import styles from './index.module.css'
 import Header from './Header'
 import Main from './Main'
@@ -11,6 +11,7 @@ import ConnectNetwork from './Steps/ConnectNetwork'
 import ImportOceanToken from './Steps/ImportOceanToken'
 import Ready from './Steps/Ready'
 import ClaimTokens from './Steps/ClaimTokens'
+import { useUserPreferences } from '../../../../providers/UserPreferences'
 
 export interface OnboardingStep {
   title: string
@@ -37,7 +38,7 @@ const steps = [
 ]
 
 export default function OnboardingSection(): ReactElement {
-  const [currentStep, setCurrentStep] = useState(0)
+  const { onboardingStep, setOnboardingStep } = useUserPreferences()
   const stepLabels = steps?.map((step) => step.shortLabel)
 
   return (
@@ -46,15 +47,15 @@ export default function OnboardingSection(): ReactElement {
       {steps.length > 0 && (
         <Container className={styles.cardWrapper}>
           <div className={styles.cardContainer}>
-            <Stepper stepLabels={stepLabels} currentStep={currentStep} />
-            {steps[currentStep].component}
+            <Stepper stepLabels={stepLabels} currentStep={onboardingStep} />
+            {steps[onboardingStep].component}
             {/* <Main
               currentStep={currentStep}
               steps={steps.map((step) => step.component)}
             /> */}
             <Navigation
-              currentStep={currentStep}
-              setCurrentStep={setCurrentStep}
+              currentStep={onboardingStep}
+              setCurrentStep={setOnboardingStep}
               totalStepsCount={steps.length}
             />
           </div>
