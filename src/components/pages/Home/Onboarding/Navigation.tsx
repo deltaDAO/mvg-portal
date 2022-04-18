@@ -8,19 +8,23 @@ const cx = classNames.bind(styles)
 export default function Navigation({
   currentStep,
   setCurrentStep,
+  setNavigationDirection,
   totalStepsCount
 }: {
   currentStep: number
   setCurrentStep: (currentStep: number) => void
+  setNavigationDirection: (direction: 'prev' | 'next') => void
   totalStepsCount: number
 }): ReactElement {
   const handlePreviousStep = () => {
     if (currentStep === 0) return
+    setNavigationDirection('prev')
     setCurrentStep(currentStep - 1)
   }
 
   const handleNextStep = () => {
     if (currentStep === totalStepsCount - 1) return
+    setNavigationDirection('next')
     setCurrentStep(currentStep + 1)
   }
 

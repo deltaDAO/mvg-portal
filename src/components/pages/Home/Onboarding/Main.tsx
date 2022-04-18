@@ -7,9 +7,11 @@ const cx = classNames.bind(styles)
 
 export default function Main({
   currentStep,
+  navigationDirection,
   steps
 }: {
   currentStep: number
+  navigationDirection: 'prev' | 'next'
   steps: {
     shortLabel: string
     component: ReactElement
@@ -22,12 +24,16 @@ export default function Main({
     initial: { opacity: 1, transform: 'translate3d(0%,-50%,0)' },
     from: {
       opacity: 0,
-      transform: 'translate3d(100%,-50%,0)'
+      transform: `translate3d(${
+        navigationDirection === 'prev' ? '-100%' : '100%'
+      },-50%,0)`
     },
     enter: { opacity: 1, transform: 'translate3d(0%,-50%,0)' },
     leave: {
       opacity: 0,
-      transform: 'translate3d(-50%,-50%,0)'
+      transform: `translate3d(${
+        navigationDirection === 'prev' ? '50%' : '-50%'
+      },-50%,0)`
     }
   })
   useEffect(() => {
