@@ -43,18 +43,18 @@ export default function ConnectNetwork(): ReactElement {
     buttonSuccess
   }: OnboardingStep = data.file.childStepsJson
 
-  const { accountId, web3Provider } = useWeb3()
+  const { accountId, networkId, web3Provider } = useWeb3()
   const { networksList } = useNetworkMetadata()
   const [loading, setLoading] = useState(false)
   const [completed, setCompleted] = useState(false)
 
   useEffect(() => {
-    if (accountId && !!web3Provider) {
+    if (accountId && !!web3Provider && networkId === 2021000) {
       setCompleted(true)
     } else {
       setCompleted(false)
     }
-  }, [accountId, web3Provider])
+  }, [accountId, web3Provider, networkId])
 
   const connectNetwork = async () => {
     setLoading(true)
