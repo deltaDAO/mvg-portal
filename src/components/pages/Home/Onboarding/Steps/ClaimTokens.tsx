@@ -99,8 +99,8 @@ export default function ClaimTokens(): ReactElement {
           buttonLabel={oceanButtonLabel}
           buttonAction={async () => await claimTokens(accountId, 'ocean')}
           successMessage={oceanSuccess}
-          loading={loading?.gx}
-          completed={completed?.gx}
+          loading={loading?.ocean}
+          completed={completed?.ocean}
         />
       </StepBody>
     </div>
