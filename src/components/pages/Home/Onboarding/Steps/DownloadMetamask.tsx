@@ -27,7 +27,7 @@ const query = graphql`
   }
 `
 
-export default function DownloadMetamask(): ReactElement {
+export default function DownloadMetaMask(): ReactElement {
   const data = useStaticQuery(query)
   const { title, subtitle, body, image, buttonLabel }: OnboardingStep =
     data.file.childStepsJson
