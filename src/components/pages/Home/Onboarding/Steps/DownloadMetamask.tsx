@@ -32,7 +32,7 @@ export default function DownloadMetaMask(): ReactElement {
   const { title, subtitle, body, image, buttonLabel }: OnboardingStep =
     data.file.childStepsJson
 
-  const downloadMetamask = () =>
+  const downloadMetaMask = () =>
     window.open(
       'https://metamask.io/download/',
       '_blank',
@@ -44,7 +44,7 @@ export default function DownloadMetaMask(): ReactElement {
       <StepBody body={body} image={image.childImageSharp.original.src}>
         <StepActions
           buttonLabel={buttonLabel}
-          buttonAction={() => downloadMetamask()}
+          buttonAction={() => downloadMetaMask()}
           loading={false}
           completed={false}
         />
