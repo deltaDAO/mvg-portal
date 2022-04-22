@@ -5,7 +5,7 @@ import Main from './Main'
 import Navigation from './Navigation'
 import Container from '../../../atoms/Container'
 import Stepper from './Stepper'
-import DownloadMetaMask from './Steps/DownloadMetaMask'
+import DownloadMetamask from './Steps/DownloadMetamask'
 import ConnectAccount from './Steps/ConnectAccount'
 import ConnectNetwork from './Steps/ConnectNetwork'
 import ImportOceanToken from './Steps/ImportOceanToken'
@@ -29,7 +29,7 @@ export interface OnboardingStep {
 }
 
 const steps = [
-  { shortLabel: 'MetaMask', component: <DownloadMetaMask /> },
+  { shortLabel: 'MetaMask', component: <DownloadMetamask /> },
   { shortLabel: 'Connect', component: <ConnectAccount /> },
   { shortLabel: 'Network', component: <ConnectNetwork /> },
   { shortLabel: 'Tokens', component: <ImportOceanToken /> },

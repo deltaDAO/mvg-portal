@@ -8,7 +8,7 @@ import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 const query = graphql`
   query DownloadMetaMaskQuery {
     file(
-      relativePath: { eq: "pages/index/onboarding/steps/downloadMetaMask.json" }
+      relativePath: { eq: "pages/index/onboarding/steps/downloadMetamask.json" }
     ) {
       childStepsJson {
         title
@@ -27,12 +27,12 @@ const query = graphql`
   }
 `
 
-export default function DownloadMetaMask(): ReactElement {
+export default function DownloadMetamask(): ReactElement {
   const data = useStaticQuery(query)
   const { title, subtitle, body, image, buttonLabel }: OnboardingStep =
     data.file.childStepsJson
 
-  const downloadMetaMask = () =>
+  const downloadMetamask = () =>
     window.open(
       'https://metamask.io/download/',
       '_blank',
@@ -44,7 +44,7 @@ export default function DownloadMetaMask(): ReactElement {
       <StepBody body={body} image={image.childImageSharp.original.src}>
         <StepActions
           buttonLabel={buttonLabel}
-          buttonAction={() => downloadMetaMask()}
+          buttonAction={() => downloadMetamask()}
           loading={false}
           completed={false}
         />
