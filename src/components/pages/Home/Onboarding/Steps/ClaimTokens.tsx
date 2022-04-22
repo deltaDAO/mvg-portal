@@ -63,8 +63,10 @@ export default function ClaimTokens(): ReactElement {
       return
     }
 
-    if (Number(balance?.eth) > 0) setCompleted({ ...completed, gx: true })
-    if (Number(balance?.ocean) > 0) setCompleted({ ...completed, ocean: true })
+    setCompleted({
+      gx: Number(balance?.eth) > 0,
+      ocean: Number(balance?.ocean) > 0
+    })
   }, [accountId, balance, networkId])
 
   const claimTokens = async (address: string, token: 'gx' | 'ocean') => {
