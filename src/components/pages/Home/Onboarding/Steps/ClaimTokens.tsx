@@ -8,6 +8,7 @@ import StepActions from '../../../../organisms/Onboarding/StepActions'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 import { GX_NETWORK_ID } from '../../../../../../chains.config'
+import { getErrorMessage } from '../../../../../utils/onboarding'
 
 const query = graphql`
   query ClaimTokensQuery {
@@ -41,6 +42,11 @@ type ClaimTokensStep<T> = Partial<T> & {
   oceanSuccess: string
 }
 
+enum Tokens {
+  GX = 'gx',
+  OCEAN = 'ocean'
+}
+
 export default function ClaimTokens(): ReactElement {
   const data = useStaticQuery(query)
   const {
@@ -53,13 +59,19 @@ export default function ClaimTokens(): ReactElement {
     oceanSuccess
   }: ClaimTokensStep<OnboardingStep> = data.file.childStepsJson
 
-  const { accountId, balance, networkId } = useWeb3()
-  const [loading, setLoading] = useState({ gx: false, ocean: false })
-  const [completed, setCompleted] = useState({ gx: false, ocean: false })
+  const { accountId, balance, networkId, web3Provider } = useWeb3()
+  const [loading, setLoading] = useState({
+    [Tokens.GX]: false,
+    [Tokens.OCEAN]: false
+  })
+  const [completed, setCompleted] = useState({
+    [Tokens.GX]: false,
+    [Tokens.OCEAN]: false
+  })
 
   useEffect(() => {
     if (networkId !== GX_NETWORK_ID) {
-      setCompleted({ gx: false, ocean: false })
+      setCompleted({ [Tokens.GX]: false, [Tokens.OCEAN]: false })
       return
     }
 
@@ -69,20 +81,24 @@ export default function ClaimTokens(): ReactElement {
     })
   }, [accountId, balance, networkId])
 
-  const claimTokens = async (address: string, token: 'gx' | 'ocean') => {
+  const claimTokens = async (address: string, token: Tokens) => {
     setLoading({ ...loading, [token]: true })
+
     const baseUrl =
-      token === 'gx'
+      token === Tokens.GX
         ? 'https://faucet.gx.gaiaxtestnet.oceanprotocol.com/send'
         : 'https://faucet.gaiaxtestnet.oceanprotocol.com/send'
     try {
+      if (networkId !== GX_NETWORK_ID) throw new Error()
       await axios.get(baseUrl, {
         params: { address }
       })
       setCompleted({ ...completed, [token]: true })
     } catch (error) {
-      toast.error('Looks like something went wrong, please try again.')
-      console.error(error.message)
+      toast.error(
+        getErrorMessage({ accountId, web3Provider: !!web3Provider, networkId })
+      )
+      if (error.message) console.error(error.message)
     } finally {
       setLoading({ ...loading, [token]: false })
     }
@@ -93,14 +109,14 @@ export default function ClaimTokens(): ReactElement {
       <StepBody body={body}>
         <StepActions
           buttonLabel={gxButtonLabel}
-          buttonAction={async () => await claimTokens(accountId, 'gx')}
+          buttonAction={async () => await claimTokens(accountId, Tokens.GX)}
           successMessage={gxSuccess}
           loading={loading?.gx}
           completed={completed?.gx}
         />
         <StepActions
           buttonLabel={oceanButtonLabel}
-          buttonAction={async () => await claimTokens(accountId, 'ocean')}
+          buttonAction={async () => await claimTokens(accountId, Tokens.OCEAN)}
           successMessage={oceanSuccess}
           loading={loading?.ocean}
           completed={completed?.ocean}

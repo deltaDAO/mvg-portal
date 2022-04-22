@@ -3,6 +3,7 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
 import { useWeb3 } from '../../../../../providers/Web3'
+import { getErrorMessage } from '../../../../../utils/onboarding'
 import StepActions from '../../../../organisms/Onboarding/StepActions'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
@@ -41,7 +42,7 @@ export default function ConnectAccount(): ReactElement {
     buttonSuccess
   }: OnboardingStep = data.file.childStepsJson
 
-  const { accountId, connect } = useWeb3()
+  const { accountId, connect, web3Provider, networkId } = useWeb3()
   const [loading, setLoading] = useState(false)
   const [completed, setCompleted] = useState(false)
 
@@ -58,7 +59,9 @@ export default function ConnectAccount(): ReactElement {
     try {
       await connect()
     } catch (error) {
-      toast.error('Looks like something went wrong, please try again.')
+      toast.error(
+        getErrorMessage({ accountId, web3Provider: !!web3Provider, networkId })
+      )
       console.error(error.message)
     } finally {
       setLoading(false)

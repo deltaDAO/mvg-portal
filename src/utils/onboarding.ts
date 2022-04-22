@@ -20,3 +20,5 @@ const getErrorMessage = ({
 
   return 'Looks like something went wrong, please try again.'
 }
+
+export { getErrorMessage }

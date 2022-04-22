@@ -5,6 +5,7 @@ import { OnboardingStep } from '..'
 import { GX_NETWORK_ID } from '../../../../../../chains.config'
 import useNetworkMetadata from '../../../../../hooks/useNetworkMetadata'
 import { useWeb3 } from '../../../../../providers/Web3'
+import { getErrorMessage } from '../../../../../utils/onboarding'
 import { addCustomNetwork } from '../../../../../utils/web3'
 import StepActions from '../../../../organisms/Onboarding/StepActions'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
@@ -65,7 +66,9 @@ export default function ConnectNetwork(): ReactElement {
       ).node
       addCustomNetwork(web3Provider, networkNode)
     } catch (error) {
-      toast.error('Looks like something went wrong, please try again.')
+      toast.error(
+        getErrorMessage({ accountId, web3Provider: !!web3Provider, networkId })
+      )
       console.error(error.message)
     } finally {
       setLoading(false)
