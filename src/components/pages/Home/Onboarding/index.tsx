@@ -37,10 +37,15 @@ const steps = [
   { shortLabel: 'Ready', component: <Ready /> }
 ]
 
+export enum NavigationDirections {
+  PREV = 'prev',
+  NEXT = 'next'
+}
+
 export default function OnboardingSection(): ReactElement {
   const { onboardingStep, setOnboardingStep } = useUserPreferences()
   const [navigationDirection, setNavigationDirection] =
-    useState<'prev' | 'next'>()
+    useState<NavigationDirections>()
   const stepLabels = steps?.map((step) => step.shortLabel)
 
   useEffect(() => {
@@ -52,7 +57,12 @@ export default function OnboardingSection(): ReactElement {
       <Header />
       <Container className={styles.cardWrapper}>
         <div className={styles.cardContainer}>
-          <Stepper stepLabels={stepLabels} currentStep={onboardingStep} />
+          <Stepper
+            stepLabels={stepLabels}
+            currentStep={onboardingStep}
+            setCurrentStep={setOnboardingStep}
+            setNavigationDirection={setNavigationDirection}
+          />
           <Main
             currentStep={onboardingStep}
             navigationDirection={navigationDirection}

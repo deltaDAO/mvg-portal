@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react'
 import classNames from 'classnames/bind'
 import styles from './Navigation.module.css'
 import Button from '../../../atoms/Button'
+import { NavigationDirections } from '.'
 
 const cx = classNames.bind(styles)
 
@@ -13,18 +14,18 @@ export default function Navigation({
 }: {
   currentStep: number
   setCurrentStep: (currentStep: number) => void
-  setNavigationDirection: (direction: 'prev' | 'next') => void
+  setNavigationDirection: (direction: NavigationDirections) => void
   totalStepsCount: number
 }): ReactElement {
   const handlePreviousStep = () => {
     if (currentStep === 0) return
-    setNavigationDirection('prev')
+    setNavigationDirection(NavigationDirections.PREV)
     setCurrentStep(currentStep - 1)
   }
 
   const handleNextStep = () => {
     if (currentStep === totalStepsCount - 1) return
-    setNavigationDirection('next')
+    setNavigationDirection(NavigationDirections.NEXT)
     setCurrentStep(currentStep + 1)
   }
 

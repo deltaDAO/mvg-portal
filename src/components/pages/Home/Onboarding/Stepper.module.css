@@ -24,6 +24,9 @@
 
 .title {
   display: none;
+  width: 100%;
+  text-transform: capitalize;
+  font-size: var(--font-size-h4);
 }
 
 .step .title {
