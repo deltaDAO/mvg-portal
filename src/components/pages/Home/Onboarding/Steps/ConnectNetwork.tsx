@@ -2,6 +2,7 @@ import { graphql, useStaticQuery } from 'gatsby'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
+import { GX_NETWORK_ID } from '../../../../../../chains.config'
 import useNetworkMetadata from '../../../../../hooks/useNetworkMetadata'
 import { useWeb3 } from '../../../../../providers/Web3'
 import { addCustomNetwork } from '../../../../../utils/web3'
@@ -49,7 +50,7 @@ export default function ConnectNetwork(): ReactElement {
   const [completed, setCompleted] = useState(false)
 
   useEffect(() => {
-    if (accountId && !!web3Provider && networkId === 2021000) {
+    if (accountId && !!web3Provider && networkId === GX_NETWORK_ID) {
       setCompleted(true)
     } else {
       setCompleted(false)
@@ -60,7 +61,7 @@ export default function ConnectNetwork(): ReactElement {
     setLoading(true)
     try {
       const networkNode = await networksList.find(
-        (data) => data.node.chainId === 2021000
+        (data) => data.node.chainId === GX_NETWORK_ID
       ).node
       addCustomNetwork(web3Provider, networkNode)
     } catch (error) {

@@ -7,6 +7,7 @@ import { useWeb3 } from '../../../../../providers/Web3'
 import StepActions from '../../../../organisms/Onboarding/StepActions'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
+import { GX_NETWORK_ID } from '../../../../../../chains.config'
 
 const query = graphql`
   query ClaimTokensQuery {
@@ -57,7 +58,7 @@ export default function ClaimTokens(): ReactElement {
   const [completed, setCompleted] = useState({ gx: false, ocean: false })
 
   useEffect(() => {
-    if (networkId !== 2021000) {
+    if (networkId !== GX_NETWORK_ID) {
       setCompleted({ gx: false, ocean: false })
       return
     }

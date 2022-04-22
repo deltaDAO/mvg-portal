@@ -12,6 +12,7 @@ const chains = [
     isDefault: true
   }
 ]
+const GX_NETWORK_ID = 2021000
 
 const getDefaultChainIds = () => {
   return chains.filter((chain) => chain.isDefault).map((c) => c.networkId)
@@ -24,5 +25,6 @@ const getSupportedChainIds = () => {
 module.exports = {
   chains,
   getDefaultChainIds,
-  getSupportedChainIds
+  getSupportedChainIds,
+  GX_NETWORK_ID
 }
