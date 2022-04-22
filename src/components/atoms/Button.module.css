@@ -73,7 +73,7 @@
     var(--color-primary) 50%,
     var(--brand-white) 50%
   );
-  background-size: 200% 100%;
+  background-size: 202% 100%;
   background-position: bottom right;
   border: 2px solid var(--color-primary);
   color: var(--color-primary);
