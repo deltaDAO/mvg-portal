@@ -57,6 +57,7 @@ export default function ClaimTokens(): ReactElement {
     title,
     subtitle,
     body,
+    image,
     gxButtonLabel,
     existingGxBalance,
     gxSuccess,
@@ -133,7 +134,7 @@ export default function ClaimTokens(): ReactElement {
   return (
     <div>
       <StepHeader title={title} subtitle={subtitle} />
-      <StepBody body={body}>
+      <StepBody body={body} image={image.childImageSharp.original.src}>
         <StepActions
           buttonLabel={gxButtonLabel}
           buttonAction={async () => await claimTokens(accountId, Tokens.GX)}

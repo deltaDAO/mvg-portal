@@ -2,6 +2,7 @@
   "title": "Get some test tokens",
   "subtitle": "To publish or consume the assets in the portal you'll need some GX and OCEAN test tokens to spend",
   "body": "Click on the buttons below to claim your test tokens.",
+  "image": "../../../../../src/images/onboarding/claim_tokens.png",
   "gxButtonLabel": "Claim 1 GX",
   "existingGxBalance": "You already have some GX test tokens in your wallet 🎉",
   "gxSuccess": "Successfully claimed 1 GX",
