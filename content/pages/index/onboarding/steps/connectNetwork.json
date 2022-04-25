@@ -4,5 +4,5 @@
   "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the Gaia-X testnet confirm the request inside the popup.",
   "image": "../../../../../src/images/onboarding/connect_network.png",
   "buttonLabel": "Connect to Gaia-X testnet",
-  "buttonSuccess": "Your account is now connected to the Gaia-X testnet"
+  "buttonSuccess": "Your account is connected to the Gaia-X testnet"
 }
