@@ -3,7 +3,9 @@
   "subtitle": "To publish or consume the assets in the portal you'll need some GX and OCEAN test tokens to spend",
   "body": "Click on the buttons below to claim your test tokens.",
   "gxButtonLabel": "Claim 1 GX",
+  "existingGxBalance": "You already have some GX test tokens in your wallet 🎉",
   "gxSuccess": "Successfully claimed 1 GX",
   "oceanButtonLabel": "Claim 100 OCEAN",
+  "existingOceanBalance": "You already have some OCEAN test tokens in your wallet 🎉",
   "oceanSuccess": "Successfully claimed 100 OCEAN"
 }

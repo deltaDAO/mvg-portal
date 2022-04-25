@@ -27,8 +27,10 @@ const query = graphql`
           }
         }
         gxButtonLabel
+        existingGxBalance
         gxSuccess
         oceanButtonLabel
+        existingOceanBalance
         oceanSuccess
       }
     }
@@ -37,8 +39,10 @@ const query = graphql`
 
 type ClaimTokensStep<T> = Partial<T> & {
   gxButtonLabel: string
+  existingGxBalance: string
   gxSuccess: string
   oceanButtonLabel: string
+  existingOceanBalance: string
   oceanSuccess: string
 }
 
@@ -54,60 +58,78 @@ export default function ClaimTokens(): ReactElement {
     subtitle,
     body,
     gxButtonLabel,
+    existingGxBalance,
     gxSuccess,
     oceanButtonLabel,
+    existingOceanBalance,
     oceanSuccess
   }: ClaimTokensStep<OnboardingStep> = data.file.childStepsJson
 
   const { accountId, balance, networkId, web3Provider } = useWeb3()
-  const [loading, setLoading] = useState({
-    [Tokens.GX]: false,
-    [Tokens.OCEAN]: false
-  })
-  const [completed, setCompleted] = useState({
-    [Tokens.GX]: false,
-    [Tokens.OCEAN]: false
+  const [tokenState, setTokenState] = useState({
+    [Tokens.GX]: { loading: false, touched: false, completed: false },
+    [Tokens.OCEAN]: { loading: false, touched: false, completed: false }
   })
 
   useEffect(() => {
     if (networkId !== GX_NETWORK_ID) {
-      setCompleted({ [Tokens.GX]: false, [Tokens.OCEAN]: false })
+      setTokenState({
+        [Tokens.GX]: { ...tokenState.gx, completed: false },
+        [Tokens.OCEAN]: { ...tokenState.ocean, completed: false }
+      })
       return
     }
 
-    setCompleted({
-      gx: Number(balance?.eth) > 0,
-      ocean: Number(balance?.ocean) > 0
+    setTokenState({
+      [Tokens.GX]: { ...tokenState.gx, completed: Number(balance?.eth) > 0 },
+      [Tokens.OCEAN]: {
+        ...tokenState.ocean,
+        completed: Number(balance?.ocean) > 0
+      }
     })
   }, [accountId, balance, networkId])
 
   const claimTokens = async (address: string, token: Tokens) => {
-    setLoading({ ...loading, [token]: true })
-
-    const baseUrl =
-      token === Tokens.GX
-        ? 'https://faucet.gx.gaiaxtestnet.oceanprotocol.com/send'
-        : 'https://faucet.gaiaxtestnet.oceanprotocol.com/send'
-    try {
-      if (networkId !== GX_NETWORK_ID) throw new Error()
-      await axios.get(baseUrl, {
-        params: { address }
-      })
-      setCompleted({ ...completed, [token]: true })
-    } catch (error) {
+    if (networkId !== GX_NETWORK_ID) {
       toast.error(
         getErrorMessage({
           accountId,
           web3Provider: !!web3Provider,
           networkId,
-          balance
+          balance: null
         })
       )
-      if (error.message) console.error(error.message)
-    } finally {
-      setLoading({ ...loading, [token]: false })
+    }
+
+    setTokenState({
+      ...tokenState,
+      [token]: { ...tokenState[token], loading: true, touched: true }
+    })
+    const baseUrl =
+      token === Tokens.GX
+        ? 'https://faucet.gx.gaiaxtestnet.oceanprotocol.com/send'
+        : 'https://faucet.gaiaxtestnet.oceanprotocol.com/send'
+
+    try {
+      await axios.get(baseUrl, {
+        params: { address }
+      })
+    } catch {
+      // Workaround until we deploy our own faucet:
+      // the api call is going to fail due to a CORS error but the tokens are
+      // sent anyway so we set the new token state in the catch
+      setTokenState({
+        ...tokenState,
+        [token]: {
+          ...tokenState[token],
+          completed: true,
+          touched: true,
+          loading: false
+        }
+      })
     }
   }
+
   return (
     <div>
       <StepHeader title={title} subtitle={subtitle} />
@@ -115,16 +137,18 @@ export default function ClaimTokens(): ReactElement {
         <StepActions
           buttonLabel={gxButtonLabel}
           buttonAction={async () => await claimTokens(accountId, Tokens.GX)}
-          successMessage={gxSuccess}
-          loading={loading?.gx}
-          completed={completed?.gx}
+          successMessage={tokenState.gx.touched ? gxSuccess : existingGxBalance}
+          loading={tokenState.gx.loading}
+          completed={tokenState.gx.completed}
         />
         <StepActions
           buttonLabel={oceanButtonLabel}
           buttonAction={async () => await claimTokens(accountId, Tokens.OCEAN)}
-          successMessage={oceanSuccess}
-          loading={loading?.ocean}
-          completed={completed?.ocean}
+          successMessage={
+            tokenState.ocean.touched ? oceanSuccess : existingOceanBalance
+          }
+          loading={tokenState.ocean.loading}
+          completed={tokenState.ocean.completed}
         />
       </StepBody>
     </div>
