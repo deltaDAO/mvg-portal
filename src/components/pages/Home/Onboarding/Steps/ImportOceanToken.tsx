@@ -63,7 +63,12 @@ export default function ImportOceanToken(): ReactElement {
       setCompleted(true)
     } catch (error) {
       toast.error(
-        getErrorMessage({ accountId, web3Provider: !!web3Provider, networkId })
+        getErrorMessage({
+          accountId,
+          web3Provider: !!web3Provider,
+          networkId,
+          balance: null
+        })
       )
       if (error.message) console.error(error.message)
     } finally {

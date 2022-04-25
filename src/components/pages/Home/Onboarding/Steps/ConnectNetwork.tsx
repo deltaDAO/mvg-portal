@@ -67,7 +67,12 @@ export default function ConnectNetwork(): ReactElement {
       addCustomNetwork(web3Provider, networkNode)
     } catch (error) {
       toast.error(
-        getErrorMessage({ accountId, web3Provider: !!web3Provider, networkId })
+        getErrorMessage({
+          accountId,
+          web3Provider: !!web3Provider,
+          networkId,
+          balance: null
+        })
       )
       console.error(error.message)
     } finally {

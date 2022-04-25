@@ -60,7 +60,12 @@ export default function ConnectAccount(): ReactElement {
       await connect()
     } catch (error) {
       toast.error(
-        getErrorMessage({ accountId, web3Provider: !!web3Provider, networkId })
+        getErrorMessage({
+          accountId,
+          web3Provider: !!web3Provider,
+          networkId,
+          balance: null
+        })
       )
       console.error(error.message)
     } finally {

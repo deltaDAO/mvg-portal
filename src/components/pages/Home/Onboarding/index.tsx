@@ -12,6 +12,8 @@ import ImportOceanToken from './Steps/ImportOceanToken'
 import Ready from './Steps/Ready'
 import ClaimTokens from './Steps/ClaimTokens'
 import { useUserPreferences } from '../../../../providers/UserPreferences'
+import { useWeb3 } from '../../../../providers/Web3'
+import { GX_NETWORK_ID } from '../../../../../chains.config'
 
 export interface OnboardingStep {
   title: string
@@ -43,7 +45,9 @@ export enum NavigationDirections {
 }
 
 export default function OnboardingSection(): ReactElement {
+  const { accountId, balance, networkId, web3Provider } = useWeb3()
   const { onboardingStep, setOnboardingStep } = useUserPreferences()
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   const [navigationDirection, setNavigationDirection] =
     useState<NavigationDirections>()
   const stepLabels = steps?.map((step) => step.shortLabel)
@@ -51,6 +55,18 @@ export default function OnboardingSection(): ReactElement {
   useEffect(() => {
     if (onboardingStep > steps.length) setOnboardingStep(0)
   }, [onboardingStep, setOnboardingStep])
+
+  useEffect(() => {
+    if (
+      accountId &&
+      web3Provider &&
+      networkId === GX_NETWORK_ID &&
+      Number(balance?.eth) > 0 &&
+      Number(balance?.ocean) > 0
+    ) {
+      setOnboardingCompleted(true)
+    }
+  }, [accountId, balance, networkId, web3Provider])
 
   return (
     <div className={styles.wrapper}>
@@ -60,6 +76,7 @@ export default function OnboardingSection(): ReactElement {
           <Stepper
             stepLabels={stepLabels}
             currentStep={onboardingStep}
+            onboardingCompleted={onboardingCompleted}
             setCurrentStep={setOnboardingStep}
             setNavigationDirection={setNavigationDirection}
           />
@@ -70,6 +87,7 @@ export default function OnboardingSection(): ReactElement {
           />
           <Navigation
             currentStep={onboardingStep}
+            onboardingCompleted={onboardingCompleted}
             setCurrentStep={setOnboardingStep}
             setNavigationDirection={setNavigationDirection}
             totalStepsCount={steps.length}

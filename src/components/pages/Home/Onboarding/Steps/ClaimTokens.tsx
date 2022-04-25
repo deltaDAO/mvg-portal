@@ -96,7 +96,12 @@ export default function ClaimTokens(): ReactElement {
       setCompleted({ ...completed, [token]: true })
     } catch (error) {
       toast.error(
-        getErrorMessage({ accountId, web3Provider: !!web3Provider, networkId })
+        getErrorMessage({
+          accountId,
+          web3Provider: !!web3Provider,
+          networkId,
+          balance
+        })
       )
       if (error.message) console.error(error.message)
     } finally {
