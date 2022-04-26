@@ -26,29 +26,29 @@ const query = graphql`
             }
           }
         }
-        gxButtonLabel
-        existingGxBalance
-        gxSuccess
-        oceanButtonLabel
-        existingOceanBalance
-        oceanSuccess
+        buttons {
+          label
+          balance
+          success
+          key
+        }
       }
     }
   }
 `
 
-type ClaimTokensStep<T> = Partial<T> & {
-  gxButtonLabel: string
-  existingGxBalance: string
-  gxSuccess: string
-  oceanButtonLabel: string
-  existingOceanBalance: string
-  oceanSuccess: string
-}
-
 enum Tokens {
   GX = 'gx',
   OCEAN = 'ocean'
+}
+
+type ClaimTokensStep<T> = Partial<T> & {
+  buttons: {
+    label: string
+    balance: string
+    success: string
+    key: Tokens
+  }[]
 }
 
 export default function ClaimTokens(): ReactElement {
@@ -58,12 +58,7 @@ export default function ClaimTokens(): ReactElement {
     subtitle,
     body,
     image,
-    gxButtonLabel,
-    existingGxBalance,
-    gxSuccess,
-    oceanButtonLabel,
-    existingOceanBalance,
-    oceanSuccess
+    buttons
   }: ClaimTokensStep<OnboardingStep> = data.file.childStepsJson
 
   const { accountId, balance, networkId, web3Provider } = useWeb3()
@@ -135,22 +130,18 @@ export default function ClaimTokens(): ReactElement {
     <div>
       <StepHeader title={title} subtitle={subtitle} />
       <StepBody body={body} image={image.childImageSharp.original.src}>
-        <StepAction
-          buttonLabel={gxButtonLabel}
-          buttonAction={async () => await claimTokens(accountId, Tokens.GX)}
-          successMessage={tokenState.gx.touched ? gxSuccess : existingGxBalance}
-          loading={tokenState.gx.loading}
-          completed={tokenState.gx.completed}
-        />
-        <StepAction
-          buttonLabel={oceanButtonLabel}
-          buttonAction={async () => await claimTokens(accountId, Tokens.OCEAN)}
-          successMessage={
-            tokenState.ocean.touched ? oceanSuccess : existingOceanBalance
-          }
-          loading={tokenState.ocean.loading}
-          completed={tokenState.ocean.completed}
-        />
+        {buttons?.map((button) => (
+          <StepAction
+            key={button.key}
+            buttonLabel={button.label}
+            buttonAction={async () => await claimTokens(accountId, button.key)}
+            successMessage={
+              tokenState[button.key].touched ? button.success : button.balance
+            }
+            loading={tokenState[button.key].loading}
+            completed={tokenState[button.key].completed}
+          />
+        ))}
       </StepBody>
     </div>
   )
