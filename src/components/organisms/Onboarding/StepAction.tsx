@@ -5,7 +5,7 @@ import Loader from '../../atoms/Loader'
 
 import styles from './StepAction.module.css'
 
-interface IStepAction {
+export interface IStepAction {
   buttonLabel: string
   buttonAction: (e: FormEvent) => void
   successMessage?: string
@@ -25,7 +25,7 @@ export default function StepAction({
   return (
     <div className={styles.container}>
       {loading ? (
-        <Loader message={loadingMessage || 'Loading...'} />
+        <Loader message={loadingMessage} />
       ) : completed ? (
         <Alert
           text={successMessage}

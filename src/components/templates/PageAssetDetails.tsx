@@ -35,7 +35,7 @@ export default function PageTemplateAssetDetails({
     </Page>
   ) : (
     <Page title={undefined} uri={uri}>
-      <Loader />
+      <Loader spinnerOnly />
     </Page>
   )
 }

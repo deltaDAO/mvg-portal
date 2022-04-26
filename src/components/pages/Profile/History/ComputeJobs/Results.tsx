@@ -113,7 +113,7 @@ export default function Results({
             )}
         </ul>
       ) : isLoading ? (
-        <Loader />
+        <Loader spinnerOnly />
       ) : (
         !isFinished && <> Waiting for results...</>
       )}

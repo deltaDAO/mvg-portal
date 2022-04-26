@@ -273,7 +273,7 @@ export default function PublishPage({
               {hasFeedback && loading ? (
                 <div className={feedbackStyles.feedback}>
                   <div className={feedbackStyles.box}>
-                    <Loader />
+                    <Loader spinnerOnly />
                   </div>
                 </div>
               ) : hasFeedback ? (

@@ -15,7 +15,7 @@ const cx = classNames.bind(styles)
 function LoaderArea() {
   return (
     <div className={styles.loaderWrap}>
-      <Loader />
+      <Loader spinnerOnly />
     </div>
   )
 }

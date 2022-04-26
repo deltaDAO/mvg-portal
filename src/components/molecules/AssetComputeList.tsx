@@ -19,7 +19,7 @@ export default function AssetComputeSelection({
     <div className={styles.display}>
       <div className={styles.scroll}>
         {!assets ? (
-          <Loader />
+          <Loader spinnerOnly />
         ) : assets && !assets.length ? (
           <Empty />
         ) : (
