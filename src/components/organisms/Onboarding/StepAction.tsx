@@ -3,7 +3,7 @@ import Alert from '../../atoms/Alert'
 import Button from '../../atoms/Button'
 import Loader from '../../atoms/Loader'
 
-import styles from './StepActions.module.css'
+import styles from './StepAction.module.css'
 
 interface IStepAction {
   buttonLabel: string
@@ -14,7 +14,7 @@ interface IStepAction {
   loadingMessage?: string
 }
 
-export default function StepActions({
+export default function StepAction({
   buttonLabel,
   buttonAction,
   successMessage,

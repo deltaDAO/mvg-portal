@@ -73,6 +73,7 @@
     var(--color-primary) 50%,
     var(--brand-white) 50%
   );
+  /* 202% used to fix a Firefox specific behavior not moving the background as expected */
   background-size: 202% 100%;
   background-position: bottom right;
   border: 2px solid var(--color-primary);

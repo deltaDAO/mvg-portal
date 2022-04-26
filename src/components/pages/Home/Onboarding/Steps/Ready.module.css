@@ -4,17 +4,18 @@
   gap: var(--spacer);
 }
 
-.suggestion {
+.body {
   width: fit-content;
+  max-width: 30rem;
   margin: 0 auto;
 }
 
-.suggestion p {
+.body p {
   margin-bottom: 0;
   color: var(--brand-grey);
 }
 
-.suggestion div {
+.body div {
   border-color: var(--brand-grey);
 }
 

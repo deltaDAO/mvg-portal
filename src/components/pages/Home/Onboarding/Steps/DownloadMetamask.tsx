@@ -1,7 +1,7 @@
 import { graphql, useStaticQuery } from 'gatsby'
 import React, { ReactElement } from 'react'
 import { OnboardingStep } from '..'
-import StepActions from '../../../../organisms/Onboarding/StepActions'
+import StepAction from '../../../../organisms/Onboarding/StepAction'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 
@@ -42,7 +42,7 @@ export default function DownloadMetamask(): ReactElement {
     <div>
       <StepHeader title={title} subtitle={subtitle} />
       <StepBody body={body} image={image.childImageSharp.original.src}>
-        <StepActions
+        <StepAction
           buttonLabel={buttonLabel}
           buttonAction={() => downloadMetamask()}
           loading={false}

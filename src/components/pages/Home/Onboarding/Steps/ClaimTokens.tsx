@@ -4,7 +4,7 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
 import { useWeb3 } from '../../../../../providers/Web3'
-import StepActions from '../../../../organisms/Onboarding/StepActions'
+import StepAction from '../../../../organisms/Onboarding/StepAction'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 import { GX_NETWORK_ID } from '../../../../../../chains.config'
@@ -135,14 +135,14 @@ export default function ClaimTokens(): ReactElement {
     <div>
       <StepHeader title={title} subtitle={subtitle} />
       <StepBody body={body} image={image.childImageSharp.original.src}>
-        <StepActions
+        <StepAction
           buttonLabel={gxButtonLabel}
           buttonAction={async () => await claimTokens(accountId, Tokens.GX)}
           successMessage={tokenState.gx.touched ? gxSuccess : existingGxBalance}
           loading={tokenState.gx.loading}
           completed={tokenState.gx.completed}
         />
-        <StepActions
+        <StepAction
           buttonLabel={oceanButtonLabel}
           buttonAction={async () => await claimTokens(accountId, Tokens.OCEAN)}
           successMessage={

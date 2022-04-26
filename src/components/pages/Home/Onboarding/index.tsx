@@ -50,7 +50,7 @@ export default function OnboardingSection(): ReactElement {
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   const [navigationDirection, setNavigationDirection] =
     useState<NavigationDirections>()
-  const stepLabels = steps?.map((step) => step.shortLabel)
+  const stepLabels = steps.map((step) => step.shortLabel)
 
   useEffect(() => {
     if (onboardingStep > steps.length) setOnboardingStep(0)

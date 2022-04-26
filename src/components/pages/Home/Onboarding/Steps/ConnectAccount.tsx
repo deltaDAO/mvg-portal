@@ -4,7 +4,7 @@ import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
 import { useWeb3 } from '../../../../../providers/Web3'
 import { getErrorMessage } from '../../../../../utils/onboarding'
-import StepActions from '../../../../organisms/Onboarding/StepActions'
+import StepAction from '../../../../organisms/Onboarding/StepAction'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 
@@ -76,7 +76,7 @@ export default function ConnectAccount(): ReactElement {
     <div>
       <StepHeader title={title} subtitle={subtitle} />
       <StepBody body={body} image={image.childImageSharp.original.src}>
-        <StepActions
+        <StepAction
           buttonLabel={buttonLabel}
           buttonAction={async () => await connectAccount()}
           successMessage={buttonSuccess}

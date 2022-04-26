@@ -8,7 +8,7 @@ const query = graphql`
     file(relativePath: { eq: "pages/index/onboarding/steps/ready.json" }) {
       childStepsJson {
         title
-        suggestion
+        body
         image {
           childImageSharp {
             original {
@@ -23,7 +23,7 @@ const query = graphql`
 
 interface ReadyStep {
   title: string
-  suggestion: string
+  body: string
   image: {
     childImageSharp: { original: { src: string } }
   }
@@ -31,11 +31,11 @@ interface ReadyStep {
 
 export default function Ready(): ReactElement {
   const data = useStaticQuery(query)
-  const { title, suggestion, image }: ReadyStep = data.file.childStepsJson
+  const { title, body, image }: ReadyStep = data.file.childStepsJson
 
   return (
     <div className={styles.container}>
-      <SuccessConfetti success={suggestion} className={styles.suggestion} />
+      <SuccessConfetti success={body} className={styles.body} />
       <img src={image.childImageSharp.original.src} className={styles.image} />
       <div className={styles.footer}>
         <h3 className={styles.title}>{title}</h3>
