@@ -1,5 +1,6 @@
 import { GX_NETWORK_ID } from '../../chains.config'
 import { UserBalance } from '../@types/TokenBalance'
+import { Tokens } from '../components/pages/Home/Onboarding/Steps/ClaimTokens'
 
 interface IErrorParams {
   accountId: string
@@ -21,12 +22,16 @@ const getErrorMessage = ({
     return 'Looks like you are not connected to the Gaia-X testnet, please go back to the "Network" step.'
   }
   if (balance !== null) {
-    if (Number(balance?.eth) === 0) {
-      return "Looks like you don't have any GX test tokens, please click on the claim button to get some."
-    }
-    if (Number(balance?.ocean) === 0) {
-      return "Looks like you don't have any OCEAN test tokens, please click on the claim button to get some."
-    }
+    const baseNoTokenError =
+      "Looks like you don't have any %TOKEN% test tokens, please click on the claim button to get some."
+    const token =
+      Number(balance?.eth) === 0 || balance?.eth === undefined
+        ? 'GX'
+        : Number(balance?.ocean) === 0 || balance?.ocean === undefined
+        ? 'OCEAN'
+        : undefined
+
+    if (token) return baseNoTokenError.replace('%TOKEN%', token)
   }
 
   return 'Looks like something went wrong, please try again.'

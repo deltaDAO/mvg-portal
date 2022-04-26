@@ -37,7 +37,7 @@ const query = graphql`
   }
 `
 
-enum Tokens {
+export enum Tokens {
   GX = 'gx',
   OCEAN = 'ocean'
 }
