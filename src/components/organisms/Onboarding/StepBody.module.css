@@ -21,13 +21,6 @@
   max-height: 25rem;
 }
 
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacer) / 2);
-  width: 100%;
-}
-
 .card {
   composes: box from '../../atoms/Box.module.css';
   display: flex;
@@ -39,13 +32,20 @@
   height: 100%;
 }
 
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
+  width: 100%;
+}
+
 @media screen and (min-width: 60rem) {
-  .cardContainer,
-  .image {
-    width: 50%;
-  }
   .content {
     flex-direction: row;
     justify-content: space-around;
+  }
+  .cardContainer,
+  .image {
+    width: 50%;
   }
 }
