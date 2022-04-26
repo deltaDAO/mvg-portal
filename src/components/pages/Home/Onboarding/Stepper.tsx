@@ -24,6 +24,15 @@ export default function Stepper({
 }): ReactElement {
   const { accountId, balance, networkId, web3Provider } = useWeb3()
 
+  const getNavigationDirection = (
+    currentStep: number,
+    newStep: number
+  ): NavigationDirections => {
+    return currentStep > newStep
+      ? NavigationDirections.PREV
+      : NavigationDirections.NEXT
+  }
+
   const handleClick = (newStep: number) => {
     if (newStep === stepLabels.length - 1 && !onboardingCompleted) {
       toast.error(
@@ -37,10 +46,9 @@ export default function Stepper({
       return
     }
 
-    currentStep > newStep
-      ? setNavigationDirection(NavigationDirections.PREV)
-      : setNavigationDirection(NavigationDirections.NEXT)
+    const navigationDirection = getNavigationDirection(currentStep, newStep)
 
+    setNavigationDirection(navigationDirection)
     setCurrentStep(newStep)
   }
   return (
