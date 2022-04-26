@@ -8,7 +8,7 @@
   padding-top: calc(var(--spacer) * 2);
 }
 
-.hide {
+.hidden {
   visibility: hidden;
   transition: none;
 }

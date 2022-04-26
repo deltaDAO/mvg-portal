@@ -52,7 +52,7 @@ export default function Navigation({
       <Button
         style="text"
         className={cx({
-          hide: currentStep === 0
+          hidden: currentStep === 0
         })}
         onClick={handlePreviousStep}
       >
@@ -62,7 +62,7 @@ export default function Navigation({
         style="outline"
         onClick={() => handleNextStep()}
         className={cx({
-          hide: currentStep === totalStepsCount - 1
+          hidden: currentStep === totalStepsCount - 1
         })}
       >
         Next Step
