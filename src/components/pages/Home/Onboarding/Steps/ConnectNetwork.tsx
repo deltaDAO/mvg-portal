@@ -7,7 +7,6 @@ import useNetworkMetadata from '../../../../../hooks/useNetworkMetadata'
 import { useWeb3 } from '../../../../../providers/Web3'
 import { getErrorMessage } from '../../../../../utils/onboarding'
 import { addCustomNetwork } from '../../../../../utils/web3'
-import StepAction from '../../../../organisms/Onboarding/StepAction'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 
@@ -79,18 +78,25 @@ export default function ConnectNetwork(): ReactElement {
       setLoading(false)
     }
   }
+
+  const actions = [
+    {
+      buttonLabel,
+      buttonAction: async () => await connectNetwork(),
+      successMessage: buttonSuccess,
+      loading: loading,
+      completed: completed
+    }
+  ]
+
   return (
     <div>
       <StepHeader title={title} subtitle={subtitle} />
-      <StepBody body={body} image={image.childImageSharp.original.src}>
-        <StepAction
-          buttonLabel={buttonLabel}
-          buttonAction={async () => await connectNetwork()}
-          successMessage={buttonSuccess}
-          loading={loading}
-          completed={completed}
-        />
-      </StepBody>
+      <StepBody
+        body={body}
+        image={image.childImageSharp.original.src}
+        actions={actions}
+      />
     </div>
   )
 }

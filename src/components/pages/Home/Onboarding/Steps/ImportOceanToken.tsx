@@ -7,7 +7,6 @@ import { useWeb3 } from '../../../../../providers/Web3'
 import { getOceanConfig } from '../../../../../utils/ocean'
 import { getErrorMessage } from '../../../../../utils/onboarding'
 import { addTokenToWallet } from '../../../../../utils/web3'
-import StepAction from '../../../../organisms/Onboarding/StepAction'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 
@@ -75,18 +74,25 @@ export default function ImportOceanToken(): ReactElement {
       setLoading(false)
     }
   }
+
+  const actions = [
+    {
+      buttonLabel,
+      buttonAction: async () => await importOceanToken(),
+      successMessage: buttonSuccess,
+      loading: loading,
+      completed: completed
+    }
+  ]
+
   return (
     <div>
       <StepHeader title={title} subtitle={subtitle} />
-      <StepBody body={body} image={image.childImageSharp.original.src}>
-        <StepAction
-          buttonLabel={buttonLabel}
-          buttonAction={async () => await importOceanToken()}
-          successMessage={buttonSuccess}
-          loading={loading}
-          completed={completed}
-        />
-      </StepBody>
+      <StepBody
+        body={body}
+        image={image.childImageSharp.original.src}
+        actions={actions}
+      />
     </div>
   )
 }

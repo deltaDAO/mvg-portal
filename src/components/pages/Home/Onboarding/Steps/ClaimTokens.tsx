@@ -4,7 +4,6 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
 import { useWeb3 } from '../../../../../providers/Web3'
-import StepAction from '../../../../organisms/Onboarding/StepAction'
 import StepBody from '../../../../organisms/Onboarding/StepBody'
 import StepHeader from '../../../../organisms/Onboarding/StepHeader'
 import { GX_NETWORK_ID } from '../../../../../../chains.config'
@@ -126,23 +125,24 @@ export default function ClaimTokens(): ReactElement {
     }
   }
 
+  const actions = buttons.map((button) => ({
+    buttonLabel: button.label,
+    buttonAction: async () => await claimTokens(accountId, button.key),
+    successMessage: tokenState[button.key].touched
+      ? button.success
+      : button.balance,
+    loading: tokenState[button.key].loading,
+    completed: tokenState[button.key].completed
+  }))
+
   return (
     <div>
       <StepHeader title={title} subtitle={subtitle} />
-      <StepBody body={body} image={image.childImageSharp.original.src}>
-        {buttons?.map((button) => (
-          <StepAction
-            key={button.key}
-            buttonLabel={button.label}
-            buttonAction={async () => await claimTokens(accountId, button.key)}
-            successMessage={
-              tokenState[button.key].touched ? button.success : button.balance
-            }
-            loading={tokenState[button.key].loading}
-            completed={tokenState[button.key].completed}
-          />
-        ))}
-      </StepBody>
+      <StepBody
+        body={body}
+        image={image.childImageSharp.original.src}
+        actions={actions}
+      />
     </div>
   )
 }
