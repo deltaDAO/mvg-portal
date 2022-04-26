@@ -47,7 +47,8 @@
   height: var(--circle-size);
   border-radius: 50%;
   background: var(--background-gradient);
-  background-size: 200% 100%;
+  /* 202% used to fix a Firefox specific behavior not moving the background as expected */
+  background-size: 202% 100%;
   background-position: bottom right;
   transition: all 0.3s ease-out;
   margin: 0 auto 1rem;
@@ -66,7 +67,8 @@
   right: calc(50% - calc(var(--circle-size) / 2 + var(--spacing)));
   height: 2px;
   background: var(--background-gradient);
-  background-size: 200% 100%;
+  /* 202% used to fix a Firefox specific behavior not moving the background as expected */
+  background-size: 202% 100%;
   background-position: bottom right;
   transition: all 0.5s ease-out 0.3s;
   order: -1;
