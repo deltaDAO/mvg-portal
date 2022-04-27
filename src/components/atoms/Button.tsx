@@ -14,7 +14,7 @@ export interface ButtonProps {
   to?: string
   name?: string
   size?: 'small'
-  style?: 'primary' | 'ghost' | 'text'
+  style?: 'primary' | 'ghost' | 'outline' | 'text'
   type?: 'submit'
   download?: boolean
   target?: string
@@ -35,6 +35,7 @@ export default function Button({
     button: true,
     primary: style === 'primary',
     ghost: style === 'ghost',
+    outline: style === 'outline',
     text: style === 'text',
     small: size === 'small',
     [className]: className

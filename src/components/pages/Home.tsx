@@ -24,6 +24,7 @@ import HomeIntro from '../organisms/HomeIntro'
 import HomeContent from '../organisms/HomeContent'
 import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
+import OnboardingSection from './Home/Onboarding'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -132,6 +133,9 @@ export default function HomePage(): ReactElement {
   return (
     <Permission eventType="browse">
       <>
+        <section className={styles.content}>
+          <OnboardingSection />
+        </section>
         <section className={styles.intro}>
           <HomeIntro />
         </section>

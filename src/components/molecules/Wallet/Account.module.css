@@ -61,7 +61,7 @@
   opacity: 1;
   z-index: -1;
   margin: 0;
-  border: 2px solid var(--border-color-menu);
+  border: var(--border-size) solid var(--border-color-menu);
   border-radius: var(--border-radius-menu);
 }
 
