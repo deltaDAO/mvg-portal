@@ -1,0 +1,8 @@
+{
+  "title": "Import custom tokens",
+  "subtitle": "Before you can claim some test tokens you need to import the token's contract address to MetaMask",
+  "body": "Click on the button below to import the OCEAN custom test token.",
+  "image": "../../../../../src/images/onboarding/import_ocean_token.png",
+  "buttonLabel": "Import OCEAN Token",
+  "buttonSuccess": "Successfully imported OCEAN test token"
+}

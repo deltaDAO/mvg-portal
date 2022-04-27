@@ -27,6 +27,7 @@ import SectionQuotes from '../../organisms/SectionQuotes'
 import { graphql, useStaticQuery } from 'gatsby'
 import PortalTeaser, { ThirdPartyPortal } from '../../molecules/PortalTeaser'
 import HomeHero from './Hero'
+import OnboardingSection from './Onboarding'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -164,6 +165,10 @@ export default function HomePage(): ReactElement {
   return (
     <Permission eventType="browse">
       <>
+        <section className={styles.content}>
+          <OnboardingSection />
+        </section>
+
         <section className={styles.content}>
           <HomeHero />
         </section>

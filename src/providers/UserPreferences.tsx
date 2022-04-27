@@ -26,6 +26,8 @@ interface UserPreferencesValue {
   setShowPPC: (value: boolean) => void
   infiniteApproval: boolean
   setInfiniteApproval: (value: boolean) => void
+  onboardingStep: number
+  setOnboardingStep: (step: number) => void
   locale: string
 }
 
@@ -78,6 +80,10 @@ function UserPreferencesProvider({
     localStorage?.infiniteApproval || false
   )
 
+  const [onboardingStep, setOnboardingStep] = useState<number>(
+    localStorage?.onboardingStep || 0
+  )
+
   // Write values to localStorage on change
   useEffect(() => {
     setLocalStorage({
@@ -87,7 +93,8 @@ function UserPreferencesProvider({
       bookmarks,
       privacyPolicySlug,
       showPPC,
-      infiniteApproval
+      infiniteApproval,
+      onboardingStep
     })
   }, [
     chainIds,
@@ -96,7 +103,8 @@ function UserPreferencesProvider({
     bookmarks,
     privacyPolicySlug,
     showPPC,
-    infiniteApproval
+    infiniteApproval,
+    onboardingStep
   ])
 
   // Set ocean.js log levels, default: Error
@@ -153,7 +161,9 @@ function UserPreferencesProvider({
           addBookmark,
           removeBookmark,
           setPrivacyPolicySlug,
-          setShowPPC
+          setShowPPC,
+          onboardingStep,
+          setOnboardingStep
         } as UserPreferencesValue
       }
     >
