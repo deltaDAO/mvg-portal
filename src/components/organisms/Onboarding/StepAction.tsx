@@ -25,7 +25,7 @@ export default function StepAction({
   return (
     <div className={styles.container}>
       {loading ? (
-        <Loader message={loadingMessage} />
+        <Loader message={loadingMessage} useDefaultMessage />
       ) : completed ? (
         <Alert
           text={successMessage}

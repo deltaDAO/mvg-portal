@@ -3,17 +3,19 @@ import styles from './Loader.module.css'
 
 export default function Loader({
   message,
-  spinnerOnly = true
+  useDefaultMessage
 }: {
   message?: string
-  spinnerOnly?: boolean
+  useDefaultMessage?: boolean
 }): ReactElement {
   const displayMessage = message || 'Loading...'
 
   return (
     <div className={styles.loaderWrap}>
       <span className={styles.loader} />
-      {!spinnerOnly && <span className={styles.message}>{displayMessage}</span>}
+      {(message || useDefaultMessage) && (
+        <span className={styles.message}>{displayMessage}</span>
+      )}
     </div>
   )
 }
