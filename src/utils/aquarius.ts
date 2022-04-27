@@ -32,10 +32,13 @@ export const MAXIMUM_NUMBER_OF_PAGES_WITH_RESULTS = 476
  * @param value the value of the filter
  * @returns json structure of the es filter
  */
+type TFilterValue = string | number | boolean | number[] | string[]
+type TFilterKey = 'terms' | 'term' | 'match' | 'match_phrase'
+
 export function getFilterTerm(
   filterField: string,
-  value: string | number | boolean | number[] | string[],
-  key: 'terms' | 'term' | 'match' = 'term'
+  value: TFilterValue,
+  key: TFilterKey = 'term'
 ): FilterTerm {
   const isArray = Array.isArray(value)
   const useKey = key === 'term' ? (isArray ? 'terms' : 'term') : key
@@ -333,7 +336,8 @@ export async function getAlgorithmDatasetsForCompute(
     filters: [
       getFilterTerm(
         'service.attributes.main.privacy.publisherTrustedAlgorithms.did',
-        algorithmId
+        algorithmId,
+        'match_phrase'
       )
     ],
     sortOptions: {

@@ -9,7 +9,14 @@ import {
 import { toStringNoMS } from '.'
 import AssetModel from '../models/Asset'
 import slugify from '@sindresorhus/slugify'
-import { DDO, MetadataAlgorithm, Logger } from '@oceanprotocol/lib'
+import {
+  DDO,
+  MetadataAlgorithm,
+  File,
+  Logger,
+  EditableMetadata,
+  EditableMetadataLinks
+} from '@oceanprotocol/lib'
 
 export function transformTags(value: string): string[] {
   const originalTags = value?.split(',')
@@ -99,6 +106,29 @@ function getAlgorithmFileExtension(fileUrl: string): string {
   return splitedFileUrl[splitedFileUrl.length - 1]
 }
 
+function sanitizeUrl(url: string): string {
+  return url.replace(/javascript:/gm, '')
+}
+
+function sanitizeUrlArray<T extends File | EditableMetadataLinks>(
+  array: T[]
+): T[] {
+  return [
+    {
+      ...array[0],
+      url: sanitizeUrl(array[0].url)
+    }
+  ]
+}
+
+function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
+  value: string | T[]
+): T[] {
+  return (
+    typeof value !== 'string' && value?.length > 0 && sanitizeUrlArray(value)
+  )
+}
+
 export function transformPublishFormToMetadata(
   {
     name,
@@ -113,6 +143,8 @@ export function transformPublishFormToMetadata(
 ): MetadataMarket {
   const currentTime = toStringNoMS(new Date())
 
+  const transformedLinks = getValidUrlArrayContent(links)
+
   const metadata: MetadataMarket = {
     main: {
       ...AssetModel.main,
@@ -120,14 +152,14 @@ export function transformPublishFormToMetadata(
       author,
       dateCreated: ddo ? ddo.created : currentTime,
       datePublished: '',
-      files: typeof files !== 'string' && files,
+      files: getValidUrlArrayContent(files),
       license: 'https://market.oceanprotocol.com/terms'
     },
     additionalInformation: {
       ...AssetModel.additionalInformation,
       description,
       tags: transformTags(tags),
-      links: typeof links !== 'string' ? links : [],
+      links: transformedLinks,
       termsAndConditions
     }
   }
@@ -212,7 +244,7 @@ export function transformPublishAlgorithmFormToMetadata(
   ddo?: DDO
 ): MetadataMarket {
   const currentTime = toStringNoMS(new Date())
-  const fileUrl = typeof files !== 'string' && files[0].url
+  const fileUrl = typeof files !== 'string' && sanitizeUrl(files[0].url)
   const algorithmLanguage = getAlgorithmFileExtension(fileUrl)
   const algorithm = getAlgorithmComponent(
     image,
@@ -227,7 +259,7 @@ export function transformPublishAlgorithmFormToMetadata(
       type: 'algorithm',
       author,
       dateCreated: ddo ? ddo.created : currentTime,
-      files: typeof files !== 'string' && files,
+      files: getValidUrlArrayContent(files),
       license: 'https://market.oceanprotocol.com/terms',
       algorithm
     },

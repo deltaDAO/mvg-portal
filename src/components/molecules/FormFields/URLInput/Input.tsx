@@ -1,9 +1,14 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import Button from '../../../atoms/Button'
 import { FieldInputProps, useField } from 'formik'
 import Loader from '../../../atoms/Loader'
 import styles from './Input.module.css'
 import InputGroup from '../../../atoms/Input/InputGroup'
+import isUrl from 'is-url-superb'
+
+const isSanitizedUrl = (url: string): boolean => {
+  return url !== '' && isUrl(url) && !url.includes('javascript:')
+}
 
 export default function URLInput({
   submitText,
@@ -17,6 +22,16 @@ export default function URLInput({
 }): ReactElement {
   const [field, meta] = useField(props as FieldInputProps<any>)
 
+  const [buttonDisabled, setButtonDisabled] = useState(true)
+
+  useEffect(() => {
+    if (!field?.value || field?.value?.length === 0) return
+
+    const isValueValid = isSanitizedUrl(field.value) && !meta.error
+
+    setButtonDisabled(!isValueValid)
+  }, [field?.value, meta?.error])
+
   return (
     <InputGroup>
       <input
@@ -28,9 +43,8 @@ export default function URLInput({
 
       <Button
         style="primary"
-        size="small"
         onClick={(e: React.SyntheticEvent) => e.preventDefault()}
-        disabled={!field.value}
+        disabled={buttonDisabled}
       >
         {isLoading ? <Loader /> : submitText}
       </Button>
