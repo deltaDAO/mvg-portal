@@ -3,7 +3,7 @@ import styles from './Loader.module.css'
 
 export default function Loader({
   message,
-  spinnerOnly
+  spinnerOnly = true
 }: {
   message?: string
   spinnerOnly?: boolean

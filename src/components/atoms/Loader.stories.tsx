@@ -7,7 +7,7 @@ export default {
   decorators: [(storyFn: any) => <Center>{storyFn()}</Center>]
 }
 
-export const Normal = () => <Loader spinnerOnly />
+export const Normal = () => <Loader />
 
 export const WithMessage = () => (
   <Loader message="Crunching all the tech for you..." />

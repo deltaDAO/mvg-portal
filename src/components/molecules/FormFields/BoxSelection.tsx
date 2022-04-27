@@ -38,7 +38,7 @@ export default function BoxSelection({
   return (
     <div className={styleClassesWrapper}>
       {!options ? (
-        <Loader spinnerOnly />
+        <Loader />
       ) : (
         options.map((value: BoxSelectionOption) => (
           <div key={value.name}>

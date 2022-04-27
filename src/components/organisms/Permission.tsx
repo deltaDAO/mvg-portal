@@ -63,7 +63,7 @@ export default function Permission({
     <>
       <Alert text={errorMessage} state={messageState} />
       <br />
-      <Loader spinnerOnly />
+      <Loader />
     </>
   )
 }

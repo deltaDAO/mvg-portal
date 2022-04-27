@@ -46,7 +46,7 @@ export default function URLInput({
         onClick={(e: React.SyntheticEvent) => e.preventDefault()}
         disabled={buttonDisabled}
       >
-        {isLoading ? <Loader spinnerOnly /> : submitText}
+        {isLoading ? <Loader /> : submitText}
       </Button>
     </InputGroup>
   )

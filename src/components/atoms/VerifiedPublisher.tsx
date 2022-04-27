@@ -49,7 +49,7 @@ export default function VerifiedPublisher({
 
   return loading || claimingCredentials ? (
     <div className={styles.loader}>
-      <Loader spinnerOnly />
+      <Loader />
       <span>verifying...</span>
     </div>
   ) : verified ? (

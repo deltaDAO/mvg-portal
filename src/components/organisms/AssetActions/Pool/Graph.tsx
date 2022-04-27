@@ -252,7 +252,7 @@ export default function Graph(): ReactElement {
   return (
     <div className={styles.graphWrap}>
       {isLoading ? (
-        <Loader spinnerOnly />
+        <Loader />
       ) : error ? (
         <small>{error.message}</small>
       ) : (
