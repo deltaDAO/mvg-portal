@@ -1,6 +1,6 @@
 import { graphql, useStaticQuery } from 'gatsby'
 import axios from 'axios'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
 import { useWeb3 } from '../../../../../providers/Web3'
@@ -59,7 +59,10 @@ export default function ClaimTokens(): ReactElement {
     image,
     buttons
   }: ClaimTokensStep<OnboardingStep> = data.file.childStepsJson
-  const { accountId, balance, networkId, web3Provider } = useWeb3()
+  const { accountId, balance, getUserBalance, networkId, web3Provider } =
+    useWeb3()
+  const balanceRef = useRef(balance)
+  balanceRef.current = balance
 
   const [gxState, setGxState] = useState({
     loading: false,
@@ -76,12 +79,44 @@ export default function ClaimTokens(): ReactElement {
     if (networkId !== GX_NETWORK_ID) {
       setGxState({ ...gxState, completed: false })
       setOceanState({ ...oceanState, completed: false })
-      return
     }
+  }, [accountId, networkId])
 
-    setGxState({ ...gxState, completed: Number(balance?.eth) > 0 })
-    setOceanState({ ...oceanState, completed: Number(balance?.ocean) > 0 })
-  }, [accountId, balance, networkId])
+  useEffect(() => {
+    let gxTimer = 0
+    if (gxState.completed) return
+
+    if (gxState.loading) {
+      gxTimer = window.setInterval(async () => {
+        await getUserBalance()
+        if (Number(balanceRef.current.eth) > 0) {
+          setGxState({ completed: true, touched: true, loading: false })
+          clearInterval(gxTimer)
+        }
+      }, 1000)
+    }
+    return () => {
+      clearInterval(gxTimer)
+    }
+  }, [getUserBalance, gxState])
+
+  useEffect(() => {
+    let oceanTimer = 0
+    if (oceanState.completed) return
+
+    if (oceanState.loading) {
+      oceanTimer = window.setInterval(async () => {
+        await getUserBalance()
+        if (Number(balanceRef.current.ocean) > 0) {
+          setOceanState({ completed: true, touched: true, loading: false })
+          clearInterval(oceanTimer)
+        }
+      }, 1000)
+    }
+    return () => {
+      clearInterval(oceanTimer)
+    }
+  }, [getUserBalance, oceanState])
 
   const claimTokens = async (address: string, token: Tokens) => {
     if (networkId !== GX_NETWORK_ID) {
@@ -93,6 +128,16 @@ export default function ClaimTokens(): ReactElement {
           balance: null
         })
       )
+    }
+
+    // Check if the user already have the tokens they are requesting
+    if (token === Tokens.GX && Number(balance.eth) > 0) {
+      setGxState({ completed: true, loading: false, touched: false })
+      return
+    }
+    if (token === Tokens.OCEAN && Number(balance.ocean) > 0) {
+      setOceanState({ completed: true, loading: false, touched: false })
+      return
     }
 
     token === Tokens.GX
@@ -108,9 +153,8 @@ export default function ClaimTokens(): ReactElement {
         params: { address }
       })
     } catch {
-      token === Tokens.GX
-        ? setGxState({ completed: true, touched: true, loading: false })
-        : setOceanState({ completed: true, touched: true, loading: false })
+      // Workaround until we deploy our own faucet:
+      // the api call is going to fail due to a CORS error but the tokens are sent anyway
     }
   }
 
