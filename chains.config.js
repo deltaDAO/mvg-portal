@@ -9,8 +9,8 @@ const chains = [
     name: 'Gaia-X',
     networkId: GX_NETWORK_ID,
     nodeUri: 'https://rpc.gaiaxtestnet.oceanprotocol.com/',
-    providerUri: 'https://provider.gaiax.delta-dao.com/',
-    explorerUri: 'https://blockscout.gaiaxtestnet.oceanprotocol.com/',
+    providerUri: 'https://provider.lab.gaia-x.eu/',
+    explorerUri: 'https://exchangelog.minimal-gaia-x.eu',
     isDefault: true
   }
 ]
