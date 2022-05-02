@@ -71,13 +71,6 @@ module.exports = {
         cache_busting_mode: 'none'
       }
     },
-    'gatsby-plugin-webpack-size',
-    {
-      resolve: 'gatsby-plugin-use-dark-mode',
-      options: {
-        ...appConfig.darkModeConfig,
-        minify: true
-      }
-    }
+    'gatsby-plugin-webpack-size'
   ]
 }

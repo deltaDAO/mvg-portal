@@ -11,8 +11,6 @@ import {
 import Loader from '../../../atoms/Loader'
 import { formatPrice } from '../../../atoms/Price/PriceUnit'
 import { useUserPreferences } from '../../../../providers/UserPreferences'
-import useDarkMode from 'use-dark-mode'
-import { darkModeConfig } from '../../../../../app.config'
 import Button from '../../../atoms/Button'
 import { Logger } from '@oceanprotocol/lib'
 import { useAsset } from '../../../../providers/Asset'
@@ -56,7 +54,7 @@ const tooltipOptions: Partial<ChartTooltipOptions> = {
   caretSize: 7
 }
 
-function getOptions(locale: string, isDarkMode: boolean): ChartOptions {
+function getOptions(locale: string): ChartOptions {
   return {
     layout: {
       padding: {
@@ -68,10 +66,10 @@ function getOptions(locale: string, isDarkMode: boolean): ChartOptions {
     },
     tooltips: {
       ...tooltipOptions,
-      backgroundColor: isDarkMode ? `#141414` : `#fff`,
-      titleFontColor: isDarkMode ? `#e2e2e2` : `#303030`,
-      bodyFontColor: isDarkMode ? `#fff` : `#141414`,
-      borderColor: isDarkMode ? `#41474e` : `#e2e2e2`,
+      backgroundColor: `#fff`,
+      titleFontColor: `#303030`,
+      bodyFontColor: `#141414`,
+      borderColor: `#e2e2e2`,
       callbacks: {
         label: (tooltipItem: ChartTooltipItem) =>
           `${formatPrice(`${tooltipItem.yLabel}`, locale)} OCEAN`
@@ -90,8 +88,8 @@ function getOptions(locale: string, isDarkMode: boolean): ChartOptions {
           display: false
           // gridLines: {
           //   drawBorder: false,
-          //   color: isDarkMode ? '#303030' : '#e2e2e2',
-          //   zeroLineColor: isDarkMode ? '#303030' : '#e2e2e2'
+          //   color: '#e2e2e2',
+          //   zeroLineColor: '#e2e2e2'
           // },
           // ticks: { display: false }
         }
@@ -120,7 +118,6 @@ const poolHistory = gql`
 
 export default function Graph(): ReactElement {
   const { locale } = useUserPreferences()
-  const darkMode = useDarkMode(false, darkModeConfig)
   const [options, setOptions] = useState<ChartOptions>()
   const [graphType, setGraphType] = useState<GraphType>('liquidity')
 
@@ -174,9 +171,9 @@ export default function Graph(): ReactElement {
 
   useEffect(() => {
     Logger.log('Fired GraphOptions!')
-    const options = getOptions(locale, darkMode.value)
+    const options = getOptions(locale)
     setOptions(options)
-  }, [locale, darkMode.value])
+  }, [locale])
 
   useEffect(() => {
     getPoolHistory()
