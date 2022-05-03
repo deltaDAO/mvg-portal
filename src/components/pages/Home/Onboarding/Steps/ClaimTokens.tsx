@@ -76,6 +76,10 @@ export default function ClaimTokens(): ReactElement {
   })
 
   useEffect(() => {
+    location.reload()
+  }, [accountId])
+
+  useEffect(() => {
     getUserBalance()
 
     setGxState({
