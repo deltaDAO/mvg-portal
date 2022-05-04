@@ -1,7 +1,7 @@
 .preferences {
   padding: calc(var(--spacer) / 6) calc(var(--spacer) / 3);
   cursor: pointer;
-  border: 2px solid var(--border-color-menu);
+  border: var(--border-size) solid var(--border-color-menu);
   border-radius: var(--border-radius-menu);
   background-color: var(--background-content);
   white-space: nowrap;

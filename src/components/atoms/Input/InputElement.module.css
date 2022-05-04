@@ -163,7 +163,7 @@
 .checkbox::after {
   width: 6px;
   height: 9px;
-  border: 2px solid var(--brand-white);
+  border: var(--border-size) solid var(--brand-white);
   border-top: 0;
   border-left: 0;
   left: 5px;
@@ -233,7 +233,7 @@ input[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   margin-top: -0.5rem;
   background: var(--brand-gradient);
-  border: 2px solid var(--border-color);
+  border: var(--border-size) solid var(--border-color);
   width: var(--font-size-h4);
   height: var(--font-size-h4);
   border-radius: 50%;
@@ -243,7 +243,7 @@ input[type='range']::-webkit-slider-thumb {
 
 input[type='range']::-moz-range-thumb {
   background: var(--brand-gradient);
-  border: 2px solid var(--border-color);
+  border: var(--border-size) solid var(--border-color);
   width: var(--font-size-large);
   height: var(--font-size-large);
   border-radius: 50%;

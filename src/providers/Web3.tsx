@@ -41,6 +41,7 @@ interface Web3ProviderValue {
   web3Loading: boolean
   connect: () => Promise<void>
   logout: () => Promise<void>
+  getUserBalance: () => Promise<void>
 }
 
 const web3ModalTheme = {
@@ -359,7 +360,8 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
         isTestnet,
         web3Loading,
         connect,
-        logout
+        logout,
+        getUserBalance
       }}
     >
       {children}
