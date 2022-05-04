@@ -77,10 +77,17 @@ export default function ClaimTokens(): ReactElement {
 
   useEffect(() => {
     getUserBalance()
-    if (networkId !== GX_NETWORK_ID) {
-      setGxState({ ...gxState, completed: false })
-      setOceanState({ ...oceanState, completed: false })
-    }
+
+    setGxState({
+      loading: false,
+      touched: false,
+      completed: false
+    })
+    setOceanState({
+      loading: false,
+      touched: false,
+      completed: false
+    })
   }, [accountId, networkId])
 
   useEffect(() => {
@@ -120,7 +127,7 @@ export default function ClaimTokens(): ReactElement {
   }, [getUserBalance, oceanState])
 
   const claimTokens = async (address: string, token: Tokens) => {
-    if (networkId !== GX_NETWORK_ID) {
+    if (!accountId || networkId !== GX_NETWORK_ID) {
       toast.error(
         getErrorMessage({
           accountId,
@@ -129,15 +136,16 @@ export default function ClaimTokens(): ReactElement {
           balance: null
         })
       )
+      return
     }
 
     await getUserBalance()
     // Check if the user already have the tokens they are requesting
-    if (token === Tokens.GX && Number(balance.eth) > 0) {
+    if (token === Tokens.GX && Number(balanceRef.current.eth) > 0) {
       setGxState({ completed: true, loading: false, touched: false })
       return
     }
-    if (token === Tokens.OCEAN && Number(balance.ocean) > 0) {
+    if (token === Tokens.OCEAN && Number(balanceRef.current.ocean) > 0) {
       setOceanState({ completed: true, loading: false, touched: false })
       return
     }
