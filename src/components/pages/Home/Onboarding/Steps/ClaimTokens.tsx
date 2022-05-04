@@ -186,6 +186,7 @@ export default function ClaimTokens(): ReactElement {
         body={body}
         image={image.childImageSharp.original.src}
         actions={actions}
+        refreshOption
       />
     </div>
   )

@@ -39,6 +39,17 @@
   width: 100%;
 }
 
+.refresh button,
+.refresh button:hover,
+.refresh button:focus {
+  display: flex;
+  gap: 1rem;
+}
+
+.refresh svg {
+  fill: var(--brand-pink);
+}
+
 @media screen and (min-width: 60rem) {
   .content {
     flex-direction: row;
