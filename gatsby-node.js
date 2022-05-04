@@ -2,16 +2,11 @@ const createFields = require('./gatsby/createFields')
 const createMarkdownPages = require('./gatsby/createMarkdownPages')
 const execSync = require('child_process').execSync
 
-// Write out repo metadata
-execSync(`node ./scripts/write-repo-metadata > repo-metadata.json`, {
-  stdio: 'inherit'
-})
-
 // Generate GraphQl typings for urql
 // execSync(`npm run graphql:graphTypes`, { stdio: 'inherit' })
 
 // Generate Apollo typings
-execSync(`npm run apollo:codegen`, { stdio: 'inherit' })
+// execSync(`npm run apollo:codegen`, { stdio: 'inherit' })
 
 // Fetch EVM networks metadata
 execSync(

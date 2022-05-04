@@ -41,10 +41,7 @@ module.exports = {
     'gatsby-transformer-sharp',
     'gatsby-transformer-json',
     {
-      resolve: `gatsby-transformer-remark`,
-      options: {
-        plugins: [`gatsby-remark-autolink-headers`]
-      }
+      resolve: `gatsby-transformer-remark`
     },
     {
       resolve: 'gatsby-plugin-svgr',
