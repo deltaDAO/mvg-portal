@@ -76,6 +76,7 @@ export default function ClaimTokens(): ReactElement {
   })
 
   useEffect(() => {
+    getUserBalance()
     if (networkId !== GX_NETWORK_ID) {
       setGxState({ ...gxState, completed: false })
       setOceanState({ ...oceanState, completed: false })
@@ -130,6 +131,7 @@ export default function ClaimTokens(): ReactElement {
       )
     }
 
+    await getUserBalance()
     // Check if the user already have the tokens they are requesting
     if (token === Tokens.GX && Number(balance.eth) > 0) {
       setGxState({ completed: true, loading: false, touched: false })
