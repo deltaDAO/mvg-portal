@@ -22,7 +22,6 @@
     "deploy:s3": "./scripts/deploy-s3.sh",
     "postinstall": "husky install",
     "apollo:codegen": "apollo client:codegen --target typescript --tsFileExtension=d.ts --outputFlat src/@types/apollo/",
-    "graphql:codegen": "graphql-codegen --config codegen.yml",
     "graphql:graphTypes": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
@@ -37,7 +36,6 @@
     "@tippyjs/react": "^4.2.5",
     "@urql/introspection": "^0.3.0",
     "@walletconnect/web3-provider": "^1.6.5",
-    "apollo": "^2.33.10",
     "axios": "^0.21.1",
     "chart.js": "^2.9.4",
     "classnames": "^2.3.1",
@@ -95,11 +93,11 @@
     "yup": "^0.32.9"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.6.2",
+    "@graphql-codegen/cli": "1.21.6",
     "@graphql-codegen/introspection": "1.18.2",
-    "@graphql-codegen/typescript": "2.4.8",
-    "@graphql-codegen/typescript-operations": "2.3.5",
-    "@graphql-codegen/urql-introspection": "2.1.1",
+    "@graphql-codegen/typescript": "1.22.4",
+    "@graphql-codegen/typescript-operations": "^1.18.3",
+    "@graphql-codegen/typescript-react-apollo": "2.3.0",
     "@svgr/webpack": "^5.5.0",
     "@testing-library/jest-dom": "^5.12.0",
     "@testing-library/react": "^11.2.7",
@@ -120,6 +118,7 @@
     "@types/yup": "^0.29.11",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
+    "apollo": "^2.33.4",
     "eslint": "^7.27.0",
     "eslint-config-oceanprotocol": "^1.5.0",
     "eslint-config-prettier": "^8.3.0",
