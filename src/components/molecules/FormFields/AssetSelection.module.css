@@ -8,8 +8,10 @@
   min-height: 200px;
 }
 
-.disabled {
+.disabled,
+.loading {
   opacity: 0.5;
+  pointer-events: none;
 }
 
 .selection [class*='loaderWrap'] {

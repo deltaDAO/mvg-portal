@@ -457,6 +457,7 @@ export default function Compute({
           <FormStartComputeDataset
             algorithms={algorithmList}
             ddoListAlgorithms={ddoAlgorithmList}
+            selectedAlgorithm={selectedAlgorithmAsset}
             setSelectedAlgorithm={setSelectedAlgorithmAsset}
             isLoading={isJobStarting}
             isComputeButtonDisabled={isComputeButtonDisabled}
@@ -478,6 +479,7 @@ export default function Compute({
             selectedComputeAssetTimeout={algorithmTimeout}
             stepText={pricingStepText || 'Starting Compute Job...'}
             algorithmPrice={algorithmPrice}
+            hasAlgorithmPriceUpdated={hasAlgorithmPriceUpdated}
             isConsumable={isConsumable}
             consumableFeedback={consumableFeedback}
           />
