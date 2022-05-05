@@ -73,7 +73,7 @@ export default function PriceOutput({
     <div className={styles.priceComponent}>
       {loading ? (
         <div className={styles.loader}>
-          <Loader message="Fetching asset total price" />
+          <Loader message="Fetching assets total price" />
         </div>
       ) : (
         <>
