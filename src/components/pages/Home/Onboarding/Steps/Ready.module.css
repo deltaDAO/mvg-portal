@@ -1,0 +1,36 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacer);
+}
+
+.body {
+  width: fit-content;
+  max-width: 30rem;
+  margin: 0 auto;
+}
+
+.body p {
+  margin-bottom: 0;
+  color: var(--brand-grey);
+}
+
+.body div {
+  border-color: var(--brand-grey);
+}
+
+.image {
+  object-fit: contain;
+  width: 100%;
+  max-height: 25rem;
+}
+
+.footer {
+  max-width: var(--break-point--small);
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 0;
+}

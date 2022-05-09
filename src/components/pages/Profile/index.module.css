@@ -17,7 +17,7 @@
     padding: 0;
   }
   .profile div[class*='tabs'] li[class*='selected'] {
-    border: 2px solid var(--border-color);
+    border: var(--border-size) solid var(--border-color);
   }
 }
 

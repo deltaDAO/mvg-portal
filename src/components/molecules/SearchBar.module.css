@@ -44,7 +44,7 @@
   left: calc(var(--spacer) / 2);
   right: 0;
   z-index: 2;
-  border: 2px solid var(--border-color-menu);
+  border: var(--border-size) solid var(--border-color-menu);
   border-radius: var(--border-radius-menu);
   cursor: text;
 }
