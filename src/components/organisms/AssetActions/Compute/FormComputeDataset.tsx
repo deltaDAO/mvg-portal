@@ -199,7 +199,7 @@ export default function FormStartCompute({
         algorithmPrice={algorithmPrice}
         symbol={oceanSymbol}
         totalPrice={totalPrice}
-        loading={selectedAlgorithm && !hasAlgorithmPriceUpdated}
+        isLoading={selectedAlgorithm && !hasAlgorithmPriceUpdated}
       />
 
       <ButtonBuy

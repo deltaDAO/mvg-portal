@@ -16,7 +16,7 @@ interface PriceOutputProps {
   hasDatatokenSelectedComputeAsset: boolean
   algorithmPrice: BestPrice
   selectedComputeAssetTimeout: string
-  loading?: boolean
+  isLoading?: boolean
 }
 
 function Row({
@@ -65,13 +65,13 @@ export default function PriceOutput({
   hasDatatokenSelectedComputeAsset,
   algorithmPrice,
   selectedComputeAssetTimeout,
-  loading
+  isLoading
 }: PriceOutputProps): ReactElement {
   const { price } = useAsset()
 
   return (
     <div className={styles.priceComponent}>
-      {loading ? (
+      {isLoading ? (
         <div className={styles.loader}>
           <Loader message="Fetching assets total price" />
         </div>
