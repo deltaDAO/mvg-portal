@@ -48,6 +48,7 @@ const contentQuery = graphql`
 export default function FormStartCompute({
   algorithms,
   ddoListAlgorithms,
+  selectedAlgorithm,
   setSelectedAlgorithm,
   isLoading,
   isComputeButtonDisabled,
@@ -67,11 +68,13 @@ export default function FormStartCompute({
   selectedComputeAssetTimeout,
   stepText,
   algorithmPrice,
+  hasAlgorithmPriceUpdated,
   isConsumable,
   consumableFeedback
 }: {
   algorithms: AssetSelectionAsset[]
   ddoListAlgorithms: DDO[]
+  selectedAlgorithm: DDO
   setSelectedAlgorithm: React.Dispatch<React.SetStateAction<DDO>>
   isLoading: boolean
   isComputeButtonDisabled: boolean
@@ -91,6 +94,7 @@ export default function FormStartCompute({
   selectedComputeAssetTimeout?: string
   stepText: string
   algorithmPrice: BestPrice
+  hasAlgorithmPriceUpdated: boolean
   isConsumable: boolean
   consumableFeedback: string
 }): ReactElement {
@@ -179,6 +183,7 @@ export default function FormStartCompute({
           {...field}
           options={algorithms}
           component={Input}
+          loading={selectedAlgorithm && isComputeButtonDisabled}
         />
       ))}
 
@@ -194,6 +199,7 @@ export default function FormStartCompute({
         algorithmPrice={algorithmPrice}
         symbol={oceanSymbol}
         totalPrice={totalPrice}
+        isLoading={selectedAlgorithm && !hasAlgorithmPriceUpdated}
       />
 
       <ButtonBuy

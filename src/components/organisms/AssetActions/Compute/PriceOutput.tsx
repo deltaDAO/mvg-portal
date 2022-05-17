@@ -1,6 +1,7 @@
 import React, { ReactElement } from 'react'
 import { BestPrice } from '../../../../models/BestPrice'
 import { useAsset } from '../../../../providers/Asset'
+import Loader from '../../../atoms/Loader'
 import PriceUnit from '../../../atoms/Price/PriceUnit'
 import Tooltip from '../../../atoms/Tooltip'
 import styles from './PriceOutput.module.css'
@@ -15,6 +16,7 @@ interface PriceOutputProps {
   hasDatatokenSelectedComputeAsset: boolean
   algorithmPrice: BestPrice
   selectedComputeAssetTimeout: string
+  isLoading?: boolean
 }
 
 function Row({
@@ -62,35 +64,45 @@ export default function PriceOutput({
   hasPreviousOrderSelectedComputeAsset,
   hasDatatokenSelectedComputeAsset,
   algorithmPrice,
-  selectedComputeAssetTimeout
+  selectedComputeAssetTimeout,
+  isLoading
 }: PriceOutputProps): ReactElement {
   const { price } = useAsset()
 
   return (
     <div className={styles.priceComponent}>
-      You will pay <PriceUnit price={`${totalPrice}`} symbol={symbol} small />
-      <Tooltip
-        content={
-          <div className={styles.calculation}>
-            <Row
-              hasPreviousOrder={hasPreviousOrder}
-              hasDatatoken={hasDatatoken}
-              price={price?.value}
-              timeout={assetTimeout}
-              symbol={symbol}
-            />
-            <Row
-              hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
-              hasDatatoken={hasDatatokenSelectedComputeAsset}
-              price={algorithmPrice?.value}
-              timeout={selectedComputeAssetTimeout}
-              symbol={symbol}
-              sign="+"
-            />
-            <Row price={totalPrice} symbol={symbol} sign="=" />
-          </div>
-        }
-      />
+      {isLoading ? (
+        <div className={styles.loader}>
+          <Loader message="Fetching assets total price" />
+        </div>
+      ) : (
+        <>
+          You will pay{' '}
+          <PriceUnit price={`${totalPrice}`} symbol={symbol} small />
+          <Tooltip
+            content={
+              <div className={styles.calculation}>
+                <Row
+                  hasPreviousOrder={hasPreviousOrder}
+                  hasDatatoken={hasDatatoken}
+                  price={price?.value}
+                  timeout={assetTimeout}
+                  symbol={symbol}
+                />
+                <Row
+                  hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
+                  hasDatatoken={hasDatatokenSelectedComputeAsset}
+                  price={algorithmPrice?.value}
+                  timeout={selectedComputeAssetTimeout}
+                  symbol={symbol}
+                  sign="+"
+                />
+                <Row price={totalPrice} symbol={symbol} sign="=" />
+              </div>
+            }
+          />
+        </>
+      )}
     </div>
   )
 }

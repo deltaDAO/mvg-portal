@@ -16,6 +16,10 @@
   display: inline-block !important;
 }
 
+.loader {
+  display: inline;
+}
+
 .calculation {
   min-width: 12rem;
 }
