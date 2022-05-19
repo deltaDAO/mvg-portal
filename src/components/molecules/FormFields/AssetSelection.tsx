@@ -26,12 +26,14 @@ export default function AssetSelection({
   assets,
   multiple,
   disabled,
+  loading,
   tutorial,
   ...props
 }: {
   assets: AssetSelectionAsset[]
   multiple?: boolean
   disabled?: boolean
+  loading?: boolean
   tutorial?: boolean
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
@@ -47,7 +49,7 @@ export default function AssetSelection({
   }
 
   return (
-    <div className={`${styles.selection} ${disabled ? styles.disabled : ''}`}>
+    <div className={cx({ selection: true, disabled, loading })}>
       <InputElement
         type="search"
         name="search"
