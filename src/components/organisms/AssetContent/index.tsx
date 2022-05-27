@@ -21,7 +21,7 @@ import EditAdvancedSettings from '../AssetActions/Edit/EditAdvancedSettings'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import NetworkName from '../../atoms/NetworkName'
 import VerifiedPublisher from '../../atoms/VerifiedPublisher'
-
+import { getSelfDescription } from '../../../utils/metadata'
 export interface AssetContentProps {
   path?: string
   tutorial?: boolean
@@ -58,7 +58,8 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const [showEditAdvancedSettings, setShowEditAdvancedSettings] =
     useState<boolean>()
   const [isOwner, setIsOwner] = useState(false)
-  const { ddo, price, metadata, type } = useAsset()
+  const [selfDescription, setSelfDescription] = useState<string>()
+  const { ddo, price, metadata, type, isSelfDescriptionVerified } = useAsset()
   const { appConfig } = useSiteMetadata()
   const { tutorial } = props
 
@@ -93,6 +94,12 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     setShowEditAdvancedSettings(true)
   }
 
+  if (isSelfDescriptionVerified) {
+    getSelfDescription(metadata?.additionalInformation?.gxSelfDescription).then(
+      (selfDescription) => setSelfDescription(selfDescription)
+    )
+  }
+
   return showEdit && !tutorial ? (
     <Edit setShowEdit={setShowEdit} isComputeType={isComputeType} />
   ) : showEditCompute ? (
@@ -103,7 +110,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     <>
       <div className={styles.networkWrap}>
         <NetworkName networkId={ddo.chainId} className={styles.network} />
-        <VerifiedPublisher address={owner} className={styles.verified} />
+        <VerifiedPublisher address={owner} />
       </div>
 
       <article className={tutorial ? styles.gridTutorial : styles.grid}>
@@ -126,6 +133,12 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
                   className={styles.description}
                   text={metadata?.additionalInformation?.description || ''}
                 />
+                {isSelfDescriptionVerified && (
+                  <Markdown
+                    className={styles.description}
+                    text={selfDescription || ''}
+                  />
+                )}
 
                 <MetaSecondary />
 

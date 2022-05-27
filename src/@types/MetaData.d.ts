@@ -9,6 +9,7 @@ import { PriceOptions } from '../hooks/usePricing'
 
 export interface AdditionalInformationMarket extends AdditionalInformation {
   links?: File[]
+  gxSelfDescription?: string
   termsAndConditions: boolean
 }
 

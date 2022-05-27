@@ -129,6 +129,45 @@ function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
   )
 }
 
+export async function verifySelfDescription(url: string): Promise<boolean> {
+  if (!url) return false
+
+  try {
+    const response = await axios.post(
+      'https://compliance.gaia-x.eu/api/v1/participant/verify',
+      { url }
+    )
+    if (!response || response.status !== 200) {
+      toast.error('Participant credential could not be verified.')
+      return false
+    }
+    return true
+  } catch (error) {
+    Logger.error(error.message)
+    toast.error(
+      'There was an error trying to verify the provided self-description. Please check URL and try again'
+    )
+    return false
+  }
+}
+
+export async function getSelfDescription(url: string): Promise<string> {
+  if (!url) return
+
+  try {
+    const selfDescription = await axios.get(url)
+    const formattedSelfDescription = JSON.stringify(
+      '```\n' + selfDescription + '\n```',
+      null,
+      2
+    )
+    return '## Participant Self-Description\n' + formattedSelfDescription
+  } catch (error) {
+    Logger.error(error.message)
+    toast.error('There was an error downloading the provided self-description.')
+  }
+}
+
 export function transformPublishFormToMetadata(
   {
     name,

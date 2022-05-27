@@ -19,6 +19,7 @@ import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
 import { BestPrice } from '../models/BestPrice'
 import { useCancelToken } from '../hooks/useCancelToken'
+import { verifySelfDescription } from '../utils/metadata'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -34,6 +35,7 @@ interface AssetProviderValue {
   refreshInterval: number
   isAssetNetwork: boolean
   loading: boolean
+  isSelfDescriptionVerified: boolean
   refreshDdo: (token?: CancelToken) => Promise<void>
 }
 
@@ -64,6 +66,8 @@ function AssetProvider({
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
+  const [isSelfDescriptionVerified, setIsSelfDescriptionVerified] =
+    useState<boolean>()
   const newCancelToken = useCancelToken()
   const fetchDdo = async (token?: CancelToken) => {
     Logger.log('[asset] Init asset, get DDO')
@@ -150,6 +154,11 @@ function AssetProvider({
     setTitle(attributes?.main.name)
     setType(attributes.main.type)
     setOwner(ddo.publicKey[0].owner)
+    setIsSelfDescriptionVerified(
+      await verifySelfDescription(
+        attributes.additionalInformation?.gxSelfDescription
+      )
+    )
     Logger.log('[asset] Got Metadata from DDO', attributes)
 
     setIsInPurgatory(ddo.isInPurgatory === 'true')
@@ -187,7 +196,8 @@ function AssetProvider({
           refreshInterval,
           loading,
           refreshDdo,
-          isAssetNetwork
+          isAssetNetwork,
+          isSelfDescriptionVerified
         } as AssetProviderValue
       }
     >
