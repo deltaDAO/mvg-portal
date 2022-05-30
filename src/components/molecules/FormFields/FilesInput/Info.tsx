@@ -5,16 +5,12 @@ import cleanupContentType from '../../../../utils/cleanupContentType'
 import styles from './Info.module.css'
 import { useField, useFormikContext } from 'formik'
 
-interface ExtendedFileMetadata extends FileMetadata {
-  isSelfDescriptionVerified?: boolean
-}
-
 export default function FileInfo({
   name,
   file
 }: {
   name: string
-  file: ExtendedFileMetadata
+  file: FileMetadata
 }): ReactElement {
   const { validateField } = useFormikContext()
   const [field, meta, helpers] = useField(name)
@@ -31,7 +27,7 @@ export default function FileInfo({
         <li>URL confirmed</li>
         {file?.contentLength && <li>{prettySize(+file.contentLength)}</li>}
         {file?.contentType && <li>{cleanupContentType(file.contentType)}</li>}
-        {file?.isSelfDescriptionVerified && <li>Valid self-description</li>}
+        {field.name === 'gxSelfDescription' && <li>Valid self-description</li>}
       </ul>
       <button
         className={styles.removeButton}

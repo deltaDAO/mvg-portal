@@ -28,8 +28,7 @@ export default function FilesInput(props: InputProps): ReactElement {
           checkedFile &&
             helpers.setValue([
               {
-                url: fileUrl,
-                isSelfDescriptionVerified: checkedFile
+                url: fileUrl
               }
             ])
         } else {

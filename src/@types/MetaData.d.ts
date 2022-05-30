@@ -40,7 +40,7 @@ export interface MetadataPublishFormDataset {
   tags?: string
   links?: string | EditableMetadataLinks[]
   providerUri?: string
-  gxSelfDescription?: string
+  gxSelfDescription?: string | { url: string }
 }
 
 export interface MetadataPublishFormAlgorithm {
@@ -60,7 +60,7 @@ export interface MetadataPublishFormAlgorithm {
   entrypoint: string
   tags?: string
   providerUri?: string
-  gxSelfDescription?: string
+  gxSelfDescription?: string | { url: string }
 }
 
 export interface MetadataEditForm {

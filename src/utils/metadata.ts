@@ -176,7 +176,8 @@ export function transformPublishFormToMetadata(
     tags,
     links,
     termsAndConditions,
-    files
+    files,
+    gxSelfDescription
   }: Partial<MetadataPublishFormDataset>,
   ddo?: DDO
 ): MetadataMarket {
@@ -199,7 +200,8 @@ export function transformPublishFormToMetadata(
       description,
       tags: transformTags(tags),
       links: transformedLinks,
-      termsAndConditions
+      termsAndConditions,
+      gxSelfDescription: gxSelfDescription?.url
     }
   }
 

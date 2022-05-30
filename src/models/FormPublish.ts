@@ -29,7 +29,7 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormDataset> =
       tags: Yup.string().nullable(),
       links: Yup.array<FileMetadata[]>().nullable(),
       providerUri: Yup.string().url().nullable(),
-      gxSelfDescription: Yup.string().nullable()
+      gxSelfDescription: Yup.object().shape({ url: Yup.string() }).nullable()
     })
     .defined()
 

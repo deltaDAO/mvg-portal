@@ -32,7 +32,7 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormAlgorithm> =
       algorithmPrivacy: Yup.boolean().nullable(),
       tags: Yup.string().nullable(),
       links: Yup.array<FileMetadata[]>().nullable(),
-      gxSelfDescription: Yup.string().nullable()
+      gxSelfDescription: Yup.object().shape({ url: Yup.string() }).nullable()
     })
     .defined()
 
