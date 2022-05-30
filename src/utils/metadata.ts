@@ -156,12 +156,7 @@ export async function getSelfDescription(url: string): Promise<string> {
 
   try {
     const selfDescription = await axios.get(url)
-    const formattedSelfDescription = JSON.stringify(
-      '```\n' + selfDescription + '\n```',
-      null,
-      2
-    )
-    return '## Participant Self-Description\n' + formattedSelfDescription
+    return JSON.stringify(selfDescription, null, 2)
   } catch (error) {
     Logger.error(error.message)
     toast.error('There was an error downloading the provided self-description.')

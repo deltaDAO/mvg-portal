@@ -96,7 +96,10 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
 
   if (isSelfDescriptionVerified) {
     getSelfDescription(metadata?.additionalInformation?.selfDescription).then(
-      (selfDescription) => setSelfDescription(selfDescription)
+      (selfDescription) => {
+        const formattedSelfDescription = `## Participant Self-Description\n\`\`\`\n${selfDescription}\n\`\`\``
+        setSelfDescription(formattedSelfDescription)
+      }
     )
   }
 
