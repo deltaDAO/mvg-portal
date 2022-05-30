@@ -31,13 +31,7 @@ export default function FileInfo({
         <li>URL confirmed</li>
         {file?.contentLength && <li>{prettySize(+file.contentLength)}</li>}
         {file?.contentType && <li>{cleanupContentType(file.contentType)}</li>}
-        {file?.isSelfDescriptionVerified !== undefined && (
-          <li>
-            {file.isSelfDescriptionVerified
-              ? 'Valid self-description'
-              : 'Invalid self-description'}
-          </li>
-        )}
+        {file?.isSelfDescriptionVerified && <li>Valid self-description</li>}
       </ul>
       <button
         className={styles.removeButton}
