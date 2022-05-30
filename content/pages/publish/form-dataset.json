@@ -31,6 +31,13 @@
       "type": "files"
     },
     {
+      "name": "gxSelfDescription",
+      "label": "Participant Self-Description",
+      "placeholder": "e.g. https://file.com/participant-self-description.json",
+      "help": "Please enter the URL to a valid participant self description and click \"ADD FILE\" to validate the data. This file URL will be publicly available after publishing.",
+      "type": "gxSelfDescription"
+    },
+    {
       "name": "access",
       "label": "Access Type",
       "help": "Choose how you want your files to be accessible for the specified price.",
