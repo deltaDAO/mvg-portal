@@ -31,7 +31,8 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormAlgorithm> =
       // ---- optional fields ----
       algorithmPrivacy: Yup.boolean().nullable(),
       tags: Yup.string().nullable(),
-      links: Yup.array<FileMetadata[]>().nullable()
+      links: Yup.array<FileMetadata[]>().nullable(),
+      gxSelfDescription: Yup.string().nullable()
     })
     .defined()
 
@@ -47,6 +48,7 @@ export const initialValues: Partial<MetadataPublishFormAlgorithm> = {
   containerTag: 'latest',
   entrypoint: 'node $ALGO',
   files: '',
+  gxSelfDescription: '',
   description: '',
   algorithmPrivacy: false,
   termsAndConditions: false,

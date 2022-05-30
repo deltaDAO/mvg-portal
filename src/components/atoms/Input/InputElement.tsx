@@ -132,6 +132,8 @@ export default function InputElement({
       )
     case 'files':
       return <FilesInput name={name} {...field} {...props} />
+    case 'gxSelfDescription':
+      return <FilesInput name={name} {...field} {...props} />
     case 'providerUri':
       return <CustomProvider name={name} {...field} {...props} />
     case 'datatoken':

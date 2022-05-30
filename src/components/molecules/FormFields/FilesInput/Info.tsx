@@ -5,12 +5,16 @@ import cleanupContentType from '../../../../utils/cleanupContentType'
 import styles from './Info.module.css'
 import { useField, useFormikContext } from 'formik'
 
+interface ExtendedFileMetadata extends FileMetadata {
+  isSelfDescriptionVerified?: boolean
+}
+
 export default function FileInfo({
   name,
   file
 }: {
   name: string
-  file: FileMetadata
+  file: ExtendedFileMetadata
 }): ReactElement {
   const { validateField } = useFormikContext()
   const [field, meta, helpers] = useField(name)
@@ -25,8 +29,15 @@ export default function FileInfo({
       <h3 className={styles.url}>{file.url}</h3>
       <ul>
         <li>URL confirmed</li>
-        {file.contentLength && <li>{prettySize(+file.contentLength)}</li>}
-        {file.contentType && <li>{cleanupContentType(file.contentType)}</li>}
+        {file?.contentLength && <li>{prettySize(+file.contentLength)}</li>}
+        {file?.contentType && <li>{cleanupContentType(file.contentType)}</li>}
+        {file?.isSelfDescriptionVerified !== undefined && (
+          <li>
+            {file.isSelfDescriptionVerified
+              ? 'Valid self-description'
+              : 'Invalid self-description'}
+          </li>
+        )}
       </ul>
       <button
         className={styles.removeButton}
