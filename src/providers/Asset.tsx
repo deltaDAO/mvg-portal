@@ -156,7 +156,7 @@ function AssetProvider({
     setOwner(ddo.publicKey[0].owner)
     setIsSelfDescriptionVerified(
       await verifySelfDescription(
-        attributes.additionalInformation?.gxSelfDescription
+        attributes.additionalInformation?.selfDescription
       )
     )
     Logger.log('[asset] Got Metadata from DDO', attributes)

@@ -27,7 +27,7 @@ export default function FileInfo({
         <li>URL confirmed</li>
         {file?.contentLength && <li>{prettySize(+file.contentLength)}</li>}
         {file?.contentType && <li>{cleanupContentType(file.contentType)}</li>}
-        {field.name === 'gxSelfDescription' && <li>Valid self-description</li>}
+        {field.name === 'selfDescription' && <li>Valid self-description</li>}
       </ul>
       <button
         className={styles.removeButton}

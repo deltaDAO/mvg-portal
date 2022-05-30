@@ -9,7 +9,7 @@ import { PriceOptions } from '../hooks/usePricing'
 
 export interface AdditionalInformationMarket extends AdditionalInformation {
   links?: File[]
-  gxSelfDescription?: string
+  selfDescription?: string
   termsAndConditions: boolean
 }
 
@@ -40,7 +40,7 @@ export interface MetadataPublishFormDataset {
   tags?: string
   links?: string | EditableMetadataLinks[]
   providerUri?: string
-  gxSelfDescription?: string | { url: string }
+  selfDescription?: string | { url: string }[]
 }
 
 export interface MetadataPublishFormAlgorithm {
@@ -60,7 +60,7 @@ export interface MetadataPublishFormAlgorithm {
   entrypoint: string
   tags?: string
   providerUri?: string
-  gxSelfDescription?: string | { url: string }
+  selfDescription?: string | { url: string }[]
 }
 
 export interface MetadataEditForm {

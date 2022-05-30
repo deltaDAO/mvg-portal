@@ -95,7 +95,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   }
 
   if (isSelfDescriptionVerified) {
-    getSelfDescription(metadata?.additionalInformation?.gxSelfDescription).then(
+    getSelfDescription(metadata?.additionalInformation?.selfDescription).then(
       (selfDescription) => setSelfDescription(selfDescription)
     )
   }

@@ -23,7 +23,7 @@ export default function FilesInput(props: InputProps): ReactElement {
     async function validateUrl() {
       try {
         setIsLoading(true)
-        if (field.name === 'gxSelfDescription') {
+        if (field.name === 'selfDescription') {
           const checkedFile = await verifySelfDescription(fileUrl)
           checkedFile &&
             helpers.setValue([

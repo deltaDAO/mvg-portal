@@ -177,13 +177,16 @@ export function transformPublishFormToMetadata(
     links,
     termsAndConditions,
     files,
-    gxSelfDescription
+    selfDescription
   }: Partial<MetadataPublishFormDataset>,
   ddo?: DDO
 ): MetadataMarket {
   const currentTime = toStringNoMS(new Date())
 
   const transformedLinks = getValidUrlArrayContent(links)
+
+  const selfDescriptionUrl =
+    typeof selfDescription === 'string' ? undefined : selfDescription[0].url
 
   const metadata: MetadataMarket = {
     main: {
@@ -201,7 +204,7 @@ export function transformPublishFormToMetadata(
       tags: transformTags(tags),
       links: transformedLinks,
       termsAndConditions,
-      gxSelfDescription: gxSelfDescription?.url
+      selfDescription: selfDescriptionUrl
     }
   }
 
