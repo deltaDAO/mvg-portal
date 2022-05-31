@@ -37,6 +37,13 @@
         "type": "files"
       },
       {
+        "name": "selfDescription",
+        "label": "Participant Self-Description",
+        "placeholder": "e.g. https://file.com/participant-self-description.json",
+        "help": "Please enter the URL to a valid participant self description and click \"ADD FILE\" to validate the data. This file URL will be publicly available after publishing.",
+        "type": "selfDescription"
+      },
+      {
         "name": "timeout",
         "label": "Timeout",
         "help": "Define how long buyers should be able to download the data set again after the initial purchase.",

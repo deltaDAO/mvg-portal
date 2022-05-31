@@ -69,6 +69,7 @@ export interface MetadataEditForm {
   timeout: string
   price?: number
   links?: string | EditableMetadataLinks[]
+  selfDescription?: string | { url: string }[]
   author?: string
 }
 
