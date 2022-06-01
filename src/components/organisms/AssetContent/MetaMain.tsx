@@ -8,7 +8,6 @@ import Time from '../../atoms/Time'
 import AssetType from '../../atoms/AssetType'
 import styles from './MetaMain.module.css'
 import VerifiedBadge from '../../atoms/VerifiedBadge'
-import moment from 'moment'
 
 export default function MetaMain(): ReactElement {
   const { ddo, owner, type, isAssetNetwork, isSelfDescriptionVerified } =
@@ -70,10 +69,11 @@ export default function MetaMain(): ReactElement {
           </p>
         </div>
         {isSelfDescriptionVerified && (
-          <div>
-            <VerifiedBadge text="Participant Self-Description" noBackground />
-            {`Verified: ${moment().format('MMMM Do yyyy [at] hh:mm:ss')}`}
-          </div>
+          <VerifiedBadge
+            text="Participant Self-Description"
+            noBackground
+            timestamp
+          />
         )}
       </div>
     </aside>
