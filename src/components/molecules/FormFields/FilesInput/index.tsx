@@ -25,12 +25,14 @@ export default function FilesInput(props: InputProps): ReactElement {
         setIsLoading(true)
         if (field.name === 'participantSelfDescription') {
           const checkedFile = await verifyParticipantSelfDescription(fileUrl)
-          checkedFile &&
+          if (checkedFile) {
+            toast.success('Great! The participant self description is valid.')
             helpers.setValue([
               {
                 url: fileUrl
               }
             ])
+          }
         } else {
           const checkedFile = await fileinfo(
             fileUrl,
