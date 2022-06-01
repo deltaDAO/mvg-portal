@@ -28,16 +28,23 @@
   padding: 0 calc(var(--spacer) / 4);
 }
 
-.noBackground {
-  justify-content: start;
-  padding-left: 0;
+.timestamp {
+  display: grid;
+  grid-template-columns: 1fr 9fr;
+  padding-top: 0;
   padding-right: 0;
   max-width: max-content;
-  background-color: var(--background-content);
+  background-color: transparent;
   color: var(--color-primary);
 }
 
-.noBackground svg path {
+.timestamp svg path {
   margin: 0;
   fill: var(--color-primary);
+}
+
+.lastVerified {
+  grid-column: 2;
+  font-size: var(--font-size-mini);
+  color: var(--color-secondary);
 }

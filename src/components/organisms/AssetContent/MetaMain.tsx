@@ -69,11 +69,7 @@ export default function MetaMain(): ReactElement {
           </p>
         </div>
         {isSelfDescriptionVerified && (
-          <VerifiedBadge
-            text="Participant Self-Description"
-            noBackground
-            timestamp
-          />
+          <VerifiedBadge text="Participant Self-Description" timestamp />
         )}
       </div>
     </aside>
