@@ -24,7 +24,7 @@
   display: inline-block;
   font-size: var(--font-size-small);
   margin-right: calc(var(--spacer) / 2);
-  color: var(--color-secondary);
+  color: var(--brand-alert-green);
 }
 
 .removeButton {
