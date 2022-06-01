@@ -29,7 +29,7 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormDataset> =
       tags: Yup.string().nullable(),
       links: Yup.array<FileMetadata[]>().nullable(),
       providerUri: Yup.string().url().nullable(),
-      selfDescription: Yup.array()
+      participantSelfDescription: Yup.array()
         .of(Yup.object().shape({ url: Yup.string() }))
         .nullable()
     })
@@ -43,7 +43,7 @@ export const initialValues: Partial<MetadataPublishFormDataset> = {
     symbol: ''
   },
   files: '',
-  selfDescription: '',
+  participantSelfDescription: '',
   description: '',
   timeout: 'Forever',
   access: '',

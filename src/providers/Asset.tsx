@@ -19,7 +19,7 @@ import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
 import { BestPrice } from '../models/BestPrice'
 import { useCancelToken } from '../hooks/useCancelToken'
-import { verifySelfDescription } from '../utils/metadata'
+import { verifyParticipantSelfDescription } from '../utils/metadata'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -155,8 +155,8 @@ function AssetProvider({
     setType(attributes.main.type)
     setOwner(ddo.publicKey[0].owner)
     setIsSelfDescriptionVerified(
-      await verifySelfDescription(
-        attributes.additionalInformation?.selfDescription
+      await verifyParticipantSelfDescription(
+        attributes.additionalInformation?.participantSelfDescription
       )
     )
     Logger.log('[asset] Got Metadata from DDO', attributes)

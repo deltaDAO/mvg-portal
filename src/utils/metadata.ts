@@ -129,7 +129,9 @@ function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
   )
 }
 
-export async function verifySelfDescription(url: string): Promise<boolean> {
+export async function verifyParticipantSelfDescription(
+  url: string
+): Promise<boolean> {
   if (!url) return false
 
   try {
@@ -151,12 +153,14 @@ export async function verifySelfDescription(url: string): Promise<boolean> {
   }
 }
 
-export async function getSelfDescription(url: string): Promise<string> {
+export async function getParticipantSelfDescription(
+  url: string
+): Promise<string> {
   if (!url) return
 
   try {
-    const selfDescription = await axios.get(url)
-    return JSON.stringify(selfDescription, null, 2)
+    const participantSelfDescription = await axios.get(url)
+    return JSON.stringify(participantSelfDescription, null, 2)
   } catch (error) {
     Logger.error(error.message)
     toast.error('There was an error downloading the provided self-description.')
@@ -172,7 +176,7 @@ export function transformPublishFormToMetadata(
     links,
     termsAndConditions,
     files,
-    selfDescription
+    participantSelfDescription
   }: Partial<MetadataPublishFormDataset>,
   ddo?: DDO
 ): MetadataMarket {
@@ -180,8 +184,10 @@ export function transformPublishFormToMetadata(
 
   const transformedLinks = getValidUrlArrayContent(links)
 
-  const selfDescriptionUrl =
-    typeof selfDescription === 'string' ? undefined : selfDescription[0].url
+  const participantSelfDescriptionUrl =
+    typeof participantSelfDescription === 'string'
+      ? undefined
+      : participantSelfDescription[0].url
 
   const metadata: MetadataMarket = {
     main: {
@@ -199,7 +205,7 @@ export function transformPublishFormToMetadata(
       tags: transformTags(tags),
       links: transformedLinks,
       termsAndConditions,
-      selfDescription: selfDescriptionUrl
+      participantSelfDescription: participantSelfDescriptionUrl
     }
   }
 

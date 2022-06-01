@@ -132,7 +132,7 @@ export default function InputElement({
       )
     case 'files':
       return <FilesInput name={name} {...field} {...props} />
-    case 'selfDescription':
+    case 'participantSelfDescription':
       return <FilesInput name={name} {...field} {...props} />
     case 'providerUri':
       return <CustomProvider name={name} {...field} {...props} />

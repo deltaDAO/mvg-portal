@@ -8,7 +8,7 @@ import { fileinfo } from '../../../../utils/provider'
 import { useWeb3 } from '../../../../providers/Web3'
 import { getOceanConfig } from '../../../../utils/ocean'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
-import { verifySelfDescription } from '../../../../utils/metadata'
+import { verifyParticipantSelfDescription } from '../../../../utils/metadata'
 
 export default function FilesInput(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
@@ -23,8 +23,8 @@ export default function FilesInput(props: InputProps): ReactElement {
     async function validateUrl() {
       try {
         setIsLoading(true)
-        if (field.name === 'selfDescription') {
-          const checkedFile = await verifySelfDescription(fileUrl)
+        if (field.name === 'participantSelfDescription') {
+          const checkedFile = await verifyParticipantSelfDescription(fileUrl)
           checkedFile &&
             helpers.setValue([
               {

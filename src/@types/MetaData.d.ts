@@ -9,7 +9,7 @@ import { PriceOptions } from '../hooks/usePricing'
 
 export interface AdditionalInformationMarket extends AdditionalInformation {
   links?: File[]
-  selfDescription?: string
+  participantSelfDescription?: string
   termsAndConditions: boolean
 }
 
@@ -40,7 +40,7 @@ export interface MetadataPublishFormDataset {
   tags?: string
   links?: string | EditableMetadataLinks[]
   providerUri?: string
-  selfDescription?: string | { url: string }[]
+  participantSelfDescription?: string | { url: string }[]
 }
 
 export interface MetadataPublishFormAlgorithm {
@@ -60,7 +60,7 @@ export interface MetadataPublishFormAlgorithm {
   entrypoint: string
   tags?: string
   providerUri?: string
-  selfDescription?: string | { url: string }[]
+  participantSelfDescription?: string | { url: string }[]
 }
 
 export interface MetadataEditForm {
@@ -69,7 +69,7 @@ export interface MetadataEditForm {
   timeout: string
   price?: number
   links?: string | EditableMetadataLinks[]
-  selfDescription?: string | { url: string }[]
+  participantSelfDescription?: string | { url: string }[]
   author?: string
 }
 

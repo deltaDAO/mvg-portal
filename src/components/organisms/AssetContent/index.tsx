@@ -21,7 +21,7 @@ import EditAdvancedSettings from '../AssetActions/Edit/EditAdvancedSettings'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import NetworkName from '../../atoms/NetworkName'
 import VerifiedPublisher from '../../atoms/VerifiedPublisher'
-import { getSelfDescription } from '../../../utils/metadata'
+import { getParticipantSelfDescription } from '../../../utils/metadata'
 export interface AssetContentProps {
   path?: string
   tutorial?: boolean
@@ -58,7 +58,8 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const [showEditAdvancedSettings, setShowEditAdvancedSettings] =
     useState<boolean>()
   const [isOwner, setIsOwner] = useState(false)
-  const [selfDescription, setSelfDescription] = useState<string>()
+  const [participantSelfDescription, setParticipantSelfDescription] =
+    useState<string>()
   const { ddo, price, metadata, type, isSelfDescriptionVerified } = useAsset()
   const { appConfig } = useSiteMetadata()
   const { tutorial } = props
@@ -95,12 +96,12 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   }
 
   if (isSelfDescriptionVerified) {
-    getSelfDescription(metadata?.additionalInformation?.selfDescription).then(
-      (selfDescription) => {
-        const formattedSelfDescription = `## Participant Self-Description\n\`\`\`\n${selfDescription}\n\`\`\``
-        setSelfDescription(formattedSelfDescription)
-      }
-    )
+    getParticipantSelfDescription(
+      metadata?.additionalInformation?.participantSelfDescription
+    ).then((participantSelfDescription) => {
+      const formattedParticipantSelfDescription = `## Participant Self-Description\n\`\`\`\n${participantSelfDescription}\n\`\`\``
+      setParticipantSelfDescription(formattedParticipantSelfDescription)
+    })
   }
 
   return showEdit && !tutorial ? (
@@ -139,7 +140,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
                 {isSelfDescriptionVerified && (
                   <Markdown
                     className={styles.description}
-                    text={selfDescription || ''}
+                    text={participantSelfDescription || ''}
                   />
                 )}
 
