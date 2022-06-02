@@ -2,10 +2,15 @@
   margin-top: calc(var(--spacer) * 2);
 }
 
-.selfDescriptionHeader {
+.selfDescriptionHeader,
+.selfDescriptionErrorsHeader {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.actionButton {
+  margin-top: calc(var(--spacer) / 2);
 }
 
 .error {

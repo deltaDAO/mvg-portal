@@ -20,13 +20,11 @@ interface Content {
     placeholder: string
     buttonLabel: string
   }
-}
-
-const errorList = {
-  invalidDid: 'The provided DID:OP does not refer to any DDO.',
-  noParticipantSelfDescription:
-    'The requested DDO does not contain a participant self-description.',
-  default: 'An unexpected error occurred. Please try again later.'
+  errorList: {
+    invalidDid: string
+    noParticipantSelfDescription: string
+    default: string
+  }
 }
 
 export default function VerifyPage({
@@ -34,7 +32,8 @@ export default function VerifyPage({
 }: {
   content: Content
 }): ReactElement {
-  const { label, placeholder, buttonLabel } = content.input
+  const { input, errorList } = content
+  const { label, placeholder, buttonLabel } = input
   const newCancelToken = useCancelToken()
   const [isLoading, setIsLoading] = useState(false)
   const [did, setDid] = useState<string>()
@@ -47,25 +46,7 @@ export default function VerifyPage({
   const [
     participantSelfDescriptionErrors,
     setParticipantSelfDescriptionErrors
-  ] = useState<string>(`{
-    "conforms": false,
-    "shape": {
-      "conforms": false,
-      "results": [
-        "http://w3id.org/gaia-x/participant#registrationNumber: Less than 1 values",
-        "http://w3id.org/gaia-x/participant#headquarterAddress: Less than 1 values",
-        "http://w3id.org/gaia-x/participant#legalAddress: Less than 1 values"
-      ]
-    },
-    "content": {
-      "conforms": false,
-      "results": [
-        "leiCode: the given leiCode is invalid or does not exist",
-        "legalAddress.country: country needs to be a valid ISO-3166-1 country name"
-      ]
-    },
-    "isValidSignature": false
-  }`)
+  ] = useState<string>()
   const [error, setError] = useState<keyof typeof errorList>()
 
   const resetState = () => {
@@ -75,7 +56,7 @@ export default function VerifyPage({
     setError(undefined)
   }
 
-  const handleSubmit = async (e: FormEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     resetState()
     setIsLoading(true)
@@ -100,6 +81,7 @@ export default function VerifyPage({
 
       const { responseBody, verified } = participantSelfDescriptionVerification
       setParticipantSelfDescriptionVerified(verified)
+
       if (!verified && !responseBody) {
         setError('default')
         return
@@ -117,12 +99,13 @@ export default function VerifyPage({
       setIsLoading(false)
     } catch (error) {
       Logger.error(error)
+    } finally {
       setIsLoading(false)
     }
   }
   return (
     <div>
-      <form>
+      <form onSubmit={async (e) => await handleSubmit(e)}>
         <Input
           className={styles.didInput}
           label={label}
@@ -133,9 +116,10 @@ export default function VerifyPage({
         />
         {error && <p className={styles.error}>{errorList[error]}</p>}
         <Button
-          style="primary"
-          onClick={handleSubmit}
+          className={styles.actionButton}
           disabled={!did || isLoading}
+          style="primary"
+          type="submit"
         >
           {buttonLabel}
         </Button>
@@ -147,13 +131,15 @@ export default function VerifyPage({
           <div className={styles.selfDescriptionContainer}>
             {participantSelfDescriptionErrors && (
               <div>
-                <div className={styles.selfDescriptionHeader}>
+                <div className={styles.selfDescriptionErrorsHeader}>
                   <h4>Validation Errors</h4>
-                  <VerifiedBadge
-                    text="Invalid Self-Description"
-                    isInvalid
-                    timestamp
-                  />
+                  {!isParticipantSelfDescriptionVerified && (
+                    <VerifiedBadge
+                      text="Invalid Self-Description"
+                      isInvalid
+                      timestamp
+                    />
+                  )}
                 </div>
                 <Markdown
                   className={styles.errorBody}

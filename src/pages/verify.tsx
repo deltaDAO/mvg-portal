@@ -31,6 +31,11 @@ export const contentQuery = graphql`
               placeholder
               buttonLabel
             }
+            errorList {
+              invalidDid
+              noParticipantSelfDescription
+              default
+            }
           }
         }
       }
