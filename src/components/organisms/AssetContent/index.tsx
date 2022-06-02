@@ -50,7 +50,17 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const content = data.purgatory.edges[0].node.childContentJson.asset
   const { debug } = useUserPreferences()
   const { accountId } = useWeb3()
-  const { owner, isInPurgatory, purgatoryData, isAssetNetwork } = useAsset()
+  const {
+    ddo,
+    isAssetNetwork,
+    isInPurgatory,
+    isSelfDescriptionVerified,
+    metadata,
+    owner,
+    price,
+    purgatoryData,
+    type
+  } = useAsset()
   const [showPricing, setShowPricing] = useState(false)
   const [showEdit, setShowEdit] = useState<boolean>()
   const [isComputeType, setIsComputeType] = useState<boolean>(false)
@@ -60,7 +70,6 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const [isOwner, setIsOwner] = useState(false)
   const [participantSelfDescription, setParticipantSelfDescription] =
     useState<string>()
-  const { ddo, price, metadata, type, isSelfDescriptionVerified } = useAsset()
   const { appConfig } = useSiteMetadata()
   const { tutorial } = props
 

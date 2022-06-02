@@ -154,11 +154,10 @@ function AssetProvider({
     setTitle(attributes?.main.name)
     setType(attributes.main.type)
     setOwner(ddo.publicKey[0].owner)
-    setIsSelfDescriptionVerified(
-      await verifyParticipantSelfDescription(
-        attributes.additionalInformation?.participantSelfDescription
-      )
+    const isSelfDescriptionVerified = await verifyParticipantSelfDescription(
+      attributes.additionalInformation?.participantSelfDescription
     )
+    setIsSelfDescriptionVerified(isSelfDescriptionVerified.verified)
     Logger.log('[asset] Got Metadata from DDO', attributes)
 
     setIsInPurgatory(ddo.isInPurgatory === 'true')

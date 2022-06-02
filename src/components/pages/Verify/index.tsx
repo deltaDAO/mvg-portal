@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactElement, useEffect, useState } from 'react'
+import React, { FormEvent, ReactElement, useState } from 'react'
 import { useCancelToken } from '../../../hooks/useCancelToken'
 import { retrieveDDO } from '../../../utils/aquarius'
 import styles from './index.module.css'
@@ -25,12 +25,18 @@ export default function VerifyPage({
   content: Content
 }): ReactElement {
   const { label, placeholder, buttonLabel } = content.input
+  const newCancelToken = useCancelToken()
   const [did, setDid] = useState<string>()
   const [participantSelfDescription, setParticipantSelfDescription] =
     useState<string>()
-  const [isSelfDescriptionVerified, setIsSelfDescriptionVerified] =
-    useState<boolean>()
-  const newCancelToken = useCancelToken()
+  const [
+    isParticipantSelfDescriptionVerified,
+    setParticipantSelfDescriptionVerified
+  ] = useState<boolean>()
+  const [
+    participantSelfDescriptionErrors,
+    setParticipantSelfDescriptionErrors
+  ] = useState<string>()
 
   const handleSubmit = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -38,8 +44,13 @@ export default function VerifyPage({
     const { attributes } = ddo.findServiceByType('metadata')
     const participantSelfDescriptionUrl =
       attributes.additionalInformation?.participantSelfDescription
-    const isParticipantSelfDescriptionVerified =
+
+    const ParticipantSelfDescriptionVerification =
       await verifyParticipantSelfDescription(participantSelfDescriptionUrl)
+    setParticipantSelfDescriptionVerified(
+      ParticipantSelfDescriptionVerification.verified
+    )
+
     const participantSelfDescription = await getParticipantSelfDescription(
       participantSelfDescriptionUrl
     )

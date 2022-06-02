@@ -129,28 +129,36 @@ function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
   )
 }
 
-export async function verifyParticipantSelfDescription(
-  url: string
-): Promise<boolean> {
-  if (!url) return false
+export async function verifyParticipantSelfDescription(url: string): Promise<{
+  verified: boolean
+  responseBody?: any
+}> {
+  if (!url) return { verified: false }
 
   try {
     const response = await axios.post(
       'https://compliance.gaia-x.eu/api/v1/participant/verify',
       { url }
     )
-    if (!response || response.status !== 200) {
+    if (response?.status === 409) {
       toast.error('Participant credential could not be verified.')
-      console.log(response)
-      return false
+      return {
+        verified: false,
+        responseBody: response.data.body
+      }
     }
-    return true
+    if (response?.status === 200) {
+      return { verified: true }
+    }
+
+    toast.error('Participant credential could not be verified.')
+    return { verified: false }
   } catch (error) {
     Logger.error(error.message)
     toast.error(
       'There was an error trying to verify the provided self-description. Please check URL and try again'
     )
-    return false
+    return { verified: false }
   }
 }
 
