@@ -141,6 +141,7 @@ export async function verifyParticipantSelfDescription(
     )
     if (!response || response.status !== 200) {
       toast.error('Participant credential could not be verified.')
+      console.log(response)
       return false
     }
     return true

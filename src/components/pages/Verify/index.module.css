@@ -1,0 +1,9 @@
+.selfDescriptionContainer {
+  margin-top: calc(var(--spacer) * 2);
+}
+
+.selfDescriptionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
