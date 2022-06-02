@@ -124,7 +124,11 @@ export default function VerifyPage({
             <div>
               <div className={styles.selfDescriptionHeader}>
                 <h4>Validation Errors</h4>
-                <VerifiedBadge text="Verified Self-Description" timestamp />
+                <VerifiedBadge
+                  text="Invalid Self-Description"
+                  isInvalid
+                  timestamp
+                />
               </div>
               <Markdown
                 className={styles.errorBody}

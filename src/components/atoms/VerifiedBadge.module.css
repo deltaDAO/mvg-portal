@@ -48,3 +48,11 @@
   font-size: var(--font-size-mini);
   color: var(--color-secondary);
 }
+
+.isInvalid {
+  color: var(--brand-alert-red);
+}
+
+.isInvalid svg path {
+  fill: var(--brand-alert-red);
+}
