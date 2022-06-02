@@ -7,3 +7,11 @@
   justify-content: space-between;
   align-items: flex-start;
 }
+
+.error {
+  color: var(--brand-alert-red);
+}
+
+form:first-child > div {
+  margin-bottom: calc(var(--spacer) / 4);
+}

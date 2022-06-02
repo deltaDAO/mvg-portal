@@ -176,6 +176,10 @@ export async function getParticipantSelfDescription(
   }
 }
 
+export function getFormattedCodeString(string: string): string {
+  return `\`\`\`\n${string}\n\`\`\``
+}
+
 export function transformPublishFormToMetadata(
   {
     name,
