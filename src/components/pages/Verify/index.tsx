@@ -11,6 +11,8 @@ import {
   verifyParticipantSelfDescription
 } from '../../../utils/metadata'
 import VerifiedBadge from '../../atoms/VerifiedBadge'
+import { Logger } from '@oceanprotocol/lib'
+import Loader from '../../atoms/Loader'
 
 interface Content {
   input: {
@@ -34,6 +36,7 @@ export default function VerifyPage({
 }): ReactElement {
   const { label, placeholder, buttonLabel } = content.input
   const newCancelToken = useCancelToken()
+  const [isLoading, setIsLoading] = useState(false)
   const [did, setDid] = useState<string>()
   const [participantSelfDescription, setParticipantSelfDescription] =
     useState<string>()
@@ -65,42 +68,57 @@ export default function VerifyPage({
   }`)
   const [error, setError] = useState<keyof typeof errorList>()
 
+  const resetState = () => {
+    setParticipantSelfDescription(undefined)
+    setParticipantSelfDescriptionVerified(undefined)
+    setParticipantSelfDescriptionErrors(undefined)
+    setError(undefined)
+  }
+
   const handleSubmit = async (e: FormEvent<HTMLButtonElement>) => {
     e.preventDefault()
-    const ddo = await retrieveDDO(did, newCancelToken())
-    if (!ddo) {
-      setError('invalidDid')
-      return
-    }
+    resetState()
+    setIsLoading(true)
 
-    const { attributes } = ddo.findServiceByType('metadata')
-    const participantSelfDescriptionUrl =
-      attributes.additionalInformation?.participantSelfDescription
-    if (!participantSelfDescriptionUrl) {
-      setError('noParticipantSelfDescription')
-      return
-    }
+    try {
+      const ddo = await retrieveDDO(did, newCancelToken())
+      if (!ddo) {
+        setError('invalidDid')
+        return
+      }
 
-    const participantSelfDescriptionVerification =
-      await verifyParticipantSelfDescription(participantSelfDescriptionUrl)
+      const { attributes } = ddo.findServiceByType('metadata')
+      const participantSelfDescriptionUrl =
+        attributes.additionalInformation?.participantSelfDescription
+      if (!participantSelfDescriptionUrl) {
+        setError('noParticipantSelfDescription')
+        return
+      }
 
-    const { responseBody, verified } = participantSelfDescriptionVerification
-    setParticipantSelfDescriptionVerified(verified)
-    if (!verified && !responseBody) {
-      setError('default')
-      return
-    }
-    if (responseBody) {
-      setParticipantSelfDescriptionErrors(responseBody)
-    }
+      const participantSelfDescriptionVerification =
+        await verifyParticipantSelfDescription(participantSelfDescriptionUrl)
 
-    const participantSelfDescriptionBody = await getParticipantSelfDescription(
-      participantSelfDescriptionUrl
-    )
-    const formattedParticipantSelfDescription = getFormattedCodeString(
-      participantSelfDescriptionBody
-    )
-    setParticipantSelfDescription(formattedParticipantSelfDescription)
+      const { responseBody, verified } = participantSelfDescriptionVerification
+      setParticipantSelfDescriptionVerified(verified)
+      if (!verified && !responseBody) {
+        setError('default')
+        return
+      }
+      if (responseBody) {
+        setParticipantSelfDescriptionErrors(responseBody)
+      }
+
+      const participantSelfDescriptionBody =
+        await getParticipantSelfDescription(participantSelfDescriptionUrl)
+      const formattedParticipantSelfDescription = getFormattedCodeString(
+        participantSelfDescriptionBody
+      )
+      setParticipantSelfDescription(formattedParticipantSelfDescription)
+      setIsLoading(false)
+    } catch (error) {
+      Logger.error(error)
+      setIsLoading(false)
+    }
   }
   return (
     <div>
@@ -114,39 +132,49 @@ export default function VerifyPage({
           value={did}
         />
         {error && <p className={styles.error}>{errorList[error]}</p>}
-        <Button style="primary" onClick={handleSubmit} disabled={!did}>
+        <Button
+          style="primary"
+          onClick={handleSubmit}
+          disabled={!did || isLoading}
+        >
           {buttonLabel}
         </Button>
       </form>
-      {participantSelfDescription && (
-        <div className={styles.selfDescriptionContainer}>
-          {participantSelfDescriptionErrors && (
-            <div>
-              <div className={styles.selfDescriptionHeader}>
-                <h4>Validation Errors</h4>
-                <VerifiedBadge
-                  text="Invalid Self-Description"
-                  isInvalid
-                  timestamp
+      {isLoading ? (
+        <Loader />
+      ) : (
+        participantSelfDescription && (
+          <div className={styles.selfDescriptionContainer}>
+            {participantSelfDescriptionErrors && (
+              <div>
+                <div className={styles.selfDescriptionHeader}>
+                  <h4>Validation Errors</h4>
+                  <VerifiedBadge
+                    text="Invalid Self-Description"
+                    isInvalid
+                    timestamp
+                  />
+                </div>
+                <Markdown
+                  className={styles.errorBody}
+                  text={getFormattedCodeString(
+                    participantSelfDescriptionErrors
+                  )}
                 />
               </div>
-              <Markdown
-                className={styles.errorBody}
-                text={getFormattedCodeString(participantSelfDescriptionErrors)}
-              />
-            </div>
-          )}
-          <div className={styles.selfDescriptionHeader}>
-            <h4>Participant Self-Description</h4>
-            {isParticipantSelfDescriptionVerified && (
-              <VerifiedBadge text="Verified Self-Description" timestamp />
             )}
+            <div className={styles.selfDescriptionHeader}>
+              <h4>Participant Self-Description</h4>
+              {isParticipantSelfDescriptionVerified && (
+                <VerifiedBadge text="Verified Self-Description" timestamp />
+              )}
+            </div>
+            <Markdown
+              className={styles.description}
+              text={participantSelfDescription || ''}
+            />
           </div>
-          <Markdown
-            className={styles.description}
-            text={participantSelfDescription || ''}
-          />
-        </div>
+        )
       )}
     </div>
   )
