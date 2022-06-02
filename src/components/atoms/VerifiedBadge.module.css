@@ -33,6 +33,7 @@
   grid-template-columns: 1fr 9fr;
   padding-top: 0;
   padding-right: 0;
+  padding-left: 0;
   max-width: max-content;
   background-color: transparent;
   color: var(--color-primary);

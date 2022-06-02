@@ -135,8 +135,8 @@ export default function VerifyPage({
                   <h4>Validation Errors</h4>
                   {!isParticipantSelfDescriptionVerified && (
                     <VerifiedBadge
-                      text="Invalid Self-Description"
                       isInvalid
+                      text="Invalid Self-Description"
                       timestamp
                     />
                   )}
