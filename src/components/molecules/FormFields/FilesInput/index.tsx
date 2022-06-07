@@ -8,7 +8,10 @@ import { fileinfo } from '../../../../utils/provider'
 import { useWeb3 } from '../../../../providers/Web3'
 import { getOceanConfig } from '../../../../utils/ocean'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
-import { verifyParticipantSelfDescription } from '../../../../utils/metadata'
+import {
+  getParticipantSelfDescription,
+  verifyParticipantSelfDescription
+} from '../../../../utils/metadata'
 
 export default function FilesInput(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
@@ -25,7 +28,10 @@ export default function FilesInput(props: InputProps): ReactElement {
         setIsLoading(true)
         if (field.name === 'participantSelfDescription') {
           const checkedFile = await verifyParticipantSelfDescription(fileUrl)
-          if (checkedFile) {
+          const checkedFileContent = await getParticipantSelfDescription(
+            fileUrl
+          )
+          if (checkedFile && checkedFileContent) {
             toast.success('Great! The participant self description is valid.')
             helpers.setValue([
               {
@@ -39,7 +45,7 @@ export default function FilesInput(props: InputProps): ReactElement {
             config?.providerUri,
             newCancelToken()
           )
-          checkedFile && helpers.setValue([checkedFile])
+          if (checkedFile) helpers.setValue([checkedFile])
         }
       } catch (error) {
         toast.error('Could not fetch file info. Please check URL and try again')

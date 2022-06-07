@@ -147,7 +147,7 @@ export async function verifyParticipantSelfDescription(
   } catch (error) {
     Logger.error(error.message)
     toast.error(
-      'There was an error trying to verify the provided self-description. Please check URL and try again'
+      'There was an error trying to verify the provided self-description. Please check the URL and try again'
     )
     return false
   }
@@ -163,8 +163,19 @@ export async function getParticipantSelfDescription(
     return JSON.stringify(participantSelfDescription, null, 2)
   } catch (error) {
     Logger.error(error.message)
-    toast.error('There was an error downloading the provided self-description.')
+    toast.error(
+      'There was an error downloading the provided self-description. Please check the URL and try again'
+    )
   }
+}
+
+export function updateParticipantSelfDescription(ddo: DDO, url: string): DDO {
+  const metadataIndex = ddo.service.findIndex((e) => e.type === 'metadata')
+  ddo.service[
+    metadataIndex
+  ].attributes.additionalInformation.participantSelfDescription = url
+
+  return ddo
 }
 
 export function transformPublishFormToMetadata(
