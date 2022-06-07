@@ -69,7 +69,7 @@ export interface MetadataEditForm {
   timeout: string
   price?: number
   links?: string | EditableMetadataLinks[]
-  participantSelfDescription?: string | { url: string }[]
+  participantSelfDescription?: { url: string }[]
   author?: string
 }
 
