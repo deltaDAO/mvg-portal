@@ -21,7 +21,10 @@ import EditAdvancedSettings from '../AssetActions/Edit/EditAdvancedSettings'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import NetworkName from '../../atoms/NetworkName'
 import VerifiedPublisher from '../../atoms/VerifiedPublisher'
-import { getParticipantSelfDescription } from '../../../utils/metadata'
+import {
+  getFormattedCodeString,
+  getParticipantSelfDescription
+} from '../../../utils/metadata'
 export interface AssetContentProps {
   path?: string
   tutorial?: boolean
@@ -108,7 +111,9 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     getParticipantSelfDescription(
       metadata?.additionalInformation?.participantSelfDescription
     ).then((participantSelfDescription) => {
-      const formattedParticipantSelfDescription = `## Participant Self-Description\n\`\`\`\n${participantSelfDescription}\n\`\`\``
+      const formattedParticipantSelfDescription = `## Participant Self-Description\n${getFormattedCodeString(
+        participantSelfDescription
+      )}`
       setParticipantSelfDescription(formattedParticipantSelfDescription)
     })
   }

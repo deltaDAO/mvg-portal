@@ -40,7 +40,7 @@ export interface MetadataPublishFormDataset {
   tags?: string
   links?: string | EditableMetadataLinks[]
   providerUri?: string
-  participantSelfDescription?: string | { url: string }[]
+  participantSelfDescription?: string | EditableMetadataLinks[]
 }
 
 export interface MetadataPublishFormAlgorithm {
@@ -60,7 +60,7 @@ export interface MetadataPublishFormAlgorithm {
   entrypoint: string
   tags?: string
   providerUri?: string
-  participantSelfDescription?: string | { url: string }[]
+  participantSelfDescription?: string | EditableMetadataLinks[]
 }
 
 export interface MetadataEditForm {
@@ -69,7 +69,7 @@ export interface MetadataEditForm {
   timeout: string
   price?: number
   links?: string | EditableMetadataLinks[]
-  participantSelfDescription?: string | { url: string }[]
+  participantSelfDescription?: string | EditableMetadataLinks[]
   author?: string
 }
 

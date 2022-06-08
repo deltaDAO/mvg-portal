@@ -16,7 +16,9 @@ const useUserPreferences: UserPreferencesValue = {
   setShowPPC: jest.fn(),
   addBookmark: jest.fn(),
   removeBookmark: jest.fn(),
-  setInfiniteApproval: jest.fn()
+  setInfiniteApproval: jest.fn(),
+  onboardingStep: 0,
+  setOnboardingStep: jest.fn()
 }
 
 export default useUserPreferences

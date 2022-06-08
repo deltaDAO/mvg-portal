@@ -8,7 +8,10 @@ import { fileinfo } from '../../../../utils/provider'
 import { useWeb3 } from '../../../../providers/Web3'
 import { getOceanConfig } from '../../../../utils/ocean'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
-import { verifyParticipantSelfDescription } from '../../../../utils/metadata'
+import {
+  getParticipantSelfDescription,
+  verifyParticipantSelfDescription
+} from '../../../../utils/metadata'
 
 export default function FilesInput(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
@@ -23,24 +26,30 @@ export default function FilesInput(props: InputProps): ReactElement {
     async function validateUrl() {
       try {
         setIsLoading(true)
+
         if (field.name === 'participantSelfDescription') {
-          const checkedFile = await verifyParticipantSelfDescription(fileUrl)
-          if (checkedFile) {
-            toast.success('Great! The participant self description is valid.')
-            helpers.setValue([
-              {
-                url: fileUrl
-              }
-            ])
+          const isParticipantSelfDescriptionVerified =
+            await verifyParticipantSelfDescription(fileUrl)
+          const participantSelfDescription =
+            await getParticipantSelfDescription(fileUrl)
+
+          if (
+            !isParticipantSelfDescriptionVerified ||
+            !participantSelfDescription
+          ) {
+            toast.error(
+              'The data file URL you entered appears to be invalid. Please check URL and try again'
+            )
+            return
           }
-        } else {
-          const checkedFile = await fileinfo(
-            fileUrl,
-            config?.providerUri,
-            newCancelToken()
-          )
-          checkedFile && helpers.setValue([checkedFile])
         }
+
+        const checkedFile = await fileinfo(
+          fileUrl,
+          config?.providerUri,
+          newCancelToken()
+        )
+        if (checkedFile) helpers.setValue([checkedFile])
       } catch (error) {
         toast.error('Could not fetch file info. Please check URL and try again')
         console.error(error.message)

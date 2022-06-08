@@ -11,7 +11,10 @@ import { MetadataPreview } from '../../../molecules/MetadataPreview'
 import Debug from './DebugEditMetadata'
 import Web3Feedback from '../../../molecules/Web3Feedback'
 import FormEditMetadata from './FormEditMetadata'
-import { mapTimeoutStringToSeconds } from '../../../../utils/metadata'
+import {
+  mapTimeoutStringToSeconds,
+  updateParticipantSelfDescription
+} from '../../../../utils/metadata'
 import styles from './index.module.css'
 import { Logger } from '@oceanprotocol/lib'
 import MetadataFeedback from '../../../molecules/MetadataFeedback'
@@ -120,7 +123,16 @@ export default function Edit({
         Logger.error(content.form.error)
         return
       }
-      let ddoEditedTimeout = ddoEditedMetdata
+
+      // Manually add participant self-description since the value is not
+      // updated in ocean.assets.editMetadata()
+      let ddoEditedTimeout = values?.participantSelfDescription
+        ? updateParticipantSelfDescription(
+            ddoEditedMetdata,
+            values.participantSelfDescription[0].url
+          )
+        : ddoEditedMetdata
+
       if (timeoutStringValue !== values.timeout) {
         const service =
           ddoEditedMetdata.findServiceByType('access') ||

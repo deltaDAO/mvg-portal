@@ -14,7 +14,6 @@ import {
   MetadataAlgorithm,
   File,
   Logger,
-  EditableMetadata,
   EditableMetadataLinks
 } from '@oceanprotocol/lib'
 
@@ -141,7 +140,6 @@ export async function verifyParticipantSelfDescription(url: string): Promise<{
       { url }
     )
     if (response?.status === 409) {
-      toast.error('Participant credential could not be verified.')
       return {
         verified: false,
         responseBody: response.data.body
@@ -151,13 +149,9 @@ export async function verifyParticipantSelfDescription(url: string): Promise<{
       return { verified: true }
     }
 
-    toast.error('Participant credential could not be verified.')
     return { verified: false }
   } catch (error) {
     Logger.error(error.message)
-    toast.error(
-      'There was an error trying to verify the provided self-description. Please check URL and try again'
-    )
     return { verified: false }
   }
 }
@@ -172,12 +166,20 @@ export async function getParticipantSelfDescription(
     return JSON.stringify(participantSelfDescription, null, 2)
   } catch (error) {
     Logger.error(error.message)
-    toast.error('There was an error downloading the provided self-description.')
   }
 }
 
 export function getFormattedCodeString(string: string): string {
   return `\`\`\`\n${string}\n\`\`\``
+}
+
+export function updateParticipantSelfDescription(ddo: DDO, url: string): DDO {
+  const metadataIndex = ddo.service.findIndex((e) => e.type === 'metadata')
+  ddo.service[
+    metadataIndex
+  ].attributes.additionalInformation.participantSelfDescription = url
+
+  return ddo
 }
 
 export function transformPublishFormToMetadata(
@@ -197,11 +199,6 @@ export function transformPublishFormToMetadata(
 
   const transformedLinks = getValidUrlArrayContent(links)
 
-  const participantSelfDescriptionUrl =
-    typeof participantSelfDescription === 'string'
-      ? undefined
-      : participantSelfDescription[0].url
-
   const metadata: MetadataMarket = {
     main: {
       ...AssetModel.main,
@@ -218,7 +215,7 @@ export function transformPublishFormToMetadata(
       tags: transformTags(tags),
       links: transformedLinks,
       termsAndConditions,
-      participantSelfDescription: participantSelfDescriptionUrl
+      participantSelfDescription: participantSelfDescription?.[0]?.url
     }
   }
 
