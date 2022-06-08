@@ -10,7 +10,7 @@ import React, {
 import { Logger, DDO, MetadataMain } from '@oceanprotocol/lib'
 import { PurgatoryData } from '@oceanprotocol/lib/dist/node/ddo/interfaces/PurgatoryData'
 import getAssetPurgatoryData from '../utils/purgatory'
-import axios, { CancelToken } from 'axios'
+import { CancelToken } from 'axios'
 import { retrieveDDO } from '../utils/aquarius'
 import { getPrice } from '../utils/subgraph'
 import { MetadataMarket } from '../@types/MetaData'
@@ -19,7 +19,10 @@ import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
 import { BestPrice } from '../models/BestPrice'
 import { useCancelToken } from '../hooks/useCancelToken'
-import { verifyParticipantSelfDescription } from '../utils/metadata'
+import {
+  getParticipantSelfDescription,
+  verifyParticipantSelfDescription
+} from '../utils/metadata'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -154,11 +157,17 @@ function AssetProvider({
     setTitle(attributes?.main.name)
     setType(attributes.main.type)
     setOwner(ddo.publicKey[0].owner)
-    setIsSelfDescriptionVerified(
-      await verifyParticipantSelfDescription(
-        attributes.additionalInformation?.participantSelfDescription
+    if (attributes.additionalInformation?.participantSelfDescription) {
+      const { participantSelfDescription } = attributes.additionalInformation
+      const verified = await verifyParticipantSelfDescription(
+        participantSelfDescription
       )
-    )
+      const participantSelfDescriptionContent =
+        await getParticipantSelfDescription(participantSelfDescription)
+      verified && !!participantSelfDescriptionContent
+        ? setIsSelfDescriptionVerified(true)
+        : setIsSelfDescriptionVerified(false)
+    }
     Logger.log('[asset] Got Metadata from DDO', attributes)
 
     setIsInPurgatory(ddo.isInPurgatory === 'true')

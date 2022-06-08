@@ -28,7 +28,7 @@
       "label": "Participant Self-Description",
       "placeholder": "e.g. https://file.com/participant-self-description.json",
       "help": "Please enter the URL to a valid participant self description and click \"ADD FILE\" to validate the data. This file URL and its content will be publicly available after publishing",
-      "type": "participantSelfDescription"
+      "type": "files"
     },
     {
       "name": "dockerImage",

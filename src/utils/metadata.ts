@@ -14,7 +14,6 @@ import {
   MetadataAlgorithm,
   File,
   Logger,
-  EditableMetadata,
   EditableMetadataLinks
 } from '@oceanprotocol/lib'
 
@@ -139,16 +138,11 @@ export async function verifyParticipantSelfDescription(
       'https://compliance.gaia-x.eu/api/v1/participant/verify',
       { url }
     )
-    if (!response || response.status !== 200) {
-      toast.error('Participant credential could not be verified.')
-      return false
-    }
+    if (!response || response.status !== 200) return false
+
     return true
   } catch (error) {
     Logger.error(error.message)
-    toast.error(
-      'There was an error trying to verify the provided self-description. Please check the URL and try again'
-    )
     return false
   }
 }
@@ -163,9 +157,6 @@ export async function getParticipantSelfDescription(
     return JSON.stringify(participantSelfDescription, null, 2)
   } catch (error) {
     Logger.error(error.message)
-    toast.error(
-      'There was an error downloading the provided self-description. Please check the URL and try again'
-    )
   }
 }
 
@@ -195,11 +186,6 @@ export function transformPublishFormToMetadata(
 
   const transformedLinks = getValidUrlArrayContent(links)
 
-  const participantSelfDescriptionUrl =
-    typeof participantSelfDescription === 'string'
-      ? undefined
-      : participantSelfDescription[0].url
-
   const metadata: MetadataMarket = {
     main: {
       ...AssetModel.main,
@@ -216,7 +202,7 @@ export function transformPublishFormToMetadata(
       tags: transformTags(tags),
       links: transformedLinks,
       termsAndConditions,
-      participantSelfDescription: participantSelfDescriptionUrl
+      participantSelfDescription: participantSelfDescription?.[0]?.url
     }
   }
 

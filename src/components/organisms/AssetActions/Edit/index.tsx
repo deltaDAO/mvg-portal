@@ -123,12 +123,16 @@ export default function Edit({
         Logger.error(content.form.error)
         return
       }
+
+      // Manually add participant self-description since the value is not
+      // updated in ocean.assets.editMetadata()
       let ddoEditedTimeout = values?.participantSelfDescription
         ? updateParticipantSelfDescription(
             ddoEditedMetdata,
             values.participantSelfDescription[0].url
           )
         : ddoEditedMetdata
+
       if (timeoutStringValue !== values.timeout) {
         const service =
           ddoEditedMetdata.findServiceByType('access') ||
