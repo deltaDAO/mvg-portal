@@ -16,6 +16,7 @@ import {
   Logger,
   EditableMetadataLinks
 } from '@oceanprotocol/lib'
+import { complianceUri } from '../../app.config'
 
 export function transformTags(value: string): string[] {
   const originalTags = value?.split(',')
@@ -135,10 +136,7 @@ export async function verifyParticipantSelfDescription(url: string): Promise<{
   if (!url) return { verified: false }
 
   try {
-    const response = await axios.post(
-      'https://compliance.gaia-x.eu/api/v1/participant/verify',
-      { url }
-    )
+    const response = await axios.post(complianceUri, { url })
     if (response?.status === 409) {
       return {
         verified: false,
