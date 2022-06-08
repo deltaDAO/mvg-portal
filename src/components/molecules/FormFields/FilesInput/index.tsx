@@ -38,7 +38,7 @@ export default function FilesInput(props: InputProps): ReactElement {
             !participantSelfDescription
           ) {
             toast.error(
-              'The data file URL you entered apears to be invalid. Please check URL and try again'
+              'The data file URL you entered appears to be invalid. Please check URL and try again'
             )
             return
           }
