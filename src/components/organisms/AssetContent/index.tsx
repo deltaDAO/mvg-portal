@@ -57,7 +57,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     ddo,
     isAssetNetwork,
     isInPurgatory,
-    isSelfDescriptionVerified,
+    isParticipantSelfDescriptionVerified,
     metadata,
     owner,
     price,
@@ -107,7 +107,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     setShowEditAdvancedSettings(true)
   }
 
-  if (isSelfDescriptionVerified) {
+  if (isParticipantSelfDescriptionVerified) {
     getParticipantSelfDescription(
       metadata?.additionalInformation?.participantSelfDescription
     ).then((participantSelfDescription) => {
@@ -151,7 +151,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
                   className={styles.description}
                   text={metadata?.additionalInformation?.description || ''}
                 />
-                {isSelfDescriptionVerified && (
+                {isParticipantSelfDescriptionVerified && (
                   <Markdown
                     className={styles.description}
                     text={participantSelfDescription || ''}

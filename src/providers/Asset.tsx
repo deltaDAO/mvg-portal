@@ -38,7 +38,7 @@ interface AssetProviderValue {
   refreshInterval: number
   isAssetNetwork: boolean
   loading: boolean
-  isSelfDescriptionVerified: boolean
+  isParticipantSelfDescriptionVerified: boolean
   refreshDdo: (token?: CancelToken) => Promise<void>
 }
 
@@ -69,8 +69,10 @@ function AssetProvider({
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
-  const [isSelfDescriptionVerified, setIsSelfDescriptionVerified] =
-    useState<boolean>()
+  const [
+    isParticipantSelfDescriptionVerified,
+    setIsParticipantSelfDescriptionVerified
+  ] = useState<boolean>()
   const newCancelToken = useCancelToken()
   const fetchDdo = async (token?: CancelToken) => {
     Logger.log('[asset] Init asset, get DDO')
@@ -159,14 +161,14 @@ function AssetProvider({
     setOwner(ddo.publicKey[0].owner)
     if (attributes.additionalInformation?.participantSelfDescription) {
       const { participantSelfDescription } = attributes.additionalInformation
-      const verified = await verifyParticipantSelfDescription(
+      const { verified } = await verifyParticipantSelfDescription(
         participantSelfDescription
       )
       const participantSelfDescriptionContent =
         await getParticipantSelfDescription(participantSelfDescription)
       verified && !!participantSelfDescriptionContent
-        ? setIsSelfDescriptionVerified(true)
-        : setIsSelfDescriptionVerified(false)
+        ? setIsParticipantSelfDescriptionVerified(true)
+        : setIsParticipantSelfDescriptionVerified(false)
     }
     Logger.log('[asset] Got Metadata from DDO', attributes)
 
@@ -206,7 +208,7 @@ function AssetProvider({
           loading,
           refreshDdo,
           isAssetNetwork,
-          isSelfDescriptionVerified
+          isParticipantSelfDescriptionVerified
         } as AssetProviderValue
       }
     >

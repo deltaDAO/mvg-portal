@@ -76,10 +76,9 @@ export default function VerifyPage({
         return
       }
 
-      const participantSelfDescriptionVerification =
-        await verifyParticipantSelfDescription(participantSelfDescriptionUrl)
-
-      const { responseBody, verified } = participantSelfDescriptionVerification
+      const { responseBody, verified } = await verifyParticipantSelfDescription(
+        participantSelfDescriptionUrl
+      )
       setParticipantSelfDescriptionVerified(verified)
 
       if (!verified && !responseBody) {

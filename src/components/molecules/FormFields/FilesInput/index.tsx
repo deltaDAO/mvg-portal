@@ -28,15 +28,11 @@ export default function FilesInput(props: InputProps): ReactElement {
         setIsLoading(true)
 
         if (field.name === 'participantSelfDescription') {
-          const isParticipantSelfDescriptionVerified =
-            await verifyParticipantSelfDescription(fileUrl)
+          const { verified } = await verifyParticipantSelfDescription(fileUrl)
           const participantSelfDescription =
             await getParticipantSelfDescription(fileUrl)
 
-          if (
-            !isParticipantSelfDescriptionVerified ||
-            !participantSelfDescription
-          ) {
+          if (!verified || !participantSelfDescription) {
             toast.error(
               'The data file URL you entered appears to be invalid. Please check URL and try again'
             )
