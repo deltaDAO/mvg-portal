@@ -49,7 +49,7 @@ export default function ServiceSelfDescription(
         return
       }
 
-      helpers.setValue({ raw: JSON.parse(rawServiceSelfDescription) })
+      helpers.setValue([{ raw: JSON.parse(rawServiceSelfDescription) }])
       toast.success(
         'Great! The provided service self-description looks good. 🐳'
       )
@@ -102,7 +102,7 @@ export default function ServiceSelfDescription(
               </Button>
             </div>
           ) : (
-            <Markdown text={getFormattedCodeString(field.value.raw)} />
+            <Markdown text={getFormattedCodeString(field.value[0].raw)} />
           ))}
       </div>
     </div>

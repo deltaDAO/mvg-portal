@@ -7,9 +7,18 @@ import {
 import { DataTokenOptions } from '../hooks/usePublish'
 import { PriceOptions } from '../hooks/usePricing'
 
+export interface ServiceSelfDescription {
+  name?: string
+  url?: string
+  type?: string
+  raw?: any
+}
 export interface AdditionalInformationMarket extends AdditionalInformation {
   links?: File[]
-  serviceSelfDescription?: string
+  serviceSelfDescription?: {
+    url?: string
+    raw: any
+  }
   termsAndConditions: boolean
 }
 
@@ -40,7 +49,7 @@ export interface MetadataPublishFormDataset {
   tags?: string
   links?: string | EditableMetadataLinks[]
   providerUri?: string
-  serviceSelfDescription?: string | EditableMetadataLinks[]
+  serviceSelfDescription?: string | ServiceSelfDescription[]
 }
 
 export interface MetadataPublishFormAlgorithm {
@@ -60,7 +69,7 @@ export interface MetadataPublishFormAlgorithm {
   entrypoint: string
   tags?: string
   providerUri?: string
-  serviceSelfDescription?: string | EditableMetadataLinks[]
+  serviceSelfDescription?: string | ServiceSelfDescription[]
 }
 
 export interface MetadataEditForm {

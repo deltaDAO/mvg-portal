@@ -208,6 +208,14 @@ export function transformPublishFormToMetadata(
 
   const transformedLinks = getValidUrlArrayContent(links)
 
+  const transformedServiceSelfDescription =
+    typeof serviceSelfDescription === 'string'
+      ? undefined
+      : {
+          url: serviceSelfDescription?.[0]?.url,
+          raw: serviceSelfDescription?.[0]?.raw
+        }
+
   const metadata: MetadataMarket = {
     main: {
       ...AssetModel.main,
@@ -224,7 +232,7 @@ export function transformPublishFormToMetadata(
       tags: transformTags(tags),
       links: transformedLinks,
       termsAndConditions,
-      serviceSelfDescription: serviceSelfDescription?.[0]?.url
+      serviceSelfDescription: transformedServiceSelfDescription
     }
   }
 
