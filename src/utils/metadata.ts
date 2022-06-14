@@ -129,7 +129,7 @@ function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
   )
 }
 
-export async function verifyParticipantSelfDescription(url: string): Promise<{
+export async function verifyServiceSelfDescription(url: string): Promise<{
   verified: boolean
   responseBody?: any
 }> {
@@ -154,14 +154,12 @@ export async function verifyParticipantSelfDescription(url: string): Promise<{
   }
 }
 
-export async function getParticipantSelfDescription(
-  url: string
-): Promise<string> {
+export async function getServiceSelfDescription(url: string): Promise<string> {
   if (!url) return
 
   try {
-    const participantSelfDescription = await axios.get(url)
-    return JSON.stringify(participantSelfDescription, null, 2)
+    const serviceSelfDescription = await axios.get(url)
+    return JSON.stringify(serviceSelfDescription, null, 2)
   } catch (error) {
     Logger.error(error.message)
   }
@@ -171,11 +169,11 @@ export function getFormattedCodeString(string: string): string {
   return `\`\`\`\n${string}\n\`\`\``
 }
 
-export function updateParticipantSelfDescription(ddo: DDO, url: string): DDO {
+export function updateServiceSelfDescription(ddo: DDO, url: string): DDO {
   const metadataIndex = ddo.service.findIndex((e) => e.type === 'metadata')
   ddo.service[
     metadataIndex
-  ].attributes.additionalInformation.participantSelfDescription = url
+  ].attributes.additionalInformation.serviceSelfDescription = url
 
   return ddo
 }
@@ -189,7 +187,7 @@ export function transformPublishFormToMetadata(
     links,
     termsAndConditions,
     files,
-    participantSelfDescription
+    serviceSelfDescription
   }: Partial<MetadataPublishFormDataset>,
   ddo?: DDO
 ): MetadataMarket {
@@ -213,7 +211,7 @@ export function transformPublishFormToMetadata(
       tags: transformTags(tags),
       links: transformedLinks,
       termsAndConditions,
-      participantSelfDescription: participantSelfDescription?.[0]?.url
+      serviceSelfDescription: serviceSelfDescription?.[0]?.url
     }
   }
 

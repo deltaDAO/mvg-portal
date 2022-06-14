@@ -23,7 +23,7 @@ import NetworkName from '../../atoms/NetworkName'
 import VerifiedPublisher from '../../atoms/VerifiedPublisher'
 import {
   getFormattedCodeString,
-  getParticipantSelfDescription
+  getServiceSelfDescription
 } from '../../../utils/metadata'
 export interface AssetContentProps {
   path?: string
@@ -57,7 +57,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     ddo,
     isAssetNetwork,
     isInPurgatory,
-    isParticipantSelfDescriptionVerified,
+    isServiceSelfDescriptionVerified,
     metadata,
     owner,
     price,
@@ -71,8 +71,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const [showEditAdvancedSettings, setShowEditAdvancedSettings] =
     useState<boolean>()
   const [isOwner, setIsOwner] = useState(false)
-  const [participantSelfDescription, setParticipantSelfDescription] =
-    useState<string>()
+  const [serviceSelfDescription, setServiceSelfDescription] = useState<string>()
   const { appConfig } = useSiteMetadata()
   const { tutorial } = props
 
@@ -107,14 +106,14 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     setShowEditAdvancedSettings(true)
   }
 
-  if (isParticipantSelfDescriptionVerified) {
-    getParticipantSelfDescription(
-      metadata?.additionalInformation?.participantSelfDescription
-    ).then((participantSelfDescription) => {
-      const formattedParticipantSelfDescription = `## Participant Self-Description\n${getFormattedCodeString(
-        participantSelfDescription
+  if (isServiceSelfDescriptionVerified) {
+    getServiceSelfDescription(
+      metadata?.additionalInformation?.serviceSelfDescription
+    ).then((serviceSelfDescription) => {
+      const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
+        serviceSelfDescription
       )}`
-      setParticipantSelfDescription(formattedParticipantSelfDescription)
+      setServiceSelfDescription(formattedServiceSelfDescription)
     })
   }
 
@@ -151,10 +150,10 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
                   className={styles.description}
                   text={metadata?.additionalInformation?.description || ''}
                 />
-                {isParticipantSelfDescriptionVerified && (
+                {isServiceSelfDescriptionVerified && (
                   <Markdown
                     className={styles.description}
-                    text={participantSelfDescription || ''}
+                    text={serviceSelfDescription || ''}
                   />
                 )}
 

@@ -18,7 +18,7 @@ const AssetModel: MetadataMarket = {
     links: undefined,
 
     // custom items
-    participantSelfDescription: undefined,
+    serviceSelfDescription: undefined,
     termsAndConditions: false
   }
 }

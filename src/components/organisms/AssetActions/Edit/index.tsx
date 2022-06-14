@@ -13,7 +13,7 @@ import Web3Feedback from '../../../molecules/Web3Feedback'
 import FormEditMetadata from './FormEditMetadata'
 import {
   mapTimeoutStringToSeconds,
-  updateParticipantSelfDescription
+  updateServiceSelfDescription
 } from '../../../../utils/metadata'
 import styles from './index.module.css'
 import { Logger } from '@oceanprotocol/lib'
@@ -124,12 +124,12 @@ export default function Edit({
         return
       }
 
-      // Manually add participant self-description since the value is not
+      // Manually add service self-description since the value is not
       // updated in ocean.assets.editMetadata()
-      let ddoEditedTimeout = values?.participantSelfDescription
-        ? updateParticipantSelfDescription(
+      let ddoEditedTimeout = values?.serviceSelfDescription
+        ? updateServiceSelfDescription(
             ddoEditedMetdata,
-            values.participantSelfDescription[0].url
+            values.serviceSelfDescription[0].url
           )
         : ddoEditedMetdata
 

@@ -9,8 +9,8 @@ import { useWeb3 } from '../../../../providers/Web3'
 import { getOceanConfig } from '../../../../utils/ocean'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
 import {
-  getParticipantSelfDescription,
-  verifyParticipantSelfDescription
+  getServiceSelfDescription,
+  verifyServiceSelfDescription
 } from '../../../../utils/metadata'
 
 export default function FilesInput(props: InputProps): ReactElement {
@@ -27,12 +27,13 @@ export default function FilesInput(props: InputProps): ReactElement {
       try {
         setIsLoading(true)
 
-        if (field.name === 'participantSelfDescription') {
-          const { verified } = await verifyParticipantSelfDescription(fileUrl)
-          const participantSelfDescription =
-            await getParticipantSelfDescription(fileUrl)
+        if (field.name === 'serviceSelfDescription') {
+          const { verified } = await verifyServiceSelfDescription(fileUrl)
+          const serviceSelfDescription = await getServiceSelfDescription(
+            fileUrl
+          )
 
-          if (!verified || !participantSelfDescription) {
+          if (!verified || !serviceSelfDescription) {
             toast.error(
               'The data file URL you entered appears to be invalid. Please check URL and try again'
             )

@@ -61,7 +61,7 @@ function MetaFull({ values }: { values: Partial<MetadataPublishFormDataset> }) {
               key.includes('tags') ||
               key.includes('files') ||
               key.includes('links') ||
-              key.includes('participantSelfDescription') ||
+              key.includes('serviceSelfDescription') ||
               key.includes('termsAndConditions') ||
               key.includes('dataTokenOptions') ||
               key.includes('dockerImage') ||

@@ -7,8 +7,8 @@ import Input from '../../atoms/Input'
 import Markdown from '../../atoms/Markdown'
 import {
   getFormattedCodeString,
-  getParticipantSelfDescription,
-  verifyParticipantSelfDescription
+  getServiceSelfDescription,
+  verifyServiceSelfDescription
 } from '../../../utils/metadata'
 import VerifiedBadge from '../../atoms/VerifiedBadge'
 import { Logger } from '@oceanprotocol/lib'
@@ -22,7 +22,7 @@ interface Content {
   }
   errorList: {
     invalidDid: string
-    noParticipantSelfDescription: string
+    noServiceSelfDescription: string
     default: string
   }
 }
@@ -37,22 +37,17 @@ export default function VerifyPage({
   const newCancelToken = useCancelToken()
   const [isLoading, setIsLoading] = useState(false)
   const [did, setDid] = useState<string>()
-  const [participantSelfDescription, setParticipantSelfDescription] =
+  const [serviceSelfDescription, setServiceSelfDescription] = useState<string>()
+  const [isServiceSelfDescriptionVerified, setServiceSelfDescriptionVerified] =
+    useState<boolean>()
+  const [serviceSelfDescriptionErrors, setServiceSelfDescriptionErrors] =
     useState<string>()
-  const [
-    isParticipantSelfDescriptionVerified,
-    setParticipantSelfDescriptionVerified
-  ] = useState<boolean>()
-  const [
-    participantSelfDescriptionErrors,
-    setParticipantSelfDescriptionErrors
-  ] = useState<string>()
   const [error, setError] = useState<keyof typeof errorList>()
 
   const resetState = () => {
-    setParticipantSelfDescription(undefined)
-    setParticipantSelfDescriptionVerified(undefined)
-    setParticipantSelfDescriptionErrors(undefined)
+    setServiceSelfDescription(undefined)
+    setServiceSelfDescriptionVerified(undefined)
+    setServiceSelfDescriptionErrors(undefined)
     setError(undefined)
   }
 
@@ -69,32 +64,33 @@ export default function VerifyPage({
       }
 
       const { attributes } = ddo.findServiceByType('metadata')
-      const participantSelfDescriptionUrl =
-        attributes.additionalInformation?.participantSelfDescription
-      if (!participantSelfDescriptionUrl) {
-        setError('noParticipantSelfDescription')
+      const serviceSelfDescriptionUrl =
+        attributes.additionalInformation?.serviceSelfDescription
+      if (!serviceSelfDescriptionUrl) {
+        setError('noServiceSelfDescription')
         return
       }
 
-      const { responseBody, verified } = await verifyParticipantSelfDescription(
-        participantSelfDescriptionUrl
+      const { responseBody, verified } = await verifyServiceSelfDescription(
+        serviceSelfDescriptionUrl
       )
-      setParticipantSelfDescriptionVerified(verified)
+      setServiceSelfDescriptionVerified(verified)
 
       if (!verified && !responseBody) {
         setError('default')
         return
       }
       if (responseBody) {
-        setParticipantSelfDescriptionErrors(responseBody)
+        setServiceSelfDescriptionErrors(responseBody)
       }
 
-      const participantSelfDescriptionBody =
-        await getParticipantSelfDescription(participantSelfDescriptionUrl)
-      const formattedParticipantSelfDescription = getFormattedCodeString(
-        participantSelfDescriptionBody
+      const serviceSelfDescriptionBody = await getServiceSelfDescription(
+        serviceSelfDescriptionUrl
       )
-      setParticipantSelfDescription(formattedParticipantSelfDescription)
+      const formattedServiceSelfDescription = getFormattedCodeString(
+        serviceSelfDescriptionBody
+      )
+      setServiceSelfDescription(formattedServiceSelfDescription)
       setIsLoading(false)
     } catch (error) {
       Logger.error(error)
@@ -126,13 +122,13 @@ export default function VerifyPage({
       {isLoading ? (
         <Loader />
       ) : (
-        participantSelfDescription && (
+        serviceSelfDescription && (
           <div className={styles.selfDescriptionContainer}>
-            {participantSelfDescriptionErrors && (
+            {serviceSelfDescriptionErrors && (
               <div>
                 <div className={styles.selfDescriptionErrorsHeader}>
                   <h4>Validation Errors</h4>
-                  {!isParticipantSelfDescriptionVerified && (
+                  {!isServiceSelfDescriptionVerified && (
                     <VerifiedBadge
                       isInvalid
                       text="Invalid Self-Description"
@@ -142,21 +138,19 @@ export default function VerifyPage({
                 </div>
                 <Markdown
                   className={styles.errorBody}
-                  text={getFormattedCodeString(
-                    participantSelfDescriptionErrors
-                  )}
+                  text={getFormattedCodeString(serviceSelfDescriptionErrors)}
                 />
               </div>
             )}
             <div className={styles.selfDescriptionHeader}>
-              <h4>Participant Self-Description</h4>
-              {isParticipantSelfDescriptionVerified && (
+              <h4>Service Self-Description</h4>
+              {isServiceSelfDescriptionVerified && (
                 <VerifiedBadge text="Verified Self-Description" timestamp />
               )}
             </div>
             <Markdown
               className={styles.description}
-              text={participantSelfDescription || ''}
+              text={serviceSelfDescription || ''}
             />
           </div>
         )

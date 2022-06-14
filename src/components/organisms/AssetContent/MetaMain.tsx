@@ -10,13 +10,8 @@ import styles from './MetaMain.module.css'
 import VerifiedBadge from '../../atoms/VerifiedBadge'
 
 export default function MetaMain(): ReactElement {
-  const {
-    ddo,
-    owner,
-    type,
-    isAssetNetwork,
-    isParticipantSelfDescriptionVerified
-  } = useAsset()
+  const { ddo, owner, type, isAssetNetwork, isServiceSelfDescriptionVerified } =
+    useAsset()
   const { web3ProviderInfo } = useWeb3()
 
   const isCompute = Boolean(ddo?.findServiceByType('compute'))
@@ -73,8 +68,8 @@ export default function MetaMain(): ReactElement {
             )}
           </p>
         </div>
-        {isParticipantSelfDescriptionVerified && (
-          <VerifiedBadge text="Participant Self-Description" timestamp />
+        {isServiceSelfDescriptionVerified && (
+          <VerifiedBadge text="Service Self-Description" timestamp />
         )}
       </div>
     </aside>

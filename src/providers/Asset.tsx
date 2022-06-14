@@ -20,8 +20,8 @@ import { useAddressConfig } from '../hooks/useAddressConfig'
 import { BestPrice } from '../models/BestPrice'
 import { useCancelToken } from '../hooks/useCancelToken'
 import {
-  getParticipantSelfDescription,
-  verifyParticipantSelfDescription
+  getServiceSelfDescription,
+  verifyServiceSelfDescription
 } from '../utils/metadata'
 
 interface AssetProviderValue {
@@ -38,7 +38,7 @@ interface AssetProviderValue {
   refreshInterval: number
   isAssetNetwork: boolean
   loading: boolean
-  isParticipantSelfDescriptionVerified: boolean
+  isServiceSelfDescriptionVerified: boolean
   refreshDdo: (token?: CancelToken) => Promise<void>
 }
 
@@ -70,8 +70,8 @@ function AssetProvider({
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
   const [
-    isParticipantSelfDescriptionVerified,
-    setIsParticipantSelfDescriptionVerified
+    isServiceSelfDescriptionVerified,
+    setIsServiceSelfDescriptionVerified
   ] = useState<boolean>()
   const newCancelToken = useCancelToken()
   const fetchDdo = async (token?: CancelToken) => {
@@ -159,16 +159,17 @@ function AssetProvider({
     setTitle(attributes?.main.name)
     setType(attributes.main.type)
     setOwner(ddo.publicKey[0].owner)
-    if (attributes.additionalInformation?.participantSelfDescription) {
-      const { participantSelfDescription } = attributes.additionalInformation
-      const { verified } = await verifyParticipantSelfDescription(
-        participantSelfDescription
+    if (attributes.additionalInformation?.serviceSelfDescription) {
+      const { serviceSelfDescription } = attributes.additionalInformation
+      const { verified } = await verifyServiceSelfDescription(
+        serviceSelfDescription
       )
-      const participantSelfDescriptionContent =
-        await getParticipantSelfDescription(participantSelfDescription)
-      verified && !!participantSelfDescriptionContent
-        ? setIsParticipantSelfDescriptionVerified(true)
-        : setIsParticipantSelfDescriptionVerified(false)
+      const serviceSelfDescriptionContent = await getServiceSelfDescription(
+        serviceSelfDescription
+      )
+      verified && !!serviceSelfDescriptionContent
+        ? setIsServiceSelfDescriptionVerified(true)
+        : setIsServiceSelfDescriptionVerified(false)
     }
     Logger.log('[asset] Got Metadata from DDO', attributes)
 
@@ -208,7 +209,7 @@ function AssetProvider({
           loading,
           refreshDdo,
           isAssetNetwork,
-          isParticipantSelfDescriptionVerified
+          isServiceSelfDescriptionVerified
         } as AssetProviderValue
       }
     >

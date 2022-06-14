@@ -33,7 +33,7 @@ export const contentQuery = graphql`
             }
             errorList {
               invalidDid
-              noParticipantSelfDescription
+              noServiceSelfDescription
               default
             }
           }
