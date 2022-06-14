@@ -30,6 +30,12 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormDataset> =
       links: Yup.array<FileMetadata[]>().nullable(),
       providerUri: Yup.string().url().nullable(),
       serviceSelfDescription: Yup.array<FileMetadata[]>().nullable()
+      // serviceSelfDescription: Yup.mixed()
+      //   .oneOf([
+      //     Yup.array<FileMetadata[]>(),
+      //     Yup.object().shape({ raw: Yup.object() })
+      //   ])
+      //   .nullable()
     })
     .defined()
 
