@@ -28,7 +28,9 @@ export default function FilesInput(props: InputProps): ReactElement {
         setIsLoading(true)
 
         if (field.name === 'serviceSelfDescription') {
-          const { verified } = await verifyServiceSelfDescription(fileUrl)
+          const { verified } = await verifyServiceSelfDescription({
+            body: fileUrl
+          })
           const serviceSelfDescription = await getServiceSelfDescription(
             fileUrl
           )
@@ -66,7 +68,7 @@ export default function FilesInput(props: InputProps): ReactElement {
     // hack so the onBlur-triggered validation does not show,
     // like when this field is required
     helpers.setTouched(false)
-
+    console.log(url)
     // File example 'https://oceanprotocol.com/tech-whitepaper.pdf'
     e.preventDefault()
 

@@ -129,17 +129,26 @@ function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
   )
 }
 
-export async function verifyServiceSelfDescription(url: string): Promise<{
+export async function verifyServiceSelfDescription({
+  body,
+  raw
+}: {
+  body: string
+  raw?: boolean
+}): Promise<{
   verified: boolean
   responseBody?: any
 }> {
-  if (!url) return { verified: false }
+  if (!body) return { verified: false }
+
+  const baseUrl = raw
+    ? `${complianceUri}/service-offering/verify/raw`
+    : `${complianceUri}/service-offering/verify`
+
+  const requestBody = raw ? body : { url: body }
 
   try {
-    const response = await axios.post(
-      `${complianceUri}/service-offering/verify`,
-      { url }
-    )
+    const response = await axios.post(baseUrl, requestBody)
     if (response?.status === 409) {
       return {
         verified: false,

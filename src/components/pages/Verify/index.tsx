@@ -71,9 +71,9 @@ export default function VerifyPage({
         return
       }
 
-      const { responseBody, verified } = await verifyServiceSelfDescription(
-        serviceSelfDescriptionUrl
-      )
+      const { responseBody, verified } = await verifyServiceSelfDescription({
+        body: serviceSelfDescriptionUrl
+      })
       setServiceSelfDescriptionVerified(verified)
 
       if (!verified && !responseBody) {
