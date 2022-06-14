@@ -1,4 +1,7 @@
-import { MetadataPublishFormAlgorithm } from '../@types/MetaData'
+import {
+  MetadataPublishFormAlgorithm,
+  ServiceSelfDescription
+} from '../@types/MetaData'
 import { File as FileMetadata } from '@oceanprotocol/lib'
 import * as Yup from 'yup'
 
@@ -32,12 +35,7 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormAlgorithm> =
       algorithmPrivacy: Yup.boolean().nullable(),
       tags: Yup.string().nullable(),
       links: Yup.array<FileMetadata[]>().nullable(),
-      serviceSelfDescription: Yup.mixed()
-        .oneOf([
-          Yup.array<FileMetadata[]>(),
-          Yup.object().shape({ raw: Yup.object() })
-        ])
-        .nullable()
+      serviceSelfDescription: Yup.array<ServiceSelfDescription[]>().nullable()
     })
     .defined()
 
