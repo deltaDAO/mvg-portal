@@ -41,10 +41,7 @@ module.exports = {
     'gatsby-transformer-sharp',
     'gatsby-transformer-json',
     {
-      resolve: `gatsby-transformer-remark`,
-      options: {
-        plugins: [`gatsby-remark-autolink-headers`]
-      }
+      resolve: `gatsby-transformer-remark`
     },
     {
       resolve: 'gatsby-plugin-svgr',
@@ -71,13 +68,6 @@ module.exports = {
         cache_busting_mode: 'none'
       }
     },
-    'gatsby-plugin-webpack-size',
-    {
-      resolve: 'gatsby-plugin-use-dark-mode',
-      options: {
-        ...appConfig.darkModeConfig,
-        minify: true
-      }
-    }
+    'gatsby-plugin-webpack-size'
   ]
 }
