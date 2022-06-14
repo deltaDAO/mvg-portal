@@ -145,7 +145,7 @@ export async function verifyServiceSelfDescription({
     ? `${complianceUri}/service-offering/verify/raw`
     : `${complianceUri}/service-offering/verify`
 
-  const requestBody = raw ? body : { url: body }
+  const requestBody = raw ? JSON.parse(body) : { url: body }
 
   try {
     const response = await axios.post(baseUrl, requestBody)

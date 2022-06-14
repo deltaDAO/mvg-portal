@@ -12,14 +12,14 @@ import BoxSelection from './BoxSelection'
 
 const serviceSelfDescriptionOptions = [
   {
-    name: 'uri',
+    name: 'url',
     checked: false,
-    title: 'Uri'
+    title: 'Url'
   },
   {
-    name: 'json',
+    name: 'raw',
     checked: false,
-    title: 'Json'
+    title: 'Raw'
   }
 ]
 
@@ -35,9 +35,8 @@ export default function ServiceSelfDescription(
     try {
       setIsLoading(true)
 
-      const parsedBody = JSON.parse(rawServiceSelfDescription)
       const { verified } = await verifyServiceSelfDescription({
-        body: parsedBody,
+        body: rawServiceSelfDescription,
         raw: true
       })
       setIsVerified(verified)
@@ -48,6 +47,8 @@ export default function ServiceSelfDescription(
         )
         return
       }
+
+      helpers.setValue({ raw: JSON.parse(rawServiceSelfDescription) })
       toast.success(
         'Great! The provided service self-description looks good. 🐳'
       )
@@ -90,8 +91,8 @@ export default function ServiceSelfDescription(
         />
       </div>
       <div>
-        {userSelection === 'uri' && <Input type="files" {...props} />}
-        {userSelection === 'json' &&
+        {userSelection === 'url' && <Input type="files" {...props} />}
+        {userSelection === 'raw' &&
           (!isVerified ? (
             <div>
               <Input type="textarea" {...props} />
