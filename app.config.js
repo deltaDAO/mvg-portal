@@ -18,7 +18,7 @@ module.exports = {
     process.env.GATSBY_COMPLIANCE_URI ||
     // TODO: revert to prod uri
     // 'https://compliance.gaia-x.eu/api/v1/participant/verify',
-    'https://compliance.lab.gaia-x.eu/api/v1/participant/verify',
+    'https://compliance.lab.gaia-x.eu/api/v1',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.

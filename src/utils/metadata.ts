@@ -136,7 +136,10 @@ export async function verifyServiceSelfDescription(url: string): Promise<{
   if (!url) return { verified: false }
 
   try {
-    const response = await axios.post(complianceUri, { url })
+    const response = await axios.post(
+      `${complianceUri}/service-offering/verify`,
+      { url }
+    )
     if (response?.status === 409) {
       return {
         verified: false,
