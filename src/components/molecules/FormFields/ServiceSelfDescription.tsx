@@ -67,13 +67,7 @@ export default function ServiceSelfDescription(
     setIsVerified(false)
   }, [userSelection])
 
-  useEffect(() => {
-    console.log(field)
-  }, [field])
-
   async function handleButtonClick(e: React.FormEvent<Element>, body: string) {
-    // hack so the onBlur-triggered validation does not show,
-    // like when this field is required
     helpers.setTouched(false)
 
     e.preventDefault()
@@ -98,8 +92,9 @@ export default function ServiceSelfDescription(
         {userSelection === 'raw' &&
           (!isVerified ? (
             <div>
-              <Input type="textarea" {...props} />
+              <Input type="textarea" {...props} placeholder="" />
               <Button
+                disabled={!field.value}
                 style="primary"
                 onClick={(e) => handleButtonClick(e, field.value)}
               >
