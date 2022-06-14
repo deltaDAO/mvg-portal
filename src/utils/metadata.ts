@@ -178,7 +178,8 @@ export async function getServiceSelfDescription(url: string): Promise<string> {
 }
 
 export function getFormattedCodeString(string: string): string {
-  return `\`\`\`\n${string}\n\`\`\``
+  const formattedString = JSON.stringify(string, null, 2)
+  return `\`\`\`\n${formattedString}\n\`\`\``
 }
 
 export function updateServiceSelfDescription(ddo: DDO, url: string): DDO {

@@ -7,6 +7,7 @@ import {
 } from '../../../utils/metadata'
 import Button from '../../atoms/Button'
 import Input, { InputProps } from '../../atoms/Input'
+import Loader from '../../atoms/Loader'
 import Markdown from '../../atoms/Markdown'
 import BoxSelection from './BoxSelection'
 
@@ -63,7 +64,6 @@ export default function ServiceSelfDescription(
   }
 
   useEffect(() => {
-    helpers.setValue(undefined)
     setIsVerified(false)
   }, [userSelection])
 
@@ -87,7 +87,10 @@ export default function ServiceSelfDescription(
         <BoxSelection
           name="serviceSelfDescriptionOptions"
           options={serviceSelfDescriptionOptions}
-          handleChange={(e) => setUserSelection(e.target.value)}
+          handleChange={(e) => {
+            helpers.setValue(undefined)
+            setUserSelection(e.target.value)
+          }}
         />
       </div>
       <div>
@@ -98,14 +101,13 @@ export default function ServiceSelfDescription(
               <Input type="textarea" {...props} />
               <Button
                 style="primary"
-                disabled={isLoading || !field.value}
                 onClick={(e) => handleButtonClick(e, field.value)}
               >
-                Verify
+                {!isLoading ? 'Verify' : <Loader />}
               </Button>
             </div>
           ) : (
-            <Markdown text={getFormattedCodeString(field.value)} />
+            <Markdown text={getFormattedCodeString(field.value.raw)} />
           ))}
       </div>
     </div>
