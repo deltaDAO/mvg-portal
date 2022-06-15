@@ -144,8 +144,7 @@ export async function verifyServiceSelfDescription({
   const baseUrl = raw
     ? `${complianceUri}/service-offering/verify/raw`
     : `${complianceUri}/service-offering/verify`
-
-  const requestBody = raw ? JSON.parse(body) : { url: body }
+  const requestBody = raw ? body : { url: body }
 
   try {
     const response = await axios.post(baseUrl, requestBody)
@@ -177,8 +176,14 @@ export async function getServiceSelfDescription(url: string): Promise<string> {
   }
 }
 
-export function getFormattedCodeString(string: string): string {
-  const formattedString = JSON.stringify(string, null, 2)
+export function getFormattedCodeString({
+  body,
+  raw
+}: {
+  body: string
+  raw?: boolean
+}): string {
+  const formattedString = raw ? JSON.stringify(body, null, 2) : body
   return `\`\`\`\n${formattedString}\n\`\`\``
 }
 

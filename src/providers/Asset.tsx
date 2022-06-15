@@ -159,14 +159,14 @@ function AssetProvider({
     setTitle(attributes?.main.name)
     setType(attributes.main.type)
     setOwner(ddo.publicKey[0].owner)
-    if (attributes.additionalInformation?.serviceSelfDescription) {
-      const { serviceSelfDescription } = attributes.additionalInformation
-      const { verified } = await verifyServiceSelfDescription({
-        body: serviceSelfDescription
-      })
-      const serviceSelfDescriptionContent = await getServiceSelfDescription(
-        serviceSelfDescription
-      )
+
+    const { raw, url } = attributes.additionalInformation.serviceSelfDescription
+    if (raw || url) {
+      const requestBody = url ? { body: url } : { body: raw, raw: true }
+      const { verified } = await verifyServiceSelfDescription(requestBody)
+      const serviceSelfDescriptionContent = url
+        ? await getServiceSelfDescription(url)
+        : raw
       verified && !!serviceSelfDescriptionContent
         ? setIsServiceSelfDescriptionVerified(true)
         : setIsServiceSelfDescriptionVerified(false)

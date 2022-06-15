@@ -106,16 +106,27 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     setShowEditAdvancedSettings(true)
   }
 
-  if (isServiceSelfDescriptionVerified) {
-    getServiceSelfDescription(
-      metadata?.additionalInformation?.serviceSelfDescription
-    ).then((serviceSelfDescription) => {
+  useEffect(() => {
+    if (!isServiceSelfDescriptionVerified) return
+    const { raw, url } = metadata?.additionalInformation?.serviceSelfDescription
+    if (raw) {
       const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-        serviceSelfDescription
+        { body: raw, raw: true }
       )}`
       setServiceSelfDescription(formattedServiceSelfDescription)
-    })
-  }
+    }
+    if (url) {
+      getServiceSelfDescription(url).then((serviceSelfDescription) => {
+        const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
+          { body: serviceSelfDescription }
+        )}`
+        setServiceSelfDescription(formattedServiceSelfDescription)
+      })
+    }
+  }, [
+    isServiceSelfDescriptionVerified,
+    metadata?.additionalInformation?.serviceSelfDescription
+  ])
 
   return showEdit && !tutorial ? (
     <Edit setShowEdit={setShowEdit} isComputeType={isComputeType} />
