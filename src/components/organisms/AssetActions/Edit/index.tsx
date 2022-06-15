@@ -126,10 +126,10 @@ export default function Edit({
 
       // Manually add service self-description since the value is not
       // updated in ocean.assets.editMetadata()
-      let ddoEditedTimeout = values?.serviceSelfDescription
+      let ddoEdited = values?.serviceSelfDescription
         ? updateServiceSelfDescription(
             ddoEditedMetdata,
-            values.serviceSelfDescription[0].url
+            values.serviceSelfDescription[0]
           )
         : ddoEditedMetdata
 
@@ -138,23 +138,20 @@ export default function Edit({
           ddoEditedMetdata.findServiceByType('access') ||
           ddoEditedMetdata.findServiceByType('compute')
         const timeout = mapTimeoutStringToSeconds(values.timeout)
-        ddoEditedTimeout = await ocean.assets.editServiceTimeout(
+        ddoEdited = await ocean.assets.editServiceTimeout(
           ddoEditedMetdata,
           service.index,
           timeout
         )
       }
 
-      if (!ddoEditedTimeout) {
+      if (!ddoEdited) {
         setError(content.form.error)
         Logger.error(content.form.error)
         return
       }
 
-      const storedddo = await ocean.assets.updateMetadata(
-        ddoEditedTimeout,
-        accountId
-      )
+      const storedddo = await ocean.assets.updateMetadata(ddoEdited, accountId)
       if (!storedddo) {
         setError(content.form.error)
         Logger.error(content.form.error)

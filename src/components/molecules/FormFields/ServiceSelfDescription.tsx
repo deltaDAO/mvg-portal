@@ -36,8 +36,9 @@ export default function ServiceSelfDescription(
     try {
       setIsLoading(true)
 
+      const parsedServiceSelfDescription = JSON.parse(rawServiceSelfDescription)
       const { verified } = await verifyServiceSelfDescription({
-        body: rawServiceSelfDescription,
+        body: parsedServiceSelfDescription,
         raw: true
       })
       setIsVerified(verified)
@@ -49,7 +50,7 @@ export default function ServiceSelfDescription(
         return
       }
 
-      helpers.setValue([{ raw: JSON.parse(rawServiceSelfDescription) }])
+      helpers.setValue([{ raw: parsedServiceSelfDescription }])
       toast.success(
         'Great! The provided service self-description looks good. 🐳'
       )
@@ -102,7 +103,12 @@ export default function ServiceSelfDescription(
               </Button>
             </div>
           ) : (
-            <Markdown text={getFormattedCodeString(field.value[0].raw)} />
+            <Markdown
+              text={getFormattedCodeString({
+                body: field.value[0].raw,
+                raw: true
+              })}
+            />
           ))}
       </div>
     </div>

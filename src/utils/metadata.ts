@@ -4,7 +4,8 @@ import isUrl from 'is-url-superb'
 import {
   MetadataMarket,
   MetadataPublishFormDataset,
-  MetadataPublishFormAlgorithm
+  MetadataPublishFormAlgorithm,
+  ServiceSelfDescription
 } from '../@types/MetaData'
 import { toStringNoMS } from '.'
 import AssetModel from '../models/Asset'
@@ -187,11 +188,15 @@ export function getFormattedCodeString({
   return `\`\`\`\n${formattedString}\n\`\`\``
 }
 
-export function updateServiceSelfDescription(ddo: DDO, url: string): DDO {
+export function updateServiceSelfDescription(
+  ddo: DDO,
+  serviceSelfDescription: ServiceSelfDescription
+): DDO {
+  const { raw, url } = serviceSelfDescription
   const metadataIndex = ddo.service.findIndex((e) => e.type === 'metadata')
   ddo.service[
     metadataIndex
-  ].attributes.additionalInformation.serviceSelfDescription = url
+  ].attributes.additionalInformation.serviceSelfDescription = { raw, url }
 
   return ddo
 }

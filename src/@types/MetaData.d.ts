@@ -75,9 +75,7 @@ export interface MetadataEditForm {
   timeout: string
   price?: number
   links?: string | EditableMetadataLinks[]
-  // TODO: fix type
-  serviceSelfDescription?: any
-  // serviceSelfDescription?: ServiceSelfDescription
+  serviceSelfDescription?: ServiceSelfDescription[]
   author?: string
 }
 
