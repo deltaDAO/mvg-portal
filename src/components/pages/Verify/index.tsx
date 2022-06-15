@@ -115,7 +115,6 @@ export default function VerifyPage({
           placeholder={placeholder}
           value={did}
         />
-        {error && <p className={styles.error}>{errorList[error]}</p>}
         <Button
           className={styles.actionButton}
           disabled={!did || isLoading}
@@ -128,38 +127,44 @@ export default function VerifyPage({
       {isLoading ? (
         <Loader />
       ) : (
-        serviceSelfDescription && (
-          <div className={styles.selfDescriptionContainer}>
-            {serviceSelfDescriptionErrors && (
-              <div>
-                <div className={styles.selfDescriptionErrorsHeader}>
-                  <h4>Validation Errors</h4>
-                  {!isServiceSelfDescriptionVerified && (
-                    <VerifiedBadge
-                      isInvalid
-                      text="Invalid Self-Description"
-                      timestamp
-                    />
-                  )}
+        <>
+          {error && <p className={styles.error}>{errorList[error]}</p>}
+          {serviceSelfDescription && (
+            <div className={styles.selfDescriptionContainer}>
+              {serviceSelfDescriptionErrors && (
+                <div>
+                  <div className={styles.selfDescriptionErrorsHeader}>
+                    <h4>Validation Errors</h4>
+                    {!isServiceSelfDescriptionVerified && (
+                      <VerifiedBadge
+                        isInvalid
+                        text="Invalid Self-Description"
+                        timestamp
+                      />
+                    )}
+                  </div>
+                  <Markdown
+                    className={styles.errorBody}
+                    text={getFormattedCodeString({
+                      body: serviceSelfDescriptionErrors,
+                      raw: true
+                    })}
+                  />
                 </div>
-                <Markdown
-                  className={styles.errorBody}
-                  text={getFormattedCodeString(serviceSelfDescriptionErrors)}
-                />
-              </div>
-            )}
-            <div className={styles.selfDescriptionHeader}>
-              <h4>Service Self-Description</h4>
-              {isServiceSelfDescriptionVerified && (
-                <VerifiedBadge text="Verified Self-Description" timestamp />
               )}
+              <div className={styles.selfDescriptionHeader}>
+                <h4>Service Self-Description</h4>
+                {isServiceSelfDescriptionVerified && (
+                  <VerifiedBadge text="Verified Self-Description" timestamp />
+                )}
+              </div>
+              <Markdown
+                className={styles.description}
+                text={serviceSelfDescription || ''}
+              />
             </div>
-            <Markdown
-              className={styles.description}
-              text={serviceSelfDescription || ''}
-            />
-          </div>
-        )
+          )}
+        </>
       )}
     </div>
   )
