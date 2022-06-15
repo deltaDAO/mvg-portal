@@ -130,6 +130,21 @@ function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
   )
 }
 
+export async function signServiceSelfDescription(body: any): Promise<any> {
+  if (!body) return
+  try {
+    const response = await axios.post(`${complianceUri}/sign`, body)
+    const signedServiceSelfDescription = {
+      selfDescriptionCredential: { ...body },
+      ...response.data
+    }
+
+    return signedServiceSelfDescription
+  } catch (error) {
+    Logger.error(error.message)
+  }
+}
+
 export async function verifyServiceSelfDescription({
   body,
   raw

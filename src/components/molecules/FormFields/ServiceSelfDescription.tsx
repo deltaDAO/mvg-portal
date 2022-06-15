@@ -3,6 +3,7 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import {
   getFormattedCodeString,
+  signServiceSelfDescription,
   verifyServiceSelfDescription
 } from '../../../utils/metadata'
 import Button from '../../atoms/Button'
@@ -37,8 +38,13 @@ export default function ServiceSelfDescription(
       setIsLoading(true)
 
       const parsedServiceSelfDescription = JSON.parse(rawServiceSelfDescription)
+      const signedServiceSelfDescription =
+        parsedServiceSelfDescription?.complianceCredential
+          ? parsedServiceSelfDescription
+          : await signServiceSelfDescription(parsedServiceSelfDescription)
+
       const { verified } = await verifyServiceSelfDescription({
-        body: parsedServiceSelfDescription,
+        body: signedServiceSelfDescription,
         raw: true
       })
       setIsVerified(verified)
@@ -50,7 +56,7 @@ export default function ServiceSelfDescription(
         return
       }
 
-      helpers.setValue([{ raw: parsedServiceSelfDescription }])
+      helpers.setValue([{ raw: signedServiceSelfDescription }])
       toast.success(
         'Great! The provided service self-description looks good. 🐳'
       )
