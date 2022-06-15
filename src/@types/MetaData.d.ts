@@ -14,9 +14,9 @@ export interface ServiceSelfDescription {
   raw?: any
 }
 export interface AdditionalInformationMarket extends AdditionalInformation {
-  links?: File[]
+  links?: EditableMetadataLinks[]
   serviceSelfDescription?: Pick<ServiceSelfDescription, 'raw' | 'url'>
-  termsAndConditions: boolean
+  termsAndConditions?: boolean
 }
 
 export interface MetadataMarket extends Metadata {
@@ -75,7 +75,9 @@ export interface MetadataEditForm {
   timeout: string
   price?: number
   links?: string | EditableMetadataLinks[]
-  serviceSelfDescription?: string | EditableMetadataLinks[]
+  // TODO: fix type
+  serviceSelfDescription?: any
+  // serviceSelfDescription?: ServiceSelfDescription
   author?: string
 }
 

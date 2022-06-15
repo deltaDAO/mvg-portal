@@ -13,6 +13,7 @@ import {
 import VerifiedBadge from '../../atoms/VerifiedBadge'
 import { Logger } from '@oceanprotocol/lib'
 import Loader from '../../atoms/Loader'
+import { MetadataMarket } from '../../../@types/MetaData'
 
 interface Content {
   input: {
@@ -63,7 +64,8 @@ export default function VerifyPage({
         return
       }
 
-      const { attributes } = ddo.findServiceByType('metadata')
+      const { attributes }: { attributes: MetadataMarket } =
+        ddo.findServiceByType('metadata')
       if (!attributes.additionalInformation?.serviceSelfDescription) {
         setError('noServiceSelfDescription')
         return
