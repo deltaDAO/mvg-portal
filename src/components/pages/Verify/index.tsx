@@ -13,6 +13,7 @@ import {
 import VerifiedBadge from '../../atoms/VerifiedBadge'
 import { Logger } from '@oceanprotocol/lib'
 import Loader from '../../atoms/Loader'
+import { MetadataMarket, ServiceMetadataMarket } from '../../../@types/MetaData'
 
 interface Content {
   input: {
@@ -64,16 +65,22 @@ export default function VerifyPage({
       }
 
       const { attributes } = ddo.findServiceByType('metadata')
-      const serviceSelfDescriptionUrl =
+      const { raw, url } =
         attributes.additionalInformation?.serviceSelfDescription
-      if (!serviceSelfDescriptionUrl) {
+
+      if (!raw && !url) {
+        setError('noServiceSelfDescription')
+        return
+      }
+      const requestBody = url ? { body: url } : { body: raw, raw: true }
+      if (!requestBody) {
         setError('noServiceSelfDescription')
         return
       }
 
-      const { responseBody, verified } = await verifyServiceSelfDescription({
-        body: serviceSelfDescriptionUrl
-      })
+      const { responseBody, verified } = await verifyServiceSelfDescription(
+        requestBody
+      )
       setServiceSelfDescriptionVerified(verified)
 
       if (!verified && !responseBody) {
@@ -84,9 +91,9 @@ export default function VerifyPage({
         setServiceSelfDescriptionErrors(responseBody)
       }
 
-      const serviceSelfDescriptionBody = await getServiceSelfDescription(
-        serviceSelfDescriptionUrl
-      )
+      const serviceSelfDescriptionBody = url
+        ? await getServiceSelfDescription(serviceSelfDescriptionUrl)
+        : raw
       const formattedServiceSelfDescription = getFormattedCodeString(
         serviceSelfDescriptionBody
       )

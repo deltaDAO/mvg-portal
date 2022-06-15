@@ -15,10 +15,7 @@ export interface ServiceSelfDescription {
 }
 export interface AdditionalInformationMarket extends AdditionalInformation {
   links?: File[]
-  serviceSelfDescription?: {
-    url?: string
-    raw: any
-  }
+  serviceSelfDescription?: Pick<ServiceSelfDescription, 'raw' | 'url'>
   termsAndConditions: boolean
 }
 
