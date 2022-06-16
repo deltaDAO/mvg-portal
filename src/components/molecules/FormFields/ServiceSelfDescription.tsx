@@ -11,6 +11,7 @@ import Input, { InputProps } from '../../atoms/Input'
 import Loader from '../../atoms/Loader'
 import Markdown from '../../atoms/Markdown'
 import BoxSelection from './BoxSelection'
+import styles from './ServiceSelfDescription.module.css'
 
 const serviceSelfDescriptionOptions = [
   {
@@ -74,12 +75,20 @@ export default function ServiceSelfDescription(
     setIsVerified(false)
   }, [userSelection])
 
-  async function handleButtonClick(e: React.FormEvent<Element>, body: string) {
+  const handleVerify = async (e: React.FormEvent<Element>, body: string) => {
     helpers.setTouched(false)
 
     e.preventDefault()
 
     verifyRawBody(body)
+  }
+
+  const handleEdit = (e: React.FormEvent<Element>) => {
+    helpers.setTouched(false)
+    e.preventDefault()
+
+    helpers.setValue(JSON.stringify(field.value[0].raw, null, 4))
+    setIsVerified(false)
   }
 
   return (
@@ -103,18 +112,23 @@ export default function ServiceSelfDescription(
               <Button
                 disabled={!field.value}
                 style="primary"
-                onClick={(e) => handleButtonClick(e, field.value)}
+                onClick={(e) => handleVerify(e, field.value)}
               >
                 {!isLoading ? 'Verify' : <Loader />}
               </Button>
             </div>
           ) : (
-            <Markdown
-              text={getFormattedCodeString({
-                body: field.value[0].raw,
-                raw: true
-              })}
-            />
+            <div className={styles.previewContainer}>
+              <Markdown
+                text={getFormattedCodeString({
+                  body: field.value[0].raw,
+                  raw: true
+                })}
+              />
+              <Button style="text" onClick={(e) => handleEdit(e)}>
+                Edit
+              </Button>
+            </div>
           ))}
       </div>
     </div>
