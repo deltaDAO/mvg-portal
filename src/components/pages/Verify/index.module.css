@@ -1,15 +1,3 @@
-.selfDescriptionContainer {
-  margin-top: calc(var(--spacer) * 2);
-}
-
-.selfDescriptionHeader,
-.selfDescriptionErrorsHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  flex-direction: column;
-}
-
 .actionButton {
   margin-top: calc(var(--spacer) / 2);
 }
@@ -23,9 +11,6 @@ form:first-child > div {
   margin-bottom: calc(var(--spacer) / 4);
 }
 
-@media screen and (min-width: 30rem) {
-  .selfDescriptionHeader,
-  .selfDescriptionErrorsHeader {
-    flex-direction: row;
-  }
+.selfDescriptionContainer {
+  margin-top: calc(var(--spacer) * 2);
 }

@@ -4,22 +4,29 @@ import { retrieveDDO } from '../../../utils/aquarius'
 import styles from './index.module.css'
 import Button from '../../atoms/Button'
 import Input from '../../atoms/Input'
-import Markdown from '../../atoms/Markdown'
 import {
   getFormattedCodeString,
   getServiceSelfDescription,
   verifyServiceSelfDescription
 } from '../../../utils/metadata'
-import VerifiedBadge from '../../atoms/VerifiedBadge'
 import { Logger } from '@oceanprotocol/lib'
 import Loader from '../../atoms/Loader'
 import { MetadataMarket } from '../../../@types/MetaData'
+import Visualizer from './Visualizer'
 
 interface Content {
   input: {
     label: string
     placeholder: string
     buttonLabel: string
+  }
+  serviceSelfDescriptionSection: {
+    title: string
+    badgeLabel: string
+  }
+  errorSection: {
+    title: string
+    badgeLabel: string
   }
   errorList: {
     invalidDid: string
@@ -33,7 +40,8 @@ export default function VerifyPage({
 }: {
   content: Content
 }): ReactElement {
-  const { input, errorList } = content
+  const { input, errorList, serviceSelfDescriptionSection, errorSection } =
+    content
   const { label, placeholder, buttonLabel } = input
   const newCancelToken = useCancelToken()
   const [isLoading, setIsLoading] = useState(false)
@@ -134,35 +142,22 @@ export default function VerifyPage({
           {serviceSelfDescription && (
             <div className={styles.selfDescriptionContainer}>
               {serviceSelfDescriptionErrors && (
-                <div>
-                  <div className={styles.selfDescriptionErrorsHeader}>
-                    <h4>Validation Errors</h4>
-                    {!isServiceSelfDescriptionVerified && (
-                      <VerifiedBadge
-                        isInvalid
-                        text="Invalid Self-Description"
-                        timestamp
-                      />
-                    )}
-                  </div>
-                  <Markdown
-                    className={styles.errorBody}
-                    text={getFormattedCodeString({
-                      body: serviceSelfDescriptionErrors,
-                      raw: true
-                    })}
-                  />
-                </div>
+                <Visualizer
+                  badgeLabel={errorSection.badgeLabel}
+                  text={getFormattedCodeString({
+                    body: serviceSelfDescriptionErrors,
+                    raw: true
+                  })}
+                  title={errorSection.title}
+                  displayBadge={!isServiceSelfDescriptionVerified}
+                  invalidBadge
+                />
               )}
-              <div className={styles.selfDescriptionHeader}>
-                <h4>Service Self-Description</h4>
-                {isServiceSelfDescriptionVerified && (
-                  <VerifiedBadge text="Verified Self-Description" timestamp />
-                )}
-              </div>
-              <Markdown
-                className={styles.description}
+              <Visualizer
+                badgeLabel={serviceSelfDescriptionSection.badgeLabel}
                 text={serviceSelfDescription || ''}
+                title={serviceSelfDescriptionSection.title}
+                displayBadge={isServiceSelfDescriptionVerified}
               />
             </div>
           )}

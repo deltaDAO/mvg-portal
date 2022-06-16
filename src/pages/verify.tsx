@@ -31,6 +31,14 @@ export const contentQuery = graphql`
               placeholder
               buttonLabel
             }
+            serviceSelfDescriptionSection {
+              title
+              badgeLabel
+            }
+            errorSection {
+              title
+              badgeLabel
+            }
             errorList {
               invalidDid
               noServiceSelfDescription
