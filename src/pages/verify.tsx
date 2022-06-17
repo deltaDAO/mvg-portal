@@ -3,14 +3,16 @@ import PageVerify from '../components/pages/Verify'
 import Page from '../components/templates/Page'
 import { graphql, PageProps } from 'gatsby'
 import OceanProvider from '../providers/Ocean'
+import queryString from 'query-string'
 
 export default function PageGatsbyVerify(props: PageProps): ReactElement {
   const content = (props.data as any).content.edges[0].node.childVerifyJson
   const { title, description } = content
+  const { did } = queryString.parse(props.location.search)
   return (
     <OceanProvider>
       <Page title={title} description={description} uri={props.uri}>
-        <PageVerify content={content} />
+        <PageVerify content={content} didQueryString={did as string} />
       </Page>
     </OceanProvider>
   )
