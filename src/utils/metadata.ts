@@ -186,7 +186,7 @@ export async function getServiceSelfDescription(url: string): Promise<string> {
 
   try {
     const serviceSelfDescription = await axios.get(url)
-    return JSON.stringify(serviceSelfDescription, null, 2)
+    return JSON.stringify(serviceSelfDescription.data, null, 2)
   } catch (error) {
     Logger.error(error.message)
   }
