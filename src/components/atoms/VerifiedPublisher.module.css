@@ -1,5 +1,4 @@
 .loader,
-.verifiedBadge,
 .verifyButton {
   display: flex;
   justify-content: space-between;
@@ -8,25 +7,6 @@
   height: calc(var(--spacer) * 1.5);
 }
 
-.verifiedBadge {
-  border-radius: var(--border-radius);
-
-  background: var(--color-primary);
-  color: var(--brand-white);
-
-  font-weight: var(--font-weight-bold);
-}
-
-.verifiedBadge svg {
-  display: inline-block;
-  height: 100%;
-}
-
-.verifiedBadge svg path {
-  fill: var(--brand-white);
-}
-
-.loader span,
-.verifiedBadge span {
+.loader span {
   padding: 0 calc(var(--spacer) / 4);
 }

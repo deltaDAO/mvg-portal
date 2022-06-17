@@ -12,6 +12,10 @@
         "link": "/publish"
       },
       {
+        "name": "Verify",
+        "link": "/verify"
+      },
+      {
         "name": "Profile",
         "link": "/profile"
       }

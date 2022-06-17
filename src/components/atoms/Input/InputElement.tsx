@@ -14,6 +14,7 @@ import AssetSelection, {
 } from '../../molecules/FormFields/AssetSelection'
 import Credentials from '../../molecules/FormFields/Credential'
 import Markdown from '../Markdown'
+import ServiceSelfDescription from '../../molecules/FormFields/ServiceSelfDescription'
 
 const cx = classNames.bind(styles)
 
@@ -132,6 +133,8 @@ export default function InputElement({
       )
     case 'files':
       return <FilesInput name={name} {...field} {...props} />
+    case 'serviceSelfDescription':
+      return <ServiceSelfDescription name={name} {...field} {...props} />
     case 'providerUri':
       return <CustomProvider name={name} {...field} {...props} />
     case 'datatoken':

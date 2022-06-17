@@ -24,6 +24,13 @@
       "required": true
     },
     {
+      "name": "serviceSelfDescription",
+      "label": "Service Self-Description",
+      "placeholder": "e.g. https://file.com/service-self-description.json",
+      "help": "Please enter a valid service self description or a URL that point to it and click \"ADD FILE\" to validate the data. This file URL and its content will be publicly available after publishing",
+      "type": "serviceSelfDescription"
+    },
+    {
       "name": "dockerImage",
       "label": "Docker Image",
       "placeholder": "e.g. python3.7",

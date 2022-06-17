@@ -25,8 +25,8 @@ export default function FileInfo({
       <h3 className={styles.url}>{file.url}</h3>
       <ul>
         <li>URL confirmed</li>
-        {file.contentLength && <li>{prettySize(+file.contentLength)}</li>}
-        {file.contentType && <li>{cleanupContentType(file.contentType)}</li>}
+        {file?.contentLength && <li>{prettySize(+file.contentLength)}</li>}
+        {file?.contentType && <li>{cleanupContentType(file.contentType)}</li>}
       </ul>
       <button
         className={styles.removeButton}
