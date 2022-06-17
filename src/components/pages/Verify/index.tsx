@@ -65,8 +65,9 @@ export default function VerifyPage({
     resetState()
     setIsLoading(true)
 
+    const didString = did.startsWith('did:op:') ? did : `did:op:${did}`
     try {
-      const ddo = await retrieveDDO(did, newCancelToken())
+      const ddo = await retrieveDDO(didString, newCancelToken())
       if (!ddo) {
         setError('invalidDid')
         return
