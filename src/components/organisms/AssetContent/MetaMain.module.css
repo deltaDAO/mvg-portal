@@ -14,9 +14,18 @@
   padding-bottom: calc(var(--spacer) / 1.75);
 }
 
+.publisherInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 @media (min-width: 40rem) {
   .asset {
     margin-top: -0.65rem;
+  }
+  .publisherInfo {
+    flex-direction: row;
   }
 }
 

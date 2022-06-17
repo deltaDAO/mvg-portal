@@ -8,6 +8,10 @@ import { fileinfo } from '../../../../utils/provider'
 import { useWeb3 } from '../../../../providers/Web3'
 import { getOceanConfig } from '../../../../utils/ocean'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
+import {
+  getServiceSelfDescription,
+  verifyServiceSelfDescription
+} from '../../../../utils/metadata'
 
 export default function FilesInput(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
@@ -22,12 +26,29 @@ export default function FilesInput(props: InputProps): ReactElement {
     async function validateUrl() {
       try {
         setIsLoading(true)
+
+        if (field.name === 'serviceSelfDescription') {
+          const { verified } = await verifyServiceSelfDescription({
+            body: fileUrl
+          })
+          const serviceSelfDescription = await getServiceSelfDescription(
+            fileUrl
+          )
+
+          if (!verified || !serviceSelfDescription) {
+            toast.error(
+              'The data file URL you entered appears to be invalid. Please check URL and try again'
+            )
+            return
+          }
+        }
+
         const checkedFile = await fileinfo(
           fileUrl,
           config?.providerUri,
           newCancelToken()
         )
-        checkedFile && helpers.setValue([checkedFile])
+        if (checkedFile) helpers.setValue([checkedFile])
       } catch (error) {
         toast.error('Could not fetch file info. Please check URL and try again')
         console.error(error.message)

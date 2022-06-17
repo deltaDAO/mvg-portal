@@ -31,6 +31,13 @@
       "type": "files"
     },
     {
+      "name": "serviceSelfDescription",
+      "label": "Service Self-Description",
+      "placeholder": "e.g. https://file.com/service-self-description.json",
+      "help": "Please enter a valid service self description or a URL that point to it and click \"ADD FILE\" to validate the data. This file URL and its content will be publicly available after publishing",
+      "type": "serviceSelfDescription"
+    },
+    {
       "name": "access",
       "label": "Access Type",
       "help": "Choose how you want your files to be accessible for the specified price.",

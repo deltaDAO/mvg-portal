@@ -1,0 +1,12 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+@media screen and (min-width: 30rem) {
+  .header {
+    flex-direction: row;
+  }
+}

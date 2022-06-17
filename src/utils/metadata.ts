@@ -4,7 +4,8 @@ import isUrl from 'is-url-superb'
 import {
   MetadataMarket,
   MetadataPublishFormDataset,
-  MetadataPublishFormAlgorithm
+  MetadataPublishFormAlgorithm,
+  ServiceSelfDescription
 } from '../@types/MetaData'
 import { toStringNoMS } from '.'
 import AssetModel from '../models/Asset'
@@ -14,9 +15,9 @@ import {
   MetadataAlgorithm,
   File,
   Logger,
-  EditableMetadata,
   EditableMetadataLinks
 } from '@oceanprotocol/lib'
+import { complianceUri } from '../../app.config'
 
 export function transformTags(value: string): string[] {
   const originalTags = value?.split(',')
@@ -129,6 +130,92 @@ function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
   )
 }
 
+export async function signServiceSelfDescription(body: any): Promise<any> {
+  if (!body) return
+  try {
+    const response = await axios.post(`${complianceUri}/sign`, body)
+    const signedServiceSelfDescription = {
+      selfDescriptionCredential: { ...body },
+      ...response.data
+    }
+
+    return signedServiceSelfDescription
+  } catch (error) {
+    Logger.error(error.message)
+  }
+}
+
+export async function verifyServiceSelfDescription({
+  body,
+  raw
+}: {
+  body: string
+  raw?: boolean
+}): Promise<{
+  verified: boolean
+  responseBody?: any
+}> {
+  if (!body) return { verified: false }
+
+  const baseUrl = raw
+    ? `${complianceUri}/service-offering/verify/raw`
+    : `${complianceUri}/service-offering/verify`
+  const requestBody = raw ? body : { url: body }
+
+  try {
+    const response = await axios.post(baseUrl, requestBody)
+    if (response?.status === 409) {
+      return {
+        verified: false,
+        responseBody: response.data.body
+      }
+    }
+    if (response?.status === 200) {
+      return { verified: true }
+    }
+
+    return { verified: false }
+  } catch (error) {
+    Logger.error(error.message)
+    return { verified: false }
+  }
+}
+
+export async function getServiceSelfDescription(url: string): Promise<string> {
+  if (!url) return
+
+  try {
+    const serviceSelfDescription = await axios.get(url)
+    return JSON.stringify(serviceSelfDescription, null, 2)
+  } catch (error) {
+    Logger.error(error.message)
+  }
+}
+
+export function getFormattedCodeString({
+  body,
+  raw
+}: {
+  body: string
+  raw?: boolean
+}): string {
+  const formattedString = raw ? JSON.stringify(body, null, 2) : body
+  return `\`\`\`\n${formattedString}\n\`\`\``
+}
+
+export function updateServiceSelfDescription(
+  ddo: DDO,
+  serviceSelfDescription: ServiceSelfDescription
+): DDO {
+  const { raw, url } = serviceSelfDescription
+  const metadataIndex = ddo.service.findIndex((e) => e.type === 'metadata')
+  ddo.service[
+    metadataIndex
+  ].attributes.additionalInformation.serviceSelfDescription = { raw, url }
+
+  return ddo
+}
+
 export function transformPublishFormToMetadata(
   {
     name,
@@ -137,13 +224,22 @@ export function transformPublishFormToMetadata(
     tags,
     links,
     termsAndConditions,
-    files
+    files,
+    serviceSelfDescription
   }: Partial<MetadataPublishFormDataset>,
   ddo?: DDO
 ): MetadataMarket {
   const currentTime = toStringNoMS(new Date())
 
   const transformedLinks = getValidUrlArrayContent(links)
+
+  const transformedServiceSelfDescription =
+    typeof serviceSelfDescription === 'string'
+      ? undefined
+      : {
+          url: serviceSelfDescription?.[0]?.url,
+          raw: serviceSelfDescription?.[0]?.raw
+        }
 
   const metadata: MetadataMarket = {
     main: {
@@ -160,7 +256,8 @@ export function transformPublishFormToMetadata(
       description,
       tags: transformTags(tags),
       links: transformedLinks,
-      termsAndConditions
+      termsAndConditions,
+      serviceSelfDescription: transformedServiceSelfDescription
     }
   }
 
