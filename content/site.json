@@ -1,7 +1,7 @@
 {
   "site": {
-    "siteTitle": "MVG Portal Demonstrator",
-    "siteTagline": "A platform to find, publish and consume Data Services in the Gaia-X Test Network.",
+    "siteTitle": "Minimal Viable Gaia-X Demonstrator",
+    "siteTagline": "A platform to find, publish and consume Service Offerings in the Gaia-X Test Network.",
     "siteUrl": "https://portal.minimal-gaia-x.eu",
     "siteIcon": "./src/images/siteIcon.png",
     "siteImage": "../src/images/share.png",
@@ -21,7 +21,7 @@
       }
     ],
     "warning": {
-      "main": "This MVG portal demonstrator was built for the 2nd Gaia-X hackathon.",
+      "main": "This MVG portal demonstrator was built for the 1st Gaia-X hackathon.",
       "polygonPublish": "Only republish data sets with a pool from ETH Mainnet into Polygon/Matic if the liquidity is **less than or equal to 1000 OCEAN in the original pool**. Doing otherwise will lead to [purgatory](https://github.com/oceanprotocol/list-purgatory) for the data set in Polygon/Matic."
     },
     "announcement": {
