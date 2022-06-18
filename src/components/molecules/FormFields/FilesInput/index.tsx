@@ -35,9 +35,15 @@ export default function FilesInput(props: InputProps): ReactElement {
             fileUrl
           )
 
-          if (!verified || !serviceSelfDescription) {
+          if (!verified) {
             toast.error(
               'The data file URL you entered appears to be invalid. Please check URL and try again'
+            )
+            return
+          }
+          if (!serviceSelfDescription) {
+            toast.error(
+              'The linked file is not accessible. Please verify your service provider allows access from this domain and try again.'
             )
             return
           }
