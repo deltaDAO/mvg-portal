@@ -13,22 +13,17 @@ import MenuDropdown from '../atoms/MenuDropdown'
 
 const Wallet = loadable(() => import('./Wallet'))
 
-export declare type MenuItem = {
-  name: string
-  link: string
-}
-
-function MenuLink({ item }: { item: MenuItem }) {
+function MenuLink({ name, link }: { name: string; link: string }) {
   const location = useLocation()
 
   const classes =
-    location?.pathname === item.link
+    location?.pathname === link
       ? `${styles.link} ${styles.active}`
       : styles.link
 
   return (
-    <Link key={item.name} to={item.link} className={classes}>
-      {item.name}
+    <Link key={name} to={link} className={classes}>
+      {name}
     </Link>
   )
 }
@@ -45,29 +40,15 @@ export default function Menu(): ReactElement {
           </Link>
 
           <ul className={styles.navigation}>
-            {menu.map((item: MenuItem) => (
+            {menu.map((item) => (
               <li key={item.name}>
-                <MenuLink item={item} />
+                {item?.subItems ? (
+                  <MenuDropdown label={item.name} items={item.subItems} />
+                ) : (
+                  <MenuLink name={item.name} link={item.link} />
+                )}
               </li>
             ))}
-            <li>
-              <MenuDropdown
-                label="Ecosystem"
-                items={[
-                  {
-                    name: 'test1',
-                    link: 'http://localhost:8000'
-                  },
-                  {
-                    name: 'test2',
-                    subItems: [
-                      { name: 'test5', link: 'http://localhost:8000' },
-                      { name: 'test6', link: 'http://localhost:8000' }
-                    ]
-                  }
-                ]}
-              />
-            </li>
           </ul>
 
           <div className={styles.actions}>
@@ -81,3 +62,20 @@ export default function Menu(): ReactElement {
     </div>
   )
 }
+
+// {
+//   "name": "Ecosystem",
+//   "link": [
+//     {
+//       "name": "test1",
+//       "link": "http://localhost:8000"
+//     },
+//     {
+//       "name": "test2",
+//       "link": [
+//         { "name": "test5", "link": "http://localhost:8000" },
+//         { "name": "test6", "link": "http://localhost:8000" }
+//       ]
+//     }
+//   ]
+// }

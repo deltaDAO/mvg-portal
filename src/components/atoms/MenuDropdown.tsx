@@ -2,13 +2,17 @@ import React, { ReactElement } from 'react'
 import Tooltip from './Tooltip'
 import styles from './MenuDropdown.module.css'
 import { ReactComponent as Caret } from '../../images/caret.svg'
-import { MenuItem } from '../molecules/Menu'
 import LinkOpener from '../molecules/LinkOpener'
 import classNames from 'classnames/bind'
 
 const cx = classNames.bind(styles)
 
-interface MenuNestedItem extends Partial<MenuItem> {
+declare type MenuItem = {
+  name: string
+  link?: string
+}
+
+interface MenuNestedItem extends MenuItem {
   subItems?: MenuItem[]
 }
 

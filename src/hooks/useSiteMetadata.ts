@@ -10,6 +10,14 @@ interface UseSiteMetadata {
   menu: {
     name: string
     link: string
+    subItems?: {
+      name: string
+      link?: string
+      subItems?: {
+        name: string
+        link: string
+      }[]
+    }[]
   }[]
   warning: {
     main: string
@@ -53,6 +61,14 @@ const query = graphql`
         menu {
           name
           link
+          subItems {
+            name
+            link
+            subItems {
+              name
+              link
+            }
+          }
         }
         warning {
           main
