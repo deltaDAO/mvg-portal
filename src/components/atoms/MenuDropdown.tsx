@@ -6,35 +6,52 @@ import { MenuItem } from '../molecules/Menu'
 import LinkOpener from '../molecules/LinkOpener'
 
 interface MenuNestedItem extends Partial<MenuItem> {
-  subLinks?: MenuItem[]
+  subItems?: MenuItem[]
 }
 
 export default function MenuDropdown({
   label,
-  links
+  items
 }: {
   label: string
-  links: MenuNestedItem[]
+  items: MenuNestedItem[]
 }): ReactElement {
   return (
     <Tooltip
       content={
         <ul>
-          {links.map((e) => (
-            <li key={e.name}>
-              <LinkOpener uri={e.link} openNewTab className={styles.link}>
-                {e.name}
-              </LinkOpener>
-              {/* <Link
-                  to={`/topic/${e.id}`}
-                  className={
-                    location?.pathname === `/topic/${e.id}`
-                      ? `${styles.link} ${styles.active}`
-                      : styles.link
+          {items.map((item, i) => (
+            <li key={`${item.name}-${i}`}>
+              {item?.subItems && item.subItems.length > 0 ? (
+                <Tooltip
+                  content={
+                    <ul>
+                      {item.subItems.map((subItem, i) => (
+                        <li key={`${subItem.name}-${i}`}>
+                          <LinkOpener
+                            uri={subItem.link}
+                            openNewTab
+                            className={styles.link}
+                          >
+                            {subItem.name}
+                          </LinkOpener>
+                        </li>
+                      ))}
+                    </ul>
                   }
+                  placement="right-start"
+                  trigger="mouseenter | focus | click"
                 >
-                  {`${e.order}. ${e.short}`}
-                </Link> */}
+                  <div className={styles.menuLink}>
+                    {item.name}
+                    <Caret aria-hidden="true" className={styles.caret} />
+                  </div>
+                </Tooltip>
+              ) : (
+                <LinkOpener uri={item.link} openNewTab className={styles.link}>
+                  {item.name}
+                </LinkOpener>
+              )}
             </li>
           ))}
         </ul>

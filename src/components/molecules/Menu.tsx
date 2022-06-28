@@ -53,14 +53,14 @@ export default function Menu(): ReactElement {
             <li>
               <MenuDropdown
                 label="Ecosystem"
-                links={[
+                items={[
                   {
                     name: 'test1',
                     link: 'http://localhost:8000'
                   },
                   {
                     name: 'test2',
-                    subLinks: [
+                    subItems: [
                       { name: 'test5', link: 'http://localhost:8000' },
                       { name: 'test6', link: 'http://localhost:8000' }
                     ]
