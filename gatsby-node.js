@@ -11,7 +11,8 @@ execSync(`node ./scripts/write-repo-metadata > repo-metadata.json`, {
 // execSync(`npm run graphql:graphTypes`, { stdio: 'inherit' })
 
 // Generate Apollo typings
-execSync(`npm run apollo:codegen`, { stdio: 'inherit' })
+// TODO: evaluate if needs to be reactivated
+// execSync(`npm run apollo:codegen`, { stdio: 'inherit' })
 
 // Fetch EVM networks metadata
 execSync(
