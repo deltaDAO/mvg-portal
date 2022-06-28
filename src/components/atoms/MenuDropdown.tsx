@@ -52,7 +52,6 @@ export default function MenuDropdown({
                         <li key={`${subItem.name}-${i}`}>
                           <LinkOpener
                             uri={subItem.link}
-                            openNewTab
                             className={styles.link}
                           >
                             {subItem.name}
@@ -67,7 +66,7 @@ export default function MenuDropdown({
                   <ItemLabel name={item.name} className="subItem" />
                 </Tooltip>
               ) : (
-                <LinkOpener uri={item.link} openNewTab className={styles.link}>
+                <LinkOpener uri={item.link} className={styles.link}>
                   {item.name}
                 </LinkOpener>
               )}
