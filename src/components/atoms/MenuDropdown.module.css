@@ -1,4 +1,4 @@
-.menuLink {
+.menuItem {
   composes: link from '../molecules/Menu.module.css';
   display: flex;
   align-items: center;
@@ -6,23 +6,8 @@
   cursor: pointer;
 }
 
-[aria-expanded='true'] .menuLink:after {
-  transform: scaleX(1);
-}
-
 .link {
   composes: link from '../molecules/Menu.module.css';
-  /* color: var(--brand-grey-dimmed);
-  font-size: var(--font-size-large); */
-}
-
-.link:hover {
-  /* color: var(--brand-white); */
-}
-
-.active,
-.active:hover {
-  /* color: var(--brand-pink); */
 }
 
 .caret,
@@ -34,6 +19,18 @@ svg.caret {
   transition: transform 0.2s ease-out;
 }
 
+.subItem svg.caret {
+  transform: rotate(-90deg);
+}
+
 [aria-expanded='true'] svg {
   transform: rotate(180deg);
+}
+
+[aria-expanded='true'] .subItem svg.caret {
+  transform: rotate(90deg);
+}
+
+[aria-expanded='true'] .menuItem:after {
+  transform: scaleX(1);
 }

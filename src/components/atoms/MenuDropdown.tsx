@@ -4,9 +4,27 @@ import styles from './MenuDropdown.module.css'
 import { ReactComponent as Caret } from '../../images/caret.svg'
 import { MenuItem } from '../molecules/Menu'
 import LinkOpener from '../molecules/LinkOpener'
+import classNames from 'classnames/bind'
+
+const cx = classNames.bind(styles)
 
 interface MenuNestedItem extends Partial<MenuItem> {
   subItems?: MenuItem[]
+}
+
+function ItemLabel({
+  name,
+  className
+}: {
+  name: string
+  className?: string
+}): ReactElement {
+  return (
+    <div className={cx({ menuItem: true, [className]: className })}>
+      {name}
+      <Caret aria-hidden="true" className={styles.caret} />
+    </div>
+  )
 }
 
 export default function MenuDropdown({
@@ -40,12 +58,9 @@ export default function MenuDropdown({
                     </ul>
                   }
                   placement="right-start"
-                  trigger="mouseenter | focus | click"
+                  trigger="focus | click"
                 >
-                  <div className={styles.menuLink}>
-                    {item.name}
-                    <Caret aria-hidden="true" className={styles.caret} />
-                  </div>
+                  <ItemLabel name={item.name} className="subItem" />
                 </Tooltip>
               ) : (
                 <LinkOpener uri={item.link} openNewTab className={styles.link}>
@@ -56,12 +71,9 @@ export default function MenuDropdown({
           ))}
         </ul>
       }
-      trigger="mouseenter | focus | click"
+      trigger="focus | click"
     >
-      <div className={styles.menuLink}>
-        {label}
-        <Caret aria-hidden="true" className={styles.caret} />
-      </div>
+      <ItemLabel name={label} />
     </Tooltip>
   )
 }
