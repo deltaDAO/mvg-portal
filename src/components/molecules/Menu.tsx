@@ -62,20 +62,3 @@ export default function Menu(): ReactElement {
     </div>
   )
 }
-
-// {
-//   "name": "Ecosystem",
-//   "link": [
-//     {
-//       "name": "test1",
-//       "link": "http://localhost:8000"
-//     },
-//     {
-//       "name": "test2",
-//       "link": [
-//         { "name": "test5", "link": "http://localhost:8000" },
-//         { "name": "test6", "link": "http://localhost:8000" }
-//       ]
-//     }
-//   ]
-// }
