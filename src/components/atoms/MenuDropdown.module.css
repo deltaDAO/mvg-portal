@@ -19,16 +19,8 @@ svg.caret {
   transition: transform 0.2s ease-out;
 }
 
-.subItem svg.caret {
-  transform: rotate(-90deg);
-}
-
 [aria-expanded='true'] svg {
   transform: rotate(180deg);
-}
-
-[aria-expanded='true'] .subItem svg.caret {
-  transform: rotate(90deg);
 }
 
 [aria-expanded='true'] .menuItem:after {

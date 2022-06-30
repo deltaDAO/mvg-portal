@@ -60,7 +60,7 @@ export default function MenuDropdown({
                       ))}
                     </ul>
                   }
-                  placement="right-start"
+                  placement="auto-end"
                   trigger="focus | click"
                 >
                   <ItemLabel name={item.name} className="subItem" />
@@ -74,6 +74,7 @@ export default function MenuDropdown({
           ))}
         </ul>
       }
+      placement="bottom"
       trigger="focus | click"
     >
       <ItemLabel name={label} />
