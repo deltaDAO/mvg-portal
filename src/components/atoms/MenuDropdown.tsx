@@ -4,6 +4,7 @@ import styles from './MenuDropdown.module.css'
 import { ReactComponent as Caret } from '../../images/caret.svg'
 import LinkOpener from '../molecules/LinkOpener'
 import classNames from 'classnames/bind'
+import MenuSubItems from './MenuSubItems'
 
 const cx = classNames.bind(styles)
 
@@ -12,11 +13,11 @@ declare type MenuItem = {
   link?: string
 }
 
-interface MenuNestedItem extends MenuItem {
+export interface MenuNestedItem extends MenuItem {
   subItems?: MenuItem[]
 }
 
-function ItemLabel({
+export function ItemLabel({
   name,
   className
 }: {
@@ -45,26 +46,7 @@ export default function MenuDropdown({
           {items.map((item, i) => (
             <li key={`${item.name}-${i}`}>
               {item?.subItems && item.subItems.length > 0 ? (
-                <Tooltip
-                  content={
-                    <ul>
-                      {item.subItems.map((subItem, i) => (
-                        <li key={`${subItem.name}-${i}`}>
-                          <LinkOpener
-                            uri={subItem.link}
-                            className={styles.link}
-                          >
-                            {subItem.name}
-                          </LinkOpener>
-                        </li>
-                      ))}
-                    </ul>
-                  }
-                  placement="auto-end"
-                  trigger="focus | click"
-                >
-                  <ItemLabel name={item.name} className="subItem" />
-                </Tooltip>
+                <MenuSubItems label={item.name} subItems={item.subItems} />
               ) : (
                 <LinkOpener uri={item.link} className={styles.link}>
                   {item.name}
