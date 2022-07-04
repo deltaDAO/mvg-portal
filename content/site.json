@@ -18,6 +18,48 @@
       {
         "name": "Profile",
         "link": "/profile"
+      },
+      {
+        "name": "Ecosystem",
+        "subItems": [
+          {
+            "name": "Catalogue",
+            "link": "https://catalogue.minimal-gaia-x.eu"
+          },
+          {
+            "name": "Exchange Logging",
+            "link": "https://exchangelog.minimal-gaia-x.eu"
+          },
+          {
+            "name": "Stats Page",
+            "link": "https://stats.minimal-gaia-x.eu"
+          },
+          {
+            "name": "Onboarding",
+            "link": "https://onboarding-portal.lab.gaia-x.eu"
+          },
+          {
+            "name": "Portals",
+            "subItems": [
+              {
+                "name": "Forever on the blockchain",
+                "link": "https://forever.portal.minimal-gaia-x.eu"
+              },
+              {
+                "name": "EuProGigant",
+                "link": "https://euprogigant.portal.minimal-gaia-x.eu"
+              },
+              {
+                "name": "safeFBDC",
+                "link": "https://safefbdc.portal.minimal-gaia-x.eu"
+              },
+              {
+                "name": "Universitat de Lleida",
+                "link": "https://udl.portal.minimal-gaia-x.eu"
+              }
+            ]
+          }
+        ]
       }
     ],
     "warning": {

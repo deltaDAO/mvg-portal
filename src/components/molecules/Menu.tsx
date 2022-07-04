@@ -9,26 +9,21 @@ import Logo from '../atoms/Logo'
 import Networks from './UserPreferences/Networks'
 import SearchBar from './SearchBar'
 import Container from '../atoms/Container'
-import Badge from '../atoms/Badge'
+import MenuDropdown from '../atoms/MenuDropdown'
 
 const Wallet = loadable(() => import('./Wallet'))
 
-declare type MenuItem = {
-  name: string
-  link: string
-}
-
-function MenuLink({ item }: { item: MenuItem }) {
+function MenuLink({ name, link }: { name: string; link: string }) {
   const location = useLocation()
 
   const classes =
-    location?.pathname === item.link
+    location?.pathname === link
       ? `${styles.link} ${styles.active}`
       : styles.link
 
   return (
-    <Link key={item.name} to={item.link} className={classes}>
-      {item.name}
+    <Link key={name} to={link} className={classes}>
+      {name}
     </Link>
   )
 }
@@ -45,9 +40,13 @@ export default function Menu(): ReactElement {
           </Link>
 
           <ul className={styles.navigation}>
-            {menu.map((item: MenuItem) => (
+            {menu.map((item) => (
               <li key={item.name}>
-                <MenuLink item={item} />
+                {item?.subItems ? (
+                  <MenuDropdown label={item.name} items={item.subItems} />
+                ) : (
+                  <MenuLink name={item.name} link={item.link} />
+                )}
               </li>
             ))}
           </ul>
