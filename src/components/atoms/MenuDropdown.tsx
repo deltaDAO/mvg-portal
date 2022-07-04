@@ -35,7 +35,6 @@ export default function MenuDropdown({
   label: string
   items: MenuItem[]
 }): ReactElement {
-  console.log(`Creating menu item for ${label}:`, items)
   return (
     <Tooltip
       content={
