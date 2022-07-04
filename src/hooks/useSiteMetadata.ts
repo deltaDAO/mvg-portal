@@ -9,7 +9,7 @@ interface UseSiteMetadata {
   copyright: string
   menu: {
     name: string
-    link: string
+    link?: string
     subItems?: {
       name: string
       link?: string
