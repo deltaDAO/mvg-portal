@@ -136,12 +136,6 @@ export default function HomePage(): ReactElement {
         <section className={styles.content}>
           <OnboardingSection />
         </section>
-        <section className={styles.intro}>
-          <HomeIntro />
-        </section>
-        <section className={styles.content}>
-          <HomeContent />
-        </section>
         <Container>
           {queryLatest && (
             <SectionQueryResult
@@ -157,6 +151,12 @@ export default function HomePage(): ReactElement {
             />
           )}
         </Container>
+        <section className={styles.intro}>
+          <HomeIntro />
+        </section>
+        <section className={styles.content}>
+          <HomeContent />
+        </section>
       </>
     </Permission>
   )
