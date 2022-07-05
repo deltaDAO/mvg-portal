@@ -1,4 +1,9 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, {
+  ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useState
+} from 'react'
 import styles from './Home.module.css'
 import AssetList from '../organisms/AssetList'
 import Button from '../atoms/Button'
@@ -25,6 +30,7 @@ import HomeContent from '../organisms/HomeContent'
 import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
 import OnboardingSection from './Home/Onboarding'
+import { useWeb3 } from '../../providers/Web3'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -106,6 +112,21 @@ export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
+  const { balance, balanceLoading, web3Loading } = useWeb3()
+  const [showOnboarding, setShowOnboarding] = useState(false)
+
+  useLayoutEffect(() => {
+    const { eth, ocean } = balance
+    if (web3Loading) {
+      setShowOnboarding(false)
+      return
+    }
+    if (!balanceLoading && (eth === '0' || ocean === '0')) {
+      setShowOnboarding(true)
+      return
+    }
+    setShowOnboarding(false)
+  }, [balance, balanceLoading, web3Loading])
 
   useEffect(() => {
     const queryParams = {
@@ -133,9 +154,11 @@ export default function HomePage(): ReactElement {
   return (
     <Permission eventType="browse">
       <>
-        <section className={styles.content}>
-          <OnboardingSection />
-        </section>
+        {showOnboarding && (
+          <section className={styles.content}>
+            <OnboardingSection />
+          </section>
+        )}
         <Container>
           {queryLatest && (
             <SectionQueryResult
