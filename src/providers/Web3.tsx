@@ -32,6 +32,7 @@ interface Web3ProviderValue {
   accountId: string
   accountEns: string
   balance: UserBalance
+  balanceLoading: boolean
   networkId: number
   chainId: number
   networkDisplayName: string
@@ -105,6 +106,7 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   const [accountId, setAccountId] = useState<string>()
   const [accountEns, setAccountEns] = useState<string>()
   const [web3Loading, setWeb3Loading] = useState<boolean>(true)
+  const [balanceLoading, setBalanceLoading] = useState<boolean>(false)
   const [balance, setBalance] = useState<UserBalance>({
     eth: '0',
     ocean: '0'
@@ -154,6 +156,7 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   // -----------------------------------
   const getUserBalance = useCallback(async () => {
     if (!accountId || !networkId || !web3) return
+    setBalanceLoading(true)
     const { eth, ocean } = balanceRef.current
 
     try {
@@ -165,6 +168,8 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
       Logger.log('[web3] Balance: ', balance)
     } catch (error) {
       Logger.error('[web3] Error: ', error.message)
+    } finally {
+      setBalanceLoading(false)
     }
   }, [accountId, networkId, web3])
 
@@ -352,6 +357,7 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
         accountId,
         accountEns,
         balance,
+        balanceLoading,
         networkId,
         chainId,
         networkDisplayName,
