@@ -112,7 +112,7 @@ export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
-  const { balance, balanceLoading, web3Loading } = useWeb3()
+  const { balance, balanceLoading, chainId, web3Loading } = useWeb3()
   const [showOnboarding, setShowOnboarding] = useState(false)
 
   useLayoutEffect(() => {
@@ -121,12 +121,15 @@ export default function HomePage(): ReactElement {
       setShowOnboarding(false)
       return
     }
-    if (!balanceLoading && (eth === '0' || ocean === '0')) {
+    if (
+      chainId !== 2021000 ||
+      (chainId === 2021000 && !balanceLoading && (eth === '0' || ocean === '0'))
+    ) {
       setShowOnboarding(true)
       return
     }
     setShowOnboarding(false)
-  }, [balance, balanceLoading, web3Loading])
+  }, [balance, balanceLoading, chainId, web3Loading])
 
   useEffect(() => {
     const queryParams = {
