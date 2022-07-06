@@ -10,8 +10,14 @@ import styles from './MetaMain.module.css'
 import VerifiedBadge from '../../atoms/VerifiedBadge'
 
 export default function MetaMain(): ReactElement {
-  const { ddo, owner, type, isAssetNetwork, isServiceSelfDescriptionVerified } =
-    useAsset()
+  const {
+    ddo,
+    owner,
+    type,
+    isAssetNetwork,
+    isServiceSelfDescriptionVerified,
+    verifiedServiceProviderName
+  } = useAsset()
   const { web3ProviderInfo } = useWeb3()
 
   const isCompute = Boolean(ddo?.findServiceByType('compute'))
@@ -55,7 +61,11 @@ export default function MetaMain(): ReactElement {
 
       <div className={styles.publisherInfo}>
         <div className={styles.byline}>
-          Published By <Publisher account={owner} />
+          Published By{' '}
+          <Publisher
+            account={owner}
+            verifiedServiceProviderName={verifiedServiceProviderName}
+          />
           <p>
             <Time date={ddo?.created} relative />
             {ddo?.created !== ddo?.updated && (

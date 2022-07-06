@@ -20,6 +20,7 @@ import { useAddressConfig } from '../hooks/useAddressConfig'
 import { BestPrice } from '../models/BestPrice'
 import { useCancelToken } from '../hooks/useCancelToken'
 import {
+  getPublisherFromServiceSD,
   getServiceSelfDescription,
   verifyServiceSelfDescription
 } from '../utils/metadata'
@@ -39,6 +40,7 @@ interface AssetProviderValue {
   isAssetNetwork: boolean
   loading: boolean
   isServiceSelfDescriptionVerified: boolean
+  verifiedServiceProviderName: string
   refreshDdo: (token?: CancelToken) => Promise<void>
 }
 
@@ -73,6 +75,8 @@ function AssetProvider({
     isServiceSelfDescriptionVerified,
     setIsServiceSelfDescriptionVerified
   ] = useState<boolean>()
+  const [verifiedServiceProviderName, setVerifiedServiceProviderName] =
+    useState<string>()
   const newCancelToken = useCancelToken()
   const fetchDdo = async (token?: CancelToken) => {
     Logger.log('[asset] Init asset, get DDO')
@@ -170,9 +174,14 @@ function AssetProvider({
       const serviceSelfDescriptionContent = serviceSelfDescription?.url
         ? await getServiceSelfDescription(serviceSelfDescription?.url)
         : serviceSelfDescription?.raw
-      verified && !!serviceSelfDescriptionContent
-        ? setIsServiceSelfDescriptionVerified(true)
-        : setIsServiceSelfDescriptionVerified(false)
+
+      setIsServiceSelfDescriptionVerified(
+        verified && !!serviceSelfDescriptionContent
+      )
+      const serviceProviderName = getPublisherFromServiceSD(
+        serviceSelfDescriptionContent
+      )
+      setVerifiedServiceProviderName(serviceProviderName)
     }
     Logger.log('[asset] Got Metadata from DDO', attributes)
 
@@ -212,7 +221,8 @@ function AssetProvider({
           loading,
           refreshDdo,
           isAssetNetwork,
-          isServiceSelfDescriptionVerified
+          isServiceSelfDescriptionVerified,
+          verifiedServiceProviderName
         } as AssetProviderValue
       }
     >

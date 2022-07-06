@@ -216,6 +216,14 @@ export function updateServiceSelfDescription(
   return ddo
 }
 
+export function getPublisherFromServiceSD(serviceSD: any): string {
+  if (!serviceSD) return
+
+  return serviceSD?.selfDescriptionCredential?.credentialSubject?.[
+    'gx-service-offering:name'
+  ]?.['@value']
+}
+
 export function transformPublishFormToMetadata(
   {
     name,
