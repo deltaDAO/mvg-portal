@@ -1,0 +1,10 @@
+{
+  "banners": [
+    {
+      "title": "EuProGigant Portal",
+      "description": "The Gaia-X lighthouse project for manufacturing",
+      "link": "https://euprogigant.portal.minimal-gaia-x.eu/",
+      "image": "../src/images/euprogigant-home-eyecatcher-scaled.jpg"
+    }
+  ]
+}

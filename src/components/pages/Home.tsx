@@ -31,6 +31,8 @@ import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
 import OnboardingSection from './Home/Onboarding'
 import { useWeb3 } from '../../providers/Web3'
+import PromotionBanner, { PromoBanner } from '../molecules/PromotionBanner'
+import { graphql, useStaticQuery } from 'gatsby'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -41,6 +43,33 @@ function sortElements(items: DDO[], sorted: string[]) {
   })
   return items
 }
+
+const promotionBannerQuery = graphql`
+  query promotionBannerQuery {
+    content: allFile(
+      filter: { relativePath: { eq: "promotionBanners.json" } }
+    ) {
+      edges {
+        node {
+          childContentJson {
+            banners {
+              title
+              description
+              link
+              image {
+                childImageSharp {
+                  original {
+                    src
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 export function SectionQueryResult({
   title,
@@ -114,6 +143,12 @@ export default function HomePage(): ReactElement {
   const { featured, hasFeaturedAssets } = useAddressConfig()
   const { balance, balanceLoading, chainId, web3Loading } = useWeb3()
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const data = useStaticQuery(promotionBannerQuery)
+  const {
+    banners
+  }: {
+    banners: PromoBanner[]
+  } = data.content.edges[0].node.childContentJson
 
   useLayoutEffect(() => {
     const { eth, ocean } = balance
@@ -181,8 +216,15 @@ export default function HomePage(): ReactElement {
           <HomeIntro />
         </section>
         <section className={styles.content}>
-          <HomeContent />
+          <HomeContent />´
         </section>
+        <Container>
+          <div>
+            {banners?.map((banner, i) => (
+              <PromotionBanner {...banner} key={i} />
+            ))}
+          </div>
+        </Container>
       </>
     </Permission>
   )
