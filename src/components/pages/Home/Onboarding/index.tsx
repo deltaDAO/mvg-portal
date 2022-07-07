@@ -30,7 +30,7 @@ export interface OnboardingStep {
   buttonSuccess?: string
 }
 
-export const steps = [
+const steps = [
   { shortLabel: 'MetaMask', component: <DownloadMetamask /> },
   { shortLabel: 'Connect', component: <ConnectAccount /> },
   { shortLabel: 'Network', component: <ConnectNetwork /> },
