@@ -212,12 +212,6 @@ export default function HomePage(): ReactElement {
             />
           )}
         </Container>
-        <section className={styles.intro}>
-          <HomeIntro />
-        </section>
-        <section className={styles.content}>
-          <HomeContent />´
-        </section>
         <Container>
           <div>
             {banners?.map((banner, i) => (
@@ -225,6 +219,12 @@ export default function HomePage(): ReactElement {
             ))}
           </div>
         </Container>
+        <section className={styles.intro}>
+          <HomeIntro />
+        </section>
+        <section className={styles.content}>
+          <HomeContent />´
+        </section>
       </>
     </Permission>
   )
