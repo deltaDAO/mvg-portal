@@ -46,15 +46,23 @@ export enum NavigationDirections {
 
 export default function OnboardingSection(): ReactElement {
   const { accountId, balance, networkId, web3Provider } = useWeb3()
-  const { onboardingStep, setOnboardingStep } = useUserPreferences()
+  const {
+    onboardingStep,
+    onboardingCompletion,
+    setOnboardingStep,
+    setOnboardingCompletion
+  } = useUserPreferences()
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   const [navigationDirection, setNavigationDirection] =
     useState<NavigationDirections>()
   const stepLabels = steps.map((step) => step.shortLabel)
-
+  console.log(onboardingCompletion)
   useEffect(() => {
     if (onboardingStep > steps.length) setOnboardingStep(0)
-  }, [onboardingStep, setOnboardingStep])
+    return () => {
+      if (onboardingStep === steps.length - 1) setOnboardingCompletion(true)
+    }
+  }, [onboardingStep, setOnboardingStep, setOnboardingCompletion])
 
   useEffect(() => {
     if (

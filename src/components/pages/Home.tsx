@@ -110,26 +110,27 @@ export function SectionQueryResult({
 
 export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
-  const { chainIds } = useUserPreferences()
+  const { chainIds, onboardingCompletion } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
   const { balance, balanceLoading, chainId, web3Loading } = useWeb3()
   const [showOnboarding, setShowOnboarding] = useState(false)
 
   useLayoutEffect(() => {
     const { eth, ocean } = balance
-    if (web3Loading) {
+    if (web3Loading || onboardingCompletion) {
       setShowOnboarding(false)
       return
     }
+    if (balanceLoading) return
     if (
       chainId !== 2021000 ||
-      (chainId === 2021000 && !balanceLoading && (eth === '0' || ocean === '0'))
+      (chainId === 2021000 && (eth === '0' || ocean === '0'))
     ) {
       setShowOnboarding(true)
       return
     }
     setShowOnboarding(false)
-  }, [balance, balanceLoading, chainId, web3Loading])
+  }, [balance, balanceLoading, chainId, onboardingCompletion, web3Loading])
 
   useEffect(() => {
     const queryParams = {
