@@ -56,6 +56,7 @@ const promotionBannerQuery = graphql`
               title
               description
               link
+              cta
               image {
                 childImageSharp {
                   original {
