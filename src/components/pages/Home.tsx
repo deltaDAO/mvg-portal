@@ -31,6 +31,7 @@ import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
 import OnboardingSection from './Home/Onboarding'
 import { useWeb3 } from '../../providers/Web3'
+import SectionTitle from '../molecules/SectionTitle'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -107,9 +108,13 @@ export function SectionQueryResult({
     </section>
   )
 }
+interface FeaturedSection {
+  title: string
+  query: SearchQuery
+}
 
 export default function HomePage(): ReactElement {
-  const [queryLatest, setQueryLatest] = useState<SearchQuery>()
+  const [queryLatest, setQueryLatest] = useState<FeaturedSection[]>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
   const { balance, balanceLoading, chainId, web3Loading } = useWeb3()
@@ -132,15 +137,7 @@ export default function HomePage(): ReactElement {
   }, [balance, balanceLoading, chainId, web3Loading])
 
   useEffect(() => {
-    const queryParams = {
-      esPaginationOptions: {
-        size: hasFeaturedAssets() ? featured.length : 9
-      },
-      filters: hasFeaturedAssets() ? [getFilterTerm('id', featured)] : undefined
-    }
-
     const baseParams = {
-      ...queryParams,
       chainIds: chainIds,
       esPaginationOptions: { size: 9 },
       sortOptions: {
@@ -149,10 +146,34 @@ export default function HomePage(): ReactElement {
       } as SortOptions
     } as BaseQueryParams
 
-    const latestOrFeaturedQuery = generateBaseQuery(baseParams)
+    // const latestOrFeaturedQuery = generateBaseQuery(baseParams)
+    const featuredSections = []
 
-    setQueryLatest(latestOrFeaturedQuery)
-  }, [chainIds])
+    for (const category of featured) {
+      const queryParams = {
+        esPaginationOptions: {
+          size: hasFeaturedAssets() ? category.assets.length : 9
+        },
+        filters: hasFeaturedAssets()
+          ? [getFilterTerm('id', category.assets)]
+          : undefined
+      }
+      featuredSections.push({
+        title: category.title,
+        query: generateBaseQuery({ ...baseParams, ...queryParams })
+      })
+    }
+    if (featuredSections.length > 0) {
+      setQueryLatest(featuredSections)
+    } else {
+      setQueryLatest([
+        {
+          title: 'Recently Published',
+          query: generateBaseQuery(baseParams)
+        }
+      ])
+    }
+  }, [chainIds, featured, hasFeaturedAssets])
 
   return (
     <Permission eventType="browse">
@@ -162,20 +183,27 @@ export default function HomePage(): ReactElement {
             <OnboardingSection />
           </section>
         )}
+
         <Container>
-          {queryLatest && (
-            <SectionQueryResult
-              title={
-                hasFeaturedAssets() ? 'Featured Assets' : 'Recently Published'
-              }
-              query={queryLatest}
-              action={
-                <Button style="text" to="/search?sort=created&sortOrder=desc">
-                  All data sets and algorithms →
-                </Button>
-              }
-            />
-          )}
+          <SectionTitle
+            title="Featured Assets"
+            body="Discover datasets from different use cases"
+          />
+          {queryLatest?.length > 0 &&
+            queryLatest.map((section) => (
+              <SectionQueryResult
+                key={section.title}
+                title={section.title}
+                query={section.query}
+              />
+            ))}
+          <Button
+            className={styles.allAssetsButton}
+            style="text"
+            to="/search?sort=created&sortOrder=desc"
+          >
+            All data sets and algorithms →
+          </Button>
         </Container>
         <section className={styles.intro}>
           <HomeIntro />
