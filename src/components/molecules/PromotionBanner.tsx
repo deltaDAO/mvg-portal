@@ -24,16 +24,18 @@ export default function PromotionBanner({
   }
 
   return (
-    <LinkOpener uri={link}>
-      <div className={styles.banner} style={bannerStyle}>
-        <div>
-          <h2 className={styles.title}>{title}</h2>
-          {description && (
-            <Markdown text={description} className={styles.description} />
-          )}
-          {cta && <div className={styles.cta}>{cta}</div>}
-        </div>
+    <div className={styles.banner} style={bannerStyle}>
+      <div>
+        <h2 className={styles.title}>{title}</h2>
+        {description && (
+          <Markdown text={description} className={styles.description} />
+        )}
+        {cta && (
+          <LinkOpener openNewTab uri={link}>
+            <div className={styles.cta}>{cta}</div>
+          </LinkOpener>
+        )}
       </div>
-    </LinkOpener>
+    </div>
   )
 }
