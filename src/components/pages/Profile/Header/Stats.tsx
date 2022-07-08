@@ -89,23 +89,24 @@ export default function Stats({
   return (
     <div className={styles.stats}>
       {showLiquidity && (
-        <NumberUnit
-          label="Liquidity in Own Assets"
-          value={
-            <Conversion
-              price={publisherLiquidity?.price}
-              hideApproximateSymbol
-            />
-          }
-        />
-      )}
-      {showLiquidity && (
-        <NumberUnit
-          label="Total Liquidity"
-          value={
-            <Conversion price={`${totalLiquidity}`} hideApproximateSymbol />
-          }
-        />
+        <>
+          <NumberUnit
+            label="Liquidity in Own Assets"
+            value={
+              <Conversion
+                price={publisherLiquidity?.price}
+                hideApproximateSymbol
+              />
+            }
+          />
+
+          <NumberUnit
+            label="Total Liquidity"
+            value={
+              <Conversion price={`${totalLiquidity}`} hideApproximateSymbol />
+            }
+          />
+        </>
       )}
       <NumberUnit label={`Sale${sales === 1 ? '' : 's'}`} value={sales} />
       <NumberUnit label="Published" value={assetsTotal} />
