@@ -31,11 +31,7 @@ export default function PromotionBanner({
           {description && (
             <Markdown text={description} className={styles.description} />
           )}
-          {cta && (
-            <Button style="primary" className={styles.button}>
-              {cta}
-            </Button>
-          )}
+          {cta && <div className={styles.cta}>{cta}</div>}
         </div>
       </div>
     </LinkOpener>
