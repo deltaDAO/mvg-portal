@@ -34,7 +34,15 @@ export default function VerifiedBadge({
   return (
     <div className={styles.container}>
       <div className={styleClasses}>
-        {isLoading ? <Loader /> : isInvalid ? <Cross /> : <VerifiedPatch />}
+        {isLoading ? (
+          <div className={styles.loader}>
+            <Loader />
+          </div>
+        ) : isInvalid ? (
+          <Cross />
+        ) : (
+          <VerifiedPatch />
+        )}
         <span>{text}</span>
         {timestamp && (
           <span className={styles.lastVerified}>

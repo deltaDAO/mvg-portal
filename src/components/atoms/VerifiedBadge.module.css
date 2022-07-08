@@ -61,3 +61,7 @@
 .isInvalid svg path {
   fill: var(--brand-alert-red);
 }
+
+.loader span {
+  padding: 0;
+}
