@@ -6,7 +6,7 @@ import styles from './Input.module.css'
 import InputGroup from '../../../atoms/Input/InputGroup'
 import isUrl from 'is-url-superb'
 
-const isSanitizedUrl = (url: string): boolean => {
+export const isSanitizedUrl = (url: string): boolean => {
   return url !== '' && isUrl(url) && !url.includes('javascript:')
 }
 

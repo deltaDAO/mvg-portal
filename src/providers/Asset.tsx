@@ -163,7 +163,7 @@ function AssetProvider({
         setIsServiceSelfDescriptionVerified(
           verified && !!serviceSelfDescriptionContent
         )
-        const serviceProviderName = getPublisherFromServiceSD(
+        const serviceProviderName = await getPublisherFromServiceSD(
           serviceSelfDescriptionContent
         )
         setVerifiedServiceProviderName(serviceProviderName)
