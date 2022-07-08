@@ -16,6 +16,7 @@ export default function MetaMain(): ReactElement {
     type,
     isAssetNetwork,
     isServiceSelfDescriptionVerified,
+    isVerifyingSD,
     verifiedServiceProviderName
   } = useAsset()
   const { web3ProviderInfo } = useWeb3()
@@ -78,8 +79,12 @@ export default function MetaMain(): ReactElement {
             )}
           </p>
         </div>
-        {isServiceSelfDescriptionVerified && (
-          <VerifiedBadge text="Service Self-Description" timestamp />
+        {(isVerifyingSD || isServiceSelfDescriptionVerified) && (
+          <VerifiedBadge
+            text="Service Self-Description"
+            isLoading={isVerifyingSD}
+            timestamp={isServiceSelfDescriptionVerified}
+          />
         )}
       </div>
     </aside>

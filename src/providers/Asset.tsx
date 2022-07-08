@@ -39,6 +39,7 @@ interface AssetProviderValue {
   refreshInterval: number
   isAssetNetwork: boolean
   loading: boolean
+  isVerifyingSD: boolean
   isServiceSelfDescriptionVerified: boolean
   verifiedServiceProviderName: string
   refreshDdo: (token?: CancelToken) => Promise<void>
@@ -71,6 +72,7 @@ function AssetProvider({
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
+  const [isVerifyingSD, setIsVerifyingSD] = useState(false)
   const [
     isServiceSelfDescriptionVerified,
     setIsServiceSelfDescriptionVerified
@@ -140,6 +142,39 @@ function AssetProvider({
     }
   }, [])
 
+  const checkServiceSD = useCallback(async (ddo: DDO): Promise<void> => {
+    if (!ddo) return
+    setIsVerifyingSD(true)
+
+    try {
+      const { attributes }: { attributes: MetadataMarket } =
+        ddo.findServiceByType('metadata')
+
+      const { serviceSelfDescription } = attributes.additionalInformation
+      if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {
+        const requestBody = serviceSelfDescription?.url
+          ? { body: serviceSelfDescription?.url }
+          : { body: serviceSelfDescription?.raw, raw: true }
+        const { verified } = await verifyServiceSelfDescription(requestBody)
+        const serviceSelfDescriptionContent = serviceSelfDescription?.url
+          ? await getServiceSelfDescription(serviceSelfDescription?.url)
+          : serviceSelfDescription?.raw
+
+        setIsServiceSelfDescriptionVerified(
+          verified && !!serviceSelfDescriptionContent
+        )
+        const serviceProviderName = getPublisherFromServiceSD(
+          serviceSelfDescriptionContent
+        )
+        setVerifiedServiceProviderName(serviceProviderName)
+      }
+    } catch (error) {
+      Logger.error(error)
+    } finally {
+      setIsVerifyingSD(false)
+    }
+  }, [])
+
   const initMetadata = useCallback(async (ddo: DDO): Promise<void> => {
     if (!ddo) return
     setLoading(true)
@@ -158,31 +193,12 @@ function AssetProvider({
     setPrice({ ...returnedPrice })
 
     // Get metadata from DDO
-    const { attributes }: { attributes: MetadataMarket } =
-      ddo.findServiceByType('metadata')
+    const { attributes } = ddo.findServiceByType('metadata')
     setMetadata(attributes)
     setTitle(attributes?.main.name)
     setType(attributes.main.type)
     setOwner(ddo.publicKey[0].owner)
 
-    const { serviceSelfDescription } = attributes.additionalInformation
-    if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {
-      const requestBody = serviceSelfDescription?.url
-        ? { body: serviceSelfDescription?.url }
-        : { body: serviceSelfDescription?.raw, raw: true }
-      const { verified } = await verifyServiceSelfDescription(requestBody)
-      const serviceSelfDescriptionContent = serviceSelfDescription?.url
-        ? await getServiceSelfDescription(serviceSelfDescription?.url)
-        : serviceSelfDescription?.raw
-
-      setIsServiceSelfDescriptionVerified(
-        verified && !!serviceSelfDescriptionContent
-      )
-      const serviceProviderName = getPublisherFromServiceSD(
-        serviceSelfDescriptionContent
-      )
-      setVerifiedServiceProviderName(serviceProviderName)
-    }
     Logger.log('[asset] Got Metadata from DDO', attributes)
 
     setIsInPurgatory(ddo.isInPurgatory === 'true')
@@ -193,7 +209,8 @@ function AssetProvider({
   useEffect(() => {
     if (!ddo) return
     initMetadata(ddo)
-  }, [ddo, initMetadata])
+    checkServiceSD(ddo)
+  }, [ddo, checkServiceSD, initMetadata])
 
   // Check user network against asset network
   useEffect(() => {
@@ -219,6 +236,7 @@ function AssetProvider({
           purgatoryData,
           refreshInterval,
           loading,
+          isVerifyingSD,
           refreshDdo,
           isAssetNetwork,
           isServiceSelfDescriptionVerified,
