@@ -60,7 +60,7 @@ export default function Publisher({
     return () => {
       source.cancel()
     }
-  }, [account])
+  }, [account, verifiedServiceProviderName])
 
   const styleClasses = cx({
     publisher: true,
