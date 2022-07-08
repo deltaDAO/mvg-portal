@@ -16,9 +16,18 @@
   margin-bottom: 0;
 }
 
-@media (min-width: 40rem) {
+@media (min-width: 35rem) {
+  .contentWrapper {
+    max-width: 80%;
+  }
+}
+
+@media (min-width: 55rem) {
   .title {
     font-size: var(--font-size-h2);
+  }
+  .contentWrapper {
+    max-width: 60%;
   }
 }
 

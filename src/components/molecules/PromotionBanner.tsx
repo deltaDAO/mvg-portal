@@ -25,7 +25,7 @@ export default function PromotionBanner({
 
   return (
     <div className={styles.banner} style={bannerStyle}>
-      <div>
+      <div className={styles.contentWrapper}>
         <h2 className={styles.title}>{title}</h2>
         {description && (
           <Markdown text={description} className={styles.description} />
