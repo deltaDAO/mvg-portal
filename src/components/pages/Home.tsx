@@ -32,7 +32,7 @@ import { useAddressConfig } from '../../hooks/useAddressConfig'
 import OnboardingSection from './Home/Onboarding'
 import { useWeb3 } from '../../providers/Web3'
 import SectionTitle from '../molecules/SectionTitle'
-import PromotionBanner, { PromoBanner } from '../molecules/PromotionBanner'
+import PromotionBanner from '../molecules/PromotionBanner'
 import { graphql, useStaticQuery } from 'gatsby'
 
 function sortElements(items: DDO[], sorted: string[]) {
@@ -45,8 +45,8 @@ function sortElements(items: DDO[], sorted: string[]) {
   return items
 }
 
-const promotionBannerQuery = graphql`
-  query promotionBannerQuery {
+const homePageContentQuery = graphql`
+  query homePageContentQuery {
     content: allFile(
       filter: { relativePath: { eq: "promotionBanners.json" } }
     ) {
@@ -80,6 +80,30 @@ const promotionBannerQuery = graphql`
     }
   }
 `
+
+interface HomeContent {
+  content: {
+    edges: {
+      node: {
+        childContentJson: {
+          banners: {
+            title: string
+            description: string
+            link: string
+            cta: string
+            image: { childImageSharp: { original: { src: string } } }
+          }[]
+        }
+      }
+    }[]
+  }
+  featuredAssets: {
+    childIndexJson: {
+      title: string
+      body: string
+    }
+  }
+}
 
 export function SectionQueryResult({
   title,
@@ -157,13 +181,10 @@ export default function HomePage(): ReactElement {
   const { featured, hasFeaturedAssets } = useAddressConfig()
   const { balance, balanceLoading, chainId, web3Loading } = useWeb3()
   const [showOnboarding, setShowOnboarding] = useState(false)
-  const data = useStaticQuery(promotionBannerQuery)
-  const {
-    banners
-  }: {
-    banners: PromoBanner[]
-  } = data.content.edges[0].node.childContentJson
-  console.log(data)
+  const data: HomeContent = useStaticQuery(homePageContentQuery)
+  const { content, featuredAssets } = data
+
+  const { banners } = content.edges[0].node.childContentJson
 
   useLayoutEffect(() => {
     const { eth, ocean } = balance
@@ -230,10 +251,7 @@ export default function HomePage(): ReactElement {
         )}
 
         <Container>
-          <SectionTitle
-            title="Featured Assets"
-            body="Discover datasets from different use cases"
-          />
+          <SectionTitle {...featuredAssets.childIndexJson} />
           {queryLatest?.length > 0 &&
             queryLatest.map((section) => (
               <SectionQueryResult
