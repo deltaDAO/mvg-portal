@@ -1,0 +1,11 @@
+{
+  "banners": [
+    {
+      "title": "EuProGigant",
+      "description": "The lighthouse project for manufacturing. See the synergies of the Minimal Viable Gaia-X and the practical EuProGigant use case being used to demonstrate the added value and the functionality of a Gaia-X federated data infrastructure for the manufacturing industry.",
+      "cta": "Explore the EuProGigant Portal →",
+      "link": "https://euprogigant.portal.minimal-gaia-x.eu/",
+      "image": "../src/images/euprogigant-home-eyecatcher-scaled.jpg"
+    }
+  ]
+}

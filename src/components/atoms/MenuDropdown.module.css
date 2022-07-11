@@ -1,0 +1,28 @@
+.menuItem {
+  composes: link from '../molecules/Menu.module.css';
+  display: flex;
+  align-items: center;
+  padding-right: 0;
+  cursor: pointer;
+}
+
+.link {
+  composes: link from '../molecules/Menu.module.css';
+}
+
+.caret,
+svg.caret {
+  width: var(--font-size-small);
+  height: var(--font-size-small);
+  fill: var(--color-primary);
+  margin-left: calc(var(--spacer) / 4);
+  transition: transform 0.2s ease-out;
+}
+
+[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+[aria-expanded='true'] .menuItem:after {
+  transform: scaleX(1);
+}

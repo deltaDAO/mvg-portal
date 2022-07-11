@@ -1,4 +1,9 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, {
+  ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useState
+} from 'react'
 import styles from './Home.module.css'
 import AssetList from '../organisms/AssetList'
 import Button from '../atoms/Button'
@@ -25,6 +30,9 @@ import HomeContent from '../organisms/HomeContent'
 import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
 import OnboardingSection from './Home/Onboarding'
+import { useWeb3 } from '../../providers/Web3'
+import PromotionBanner, { PromoBanner } from '../molecules/PromotionBanner'
+import { graphql, useStaticQuery } from 'gatsby'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -35,6 +43,34 @@ function sortElements(items: DDO[], sorted: string[]) {
   })
   return items
 }
+
+const promotionBannerQuery = graphql`
+  query promotionBannerQuery {
+    content: allFile(
+      filter: { relativePath: { eq: "promotionBanners.json" } }
+    ) {
+      edges {
+        node {
+          childContentJson {
+            banners {
+              title
+              description
+              link
+              cta
+              image {
+                childImageSharp {
+                  original {
+                    src
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
 
 export function SectionQueryResult({
   title,
@@ -106,6 +142,41 @@ export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
+  const { accountId, balance, balanceLoading, chainId, web3Loading } = useWeb3()
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const data = useStaticQuery(promotionBannerQuery)
+  const {
+    banners
+  }: {
+    banners: PromoBanner[]
+  } = data.content.edges[0].node.childContentJson
+
+  useLayoutEffect(() => {
+    const { eth, ocean } = balance
+    if (balanceLoading) return
+    if (web3Loading) {
+      setShowOnboarding(false)
+      return
+    }
+    if (!accountId) {
+      setShowOnboarding(true)
+      return
+    }
+    const showOnboardingSession = sessionStorage.getItem(
+      'showOnboardingSession'
+    )
+    if (showOnboardingSession === 'true') {
+      setShowOnboarding(true)
+      return
+    }
+    if (
+      chainId !== 2021000 ||
+      (chainId === 2021000 && (eth === '0' || ocean === '0'))
+    ) {
+      setShowOnboarding(true)
+      sessionStorage.setItem('showOnboardingSession', 'true')
+    }
+  }, [accountId, balance, balanceLoading, chainId, web3Loading])
 
   useEffect(() => {
     const queryParams = {
@@ -133,15 +204,11 @@ export default function HomePage(): ReactElement {
   return (
     <Permission eventType="browse">
       <>
-        <section className={styles.content}>
-          <OnboardingSection />
-        </section>
-        <section className={styles.intro}>
-          <HomeIntro />
-        </section>
-        <section className={styles.content}>
-          <HomeContent />
-        </section>
+        {showOnboarding && (
+          <section className={styles.content}>
+            <OnboardingSection />
+          </section>
+        )}
         <Container>
           {queryLatest && (
             <SectionQueryResult
@@ -157,6 +224,19 @@ export default function HomePage(): ReactElement {
             />
           )}
         </Container>
+        <Container>
+          <div>
+            {banners?.map((banner, i) => (
+              <PromotionBanner {...banner} key={i} />
+            ))}
+          </div>
+        </Container>
+        <section className={styles.intro}>
+          <HomeIntro />
+        </section>
+        <section className={styles.content}>
+          <HomeContent />´
+        </section>
       </>
     </Permission>
   )
