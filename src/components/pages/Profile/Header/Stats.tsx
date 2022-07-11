@@ -28,9 +28,11 @@ async function getPoolSharesLiquidity(
 }
 
 export default function Stats({
-  accountId
+  accountId,
+  showLiquidity
 }: {
   accountId: string
+  showLiquidity: boolean
 }): ReactElement {
   const { chainIds } = useUserPreferences()
   const { poolShares, assets, assetsTotal, sales } = useProfile()
@@ -86,16 +88,26 @@ export default function Stats({
 
   return (
     <div className={styles.stats}>
-      <NumberUnit
-        label="Liquidity in Own Assets"
-        value={
-          <Conversion price={publisherLiquidity?.price} hideApproximateSymbol />
-        }
-      />
-      <NumberUnit
-        label="Total Liquidity"
-        value={<Conversion price={`${totalLiquidity}`} hideApproximateSymbol />}
-      />
+      {showLiquidity && (
+        <>
+          <NumberUnit
+            label="Liquidity in Own Assets"
+            value={
+              <Conversion
+                price={publisherLiquidity?.price}
+                hideApproximateSymbol
+              />
+            }
+          />
+
+          <NumberUnit
+            label="Total Liquidity"
+            value={
+              <Conversion price={`${totalLiquidity}`} hideApproximateSymbol />
+            }
+          />
+        </>
+      )}
       <NumberUnit label={`Sale${sales === 1 ? '' : 's'}`} value={sales} />
       <NumberUnit label="Published" value={assetsTotal} />
     </div>
