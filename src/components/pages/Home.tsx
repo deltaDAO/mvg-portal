@@ -112,7 +112,7 @@ export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
-  const { balance, balanceLoading, chainId, web3Loading } = useWeb3()
+  const { accountId, balance, balanceLoading, chainId, web3Loading } = useWeb3()
   const [showOnboarding, setShowOnboarding] = useState(false)
 
   useLayoutEffect(() => {
@@ -120,6 +120,10 @@ export default function HomePage(): ReactElement {
     if (balanceLoading) return
     if (web3Loading) {
       setShowOnboarding(false)
+      return
+    }
+    if (!accountId) {
+      setShowOnboarding(true)
       return
     }
     const showOnboardingSession = sessionStorage.getItem(
@@ -136,7 +140,7 @@ export default function HomePage(): ReactElement {
       setShowOnboarding(true)
       sessionStorage.setItem('showOnboardingSession', 'true')
     }
-  }, [balance, balanceLoading, chainId, web3Loading])
+  }, [accountId, balance, balanceLoading, chainId, web3Loading])
 
   useEffect(() => {
     const queryParams = {
