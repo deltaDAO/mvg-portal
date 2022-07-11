@@ -142,7 +142,7 @@ export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<SearchQuery>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
-  const { balance, balanceLoading, chainId, web3Loading } = useWeb3()
+  const { accountId, balance, balanceLoading, chainId, web3Loading } = useWeb3()
   const [showOnboarding, setShowOnboarding] = useState(false)
   const data = useStaticQuery(promotionBannerQuery)
   const {
@@ -153,19 +153,30 @@ export default function HomePage(): ReactElement {
 
   useLayoutEffect(() => {
     const { eth, ocean } = balance
+    if (balanceLoading) return
     if (web3Loading) {
       setShowOnboarding(false)
       return
     }
-    if (
-      chainId !== 2021000 ||
-      (chainId === 2021000 && !balanceLoading && (eth === '0' || ocean === '0'))
-    ) {
+    if (!accountId) {
       setShowOnboarding(true)
       return
     }
-    setShowOnboarding(false)
-  }, [balance, balanceLoading, chainId, web3Loading])
+    const showOnboardingSession = sessionStorage.getItem(
+      'showOnboardingSession'
+    )
+    if (showOnboardingSession === 'true') {
+      setShowOnboarding(true)
+      return
+    }
+    if (
+      chainId !== 2021000 ||
+      (chainId === 2021000 && (eth === '0' || ocean === '0'))
+    ) {
+      setShowOnboarding(true)
+      sessionStorage.setItem('showOnboardingSession', 'true')
+    }
+  }, [accountId, balance, balanceLoading, chainId, web3Loading])
 
   useEffect(() => {
     const queryParams = {
