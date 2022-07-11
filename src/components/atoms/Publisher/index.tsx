@@ -15,10 +15,12 @@ const cx = classNames.bind(styles)
 export default function Publisher({
   account,
   minimal,
+  verifiedServiceProviderName,
   className
 }: {
   account: string
   minimal?: boolean
+  verifiedServiceProviderName?: string
   className?: string
 }): ReactElement {
   const { accountId } = useWeb3()
@@ -32,6 +34,11 @@ export default function Publisher({
     if (!account) return
 
     const source = axios.CancelToken.source()
+
+    if (verifiedServiceProviderName) {
+      setName(verifiedServiceProviderName)
+      return
+    }
 
     async function getExternalName() {
       // ENS
@@ -53,7 +60,7 @@ export default function Publisher({
     return () => {
       source.cancel()
     }
-  }, [account])
+  }, [account, verifiedServiceProviderName])
 
   const styleClasses = cx({
     publisher: true,

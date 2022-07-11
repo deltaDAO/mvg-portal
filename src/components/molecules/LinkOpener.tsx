@@ -21,9 +21,13 @@ export default function LinkOpener({
     >
       {children}
     </a>
-  ) : (
+  ) : uri.startsWith('/') ? (
     <Link to={uri} className={className}>
       {children}
     </Link>
+  ) : (
+    <a href={uri} className={className}>
+      {children}
+    </a>
   )
 }
