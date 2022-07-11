@@ -70,6 +70,14 @@ const promotionBannerQuery = graphql`
         }
       }
     }
+    featuredAssets: file(
+      relativePath: { eq: "pages/index/featuredAssets.json" }
+    ) {
+      childIndexJson {
+        title
+        body
+      }
+    }
   }
 `
 
@@ -155,6 +163,7 @@ export default function HomePage(): ReactElement {
   }: {
     banners: PromoBanner[]
   } = data.content.edges[0].node.childContentJson
+  console.log(data)
 
   useLayoutEffect(() => {
     const { eth, ocean } = balance
