@@ -53,7 +53,7 @@ export default function VerifiedPublisher({
       <span>verifying...</span>
     </div>
   ) : verified ? (
-    <VerifiedBadge text="Verified Publisher" />
+    <VerifiedBadge text="Verified Publisher" fillBackground />
   ) : verifyOption ? (
     <div className={styles.verifyButton}>
       <Button
