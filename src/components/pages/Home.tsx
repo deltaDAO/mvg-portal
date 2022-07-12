@@ -45,6 +45,8 @@ function sortElements(items: DDO[], sorted: string[]) {
   return items
 }
 
+const NUMBER_OF_ASSETS_PER_PAGE = 9
+
 const homePageContentQuery = graphql`
   query homePageContentQuery {
     content: allFile(
@@ -143,7 +145,7 @@ export function SectionQueryResult({
           if (!isMounted()) return
           if (queryData && result?.totalResults > 0) {
             const sortedAssets = sortElements(result.results, queryData)
-            const overflow = sortedAssets.length - 9
+            const overflow = sortedAssets.length - NUMBER_OF_ASSETS_PER_PAGE
             sortedAssets.splice(sortedAssets.length - overflow, overflow)
             result.results = sortedAssets
           }
@@ -216,7 +218,7 @@ export default function HomePage(): ReactElement {
   useEffect(() => {
     const baseParams = {
       chainIds: chainIds,
-      esPaginationOptions: { size: 9 },
+      esPaginationOptions: { size: NUMBER_OF_ASSETS_PER_PAGE },
       sortOptions: {
         sortBy: SortTermOptions.Created,
         sortDirection: SortDirectionOptions.Ascending
@@ -229,7 +231,9 @@ export default function HomePage(): ReactElement {
     for (const category of featured) {
       const queryParams = {
         esPaginationOptions: {
-          size: hasFeaturedAssetsConfigured ? category.assets.length : 9
+          size: hasFeaturedAssetsConfigured
+            ? category.assets.length
+            : NUMBER_OF_ASSETS_PER_PAGE
         },
         filters: hasFeaturedAssetsConfigured
           ? [getFilterTerm('id', category.assets)]
