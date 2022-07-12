@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: var(--wrapper-height);
+  margin-bottom: var(--spacer);
+}
+
+.content {
+  padding: var(--spacer) var(--spacer) 0 0;
+}
+
+.title {
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.subtitle {
+  display: inline-block;
+  padding: calc(var(--spacer) / 8) calc(var(--spacer) / 4) 0;
+  background-color: var(--brand-violet);
+  margin-bottom: 0;
+  color: var(--brand-white);
+}
+
+.paragraph p {
+  margin-bottom: 0;
+}

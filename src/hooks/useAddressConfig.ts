@@ -13,7 +13,7 @@ export interface UseAddressConfig {
     'publicKey.owner': string[]
     dataToken: string[]
   }
-  featured: string[]
+  featured: { assets: string[]; title: string }[]
   isAddressWhitelisted: (address: string) => boolean
   isDDOWhitelisted: (ddo: DDO) => boolean
   hasFeaturedAssets: () => boolean
@@ -28,13 +28,15 @@ function isWhitelistEnabled() {
 }
 
 function hasFeaturedAssets() {
-  return (Object.values(featured) as string[])?.length > 0
+  return featured?.length > 0
 }
 
 export function useAddressConfig(): UseAddressConfig {
   const isAssetFeatured = function (address: string): boolean {
     return hasFeaturedAssets()
-      ? (featured as string[]).find((feat) => feat === address) !== undefined
+      ? featured.some((list) =>
+          list.assets.find((feat) => feat === address)
+        ) !== undefined
       : false
   }
 
