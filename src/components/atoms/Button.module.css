@@ -110,3 +110,16 @@
 .text.small {
   padding: 0;
 }
+
+.arrow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.arrow:hover {
+  display: flex;
+}
+
+.arrow svg {
+  transform: scale(0.5);
+}
