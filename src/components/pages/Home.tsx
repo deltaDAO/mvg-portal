@@ -223,15 +223,15 @@ export default function HomePage(): ReactElement {
       } as SortOptions
     } as BaseQueryParams
 
-    // const latestOrFeaturedQuery = generateBaseQuery(baseParams)
     const featuredSections = []
+    const hasFeaturedAssetsConfigured = hasFeaturedAssets()
 
     for (const category of featured) {
       const queryParams = {
         esPaginationOptions: {
-          size: hasFeaturedAssets() ? category.assets.length : 9
+          size: hasFeaturedAssetsConfigured ? category.assets.length : 9
         },
-        filters: hasFeaturedAssets()
+        filters: hasFeaturedAssetsConfigured
           ? [getFilterTerm('id', category.assets)]
           : undefined
       }
