@@ -31,7 +31,8 @@ import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
 import OnboardingSection from './Home/Onboarding'
 import { useWeb3 } from '../../providers/Web3'
-import PromotionBanner, { PromoBanner } from '../molecules/PromotionBanner'
+import SectionTitle from '../molecules/SectionTitle'
+import PromotionBanner from '../molecules/PromotionBanner'
 import { graphql, useStaticQuery } from 'gatsby'
 
 function sortElements(items: DDO[], sorted: string[]) {
@@ -44,8 +45,10 @@ function sortElements(items: DDO[], sorted: string[]) {
   return items
 }
 
-const promotionBannerQuery = graphql`
-  query promotionBannerQuery {
+const NUMBER_OF_ASSETS_PER_PAGE = 9
+
+const homePageContentQuery = graphql`
+  query homePageContentQuery {
     content: allFile(
       filter: { relativePath: { eq: "promotionBanners.json" } }
     ) {
@@ -69,8 +72,40 @@ const promotionBannerQuery = graphql`
         }
       }
     }
+    featuredAssets: file(
+      relativePath: { eq: "pages/index/featuredAssets.json" }
+    ) {
+      childIndexJson {
+        title
+        body
+      }
+    }
   }
 `
+
+interface HomeContent {
+  content: {
+    edges: {
+      node: {
+        childContentJson: {
+          banners: {
+            title: string
+            description: string
+            link: string
+            cta: string
+            image: { childImageSharp: { original: { src: string } } }
+          }[]
+        }
+      }
+    }[]
+  }
+  featuredAssets: {
+    childIndexJson: {
+      title: string
+      body: string
+    }
+  }
+}
 
 export function SectionQueryResult({
   title,
@@ -110,7 +145,7 @@ export function SectionQueryResult({
           if (!isMounted()) return
           if (queryData && result?.totalResults > 0) {
             const sortedAssets = sortElements(result.results, queryData)
-            const overflow = sortedAssets.length - 9
+            const overflow = sortedAssets.length - NUMBER_OF_ASSETS_PER_PAGE
             sortedAssets.splice(sortedAssets.length - overflow, overflow)
             result.results = sortedAssets
           }
@@ -137,19 +172,21 @@ export function SectionQueryResult({
     </section>
   )
 }
+interface FeaturedSection {
+  title: string
+  query: SearchQuery
+}
 
 export default function HomePage(): ReactElement {
-  const [queryLatest, setQueryLatest] = useState<SearchQuery>()
+  const [queryLatest, setQueryLatest] = useState<FeaturedSection[]>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
   const { accountId, balance, balanceLoading, chainId, web3Loading } = useWeb3()
   const [showOnboarding, setShowOnboarding] = useState(false)
-  const data = useStaticQuery(promotionBannerQuery)
-  const {
-    banners
-  }: {
-    banners: PromoBanner[]
-  } = data.content.edges[0].node.childContentJson
+  const data: HomeContent = useStaticQuery(homePageContentQuery)
+  const { content, featuredAssets } = data
+
+  const { banners } = content.edges[0].node.childContentJson
 
   useLayoutEffect(() => {
     const { eth, ocean } = balance
@@ -179,27 +216,41 @@ export default function HomePage(): ReactElement {
   }, [accountId, balance, balanceLoading, chainId, web3Loading])
 
   useEffect(() => {
-    const queryParams = {
-      esPaginationOptions: {
-        size: hasFeaturedAssets() ? featured.length : 9
-      },
-      filters: hasFeaturedAssets() ? [getFilterTerm('id', featured)] : undefined
-    }
-
     const baseParams = {
-      ...queryParams,
       chainIds: chainIds,
-      esPaginationOptions: { size: 9 },
+      esPaginationOptions: { size: NUMBER_OF_ASSETS_PER_PAGE },
       sortOptions: {
         sortBy: SortTermOptions.Created,
         sortDirection: SortDirectionOptions.Ascending
       } as SortOptions
     } as BaseQueryParams
 
-    const latestOrFeaturedQuery = generateBaseQuery(baseParams)
+    const featuredSections = []
+    const hasFeaturedAssetsConfigured = hasFeaturedAssets()
 
-    setQueryLatest(latestOrFeaturedQuery)
-  }, [chainIds])
+    for (const category of featured) {
+      const queryParams = {
+        esPaginationOptions: {
+          size: hasFeaturedAssetsConfigured
+            ? category.assets.length
+            : NUMBER_OF_ASSETS_PER_PAGE
+        },
+        filters: hasFeaturedAssetsConfigured
+          ? [getFilterTerm('id', category.assets)]
+          : undefined
+      }
+      featuredSections.push({
+        title: category.title,
+        query: generateBaseQuery({ ...baseParams, ...queryParams })
+      })
+    }
+    if (featuredSections.length === 0)
+      featuredSections.push({
+        title: 'Recently Published',
+        query: generateBaseQuery(baseParams)
+      })
+    setQueryLatest(featuredSections)
+  }, [chainIds, featured, hasFeaturedAssets])
 
   return (
     <Permission eventType="browse">
@@ -209,20 +260,25 @@ export default function HomePage(): ReactElement {
             <OnboardingSection />
           </section>
         )}
+
         <Container>
-          {queryLatest && (
-            <SectionQueryResult
-              title={
-                hasFeaturedAssets() ? 'Featured Assets' : 'Recently Published'
-              }
-              query={queryLatest}
-              action={
-                <Button style="text" to="/search?sort=created&sortOrder=desc">
-                  All data sets and algorithms →
-                </Button>
-              }
-            />
-          )}
+          <SectionTitle {...featuredAssets.childIndexJson} />
+          {queryLatest?.length > 0 &&
+            queryLatest.map((section) => (
+              <SectionQueryResult
+                key={section.title}
+                title={section.title}
+                query={section.query}
+              />
+            ))}
+          <Button
+            className={styles.allAssetsButton}
+            style="text"
+            to="/search?sort=created&sortOrder=desc"
+            arrow
+          >
+            All data sets and algorithms
+          </Button>
         </Container>
         <Container>
           <div>

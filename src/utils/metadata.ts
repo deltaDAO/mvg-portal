@@ -221,11 +221,15 @@ export async function getPublisherFromServiceSD(
   serviceSD: any
 ): Promise<string> {
   if (!serviceSD) return
+
   try {
+    const parsedServiceSD =
+      typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
     const providedByUrl =
-      serviceSD?.selfDescriptionCredential?.credentialSubject?.[
+      parsedServiceSD?.selfDescriptionCredential?.credentialSubject?.[
         'gx-service-offering:providedBy'
       ]?.['@value']
+
     if (!isSanitizedUrl(providedByUrl)) return
 
     const response = await axios.get(providedByUrl)

@@ -14,18 +14,6 @@ Company registered in Hamburg<br/>
 Register court: Handelsregister Hamburg<br/>
 Commercial Register No.: HRB 170364<br/>
 
-## Members of the Board
+Members of the Board: Frederic Schwill, Kai Meinke, Albert Peci<br/>
 
-**Frederic Schwill**<br/>
-Tech Lead<br/>
-
-**Kai Meinke**<br/>
-Business Lead<br/>
-
-**Albert Peci**<br/>
-Web3 Development<br/>
-
-## Supervisory Board
-
-**Dr. Sven Hildebrandt**<br/>
-Chief of the Supervisory Board
+Supervisory Board: Dr. Sven Hildebrandt
