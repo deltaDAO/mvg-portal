@@ -221,10 +221,10 @@ export async function getPublisherFromServiceSD(
   serviceSD: any
 ): Promise<string> {
   if (!serviceSD) return
-  const parsedServiceSD =
-    typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
 
   try {
+    const parsedServiceSD =
+      typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
     const providedByUrl =
       parsedServiceSD?.selfDescriptionCredential?.credentialSubject?.[
         'gx-service-offering:providedBy'
