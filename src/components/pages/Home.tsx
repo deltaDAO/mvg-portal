@@ -244,16 +244,12 @@ export default function HomePage(): ReactElement {
         query: generateBaseQuery({ ...baseParams, ...queryParams })
       })
     }
-    if (featuredSections.length > 0) {
-      setQueryLatest(featuredSections)
-    } else {
-      setQueryLatest([
-        {
-          title: 'Recently Published',
-          query: generateBaseQuery(baseParams)
-        }
-      ])
-    }
+    if (featuredSections.length === 0)
+      featuredSections.push({
+        title: 'Recently Published',
+        query: generateBaseQuery(baseParams)
+      })
+    setQueryLatest(featuredSections)
   }, [chainIds, featured, hasFeaturedAssets])
 
   return (
