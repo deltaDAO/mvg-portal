@@ -9,10 +9,11 @@ import NetworkName from '../atoms/NetworkName'
 import styles from './AssetTeaser.module.css'
 import LinkOpener from '../molecules/LinkOpener'
 import { BestPrice } from '../../models/BestPrice'
+import Loader from '../atoms/Loader'
 
 declare type AssetTeaserProps = {
   ddo: DDO
-  price: BestPrice
+  price?: BestPrice
   noPublisher?: boolean
 }
 
@@ -65,7 +66,11 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
           </div>
 
           <footer className={styles.foot}>
-            <Price price={price} small />
+            {price ? (
+              <Price price={price} small />
+            ) : (
+              <Loader style="gradient" dimensions={{ width: 64, height: 16 }} />
+            )}
             <div className={styles.network}>
               <NetworkName networkId={ddo.chainId} />
             </div>
