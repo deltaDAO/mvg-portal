@@ -49,7 +49,7 @@
   animation-iteration-count: infinite;
   animation-name: placeHolderShimmer;
   animation-timing-function: linear;
-  background: darkgray;
+  background: var(--brand-grey-dimmed);
   background: linear-gradient(
     to right,
     var(--brand-grey-dimmed) 10%,
