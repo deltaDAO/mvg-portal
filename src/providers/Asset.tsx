@@ -178,6 +178,20 @@ function AssetProvider({
   const initMetadata = useCallback(async (ddo: DDO): Promise<void> => {
     if (!ddo) return
     setLoading(true)
+    // Get metadata from DDO
+    const { attributes } = ddo.findServiceByType('metadata')
+    setMetadata(attributes)
+    setTitle(attributes?.main.name)
+    setType(attributes.main.type)
+    setOwner(ddo.publicKey[0].owner)
+
+    Logger.log('[asset] Got Metadata from DDO', attributes)
+
+    setIsInPurgatory(ddo.isInPurgatory === 'true')
+    await setPurgatory(ddo.id)
+    setLoading(false)
+
+    // load price
     const returnedPrice = await getPrice(ddo)
     if (
       appConfig.allowDynamicPricing !== 'true' &&
@@ -191,19 +205,6 @@ function AssetProvider({
       return
     }
     setPrice({ ...returnedPrice })
-
-    // Get metadata from DDO
-    const { attributes } = ddo.findServiceByType('metadata')
-    setMetadata(attributes)
-    setTitle(attributes?.main.name)
-    setType(attributes.main.type)
-    setOwner(ddo.publicKey[0].owner)
-
-    Logger.log('[asset] Got Metadata from DDO', attributes)
-
-    setIsInPurgatory(ddo.isInPurgatory === 'true')
-    await setPurgatory(ddo.id)
-    setLoading(false)
   }, [])
 
   useEffect(() => {

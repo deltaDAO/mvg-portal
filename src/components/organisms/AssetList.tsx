@@ -44,17 +44,14 @@ const AssetList: React.FC<AssetListProps> = ({
   const { appConfig } = useSiteMetadata()
   const { chainIds } = useUserPreferences()
   const [assetsWithPrices, setAssetWithPrices] = useState<AssetListPrices[]>()
-  const [loading, setLoading] = useState<boolean>(true)
   const isMounted = useIsMounted()
   useEffect(() => {
     if (!assets) return
-    isLoading && setLoading(true)
 
     async function fetchPrices() {
       const asset = await getAssetsBestPrices(assets)
       if (!isMounted()) return
       setAssetWithPrices(asset)
-      setLoading(false)
     }
 
     fetchPrices()
@@ -74,10 +71,10 @@ const AssetList: React.FC<AssetListProps> = ({
     <div className={styleClasses}>
       <div className={styles.empty}>No network selected</div>
     </div>
-  ) : assetsWithPrices && !loading ? (
+  ) : assetsWithPrices || assets ? (
     <>
       <div className={styleClasses}>
-        {assetsWithPrices.length > 0 ? (
+        {assetsWithPrices && assetsWithPrices.length > 0 ? (
           assetsWithPrices.map((assetWithPrice) => (
             <AssetTeaser
               ddo={assetWithPrice.ddo}
@@ -85,6 +82,10 @@ const AssetList: React.FC<AssetListProps> = ({
               key={assetWithPrice.ddo.id}
               noPublisher={noPublisher}
             />
+          ))
+        ) : assets.length > 0 ? (
+          assets.map((asset) => (
+            <AssetTeaser ddo={asset} key={asset.id} noPublisher={noPublisher} />
           ))
         ) : (
           <div className={styles.empty}>No results found</div>
