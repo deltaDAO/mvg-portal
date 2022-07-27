@@ -7,7 +7,7 @@ module.exports = {
     {
       title: 'Industry',
       assets: [
-        'did:op:1E8Ae58222F96f9235F7093C73f73e2497dC7A10',
+        'did:op:105d721f56D8ba1fF1847f7925e097EAAcF9F4e8',
         'did:op:87152E582e3B05Cc6940E9763b9e0c22eA812448'
       ]
     },
@@ -31,7 +31,9 @@ module.exports = {
         'did:op:16229fE8e0Ebb09224E21E3dDA23D584Ea33f201',
         'did:op:ae5D24b8ED7932F2146C0F4baf1D7Be8fF4F13C4',
         'did:op:E4bE4AF489089bE4c199149A9f9D9C1fbEa138A8',
-        'did:op:50e530262B736999860aDDe07fcabA91b171f15E'
+        'did:op:50e530262B736999860aDDe07fcabA91b171f15E',
+        'did:op:59205be7D61a5137685F9f15167DD8dEA65ff351',
+        'did:op:5d7D674BF130489eD9dAb5624ca443287d41FA11'
       ]
     }
   ]
