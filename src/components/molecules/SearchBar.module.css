@@ -3,6 +3,22 @@
   position: relative;
 }
 
+.visibleInputSearch {
+  display: flex;
+  position: relative;
+  justify-content: right;
+  margin: 0 0 var(--spacer) 0;
+  width: 100%;
+}
+
+.visibleInputSearchHome {
+  display: flex;
+  position: relative;
+  justify-content: center;
+  margin: 0 0 var(--spacer) 0;
+  width: 100%;
+}
+
 .button {
   color: var(--color-secondary);
   cursor: pointer;
@@ -18,6 +34,16 @@
   top: 1px;
   bottom: 1px;
   z-index: -1;
+}
+.visibleInputButton {
+  color: var(--color-secondary);
+  cursor: pointer;
+  background: var(--background-content);
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  padding: calc(var(--spacer) / 4);
+  width: fit-content;
 }
 
 .button:hover,
@@ -35,6 +61,14 @@
   transition: none;
   border: none;
   cursor: pointer;
+}
+
+.visibleInput {
+  background-color: var(--background-content);
+  border: var(--border-size) solid var(--border-color-menu);
+  border-radius: var(--border-radius-menu);
+  cursor: text;
+  max-width: 250px;
 }
 
 .input:focus {

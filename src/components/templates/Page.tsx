@@ -2,6 +2,7 @@ import React, { ReactNode, ReactElement } from 'react'
 import PageHeader from '../molecules/PageHeader'
 import Seo from '../atoms/Seo'
 import Container from '../atoms/Container'
+import SearchBar from '../molecules/SearchBar'
 
 export interface PageProps {
   children: ReactNode
@@ -21,9 +22,19 @@ export default function Page({
   headerCenter
 }: PageProps): ReactElement {
   const isHome = uri === '/'
+  const isSearch = uri === '/search'
 
   const childElements = (
     <>
+      {(isHome || isSearch) && (
+        <>
+          <SearchBar
+            visibleInput
+            isHome={isHome}
+            placeholder="Search for data sets / algorithms"
+          />
+        </>
+      )}
       {title && !noPageHeader && (
         <PageHeader
           title={title}
