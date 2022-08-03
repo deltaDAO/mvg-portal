@@ -28,10 +28,14 @@ async function emptySearch() {
 
 export default function SearchBar({
   placeholder,
-  initialValue
+  initialValue,
+  visibleInput,
+  isHome
 }: {
   placeholder?: string
   initialValue?: string
+  visibleInput?: boolean
+  isHome?: boolean
 }): ReactElement {
   const [value, setValue] = useState(initialValue || '')
   const parsed = queryString.parse(location.search)
@@ -72,7 +76,15 @@ export default function SearchBar({
   }
 
   return (
-    <form className={styles.search}>
+    <form
+      className={
+        visibleInput
+          ? isHome
+            ? styles.visibleInputSearchHome
+            : styles.visibleInputSearch
+          : styles.search
+      }
+    >
       <InputElement
         type="search"
         name="search"
@@ -81,10 +93,13 @@ export default function SearchBar({
         onChange={handleChange}
         required
         size="small"
-        className={styles.input}
+        className={visibleInput ? styles.visibleInput : styles.input}
         onKeyPress={handleKeyPress}
       />
-      <button onClick={handleButtonClick} className={styles.button}>
+      <button
+        onClick={handleButtonClick}
+        className={visibleInput ? styles.visibleInputButton : styles.button}
+      >
         <SearchIcon className={styles.searchIcon} />
       </button>
     </form>
