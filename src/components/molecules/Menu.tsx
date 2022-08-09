@@ -52,6 +52,7 @@ export default function Menu(): ReactElement {
           </ul>
 
           <div className={styles.actions}>
+            <SearchBar />
             <Networks />
             <Wallet />
             <UserPreferences />
