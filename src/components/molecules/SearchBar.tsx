@@ -30,12 +30,14 @@ export default function SearchBar({
   placeholder,
   initialValue,
   visibleInput,
-  isHome
+  isHome,
+  name
 }: {
   placeholder?: string
   initialValue?: string
   visibleInput?: boolean
   isHome?: boolean
+  name?: string
 }): ReactElement {
   const [value, setValue] = useState(initialValue || '')
   const parsed = queryString.parse(location.search)
@@ -87,7 +89,7 @@ export default function SearchBar({
     >
       <InputElement
         type="search"
-        name="search"
+        name={name || 'search'}
         placeholder={placeholder || 'Search...'}
         value={value}
         onChange={handleChange}

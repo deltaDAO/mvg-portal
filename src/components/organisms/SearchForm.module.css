@@ -1,0 +1,25 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--spacer);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.title {
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.paragraph p {
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.inputLabel {
+  display: none;
+}

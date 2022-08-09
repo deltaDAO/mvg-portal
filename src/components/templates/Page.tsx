@@ -26,11 +26,10 @@ export default function Page({
 
   const childElements = (
     <>
-      {(isHome || isSearch) && (
+      {isSearch && (
         <>
           <SearchBar
             visibleInput
-            isHome={isHome}
             placeholder="Search for data sets / algorithms"
           />
         </>

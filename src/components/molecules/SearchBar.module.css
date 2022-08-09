@@ -5,18 +5,23 @@
 
 .visibleInputSearch {
   display: flex;
-  position: relative;
-  justify-content: right;
+  flex-direction: row-reverse;
+  border: var(--border-size) solid var(--border-color-menu);
+  border-radius: var(--border-radius-menu);
+  justify-content: left;
   margin: 0 0 var(--spacer) 0;
   width: 100%;
 }
 
 .visibleInputSearchHome {
   display: flex;
-  position: relative;
-  justify-content: center;
+  flex-direction: row-reverse;
+  border: var(--border-size) solid var(--border-color-menu);
+  border-radius: var(--border-radius-menu);
+  justify-content: left;
   margin: 0 0 var(--spacer) 0;
   width: 100%;
+  max-width: 500px;
 }
 
 .button {
@@ -39,6 +44,9 @@
   color: var(--color-secondary);
   cursor: pointer;
   background: var(--background-content);
+  /* border: var(--border-size) solid var(--border-color-menu);
+  border-radius: var(--border-radius-menu);
+  border-style: solid none solid solid; */
   border: none;
   box-shadow: none;
   padding: 0;
@@ -65,10 +73,12 @@
 
 .visibleInput {
   background-color: var(--background-content);
-  border: var(--border-size) solid var(--border-color-menu);
+  /* border: var(--border-size) solid var(--border-color-menu);
   border-radius: var(--border-radius-menu);
+  border-style: solid solid solid none; */
+  border: none;
   cursor: text;
-  max-width: 250px;
+  max-width: 100%;
 }
 
 .input:focus {
