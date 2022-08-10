@@ -28,10 +28,7 @@ export default function Page({
     <>
       {isSearch && (
         <>
-          <SearchBar
-            visibleInput
-            placeholder="Search for data sets / algorithms"
-          />
+          <SearchBar visibleInput placeholder="Search for service offerings" />
         </>
       )}
       {title && !noPageHeader && (
