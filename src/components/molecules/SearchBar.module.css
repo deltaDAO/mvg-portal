@@ -6,22 +6,25 @@
 .visibleInputSearch {
   display: flex;
   flex-direction: row-reverse;
-  border: var(--border-size) solid var(--border-color-menu);
-  border-radius: var(--border-radius-menu);
   justify-content: left;
   margin: 0 0 var(--spacer) 0;
   width: 100%;
+  position: relative;
 }
 
 .visibleInputSearchHome {
   display: flex;
   flex-direction: row-reverse;
-  border: var(--border-size) solid var(--border-color-menu);
-  border-radius: var(--border-radius-menu);
   justify-content: left;
   margin: 0 0 var(--spacer) 0;
   width: 100%;
   max-width: 500px;
+  position: relative;
+}
+
+.visibleInputSearch input,
+.visibleInputSearchHome input {
+  padding-left: 40px;
 }
 
 .button {
@@ -43,15 +46,17 @@
 .visibleInputButton {
   color: var(--color-secondary);
   cursor: pointer;
-  background: var(--background-content);
-  /* border: var(--border-size) solid var(--border-color-menu);
-  border-radius: var(--border-radius-menu);
-  border-style: solid none solid solid; */
+  background: transparent;
   border: none;
+  position: absolute;
+  right: 1px;
+  left: 1px;
+  top: 1px;
+  bottom: 1px;
   box-shadow: none;
   padding: 0;
   padding: calc(var(--spacer) / 4);
-  width: fit-content;
+  width: 40px;
 }
 
 .button:hover,
@@ -73,12 +78,20 @@
 
 .visibleInput {
   background-color: var(--background-content);
-  /* border: var(--border-size) solid var(--border-color-menu);
-  border-radius: var(--border-radius-menu);
-  border-style: solid solid solid none; */
-  border: none;
+  border: var(--border-size) solid var(--brand-grey-light);
+  border-radius: 0 var(--border-radius-menu) var(--border-radius-menu) 0;
   cursor: text;
   max-width: 100%;
+}
+
+.visibleInput:focus,
+.visibleInput:hover {
+  border-color: var(--border-color-menu);
+}
+
+.visibleInput:focus + button svg,
+.visibleInput:hover + button svg {
+  fill: var(--border-color-menu);
 }
 
 .input:focus {
@@ -96,8 +109,15 @@
 .searchIcon {
   fill: var(--color-primary);
   transition: 0.2s ease-out;
-  width: var(--font-size-h5);
-  height: var(--font-size-h5);
+  width: var(--font-size-base);
+  height: var(--font-size-base);
+}
+
+.visibleInputSearchIcon {
+  fill: var(--brand-grey-light);
+  transition: 0.2s ease-out;
+  width: var(--font-size-base);
+  height: var(--font-size-base);
 }
 
 .input:hover .searchIcon {

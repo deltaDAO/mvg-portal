@@ -102,7 +102,11 @@ export default function SearchBar({
         onClick={handleButtonClick}
         className={visibleInput ? styles.visibleInputButton : styles.button}
       >
-        <SearchIcon className={styles.searchIcon} />
+        <SearchIcon
+          className={
+            visibleInput ? styles.visibleInputSearchIcon : styles.searchIcon
+          }
+        />
       </button>
     </form>
   )
