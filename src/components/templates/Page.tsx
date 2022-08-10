@@ -3,7 +3,25 @@ import PageHeader from '../molecules/PageHeader'
 import Seo from '../atoms/Seo'
 import Container from '../atoms/Container'
 import SearchBar from '../molecules/SearchBar'
+import { graphql, useStaticQuery } from 'gatsby'
 
+const query = graphql`
+  query SearchBarQuery {
+    file(relativePath: { eq: "pages/index/searchForm/index.json" }) {
+      childSearchFormJson {
+        placeholder
+      }
+    }
+  }
+`
+
+interface SearchFormData {
+  file: {
+    childSearchFormJson: {
+      placeholder: string
+    }
+  }
+}
 export interface PageProps {
   children: ReactNode
   title?: string
@@ -21,6 +39,8 @@ export default function Page({
   noPageHeader,
   headerCenter
 }: PageProps): ReactElement {
+  const data: SearchFormData = useStaticQuery(query)
+  const { placeholder } = data.file.childSearchFormJson
   const isHome = uri === '/'
   const isSearch = uri === '/search'
 
@@ -28,7 +48,7 @@ export default function Page({
     <>
       {isSearch && (
         <>
-          <SearchBar visibleInput placeholder="Search for service offerings" />
+          <SearchBar visibleInput placeholder={placeholder} />
         </>
       )}
       {title && !noPageHeader && (
