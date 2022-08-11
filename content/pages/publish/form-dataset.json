@@ -19,7 +19,7 @@
       "name": "files",
       "label": "File",
       "placeholder": "e.g. https://file.com/file.json",
-      "help": "Please enter the URL to your data set file and click \"ADD FILE\" to validate the data. This URL will be stored permanently encrypted on-chain on the Gaia-X testnet after publishing. For a compute data set, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size.",
+      "help": "Please enter the URL to your data set file and click \"ADD FILE\" to validate the data. This URL will be stored permanently encrypted on-chain on the Gaia-X testnet after publishing. For a compute data set, your file should match the file type required by the algorithm.",
       "type": "files",
       "required": true
     },
