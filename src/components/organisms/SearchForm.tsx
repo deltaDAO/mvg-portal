@@ -33,7 +33,7 @@ export default function SearchForm(): ReactElement {
   const { title, body, placeholder, inputLabel } = data.file.childSearchFormJson
 
   return (
-    <div className={styles.container}>
+    <div id="searchFormSection" className={styles.container}>
       <div className={styles.content}>
         <h2 className={styles.title}>{title}</h2>
         {body && <Markdown text={body} className={styles.paragraph} />}

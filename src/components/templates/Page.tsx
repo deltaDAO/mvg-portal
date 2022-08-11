@@ -46,9 +46,14 @@ export default function Page({
 
   const childElements = (
     <>
-      {isSearch && (
+      {!isHome && (
         <>
-          <SearchBar visibleInput placeholder={placeholder} />
+          <SearchBar
+            visibleInput
+            name="searchForm"
+            placeholder={placeholder}
+            isSearchPage={isSearch}
+          />
         </>
       )}
       {title && !noPageHeader && (

@@ -31,12 +31,14 @@ export default function SearchBar({
   initialValue,
   visibleInput,
   isHome,
+  isSearchPage,
   name
 }: {
   placeholder?: string
   initialValue?: string
   visibleInput?: boolean
   isHome?: boolean
+  isSearchPage?: boolean
   name?: string
 }): ReactElement {
   const [value, setValue] = useState(initialValue || '')
@@ -80,10 +82,10 @@ export default function SearchBar({
   return (
     <form
       className={
-        visibleInput
-          ? isHome
-            ? styles.visibleInputSearchHome
-            : styles.visibleInputSearch
+        isHome
+          ? styles.visibleInputSearchHome
+          : isSearchPage
+          ? styles.visibleInputSearch
           : styles.search
       }
     >

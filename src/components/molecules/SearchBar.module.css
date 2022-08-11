@@ -1,6 +1,19 @@
-.search {
+.search:focus-within {
   display: flex;
+  flex-direction: row-reverse;
+  justify-content: left;
+  margin: 0 0 var(--spacer) 0;
+  width: 100%;
   position: relative;
+}
+.search:not(:focus-within) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 0px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 0px;
 }
 
 .visibleInputSearch {
@@ -23,7 +36,8 @@
 }
 
 .visibleInputSearch input,
-.visibleInputSearchHome input {
+.visibleInputSearchHome input,
+.search input {
   padding-left: 40px;
 }
 
