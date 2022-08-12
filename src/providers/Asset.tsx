@@ -38,6 +38,7 @@ interface AssetProviderValue {
   error?: string
   refreshInterval: number
   isAssetNetwork: boolean
+  isAssetNetworkAllowed: boolean
   loading: boolean
   isVerifyingSD: boolean
   isServiceSelfDescriptionVerified: boolean
@@ -72,6 +73,7 @@ function AssetProvider({
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
+  const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] = useState<boolean>()
   const [isVerifyingSD, setIsVerifyingSD] = useState(false)
   const [
     isServiceSelfDescriptionVerified,
@@ -219,7 +221,12 @@ function AssetProvider({
 
     const isAssetNetwork = networkId === ddo?.chainId
     setIsAssetNetwork(isAssetNetwork)
-  }, [networkId, ddo])
+
+    const isAssetNetworkAllowed = appConfig.chainIdsSupported.includes(
+      ddo?.chainId
+    )
+    setIsAssetNetworkAllowed(isAssetNetworkAllowed)
+  }, [networkId, ddo, appConfig.chainIdsSupported])
 
   return (
     <AssetContext.Provider
@@ -240,6 +247,7 @@ function AssetProvider({
           isVerifyingSD,
           refreshDdo,
           isAssetNetwork,
+          isAssetNetworkAllowed,
           isServiceSelfDescriptionVerified,
           verifiedServiceProviderName
         } as AssetProviderValue

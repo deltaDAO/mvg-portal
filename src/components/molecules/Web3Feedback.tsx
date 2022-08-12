@@ -16,7 +16,7 @@ export default function Web3Feedback({
 }: {
   isAssetNetwork?: boolean
 }): ReactElement {
-  const { accountId } = useWeb3()
+  const { accountId, isChainIdAllowed } = useWeb3()
   const { isGraphSynced, blockGraph, blockHead } = useGraphSyncStatus()
   const [state, setState] = useState<string>()
   const [title, setTitle] = useState<string>()
@@ -31,6 +31,10 @@ export default function Web3Feedback({
     if (!accountId) {
       setState('error')
       setTitle('No account connected')
+      setMessage('Please connect your Web3 wallet.')
+    } else if (isChainIdAllowed === false) {
+      setState('error')
+      setTitle('Not connected to a supported network')
       setMessage('Please connect your Web3 wallet.')
     } else if (isAssetNetwork === false) {
       setState('error')
@@ -47,13 +51,13 @@ export default function Web3Feedback({
       setTitle('Something went wrong.')
       setMessage('Something went wrong.')
     }
-  }, [accountId, isGraphSynced, isAssetNetwork])
+  }, [accountId, isGraphSynced, isAssetNetwork, isChainIdAllowed])
 
   return showFeedback ? (
     <section className={styles.feedback}>
       <Status state={state} aria-hidden />
       <h3 className={styles.title}>{title}</h3>
-      {isAssetNetwork === false ? (
+      {isAssetNetwork === false || isChainIdAllowed === false ? (
         <WalletNetworkSwitcher />
       ) : (
         message && <p className={styles.error}>{message}</p>
