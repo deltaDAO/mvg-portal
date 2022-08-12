@@ -215,6 +215,10 @@ export default function ButtonBuy({
                   selectedComputeAssetType,
                   algorithmConsumableStatus
                 )}
+            <Alert
+              text="If you consume a service offering, your wallet address and public key will be stored permanently on-chain on the Gaia-X testnet. For more information, please refer to our [privacy policy](/privacy/en)."
+              state="info"
+            />
           </div>
         </>
       )}
