@@ -307,7 +307,7 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   }, [web3Provider])
 
   // -----------------------------------
-  // Set if selected chainId is allowed
+  // Check if the selected chainId is included in the allowed list
   // -----------------------------------
   useEffect(() => {
     setIsChainIdAllowed(chainIdsSupported.includes(chainId))

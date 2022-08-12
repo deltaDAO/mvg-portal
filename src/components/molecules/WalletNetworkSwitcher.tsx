@@ -36,8 +36,8 @@ export default function WalletNetworkSwitcher(): ReactElement {
   return (
     <>
       <p className={styles.text}>
-        The portal does not support the network you are currently connected to.
-        Please connect to {targetNetworkName} to interact with this portal.
+        The portal does not support your currently selected network. Please
+        connect to {targetNetworkName} to interact with this portal.
       </p>
       <Button
         style="primary"
