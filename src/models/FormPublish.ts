@@ -28,6 +28,8 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormDataset> =
         .matches(/Compute|Download/g, { excludeEmptyString: true })
         .required('Required'),
       termsAndConditions: Yup.boolean().required('Required'),
+      walletAddress: Yup.boolean().required('Required'),
+      noPersonalData: Yup.boolean().required('Required'),
       // ---- optional fields ----
       tags: Yup.string().nullable(),
       links: Yup.array<FileMetadata[]>().nullable(),
@@ -49,6 +51,8 @@ export const initialValues: Partial<MetadataPublishFormDataset> = {
   timeout: 'Forever',
   access: '',
   termsAndConditions: false,
+  walletAddress: false,
+  noPersonalData: false,
   tags: '',
   providerUri: ''
 }

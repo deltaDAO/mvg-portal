@@ -31,6 +31,8 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormAlgorithm> =
       entrypoint: Yup.string().required('Required'),
       author: Yup.string().required('Required'),
       termsAndConditions: Yup.boolean().required('Required'),
+      walletAddress: Yup.boolean().required('Required'),
+      noPersonalData: Yup.boolean().required('Required'),
       // ---- optional fields ----
       algorithmPrivacy: Yup.boolean().nullable(),
       tags: Yup.string().nullable(),
@@ -55,6 +57,8 @@ export const initialValues: Partial<MetadataPublishFormAlgorithm> = {
   description: '',
   algorithmPrivacy: false,
   termsAndConditions: false,
+  walletAddress: false,
+  noPersonalData: false,
   tags: '',
   timeout: 'Forever',
   providerUri: ''

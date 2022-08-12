@@ -15,6 +15,7 @@ import AssetSelection, {
 import Credentials from '../../molecules/FormFields/Credential'
 import Markdown from '../Markdown'
 import ServiceSelfDescription from '../../molecules/FormFields/ServiceSelfDescription'
+import Terms from '../../molecules/FormFields/Terms'
 
 const cx = classNames.bind(styles)
 
@@ -150,6 +151,8 @@ export default function InputElement({
       )
     case 'credentials':
       return <Credentials name={name} {...field} {...props} />
+    case 'terms':
+      return <Terms name={name} options={options} {...field} {...props} />
     default:
       return prefix || postfix ? (
         <div className={`${prefix ? styles.prefixGroup : styles.postfixGroup}`}>

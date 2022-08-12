@@ -251,6 +251,8 @@ export function transformPublishFormToMetadata(
     tags,
     links,
     termsAndConditions,
+    walletAddress,
+    noPersonalData,
     files,
     serviceSelfDescription
   }: Partial<MetadataPublishFormDataset>,
@@ -284,6 +286,10 @@ export function transformPublishFormToMetadata(
       tags: transformTags(tags),
       links: transformedLinks,
       termsAndConditions,
+      consent: {
+        walletAddress,
+        noPersonalData
+      },
       serviceSelfDescription: transformedServiceSelfDescription
     }
   }
@@ -363,6 +369,8 @@ export function transformPublishAlgorithmFormToMetadata(
     containerTag,
     entrypoint,
     termsAndConditions,
+    walletAddress,
+    noPersonalData,
     files
   }: Partial<MetadataPublishFormAlgorithm>,
   ddo?: DDO
@@ -391,7 +399,11 @@ export function transformPublishAlgorithmFormToMetadata(
       ...AssetModel.additionalInformation,
       description,
       tags: transformTags(tags),
-      termsAndConditions
+      termsAndConditions,
+      consent: {
+        walletAddress,
+        noPersonalData
+      }
     }
   }
 

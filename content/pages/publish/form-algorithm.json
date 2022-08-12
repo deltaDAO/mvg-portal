@@ -98,6 +98,24 @@
       "help": "Enter the URL for your custom provider or leave blank to use the default provider. [Learn more](https://github.com/oceanprotocol/provider/).",
       "placeholder": "https://provider.polygon.oceanprotocol.com/",
       "advanced": true
+    },
+    {
+      "name": "walletAddress",
+      "label": "Wallet address agreement",
+      "type": "terms",
+      "options": [
+        "I agree that my wallet address and public key will be transmitted to a smart contract stored permanently on the Gaia-X testnet, so I can prove service offering ownership and sales."
+      ],
+      "required": true
+    },
+    {
+      "name": "noPersonalData",
+      "label": "Personal data agreement",
+      "type": "terms",
+      "options": [
+        "I confirm that I did not provide personal data in the metadata, which will be stored permanently on-chain on the Gaia-X testnet."
+      ],
+      "required": true
     }
   ],
   "success": "Algorithm Published!"
