@@ -1,7 +1,5 @@
 import React, { ReactElement } from 'react'
 import Tabs from '../../../atoms/Tabs'
-import PoolShares from './PoolShares'
-import PoolTransactions from '../../../molecules/PoolTransactions'
 import PublishedList from './PublishedList'
 import Downloads from './Downloads'
 import ComputeJobs from './ComputeJobs'
@@ -9,7 +7,6 @@ import { useLocation } from '@reach/router'
 import styles from './index.module.css'
 import OceanProvider from '../../../../providers/Ocean'
 import { useWeb3 } from '../../../../providers/Web3'
-import Verify from './Verify'
 
 interface HistoryTab {
   title: string
@@ -33,14 +30,6 @@ function getTabs(accountId: string, userAccountId: string): HistoryTab[] {
       content: (
         <OceanProvider>
           <ComputeJobs />
-        </OceanProvider>
-      )
-    },
-    {
-      title: 'Verify',
-      content: (
-        <OceanProvider>
-          <Verify accountIdentifier={accountId} />
         </OceanProvider>
       )
     }

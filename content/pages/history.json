@@ -1,17 +1,5 @@
 {
   "compute": {
     "storage": "Results are stored for 30 days."
-  },
-  "verify": {
-    "data": [
-      {
-        "name": "file",
-        "label": "Verifiable Presentation File",
-        "placeholder": "e.g. https://file.com/vp.json",
-        "help": "Please enter the URL to your verifiable presentation file and click \"ADD FILE\" to validate the data. This URL will be stored encrypted after publishing. For a compute data set, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size.",
-        "type": "files",
-        "required": true
-      }
-    ]
   }
 }

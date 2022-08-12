@@ -8,7 +8,6 @@ import { useUserPreferences } from '../../../../providers/UserPreferences'
 import styles from './PublishedList.module.css'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
 import { PagedAssets } from '../../../../models/PagedAssets'
-import VerifiedPublisher from '../../../atoms/VerifiedPublisher'
 
 export default function PublishedList({
   accountId
@@ -76,7 +75,6 @@ export default function PublishedList({
           setAccessType={setAccsesType}
           className={styles.filters}
         />
-        <VerifiedPublisher address={accountId} verifyOption />
       </div>
       <AssetList
         assets={queryResult?.results}
