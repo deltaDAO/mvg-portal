@@ -24,6 +24,13 @@
   flex: 1;
 }
 
+.mainNoPaddingTop {
+  padding: 0 0 calc(var(--spacer) * 2) 0;
+
+  /* sticky footer technique */
+  flex: 1;
+}
+
 .main > div[class*='Alert']:first-child {
   margin-top: -2rem;
 }
