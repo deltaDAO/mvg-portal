@@ -1,12 +1,23 @@
 import React, { FormEvent, ReactElement } from 'react'
 import { ReactComponent as SearchIcon } from '../../images/search.svg'
 import styles from './SearchButton.module.css'
+import { useUserPreferences } from '../../providers/UserPreferences'
 
 export default function SearchButton(): ReactElement {
+  const { isSearchBarVisible, setSearchBarVisible } = useUserPreferences()
+
+  React.useEffect(() => {
+    const isHome = window.location.pathname === '/'
+    if (isSearchBarVisible || isHome) {
+      const searchFormSection = document?.getElementById('searchFormSection')
+      document.getElementById('searchForm').focus()
+      if (searchFormSection) searchFormSection.scrollIntoView()
+    }
+  }, [isSearchBarVisible])
+
   async function handleButtonClick(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
-    document.getElementById('searchForm').focus()
-    document.getElementById('searchFormSection').scrollIntoView()
+    setSearchBarVisible(!isSearchBarVisible)
   }
 
   return (

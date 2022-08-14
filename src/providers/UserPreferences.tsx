@@ -28,6 +28,8 @@ interface UserPreferencesValue {
   setInfiniteApproval: (value: boolean) => void
   onboardingStep: number
   setOnboardingStep: (step: number) => void
+  isSearchBarVisible: boolean
+  setSearchBarVisible: (value: boolean) => void
   locale: string
 }
 
@@ -84,6 +86,10 @@ function UserPreferencesProvider({
     localStorage?.onboardingStep || 0
   )
 
+  const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(
+    localStorage?.isSearchBarVisible || false
+  )
+
   // Write values to localStorage on change
   useEffect(() => {
     setLocalStorage({
@@ -94,7 +100,8 @@ function UserPreferencesProvider({
       privacyPolicySlug,
       showPPC,
       infiniteApproval,
-      onboardingStep
+      onboardingStep,
+      isSearchBarVisible
     })
   }, [
     chainIds,
@@ -104,7 +111,8 @@ function UserPreferencesProvider({
     privacyPolicySlug,
     showPPC,
     infiniteApproval,
-    onboardingStep
+    onboardingStep,
+    isSearchBarVisible
   ])
 
   // Set ocean.js log levels, default: Error
@@ -163,7 +171,9 @@ function UserPreferencesProvider({
           setPrivacyPolicySlug,
           setShowPPC,
           onboardingStep,
-          setOnboardingStep
+          setOnboardingStep,
+          isSearchBarVisible,
+          setSearchBarVisible
         } as UserPreferencesValue
       }
     >
