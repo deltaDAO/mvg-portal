@@ -128,16 +128,6 @@ export function getSearchQuery(
 
   const query = generateBaseQuery(baseQueryParams)
 
-  // exclude invoices from search results
-  query.query.bool.must_not = [
-    { ...query.query.bool.must_not },
-    getFilterTerm(
-      'service.attributes.additionalInformation.tags',
-      'mvg-stripe-invoice',
-      'match'
-    )
-  ]
-
   return query
 }
 
