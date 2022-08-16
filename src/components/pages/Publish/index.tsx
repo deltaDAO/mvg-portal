@@ -25,8 +25,7 @@ import {
 } from '../../molecules/MetadataPreview'
 import {
   MetadataPublishFormDataset,
-  MetadataPublishFormAlgorithm,
-  publishFormKeys
+  MetadataPublishFormAlgorithm
 } from '../../../@types/MetaData'
 import { useUserPreferences } from '../../../providers/UserPreferences'
 import { DDO, Logger, Metadata, MetadataMain } from '@oceanprotocol/lib'
@@ -37,6 +36,11 @@ import { useAccountPurgatory } from '../../../hooks/useAccountPurgatory'
 import { useWeb3 } from '../../../providers/Web3'
 import Loader from '../../atoms/Loader'
 import feedbackStyles from '../../molecules/MetadataFeedback.module.css'
+
+export enum publishFormKeys {
+  FORM_NAME_DATASETS = 'ocean-publish-form-datasets',
+  FORM_NAME_ALGORITHMS = 'ocean-publish-form-algorithms'
+}
 
 function TabContent({
   publishType,

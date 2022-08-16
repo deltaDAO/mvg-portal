@@ -5,8 +5,7 @@ import {
   MetadataMarket,
   MetadataPublishFormDataset,
   MetadataPublishFormAlgorithm,
-  ServiceSelfDescription,
-  publishFormKeys
+  ServiceSelfDescription
 } from '../@types/MetaData'
 import { toStringNoMS } from '.'
 import AssetModel from '../models/Asset'
@@ -22,6 +21,7 @@ import { complianceUri } from '../../app.config'
 import { isSanitizedUrl } from '../components/molecules/FormFields/URLInput/Input'
 import { initialValues as initialValuesDataset } from '../models/FormPublish'
 import { initialValues as initialValuesAlgorithm } from '../models/FormAlgoPublish'
+import { publishFormKeys } from '../components/pages/Publish'
 
 export function transformTags(value: string): string[] {
   const originalTags = value?.split(',')
