@@ -7,6 +7,10 @@ import {
 import { DataTokenOptions } from '../hooks/usePublish'
 import { PriceOptions } from '../hooks/usePricing'
 
+export enum publishFormKeys {
+  FORM_NAME_DATASETS = 'ocean-publish-form-datasets',
+  FORM_NAME_ALGORITHMS = 'ocean-publish-form-algorithms'
+}
 export interface ServiceSelfDescription {
   name?: string
   url?: string

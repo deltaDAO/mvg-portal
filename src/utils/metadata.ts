@@ -5,7 +5,8 @@ import {
   MetadataMarket,
   MetadataPublishFormDataset,
   MetadataPublishFormAlgorithm,
-  ServiceSelfDescription
+  ServiceSelfDescription,
+  publishFormKeys
 } from '../@types/MetaData'
 import { toStringNoMS } from '.'
 import AssetModel from '../models/Asset'
@@ -19,6 +20,8 @@ import {
 } from '@oceanprotocol/lib'
 import { complianceUri } from '../../app.config'
 import { isSanitizedUrl } from '../components/molecules/FormFields/URLInput/Input'
+import { initialValues as initialValuesDataset } from '../models/FormPublish'
+import { initialValues as initialValuesAlgorithm } from '../models/FormAlgoPublish'
 
 export function transformTags(value: string): string[] {
   const originalTags = value?.split(',')
@@ -241,6 +244,30 @@ export async function getPublisherFromServiceSD(
   } catch (error) {
     Logger.error(error.message)
   }
+}
+
+export function getInitialPublishFormDatasetsValues(
+  localStorageKey: publishFormKeys
+): Partial<MetadataPublishFormDataset> {
+  const initialValues =
+    localStorageKey === publishFormKeys.FORM_NAME_DATASETS
+      ? initialValuesDataset
+      : initialValuesAlgorithm
+  const { termsAndConditions, noPersonalData, walletAddress } = initialValues
+  const localStorageValues =
+    localStorage.getItem(localStorageKey) &&
+    (JSON.parse(localStorage.getItem(localStorageKey))
+      .initialValues as MetadataPublishFormDataset)
+
+  // ignore local storage values for all "terms" checkboxes
+  return localStorageValues
+    ? {
+        ...localStorageValues,
+        termsAndConditions,
+        noPersonalData,
+        walletAddress
+      }
+    : initialValues
 }
 
 export function transformPublishFormToMetadata(
