@@ -3,6 +3,7 @@ import classNames from 'classnames/bind'
 import styles from './PageHeader.module.css'
 import Markdown from '../atoms/Markdown'
 import Logo from '../atoms/Logo'
+import Badge from '../atoms/Badge'
 
 const cx = classNames.bind(styles)
 
@@ -10,12 +11,14 @@ export default function PageHeader({
   title,
   description,
   center,
-  powered
+  powered,
+  isEdgeNetwork
 }: {
   title: string
   description?: string
   center?: boolean
   powered?: boolean
+  isEdgeNetwork?: boolean
 }): ReactElement {
   const styleClasses = cx({
     header: true,
@@ -24,7 +27,9 @@ export default function PageHeader({
 
   return (
     <header className={styleClasses}>
-      <h1 className={styles.title}>{title}</h1>
+      <h1 className={styles.title}>
+        {title} {isEdgeNetwork && <Badge label="EDGE" />}
+      </h1>
       {description && (
         <Markdown text={description} className={styles.description} />
       )}

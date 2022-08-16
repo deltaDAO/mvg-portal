@@ -53,6 +53,8 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const {
     ddo,
     isAssetNetwork,
+    isEdgeNetwork,
+    isEdgeCtdAvailable,
     isInPurgatory,
     isServiceSelfDescriptionVerified,
     metadata,

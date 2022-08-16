@@ -10,6 +10,7 @@ export interface PageProps {
   description?: string
   noPageHeader?: boolean
   headerCenter?: boolean
+  isEdgeNetwork?: boolean
 }
 
 export default function Page({
@@ -18,7 +19,8 @@ export default function Page({
   uri,
   description,
   noPageHeader,
-  headerCenter
+  headerCenter,
+  isEdgeNetwork
 }: PageProps): ReactElement {
   const isHome = uri === '/'
 
@@ -30,6 +32,7 @@ export default function Page({
           description={description}
           center={headerCenter}
           powered={isHome}
+          isEdgeNetwork={isEdgeNetwork}
         />
       )}
       {children}
