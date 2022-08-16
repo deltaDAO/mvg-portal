@@ -7,11 +7,14 @@ import Loader from './Loader'
 
 const query = graphql`
   query {
-    content: allFile(filter: { relativePath: { eq: "assetDisclaimer.json" } }) {
+    content: allFile(
+      filter: { relativePath: { eq: "assetDisclaimers.json" } }
+    ) {
       edges {
         node {
           childContentJson {
-            message
+            edgeDeviceUnavailableMessage
+            disclaimerMessage
           }
         }
       }
@@ -24,7 +27,8 @@ interface DisclaimerData {
     edges: {
       node: {
         childContentJson: {
-          message: string
+          edgeDeviceUnavailableMessage: string
+          disclaimerMessage: string
         }
       }
     }[]
@@ -57,6 +61,7 @@ interface ButtonBuyProps {
   priceType?: string
   algorithmPriceType?: string
   algorithmConsumableStatus?: number
+  isEdgeDeviceUnavailable?: boolean
 }
 
 function getConsumeHelpText(
@@ -172,10 +177,12 @@ export default function ButtonBuy({
   type,
   priceType,
   algorithmPriceType,
-  algorithmConsumableStatus
+  algorithmConsumableStatus,
+  isEdgeDeviceUnavailable
 }: ButtonBuyProps): ReactElement {
   const data: DisclaimerData = useStaticQuery(query)
-  const { message } = data.content.edges[0].node.childContentJson
+  const { edgeDeviceUnavailableMessage, disclaimerMessage } =
+    data.content.edges[0].node.childContentJson
 
   const buttonText =
     action === 'download'
@@ -245,7 +252,14 @@ export default function ButtonBuy({
                   selectedComputeAssetType,
                   algorithmConsumableStatus
                 )}
-            <Alert text={message} state="info" />
+            <Alert
+              text={
+                isEdgeDeviceUnavailable
+                  ? edgeDeviceUnavailableMessage
+                  : disclaimerMessage
+              }
+              state="info"
+            />
           </div>
         </>
       )}
