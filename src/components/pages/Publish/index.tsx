@@ -255,7 +255,6 @@ export default function PublishPage({
                 }
                 ignoreFields={[
                   'isSubmitting',
-                  'walletAddress',
                   'noPersonalData',
                   'termsAndConditions'
                 ]}

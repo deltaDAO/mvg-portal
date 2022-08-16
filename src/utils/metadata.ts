@@ -269,7 +269,6 @@ export function transformPublishFormToMetadata(
     tags,
     links,
     termsAndConditions,
-    walletAddress,
     noPersonalData,
     files,
     serviceSelfDescription
@@ -305,7 +304,6 @@ export function transformPublishFormToMetadata(
       links: transformedLinks,
       termsAndConditions,
       consent: {
-        walletAddress,
         noPersonalData
       },
       serviceSelfDescription: transformedServiceSelfDescription
@@ -387,7 +385,6 @@ export function transformPublishAlgorithmFormToMetadata(
     containerTag,
     entrypoint,
     termsAndConditions,
-    walletAddress,
     noPersonalData,
     files
   }: Partial<MetadataPublishFormAlgorithm>,
@@ -419,7 +416,6 @@ export function transformPublishAlgorithmFormToMetadata(
       tags: transformTags(tags),
       termsAndConditions,
       consent: {
-        walletAddress,
         noPersonalData
       }
     }
