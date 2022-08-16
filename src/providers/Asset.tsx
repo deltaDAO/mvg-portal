@@ -10,7 +10,7 @@ import React, {
 import { Logger, DDO, MetadataMain } from '@oceanprotocol/lib'
 import { PurgatoryData } from '@oceanprotocol/lib/dist/node/ddo/interfaces/PurgatoryData'
 import getAssetPurgatoryData from '../utils/purgatory'
-import { CancelToken } from 'axios'
+import axios, { CancelToken } from 'axios'
 import { retrieveDDO } from '../utils/aquarius'
 import { getPrice } from '../utils/subgraph'
 import { MetadataMarket } from '../@types/MetaData'
@@ -181,45 +181,59 @@ function AssetProvider({
     }
   }, [])
 
-  const initMetadata = useCallback(async (ddo: DDO): Promise<void> => {
-    if (!ddo) return
-    setLoading(true)
-    // Get metadata from DDO
-    const { attributes } = ddo.findServiceByType('metadata')
-    setMetadata(attributes)
-    setTitle(attributes?.main.name)
-    setType(attributes.main.type)
-    setOwner(ddo.publicKey[0].owner)
+  const initMetadata = useCallback(
+    async (ddo: DDO, token?: CancelToken): Promise<void> => {
+      if (!ddo) return
+      setLoading(true)
+      // Get metadata from DDO
+      const { attributes } = ddo.findServiceByType('metadata')
+      setMetadata(attributes)
+      setTitle(attributes?.main.name)
+      setType(attributes.main.type)
+      setOwner(ddo.publicKey[0].owner)
 
-    Logger.log('[asset] Got Metadata from DDO', attributes)
+      Logger.log('[asset] Got Metadata from DDO', attributes)
 
-    setIsInPurgatory(ddo.isInPurgatory === 'true')
-    await setPurgatory(ddo.id)
-    setLoading(false)
-
-    // load price
-    const returnedPrice = await getPrice(ddo)
-    if (
-      appConfig.allowDynamicPricing !== 'true' &&
-      returnedPrice.type === 'pool'
-    ) {
-      setError(
-        `[asset] The asset ${ddo.id} can not be displayed on this market.`
-      )
-      setDDO(undefined)
+      setIsInPurgatory(ddo.isInPurgatory === 'true')
+      await setPurgatory(ddo.id)
       setLoading(false)
-      return
-    }
-    setPrice({ ...returnedPrice })
 
-    // TODO check if DDO is edge type
-  }, [])
+      // load price
+      const returnedPrice = await getPrice(ddo)
+      if (
+        appConfig.allowDynamicPricing !== 'true' &&
+        returnedPrice.type === 'pool'
+      ) {
+        setError(
+          `[asset] The asset ${ddo.id} can not be displayed on this market.`
+        )
+        setDDO(undefined)
+        setLoading(false)
+        return
+      }
+      setPrice({ ...returnedPrice })
+
+      // TODO check if DDO is edge type
+      const { type } = attributes.main
+      setIsEdgeNetwork(type === 'edge')
+
+      const { serviceEndpoint } = ddo.findServiceByType('compute')
+      const response = await axios.get(serviceEndpoint, { cancelToken: token })
+      if (response.status === 200) {
+        setIsEdgeCtdAvailable(true)
+        return
+      }
+      setIsAssetNetworkAllowed(false)
+    },
+    []
+  )
 
   useEffect(() => {
     if (!ddo) return
-    initMetadata(ddo)
+
+    initMetadata(ddo, newCancelToken())
     checkServiceSD(ddo)
-  }, [ddo, checkServiceSD, initMetadata])
+  }, [ddo, checkServiceSD, initMetadata, newCancelToken])
 
   // Check user network against asset network
   useEffect(() => {
