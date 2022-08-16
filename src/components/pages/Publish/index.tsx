@@ -289,7 +289,12 @@ export default function PublishPage({
                     ? publishFormKeys.FORM_NAME_DATASETS
                     : publishFormKeys.FORM_NAME_ALGORITHMS
                 }
-                ignoreFields={['isSubmitting']}
+                ignoreFields={[
+                  'isSubmitting',
+                  'walletAddress',
+                  'noPersonalData',
+                  'termsAndConditions'
+                ]}
               />
 
               {hasFeedback && loading ? (

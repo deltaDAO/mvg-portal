@@ -253,21 +253,12 @@ export function getInitialPublishFormDatasetsValues(
     localStorageKey === publishFormKeys.FORM_NAME_DATASETS
       ? initialValuesDataset
       : initialValuesAlgorithm
-  const { termsAndConditions, noPersonalData, walletAddress } = initialValues
   const localStorageValues =
     localStorage.getItem(localStorageKey) &&
     (JSON.parse(localStorage.getItem(localStorageKey))
       .initialValues as MetadataPublishFormDataset)
 
-  // ignore local storage values for all "terms" checkboxes
-  return localStorageValues
-    ? {
-        ...localStorageValues,
-        termsAndConditions,
-        noPersonalData,
-        walletAddress
-      }
-    : initialValues
+  return localStorageValues || initialValues
 }
 
 export function transformPublishFormToMetadata(
