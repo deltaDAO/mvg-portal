@@ -7,11 +7,9 @@ import Loader from '../atoms/Loader'
 import { useAsset } from '../../providers/Asset'
 
 export default function PageTemplateAssetDetails({
-  uri,
-  setShowComputeTutorial
+  uri
 }: {
   uri: string
-  setShowComputeTutorial?: (value: boolean) => void
 }): ReactElement {
   const { ddo, title, error, isInPurgatory, loading, isAssetNetworkAllowed } =
     useAsset()
@@ -28,17 +26,9 @@ export default function PageTemplateAssetDetails({
 
   return ddo && pageTitle !== undefined && !loading && isAssetNetworkAllowed ? (
     <Page title={pageTitle} uri={uri}>
-      {uri.includes('/tutorial') ? (
-        <AssetContent
-          path=":did"
-          tutorial
-          setShowComputeTutorial={setShowComputeTutorial}
-        />
-      ) : (
-        <Router basepath="/asset">
-          <AssetContent path=":did" />
-        </Router>
-      )}
+      <Router basepath="/asset">
+        <AssetContent path=":did" />
+      </Router>
     </Page>
   ) : error || !isAssetNetworkAllowed ? (
     <Page title={pageTitle} noPageHeader uri={uri}>

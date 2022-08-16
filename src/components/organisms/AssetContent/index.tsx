@@ -26,8 +26,6 @@ import {
 } from '../../../utils/metadata'
 export interface AssetContentProps {
   path?: string
-  tutorial?: boolean
-  setShowComputeTutorial?: (value: boolean) => void
 }
 
 const contentQuery = graphql`
@@ -72,7 +70,6 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const [isOwner, setIsOwner] = useState(false)
   const [serviceSelfDescription, setServiceSelfDescription] = useState<string>()
   const { appConfig } = useSiteMetadata()
-  const { tutorial } = props
 
   useEffect(() => {
     if (!accountId || !owner) return
@@ -85,23 +82,17 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
 
   function handleEditButton() {
     // move user's focus to top of screen
-    if (!tutorial) {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
-    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     setShowEdit(true)
   }
 
   function handleEditComputeButton() {
-    if (!tutorial) {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
-    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     setShowEditCompute(true)
   }
 
   function handleEditAdvancedSettingsButton() {
-    if (!tutorial) {
-      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
-    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     setShowEditAdvancedSettings(true)
   }
 
@@ -127,10 +118,10 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     metadata?.additionalInformation?.serviceSelfDescription
   ])
 
-  return showEdit && !tutorial ? (
+  return showEdit ? (
     <Edit setShowEdit={setShowEdit} isComputeType={isComputeType} />
   ) : showEditCompute ? (
-    <EditComputeDataset setShowEdit={setShowEditCompute} tutorial={tutorial} />
+    <EditComputeDataset setShowEdit={setShowEditCompute} />
   ) : showEditAdvancedSettings ? (
     <EditAdvancedSettings setShowEdit={setShowEditAdvancedSettings} />
   ) : (
@@ -139,7 +130,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
         <NetworkName networkId={ddo.chainId} className={styles.network} />
       </div>
 
-      <article className={tutorial ? styles.gridTutorial : styles.grid}>
+      <article className={styles.grid}>
         <div>
           {showPricing && <Pricing ddo={ddo} />}
           <div className={styles.content}>
@@ -211,12 +202,9 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
             {debug === true && <DebugOutput title="DDO" output={ddo} />}
           </div>
         </div>
-
-        {!tutorial && (
-          <div className={styles.actions}>
-            <AssetActions />
-          </div>
-        )}
+        <div className={styles.actions}>
+          <AssetActions />
+        </div>
       </article>
     </>
   )

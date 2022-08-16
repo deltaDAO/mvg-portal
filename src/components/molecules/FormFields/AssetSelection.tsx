@@ -27,14 +27,12 @@ export default function AssetSelection({
   multiple,
   disabled,
   loading,
-  tutorial,
   ...props
 }: {
   assets: AssetSelectionAsset[]
   multiple?: boolean
   disabled?: boolean
   loading?: boolean
-  tutorial?: boolean
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
 
@@ -60,7 +58,7 @@ export default function AssetSelection({
         className={styles.search}
         disabled={disabled}
       />
-      <div className={tutorial ? styles.tutorialScroll : styles.scroll}>
+      <div className={styles.scroll}>
         {!assets ? (
           <Loader />
         ) : assets && !assets.length ? (
