@@ -18,7 +18,7 @@ import {
 } from '../../../utils/metadata'
 import { Logger } from '@oceanprotocol/lib'
 import Loader from '../../atoms/Loader'
-import { MetadataMarket } from '../../../@types/MetaData'
+import { MetadataMarket, ServiceMetadataMarket } from '../../../@types/MetaData'
 import Visualizer from './Visualizer'
 
 interface Content {
@@ -90,8 +90,9 @@ export default function VerifyPage({
           return
         }
 
-        const { attributes }: { attributes: MetadataMarket } =
-          ddo.findServiceByType('metadata')
+        const { attributes } = ddo.findServiceByType(
+          'metadata'
+        ) as ServiceMetadataMarket
         if (!attributes.additionalInformation?.serviceSelfDescription) {
           setError('noServiceSelfDescription')
           return

@@ -13,7 +13,7 @@ import getAssetPurgatoryData from '../utils/purgatory'
 import { CancelToken } from 'axios'
 import { retrieveDDO } from '../utils/aquarius'
 import { getPrice } from '../utils/subgraph'
-import { MetadataMarket } from '../@types/MetaData'
+import { MetadataMarket, ServiceMetadataMarket } from '../@types/MetaData'
 import { useWeb3 } from './Web3'
 import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
@@ -149,8 +149,9 @@ function AssetProvider({
     setIsVerifyingSD(true)
 
     try {
-      const { attributes }: { attributes: MetadataMarket } =
-        ddo.findServiceByType('metadata')
+      const { attributes } = ddo.findServiceByType(
+        'metadata'
+      ) as ServiceMetadataMarket
 
       const { serviceSelfDescription } = attributes.additionalInformation
       if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {
@@ -181,7 +182,9 @@ function AssetProvider({
     if (!ddo) return
     setLoading(true)
     // Get metadata from DDO
-    const { attributes } = ddo.findServiceByType('metadata')
+    const { attributes } = ddo.findServiceByType(
+      'metadata'
+    ) as ServiceMetadataMarket
     setMetadata(attributes)
     setTitle(attributes?.main.name)
     setType(attributes.main.type)
