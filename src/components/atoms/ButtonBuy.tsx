@@ -1,35 +1,8 @@
-import { graphql, useStaticQuery } from 'gatsby'
 import React, { FormEvent, ReactElement } from 'react'
 import Alert from './Alert'
 import Button from './Button'
 import styles from './ButtonBuy.module.css'
 import Loader from './Loader'
-
-const query = graphql`
-  query {
-    content: allFile(filter: { relativePath: { eq: "assetDisclaimer.json" } }) {
-      edges {
-        node {
-          childContentJson {
-            message
-          }
-        }
-      }
-    }
-  }
-`
-
-interface DisclaimerData {
-  content: {
-    edges: {
-      node: {
-        childContentJson: {
-          message: string
-        }
-      }
-    }[]
-  }
-}
 
 interface ButtonBuyProps {
   action: 'download' | 'compute'
@@ -174,9 +147,6 @@ export default function ButtonBuy({
   algorithmPriceType,
   algorithmConsumableStatus
 }: ButtonBuyProps): ReactElement {
-  const data: DisclaimerData = useStaticQuery(query)
-  const { message } = data.content.edges[0].node.childContentJson
-
   const buttonText =
     action === 'download'
       ? hasPreviousOrder
@@ -245,7 +215,6 @@ export default function ButtonBuy({
                   selectedComputeAssetType,
                   algorithmConsumableStatus
                 )}
-            <Alert text={message} state="info" />
           </div>
         </>
       )}
