@@ -73,7 +73,8 @@ function AssetProvider({
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
-  const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] = useState<boolean>()
+  const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] =
+    useState<boolean>(true)
   const [isVerifyingSD, setIsVerifyingSD] = useState(false)
   const [
     isServiceSelfDescriptionVerified,
@@ -220,7 +221,7 @@ function AssetProvider({
 
   // Check user network against asset network
   useEffect(() => {
-    if (!networkId || !ddo) return
+    if (!ddo) return
 
     const isAssetNetwork = networkId === ddo?.chainId
     setIsAssetNetwork(isAssetNetwork)
