@@ -109,6 +109,6 @@
       "required": true
     }
   ],
-  "walletDisclaimer": "When you click submit, your wallet address and public key will be transmitted to a smart contract stored permanently on the Gaia-X testnet.",
+  "walletDisclaimer": "When you click submit, your wallet address and public key will be transmitted to a smart contract stored permanently on-chain on the Gaia-X testnet.",
   "success": "Algorithm Published!"
 }
