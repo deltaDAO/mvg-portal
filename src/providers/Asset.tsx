@@ -150,8 +150,9 @@ function AssetProvider({
     setIsVerifyingSD(true)
 
     try {
-      const { attributes }: { attributes: MetadataMarket } =
-        ddo.findServiceByType('metadata') as ServiceMetadataMarket
+      const { attributes } = ddo.findServiceByType(
+        'metadata'
+      ) as ServiceMetadataMarket
 
       const { serviceSelfDescription } = attributes.additionalInformation
       if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {

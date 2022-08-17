@@ -1,3 +1,9 @@
+.actionsFooter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacer);
+}
+
 .actions {
   display: flex;
   justify-content: space-between;

@@ -19,3 +19,7 @@
 .feedback:empty {
   margin-top: 0;
 }
+
+.disclaimer {
+  margin-top: var(--spacer);
+}
