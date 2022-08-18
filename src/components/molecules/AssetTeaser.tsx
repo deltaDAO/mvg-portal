@@ -10,6 +10,7 @@ import styles from './AssetTeaser.module.css'
 import LinkOpener from '../molecules/LinkOpener'
 import { BestPrice } from '../../models/BestPrice'
 import Loader from '../atoms/Loader'
+import { ServiceMetadataMarket } from '../../@types/MetaData'
 
 declare type AssetTeaserProps = {
   ddo: DDO
@@ -22,7 +23,9 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
   price,
   noPublisher
 }: AssetTeaserProps) => {
-  const { attributes } = ddo.findServiceByType('metadata')
+  const { attributes } = ddo.findServiceByType(
+    'metadata'
+  ) as ServiceMetadataMarket
   const { name, type } = attributes.main
   const { dataTokenInfo } = ddo
   const isCompute = Boolean(ddo?.findServiceByType('compute'))

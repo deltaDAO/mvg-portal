@@ -3,16 +3,27 @@ import styles from './AssetType.module.css'
 import classNames from 'classnames/bind'
 import { ReactComponent as Compute } from '../../images/compute.svg'
 import { ReactComponent as Download } from '../../images/download.svg'
-import { ReactComponent as Lock } from '../../images/lock.svg'
+import {
+  ReactComponent as Lock,
+  ReactComponent as Edge
+} from '../../images/edgeAssetIcon.svg'
+
+import { MetadataMainMarket } from '../../@types/MetaData'
 
 const cx = classNames.bind(styles)
+
+const assetTypeLabels: { [value in MetadataMainMarket['type']]: string } = {
+  dataset: 'data set',
+  algorithm: 'algorithm',
+  edge: 'edge'
+}
 
 export default function AssetType({
   type,
   accessType,
   className
 }: {
-  type: string
+  type: MetadataMainMarket['type']
   accessType: string
   className?: string
 }): ReactElement {
@@ -21,7 +32,9 @@ export default function AssetType({
   })
   return (
     <div className={styleClasses}>
-      {accessType === 'access' ? (
+      {type === 'edge' ? (
+        <Edge role="img" aria-label="Download" className={styles.icon} />
+      ) : accessType === 'access' ? (
         <Download role="img" aria-label="Download" className={styles.icon} />
       ) : accessType === 'compute' && type === 'algorithm' ? (
         <Lock role="img" aria-label="Private" className={styles.icon} />
@@ -29,9 +42,7 @@ export default function AssetType({
         <Compute role="img" aria-label="Compute" className={styles.icon} />
       )}
 
-      <div className={styles.typeLabel}>
-        {type === 'dataset' ? 'data set' : 'algorithm'}
-      </div>
+      <div className={styles.typeLabel}>{assetTypeLabels[type]}</div>
     </div>
   )
 }
