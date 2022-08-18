@@ -76,7 +76,11 @@ FilterTerm | undefined {
 }
 
 export function generateBaseQuery(
-  baseQueryParams: BaseQueryParams
+  baseQueryParams: BaseQueryParams,
+  options?: {
+    includeThings?: boolean
+    includeInvoices?: boolean
+  }
 ): SearchQuery {
   const generatedQuery = {
     from: baseQueryParams.esPaginationOptions?.from || 0,
@@ -93,13 +97,16 @@ export function generateBaseQuery(
             : [getFilterTerm('isInPurgatory', 'false')])
         ],
         must_not: [
+          ...(baseQueryParams.mustNot || []),
           getDynamicPricingMustNot(),
-          getFilterTerm('service.attributes.main.type', 'thing'),
-          getFilterTerm(
-            'service.attributes.additionalInformation.tags',
-            'mvg-stripe-invoice',
-            'match'
-          )
+          !options?.includeThings &&
+            getFilterTerm('service.attributes.main.type', 'thing'),
+          !options?.includeInvoices &&
+            getFilterTerm(
+              'service.attributes.additionalInformation.tags',
+              'mvg-stripe-invoice',
+              'match'
+            )
         ],
         ...getWhitelistShould()
       }
