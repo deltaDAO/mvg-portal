@@ -11,6 +11,7 @@ import LinkOpener from '../molecules/LinkOpener'
 import { BestPrice } from '../../models/BestPrice'
 import Loader from '../atoms/Loader'
 import { ServiceMetadataMarket } from '../../@types/MetaData'
+import EdgeAssetDetails from '../atoms/EdgeAssetDetails'
 
 declare type AssetTeaserProps = {
   ddo: DDO
@@ -51,22 +52,30 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
           />
 
           <div className={styles.content}>
-            <Dotdotdot tagName="p" clamp={3}>
-              {removeMarkdown(
-                attributes?.additionalInformation?.description?.substring(
-                  0,
-                  300
-                ) || ''
-              )}
-            </Dotdotdot>
+            {type === 'edge' ? (
+              <EdgeAssetDetails ddo={ddo} />
+            ) : (
+              <Dotdotdot tagName="p" clamp={3}>
+                {removeMarkdown(
+                  attributes?.additionalInformation?.description?.substring(
+                    0,
+                    300
+                  ) || ''
+                )}
+              </Dotdotdot>
+            )}
           </div>
 
           <footer className={styles.foot}>
-            {price && type !== 'edge' ? (
-              <Price price={price} small />
-            ) : (
-              <Loader style="gradient" dimensions={{ width: 64, height: 16 }} />
-            )}
+            {type !== 'edge' &&
+              (price ? (
+                <Price price={price} small />
+              ) : (
+                <Loader
+                  style="gradient"
+                  dimensions={{ width: 64, height: 16 }}
+                />
+              ))}
             <div className={styles.network}>
               <NetworkName networkId={ddo.chainId} />
             </div>
