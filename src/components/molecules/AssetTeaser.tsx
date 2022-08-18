@@ -62,7 +62,7 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
           </div>
 
           <footer className={styles.foot}>
-            {price ? (
+            {price && type !== 'edge' ? (
               <Price price={price} small />
             ) : (
               <Loader style="gradient" dimensions={{ width: 64, height: 16 }} />

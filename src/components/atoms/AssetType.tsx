@@ -15,7 +15,7 @@ const cx = classNames.bind(styles)
 const assetTypeLabels: { [value in MetadataMainMarket['type']]: string } = {
   dataset: 'data set',
   algorithm: 'algorithm',
-  edge: 'edge'
+  edge: 'edge device'
 }
 
 export default function AssetType({
