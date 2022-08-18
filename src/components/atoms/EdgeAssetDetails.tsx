@@ -8,12 +8,15 @@ export default function EdgeAssetDetails({
 }: {
   ddo: EdgeDDO
 }): ReactElement {
-  const { model } = ddo.findServiceByType('edge').provider.device
-  const { attributes } = ddo.findServiceByType('edge')
-  const numberOfAvailableAssets = attributes.main.availableServices.length
+  const service = ddo.findServiceByType('edge')
+  const assetModel = service?.attributes?.main?.provider?.device?.model
+  const numberOfAvailableAssets =
+    service?.attributes?.main?.availableServices?.length
   return (
     <div className={styles.container}>
-      <NumberUnit label={model} value={numberOfAvailableAssets} />
+      {assetModel && (
+        <NumberUnit label={assetModel} value={numberOfAvailableAssets || 1} />
+      )}
     </div>
   )
 }

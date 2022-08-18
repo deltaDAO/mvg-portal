@@ -25,7 +25,7 @@ export interface AdditionalInformationMarket extends AdditionalInformation {
 }
 
 export interface MetadataMainMarket extends MetadataMain {
-  type: 'dataset' | 'algorithm' | 'edge'
+  type: 'dataset' | 'algorithm' | 'thing'
 }
 
 export interface MetadataMarket extends Metadata {

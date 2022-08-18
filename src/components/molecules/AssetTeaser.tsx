@@ -42,7 +42,9 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
             <Dotdotdot clamp={3}>
               <h1 className={styles.title}>{name}</h1>
             </Dotdotdot>
-            <Publisher account={owner} minimal className={styles.publisher} />
+            {!noPublisher && (
+              <Publisher account={owner} minimal className={styles.publisher} />
+            )}
           </header>
 
           <AssetType
@@ -52,7 +54,7 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
           />
 
           <div className={styles.content}>
-            {type === 'edge' ? (
+            {type === 'thing' ? (
               <EdgeAssetDetails ddo={ddo} />
             ) : (
               <Dotdotdot tagName="p" clamp={3}>
@@ -67,7 +69,7 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
           </div>
 
           <footer className={styles.foot}>
-            {type !== 'edge' &&
+            {type !== 'thing' &&
               (price ? (
                 <Price price={price} small />
               ) : (

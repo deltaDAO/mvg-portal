@@ -15,7 +15,7 @@ const cx = classNames.bind(styles)
 const assetTypeLabels: { [value in MetadataMainMarket['type']]: string } = {
   dataset: 'data set',
   algorithm: 'algorithm',
-  edge: 'edge device'
+  thing: 'edge device'
 }
 
 export default function AssetType({
@@ -32,7 +32,7 @@ export default function AssetType({
   })
   return (
     <div className={styleClasses}>
-      {type === 'edge' ? (
+      {type === 'thing' ? (
         <Edge role="img" aria-label="Download" className={styles.icon} />
       ) : accessType === 'access' ? (
         <Download role="img" aria-label="Download" className={styles.icon} />
