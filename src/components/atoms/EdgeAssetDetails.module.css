@@ -3,3 +3,38 @@
   align-items: flex-end;
   height: 100%;
 }
+
+.detailsContainer {
+  display: flex;
+  gap: calc(var(--spacer) / 3);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.model {
+  font-size: var(--font-size-h5);
+  color: var(--font-color-heading);
+}
+
+.model {
+  font-weight: var(--font-weight-bold);
+}
+
+.icon {
+  width: 2rem;
+}
+
+.icon circle {
+  fill: var(--color-primary);
+}
+
+.icon path {
+  fill: var(--brand-white);
+}
+
+.unavailable circle {
+  fill: var(--brand-alert-red);
+}

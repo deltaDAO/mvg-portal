@@ -3,10 +3,8 @@ import styles from './AssetType.module.css'
 import classNames from 'classnames/bind'
 import { ReactComponent as Compute } from '../../images/compute.svg'
 import { ReactComponent as Download } from '../../images/download.svg'
-import {
-  ReactComponent as Lock,
-  ReactComponent as Edge
-} from '../../images/edgeAssetIcon.svg'
+import { ReactComponent as Lock } from '../../images/lock.svg'
+import { ReactComponent as Edge } from '../../images/edgeAssetIcon.svg'
 
 import { MetadataMainMarket } from '../../@types/MetaData'
 
@@ -33,7 +31,7 @@ export default function AssetType({
   return (
     <div className={styleClasses}>
       {type === 'thing' ? (
-        <Edge role="img" aria-label="Download" className={styles.icon} />
+        <Edge role="img" aria-label="Edge device" className={styles.icon} />
       ) : accessType === 'access' ? (
         <Download role="img" aria-label="Download" className={styles.icon} />
       ) : accessType === 'compute' && type === 'algorithm' ? (
