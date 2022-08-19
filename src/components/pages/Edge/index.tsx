@@ -16,6 +16,7 @@ import {
 import { PagedAssets } from '../../../models/PagedAssets'
 import { useCancelToken } from '../../../hooks/useCancelToken'
 import { useUserPreferences } from '../../../providers/UserPreferences'
+import Loader from '../../atoms/Loader'
 
 export default function EdgePage(): ReactElement {
   const { chainIds } = useUserPreferences()
@@ -49,15 +50,19 @@ export default function EdgePage(): ReactElement {
 
   return (
     <Permission eventType="browse">
-      <div className={styles.results}>
-        <AssetList
-          assets={queryResult?.results}
-          showPagination
-          isLoading={isLoading}
-          page={queryResult?.page}
-          totalPages={queryResult?.totalPages}
-        />
-      </div>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <div className={styles.results}>
+          <AssetList
+            assets={queryResult?.results}
+            showPagination
+            isLoading={isLoading}
+            page={queryResult?.page}
+            totalPages={queryResult?.totalPages}
+          />
+        </div>
+      )}
     </Permission>
   )
 }
