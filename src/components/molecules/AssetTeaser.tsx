@@ -35,54 +35,52 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
 
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
-      <LinkOpener uri={`/asset/${ddo.id}`} className={styles.link}>
-        <>
-          <header className={styles.header}>
-            <div className={styles.symbol}>{dataTokenInfo?.symbol}</div>
-            <Dotdotdot clamp={3}>
-              <h1 className={styles.title}>{name}</h1>
+      <LinkOpener
+        uri={type !== 'thing' && `/asset/${ddo.id}`}
+        className={styles.link}
+      >
+        <header className={styles.header}>
+          <div className={styles.symbol}>{dataTokenInfo?.symbol}</div>
+          <Dotdotdot clamp={3}>
+            <h1 className={styles.title}>{name}</h1>
+          </Dotdotdot>
+          {!noPublisher && (
+            <Publisher account={owner} minimal className={styles.publisher} />
+          )}
+        </header>
+
+        <AssetType
+          type={type}
+          accessType={accessType}
+          className={styles.typeDetails}
+        />
+
+        <div className={styles.content}>
+          {type === 'thing' ? (
+            <EdgeAssetDetails ddo={ddo} />
+          ) : (
+            <Dotdotdot tagName="p" clamp={3}>
+              {removeMarkdown(
+                attributes?.additionalInformation?.description?.substring(
+                  0,
+                  300
+                ) || ''
+              )}
             </Dotdotdot>
-            {!noPublisher && (
-              <Publisher account={owner} minimal className={styles.publisher} />
-            )}
-          </header>
+          )}
+        </div>
 
-          <AssetType
-            type={type}
-            accessType={accessType}
-            className={styles.typeDetails}
-          />
-
-          <div className={styles.content}>
-            {type === 'thing' ? (
-              <EdgeAssetDetails ddo={ddo} />
+        <footer className={styles.foot}>
+          {type !== 'thing' &&
+            (price ? (
+              <Price price={price} small />
             ) : (
-              <Dotdotdot tagName="p" clamp={3}>
-                {removeMarkdown(
-                  attributes?.additionalInformation?.description?.substring(
-                    0,
-                    300
-                  ) || ''
-                )}
-              </Dotdotdot>
-            )}
+              <Loader style="gradient" dimensions={{ width: 64, height: 16 }} />
+            ))}
+          <div className={styles.network}>
+            <NetworkName networkId={ddo.chainId} />
           </div>
-
-          <footer className={styles.foot}>
-            {type !== 'thing' &&
-              (price ? (
-                <Price price={price} small />
-              ) : (
-                <Loader
-                  style="gradient"
-                  dimensions={{ width: 64, height: 16 }}
-                />
-              ))}
-            <div className={styles.network}>
-              <NetworkName networkId={ddo.chainId} />
-            </div>
-          </footer>
-        </>
+        </footer>
       </LinkOpener>
     </article>
   )

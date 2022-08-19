@@ -7,27 +7,31 @@ export default function LinkOpener({
   openNewTab,
   children
 }: {
-  uri: string
+  uri?: string
   className?: string
   openNewTab?: boolean
   children?: ReactNode
 }): ReactElement {
-  return openNewTab ? (
-    <a
-      href={uri}
-      className={className}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      {children}
-    </a>
-  ) : uri.startsWith('/') ? (
-    <Link to={uri} className={className}>
-      {children}
-    </Link>
+  return uri ? (
+    openNewTab ? (
+      <a
+        href={uri}
+        className={className}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {children}
+      </a>
+    ) : uri.startsWith('/') ? (
+      <Link to={uri} className={className}>
+        {children}
+      </Link>
+    ) : (
+      <a href={uri} className={className}>
+        {children}
+      </a>
+    )
   ) : (
-    <a href={uri} className={className}>
-      {children}
-    </a>
+    <div className={className}>{children}</div>
   )
 }
