@@ -8,7 +8,7 @@ export default function PageGatsbyEdge(props: PageProps): ReactElement {
   const { title, description } = content
   return (
     <Page title={title} description={description} uri={props.uri}>
-      <PageEdge />
+      <PageEdge location={props.location} />
     </Page>
   )
 }
