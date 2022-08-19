@@ -31,14 +31,12 @@ export default function SearchBar({
   placeholder,
   initialValue,
   visibleInput,
-  isHome,
   isSearchPage,
   name
 }: {
   placeholder?: string
   initialValue?: string
   visibleInput?: boolean
-  isHome?: boolean
   isSearchPage?: boolean
   name?: string
 }): ReactElement {
@@ -46,6 +44,7 @@ export default function SearchBar({
   const parsed = queryString.parse(location.search)
   const { text, owner } = parsed
   const { isSearchBarVisible } = useUserPreferences()
+  const isHome = window.location.pathname === '/'
 
   useEffect(() => {
     ;(text || owner) && setValue((text || owner) as string)

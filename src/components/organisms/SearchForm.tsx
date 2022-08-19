@@ -32,12 +32,15 @@ interface SearchFormData {
 export default function SearchForm(): ReactElement {
   const data: SearchFormData = useStaticQuery(query)
   const { title, body, placeholder, inputLabel } = data.file.childSearchFormJson
-  const { isSearchBarVisible } = useUserPreferences()
+  const { isSearchBarVisible, setSearchBarVisible } = useUserPreferences()
   const searchformSection = useRef(null)
 
   useEffect(() => {
-    searchformSection.current.scrollIntoView()
-  }, [isSearchBarVisible])
+    if (isSearchBarVisible) {
+      searchformSection.current.scrollIntoView()
+      setSearchBarVisible(false)
+    }
+  }, [isSearchBarVisible, setSearchBarVisible])
 
   return (
     <div ref={searchformSection} className={styles.container}>
@@ -47,12 +50,7 @@ export default function SearchForm(): ReactElement {
         <label className={styles.inputLabel} htmlFor="searchForm">
           {inputLabel}
         </label>
-        <SearchBar
-          isHome
-          visibleInput
-          placeholder={placeholder}
-          name="searchForm"
-        />
+        <SearchBar visibleInput placeholder={placeholder} name="searchForm" />
       </div>
     </div>
   )

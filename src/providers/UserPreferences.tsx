@@ -86,9 +86,7 @@ function UserPreferencesProvider({
     localStorage?.onboardingStep || 0
   )
 
-  const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(
-    localStorage?.isSearchBarVisible || false
-  )
+  const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(false)
 
   // Write values to localStorage on change
   useEffect(() => {
@@ -100,8 +98,7 @@ function UserPreferencesProvider({
       privacyPolicySlug,
       showPPC,
       infiniteApproval,
-      onboardingStep,
-      isSearchBarVisible
+      onboardingStep
     })
   }, [
     chainIds,
@@ -111,8 +108,7 @@ function UserPreferencesProvider({
     privacyPolicySlug,
     showPPC,
     infiniteApproval,
-    onboardingStep,
-    isSearchBarVisible
+    onboardingStep
   ])
 
   // Set ocean.js log levels, default: Error
