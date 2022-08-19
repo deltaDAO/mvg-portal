@@ -55,7 +55,7 @@ export default function SearchBar({
       const searchForm = document?.getElementById('searchForm')
       if (searchForm) searchForm.focus()
     }
-  }, [isSearchBarVisible])
+  }, [isHome, isSearchBarVisible])
 
   async function startSearch(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
