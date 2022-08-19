@@ -52,8 +52,8 @@ export default function SearchBar({
 
   useEffect(() => {
     if (!isHome) {
-      const searchForm = document?.getElementById('searchForm')
-      if (searchForm) searchForm.focus()
+      const searchInput = document?.getElementById('searchInput')
+      if (searchInput) searchInput.focus()
     }
   }, [isHome, isSearchBarVisible])
 

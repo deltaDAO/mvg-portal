@@ -56,7 +56,7 @@ export default function Page({
         <>
           <SearchBar
             visibleInput
-            name="searchForm"
+            name="searchInput"
             placeholder={placeholder}
             isSearchPage={isSearch}
           />

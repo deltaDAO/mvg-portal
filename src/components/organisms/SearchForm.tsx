@@ -47,10 +47,10 @@ export default function SearchForm(): ReactElement {
       <div className={styles.content}>
         <h2 className={styles.title}>{title}</h2>
         {body && <Markdown text={body} className={styles.paragraph} />}
-        <label className={styles.inputLabel} htmlFor="searchForm">
+        <label className={styles.inputLabel} htmlFor="searchInput">
           {inputLabel}
         </label>
-        <SearchBar visibleInput placeholder={placeholder} name="searchForm" />
+        <SearchBar visibleInput placeholder={placeholder} name="searchInput" />
       </div>
     </div>
   )
