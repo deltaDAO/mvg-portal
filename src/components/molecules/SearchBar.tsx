@@ -12,6 +12,7 @@ import { addExistingParamsToUrl } from '../templates/Search/utils'
 import { ReactComponent as SearchIcon } from '../../images/search.svg'
 import InputElement from '../atoms/Input/InputElement'
 import styles from './SearchBar.module.css'
+import { useUserPreferences } from '../../providers/UserPreferences'
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window.location.href)
@@ -44,10 +45,16 @@ export default function SearchBar({
   const [value, setValue] = useState(initialValue || '')
   const parsed = queryString.parse(location.search)
   const { text, owner } = parsed
+  const { isSearchBarVisible } = useUserPreferences()
 
   useEffect(() => {
     ;(text || owner) && setValue((text || owner) as string)
   }, [text, owner])
+
+  useEffect(() => {
+    const searchForm = document?.getElementById('searchForm')
+    if (searchForm) searchForm.focus()
+  }, [isSearchBarVisible])
 
   async function startSearch(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
