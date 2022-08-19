@@ -51,8 +51,10 @@ export default function SearchBar({
   }, [text, owner])
 
   useEffect(() => {
-    const searchForm = document?.getElementById('searchForm')
-    if (searchForm) searchForm.focus()
+    if (!isHome) {
+      const searchForm = document?.getElementById('searchForm')
+      if (searchForm) searchForm.focus()
+    }
   }, [isSearchBarVisible])
 
   async function startSearch(e: FormEvent<HTMLButtonElement>) {
