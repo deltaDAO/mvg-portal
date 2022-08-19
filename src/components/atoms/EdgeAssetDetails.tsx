@@ -15,7 +15,7 @@ export default function EdgeAssetDetails({
   return (
     <div className={styles.container}>
       {assetModel && (
-        <NumberUnit label={assetModel} value={numberOfAvailableAssets || 1} />
+        <NumberUnit label={assetModel} value={numberOfAvailableAssets || 0} />
       )}
     </div>
   )
