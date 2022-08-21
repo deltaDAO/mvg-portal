@@ -18,14 +18,56 @@ import { useCancelToken } from '../../../hooks/useCancelToken'
 import { useUserPreferences } from '../../../providers/UserPreferences'
 import Loader from '../../atoms/Loader'
 import { updateQueryStringParameter } from '../../../utils'
-import { navigate } from 'gatsby'
+import { graphql, navigate, useStaticQuery } from 'gatsby'
 import queryString from 'query-string'
+import Markdown from '../../atoms/Markdown'
+
+const edgeContentQuery = graphql`
+  query edgeContentQuery {
+    content: allFile(
+      filter: { relativePath: { eq: "pages/edge/content.json" } }
+    ) {
+      edges {
+        node {
+          childEdgeJson {
+            content {
+              paragraphs {
+                title
+                body
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`
+
+interface EdgeContent {
+  content: {
+    edges: {
+      node: {
+        childEdgeJson: {
+          content: {
+            paragraphs: {
+              title: string
+              body: string
+            }[]
+          }
+        }
+      }
+    }[]
+  }
+}
 
 export default function EdgePage({
   location
 }: {
   location: Location
 }): ReactElement {
+  const data: EdgeContent = useStaticQuery(edgeContentQuery)
+  const { paragraphs } = data.content.edges[0].node.childEdgeJson.content
+  console.log(data)
   const { chainIds } = useUserPreferences()
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
@@ -93,21 +135,29 @@ export default function EdgePage({
   }, [parsed, chainIds, newCancelToken, fetchAssets])
 
   return (
-    <Permission eventType="browse">
-      {isLoading ? (
-        <Loader />
-      ) : (
-        <div className={styles.results}>
-          <AssetList
-            assets={queryResult?.results}
-            showPagination
-            isLoading={isLoading}
-            page={queryResult?.page}
-            totalPages={queryResult?.totalPages}
-            onPageChange={updatePage}
-          />
+    <div>
+      {paragraphs.map((paragraph, i) => (
+        <div key={i}>
+          <h4>{paragraph.title}</h4>
+          <Markdown text={paragraph.body} />
         </div>
-      )}
-    </Permission>
+      ))}
+      <Permission eventType="browse">
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <div className={styles.results}>
+            <AssetList
+              assets={queryResult?.results}
+              showPagination
+              isLoading={isLoading}
+              page={queryResult?.page}
+              totalPages={queryResult?.totalPages}
+              onPageChange={updatePage}
+            />
+          </div>
+        )}
+      </Permission>
+    </div>
   )
 }
