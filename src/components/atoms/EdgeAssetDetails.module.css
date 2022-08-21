@@ -23,18 +23,11 @@
   font-weight: var(--font-weight-bold);
 }
 
-.icon {
-  width: 2rem;
+.badge {
+  margin-left: calc(var(--spacer) / 6);
+  background: var(--brand-alert-green);
 }
 
-.icon circle {
-  fill: var(--color-primary);
-}
-
-.icon path {
-  fill: var(--brand-white);
-}
-
-.unavailable circle {
-  fill: var(--brand-alert-red);
+.unavailable {
+  background: var(--brand-alert-red);
 }
