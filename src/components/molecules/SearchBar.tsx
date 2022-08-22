@@ -4,7 +4,8 @@ import React, {
   ChangeEvent,
   FormEvent,
   KeyboardEvent,
-  ReactElement
+  ReactElement,
+  useRef
 } from 'react'
 import { navigate } from 'gatsby'
 import queryString from 'query-string'
@@ -43,19 +44,22 @@ export default function SearchBar({
   const [value, setValue] = useState(initialValue || '')
   const parsed = queryString.parse(location.search)
   const { text, owner } = parsed
-  const { isSearchBarVisible } = useUserPreferences()
+  const { searchBarScrollState, isSearchBarVisible } = useUserPreferences()
   const isHome = window.location.pathname === '/'
+
+  const searchBarRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     ;(text || owner) && setValue((text || owner) as string)
   }, [text, owner])
 
   useEffect(() => {
-    if (!isHome) {
-      const searchInput = document?.getElementById('searchInput')
-      if (searchInput) searchInput.focus()
+    if (isHome && !searchBarScrollState) return
+    if (!isHome && !isSearchBarVisible) return
+    if (searchBarRef?.current) {
+      searchBarRef.current.focus()
     }
-  }, [isHome, isSearchBarVisible])
+  }, [isHome, searchBarScrollState, isSearchBarVisible])
 
   async function startSearch(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
@@ -107,6 +111,7 @@ export default function SearchBar({
         size="small"
         className={visibleInput ? styles.visibleInput : styles.input}
         onKeyPress={handleKeyPress}
+        ref={searchBarRef}
       />
       <button
         onClick={handleButtonClick}
