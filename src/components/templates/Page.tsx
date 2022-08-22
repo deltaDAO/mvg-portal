@@ -1,4 +1,4 @@
-import React, { ReactNode, ReactElement, useState } from 'react'
+import React, { ReactNode, ReactElement } from 'react'
 import PageHeader from '../molecules/PageHeader'
 import Seo from '../atoms/Seo'
 import Container from '../atoms/Container'
@@ -46,9 +46,9 @@ export default function Page({
   const isSearch = uri === '/search'
   const { isSearchBarVisible, setSearchBarVisible } = useUserPreferences()
 
-  React.useEffect(() => {
+  React.useLayoutEffect(() => {
     setSearchBarVisible(false)
-  }, [setSearchBarVisible])
+  }, [isHome, setSearchBarVisible])
 
   const childElements = (
     <>
