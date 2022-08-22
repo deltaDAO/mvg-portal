@@ -1,7 +1,7 @@
 import { useOcean } from '../../../../providers/Ocean'
 import { useWeb3 } from '../../../../providers/Web3'
 import { Formik } from 'formik'
-import React, { ReactElement, useRef, useState } from 'react'
+import React, { ReactElement, useState } from 'react'
 import {
   validationSchema,
   getInitialValues,
@@ -21,8 +21,6 @@ import {
   setMinterToPublisher
 } from '../../../../utils/freePrice'
 import Web3Feedback from '../../../molecules/Web3Feedback'
-import Page from '../../../templates/Page'
-import Loader from '../../../atoms/Loader'
 
 const contentQuery = graphql`
   query EditComputeDataQuery {
@@ -59,11 +57,9 @@ const contentQuery = graphql`
 `
 
 export default function EditComputeDataset({
-  setShowEdit,
-  tutorial
+  setShowEdit
 }: {
   setShowEdit: (show: boolean) => void
-  tutorial?: boolean
 }): ReactElement {
   const data = useStaticQuery(contentQuery)
   const content = data.content.edges[0].node.childPagesJson
@@ -135,15 +131,7 @@ export default function EditComputeDataset({
     }
   }
 
-  const computeRef = useRef(null)
-  const executeScroll = () =>
-    computeRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' })
-
-  return !ddo && tutorial ? (
-    <Page title={undefined} uri="/tutorial">
-      <Loader />
-    </Page>
-  ) : (
+  return (
     <Formik
       initialValues={getInitialValues(
         ddo.findServiceByType('compute').attributes.main.privacy
@@ -151,21 +139,14 @@ export default function EditComputeDataset({
       validationSchema={validationSchema}
       onSubmit={async (values, { resetForm }) => {
         // move user's focus to top of screen
-        if (!tutorial) {
-          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
-        } else {
-          executeScroll()
-        }
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
         // kick off editing
         await handleSubmit(values, resetForm)
-        if (tutorial) {
-          setShowEdit(true)
-        }
       }}
     >
       {({ values, isSubmitting }) =>
         isSubmitting || hasFeedback ? (
-          <div ref={computeRef}>
+          <div>
             <MetadataFeedback
               title="Updating Data Set"
               error={error}
@@ -182,15 +163,12 @@ export default function EditComputeDataset({
           </div>
         ) : (
           <>
-            {!tutorial && (
-              <p className={styles.description}>{content.description}</p>
-            )}
-            <article className={tutorial ? styles.tutorialGrid : styles.grid}>
+            <p className={styles.description}>{content.description}</p>
+            <article className={styles.grid}>
               <FormEditComputeDataset
                 title={content.form.title}
                 data={content.form.data}
                 setShowEdit={setShowEdit}
-                tutorial={tutorial}
               />
             </article>
             <Web3Feedback isAssetNetwork={isAssetNetwork} />

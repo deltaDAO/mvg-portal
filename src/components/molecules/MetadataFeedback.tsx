@@ -4,8 +4,6 @@ import Loader from '../atoms/Loader'
 import React, { ReactElement, useState, FormEvent } from 'react'
 import styles from './MetadataFeedback.module.css'
 import SuccessConfetti from '../atoms/SuccessConfetti'
-import { DDO } from '@oceanprotocol/lib'
-import AssetTeaser from './AssetTeaser'
 
 interface Action {
   name: string
@@ -48,9 +46,7 @@ export default function MetadataFeedback({
   success,
   loading,
   successAction,
-  setError,
-  tutorial,
-  ddo
+  setError
 }: {
   title: string
   error: string
@@ -58,8 +54,6 @@ export default function MetadataFeedback({
   loading?: string
   successAction: Action
   setError: (error: string) => void
-  tutorial?: boolean
-  ddo?: DDO
 }): ReactElement {
   const [moreInfo, setMoreInfo] = useState<boolean>(false)
 
@@ -89,15 +83,7 @@ export default function MetadataFeedback({
         ) : success ? (
           <SuccessConfetti
             success={success}
-            action={
-              tutorial && ddo ? (
-                <div className={styles.teaser}>
-                  <AssetTeaser ddo={ddo} price={ddo.price} />
-                </div>
-              ) : (
-                !tutorial && <ActionSuccess action={successAction} />
-              )
-            }
+            action={<ActionSuccess action={successAction} />}
           />
         ) : (
           <Loader message={loading} />

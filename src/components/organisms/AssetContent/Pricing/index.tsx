@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactElement, useRef, useState } from 'react'
+import React, { FormEvent, ReactElement, useState } from 'react'
 import { Formik } from 'formik'
 import { initialValues, validationSchema } from '../../../../models/FormPricing'
 import { DDO, Logger } from '@oceanprotocol/lib'
@@ -10,7 +10,6 @@ import Feedback from './Feedback'
 import { graphql, useStaticQuery } from 'gatsby'
 import { usePricing } from '../../../../hooks/usePricing'
 import styles from './index.module.css'
-import { CancelToken } from 'axios'
 import { useSiteMetadata } from '../../../../hooks/useSiteMetadata'
 import { useAsset } from '../../../../providers/Asset'
 
@@ -59,17 +58,7 @@ const query = graphql`
   }
 `
 
-export default function Pricing({
-  ddo,
-  tutorial,
-  setShowPriceTutorial,
-  refreshDdo
-}: {
-  ddo: DDO
-  tutorial?: boolean
-  setShowPriceTutorial?: (value: boolean) => void
-  refreshDdo?: (token?: CancelToken) => Promise<void>
-}): ReactElement {
+export default function Pricing({ ddo }: { ddo: DDO }): ReactElement {
   // Get content
   const data = useStaticQuery(query)
   const content = data.content.edges[0].node.childContentJson.create
@@ -86,10 +75,6 @@ export default function Pricing({
   const { isAssetNetwork } = useAsset()
 
   const hasFeedback = pricingIsLoading || typeof success !== 'undefined'
-
-  const priceRef = useRef(null)
-  const executeScroll = () =>
-    priceRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' })
 
   async function handleCreatePricing(values: PriceOptionsMarket) {
     try {
@@ -125,7 +110,7 @@ export default function Pricing({
   }
 
   return (
-    <div className={styles.pricing} ref={priceRef}>
+    <div className={styles.pricing}>
       <Formik
         initialValues={{
           ...initialValues,
@@ -135,25 +120,17 @@ export default function Pricing({
         validationSchema={validationSchema}
         validateOnChange
         onSubmit={async (values, { setSubmitting }) => {
-          if (tutorial) {
-            executeScroll()
-          } else {
-            // move user's focus to top of screen
-            window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
-          }
+          // move user's focus to top of screen
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
 
           // Kick off price creation
           await handleCreatePricing(values)
-          if (tutorial) {
-            await refreshDdo()
-            setShowPriceTutorial(true)
-          }
           setSubmitting(false)
         }}
       >
         {hasFeedback ? (
           <Feedback success={success} pricingStepText={pricingStepText} />
-        ) : tutorial || showPricing ? (
+        ) : showPricing ? (
           <FormPricing
             ddo={ddo}
             setShowPricing={setShowPricing}
@@ -161,7 +138,7 @@ export default function Pricing({
           />
         ) : (
           <Alert
-            state="info"
+            state="warning"
             title={content.empty.title}
             text={content.empty.info}
             action={{

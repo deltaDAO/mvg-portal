@@ -13,7 +13,7 @@ import getAssetPurgatoryData from '../utils/purgatory'
 import { CancelToken } from 'axios'
 import { retrieveDDO } from '../utils/aquarius'
 import { getPrice } from '../utils/subgraph'
-import { MetadataMarket } from '../@types/MetaData'
+import { MetadataMarket, ServiceMetadataMarket } from '../@types/MetaData'
 import { useWeb3 } from './Web3'
 import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
@@ -38,6 +38,7 @@ interface AssetProviderValue {
   error?: string
   refreshInterval: number
   isAssetNetwork: boolean
+  isAssetNetworkAllowed: boolean
   loading: boolean
   isVerifyingSD: boolean
   isServiceSelfDescriptionVerified: boolean
@@ -72,6 +73,8 @@ function AssetProvider({
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
+  const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] =
+    useState<boolean>(true)
   const [isVerifyingSD, setIsVerifyingSD] = useState(false)
   const [
     isServiceSelfDescriptionVerified,
@@ -147,8 +150,9 @@ function AssetProvider({
     setIsVerifyingSD(true)
 
     try {
-      const { attributes }: { attributes: MetadataMarket } =
-        ddo.findServiceByType('metadata')
+      const { attributes } = ddo.findServiceByType(
+        'metadata'
+      ) as ServiceMetadataMarket
 
       const { serviceSelfDescription } = attributes.additionalInformation
       if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {
@@ -179,7 +183,9 @@ function AssetProvider({
     if (!ddo) return
     setLoading(true)
     // Get metadata from DDO
-    const { attributes } = ddo.findServiceByType('metadata')
+    const { attributes } = ddo.findServiceByType(
+      'metadata'
+    ) as ServiceMetadataMarket
     setMetadata(attributes)
     setTitle(attributes?.main.name)
     setType(attributes.main.type)
@@ -215,11 +221,16 @@ function AssetProvider({
 
   // Check user network against asset network
   useEffect(() => {
-    if (!networkId || !ddo) return
+    if (!ddo) return
 
     const isAssetNetwork = networkId === ddo?.chainId
     setIsAssetNetwork(isAssetNetwork)
-  }, [networkId, ddo])
+
+    const isAssetNetworkAllowed = appConfig.chainIdsSupported.includes(
+      ddo?.chainId
+    )
+    setIsAssetNetworkAllowed(isAssetNetworkAllowed)
+  }, [networkId, ddo, appConfig.chainIdsSupported])
 
   return (
     <AssetContext.Provider
@@ -240,6 +251,7 @@ function AssetProvider({
           isVerifyingSD,
           refreshDdo,
           isAssetNetwork,
+          isAssetNetworkAllowed,
           isServiceSelfDescriptionVerified,
           verifiedServiceProviderName
         } as AssetProviderValue

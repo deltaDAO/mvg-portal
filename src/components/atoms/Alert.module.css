@@ -80,11 +80,11 @@ button.action {
 }
 
 .info {
-  border-color: var(--brand-alert-yellow);
-  color: #9f7e19;
+  border-color: var(--brand-grey);
+  color: var(--brand-grey);
 }
 
 .warning {
-  border-color: var(--brand-alert-orange);
-  color: var(--brand-alert-orange);
+  border-color: var(--brand-alert-yellow);
+  color: #9f7e19;
 }

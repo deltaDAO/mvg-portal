@@ -17,6 +17,9 @@ export interface AdditionalInformationMarket extends AdditionalInformation {
   links?: EditableMetadataLinks[]
   serviceSelfDescription?: Pick<ServiceSelfDescription, 'raw' | 'url'>
   termsAndConditions?: boolean
+  consent: {
+    noPersonalData: boolean
+  }
 }
 
 export interface MetadataMarket extends Metadata {
@@ -42,6 +45,7 @@ export interface MetadataPublishFormDataset {
   dataTokenOptions: DataTokenOptions
   access: 'Download' | 'Compute' | string
   termsAndConditions: boolean
+  noPersonalData: boolean
   // ---- optional fields ----
   tags?: string
   links?: string | EditableMetadataLinks[]
@@ -60,6 +64,7 @@ export interface MetadataPublishFormAlgorithm {
   timeout: string
   dataTokenOptions: DataTokenOptions
   termsAndConditions: boolean
+  noPersonalData: boolean
   // ---- optional fields ----
   image: string
   containerTag: string

@@ -19,6 +19,9 @@ import {
 } from '@oceanprotocol/lib'
 import { complianceUri } from '../../app.config'
 import { isSanitizedUrl } from '../components/molecules/FormFields/URLInput/Input'
+import { initialValues as initialValuesDataset } from '../models/FormPublish'
+import { initialValues as initialValuesAlgorithm } from '../models/FormAlgoPublish'
+import { publishFormKeys } from '../components/pages/Publish'
 
 export function transformTags(value: string): string[] {
   const originalTags = value?.split(',')
@@ -243,6 +246,21 @@ export async function getPublisherFromServiceSD(
   }
 }
 
+export function getInitialPublishFormDatasetsValues(
+  localStorageKey: publishFormKeys
+): Partial<MetadataPublishFormDataset> {
+  const initialValues =
+    localStorageKey === publishFormKeys.FORM_NAME_DATASETS
+      ? initialValuesDataset
+      : initialValuesAlgorithm
+  const localStorageValues =
+    localStorage.getItem(localStorageKey) &&
+    (JSON.parse(localStorage.getItem(localStorageKey))
+      .initialValues as MetadataPublishFormDataset)
+
+  return localStorageValues || initialValues
+}
+
 export function transformPublishFormToMetadata(
   {
     name,
@@ -251,6 +269,7 @@ export function transformPublishFormToMetadata(
     tags,
     links,
     termsAndConditions,
+    noPersonalData,
     files,
     serviceSelfDescription
   }: Partial<MetadataPublishFormDataset>,
@@ -284,6 +303,9 @@ export function transformPublishFormToMetadata(
       tags: transformTags(tags),
       links: transformedLinks,
       termsAndConditions,
+      consent: {
+        noPersonalData
+      },
       serviceSelfDescription: transformedServiceSelfDescription
     }
   }
@@ -363,6 +385,7 @@ export function transformPublishAlgorithmFormToMetadata(
     containerTag,
     entrypoint,
     termsAndConditions,
+    noPersonalData,
     files
   }: Partial<MetadataPublishFormAlgorithm>,
   ddo?: DDO
@@ -391,7 +414,10 @@ export function transformPublishAlgorithmFormToMetadata(
       ...AssetModel.additionalInformation,
       description,
       tags: transformTags(tags),
-      termsAndConditions
+      termsAndConditions,
+      consent: {
+        noPersonalData
+      }
     }
   }
 
