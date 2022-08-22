@@ -55,7 +55,7 @@ export function getSearchQuery(
       ? '*' + searchTerm + '*'
       : '**'
   const searchFields = [
-    '_id',
+    'id',
     'publicKey.owner',
     'dataToken',
     'dataTokenInfo.name',
