@@ -7,13 +7,12 @@ import Loader from '../atoms/Loader'
 import { useAsset } from '../../providers/Asset'
 
 export default function PageTemplateAssetDetails({
-  uri,
-  setShowComputeTutorial
+  uri
 }: {
   uri: string
-  setShowComputeTutorial?: (value: boolean) => void
 }): ReactElement {
-  const { ddo, title, error, isInPurgatory, loading } = useAsset()
+  const { ddo, title, error, isInPurgatory, loading, isAssetNetworkAllowed } =
+    useAsset()
   const [pageTitle, setPageTitle] = useState<string>()
 
   useEffect(() => {
@@ -25,23 +24,19 @@ export default function PageTemplateAssetDetails({
     setPageTitle(isInPurgatory ? '' : title)
   }, [ddo, error, isInPurgatory, title])
 
-  return ddo && pageTitle !== undefined && !loading ? (
+  return ddo && pageTitle !== undefined && !loading && isAssetNetworkAllowed ? (
     <Page title={pageTitle} uri={uri}>
-      {uri.includes('/tutorial') ? (
-        <AssetContent
-          path=":did"
-          tutorial
-          setShowComputeTutorial={setShowComputeTutorial}
-        />
-      ) : (
-        <Router basepath="/asset">
-          <AssetContent path=":did" />
-        </Router>
-      )}
+      <Router basepath="/asset">
+        <AssetContent path=":did" />
+      </Router>
     </Page>
-  ) : error ? (
+  ) : error || !isAssetNetworkAllowed ? (
     <Page title={pageTitle} noPageHeader uri={uri}>
-      <Alert title={pageTitle} text={error} state="error" />
+      <Alert
+        title={pageTitle}
+        text={error || 'This asset was published in an unsupported network'}
+        state="error"
+      />
     </Page>
   ) : (
     <Page title={undefined} uri={uri}>

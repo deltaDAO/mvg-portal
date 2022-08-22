@@ -4,6 +4,9 @@
 }
 
 .help {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacer);
   font-size: var(--font-size-mini);
   color: var(--color-secondary);
   margin-top: calc(var(--spacer) / 3);

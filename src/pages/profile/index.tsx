@@ -7,14 +7,11 @@ import { useWeb3 } from '../../providers/Web3'
 import ProfileProvider from '../../providers/Profile'
 import { getEnsAddress, getEnsName } from '../../utils/ens'
 import ethereumAddress from 'ethereum-address'
-import queryString from 'query-string'
 
 export default function PageGatsbyProfile(props: PageProps): ReactElement {
   const { accountId, accountEns } = useWeb3()
   const [finalAccountId, setFinalAccountId] = useState<string>()
   const [finalAccountEns, setFinalAccountEns] = useState<string>()
-
-  const { token } = queryString.parse(props.location.search)
 
   // Have accountId in path take over, if not present fall back to web3
   useEffect(() => {
@@ -62,7 +59,7 @@ export default function PageGatsbyProfile(props: PageProps): ReactElement {
   return (
     <Page uri={props.uri} title={accountTruncate(finalAccountId)} noPageHeader>
       <ProfileProvider accountId={finalAccountId} accountEns={finalAccountEns}>
-        <ProfilePage accountId={finalAccountId} token={token as string} />
+        <ProfilePage accountId={finalAccountId} />
       </ProfileProvider>
     </Page>
   )

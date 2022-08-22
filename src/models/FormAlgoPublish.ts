@@ -30,8 +30,9 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormAlgorithm> =
       containerTag: Yup.string().required('Required'),
       entrypoint: Yup.string().required('Required'),
       author: Yup.string().required('Required'),
-      termsAndConditions: Yup.boolean().required('Required'),
+      noPersonalData: Yup.boolean().required('Required'),
       // ---- optional fields ----
+      termsAndConditions: Yup.boolean(),
       algorithmPrivacy: Yup.boolean().nullable(),
       tags: Yup.string().nullable(),
       links: Yup.array<FileMetadata[]>().nullable(),
@@ -55,6 +56,7 @@ export const initialValues: Partial<MetadataPublishFormAlgorithm> = {
   description: '',
   algorithmPrivacy: false,
   termsAndConditions: false,
+  noPersonalData: false,
   tags: '',
   timeout: 'Forever',
   providerUri: ''

@@ -44,6 +44,7 @@ const query = graphql`
               disclaimerValues
             }
             warning
+            walletDisclaimer
           }
         }
       }
@@ -51,11 +52,7 @@ const query = graphql`
   }
 `
 
-export default function FormPublish({
-  tutorial
-}: {
-  tutorial?: boolean
-}): ReactElement {
+export default function FormPublish(): ReactElement {
   const data = useStaticQuery(query)
   const content: FormContent = data.content.edges[0].node.childPublishJson
 
@@ -148,9 +145,7 @@ export default function FormPublish({
               key={field.name}
               {...field}
               options={
-                field.type === 'boxSelection' && tutorial
-                  ? accessTypeOptions.filter((e) => e.name === 'Compute')
-                  : field.type === 'boxSelection'
+                field.type === 'boxSelection'
                   ? accessTypeOptions
                   : field.options
               }
@@ -169,6 +164,7 @@ export default function FormPublish({
       <FormActions
         isValid={isValid}
         resetFormAndClearStorage={resetFormAndClearStorage}
+        walletDisclaimer={content.walletDisclaimer}
       />
     </Form>
   )

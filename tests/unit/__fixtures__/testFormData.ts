@@ -11,6 +11,7 @@ const testFormData: MetadataPublishFormDataset = {
   timeout: '',
   description: 'description',
   termsAndConditions: true,
+  noPersonalData: true,
   access: 'Download'
   // links: []
 }

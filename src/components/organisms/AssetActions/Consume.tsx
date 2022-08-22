@@ -18,6 +18,7 @@ import { secondsToString } from '../../../utils/metadata'
 import AlgorithmDatasetsListForCompute from '../AssetContent/AlgorithmDatasetsListForCompute'
 import styles from './Consume.module.css'
 import { useIsMounted } from '../../../hooks/useIsMounted'
+import Alert from '../../atoms/Alert'
 
 const previousOrderQuery = gql`
   query PreviousOrder($id: String!, $account: String!) {
@@ -40,7 +41,8 @@ export default function Consume({
   dtBalance,
   fileIsLoading,
   isConsumable,
-  consumableFeedback
+  consumableFeedback,
+  consumeDisclaimerMessage
 }: {
   ddo: DDO
   file: FileMetadata
@@ -49,6 +51,7 @@ export default function Consume({
   fileIsLoading?: boolean
   isConsumable?: boolean
   consumableFeedback?: string
+  consumeDisclaimerMessage?: string
 }): ReactElement {
   const { accountId } = useWeb3()
   const { ocean } = useOcean()
@@ -203,6 +206,11 @@ export default function Consume({
           {!isInPurgatory && <PurchaseButton />}
         </div>
       </div>
+      {consumeDisclaimerMessage && (
+        <div className={styles.disclaimer}>
+          <Alert state="info" text={consumeDisclaimerMessage} />
+        </div>
+      )}
       {type === 'algorithm' && (
         <AlgorithmDatasetsListForCompute algorithmDid={ddo.id} dataset={ddo} />
       )}

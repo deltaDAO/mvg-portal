@@ -32,7 +32,7 @@ export default function Stats({
   showLiquidity
 }: {
   accountId: string
-  showLiquidity: boolean
+  showLiquidity?: boolean
 }): ReactElement {
   const { chainIds } = useUserPreferences()
   const { poolShares, assets, assetsTotal, sales } = useProfile()
