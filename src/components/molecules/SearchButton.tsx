@@ -5,13 +5,13 @@ import { useUserPreferences } from '../../providers/UserPreferences'
 
 export default function SearchButton(): ReactElement {
   const isHome = window.location.pathname === '/'
-  const { isSearchBarVisible, setSearchBarVisible, setSearchBarScrollState } =
+  const { isSearchBarVisible, setSearchBarVisible, setIsScrollingToSearchBar } =
     useUserPreferences()
 
   async function handleButtonClick(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
     if (isHome) {
-      setSearchBarScrollState(true)
+      setIsScrollingToSearchBar(true)
       return
     }
     setSearchBarVisible(!isSearchBarVisible)

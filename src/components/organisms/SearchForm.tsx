@@ -32,15 +32,16 @@ interface SearchFormData {
 export default function SearchForm(): ReactElement {
   const data: SearchFormData = useStaticQuery(query)
   const { title, body, placeholder, inputLabel } = data.file.childSearchFormJson
-  const { searchBarScrollState, setSearchBarScrollState } = useUserPreferences()
+  const { isScrollingToSearchBar, setIsScrollingToSearchBar } =
+    useUserPreferences()
   const searchformSection = useRef(null)
 
   useEffect(() => {
-    if (searchBarScrollState) {
+    if (isScrollingToSearchBar) {
       searchformSection.current.scrollIntoView()
-      setSearchBarScrollState(false)
+      setIsScrollingToSearchBar(false)
     }
-  }, [searchBarScrollState, setSearchBarScrollState])
+  }, [isScrollingToSearchBar, setIsScrollingToSearchBar])
 
   return (
     <div ref={searchformSection} className={styles.container}>
