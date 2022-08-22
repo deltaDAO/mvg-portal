@@ -291,7 +291,7 @@ export default function HomePage(): ReactElement {
           <HomeIntro />
         </section>
         <section className={styles.content}>
-          <HomeContent />´
+          <HomeContent />
         </section>
       </>
     </Permission>

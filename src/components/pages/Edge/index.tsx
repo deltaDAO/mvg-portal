@@ -67,7 +67,7 @@ export default function EdgePage({
 }): ReactElement {
   const data: EdgeContent = useStaticQuery(edgeContentQuery)
   const { paragraphs } = data.content.edges[0].node.childEdgeJson.content
-  console.log(data)
+
   const { chainIds } = useUserPreferences()
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
