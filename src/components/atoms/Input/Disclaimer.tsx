@@ -22,7 +22,7 @@ const FormDisclaimer = ({
 
   return (
     <div className={styleClasses}>
-      <Alert text={children} state="info" />
+      <Alert text={children} state="warning" />
     </div>
   )
 }

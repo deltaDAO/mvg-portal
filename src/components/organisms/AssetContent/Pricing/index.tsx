@@ -138,7 +138,7 @@ export default function Pricing({ ddo }: { ddo: DDO }): ReactElement {
           />
         ) : (
           <Alert
-            state="info"
+            state="warning"
             title={content.empty.title}
             text={content.empty.info}
             action={{

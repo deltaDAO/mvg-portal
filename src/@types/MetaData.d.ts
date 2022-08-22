@@ -19,7 +19,6 @@ export interface AdditionalInformationMarket extends AdditionalInformation {
   serviceSelfDescription?: Pick<ServiceSelfDescription, 'raw' | 'url'>
   termsAndConditions?: boolean
   consent: {
-    walletAddress: boolean
     noPersonalData: boolean
   }
 }
@@ -52,7 +51,6 @@ export interface MetadataPublishFormDataset {
   dataTokenOptions: DataTokenOptions
   access: 'Download' | 'Compute' | string
   termsAndConditions: boolean
-  walletAddress: boolean
   noPersonalData: boolean
   // ---- optional fields ----
   tags?: string
@@ -72,7 +70,6 @@ export interface MetadataPublishFormAlgorithm {
   timeout: string
   dataTokenOptions: DataTokenOptions
   termsAndConditions: boolean
-  walletAddress: boolean
   noPersonalData: boolean
   // ---- optional fields ----
   image: string

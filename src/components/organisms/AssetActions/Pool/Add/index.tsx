@@ -179,7 +179,7 @@ export default function Add({
                   <Alert
                     className={styles.warning}
                     text={content.warning.toString()}
-                    state="info"
+                    state="warning"
                     action={{
                       name: 'I understand',
                       style: 'text',
