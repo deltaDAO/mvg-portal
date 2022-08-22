@@ -236,7 +236,7 @@ export default function HomePage(): ReactElement {
             : NUMBER_OF_ASSETS_PER_PAGE
         },
         filters: hasFeaturedAssetsConfigured
-          ? [getFilterTerm('id', category.assets)]
+          ? [getFilterTerm('_id', category.assets)]
           : undefined
       }
       featuredSections.push({
