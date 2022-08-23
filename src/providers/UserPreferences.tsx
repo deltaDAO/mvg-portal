@@ -28,6 +28,10 @@ interface UserPreferencesValue {
   setInfiniteApproval: (value: boolean) => void
   onboardingStep: number
   setOnboardingStep: (step: number) => void
+  isSearchBarVisible: boolean
+  setSearchBarVisible: (value: boolean) => void
+  isScrollingToSearchBar: boolean
+  setIsScrollingToSearchBar: (value: boolean) => void
   locale: string
 }
 
@@ -83,6 +87,10 @@ function UserPreferencesProvider({
   const [onboardingStep, setOnboardingStep] = useState<number>(
     localStorage?.onboardingStep || 0
   )
+
+  const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(false)
+  const [isScrollingToSearchBar, setIsScrollingToSearchBar] =
+    useState<boolean>(false)
 
   // Write values to localStorage on change
   useEffect(() => {
@@ -163,7 +171,11 @@ function UserPreferencesProvider({
           setPrivacyPolicySlug,
           setShowPPC,
           onboardingStep,
-          setOnboardingStep
+          setOnboardingStep,
+          isSearchBarVisible,
+          setSearchBarVisible,
+          isScrollingToSearchBar,
+          setIsScrollingToSearchBar
         } as UserPreferencesValue
       }
     >
