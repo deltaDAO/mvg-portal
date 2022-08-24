@@ -34,6 +34,7 @@ import { useWeb3 } from '../../providers/Web3'
 import SectionTitle from '../molecules/SectionTitle'
 import PromotionBanner from '../molecules/PromotionBanner'
 import { graphql, useStaticQuery } from 'gatsby'
+import SearchForm from '../organisms/SearchForm'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -236,7 +237,7 @@ export default function HomePage(): ReactElement {
             : NUMBER_OF_ASSETS_PER_PAGE
         },
         filters: hasFeaturedAssetsConfigured
-          ? [getFilterTerm('id', category.assets)]
+          ? [getFilterTerm('_id', category.assets)]
           : undefined
       }
       featuredSections.push({
@@ -261,6 +262,9 @@ export default function HomePage(): ReactElement {
           </section>
         )}
 
+        <Container>
+          <SearchForm />
+        </Container>
         <Container>
           <SectionTitle {...featuredAssets.childIndexJson} />
           {queryLatest?.length > 0 &&
