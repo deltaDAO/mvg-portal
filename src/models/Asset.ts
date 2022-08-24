@@ -19,7 +19,10 @@ const AssetModel: MetadataMarket = {
 
     // custom items
     serviceSelfDescription: undefined,
-    termsAndConditions: false
+    termsAndConditions: false,
+    consent: {
+      noPersonalData: false
+    }
   }
 }
 

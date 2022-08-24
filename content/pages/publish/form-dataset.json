@@ -78,17 +78,8 @@
       "help": "Separate tags with comma."
     },
     {
-      "name": "walletAddress",
-      "label": "Wallet address agreement",
-      "type": "terms",
-      "options": [
-        "I agree that my wallet address and public key will be transmitted to a smart contract stored permanently on the Gaia-X testnet, so I can prove service offering ownership and sales."
-      ],
-      "required": true
-    },
-    {
       "name": "noPersonalData",
-      "label": "Personal data agreement",
+      "label": "Metadata confirmation",
       "type": "terms",
       "options": [
         "I confirm that I did not provide personal data in the metadata, which will be stored permanently on-chain on the Gaia-X testnet."
@@ -96,5 +87,6 @@
       "required": true
     }
   ],
-  "success": "Asset Created!"
+  "success": "Asset Created!",
+  "walletDisclaimer": "When you click submit, your wallet address and public key will be transmitted to a smart contract stored permanently on-chain on the Gaia-X testnet."
 }

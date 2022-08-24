@@ -16,6 +16,10 @@
         "link": "/verify"
       },
       {
+        "name": "Edge Computing",
+        "link": "/edge"
+      },
+      {
         "name": "Profile",
         "link": "/profile"
       },
