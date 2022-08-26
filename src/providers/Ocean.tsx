@@ -44,6 +44,7 @@ function OceanProvider({ children }: { children: ReactNode }): ReactElement {
       try {
         Logger.log('[ocean] Connecting Ocean...', newConfig)
         const newOcean = await Ocean.getInstance(newConfig)
+        newOcean.utils.fetch.requestTimeout = 10000
         setOcean(newOcean)
         setConfig(newConfig)
         Logger.log('[ocean] Ocean instance created.', newOcean)

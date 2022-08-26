@@ -1,12 +1,12 @@
 import React, { ReactElement } from 'react'
 import { EdgeDDO } from '../../@types/edge/DDO'
-import styles from './EdgeAssetDetails.module.css'
+import styles from './EdgeAssetTeaserDetails.module.css'
 import classNames from 'classnames/bind'
 import Badge from './Badge'
 
 const cx = classNames.bind(styles)
 
-export default function EdgeAssetDetails({
+export default function EdgeAssetTeaserDetails({
   ddo
 }: {
   ddo: EdgeDDO

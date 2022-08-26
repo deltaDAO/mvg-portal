@@ -7,13 +7,17 @@ import React, {
   useCallback,
   ReactNode
 } from 'react'
-import { Logger, DDO, MetadataMain } from '@oceanprotocol/lib'
+import { Logger, DDO } from '@oceanprotocol/lib'
 import { PurgatoryData } from '@oceanprotocol/lib/dist/node/ddo/interfaces/PurgatoryData'
 import getAssetPurgatoryData from '../utils/purgatory'
-import { CancelToken } from 'axios'
+import axios, { CancelToken } from 'axios'
 import { retrieveDDO } from '../utils/aquarius'
 import { getPrice } from '../utils/subgraph'
-import { MetadataMarket, ServiceMetadataMarket } from '../@types/MetaData'
+import {
+  MetadataMainMarket,
+  MetadataMarket,
+  ServiceMetadataMarket
+} from '../@types/MetaData'
 import { useWeb3 } from './Web3'
 import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
@@ -24,6 +28,7 @@ import {
   getServiceSelfDescription,
   verifyServiceSelfDescription
 } from '../utils/metadata'
+import { EdgeDDO } from '../@types/edge/DDO'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -34,11 +39,13 @@ interface AssetProviderValue {
   title: string
   owner: string
   price: BestPrice
-  type: MetadataMain['type']
+  type: MetadataMainMarket['type']
   error?: string
   refreshInterval: number
   isAssetNetwork: boolean
   isAssetNetworkAllowed: boolean
+  isEdgeNetwork: boolean
+  isEdgeCtdAvailable: boolean
   loading: boolean
   isVerifyingSD: boolean
   isServiceSelfDescriptionVerified: boolean
@@ -69,12 +76,13 @@ function AssetProvider({
   const [price, setPrice] = useState<BestPrice>()
   const [owner, setOwner] = useState<string>()
   const [error, setError] = useState<string>()
-  const [type, setType] = useState<MetadataMain['type']>()
+  const [type, setType] = useState<MetadataMainMarket['type']>()
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
-  const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] =
-    useState<boolean>(true)
+  const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] = useState<boolean>()
+  const [isEdgeNetwork, setIsEdgeNetwork] = useState<boolean>()
+  const [isEdgeCtdAvailable, setIsEdgeCtdAvailable] = useState<boolean>()
   const [isVerifyingSD, setIsVerifyingSD] = useState(false)
   const [
     isServiceSelfDescriptionVerified,
@@ -153,6 +161,7 @@ function AssetProvider({
       const { attributes } = ddo.findServiceByType(
         'metadata'
       ) as ServiceMetadataMarket
+      if (attributes.main.type === 'thing') return
 
       const { serviceSelfDescription } = attributes.additionalInformation
       if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {
@@ -179,45 +188,62 @@ function AssetProvider({
     }
   }, [])
 
-  const initMetadata = useCallback(async (ddo: DDO): Promise<void> => {
-    if (!ddo) return
-    setLoading(true)
-    // Get metadata from DDO
-    const { attributes } = ddo.findServiceByType(
-      'metadata'
-    ) as ServiceMetadataMarket
-    setMetadata(attributes)
-    setTitle(attributes?.main.name)
-    setType(attributes.main.type)
-    setOwner(ddo.publicKey[0].owner)
+  const initMetadata = useCallback(
+    async (ddo: DDO, token?: CancelToken): Promise<void> => {
+      if (!ddo) return
+      setLoading(true)
+      // Get metadata from DDO
+      const { attributes } = ddo.findServiceByType(
+        'metadata'
+      ) as ServiceMetadataMarket
+      setMetadata(attributes)
+      setTitle(attributes?.main.name)
+      setType(attributes.main.type)
+      setOwner(ddo.publicKey[0].owner)
 
-    Logger.log('[asset] Got Metadata from DDO', attributes)
+      Logger.log('[asset] Got Metadata from DDO', attributes)
 
-    setIsInPurgatory(ddo.isInPurgatory === 'true')
-    await setPurgatory(ddo.id)
-    setLoading(false)
-
-    // load price
-    const returnedPrice = await getPrice(ddo)
-    if (
-      appConfig.allowDynamicPricing !== 'true' &&
-      returnedPrice.type === 'pool'
-    ) {
-      setError(
-        `[asset] The asset ${ddo.id} can not be displayed on this market.`
-      )
-      setDDO(undefined)
+      setIsInPurgatory(ddo.isInPurgatory === 'true')
+      await setPurgatory(ddo.id)
       setLoading(false)
-      return
-    }
-    setPrice({ ...returnedPrice })
-  }, [])
+
+      // load price
+      const returnedPrice = await getPrice(ddo)
+      if (
+        appConfig.allowDynamicPricing !== 'true' &&
+        returnedPrice.type === 'pool'
+      ) {
+        setError(
+          `[asset] The asset ${ddo.id} can not be displayed on this market.`
+        )
+        setDDO(undefined)
+        setLoading(false)
+        return
+      }
+      setPrice({ ...returnedPrice })
+
+      if (attributes.main.type === 'thing') {
+        setIsEdgeNetwork(true)
+
+        const { serviceEndpoint } = (ddo as EdgeDDO).findServiceByType('edge')
+        const response = await axios.get(serviceEndpoint, {
+          cancelToken: token
+        })
+        if (response.status === 200) {
+          setIsEdgeCtdAvailable(true)
+        }
+        // setIsAssetNetworkAllowed(false)
+      }
+    },
+    []
+  )
 
   useEffect(() => {
     if (!ddo) return
-    initMetadata(ddo)
+
+    initMetadata(ddo, newCancelToken())
     checkServiceSD(ddo)
-  }, [ddo, checkServiceSD, initMetadata])
+  }, [ddo, checkServiceSD, initMetadata, newCancelToken])
 
   // Check user network against asset network
   useEffect(() => {
@@ -252,6 +278,8 @@ function AssetProvider({
           refreshDdo,
           isAssetNetwork,
           isAssetNetworkAllowed,
+          isEdgeNetwork,
+          isEdgeCtdAvailable,
           isServiceSelfDescriptionVerified,
           verifiedServiceProviderName
         } as AssetProviderValue

@@ -1,8 +1,39 @@
+import { graphql, useStaticQuery } from 'gatsby'
 import React, { FormEvent, ReactElement } from 'react'
 import Alert from './Alert'
 import Button from './Button'
 import styles from './ButtonBuy.module.css'
 import Loader from './Loader'
+
+const query = graphql`
+  query {
+    content: allFile(
+      filter: { relativePath: { eq: "assetDisclaimers.json" } }
+    ) {
+      edges {
+        node {
+          childContentJson {
+            edgeDeviceUnavailableMessage
+            disclaimerMessage
+          }
+        }
+      }
+    }
+  }
+`
+
+interface DisclaimerData {
+  content: {
+    edges: {
+      node: {
+        childContentJson: {
+          edgeDeviceUnavailableMessage: string
+          disclaimerMessage: string
+        }
+      }
+    }[]
+  }
+}
 
 interface ButtonBuyProps {
   action: 'download' | 'compute'
@@ -30,6 +61,7 @@ interface ButtonBuyProps {
   priceType?: string
   algorithmPriceType?: string
   algorithmConsumableStatus?: number
+  isEdgeDeviceUnavailable?: boolean
 }
 
 function getConsumeHelpText(
@@ -145,8 +177,13 @@ export default function ButtonBuy({
   type,
   priceType,
   algorithmPriceType,
-  algorithmConsumableStatus
+  algorithmConsumableStatus,
+  isEdgeDeviceUnavailable
 }: ButtonBuyProps): ReactElement {
+  const data: DisclaimerData = useStaticQuery(query)
+  const { edgeDeviceUnavailableMessage, disclaimerMessage } =
+    data.content.edges[0].node.childContentJson
+
   const buttonText =
     action === 'download'
       ? hasPreviousOrder
@@ -215,6 +252,14 @@ export default function ButtonBuy({
                   selectedComputeAssetType,
                   algorithmConsumableStatus
                 )}
+            <Alert
+              text={
+                isEdgeDeviceUnavailable
+                  ? edgeDeviceUnavailableMessage
+                  : disclaimerMessage
+              }
+              state="info"
+            />
           </div>
         </>
       )}

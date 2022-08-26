@@ -42,6 +42,7 @@ export interface InputProps {
       | React.KeyboardEvent<HTMLSelectElement>
       | React.KeyboardEvent<HTMLTextAreaElement>
   ): void
+  onBlur?(e: React.FocusEvent<HTMLElement>): void
   rows?: number
   multiple?: boolean
   pattern?: string

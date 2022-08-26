@@ -24,6 +24,7 @@ import {
   getFormattedCodeString,
   getServiceSelfDescription
 } from '../../../utils/metadata'
+import EdgeDetails from './EdgeDetails'
 export interface AssetContentProps {
   path?: string
 }
@@ -53,6 +54,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const {
     ddo,
     isAssetNetwork,
+    isEdgeCtdAvailable,
     isInPurgatory,
     isServiceSelfDescriptionVerified,
     metadata,
@@ -146,6 +148,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
               />
             ) : (
               <>
+                {type === 'thing' && <EdgeDetails ddo={ddo} />}
                 <Markdown
                   className={styles.description}
                   text={metadata?.additionalInformation?.description || ''}
@@ -158,8 +161,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
                 )}
 
                 <MetaSecondary />
-
-                {isOwner && isAssetNetwork && (
+                {isOwner && isAssetNetwork && type !== 'thing' && (
                   <div className={styles.ownerActions}>
                     <Button
                       style="text"
@@ -202,9 +204,11 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
             {debug === true && <DebugOutput title="DDO" output={ddo} />}
           </div>
         </div>
-        <div className={styles.actions}>
-          <AssetActions />
-        </div>
+        {type !== 'thing' && (
+          <div className={styles.actions}>
+            <AssetActions />
+          </div>
+        )}
       </article>
     </>
   )

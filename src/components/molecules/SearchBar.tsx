@@ -4,7 +4,8 @@ import React, {
   ChangeEvent,
   FormEvent,
   KeyboardEvent,
-  ReactElement
+  ReactElement,
+  useRef
 } from 'react'
 import { navigate } from 'gatsby'
 import queryString from 'query-string'
@@ -12,6 +13,7 @@ import { addExistingParamsToUrl } from '../templates/Search/utils'
 import { ReactComponent as SearchIcon } from '../../images/search.svg'
 import InputElement from '../atoms/Input/InputElement'
 import styles from './SearchBar.module.css'
+import { useUserPreferences } from '../../providers/UserPreferences'
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window.location.href)
@@ -28,18 +30,36 @@ async function emptySearch() {
 
 export default function SearchBar({
   placeholder,
-  initialValue
+  initialValue,
+  visibleInput,
+  isSearchPage,
+  name
 }: {
   placeholder?: string
   initialValue?: string
+  visibleInput?: boolean
+  isSearchPage?: boolean
+  name?: string
 }): ReactElement {
   const [value, setValue] = useState(initialValue || '')
   const parsed = queryString.parse(location.search)
   const { text, owner } = parsed
+  const { isScrollingToSearchBar, isSearchBarVisible } = useUserPreferences()
+  const isHome = window.location.pathname === '/'
+
+  const searchBarRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     ;(text || owner) && setValue((text || owner) as string)
   }, [text, owner])
+
+  useEffect(() => {
+    if (isHome && !isScrollingToSearchBar) return
+    if (!isHome && !isSearchBarVisible) return
+    if (searchBarRef?.current) {
+      searchBarRef.current.focus()
+    }
+  }, [isHome, isScrollingToSearchBar, isSearchBarVisible])
 
   async function startSearch(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
@@ -72,20 +92,36 @@ export default function SearchBar({
   }
 
   return (
-    <form className={styles.search}>
+    <form
+      className={
+        isHome
+          ? styles.visibleInputSearchHome
+          : isSearchPage
+          ? styles.visibleInputSearch
+          : styles.search
+      }
+    >
       <InputElement
         type="search"
-        name="search"
+        name={name || 'search'}
         placeholder={placeholder || 'Search...'}
         value={value}
         onChange={handleChange}
         required
         size="small"
-        className={styles.input}
+        className={visibleInput ? styles.visibleInput : styles.input}
         onKeyPress={handleKeyPress}
+        ref={searchBarRef}
       />
-      <button onClick={handleButtonClick} className={styles.button}>
-        <SearchIcon className={styles.searchIcon} />
+      <button
+        onClick={handleButtonClick}
+        className={visibleInput ? styles.visibleInputButton : styles.button}
+      >
+        <SearchIcon
+          className={
+            visibleInput ? styles.visibleInputSearchIcon : styles.searchIcon
+          }
+        />
       </button>
     </form>
   )
