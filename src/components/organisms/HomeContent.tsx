@@ -58,7 +58,7 @@ interface HomeContentData {
 
 export default function HomeContent(): ReactElement {
   const data: HomeContentData = useStaticQuery(query)
-  const { paragraphs, teaser } = data.file.childIndexJson.content
+  const { paragraphs, teaser } = data?.file.childIndexJson.content
 
   return (
     <Container>
