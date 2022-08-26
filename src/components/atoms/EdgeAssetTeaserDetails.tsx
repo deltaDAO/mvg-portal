@@ -7,6 +7,7 @@ import { getAssetsForProviders } from '../../utils/aquarius'
 import { useUserPreferences } from '../../providers/UserPreferences'
 import { useCancelToken } from '../../hooks/useCancelToken'
 import axios from 'axios'
+import Loader from './Loader'
 
 const cx = classNames.bind(styles)
 
@@ -19,6 +20,7 @@ export default function EdgeAssetTeaserDetails({
   const newCancelToken = useCancelToken()
   const [isDeviceOnline, setIsDeviceOnline] = useState<boolean>(false)
   const [availableAssets, setAvailableAssets] = useState<number>(0)
+  const [isLoading, setIsLoading] = useState<boolean>()
 
   const service = ddo.findServiceByType('edge')
   const assetModel = service?.attributes?.main?.provider?.device?.model
@@ -36,12 +38,14 @@ export default function EdgeAssetTeaserDetails({
     }
 
     const fetchAssets = async () => {
+      setIsLoading(true)
       const assets = await getAssetsForProviders(
         [serviceEndpoint],
         chainIds,
         newCancelToken()
       )
       setAvailableAssets(assets.length)
+      setIsLoading(false)
     }
 
     checkService()
@@ -64,7 +68,11 @@ export default function EdgeAssetTeaserDetails({
             />
           </div>
           <span className={styles.availableAssets}>
-            {`${availableAssets} available assets`}
+            {isLoading ? (
+              <Loader message="loading available assets" />
+            ) : (
+              `${availableAssets} available assets`
+            )}
           </span>
         </div>
       )}
