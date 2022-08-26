@@ -461,3 +461,51 @@ export async function getDownloadAssets(
     Logger.error(error.message)
   }
 }
+
+export async function getAssetsForProviders(
+  provider: string[],
+  chainIds: number[],
+  cancelToken: CancelToken,
+  assetFilters?: FilterTerm[]
+): Promise<DDO[]> {
+  try {
+    const queryParams: BaseQueryParams = {
+      chainIds,
+      filters: assetFilters || [
+        getFilterTerm('service.attributes.main.type', 'dataset'),
+        getFilterTerm('service.type', 'compute')
+      ],
+      sortOptions: {
+        sortBy: SortTermOptions.Created,
+        sortDirection: SortDirectionOptions.Descending
+      }
+    }
+    const baseQuery = generateBaseQuery(queryParams)
+    const query = {
+      ...baseQuery,
+      query: {
+        ...baseQuery.query,
+        bool: {
+          ...baseQuery.query.bool,
+          should: [
+            ...provider.map((p) =>
+              getFilterTerm('service.serviceEndpoint', p, 'match_phrase')
+            )
+          ],
+          minimum_should_match: 1
+        }
+      }
+    }
+
+    const response = await queryMetadata(query, cancelToken)
+    if (!response) return []
+
+    return response.results || []
+  } catch (error: any) {
+    Logger.error(
+      `Could not load assets for provider ${provider}:`,
+      error.message
+    )
+    return []
+  }
+}

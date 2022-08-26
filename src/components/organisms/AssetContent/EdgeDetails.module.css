@@ -21,3 +21,7 @@ p {
 .unavailable {
   background: var(--brand-alert-red);
 }
+
+.assets {
+  margin-top: var(--spacer);
+}

@@ -188,62 +188,74 @@ function AssetProvider({
     }
   }, [])
 
-  const initMetadata = useCallback(
-    async (ddo: DDO, token?: CancelToken): Promise<void> => {
+  const checkEdgeDeviceStatus = useCallback(
+    async (ddo: EdgeDDO, token?: CancelToken) => {
       if (!ddo) return
-      setLoading(true)
-      // Get metadata from DDO
-      const { attributes } = ddo.findServiceByType(
-        'metadata'
+
+      const { serviceEndpoint } = ddo.findServiceByType(
+        'edge'
       ) as ServiceMetadataMarket
-      setMetadata(attributes)
-      setTitle(attributes?.main.name)
-      setType(attributes.main.type)
-      setOwner(ddo.publicKey[0].owner)
 
-      Logger.log('[asset] Got Metadata from DDO', attributes)
-
-      setIsInPurgatory(ddo.isInPurgatory === 'true')
-      await setPurgatory(ddo.id)
-      setLoading(false)
-
-      // load price
-      const returnedPrice = await getPrice(ddo)
-      if (
-        appConfig.allowDynamicPricing !== 'true' &&
-        returnedPrice.type === 'pool'
-      ) {
-        setError(
-          `[asset] The asset ${ddo.id} can not be displayed on this market.`
-        )
-        setDDO(undefined)
-        setLoading(false)
+      if (!serviceEndpoint) {
+        setIsEdgeCtdAvailable(false)
         return
       }
-      setPrice({ ...returnedPrice })
-
-      if (attributes.main.type === 'thing') {
-        setIsEdgeNetwork(true)
-
-        const { serviceEndpoint } = (ddo as EdgeDDO).findServiceByType('edge')
+      try {
         const response = await axios.get(serviceEndpoint, {
           cancelToken: token
         })
         if (response.status === 200) {
           setIsEdgeCtdAvailable(true)
+          return
         }
-        // setIsAssetNetworkAllowed(false)
+        setIsEdgeCtdAvailable(false)
+      } catch (error) {
+        console.error(error.message)
       }
     },
     []
   )
 
+  const initMetadata = useCallback(async (ddo: DDO): Promise<void> => {
+    if (!ddo) return
+    setLoading(true)
+    // Get metadata from DDO
+    const { attributes } = ddo.findServiceByType(
+      'metadata'
+    ) as ServiceMetadataMarket
+    setMetadata(attributes)
+    setTitle(attributes?.main.name)
+    setType(attributes.main.type)
+    setOwner(ddo.publicKey[0].owner)
+
+    Logger.log('[asset] Got Metadata from DDO', attributes)
+
+    setIsInPurgatory(ddo.isInPurgatory === 'true')
+    await setPurgatory(ddo.id)
+    setLoading(false)
+
+    // load price
+    const returnedPrice = await getPrice(ddo)
+    if (
+      appConfig.allowDynamicPricing !== 'true' &&
+      returnedPrice.type === 'pool'
+    ) {
+      setError(
+        `[asset] The asset ${ddo.id} can not be displayed on this market.`
+      )
+      setDDO(undefined)
+      setLoading(false)
+      return
+    }
+    setPrice({ ...returnedPrice })
+  }, [])
+
   useEffect(() => {
     if (!ddo) return
 
-    initMetadata(ddo, newCancelToken())
+    initMetadata(ddo)
     checkServiceSD(ddo)
-  }, [ddo, checkServiceSD, initMetadata, newCancelToken])
+  }, [ddo, checkServiceSD, initMetadata])
 
   // Check user network against asset network
   useEffect(() => {
@@ -257,6 +269,21 @@ function AssetProvider({
     )
     setIsAssetNetworkAllowed(isAssetNetworkAllowed)
   }, [networkId, ddo, appConfig.chainIdsSupported])
+
+  // Check edge asset online status
+  useEffect(() => {
+    checkEdgeDeviceStatus(ddo, newCancelToken())
+
+    // init periodic refresh of edge asset online status
+    const statusCheckInterval = setInterval(
+      () => checkEdgeDeviceStatus(ddo, newCancelToken()),
+      refreshInterval
+    )
+
+    return () => {
+      clearInterval(statusCheckInterval)
+    }
+  }, [checkEdgeDeviceStatus, ddo, newCancelToken])
 
   return (
     <AssetContext.Provider
