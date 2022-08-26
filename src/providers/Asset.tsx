@@ -7,13 +7,17 @@ import React, {
   useCallback,
   ReactNode
 } from 'react'
-import { Logger, DDO, MetadataMain } from '@oceanprotocol/lib'
+import { Logger, DDO } from '@oceanprotocol/lib'
 import { PurgatoryData } from '@oceanprotocol/lib/dist/node/ddo/interfaces/PurgatoryData'
 import getAssetPurgatoryData from '../utils/purgatory'
 import axios, { CancelToken } from 'axios'
 import { retrieveDDO } from '../utils/aquarius'
 import { getPrice } from '../utils/subgraph'
-import { MetadataMarket, ServiceMetadataMarket } from '../@types/MetaData'
+import {
+  MetadataMainMarket,
+  MetadataMarket,
+  ServiceMetadataMarket
+} from '../@types/MetaData'
 import { useWeb3 } from './Web3'
 import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
@@ -24,6 +28,7 @@ import {
   getServiceSelfDescription,
   verifyServiceSelfDescription
 } from '../utils/metadata'
+import { EdgeDDO } from '../@types/edge/DDO'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -34,7 +39,7 @@ interface AssetProviderValue {
   title: string
   owner: string
   price: BestPrice
-  type: MetadataMain['type']
+  type: MetadataMainMarket['type']
   error?: string
   refreshInterval: number
   isAssetNetwork: boolean
@@ -71,7 +76,7 @@ function AssetProvider({
   const [price, setPrice] = useState<BestPrice>()
   const [owner, setOwner] = useState<string>()
   const [error, setError] = useState<string>()
-  const [type, setType] = useState<MetadataMain['type']>()
+  const [type, setType] = useState<MetadataMainMarket['type']>()
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
@@ -156,6 +161,7 @@ function AssetProvider({
       const { attributes } = ddo.findServiceByType(
         'metadata'
       ) as ServiceMetadataMarket
+      if (attributes.main.type === 'thing') return
 
       const { serviceSelfDescription } = attributes.additionalInformation
       if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {
@@ -216,17 +222,18 @@ function AssetProvider({
       }
       setPrice({ ...returnedPrice })
 
-      // TODO check if DDO is edge type
-      const { type } = attributes.main
-      setIsEdgeNetwork(type === 'edge')
+      if (attributes.main.type === 'thing') {
+        setIsEdgeNetwork(true)
 
-      const { serviceEndpoint } = ddo.findServiceByType('compute')
-      const response = await axios.get(serviceEndpoint, { cancelToken: token })
-      if (response.status === 200) {
-        setIsEdgeCtdAvailable(true)
-        return
+        const { serviceEndpoint } = (ddo as EdgeDDO).findServiceByType('edge')
+        const response = await axios.get(serviceEndpoint, {
+          cancelToken: token
+        })
+        if (response.status === 200) {
+          setIsEdgeCtdAvailable(true)
+        }
+        // setIsAssetNetworkAllowed(false)
       }
-      setIsAssetNetworkAllowed(false)
     },
     []
   )

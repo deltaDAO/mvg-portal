@@ -6,13 +6,16 @@ const cx = classNames.bind(styles)
 
 export default function Badge({
   label,
+  large,
   className
 }: {
   label: string
+  large?: boolean
   className?: string
 }): ReactElement {
   const styleClasses = cx({
     badge: true,
+    large: large,
     [className]: className
   })
 

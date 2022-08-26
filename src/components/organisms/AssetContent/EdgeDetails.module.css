@@ -1,0 +1,23 @@
+h5,
+p {
+  margin-bottom: 0;
+}
+
+p {
+  font-size: var(--font-size-small);
+}
+
+.info {
+  display: grid;
+  gap: var(--spacer);
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.badge {
+  background: var(--brand-alert-green);
+}
+
+.unavailable {
+  background: var(--brand-alert-red);
+}

@@ -73,7 +73,7 @@ export default function EdgePage({
   const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [isLoading, setIsLoading] = useState(false)
   const newCancelToken = useCancelToken()
-
+  console.log(queryResult)
   useEffect(() => {
     const parsed = queryString.parse(location.search)
     setParsed(parsed)

@@ -11,3 +11,7 @@
   background: var(--brand-purple);
   vertical-align: top;
 }
+
+.large {
+  font-size: var(--font-size-base);
+}

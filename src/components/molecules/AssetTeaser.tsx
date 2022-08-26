@@ -11,7 +11,7 @@ import LinkOpener from '../molecules/LinkOpener'
 import { BestPrice } from '../../models/BestPrice'
 import Loader from '../atoms/Loader'
 import { ServiceMetadataMarket } from '../../@types/MetaData'
-import EdgeAssetDetails from '../atoms/EdgeAssetDetails'
+import EdgeAssetTeaserDetails from '../atoms/EdgeAssetTeaserDetails'
 
 declare type AssetTeaserProps = {
   ddo: DDO
@@ -57,7 +57,7 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
 
         <div className={styles.content}>
           {type === 'thing' ? (
-            <EdgeAssetDetails ddo={ddo} />
+            <EdgeAssetTeaserDetails ddo={ddo} />
           ) : (
             <Dotdotdot tagName="p" clamp={3}>
               {removeMarkdown(

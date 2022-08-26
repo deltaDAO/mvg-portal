@@ -28,7 +28,7 @@ export default function PageHeader({
   return (
     <header className={styleClasses}>
       <h1 className={styles.title}>
-        {title} {isEdgeNetwork && <Badge label="EDGE" />}
+        {title} {isEdgeNetwork && <Badge label="EDGE" large />}
       </h1>
       {description && (
         <Markdown text={description} className={styles.description} />
