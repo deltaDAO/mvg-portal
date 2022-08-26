@@ -35,10 +35,7 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
 
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
-      <LinkOpener
-        uri={type !== 'thing' && `/asset/${ddo.id}`}
-        className={styles.link}
-      >
+      <LinkOpener uri={`/asset/${ddo.id}`} className={styles.link}>
         <header className={styles.header}>
           <div className={styles.symbol}>{dataTokenInfo?.symbol}</div>
           <Dotdotdot clamp={3}>
