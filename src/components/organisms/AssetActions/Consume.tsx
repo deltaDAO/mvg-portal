@@ -41,8 +41,7 @@ export default function Consume({
   dtBalance,
   fileIsLoading,
   isConsumable,
-  consumableFeedback,
-  consumeDisclaimerMessage
+  consumableFeedback
 }: {
   ddo: DDO
   file: FileMetadata
@@ -51,7 +50,6 @@ export default function Consume({
   fileIsLoading?: boolean
   isConsumable?: boolean
   consumableFeedback?: string
-  consumeDisclaimerMessage?: string
 }): ReactElement {
   const { accountId } = useWeb3()
   const { ocean } = useOcean()
@@ -206,11 +204,6 @@ export default function Consume({
           {!isInPurgatory && <PurchaseButton />}
         </div>
       </div>
-      {consumeDisclaimerMessage && (
-        <div className={styles.disclaimer}>
-          <Alert state="info" text={consumeDisclaimerMessage} />
-        </div>
-      )}
       {type === 'algorithm' && (
         <AlgorithmDatasetsListForCompute algorithmDid={ddo.id} dataset={ddo} />
       )}

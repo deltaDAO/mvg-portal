@@ -466,7 +466,8 @@ export async function getAssetsForProviders(
   provider: string[],
   chainIds: number[],
   cancelToken: CancelToken,
-  assetFilters?: FilterTerm[]
+  assetFilters?: FilterTerm[],
+  includeThings?: boolean
 ): Promise<DDO[]> {
   try {
     const queryParams: BaseQueryParams = {
@@ -480,7 +481,7 @@ export async function getAssetsForProviders(
         sortDirection: SortDirectionOptions.Descending
       }
     }
-    const baseQuery = generateBaseQuery(queryParams)
+    const baseQuery = generateBaseQuery(queryParams, { includeThings })
     const query = {
       ...baseQuery,
       query: {

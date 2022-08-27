@@ -16,43 +16,11 @@ import { getFileInfo } from '../../../utils/provider'
 import { getOceanConfig } from '../../../utils/ocean'
 import { useCancelToken } from '../../../hooks/useCancelToken'
 import { useIsMounted } from '../../../hooks/useIsMounted'
-import { graphql, useStaticQuery } from 'gatsby'
-
-const query = graphql`
-  query {
-    content: allFile(
-      filter: { relativePath: { eq: "assetDisclaimers.json" } }
-    ) {
-      edges {
-        node {
-          childContentJson {
-            disclaimerMessage
-          }
-        }
-      }
-    }
-  }
-`
-
-interface DisclaimerData {
-  content: {
-    edges: {
-      node: {
-        childContentJson: {
-          disclaimerMessage: string
-        }
-      }
-    }[]
-  }
-}
 
 export default function AssetActions(): ReactElement {
-  const data: DisclaimerData = useStaticQuery(query)
-  const { disclaimerMessage } = data.content.edges[0].node.childContentJson
-
   const { accountId, balance } = useWeb3()
   const { ocean, account } = useOcean()
-  const { price, ddo, isAssetNetwork } = useAsset()
+  const { price, ddo, isAssetNetwork, isEdgeCtdAvailable } = useAsset()
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>()
   const [dtBalance, setDtBalance] = useState<string>()
   const [fileMetadata, setFileMetadata] = useState<FileMetadata>(Object)
@@ -67,6 +35,11 @@ export default function AssetActions(): ReactElement {
     if (!ddo || !accountId || !ocean || !isAssetNetwork) return
 
     async function checkIsConsumable() {
+      if (!isEdgeCtdAvailable) {
+        setIsConsumable(false)
+        setConsumableFeedback('(!) Edge Device currently unavailable')
+        return
+      }
       const consumable = await ocean.assets.isConsumable(
         ddo,
         accountId.toLowerCase()
@@ -138,7 +111,6 @@ export default function AssetActions(): ReactElement {
       fileIsLoading={fileIsLoading}
       isConsumable={isConsumable}
       consumableFeedback={consumableFeedback}
-      computeDisclaimerMessage={disclaimerMessage}
     />
   ) : (
     <Consume
@@ -149,7 +121,6 @@ export default function AssetActions(): ReactElement {
       fileIsLoading={fileIsLoading}
       isConsumable={isConsumable}
       consumableFeedback={consumableFeedback}
-      consumeDisclaimerMessage={disclaimerMessage}
     />
   )
 

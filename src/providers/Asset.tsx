@@ -11,7 +11,11 @@ import { Logger, DDO } from '@oceanprotocol/lib'
 import { PurgatoryData } from '@oceanprotocol/lib/dist/node/ddo/interfaces/PurgatoryData'
 import getAssetPurgatoryData from '../utils/purgatory'
 import axios, { CancelToken } from 'axios'
-import { retrieveDDO } from '../utils/aquarius'
+import {
+  getAssetsForProviders,
+  getFilterTerm,
+  retrieveDDO
+} from '../utils/aquarius'
 import { getPrice } from '../utils/subgraph'
 import {
   MetadataMainMarket,
@@ -29,6 +33,7 @@ import {
   verifyServiceSelfDescription
 } from '../utils/metadata'
 import { EdgeDDO } from '../@types/edge/DDO'
+import { GX_NETWORK_ID } from '../../chains.config'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -189,11 +194,25 @@ function AssetProvider({
   }, [])
 
   const checkEdgeDeviceStatus = useCallback(
-    async (ddo: EdgeDDO, token?: CancelToken) => {
+    async (ddo: EdgeDDO, token: CancelToken) => {
       if (!ddo) return
 
+      const filters = [getFilterTerm('service.type', 'edge')]
+      const thingDDOs = await getAssetsForProviders(
+        [ddo.findServiceByType('compute').serviceEndpoint],
+        [GX_NETWORK_ID],
+        token,
+        filters,
+        true
+      )
+      // Only check if this is an edge asset
+      if (!thingDDOs || thingDDOs.length <= 0) {
+        setIsEdgeCtdAvailable(true)
+        return
+      }
+
       const { serviceEndpoint } = ddo.findServiceByType(
-        'edge'
+        'compute'
       ) as ServiceMetadataMarket
 
       if (!serviceEndpoint) {

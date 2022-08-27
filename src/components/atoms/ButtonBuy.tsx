@@ -217,7 +217,7 @@ export default function ButtonBuy({
             style="primary"
             type={type}
             onClick={onClick}
-            disabled={disabled}
+            disabled={disabled || !isConsumable}
           >
             {buttonText}
           </Button>
