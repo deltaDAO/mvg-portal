@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useMemo, useState } from 'react'
 import { graphql, useStaticQuery } from 'gatsby'
 import Markdown from '../../atoms/Markdown'
 import MetaFull from './MetaFull'
@@ -25,6 +25,7 @@ import {
   getServiceSelfDescription
 } from '../../../utils/metadata'
 import EdgeDetails from './EdgeDetails'
+import { EdgeDDO } from '../../../@types/edge/DDO'
 export interface AssetContentProps {
   path?: string
 }
@@ -72,6 +73,11 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const [isOwner, setIsOwner] = useState(false)
   const [serviceSelfDescription, setServiceSelfDescription] = useState<string>()
   const { appConfig } = useSiteMetadata()
+
+  const showEdgeDetails = useMemo(
+    () => !!(ddo as EdgeDDO)?.findServiceByType('edge'),
+    [ddo]
+  )
 
   useEffect(() => {
     if (!accountId || !owner) return
@@ -148,7 +154,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
               />
             ) : (
               <>
-                {type === 'thing' && <EdgeDetails ddo={ddo} />}
+                {showEdgeDetails && <EdgeDetails ddo={ddo} />}
                 <Markdown
                   className={styles.description}
                   text={metadata?.additionalInformation?.description || ''}
@@ -204,7 +210,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
             {debug === true && <DebugOutput title="DDO" output={ddo} />}
           </div>
         </div>
-        {type !== 'thing' && (
+        {!showEdgeDetails && (
           <div className={styles.actions}>
             <AssetActions />
           </div>
