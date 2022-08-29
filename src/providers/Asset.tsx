@@ -49,6 +49,7 @@ interface AssetProviderValue {
   refreshInterval: number
   isAssetNetwork: boolean
   isAssetNetworkAllowed: boolean
+  isEdgeDeviceAvailable: boolean
   isEdgeCtdAvailable: boolean
   loading: boolean
   isVerifyingSD: boolean
@@ -85,6 +86,7 @@ function AssetProvider({
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
   const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] = useState<boolean>()
+  const [isEdgeDeviceAvailable, setIsEdgeDeviceAvailable] = useState<boolean>()
   const [isEdgeCtdAvailable, setIsEdgeCtdAvailable] = useState<boolean>()
   const [isVerifyingSD, setIsVerifyingSD] = useState(false)
   const [
@@ -194,6 +196,40 @@ function AssetProvider({
   const checkEdgeDeviceStatus = useCallback(
     async (ddo: EdgeDDO, token: CancelToken) => {
       if (!ddo) return
+      const { attributes } = ddo.findServiceByType('metadata')
+      if (attributes.main.type !== 'thing') {
+        setIsEdgeDeviceAvailable(false)
+        return
+      }
+
+      try {
+        const { serviceEndpoint } = ddo.findServiceByType(
+          'edge'
+        ) as ServiceMetadataMarket
+
+        if (!serviceEndpoint) {
+          setIsEdgeDeviceAvailable(false)
+          return
+        }
+        const response = await axios.get(serviceEndpoint, {
+          cancelToken: token
+        })
+        if (response.status === 200) {
+          setIsEdgeDeviceAvailable(true)
+          return
+        }
+        setIsEdgeDeviceAvailable(false)
+      } catch (error) {
+        console.error(error.message)
+        setIsEdgeDeviceAvailable(false)
+      }
+    },
+    []
+  )
+
+  const checkEdgeCtdStatus = useCallback(
+    async (ddo: EdgeDDO, token: CancelToken) => {
+      if (!ddo) return
 
       const filters = [getFilterTerm('service.type', 'edge')]
       const thingDDOs = await getAssetsForProviders(
@@ -203,6 +239,7 @@ function AssetProvider({
         filters,
         true
       )
+      console.log(thingDDOs)
       // Only check if this is an edge asset
       if (!thingDDOs || thingDDOs.length <= 0) {
         setIsEdgeCtdAvailable(true)
@@ -289,18 +326,19 @@ function AssetProvider({
 
   // Check edge asset online status
   useEffect(() => {
+    checkEdgeCtdStatus(ddo, newCancelToken())
     checkEdgeDeviceStatus(ddo, newCancelToken())
 
     // init periodic refresh of edge asset online status
-    const statusCheckInterval = setInterval(
-      () => checkEdgeDeviceStatus(ddo, newCancelToken()),
-      refreshInterval
-    )
+    const statusCheckInterval = setInterval(() => {
+      checkEdgeCtdStatus(ddo, newCancelToken())
+      checkEdgeDeviceStatus(ddo, newCancelToken())
+    }, refreshInterval)
 
     return () => {
       clearInterval(statusCheckInterval)
     }
-  }, [checkEdgeDeviceStatus, ddo, newCancelToken])
+  }, [checkEdgeCtdStatus, checkEdgeDeviceStatus, ddo, newCancelToken])
 
   return (
     <AssetContext.Provider
@@ -322,6 +360,7 @@ function AssetProvider({
           refreshDdo,
           isAssetNetwork,
           isAssetNetworkAllowed,
+          isEdgeDeviceAvailable,
           isEdgeCtdAvailable,
           isServiceSelfDescriptionVerified,
           verifiedServiceProviderName

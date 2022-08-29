@@ -16,7 +16,7 @@ import { accountTruncate } from '../../../utils/web3'
 const cx = classNames.bind(styles)
 
 export default function EdgeDetails({ ddo }: { ddo: EdgeDDO }): ReactElement {
-  const { isEdgeCtdAvailable } = useAsset()
+  const { isEdgeDeviceAvailable } = useAsset()
   const { chainIds } = useUserPreferences()
   const newCancelToken = useCancelToken()
 
@@ -44,7 +44,7 @@ export default function EdgeDetails({ ddo }: { ddo: EdgeDDO }): ReactElement {
 
   const badgeStyles = cx({
     badge: true,
-    unavailable: !isEdgeCtdAvailable
+    unavailable: !isEdgeDeviceAvailable
   })
 
   const columns = [
@@ -72,7 +72,7 @@ export default function EdgeDetails({ ddo }: { ddo: EdgeDDO }): ReactElement {
       </div>
       <div className={styles.status}>
         <Badge
-          label={isEdgeCtdAvailable ? 'online' : 'offline'}
+          label={isEdgeDeviceAvailable ? 'online' : 'offline'}
           className={badgeStyles}
           large
         />
