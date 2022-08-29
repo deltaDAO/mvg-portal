@@ -18,7 +18,7 @@ export default function PageTemplateAssetDetails({
     isInPurgatory,
     loading,
     isAssetNetworkAllowed,
-    isEdgeNetwork
+    type
   } = useAsset()
   const [pageTitle, setPageTitle] = useState<string>()
 
@@ -32,7 +32,7 @@ export default function PageTemplateAssetDetails({
   }, [ddo, error, isInPurgatory, title])
 
   return ddo && pageTitle !== undefined && !loading && isAssetNetworkAllowed ? (
-    <Page title={pageTitle} uri={uri} isEdgeNetwork={isEdgeNetwork}>
+    <Page title={pageTitle} uri={uri} isEdgeNetwork={type === 'thing'}>
       <Router basepath="/asset">
         <AssetContent path=":did" />
       </Router>

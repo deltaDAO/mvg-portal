@@ -49,7 +49,6 @@ interface AssetProviderValue {
   refreshInterval: number
   isAssetNetwork: boolean
   isAssetNetworkAllowed: boolean
-  isEdgeNetwork: boolean
   isEdgeCtdAvailable: boolean
   loading: boolean
   isVerifyingSD: boolean
@@ -86,7 +85,6 @@ function AssetProvider({
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
   const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] = useState<boolean>()
-  const [isEdgeNetwork, setIsEdgeNetwork] = useState<boolean>()
   const [isEdgeCtdAvailable, setIsEdgeCtdAvailable] = useState<boolean>()
   const [isVerifyingSD, setIsVerifyingSD] = useState(false)
   const [
@@ -324,7 +322,6 @@ function AssetProvider({
           refreshDdo,
           isAssetNetwork,
           isAssetNetworkAllowed,
-          isEdgeNetwork,
           isEdgeCtdAvailable,
           isServiceSelfDescriptionVerified,
           verifiedServiceProviderName
