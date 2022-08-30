@@ -37,7 +37,6 @@ export default function AssetActions(): ReactElement {
     async function checkIsConsumable() {
       if (!isEdgeCtdAvailable) {
         setIsConsumable(false)
-        setConsumableFeedback('(!) Edge Device currently unavailable')
         return
       }
       const consumable = await ocean.assets.isConsumable(
@@ -50,7 +49,7 @@ export default function AssetActions(): ReactElement {
       }
     }
     checkIsConsumable()
-  }, [accountId, isAssetNetwork, ddo, ocean])
+  }, [accountId, isAssetNetwork, ddo, ocean, isEdgeCtdAvailable])
 
   useEffect(() => {
     const oceanConfig = getOceanConfig(ddo.chainId)

@@ -258,7 +258,7 @@ export default function ButtonBuy({
                   ? edgeDeviceUnavailableMessage
                   : disclaimerMessage
               }
-              state="info"
+              state="warning"
             />
           </div>
         </>
