@@ -129,7 +129,7 @@ function getComputeAssetHelpText(
       : hasDatatokenSelectedComputeAsset
       ? `You own ${dtBalanceSelectedComputeAsset} ${dtSymbolSelectedComputeAsset} allowing you to use the selected ${selectedComputeAssetType} by spending 1 ${dtSymbolSelectedComputeAsset}, but without paying OCEAN again.`
       : selectedComputeAssettLowPoolLiquidity
-      ? `There are not enought ${dtSymbolSelectedComputeAsset} available in the pool for the transaction to take place`
+      ? `There are not enough ${dtSymbolSelectedComputeAsset} available in the pool for the transaction to take place`
       : isBalanceSufficient === false
       ? ''
       : `Additionally, you will buy 1 ${dtSymbolSelectedComputeAsset} for the ${selectedComputeAssetType} and spend it back to its publisher and pool.`
@@ -258,7 +258,7 @@ export default function ButtonBuy({
                   ? edgeDeviceUnavailableMessage
                   : disclaimerMessage
               }
-              state="warning"
+              state={isEdgeDeviceUnavailable ? 'warning' : 'info'}
             />
           </div>
         </>
