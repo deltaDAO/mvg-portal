@@ -18,7 +18,11 @@ const useUserPreferences: UserPreferencesValue = {
   removeBookmark: jest.fn(),
   setInfiniteApproval: jest.fn(),
   onboardingStep: 0,
-  setOnboardingStep: jest.fn()
+  setOnboardingStep: jest.fn(),
+  isSearchBarVisible: false,
+  setSearchBarVisible: jest.fn(),
+  isScrollingToSearchBar: false,
+  setIsScrollingToSearchBar: jest.fn()
 }
 
 export default useUserPreferences
