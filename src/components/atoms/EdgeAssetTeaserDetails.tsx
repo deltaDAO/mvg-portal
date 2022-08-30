@@ -20,7 +20,7 @@ export default function EdgeAssetTeaserDetails({
   const newCancelToken = useCancelToken()
   const [isDeviceOnline, setIsDeviceOnline] = useState<boolean>(false)
   const [availableAssets, setAvailableAssets] = useState<number>(0)
-  const [isLoading, setIsLoading] = useState<boolean>()
+  const [isLoadingAssets, setIsLoadingAssets] = useState<boolean>()
 
   const service = ddo.findServiceByType('edge')
   const assetModel = service?.attributes?.main?.provider?.device?.model
@@ -29,23 +29,28 @@ export default function EdgeAssetTeaserDetails({
   useEffect(() => {
     if (!ddo || !serviceEndpoint) return
     const checkService = async () => {
-      const response = await axios.get(serviceEndpoint)
-      if (response.status === 200) {
-        setIsDeviceOnline(true)
-        return
+      try {
+        const response = await axios.get(serviceEndpoint)
+        if (response.status === 200) {
+          setIsDeviceOnline(true)
+          return
+        }
+        setIsDeviceOnline(false)
+      } catch (error) {
+        console.error(error.message)
+        setIsDeviceOnline(false)
       }
-      setIsDeviceOnline(false)
     }
 
     const fetchAssets = async () => {
-      setIsLoading(true)
+      setIsLoadingAssets(true)
       const assets = await getAssetsForProviders(
         [serviceEndpoint],
         chainIds,
         newCancelToken()
       )
       setAvailableAssets(assets.length)
-      setIsLoading(false)
+      setIsLoadingAssets(false)
     }
 
     checkService()
@@ -68,7 +73,7 @@ export default function EdgeAssetTeaserDetails({
             />
           </div>
           <span className={styles.availableAssets}>
-            {isLoading ? (
+            {isLoadingAssets ? (
               <Loader message="loading available assets" />
             ) : (
               `${availableAssets} available assets`

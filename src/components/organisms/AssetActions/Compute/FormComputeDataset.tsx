@@ -103,7 +103,7 @@ export default function FormStartCompute({
 
   const { isValid, values }: FormikContextType<{ algorithm: string }> =
     useFormikContext()
-  const { price, ddo, isAssetNetwork, isEdgeCtdAvailable, type } = useAsset()
+  const { price, ddo, isAssetNetwork, isEdgeCtdAvailable } = useAsset()
   const [totalPrice, setTotalPrice] = useState(price?.value)
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(false)
   const { accountId, balance } = useWeb3()
@@ -210,7 +210,7 @@ export default function FormStartCompute({
           !isBalanceSufficient ||
           !isAssetNetwork ||
           algorithmConsumableStatus > 0 ||
-          (type === 'thing' && !isEdgeCtdAvailable)
+          !isEdgeCtdAvailable
         }
         hasPreviousOrder={hasPreviousOrder}
         hasDatatoken={hasDatatoken}
@@ -238,7 +238,7 @@ export default function FormStartCompute({
         isConsumable={isConsumable}
         consumableFeedback={consumableFeedback}
         algorithmConsumableStatus={algorithmConsumableStatus}
-        isEdgeDeviceUnavailable={type === 'thing' && !isEdgeCtdAvailable}
+        isEdgeDeviceUnavailable={!isEdgeCtdAvailable}
       />
     </Form>
   )

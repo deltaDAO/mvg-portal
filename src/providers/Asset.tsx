@@ -241,7 +241,6 @@ function AssetProvider({
         filters,
         true
       )
-      console.log(thingDDOs)
       // Only check if this is an edge asset
       if (!thingDDOs || thingDDOs.length <= 0) {
         setIsEdgeAsset(false)
@@ -269,6 +268,7 @@ function AssetProvider({
         setIsEdgeCtdAvailable(false)
       } catch (error) {
         console.error(error.message)
+        setIsEdgeCtdAvailable(false)
       }
     },
     []
