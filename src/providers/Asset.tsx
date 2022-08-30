@@ -49,6 +49,7 @@ interface AssetProviderValue {
   refreshInterval: number
   isAssetNetwork: boolean
   isAssetNetworkAllowed: boolean
+  isEdgeAsset: boolean
   isEdgeDeviceAvailable: boolean
   isEdgeCtdAvailable: boolean
   loading: boolean
@@ -86,6 +87,7 @@ function AssetProvider({
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
   const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] = useState<boolean>()
+  const [isEdgeAsset, setIsEdgeAsset] = useState<boolean>()
   const [isEdgeDeviceAvailable, setIsEdgeDeviceAvailable] = useState<boolean>()
   const [isEdgeCtdAvailable, setIsEdgeCtdAvailable] = useState<boolean>()
   const [isVerifyingSD, setIsVerifyingSD] = useState(false)
@@ -242,10 +244,12 @@ function AssetProvider({
       console.log(thingDDOs)
       // Only check if this is an edge asset
       if (!thingDDOs || thingDDOs.length <= 0) {
+        setIsEdgeAsset(false)
         setIsEdgeCtdAvailable(true)
         return
       }
 
+      setIsEdgeAsset(true)
       const { serviceEndpoint } = ddo.findServiceByType(
         'compute'
       ) as ServiceMetadataMarket
@@ -360,6 +364,7 @@ function AssetProvider({
           refreshDdo,
           isAssetNetwork,
           isAssetNetworkAllowed,
+          isEdgeAsset,
           isEdgeDeviceAvailable,
           isEdgeCtdAvailable,
           isServiceSelfDescriptionVerified,
