@@ -12,17 +12,20 @@ import { BestPrice } from '../../models/BestPrice'
 import Loader from '../atoms/Loader'
 import { ServiceMetadataMarket } from '../../@types/MetaData'
 import EdgeAssetTeaserDetails from '../atoms/EdgeAssetTeaserDetails'
+import Badge from '../atoms/Badge'
 
 declare type AssetTeaserProps = {
   ddo: DDO
   price?: BestPrice
   noPublisher?: boolean
+  isEdgeAsset?: boolean
 }
 
 const AssetTeaser: React.FC<AssetTeaserProps> = ({
   ddo,
   price,
-  noPublisher
+  noPublisher,
+  isEdgeAsset
 }: AssetTeaserProps) => {
   const { attributes } = ddo.findServiceByType(
     'metadata'
@@ -41,6 +44,7 @@ const AssetTeaser: React.FC<AssetTeaserProps> = ({
           <Dotdotdot clamp={3}>
             <h1 className={styles.title}>{name}</h1>
           </Dotdotdot>
+          {isEdgeAsset && <Badge className={styles.badge} label="EDGE" />}
           {!noPublisher && (
             <Publisher account={owner} minimal className={styles.publisher} />
           )}

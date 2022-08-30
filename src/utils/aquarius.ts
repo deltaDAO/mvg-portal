@@ -17,6 +17,7 @@ import { SearchResponse } from '../models/aquarius/SearchResponse'
 import { BaseQueryParams } from '../models/aquarius/BaseQueryParams'
 import { FilterTerm } from '../models/aquarius/FilterTerm'
 import { SortDirectionOptions, SortTermOptions } from '../models/SortAndFilters'
+import { EdgeDDO } from '../@types/edge/DDO'
 
 export interface DownloadedAsset {
   dtSymbol: string
@@ -468,7 +469,7 @@ export async function getAssetsForProviders(
   cancelToken: CancelToken,
   assetFilters?: FilterTerm[],
   includeThings?: boolean
-): Promise<DDO[]> {
+): Promise<EdgeDDO[]> {
   try {
     const queryParams: BaseQueryParams = {
       chainIds,
