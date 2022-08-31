@@ -90,8 +90,11 @@ function UserPreferencesProvider({
     localStorage?.onboardingStep || 0
   )
 
-  const [showOnboardingModule, setShowOnboardingModule] =
-    useState<boolean>(true)
+  const [showOnboardingModule, setShowOnboardingModule] = useState<boolean>(
+    localStorage?.showOnboardingModule === undefined
+      ? true
+      : localStorage?.showOnboardingModule
+  )
 
   const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(false)
   const [isScrollingToSearchBar, setIsScrollingToSearchBar] =
