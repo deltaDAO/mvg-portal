@@ -30,6 +30,10 @@ interface UserPreferencesValue {
   setOnboardingStep: (step: number) => void
   showOnboardingModule: boolean
   setShowOnboardingModule: (value: boolean) => void
+  isSearchBarVisible: boolean
+  setSearchBarVisible: (value: boolean) => void
+  isScrollingToSearchBar: boolean
+  setIsScrollingToSearchBar: (value: boolean) => void
   locale: string
 }
 
@@ -88,6 +92,10 @@ function UserPreferencesProvider({
 
   const [showOnboardingModule, setShowOnboardingModule] =
     useState<boolean>(true)
+
+  const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(false)
+  const [isScrollingToSearchBar, setIsScrollingToSearchBar] =
+    useState<boolean>(false)
 
   // Write values to localStorage on change
   useEffect(() => {
@@ -172,7 +180,11 @@ function UserPreferencesProvider({
           onboardingStep,
           setOnboardingStep,
           showOnboardingModule,
-          setShowOnboardingModule
+          setShowOnboardingModule,
+          isSearchBarVisible,
+          setSearchBarVisible,
+          isScrollingToSearchBar,
+          setIsScrollingToSearchBar
         } as UserPreferencesValue
       }
     >
