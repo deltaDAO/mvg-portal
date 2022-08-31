@@ -45,6 +45,7 @@ const AssetList: React.FC<AssetListProps> = ({
   const { chainIds } = useUserPreferences()
   const [assetsWithPrices, setAssetWithPrices] = useState<AssetListPrices[]>()
   const [edgeAssetsList, setEdgeAssetsList] = useState<string[]>([])
+  const [isLoadingPrices, setIsLoadingPrices] = useState(false)
   const isMounted = useIsMounted()
   const newCancelToken = useCancelToken()
 
@@ -85,9 +86,11 @@ const AssetList: React.FC<AssetListProps> = ({
     }
 
     async function fetchPrices() {
+      setIsLoadingPrices(true)
       const asset = await getAssetsBestPrices(assets)
       if (!isMounted()) return
       setAssetWithPrices(asset)
+      setIsLoadingPrices(false)
     }
 
     getEdgeAssetList()
@@ -111,7 +114,9 @@ const AssetList: React.FC<AssetListProps> = ({
   ) : (assetsWithPrices || assets) && !isLoading ? (
     <>
       <div className={styleClasses}>
-        {assetsWithPrices && assetsWithPrices.length > 0 ? (
+        {assetsWithPrices &&
+        assetsWithPrices?.length > 0 &&
+        !isLoadingPrices ? (
           assetsWithPrices.map((assetWithPrice) => (
             <AssetTeaser
               ddo={assetWithPrice.ddo}
@@ -121,7 +126,7 @@ const AssetList: React.FC<AssetListProps> = ({
               isEdgeAsset={edgeAssetsList.includes(assetWithPrice.ddo.id)}
             />
           ))
-        ) : assets.length > 0 ? (
+        ) : assets?.length > 0 ? (
           assets.map((asset) => (
             <AssetTeaser
               ddo={asset}
