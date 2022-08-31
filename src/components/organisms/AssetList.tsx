@@ -7,7 +7,6 @@ import classNames from 'classnames/bind'
 import { getAssetsBestPrices, AssetListPrices } from '../../utils/subgraph'
 import Loader from '../atoms/Loader'
 import { useUserPreferences } from '../../providers/UserPreferences'
-import { useSiteMetadata } from '../../hooks/useSiteMetadata'
 import { useIsMounted } from '../../hooks/useIsMounted'
 import { getAssetsForProviders, getFilterTerm } from '../../utils/aquarius'
 import { useCancelToken } from '../../hooks/useCancelToken'
@@ -43,7 +42,6 @@ const AssetList: React.FC<AssetListProps> = ({
   className,
   noPublisher
 }) => {
-  const { appConfig } = useSiteMetadata()
   const { chainIds } = useUserPreferences()
   const [assetsWithPrices, setAssetWithPrices] = useState<AssetListPrices[]>()
   const [edgeAssetsList, setEdgeAssetsList] = useState<string[]>([])
@@ -52,6 +50,7 @@ const AssetList: React.FC<AssetListProps> = ({
 
   useEffect(() => {
     if (!assets) return
+
     async function getEdgeAssetList() {
       const datasets = assets.filter((asset) => {
         const { type } = asset.findServiceByType('metadata').attributes.main
@@ -109,7 +108,7 @@ const AssetList: React.FC<AssetListProps> = ({
     <div className={styleClasses}>
       <div className={styles.empty}>No network selected</div>
     </div>
-  ) : assetsWithPrices || assets ? (
+  ) : (assetsWithPrices || assets) && !isLoading ? (
     <>
       <div className={styleClasses}>
         {assetsWithPrices && assetsWithPrices.length > 0 ? (
