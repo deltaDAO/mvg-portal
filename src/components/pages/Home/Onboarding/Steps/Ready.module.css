@@ -34,8 +34,3 @@
 .title {
   margin-bottom: var(--spacer);
 }
-
-.footer p {
-  font-size: var(--font-size-small);
-  margin-bottom: 0;
-}
