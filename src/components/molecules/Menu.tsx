@@ -4,7 +4,6 @@ import { useLocation } from '@reach/router'
 import loadable from '@loadable/component'
 import styles from './Menu.module.css'
 import { useSiteMetadata } from '../../hooks/useSiteMetadata'
-import UserPreferences from './UserPreferences'
 import Logo from '../atoms/Logo'
 import Networks from './UserPreferences/Networks'
 import SearchBar from './SearchBar'
@@ -55,7 +54,6 @@ export default function Menu(): ReactElement {
             <SearchBar />
             <Networks />
             <Wallet />
-            <UserPreferences />
           </div>
         </nav>
       </Container>
