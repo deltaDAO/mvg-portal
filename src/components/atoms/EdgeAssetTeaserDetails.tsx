@@ -28,6 +28,7 @@ export default function EdgeAssetTeaserDetails({
 
   useEffect(() => {
     if (!ddo || !serviceEndpoint) return
+
     const checkService = async () => {
       try {
         const response = await axios.get(serviceEndpoint)
@@ -42,6 +43,12 @@ export default function EdgeAssetTeaserDetails({
       }
     }
 
+    checkService()
+  }, [ddo, serviceEndpoint])
+
+  useEffect(() => {
+    if (!ddo || !serviceEndpoint) return
+
     const fetchAssets = async () => {
       setIsLoadingAssets(true)
       const assets = await getAssetsForProviders(
@@ -53,7 +60,6 @@ export default function EdgeAssetTeaserDetails({
       setIsLoadingAssets(false)
     }
 
-    checkService()
     fetchAssets()
   }, [chainIds, ddo, newCancelToken, serviceEndpoint])
 
