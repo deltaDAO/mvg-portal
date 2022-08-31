@@ -12,7 +12,7 @@ export default function Onboarding(): ReactElement {
       name="onboarding"
       type="checkbox"
       options={['Show onboarding tutorial']}
-      defaultChecked={showOnboardingModule === true}
+      checked={showOnboardingModule}
       onChange={() => setShowOnboardingModule(!showOnboardingModule)}
     />
   )
