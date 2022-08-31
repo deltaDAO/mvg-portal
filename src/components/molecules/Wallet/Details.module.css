@@ -100,6 +100,11 @@
   max-width: 17rem;
 }
 
-.debug * {
+.debug *,
+.onboarding * {
   margin-bottom: 0;
+}
+
+.debug {
+  margin-top: calc(var(--spacer) / 2);
 }

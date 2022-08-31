@@ -1,9 +1,4 @@
-import React, {
-  ReactElement,
-  useEffect,
-  useLayoutEffect,
-  useState
-} from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import styles from './Home.module.css'
 import AssetList from '../organisms/AssetList'
 import Button from '../atoms/Button'
@@ -30,7 +25,6 @@ import HomeContent from '../organisms/HomeContent'
 import Container from '../atoms/Container'
 import { useAddressConfig } from '../../hooks/useAddressConfig'
 import OnboardingSection from './Home/Onboarding'
-import { useWeb3 } from '../../providers/Web3'
 import SectionTitle from '../molecules/SectionTitle'
 import PromotionBanner from '../molecules/PromotionBanner'
 import { graphql, useStaticQuery } from 'gatsby'
@@ -181,39 +175,11 @@ export default function HomePage(): ReactElement {
   const [queryLatest, setQueryLatest] = useState<FeaturedSection[]>()
   const { chainIds } = useUserPreferences()
   const { featured, hasFeaturedAssets } = useAddressConfig()
-  const { accountId, balance, balanceLoading, chainId, web3Loading } = useWeb3()
-  const [showOnboarding, setShowOnboarding] = useState(false)
+  const { showOnboardingModule } = useUserPreferences()
   const data: HomeContent = useStaticQuery(homePageContentQuery)
   const { content, featuredAssets } = data
 
   const { banners } = content.edges[0].node.childContentJson
-
-  useLayoutEffect(() => {
-    const { eth, ocean } = balance
-    if (balanceLoading) return
-    if (web3Loading) {
-      setShowOnboarding(false)
-      return
-    }
-    if (!accountId) {
-      setShowOnboarding(true)
-      return
-    }
-    const showOnboardingSession = sessionStorage.getItem(
-      'showOnboardingSession'
-    )
-    if (showOnboardingSession === 'true') {
-      setShowOnboarding(true)
-      return
-    }
-    if (
-      chainId !== 2021000 ||
-      (chainId === 2021000 && (eth === '0' || ocean === '0'))
-    ) {
-      setShowOnboarding(true)
-      sessionStorage.setItem('showOnboardingSession', 'true')
-    }
-  }, [accountId, balance, balanceLoading, chainId, web3Loading])
 
   useEffect(() => {
     const baseParams = {
@@ -255,7 +221,7 @@ export default function HomePage(): ReactElement {
   return (
     <Permission eventType="browse">
       <>
-        {showOnboarding && (
+        {showOnboardingModule && (
           <section className={styles.content}>
             <OnboardingSection />
           </section>
@@ -291,7 +257,7 @@ export default function HomePage(): ReactElement {
           <HomeIntro />
         </section>
         <section className={styles.content}>
-          <HomeContent />´
+          <HomeContent />
         </section>
       </>
     </Permission>
