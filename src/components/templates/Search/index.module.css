@@ -1,18 +1,15 @@
 .row {
   display: inline-flex;
   flex-direction: column;
+  gap: calc(var(--spacer) / 2);
   align-items: stretch;
   justify-content: space-between;
   width: 100%;
   white-space: nowrap;
-  margin-bottom: calc(var(--spacer) / 2);
+  margin-bottom: var(--spacer);
 }
 
-.row > div {
-  margin-bottom: calc(var(--spacer) / 2);
-}
-
-@media (min-width: 40rem) {
+@media (min-width: 60rem) {
   .row {
     flex-direction: row;
   }
