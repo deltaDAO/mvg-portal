@@ -9,6 +9,7 @@ import { useWeb3 } from '../../../providers/Web3'
 import Web3Feedback from '../Web3Feedback'
 import styles from './Details.module.css'
 import { getOceanConfig } from '../../../utils/ocean'
+import Debug from '../UserPreferences/Debug'
 
 export default function Details(): ReactElement {
   const {
@@ -128,6 +129,9 @@ export default function Details(): ReactElement {
               Disconnect
             </Button>
           </p>
+        </li>
+        <li className={styles.debug}>
+          <Debug />
         </li>
       </ul>
       <Web3Feedback />

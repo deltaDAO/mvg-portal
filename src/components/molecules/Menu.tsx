@@ -29,7 +29,7 @@ function MenuLink({ name, link }: { name: string; link: string }) {
 }
 
 export default function Menu(): ReactElement {
-  const { menu, badge } = useSiteMetadata()
+  const { menu } = useSiteMetadata()
 
   return (
     <div className={styles.wrapper}>
