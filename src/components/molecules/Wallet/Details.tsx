@@ -5,7 +5,6 @@ import Button from '../../atoms/Button'
 import AddToken from '../../atoms/AddToken'
 import Conversion from '../../atoms/Price/Conversion'
 import { useWeb3 } from '../../../providers/Web3'
-
 import Web3Feedback from '../Web3Feedback'
 import styles from './Details.module.css'
 import { getOceanConfig } from '../../../utils/ocean'
@@ -72,6 +71,11 @@ export default function Details(): ReactElement {
             {key === 'ocean' && <Conversion price={value} />}
           </li>
         ))}
+        <li className={styles.profileLink}>
+          <Button style="text" to="/profile">
+            View Profile
+          </Button>
+        </li>
 
         <li className={styles.actions}>
           <div title="Connected provider" className={styles.walletInfo}>
