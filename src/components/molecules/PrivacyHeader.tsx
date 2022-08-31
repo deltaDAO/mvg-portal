@@ -18,10 +18,6 @@ export default function PrivacyPolicyHeader({
   return (
     <div>
       <PrivacyLanguages label={params.languageLabel} />
-      <p>
-        {params?.updated || 'Last updated on'}{' '}
-        <Time date={date} displayFormat={params?.dateFormat || 'MM-dd-yyyy'} />
-      </p>
       <div className={styles.content}>
         <h1>{params?.tocHeader || 'Table of Contents'}</h1>
         <div
