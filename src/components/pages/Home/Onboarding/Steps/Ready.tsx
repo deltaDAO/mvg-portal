@@ -2,6 +2,8 @@ import React, { ReactElement } from 'react'
 import styles from './Ready.module.css'
 import SuccessConfetti from '../../../../atoms/SuccessConfetti'
 import { graphql, useStaticQuery } from 'gatsby'
+import Button from '../../../../atoms/Button'
+import { useUserPreferences } from '../../../../../providers/UserPreferences'
 
 const query = graphql`
   query ReadyQuery {
@@ -32,6 +34,7 @@ interface ReadyStep {
 export default function Ready(): ReactElement {
   const data = useStaticQuery(query)
   const { title, body, image }: ReadyStep = data.file.childStepsJson
+  const { setShowOnboardingModule } = useUserPreferences()
 
   return (
     <div className={styles.container}>
@@ -39,6 +42,9 @@ export default function Ready(): ReactElement {
       <img src={image.childImageSharp.original.src} className={styles.image} />
       <div className={styles.footer}>
         <h3 className={styles.title}>{title}</h3>
+        <Button style="text" onClick={() => setShowOnboardingModule(false)}>
+          Hide tutorial for my next visits
+        </Button>
       </div>
     </div>
   )
