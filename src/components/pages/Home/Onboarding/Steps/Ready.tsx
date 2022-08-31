@@ -11,6 +11,7 @@ const query = graphql`
       childStepsJson {
         title
         body
+        hideTutorial
         image {
           childImageSharp {
             original {
@@ -26,6 +27,7 @@ const query = graphql`
 interface ReadyStep {
   title: string
   body: string
+  hideTutorial: string
   image: {
     childImageSharp: { original: { src: string } }
   }
@@ -33,7 +35,8 @@ interface ReadyStep {
 
 export default function Ready(): ReactElement {
   const data = useStaticQuery(query)
-  const { title, body, image }: ReadyStep = data.file.childStepsJson
+  const { title, body, hideTutorial, image }: ReadyStep =
+    data.file.childStepsJson
   const { setShowOnboardingModule } = useUserPreferences()
 
   return (
@@ -43,7 +46,7 @@ export default function Ready(): ReactElement {
       <div className={styles.footer}>
         <h3 className={styles.title}>{title}</h3>
         <Button style="text" onClick={() => setShowOnboardingModule(false)}>
-          Hide tutorial for my next visits
+          {hideTutorial}
         </Button>
       </div>
     </div>
