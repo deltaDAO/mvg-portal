@@ -3,16 +3,26 @@ title: Privacy Policy
 description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO) processes your personal data when you visit our portal demonstrator and when you use one of our portal demonstrator functionalities. Moreover, this privacy policy informs you about your rights.
 ---
 
-# 1. Controller
+_Last updated on September 01, 2022_
 
-The controller of the processing of your personal data is:
+# 1. Contact details of the controller and Data Protection Officer
 
-deltaDAO AG<br/>
-Geibelstraße 46b<br/>
-22303 Hamburg<br/>
-Germany
+The controller pursuant to the EU General Data Protection Regulation (“GDPR”) for the processing of your personal data is:
 
+deltaDAO AG  
+Geibelstraße 46b  
+22303 Hamburg  
+Germany<br>
 E-mail: [contact@delta-dao.com](mailto:contact@delta-dao.com)
+
+If you have any questions about the protection of your personal data at deltaDAO, please contact our Data Protection Officer:
+
+Data Protection Officer<br>
+deltaDAO AG  
+Geibelstraße 46b  
+22303 Hamburg  
+Germany<br>
+E-mail: [privacy@delta-dao.com](mailto:privacy@delta-dao.com)
 
 # 2. What&#39;s personal data?
 
@@ -39,7 +49,7 @@ If you use our portal demonstrator functionalities, we disclose your wallet addr
 
 **Contact via e-mail**
 
-When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at contact@delta-dao.com.
+When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at [privacy@delta-dao.com](mailto:privacy@delta-dao.com).
 
 # 4. Processing operations according to Article 13 GDPR
 
@@ -245,7 +255,7 @@ You have the right to lodge a complaint with a supervisory authority if you cons
 
 # 8. Questions
 
-For any requests regarding our privacy policy, please send us an e-mail to [contact@delta-dao.com](mailto:contact@delta-dao.com).
+For any requests regarding our privacy policy, please send us an e-mail to [privacy@delta-dao.com](mailto:privacy@delta-dao.com).
 
 # 9. Changes to the Privacy Policy
 We adjust this policy from time to time, by publishing a new version on our portal demonstrator. You can find the date of the current version at the beginning of this policy.
