@@ -3,13 +3,10 @@
     {
       "policy": "en",
       "language": "English",
-      "date": "2022-03-24",
       "params": {
         "languageLabel": "Language",
         "languageHelp": "Language of the privacy policy",
-        "tocHeader": "Table of contents",
-        "updated": "Last updated on",
-        "dateFormat": "MM/dd/yyyy"
+        "tocHeader": "Table of contents"
       }
     }
   ]
