@@ -65,8 +65,7 @@ const AssetList: React.FC<AssetListProps> = ({
         [...new Set(assetsServiceEndpoints.filter((e) => e !== undefined))],
         chainIds,
         newCancelToken(),
-        [getFilterTerm('service.type', 'edge')],
-        true
+        [getFilterTerm('service.type', 'edge')]
       )
       const edgeDeviceProviders = [
         ...new Set(

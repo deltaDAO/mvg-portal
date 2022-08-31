@@ -16,7 +16,12 @@ import { SearchQuery } from '../models/aquarius/SearchQuery'
 import { SearchResponse } from '../models/aquarius/SearchResponse'
 import { BaseQueryParams } from '../models/aquarius/BaseQueryParams'
 import { FilterTerm } from '../models/aquarius/FilterTerm'
-import { SortDirectionOptions, SortTermOptions } from '../models/SortAndFilters'
+import {
+  FilterByAccessOptions,
+  FilterByTypeOptions,
+  SortDirectionOptions,
+  SortTermOptions
+} from '../models/SortAndFilters'
 import { EdgeDDO } from '../@types/edge/DDO'
 
 export interface DownloadedAsset {
@@ -79,7 +84,6 @@ FilterTerm | undefined {
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams,
   options?: {
-    includeThings?: boolean
     includeInvoices?: boolean
   }
 ): SearchQuery {
@@ -100,8 +104,6 @@ export function generateBaseQuery(
         must_not: [
           ...(baseQueryParams.mustNot || []),
           getDynamicPricingMustNot(),
-          !options?.includeThings &&
-            getFilterTerm('service.attributes.main.type', 'thing'),
           !options?.includeInvoices &&
             getFilterTerm(
               'service.attributes.additionalInformation.tags',
@@ -381,16 +383,16 @@ export async function getPublishedAssets(
   chainIds: number[],
   cancelToken: CancelToken,
   page?: number,
-  type?: string,
-  accesType?: string
+  type?: FilterByTypeOptions[],
+  accessType?: FilterByAccessOptions[]
 ): Promise<PagedAssets> {
   if (!accountId) return
 
   const filters: FilterTerm[] = []
 
   filters.push(getFilterTerm('publicKey.owner', accountId.toLowerCase()))
-  accesType !== undefined &&
-    filters.push(getFilterTerm('service.type', accesType))
+  accessType !== undefined &&
+    filters.push(getFilterTerm('service.type', accessType))
   type !== undefined &&
     filters.push(getFilterTerm('service.attributes.main.type', type))
 
@@ -467,8 +469,7 @@ export async function getAssetsForProviders(
   provider: string[],
   chainIds: number[],
   cancelToken: CancelToken,
-  assetFilters?: FilterTerm[],
-  includeThings?: boolean
+  assetFilters?: FilterTerm[]
 ): Promise<EdgeDDO[]> {
   try {
     const queryParams: BaseQueryParams = {
@@ -482,7 +483,7 @@ export async function getAssetsForProviders(
         sortDirection: SortDirectionOptions.Descending
       }
     }
-    const baseQuery = generateBaseQuery(queryParams, { includeThings })
+    const baseQuery = generateBaseQuery(queryParams)
     const query = {
       ...baseQuery,
       query: {

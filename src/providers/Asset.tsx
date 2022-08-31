@@ -238,8 +238,7 @@ function AssetProvider({
         [ddo.findServiceByType('compute').serviceEndpoint],
         [GX_NETWORK_ID],
         token,
-        filters,
-        true
+        filters
       )
       // Only check if this is an edge asset
       if (!thingDDOs || thingDDOs.length <= 0) {

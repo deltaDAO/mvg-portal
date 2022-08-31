@@ -25,18 +25,16 @@ export default function SearchPage({
   const { chainIds } = useUserPreferences()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [loading, setLoading] = useState<boolean>()
-  const [serviceType, setServiceType] = useState<string>()
-  const [accessType, setAccessType] = useState<string>()
   const [sortType, setSortType] = useState<string>()
   const [sortDirection, setSortDirection] = useState<string>()
   const newCancelToken = useCancelToken()
 
   useEffect(() => {
-    const parsed = queryString.parse(location.search)
-    const { sort, sortOrder, serviceType, accessType } = parsed
+    const parsed = queryString.parse(location.search, {
+      arrayFormat: 'separator'
+    })
+    const { sort, sortOrder } = parsed
     setParsed(parsed)
-    setServiceType(serviceType as string)
-    setAccessType(accessType as string)
     setSortDirection(sortOrder as string)
     setSortType(sort as string)
   }, [location])
@@ -82,13 +80,7 @@ export default function SearchPage({
       <>
         <div className={styles.search}>
           <div className={styles.row}>
-            <Filters
-              serviceType={serviceType}
-              accessType={accessType}
-              setServiceType={setServiceType}
-              setAccessType={setAccessType}
-              addFiltersToUrl
-            />
+            <Filters addFiltersToUrl />
             <Sort
               sortType={sortType}
               sortDirection={sortDirection}
