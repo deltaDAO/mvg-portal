@@ -4,6 +4,7 @@ import { AbiItem } from 'web3-utils/types'
 import Web3 from 'web3'
 import { chains } from '../../chains.config'
 import { ConfigHelperConfigOverwrite } from '../@types/Chains'
+import { metadataCacheUri } from '../../app.config'
 
 export function getOceanConfig(network: string | number): ConfigHelperConfig {
   const config = new ConfigHelper().getConfig(
@@ -23,6 +24,8 @@ export function getOceanConfig(network: string | number): ConfigHelperConfig {
   const configOverwrite = (chains as ConfigHelperConfigOverwrite[]).find(
     (c) => c.networkId === config.networkId
   )
+
+  config.metadataCacheUri = metadataCacheUri
 
   return configOverwrite
     ? {
