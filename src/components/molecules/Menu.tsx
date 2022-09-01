@@ -12,7 +12,13 @@ import SearchButton from './SearchButton'
 
 const Wallet = loadable(() => import('./Wallet'))
 
-function MenuLink({ name, link }: { name: string; link: string }) {
+export function MenuLink({
+  name,
+  link
+}: {
+  name: string
+  link: string
+}): ReactElement {
   const location = useLocation()
 
   const classes =
@@ -20,10 +26,19 @@ function MenuLink({ name, link }: { name: string; link: string }) {
       ? `${styles.link} ${styles.active}`
       : styles.link
 
-  return (
+  return link.startsWith('/') ? (
     <Link key={name} to={link} className={classes}>
       {name}
     </Link>
+  ) : (
+    <a
+      href={link}
+      className={classes}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {name}
+    </a>
   )
 }
 
