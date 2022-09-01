@@ -18,26 +18,19 @@
   margin-top: var(--sub-section-spacing);
 }
 
-.balance {
-  font-size: var(--font-size-base);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-secondary);
-  white-space: nowrap;
-}
-
-.symbol {
-  width: 22%;
-  text-align: right;
-  font-weight: var(--font-weight-base);
-  font-size: var(--font-size-small);
-  display: inline-block;
-  margin-right: 0.4rem;
-}
-
 .profileLink {
-  border-top: 1px solid var(--border-color);
-  margin-top: var(--sub-section-spacing);
+  display: flex;
+  align-items: center;
   padding-top: var(--sub-section-spacing);
+}
+
+.profileLink img {
+  margin: 0;
+  margin-right: calc(var(--spacer) / 8);
+}
+
+.profileButton {
+  padding: 0;
 }
 
 .actions {

@@ -123,18 +123,19 @@
   transition: transform 0.2s;
 }
 
-.link:hover:after {
+.link:hover:after,
+.active:after {
   transform: scaleX(1);
 }
 
 .actions,
 .link:hover,
 .link:focus,
-.link:active {
+.active {
   color: var(--color-menu-active);
 }
 
-.link[aria-current],
+.active[aria-current],
 .link[aria-current]:hover,
 .link[aria-current]:focus {
   color: var(--font-color-heading);

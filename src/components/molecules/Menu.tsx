@@ -9,22 +9,31 @@ import Networks from './UserPreferences/Networks'
 import Container from '../atoms/Container'
 import MenuDropdown from '../atoms/MenuDropdown'
 import SearchButton from './SearchButton'
+import classNames from 'classnames/bind'
 
 const Wallet = loadable(() => import('./Wallet'))
 
+const cx = classNames.bind(styles)
+
 export function MenuLink({
   name,
-  link
+  link,
+  className
 }: {
   name: string
   link: string
+  className?: string
 }): ReactElement {
   const location = useLocation()
 
-  const classes =
-    location?.pathname === link
-      ? `${styles.link} ${styles.active}`
-      : styles.link
+  const basePath = location?.pathname.split(/[/?]/)[1]
+  const baseLink = link.split(/[/?]/)[1]
+
+  const classes = cx({
+    link: true,
+    active: basePath === baseLink,
+    [className]: className
+  })
 
   return link.startsWith('/') ? (
     <Link key={name} to={link} className={classes}>
