@@ -25,8 +25,6 @@ export function getOceanConfig(network: string | number): ConfigHelperConfig {
     (c) => c.networkId === config.networkId
   )
 
-  config.metadataCacheUri = metadataCacheUri
-
   return configOverwrite
     ? {
         ...config,
