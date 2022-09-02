@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { Link } from 'gatsby'
+import { Link, prefetchPathname } from 'gatsby'
 import { useLocation } from '@reach/router'
 import loadable from '@loadable/component'
 import styles from './Menu.module.css'
@@ -31,7 +31,7 @@ export function MenuLink({
 
   const classes = cx({
     link: true,
-    active: basePath === baseLink,
+    active: link.startsWith('/') && basePath === baseLink,
     [className]: className
   })
 
@@ -46,7 +46,7 @@ export function MenuLink({
       target="_blank"
       rel="noopener noreferrer"
     >
-      {name}
+      {name} &#8599;
     </a>
   )
 }
