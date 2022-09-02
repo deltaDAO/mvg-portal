@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { Link, prefetchPathname } from 'gatsby'
+import { Link } from 'gatsby'
 import { useLocation } from '@reach/router'
 import loadable from '@loadable/component'
 import styles from './Menu.module.css'
