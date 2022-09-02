@@ -28,6 +28,8 @@ interface UserPreferencesValue {
   setInfiniteApproval: (value: boolean) => void
   onboardingStep: number
   setOnboardingStep: (step: number) => void
+  showOnboardingModule: boolean
+  setShowOnboardingModule: (value: boolean) => void
   isSearchBarVisible: boolean
   setSearchBarVisible: (value: boolean) => void
   isScrollingToSearchBar: boolean
@@ -88,6 +90,12 @@ function UserPreferencesProvider({
     localStorage?.onboardingStep || 0
   )
 
+  const [showOnboardingModule, setShowOnboardingModule] = useState<boolean>(
+    localStorage?.showOnboardingModule === undefined
+      ? true
+      : localStorage?.showOnboardingModule
+  )
+
   const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(false)
   const [isScrollingToSearchBar, setIsScrollingToSearchBar] =
     useState<boolean>(false)
@@ -102,7 +110,8 @@ function UserPreferencesProvider({
       privacyPolicySlug,
       showPPC,
       infiniteApproval,
-      onboardingStep
+      onboardingStep,
+      showOnboardingModule
     })
   }, [
     chainIds,
@@ -112,7 +121,8 @@ function UserPreferencesProvider({
     privacyPolicySlug,
     showPPC,
     infiniteApproval,
-    onboardingStep
+    onboardingStep,
+    showOnboardingModule
   ])
 
   // Set ocean.js log levels, default: Error
@@ -172,6 +182,8 @@ function UserPreferencesProvider({
           setShowPPC,
           onboardingStep,
           setOnboardingStep,
+          showOnboardingModule,
+          setShowOnboardingModule,
           isSearchBarVisible,
           setSearchBarVisible,
           isScrollingToSearchBar,

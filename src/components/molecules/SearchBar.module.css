@@ -84,7 +84,7 @@
 .visibleInput {
   background-color: var(--background-content);
   border: var(--border-size) solid var(--brand-grey-light);
-  border-radius: 0 var(--border-radius-menu) var(--border-radius-menu) 0;
+  border-radius: var(--border-radius-menu);
   cursor: text;
   max-width: 100%;
 }

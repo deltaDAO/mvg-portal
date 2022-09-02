@@ -10,10 +10,12 @@
   color: inherit;
 }
 
-.content button {
+.content button,
+.linkButton {
   text-transform: none;
   transform: none !important;
   font-weight: var(--font-weight-normal);
+  font-size: var(--font-size-small);
 }
 
 .content a:hover,

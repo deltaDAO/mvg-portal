@@ -3,8 +3,9 @@
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-small);
-  border: none;
-  padding: calc(var(--spacer) / 6) var(--spacer);
+  border: var(--border-size) solid var(--border-color-menu);
+  border-radius: var(--border-radius-menu);
+  padding: calc(var(--spacer) / 6) calc(var(--spacer) / 2);
   white-space: nowrap;
   background: var(--background-content);
   margin: 0;
@@ -25,54 +26,8 @@
   color: var(--color-primary);
 }
 
-.button:hover,
-.button:focus,
-.button:hover .address,
-.button:focus .address {
-  transform: none;
-  outline: 0;
-  color: var(--brand-white);
-}
-
-.button:before,
-.button:after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
-
-.button:before {
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  background-color: var(--color-primary);
-  transition: transform 0.2s;
-  z-index: -1;
-}
-
-.button:hover:before,
-.button:focus:before {
-  transform: scaleX(1);
-}
-
-.button:after {
-  opacity: 1;
-  z-index: -1;
-  margin: 0;
-  border: var(--border-size) solid var(--border-color-menu);
-  border-radius: var(--border-radius-menu);
-}
-
 .button.initial span {
   display: none;
-}
-
-@media screen and (min-width: 42rem) {
-  .button.initial span {
-    display: inline;
-  }
 }
 
 .address {
@@ -81,16 +36,6 @@
   border-right: 2px solid var(--border-color-menu);
   padding-right: calc(var(--spacer) / 3);
   padding-left: calc(var(--spacer) / 8);
-}
-
-@media screen and (min-width: 60rem) {
-  .address {
-    display: inline-block;
-  }
-
-  .blockies {
-    margin-right: calc(var(--spacer) / 6);
-  }
 }
 
 .button svg {
@@ -118,15 +63,22 @@ svg.caret {
   display: none;
 }
 
-@media screen and (min-width: 42rem) {
+@media screen and (min-width: 30rem) {
+  .button.initial span {
+    display: inline;
+  }
   .caret,
   svg.caret {
     display: inline-block;
     fill: var(--color-primary);
   }
+}
 
-  .button:hover .caret,
-  .button:focus .caret {
-    fill: var(--brand-white);
+@media screen and (min-width: 60rem) {
+  .address {
+    display: inline-block;
+  }
+  .blockies {
+    margin-right: calc(var(--spacer) / 6);
   }
 }

@@ -22,15 +22,15 @@
 .image {
   object-fit: contain;
   width: 100%;
-  max-height: 25rem;
+  max-height: 20rem;
 }
 
 .footer {
   max-width: var(--break-point--small);
   margin: 0 auto;
+  text-align: center;
 }
 
 .title {
-  text-align: center;
-  margin-bottom: 0;
+  margin-bottom: var(--spacer);
 }
