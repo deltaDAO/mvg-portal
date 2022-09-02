@@ -48,7 +48,7 @@ export default function Footer(): ReactElement {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Statistics
+            Statistics &#8599;
           </Button>
         </div>
       </div>
