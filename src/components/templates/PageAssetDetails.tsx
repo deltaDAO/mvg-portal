@@ -36,7 +36,7 @@ export default function PageTemplateAssetDetails({
     <Page
       title={pageTitle}
       uri={uri}
-      isEdgeNetwork={type === 'thing' || isEdgeAsset}
+      isEdgeProvider={type === 'thing' || isEdgeAsset}
     >
       <Router basepath="/asset">
         <AssetContent path=":did" />

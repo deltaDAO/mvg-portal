@@ -30,7 +30,7 @@ export interface PageProps {
   description?: string
   noPageHeader?: boolean
   headerCenter?: boolean
-  isEdgeNetwork?: boolean
+  isEdgeProvider?: boolean
 }
 
 export default function Page({
@@ -40,7 +40,7 @@ export default function Page({
   description,
   noPageHeader,
   headerCenter,
-  isEdgeNetwork
+  isEdgeProvider
 }: PageProps): ReactElement {
   const data: SearchFormData = useStaticQuery(query)
   const { placeholder } = data.file.childSearchFormJson
@@ -70,7 +70,7 @@ export default function Page({
           description={description}
           center={headerCenter}
           powered={isHome}
-          isEdgeNetwork={isEdgeNetwork}
+          isEdgeProvider={isEdgeProvider}
         />
       )}
       {children}

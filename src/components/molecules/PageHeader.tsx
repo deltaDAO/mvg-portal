@@ -12,13 +12,13 @@ export default function PageHeader({
   description,
   center,
   powered,
-  isEdgeNetwork
+  isEdgeProvider
 }: {
   title: string
   description?: string
   center?: boolean
   powered?: boolean
-  isEdgeNetwork?: boolean
+  isEdgeProvider?: boolean
 }): ReactElement {
   const styleClasses = cx({
     header: true,
@@ -28,7 +28,7 @@ export default function PageHeader({
   return (
     <header className={styleClasses}>
       <h1 className={styles.title}>
-        {title} {isEdgeNetwork && <Badge label="EDGE" large />}
+        {title} {isEdgeProvider && <Badge label="EDGE" large />}
       </h1>
       {description && (
         <Markdown text={description} className={styles.description} />
