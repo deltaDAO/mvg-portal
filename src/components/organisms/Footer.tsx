@@ -40,6 +40,16 @@ export default function Footer(): ReactElement {
               </Button>
             </>
           )}
+          {' — '}
+          <Button
+            className={styles.linkButton}
+            style="text"
+            href="https://stats.minimal-gaia-x.eu"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Statistics &#8599;
+          </Button>
         </div>
       </div>
     </footer>

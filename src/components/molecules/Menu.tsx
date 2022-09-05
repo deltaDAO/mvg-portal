@@ -4,32 +4,55 @@ import { useLocation } from '@reach/router'
 import loadable from '@loadable/component'
 import styles from './Menu.module.css'
 import { useSiteMetadata } from '../../hooks/useSiteMetadata'
-import UserPreferences from './UserPreferences'
 import Logo from '../atoms/Logo'
 import Networks from './UserPreferences/Networks'
-import SearchBar from './SearchBar'
 import Container from '../atoms/Container'
 import MenuDropdown from '../atoms/MenuDropdown'
+import SearchButton from './SearchButton'
+import classNames from 'classnames/bind'
 
 const Wallet = loadable(() => import('./Wallet'))
 
-function MenuLink({ name, link }: { name: string; link: string }) {
+const cx = classNames.bind(styles)
+
+export function MenuLink({
+  name,
+  link,
+  className
+}: {
+  name: string
+  link: string
+  className?: string
+}): ReactElement {
   const location = useLocation()
 
-  const classes =
-    location?.pathname === link
-      ? `${styles.link} ${styles.active}`
-      : styles.link
+  const basePath = location?.pathname.split(/[/?]/)[1]
+  const baseLink = link.split(/[/?]/)[1]
 
-  return (
+  const classes = cx({
+    link: true,
+    active: link.startsWith('/') && basePath === baseLink,
+    [className]: className
+  })
+
+  return link.startsWith('/') ? (
     <Link key={name} to={link} className={classes}>
       {name}
     </Link>
+  ) : (
+    <a
+      href={link}
+      className={classes}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {name} &#8599;
+    </a>
   )
 }
 
 export default function Menu(): ReactElement {
-  const { menu, badge } = useSiteMetadata()
+  const { menu } = useSiteMetadata()
 
   return (
     <div className={styles.wrapper}>
@@ -52,10 +75,9 @@ export default function Menu(): ReactElement {
           </ul>
 
           <div className={styles.actions}>
-            <SearchBar />
+            <SearchButton />
             <Networks />
             <Wallet />
-            <UserPreferences />
           </div>
         </nav>
       </Container>

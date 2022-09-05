@@ -63,10 +63,6 @@ const query = graphql`
           subItems {
             name
             link
-            subItems {
-              name
-              link
-            }
           }
         }
         warning {
