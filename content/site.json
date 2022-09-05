@@ -45,6 +45,40 @@
       "main": "Ocean Market is [available on Polygon](https://blog.oceanprotocol.com/ocean-on-polygon-network-8abad19cbf47).",
       "polygon": "Polygon/Matic EVM support is in early stages. [Use the Polygon Bridge](https://docs.oceanprotocol.com/tutorials/polygon-bridge/) to get mOCEAN."
     },
-    "badge": "Powered by Ocean Protocol"
+    "badge": "Powered by Ocean Protocol",
+    "footer": {
+      "title": "Gaia-X Lab",
+      "subtitle": "Fast prototyping under the Gaia-X CTO office",
+      "copyright": "Built by [deltaDAO](https://delta-dao.com). Powered by [Ocean Protocol](https://oceanprotocol.com).",
+      "privacyTitle": "Privacy",
+      "content": [
+        {
+          "title": "Contribute",
+          "links": [
+            {
+              "name": "GitHub",
+              "link": "https://github.com/deltaDAO/mvg-portal"
+            }
+          ]
+        },
+        {
+          "title": "Navigation",
+          "links": [
+            {
+              "name": "Publish",
+              "link": "/publish"
+            },
+            {
+              "name": "Profile",
+              "link": "/profile"
+            },
+            {
+              "name": "Catalogue",
+              "link": "/search?sort=_score&sortOrder=desc&text="
+            }
+          ]
+        }
+      ]
+    }
   }
 }
