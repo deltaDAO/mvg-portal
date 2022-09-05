@@ -10,6 +10,7 @@ const chains = [
     networkId: GX_NETWORK_ID,
     nodeUri: 'https://rpc.gaiaxtestnet.oceanprotocol.com/',
     providerUri: 'https://provider.gaiax.delta-dao.com/',
+    metadataCacheUri: 'https://aquarius.delta-dao.com/',
     explorerUri: 'https://blockscout.gaiaxtestnet.oceanprotocol.com/',
     isDefault: true
   }
