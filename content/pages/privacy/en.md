@@ -3,16 +3,26 @@ title: Privacy Policy
 description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO) processes your personal data when you visit our portal demonstrator and when you use one of our portal demonstrator functionalities. Moreover, this privacy policy informs you about your rights.
 ---
 
-# 1. Controller
+_Last updated on September 01, 2022_
 
-The controller of the processing of your personal data is:
+# 1. Contact details of the controller and Data Protection Officer
 
-deltaDAO AG<br/>
-Geibelstraße 46b<br/>
-22303 Hamburg<br/>
-Germany
+The controller pursuant to the EU General Data Protection Regulation (“GDPR”) for the processing of your personal data is:
 
+deltaDAO AG  
+Geibelstraße 46b  
+22303 Hamburg  
+Germany<br>
 E-mail: [contact@delta-dao.com](mailto:contact@delta-dao.com)
+
+If you have any questions about the protection of your personal data at deltaDAO, please contact our Data Protection Officer:
+
+Data Protection Officer<br>
+deltaDAO AG  
+Geibelstraße 46b  
+22303 Hamburg  
+Germany<br>
+E-mail: [privacy@delta-dao.com](mailto:privacy@delta-dao.com)
 
 # 2. What&#39;s personal data?
 
@@ -39,7 +49,7 @@ If you use our portal demonstrator functionalities, we disclose your wallet addr
 
 **Contact via e-mail**
 
-When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at contact@delta-dao.com.
+When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at [privacy@delta-dao.com](mailto:privacy@delta-dao.com).
 
 # 4. Processing operations according to Article 13 GDPR
 
@@ -167,6 +177,7 @@ Our legitimate interest is to answer your inquiries.
 
 deltaDAO deletes your personal data as soon as we no longer require them for processing your inquiry, except deltaDAO is obliged to comply with legal retention periods or in case of legal disputes.
 <br/><i id="cookies"></i>
+
 # 5. Cookies and web storage
 
 A cookie is a small file that stores Internet settings. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content.
@@ -245,8 +256,9 @@ You have the right to lodge a complaint with a supervisory authority if you cons
 
 # 8. Questions
 
-For any requests regarding our privacy policy, please send us an e-mail to [contact@delta-dao.com](mailto:contact@delta-dao.com).
+For any requests regarding our privacy policy, please send us an e-mail to [privacy@delta-dao.com](mailto:privacy@delta-dao.com).
 
 # 9. Changes to the Privacy Policy
+
 We adjust this policy from time to time, by publishing a new version on our portal demonstrator. You can find the date of the current version at the beginning of this policy.
 The latest version of this policy applies to the processing of your personal data.

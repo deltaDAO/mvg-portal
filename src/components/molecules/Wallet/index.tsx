@@ -14,7 +14,7 @@ export default function Wallet(): ReactElement {
       <Network />
       <Tooltip
         content={<Details />}
-        trigger="click focus"
+        trigger="click focus mouseenter"
         disabled={!accountId}
       >
         <Account />

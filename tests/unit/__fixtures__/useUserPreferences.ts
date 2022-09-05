@@ -19,6 +19,8 @@ const useUserPreferences: UserPreferencesValue = {
   setInfiniteApproval: jest.fn(),
   onboardingStep: 0,
   setOnboardingStep: jest.fn(),
+  showOnboardingModule: false,
+  setShowOnboardingModule: jest.fn(),
   isSearchBarVisible: false,
   setSearchBarVisible: jest.fn(),
   isScrollingToSearchBar: false,
