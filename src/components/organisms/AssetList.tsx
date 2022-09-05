@@ -10,6 +10,8 @@ import { useUserPreferences } from '../../providers/UserPreferences'
 import { useIsMounted } from '../../hooks/useIsMounted'
 import { getAssetsForProviders, getFilterTerm } from '../../utils/aquarius'
 import { useCancelToken } from '../../hooks/useCancelToken'
+import { normalizeUrl } from '../../utils/metadata'
+import { EdgeDDO } from '../../@types/edge/DDO'
 
 const cx = classNames.bind(styles)
 
@@ -52,6 +54,19 @@ const AssetList: React.FC<AssetListProps> = ({
   useEffect(() => {
     if (!assets) return
 
+    function unifyServiceEndpoint(edgeDeviceList: EdgeDDO[]): string[] {
+      if (edgeDeviceList.length === 0) return []
+
+      const serviceEndpoints = edgeDeviceList.map((device) => {
+        const { serviceEndpoint } = device.findServiceByType('edge')
+        return normalizeUrl(serviceEndpoint)
+      })
+      // remove duplicates
+      const unifiedServiceEndpoints = [...new Set(serviceEndpoints)]
+
+      return unifiedServiceEndpoints
+    }
+
     async function getEdgeAssetList() {
       const datasets = assets.filter((asset) => {
         const { type } = asset.findServiceByType('metadata').attributes.main
@@ -67,19 +82,10 @@ const AssetList: React.FC<AssetListProps> = ({
         newCancelToken(),
         [getFilterTerm('service.type', 'edge')]
       )
-      const edgeDeviceProviders = [
-        ...new Set(
-          edgeDeviceList.map((device) => {
-            const { serviceEndpoint } = device.findServiceByType('edge')
-            return serviceEndpoint.replace(/\/$/, '').toLowerCase()
-          })
-        )
-      ]
+      const edgeDeviceProviders = unifyServiceEndpoint(edgeDeviceList)
       const edgeAssets = datasets.filter((asset) => {
         const { serviceEndpoint } = asset.findServiceByType('compute')
-        return edgeDeviceProviders.includes(
-          serviceEndpoint.replace(/\/$/, '').toLowerCase()
-        )
+        return edgeDeviceProviders.includes(normalizeUrl(serviceEndpoint))
       })
       const edgeAssetDIDs = edgeAssets.map((asset) => asset.id)
       setEdgeAssetsList(edgeAssetDIDs)

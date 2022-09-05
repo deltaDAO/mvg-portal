@@ -55,7 +55,6 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const {
     ddo,
     isAssetNetwork,
-    isEdgeCtdAvailable,
     isInPurgatory,
     isServiceSelfDescriptionVerified,
     metadata,
@@ -74,7 +73,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const [serviceSelfDescription, setServiceSelfDescription] = useState<string>()
   const { appConfig } = useSiteMetadata()
 
-  const showEdgeDetails = useMemo(
+  const showEdgeDetails: boolean = useMemo(
     () => !!(ddo as EdgeDDO)?.findServiceByType('edge'),
     [ddo]
   )
