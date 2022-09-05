@@ -83,7 +83,7 @@ function getConsumeHelpText(
       : hasDatatoken
       ? `You own ${dtBalance} ${dtSymbol} allowing you to use this data set by spending 1 ${dtSymbol}, but without paying OCEAN again.`
       : lowPoolLiquidity
-      ? `There are not enought ${dtSymbol} available in the pool for the transaction to take place`
+      ? `There are not enough ${dtSymbol} available in the pool for the transaction to take place`
       : isBalanceSufficient === false
       ? 'You do not have enough OCEAN in your wallet to purchase this asset.'
       : `For using this ${assetType}, you will buy 1 ${dtSymbol} and immediately spend it back to the publisher and pool.`

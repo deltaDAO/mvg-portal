@@ -18,7 +18,6 @@ import { secondsToString } from '../../../utils/metadata'
 import AlgorithmDatasetsListForCompute from '../AssetContent/AlgorithmDatasetsListForCompute'
 import styles from './Consume.module.css'
 import { useIsMounted } from '../../../hooks/useIsMounted'
-import Alert from '../../atoms/Alert'
 
 const previousOrderQuery = gql`
   query PreviousOrder($id: String!, $account: String!) {
@@ -74,6 +73,7 @@ export default function Consume({
       id: ddo.dataToken?.toLowerCase(),
       account: accountId?.toLowerCase()
     }
+
     fetchData(previousOrderQuery, variables, context).then((result: any) => {
       isMounted() && setData(result.data)
     })

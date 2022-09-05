@@ -35,10 +35,6 @@ export default function AssetActions(): ReactElement {
     if (!ddo || !accountId || !ocean || !isAssetNetwork) return
 
     async function checkIsConsumable() {
-      if (!isEdgeCtdAvailable) {
-        setIsConsumable(false)
-        return
-      }
       const consumable = await ocean.assets.isConsumable(
         ddo,
         accountId.toLowerCase()
