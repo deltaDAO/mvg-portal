@@ -233,9 +233,16 @@ function AssetProvider({
     async (ddo: EdgeDDO, token: CancelToken) => {
       if (!ddo) return
 
+      const computeService = ddo.findServiceByType('compute')
+      if (!computeService) {
+        setIsEdgeAsset(false)
+        setIsEdgeCtdAvailable(false)
+        return
+      }
+
       const filters = [getFilterTerm('service.type', 'edge')]
       const thingDDOs = await getAssetsForProviders(
-        [ddo.findServiceByType('compute').serviceEndpoint],
+        [computeService?.serviceEndpoint],
         [GX_NETWORK_ID],
         token,
         filters
@@ -243,21 +250,18 @@ function AssetProvider({
       // Only check if this is an edge asset
       if (!thingDDOs || thingDDOs.length <= 0) {
         setIsEdgeAsset(false)
-        setIsEdgeCtdAvailable(true)
+        setIsEdgeCtdAvailable(false)
         return
       }
 
       setIsEdgeAsset(true)
-      const { serviceEndpoint } = ddo.findServiceByType(
-        'compute'
-      ) as ServiceMetadataMarket
 
-      if (!serviceEndpoint) {
+      if (!computeService?.serviceEndpoint) {
         setIsEdgeCtdAvailable(false)
         return
       }
       try {
-        const response = await axios.get(serviceEndpoint, {
+        const response = await axios.get(computeService.serviceEndpoint, {
           cancelToken: token
         })
         if (response.status === 200) {
