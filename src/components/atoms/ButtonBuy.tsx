@@ -214,7 +214,7 @@ export default function ButtonBuy({
                     ? getAlgorithmConsumableStatusHelpText(
                         algorithmConsumableStatus
                       )
-                    : 'Access denied, your wallet address is not found on the selected asset allow list.'
+                    : 'Access denied, your wallet address is not found on the asset allow list.'
                 }
                 state="warning"
               />
