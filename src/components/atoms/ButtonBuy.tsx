@@ -62,6 +62,7 @@ interface ButtonBuyProps {
   algorithmPriceType?: string
   algorithmConsumableStatus?: number
   isEdgeDeviceUnavailable?: boolean
+  isAddressWhitelisted?: boolean
 }
 
 function getConsumeHelpText(
@@ -178,7 +179,8 @@ export default function ButtonBuy({
   priceType,
   algorithmPriceType,
   algorithmConsumableStatus,
-  isEdgeDeviceUnavailable
+  isEdgeDeviceUnavailable,
+  isAddressWhitelisted
 }: ButtonBuyProps): ReactElement {
   const data: DisclaimerData = useStaticQuery(query)
   const { edgeDeviceUnavailableMessage, disclaimerMessage } =
@@ -204,11 +206,16 @@ export default function ButtonBuy({
       ) : (
         <>
           <div className={styles.warning}>
-            {action === 'compute' && algorithmConsumableStatus > 0 && (
+            {((action === 'compute' && algorithmConsumableStatus > 0) ||
+              (action === 'download' && isAddressWhitelisted === false)) && (
               <Alert
-                text={getAlgorithmConsumableStatusHelpText(
-                  algorithmConsumableStatus
-                )}
+                text={
+                  action === 'compute'
+                    ? getAlgorithmConsumableStatusHelpText(
+                        algorithmConsumableStatus
+                      )
+                    : 'Access denied, your wallet address is not found on the asset allow list.'
+                }
                 state="warning"
               />
             )}

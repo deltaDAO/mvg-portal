@@ -63,9 +63,9 @@ button.filter,
 .showClear {
   display: inline-flex;
   text-transform: capitalize;
+  align-self: center;
   color: var(--color-secondary);
   font-weight: var(--font-weight-base);
-  margin-left: calc(var(--spacer) / 6);
 }
 
 .hideClear {

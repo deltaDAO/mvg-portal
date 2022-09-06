@@ -392,8 +392,10 @@ export async function getPublishedAssets(
 
   filters.push(getFilterTerm('publicKey.owner', accountId.toLowerCase()))
   accessType !== undefined &&
+    accessType.length > 0 &&
     filters.push(getFilterTerm('service.type', accessType))
   type !== undefined &&
+    type.length > 0 &&
     filters.push(getFilterTerm('service.attributes.main.type', type))
 
   const baseQueryParams = {
