@@ -9,7 +9,7 @@
   margin-bottom: var(--spacer);
 }
 
-@media (min-width: 60rem) {
+@media (min-width: 65rem) {
   .row {
     flex-direction: row;
   }
