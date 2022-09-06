@@ -8,6 +8,11 @@ import { useUserPreferences } from '../../../../providers/UserPreferences'
 import styles from './PublishedList.module.css'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
 import { PagedAssets } from '../../../../models/PagedAssets'
+import {
+  FilterByAccessOptions,
+  FilterByTypeOptions
+} from '../../../../models/SortAndFilters'
+import { CancelToken } from 'axios'
 
 export default function PublishedList({
   accountId
@@ -20,12 +25,19 @@ export default function PublishedList({
   const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [isLoading, setIsLoading] = useState(false)
   const [page, setPage] = useState<number>(1)
-  const [service, setServiceType] = useState()
-  const [access, setAccsesType] = useState()
+  const [serviceType, setServiceType] = useState<FilterByTypeOptions[]>([])
+  const [accessType, setAccessType] = useState<FilterByAccessOptions[]>([])
   const newCancelToken = useCancelToken()
 
   const getPublished = useCallback(
-    async (accountId, chainIds, page, service, access, cancelToken) => {
+    async (
+      accountId: string,
+      chainIds: number[],
+      cancelToken: CancelToken,
+      page?: number,
+      serviceType?: FilterByTypeOptions[],
+      accessType?: FilterByAccessOptions[]
+    ) => {
       try {
         setIsLoading(true)
         const result = await getPublishedAssets(
@@ -33,8 +45,8 @@ export default function PublishedList({
           chainIds,
           cancelToken,
           page,
-          service,
-          access
+          serviceType,
+          accessType
         )
         setQueryResult(result)
       } catch (error) {
@@ -53,7 +65,14 @@ export default function PublishedList({
   useEffect(() => {
     if (!accountId) return
 
-    getPublished(accountId, chainIds, page, service, access, newCancelToken())
+    getPublished(
+      accountId,
+      chainIds,
+      newCancelToken(),
+      page,
+      serviceType,
+      accessType
+    )
   }, [
     accountId,
     page,
@@ -61,18 +80,18 @@ export default function PublishedList({
     chainIds,
     newCancelToken,
     getPublished,
-    service,
-    access
+    serviceType,
+    accessType
   ])
 
   return accountId ? (
     <>
       <div className={styles.header}>
         <Filters
-          serviceType={service}
+          serviceType={serviceType}
           setServiceType={setServiceType}
-          accessType={access}
-          setAccessType={setAccsesType}
+          accessType={accessType}
+          setAccessType={setAccessType}
           className={styles.filters}
         />
       </div>

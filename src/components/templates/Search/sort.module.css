@@ -27,7 +27,7 @@
 
 .sorted {
   display: flex;
-  padding: calc(var(--spacer) / 6) calc(var(--spacer) / 2);
+  padding: calc(var(--spacer) / 6);
   margin-right: calc(var(--spacer) / 4);
   color: var(--color-secondary);
   text-transform: capitalize;

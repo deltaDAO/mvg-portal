@@ -8,5 +8,6 @@ export interface BaseQueryParams {
   esPaginationOptions?: EsPaginationOptions
   sortOptions?: SortOptions
   filters?: FilterTerm[]
+  mustNot?: FilterTerm[]
   ignorePurgatory?: boolean
 }

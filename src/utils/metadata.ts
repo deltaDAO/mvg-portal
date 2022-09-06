@@ -126,6 +126,10 @@ function sanitizeUrlArray<T extends File | EditableMetadataLinks>(
   ]
 }
 
+export function normalizeUrl(url: string): string {
+  return url.replace(/\/$/, '').toLowerCase()
+}
+
 function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
   value: string | T[]
 ): T[] {

@@ -1,8 +1,39 @@
+import { graphql, useStaticQuery } from 'gatsby'
 import React, { FormEvent, ReactElement } from 'react'
 import Alert from './Alert'
 import Button from './Button'
 import styles from './ButtonBuy.module.css'
 import Loader from './Loader'
+
+const query = graphql`
+  query {
+    content: allFile(
+      filter: { relativePath: { eq: "assetDisclaimers.json" } }
+    ) {
+      edges {
+        node {
+          childContentJson {
+            edgeDeviceUnavailableMessage
+            disclaimerMessage
+          }
+        }
+      }
+    }
+  }
+`
+
+interface DisclaimerData {
+  content: {
+    edges: {
+      node: {
+        childContentJson: {
+          edgeDeviceUnavailableMessage: string
+          disclaimerMessage: string
+        }
+      }
+    }[]
+  }
+}
 
 interface ButtonBuyProps {
   action: 'download' | 'compute'
@@ -30,6 +61,7 @@ interface ButtonBuyProps {
   priceType?: string
   algorithmPriceType?: string
   algorithmConsumableStatus?: number
+  isEdgeDeviceUnavailable?: boolean
 }
 
 function getConsumeHelpText(
@@ -51,7 +83,7 @@ function getConsumeHelpText(
       : hasDatatoken
       ? `You own ${dtBalance} ${dtSymbol} allowing you to use this data set by spending 1 ${dtSymbol}, but without paying OCEAN again.`
       : lowPoolLiquidity
-      ? `There are not enought ${dtSymbol} available in the pool for the transaction to take place`
+      ? `There are not enough ${dtSymbol} available in the pool for the transaction to take place`
       : isBalanceSufficient === false
       ? 'You do not have enough OCEAN in your wallet to purchase this asset.'
       : `For using this ${assetType}, you will buy 1 ${dtSymbol} and immediately spend it back to the publisher and pool.`
@@ -97,7 +129,7 @@ function getComputeAssetHelpText(
       : hasDatatokenSelectedComputeAsset
       ? `You own ${dtBalanceSelectedComputeAsset} ${dtSymbolSelectedComputeAsset} allowing you to use the selected ${selectedComputeAssetType} by spending 1 ${dtSymbolSelectedComputeAsset}, but without paying OCEAN again.`
       : selectedComputeAssettLowPoolLiquidity
-      ? `There are not enought ${dtSymbolSelectedComputeAsset} available in the pool for the transaction to take place`
+      ? `There are not enough ${dtSymbolSelectedComputeAsset} available in the pool for the transaction to take place`
       : isBalanceSufficient === false
       ? ''
       : `Additionally, you will buy 1 ${dtSymbolSelectedComputeAsset} for the ${selectedComputeAssetType} and spend it back to its publisher and pool.`
@@ -145,8 +177,13 @@ export default function ButtonBuy({
   type,
   priceType,
   algorithmPriceType,
-  algorithmConsumableStatus
+  algorithmConsumableStatus,
+  isEdgeDeviceUnavailable
 }: ButtonBuyProps): ReactElement {
+  const data: DisclaimerData = useStaticQuery(query)
+  const { edgeDeviceUnavailableMessage, disclaimerMessage } =
+    data.content.edges[0].node.childContentJson
+
   const buttonText =
     action === 'download'
       ? hasPreviousOrder
@@ -215,6 +252,14 @@ export default function ButtonBuy({
                   selectedComputeAssetType,
                   algorithmConsumableStatus
                 )}
+            <Alert
+              text={
+                isEdgeDeviceUnavailable
+                  ? edgeDeviceUnavailableMessage
+                  : disclaimerMessage
+              }
+              state={isEdgeDeviceUnavailable ? 'warning' : 'info'}
+            />
           </div>
         </>
       )}
