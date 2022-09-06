@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  align-items: flex-end;
+  height: 100%;
+}
+
+.detailsContainer {
+  display: flex;
+  gap: calc(var(--spacer) / 3);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.model {
+  font-size: var(--font-size-h5);
+  color: var(--font-color-heading);
+}
+
+.model {
+  font-weight: var(--font-weight-bold);
+}
+
+.badge {
+  margin-left: calc(var(--spacer) / 6);
+  background: var(--brand-alert-green);
+}
+
+.unavailable {
+  background: var(--brand-alert-red);
+}

@@ -12,6 +12,7 @@ import {
   getServiceSelfDescription,
   verifyServiceSelfDescription
 } from '../../../../utils/metadata'
+import { GX_NETWORK_ID } from '../../../../../chains.config'
 
 export default function FilesInput(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
@@ -21,7 +22,7 @@ export default function FilesInput(props: InputProps): ReactElement {
   const newCancelToken = useCancelToken()
 
   function loadFileInfo() {
-    const config = getOceanConfig(chainId || 1)
+    const config = getOceanConfig(chainId || GX_NETWORK_ID)
 
     async function validateUrl() {
       try {

@@ -16,7 +16,13 @@ import { SearchQuery } from '../models/aquarius/SearchQuery'
 import { SearchResponse } from '../models/aquarius/SearchResponse'
 import { BaseQueryParams } from '../models/aquarius/BaseQueryParams'
 import { FilterTerm } from '../models/aquarius/FilterTerm'
-import { SortDirectionOptions, SortTermOptions } from '../models/SortAndFilters'
+import {
+  FilterByAccessOptions,
+  FilterByTypeOptions,
+  SortDirectionOptions,
+  SortTermOptions
+} from '../models/SortAndFilters'
+import { EdgeDDO } from '../@types/edge/DDO'
 
 export interface DownloadedAsset {
   dtSymbol: string
@@ -76,7 +82,10 @@ FilterTerm | undefined {
 }
 
 export function generateBaseQuery(
-  baseQueryParams: BaseQueryParams
+  baseQueryParams: BaseQueryParams,
+  options?: {
+    includeInvoices?: boolean
+  }
 ): SearchQuery {
   const generatedQuery = {
     from: baseQueryParams.esPaginationOptions?.from || 0,
@@ -93,13 +102,14 @@ export function generateBaseQuery(
             : [getFilterTerm('isInPurgatory', 'false')])
         ],
         must_not: [
+          ...(baseQueryParams.mustNot || []),
           getDynamicPricingMustNot(),
-          getFilterTerm('service.attributes.main.type', 'thing'),
-          getFilterTerm(
-            'service.attributes.additionalInformation.tags',
-            'mvg-stripe-invoice',
-            'match'
-          )
+          !options?.includeInvoices &&
+            getFilterTerm(
+              'service.attributes.additionalInformation.tags',
+              'mvg-stripe-invoice',
+              'match'
+            )
         ],
         ...getWhitelistShould()
       }
@@ -373,16 +383,16 @@ export async function getPublishedAssets(
   chainIds: number[],
   cancelToken: CancelToken,
   page?: number,
-  type?: string,
-  accesType?: string
+  type?: FilterByTypeOptions[],
+  accessType?: FilterByAccessOptions[]
 ): Promise<PagedAssets> {
   if (!accountId) return
 
   const filters: FilterTerm[] = []
 
   filters.push(getFilterTerm('publicKey.owner', accountId.toLowerCase()))
-  accesType !== undefined &&
-    filters.push(getFilterTerm('service.type', accesType))
+  accessType !== undefined &&
+    filters.push(getFilterTerm('service.type', accessType))
   type !== undefined &&
     filters.push(getFilterTerm('service.attributes.main.type', type))
 
@@ -452,5 +462,53 @@ export async function getDownloadAssets(
     return downloadedAssets
   } catch (error) {
     Logger.error(error.message)
+  }
+}
+
+export async function getAssetsForProviders(
+  provider: string[],
+  chainIds: number[],
+  cancelToken: CancelToken,
+  assetFilters?: FilterTerm[]
+): Promise<EdgeDDO[]> {
+  try {
+    const queryParams: BaseQueryParams = {
+      chainIds,
+      filters: assetFilters || [
+        getFilterTerm('service.attributes.main.type', 'dataset'),
+        getFilterTerm('service.type', 'compute')
+      ],
+      sortOptions: {
+        sortBy: SortTermOptions.Created,
+        sortDirection: SortDirectionOptions.Descending
+      }
+    }
+    const baseQuery = generateBaseQuery(queryParams)
+    const query = {
+      ...baseQuery,
+      query: {
+        ...baseQuery.query,
+        bool: {
+          ...baseQuery.query.bool,
+          should: [
+            ...provider.map((p) =>
+              getFilterTerm('service.serviceEndpoint', p, 'match_phrase')
+            )
+          ],
+          minimum_should_match: 1
+        }
+      }
+    }
+
+    const response = await queryMetadata(query, cancelToken)
+    if (!response) return []
+
+    return response.results || []
+  } catch (error: any) {
+    Logger.error(
+      `Could not load assets for provider ${provider}:`,
+      error.message
+    )
+    return []
   }
 }

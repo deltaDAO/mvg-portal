@@ -221,7 +221,7 @@ export default function HomePage(): ReactElement {
 
   return (
     <Permission eventType="browse">
-      <>
+      <div className={styles.homeContainer}>
         {showOnboardingModule && (
           <section className={styles.content}>
             <OnboardingSection />
@@ -263,7 +263,7 @@ export default function HomePage(): ReactElement {
         <section className={styles.content}>
           <HomeContent />
         </section>
-      </>
+      </div>
     </Permission>
   )
 }
