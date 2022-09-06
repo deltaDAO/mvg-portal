@@ -47,17 +47,19 @@
     },
     "badge": "Powered by Ocean Protocol",
     "footer": {
-      "title": "Gaia-X Lab",
-      "subtitle": "Fast prototyping under the Gaia-X CTO office",
       "copyright": "Built by [deltaDAO](https://delta-dao.com). Powered by [Ocean Protocol](https://oceanprotocol.com).",
       "privacyTitle": "Privacy",
       "content": [
         {
-          "title": "Contribute",
+          "title": "External",
           "links": [
             {
-              "name": "GitHub",
-              "link": "https://github.com/deltaDAO/mvg-portal"
+              "name": "Log",
+              "link": "https://exchangelog.minimal-gaia-x.eu"
+            },
+            {
+              "name": " Statistics",
+              "link": "https://stats.minimal-gaia-x.eu"
             }
           ]
         },
@@ -65,16 +67,24 @@
           "title": "Navigation",
           "links": [
             {
-              "name": "Publish",
-              "link": "/publish"
+              "name": "Bookmarks",
+              "link": "/bookmarks"
+            },
+            {
+              "name": "Catalogue",
+              "link": "/search?sort=_score&sortOrder=desc&text="
             },
             {
               "name": "Profile",
               "link": "/profile"
             },
             {
-              "name": "Catalogue",
-              "link": "/search?sort=_score&sortOrder=desc&text="
+              "name": "Publish",
+              "link": "/publish"
+            },
+            {
+              "name": "Verify",
+              "link": "/verify"
             }
           ]
         }

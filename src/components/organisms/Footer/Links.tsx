@@ -4,7 +4,6 @@ import { useGdprMetadata } from '../../../hooks/useGdprMetadata'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import { useUserPreferences } from '../../../providers/UserPreferences'
 import Button from '../../atoms/Button'
-import LinkOpener from '../../molecules/LinkOpener'
 import styles from './Links.module.css'
 
 export default function Links(): ReactElement {
@@ -20,11 +19,22 @@ export default function Links(): ReactElement {
         <div key={i} className={styles.section}>
           <p className={styles.title}>{section.title}</p>
           <div className={styles.links}>
-            {section.links.map((e, i) => (
-              <LinkOpener key={`${e.name}-${i}`} uri={e.link} openNewTab>
-                {e.name}
-              </LinkOpener>
-            ))}
+            {section.links.map((e, i) =>
+              e.link.startsWith('/') ? (
+                <Link key={i} to={e.link}>
+                  {e.name}
+                </Link>
+              ) : (
+                <a
+                  key={i}
+                  href={e.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {e.name} &#8599;
+                </a>
+              )
+            )}
           </div>
         </div>
       ))}
