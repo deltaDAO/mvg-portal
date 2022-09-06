@@ -55,7 +55,6 @@ export default function Results({
           job.jobId
         )
         if (jobStatus) {
-          console.log('results', jobStatus)
           job.results = jobStatus[0].results
         }
       } catch (error) {
