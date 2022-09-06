@@ -41,7 +41,7 @@
   color: var(--brand-cyan);
 }
 
-@media screen and (min-width: 50rem) {
+@media screen and (min-width: 55rem) {
   .container {
     width: auto;
   }

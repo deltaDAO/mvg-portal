@@ -7,14 +7,24 @@ import Links from './Links'
 import Container from '../../atoms/Container'
 
 export default function Footer(): ReactElement {
-  const { footer } = useSiteMetadata()
-  const { copyright } = footer
+  const { siteTitle, footer } = useSiteMetadata()
+  const { copyright, subtitle } = footer
 
   return (
     <footer className={styles.footer}>
       <Container className={styles.container}>
-        <div className={styles.main}>
-          <DeltaDaoLogo />
+        <div>
+          <p className={styles.siteTitle}>{siteTitle}</p>
+          <a
+            href="https://delta-dao.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <div className={styles.main}>
+              <DeltaDaoLogo />
+              <p className={styles.subtitle}>{subtitle}</p>
+            </div>
+          </a>
         </div>
         <Links />
       </Container>

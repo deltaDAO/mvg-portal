@@ -29,6 +29,7 @@ interface UseSiteMetadata {
   }
   badge: string
   footer: {
+    subtitle: string
     copyright: string
     privacyTitle: string
     content: {
@@ -86,6 +87,7 @@ const query = graphql`
         }
         badge
         footer {
+          subtitle
           copyright
           privacyTitle
           content {
