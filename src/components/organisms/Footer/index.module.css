@@ -1,6 +1,6 @@
 .footer {
   padding: var(--spacer);
-  padding-bottom: 0;
+  padding-bottom: calc(var(--spacer) / 2);
   text-align: center;
   color: var(--brand-white);
   background-color: var(--color-primary);
@@ -48,7 +48,7 @@
 @media screen and (min-width: 55rem) {
   .footer {
     padding: calc(var(--spacer) * 2);
-    padding-bottom: 0;
+    padding-bottom: calc(var(--spacer) / 2);
   }
   .container {
     flex-direction: row;
