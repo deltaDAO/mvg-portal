@@ -18,18 +18,27 @@
   margin-top: var(--sub-section-spacing);
 }
 
-.profileLink {
+.profileLink,
+.bookmarksLink {
   display: flex;
   align-items: center;
   padding-top: var(--sub-section-spacing);
 }
 
-.profileLink img {
+.profileLink img,
+.bookmarksLink svg {
   margin: 0;
   margin-right: calc(var(--spacer) / 8);
 }
 
-.profileButton {
+.bookmarksLink svg {
+  width: var(--font-size-large);
+  height: var(--font-size-large);
+  fill: var(--brand-purple);
+}
+
+.profileButton,
+.bookmarksButton {
   padding: 0;
 }
 

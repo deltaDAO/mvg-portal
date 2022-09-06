@@ -28,6 +28,18 @@ interface UseSiteMetadata {
     polygon: string
   }
   badge: string
+  footer: {
+    subtitle: string
+    copyright: string
+    privacyTitle: string
+    content: {
+      title: string
+      links: {
+        name: string
+        link: string
+      }[]
+    }[]
+  }
   appConfig: {
     metadataCacheUri: string
     complianceUri: string
@@ -74,6 +86,18 @@ const query = graphql`
           polygon
         }
         badge
+        footer {
+          subtitle
+          copyright
+          privacyTitle
+          content {
+            title
+            links {
+              name
+              link
+            }
+          }
+        }
         appConfig {
           metadataCacheUri
           complianceUri
