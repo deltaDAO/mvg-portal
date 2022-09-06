@@ -198,13 +198,15 @@ export default function Consume({
   return (
     <aside className={styles.consume}>
       <div className={styles.info}>
-        <div className={styles.filewrapper}>
+        <div className={styles.fileWrapper}>
           <File file={file} isLoading={fileIsLoading} />
         </div>
-        <div className={styles.pricewrapper}>
+        <div className={styles.priceWrapper}>
           <Price price={price} conversion />
-          {!isInPurgatory && <PurchaseButton />}
         </div>
+      </div>
+      <div className={styles.purchaseWrapper}>
+        {!isInPurgatory && <PurchaseButton />}
       </div>
       {consumeDisclaimerMessage && (
         <div className={styles.disclaimer}>
