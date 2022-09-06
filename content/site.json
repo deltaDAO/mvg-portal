@@ -20,10 +20,6 @@
         "link": "/verify"
       },
       {
-        "name": "Log",
-        "link": "https://exchangelog.minimal-gaia-x.eu"
-      },
-      {
         "name": "Ecosystem",
         "subItems": [
           {

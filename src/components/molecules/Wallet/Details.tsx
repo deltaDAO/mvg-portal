@@ -9,6 +9,7 @@ import Debug from '../UserPreferences/Debug'
 import Onboarding from '../UserPreferences/Onboarding'
 import Blockies from '../../atoms/Blockies'
 import { MenuLink } from '../Menu'
+import { ReactComponent as Bookmark } from '../../../images/bookmark.svg'
 
 export default function Details(): ReactElement {
   const {
@@ -59,6 +60,14 @@ export default function Details(): ReactElement {
             link="/profile"
             name="View Profile"
             className={styles.profileButton}
+          />
+        </li>
+        <li className={styles.bookmarksLink}>
+          <Bookmark />
+          <MenuLink
+            link="/bookmarks"
+            name="View Bookmarks"
+            className={styles.bookmarksButton}
           />
         </li>
 
