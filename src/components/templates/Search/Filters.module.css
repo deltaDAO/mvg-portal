@@ -1,14 +1,21 @@
-.filterList,
-div.filterList {
-  white-space: normal;
-  margin-bottom: 0;
+.filterList {
   display: flex;
-  flex-direction: row;
-  align-items: baseline;
+  gap: calc(var(--spacer) / 2) var(--spacer);
+  flex-wrap: wrap;
 }
 
-.separator {
-  width: calc(var(--spacer) / 2);
+.filterAccess,
+.filterType {
+  display: grid;
+  gap: calc(var(--spacer) / 4);
+}
+
+.filterAccess {
+  grid-template-columns: repeat(2, minmax(max-content, 1fr));
+}
+
+.filterType {
+  grid-template-columns: repeat(3, minmax(max-content, 1fr));
 }
 
 .filter {
@@ -22,10 +29,9 @@ button.filter,
 .filter:focus {
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  margin-right: calc(var(--spacer) / 6);
-  margin-bottom: calc(var(--spacer) / 6);
   color: var(--color-secondary);
   background: var(--background-content);
+  min-width: 7rem;
 
   /* the only thing not possible to overwrite button style="text" with more specifity of selectors, so sledgehammer */
   padding: calc(var(--spacer) / 6) !important;
@@ -57,9 +63,9 @@ button.filter,
 .showClear {
   display: inline-flex;
   text-transform: capitalize;
+  align-self: center;
   color: var(--color-secondary);
   font-weight: var(--font-weight-base);
-  margin-left: calc(var(--spacer) / 6);
 }
 
 .hideClear {

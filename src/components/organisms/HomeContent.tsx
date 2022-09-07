@@ -10,23 +10,30 @@ import InteractiveModalImage from '../molecules/InteractiveModalImage'
 const cx = classNames.bind(styles)
 
 const query = graphql`
-{
-  file(absolutePath: {regex: "/content\\.json/"}) {
-    childIndexJson {
-      content {
-        teaser {
-          title
-          text
-        }
-        paragraphs {
-          title
-          body
-          cta
-          ctaTo
-          image {
-            childImageSharp {
-              original {
-                src
+  query homeContentQuery {
+    content: allFile(
+      filter: { relativePath: { eq: "pages/index/content.json" } }
+    ) {
+      edges {
+        node {
+          childIndexJson {
+            content {
+              teaser {
+                title
+                text
+              }
+              paragraphs {
+                title
+                body
+                cta
+                ctaTo
+                image {
+                  childImageSharp {
+                    original {
+                      src
+                    }
+                  }
+                }
               }
             }
           }
@@ -34,31 +41,35 @@ const query = graphql`
       }
     }
   }
-}
 `
 interface HomeContentData {
-  file: {
-    childIndexJson: {
-      content: {
-        teaser: {
-          title: string
-          text: string
+  content: {
+    edges: {
+      node: {
+        childIndexJson: {
+          content: {
+            teaser: {
+              title: string
+              text: string
+            }
+            paragraphs: {
+              title: string
+              body: string
+              cta: string
+              ctaTo: string
+              image: { childImageSharp: { original: { src: string } } }
+            }[]
+          }
         }
-        paragraphs: {
-          title: string
-          body: string
-          cta: string
-          ctaTo: string
-          image: { childImageSharp: { original: { src: string } } }
-        }[]
       }
-    }
+    }[]
   }
 }
 
 export default function HomeContent(): ReactElement {
   const data: HomeContentData = useStaticQuery(query)
-  const { paragraphs, teaser } = data.file.childIndexJson.content
+  const { paragraphs, teaser } =
+    data.content.edges[0].node.childIndexJson.content
 
   return (
     <Container>

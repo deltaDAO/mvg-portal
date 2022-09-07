@@ -6,10 +6,6 @@
   cursor: pointer;
 }
 
-.link {
-  composes: link from '../molecules/Menu.module.css';
-}
-
 .caret,
 svg.caret {
   width: var(--font-size-small);
@@ -21,8 +17,4 @@ svg.caret {
 
 [aria-expanded='true'] svg {
   transform: rotate(180deg);
-}
-
-[aria-expanded='true'] .menuItem:after {
-  transform: scaleX(1);
 }

@@ -1,5 +1,6 @@
 {
   "title": "Good job! You are ready to explore the portal, scroll down to see more.",
   "body": "One last thing: we are never going to ask for your private key, remember to never share it with anyone!",
+  "hideTutorial": "Hide tutorial for my next visits",
   "image": "../../../../../src/images/onboarding/ready.png"
 }

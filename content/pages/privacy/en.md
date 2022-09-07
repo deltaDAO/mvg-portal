@@ -177,6 +177,7 @@ Our legitimate interest is to answer your inquiries.
 
 deltaDAO deletes your personal data as soon as we no longer require them for processing your inquiry, except deltaDAO is obliged to comply with legal retention periods or in case of legal disputes.
 <br/><i id="cookies"></i>
+
 # 5. Cookies and web storage
 
 A cookie is a small file that stores Internet settings. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content.
@@ -258,5 +259,6 @@ You have the right to lodge a complaint with a supervisory authority if you cons
 For any requests regarding our privacy policy, please send us an e-mail to [privacy@delta-dao.com](mailto:privacy@delta-dao.com).
 
 # 9. Changes to the Privacy Policy
+
 We adjust this policy from time to time, by publishing a new version on our portal demonstrator. You can find the date of the current version at the beginning of this policy.
 The latest version of this policy applies to the processing of your personal data.

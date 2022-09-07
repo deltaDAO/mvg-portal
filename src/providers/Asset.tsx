@@ -7,13 +7,21 @@ import React, {
   useCallback,
   ReactNode
 } from 'react'
-import { Logger, DDO, MetadataMain } from '@oceanprotocol/lib'
+import { Logger, DDO } from '@oceanprotocol/lib'
 import { PurgatoryData } from '@oceanprotocol/lib/dist/node/ddo/interfaces/PurgatoryData'
 import getAssetPurgatoryData from '../utils/purgatory'
-import { CancelToken } from 'axios'
-import { retrieveDDO } from '../utils/aquarius'
+import axios, { CancelToken } from 'axios'
+import {
+  getAssetsForProviders,
+  getFilterTerm,
+  retrieveDDO
+} from '../utils/aquarius'
 import { getPrice } from '../utils/subgraph'
-import { MetadataMarket, ServiceMetadataMarket } from '../@types/MetaData'
+import {
+  MetadataMainMarket,
+  MetadataMarket,
+  ServiceMetadataMarket
+} from '../@types/MetaData'
 import { useWeb3 } from './Web3'
 import { useSiteMetadata } from '../hooks/useSiteMetadata'
 import { useAddressConfig } from '../hooks/useAddressConfig'
@@ -24,6 +32,8 @@ import {
   getServiceSelfDescription,
   verifyServiceSelfDescription
 } from '../utils/metadata'
+import { EdgeDDO } from '../@types/edge/DDO'
+import { GX_NETWORK_ID } from '../../chains.config'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -34,11 +44,14 @@ interface AssetProviderValue {
   title: string
   owner: string
   price: BestPrice
-  type: MetadataMain['type']
+  type: MetadataMainMarket['type']
   error?: string
   refreshInterval: number
   isAssetNetwork: boolean
   isAssetNetworkAllowed: boolean
+  isEdgeAsset: boolean
+  isEdgeDeviceAvailable: boolean
+  isEdgeCtdAvailable: boolean
   loading: boolean
   isVerifyingSD: boolean
   isServiceSelfDescriptionVerified: boolean
@@ -69,12 +82,14 @@ function AssetProvider({
   const [price, setPrice] = useState<BestPrice>()
   const [owner, setOwner] = useState<string>()
   const [error, setError] = useState<string>()
-  const [type, setType] = useState<MetadataMain['type']>()
+  const [type, setType] = useState<MetadataMainMarket['type']>()
   const { isDDOWhitelisted } = useAddressConfig()
   const [loading, setLoading] = useState(false)
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
-  const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] =
-    useState<boolean>(true)
+  const [isAssetNetworkAllowed, setIsAssetNetworkAllowed] = useState<boolean>()
+  const [isEdgeAsset, setIsEdgeAsset] = useState<boolean>()
+  const [isEdgeDeviceAvailable, setIsEdgeDeviceAvailable] = useState<boolean>()
+  const [isEdgeCtdAvailable, setIsEdgeCtdAvailable] = useState<boolean>()
   const [isVerifyingSD, setIsVerifyingSD] = useState(false)
   const [
     isServiceSelfDescriptionVerified,
@@ -153,6 +168,7 @@ function AssetProvider({
       const { attributes } = ddo.findServiceByType(
         'metadata'
       ) as ServiceMetadataMarket
+      if (attributes.main.type === 'thing') return
 
       const { serviceSelfDescription } = attributes.additionalInformation
       if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {
@@ -178,6 +194,88 @@ function AssetProvider({
       setIsVerifyingSD(false)
     }
   }, [])
+
+  const checkEdgeDeviceStatus = useCallback(
+    async (ddo: EdgeDDO, token: CancelToken) => {
+      if (!ddo) return
+      const { attributes } = ddo.findServiceByType('metadata')
+      if (attributes.main.type !== 'thing') {
+        setIsEdgeDeviceAvailable(false)
+        return
+      }
+
+      try {
+        const { serviceEndpoint } = ddo.findServiceByType(
+          'edge'
+        ) as ServiceMetadataMarket
+
+        if (!serviceEndpoint) {
+          setIsEdgeDeviceAvailable(false)
+          return
+        }
+        const response = await axios.get(serviceEndpoint, {
+          cancelToken: token
+        })
+        if (response.status === 200) {
+          setIsEdgeDeviceAvailable(true)
+          return
+        }
+        setIsEdgeDeviceAvailable(false)
+      } catch (error) {
+        console.error(error.message)
+        setIsEdgeDeviceAvailable(false)
+      }
+    },
+    []
+  )
+
+  const checkEdgeCtdStatus = useCallback(
+    async (ddo: EdgeDDO, token: CancelToken) => {
+      if (!ddo) return
+
+      const computeService = ddo.findServiceByType('compute')
+      if (!computeService) {
+        setIsEdgeAsset(false)
+        setIsEdgeCtdAvailable(false)
+        return
+      }
+
+      const filters = [getFilterTerm('service.type', 'edge')]
+      const thingDDOs = await getAssetsForProviders(
+        [computeService?.serviceEndpoint],
+        [GX_NETWORK_ID],
+        token,
+        filters
+      )
+      // Only check if this is an edge asset
+      if (!thingDDOs || thingDDOs.length <= 0) {
+        setIsEdgeAsset(false)
+        setIsEdgeCtdAvailable(false)
+        return
+      }
+
+      setIsEdgeAsset(true)
+
+      if (!computeService?.serviceEndpoint) {
+        setIsEdgeCtdAvailable(false)
+        return
+      }
+      try {
+        const response = await axios.get(computeService.serviceEndpoint, {
+          cancelToken: token
+        })
+        if (response.status === 200) {
+          setIsEdgeCtdAvailable(true)
+          return
+        }
+        setIsEdgeCtdAvailable(false)
+      } catch (error) {
+        console.error(error.message)
+        setIsEdgeCtdAvailable(false)
+      }
+    },
+    []
+  )
 
   const initMetadata = useCallback(async (ddo: DDO): Promise<void> => {
     if (!ddo) return
@@ -215,6 +313,7 @@ function AssetProvider({
 
   useEffect(() => {
     if (!ddo) return
+
     initMetadata(ddo)
     checkServiceSD(ddo)
   }, [ddo, checkServiceSD, initMetadata])
@@ -231,6 +330,22 @@ function AssetProvider({
     )
     setIsAssetNetworkAllowed(isAssetNetworkAllowed)
   }, [networkId, ddo, appConfig.chainIdsSupported])
+
+  // Check edge asset online status
+  useEffect(() => {
+    checkEdgeCtdStatus(ddo, newCancelToken())
+    checkEdgeDeviceStatus(ddo, newCancelToken())
+
+    // init periodic refresh of edge asset online status
+    const statusCheckInterval = setInterval(() => {
+      checkEdgeCtdStatus(ddo, newCancelToken())
+      checkEdgeDeviceStatus(ddo, newCancelToken())
+    }, refreshInterval)
+
+    return () => {
+      clearInterval(statusCheckInterval)
+    }
+  }, [checkEdgeCtdStatus, checkEdgeDeviceStatus, ddo, newCancelToken])
 
   return (
     <AssetContext.Provider
@@ -252,6 +367,9 @@ function AssetProvider({
           refreshDdo,
           isAssetNetwork,
           isAssetNetworkAllowed,
+          isEdgeAsset,
+          isEdgeDeviceAvailable,
+          isEdgeCtdAvailable,
           isServiceSelfDescriptionVerified,
           verifiedServiceProviderName
         } as AssetProviderValue

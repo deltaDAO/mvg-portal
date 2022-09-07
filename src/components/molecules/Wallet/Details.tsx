@@ -1,29 +1,27 @@
 import React, { ReactElement, useEffect, useState } from 'react'
-import { formatCurrency } from '@coingecko/cryptoformat'
-import { useUserPreferences } from '../../../providers/UserPreferences'
 import Button from '../../atoms/Button'
 import AddToken from '../../atoms/AddToken'
-import Conversion from '../../atoms/Price/Conversion'
 import { useWeb3 } from '../../../providers/Web3'
-
 import Web3Feedback from '../Web3Feedback'
 import styles from './Details.module.css'
 import { getOceanConfig } from '../../../utils/ocean'
+import Debug from '../UserPreferences/Debug'
+import Onboarding from '../UserPreferences/Onboarding'
+import Blockies from '../../atoms/Blockies'
+import { MenuLink } from '../Menu'
+import { ReactComponent as Bookmark } from '../../../images/bookmark.svg'
 
 export default function Details(): ReactElement {
   const {
+    accountId,
     web3Provider,
     web3ProviderInfo,
     web3Modal,
     connect,
     logout,
     networkData,
-    networkId,
-    balance
+    networkId
   } = useWeb3()
-  const { locale } = useUserPreferences()
-
-  const [mainCurrency, setMainCurrency] = useState<string>()
   const [oceanTokenMetadata, setOceanTokenMetadata] =
     useState<{
       address: string
@@ -33,10 +31,6 @@ export default function Details(): ReactElement {
 
   useEffect(() => {
     if (!networkId) return
-
-    const symbol =
-      networkId === 2021000 ? 'GX' : networkData?.nativeCurrency.symbol
-    setMainCurrency(symbol)
 
     const oceanConfig = getOceanConfig(networkId)
 
@@ -60,17 +54,22 @@ export default function Details(): ReactElement {
   return (
     <div className={styles.details}>
       <ul>
-        {Object.entries(balance).map(([key, value]) => (
-          <li className={styles.balance} key={key}>
-            <span className={styles.symbol}>
-              {key === 'eth' ? mainCurrency : oceanTokenMetadata?.symbol}
-            </span>{' '}
-            {formatCurrency(Number(value), '', locale, false, {
-              significantFigures: 4
-            })}
-            {key === 'ocean' && <Conversion price={value} />}
-          </li>
-        ))}
+        <li className={styles.profileLink}>
+          <Blockies accountId={accountId} />
+          <MenuLink
+            link="/profile"
+            name="View Profile"
+            className={styles.profileButton}
+          />
+        </li>
+        <li className={styles.bookmarksLink}>
+          <Bookmark />
+          <MenuLink
+            link="/bookmarks"
+            name="View Bookmarks"
+            className={styles.bookmarksButton}
+          />
+        </li>
 
         <li className={styles.actions}>
           <div title="Connected provider" className={styles.walletInfo}>
@@ -128,6 +127,12 @@ export default function Details(): ReactElement {
               Disconnect
             </Button>
           </p>
+        </li>
+        <li className={styles.onboarding}>
+          <Onboarding />
+        </li>
+        <li className={styles.debug}>
+          <Debug />
         </li>
       </ul>
       <Web3Feedback />

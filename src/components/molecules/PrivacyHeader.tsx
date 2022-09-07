@@ -1,5 +1,4 @@
 import React, { ReactElement } from 'react'
-import Time from '../atoms/Time'
 import styles from '../templates/PageMarkdown.module.css'
 import { usePrivacyMetadata } from '../../hooks/usePrivacyMetadata'
 import PrivacyLanguages from '../atoms/PrivacyLanguages'
@@ -13,7 +12,7 @@ export default function PrivacyPolicyHeader({
 }): ReactElement {
   const { policies } = usePrivacyMetadata()
   const policyMetadata = policies.find((p) => p.policy === policy)
-  const { date, params } = policyMetadata
+  const { params } = policyMetadata
 
   return (
     <div>

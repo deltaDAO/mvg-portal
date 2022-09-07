@@ -1,3 +1,7 @@
+.homeContainer {
+  margin-top: calc(var(--spacer) * 2);
+}
+
 .searchWrap {
   display: flex;
   justify-content: center;

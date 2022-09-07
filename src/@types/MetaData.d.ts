@@ -2,7 +2,8 @@ import {
   Metadata,
   File,
   AdditionalInformation,
-  ServiceMetadata
+  ServiceMetadata,
+  MetadataMain
 } from '@oceanprotocol/lib'
 import { DataTokenOptions } from '../hooks/usePublish'
 import { PriceOptions } from '../hooks/usePricing'
@@ -22,10 +23,15 @@ export interface AdditionalInformationMarket extends AdditionalInformation {
   }
 }
 
+export interface MetadataMainMarket extends MetadataMain {
+  type: 'dataset' | 'algorithm' | 'thing'
+}
+
 export interface MetadataMarket extends Metadata {
   // While required for this market, Aquarius/Plecos will keep this as optional
   // allowing external pushes of assets without `additionalInformation`.
   // Making it optional here helps safeguarding against those assets.
+  main: MetadataMainMarket
   additionalInformation?: AdditionalInformationMarket
 }
 

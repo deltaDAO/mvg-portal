@@ -11,8 +11,16 @@ export default function PageTemplateAssetDetails({
 }: {
   uri: string
 }): ReactElement {
-  const { ddo, title, error, isInPurgatory, loading, isAssetNetworkAllowed } =
-    useAsset()
+  const {
+    ddo,
+    title,
+    error,
+    isInPurgatory,
+    loading,
+    isAssetNetworkAllowed,
+    isEdgeAsset,
+    type
+  } = useAsset()
   const [pageTitle, setPageTitle] = useState<string>()
 
   useEffect(() => {
@@ -25,12 +33,16 @@ export default function PageTemplateAssetDetails({
   }, [ddo, error, isInPurgatory, title])
 
   return ddo && pageTitle !== undefined && !loading && isAssetNetworkAllowed ? (
-    <Page title={pageTitle} uri={uri}>
+    <Page
+      title={pageTitle}
+      uri={uri}
+      isEdgeProvider={type === 'thing' || isEdgeAsset}
+    >
       <Router basepath="/asset">
         <AssetContent path=":did" />
       </Router>
     </Page>
-  ) : error || !isAssetNetworkAllowed ? (
+  ) : (error || !isAssetNetworkAllowed) && !loading ? (
     <Page title={pageTitle} noPageHeader uri={uri}>
       <Alert
         title={pageTitle}
