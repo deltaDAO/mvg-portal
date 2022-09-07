@@ -83,9 +83,9 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
 
     const isOwner = accountId.toLowerCase() === owner.toLowerCase()
     setIsOwner(isOwner)
-    setShowPricing(isOwner && price?.type === '')
+    setShowPricing(isOwner && type !== 'thing' && price?.type === '')
     setIsComputeType(Boolean(ddo.findServiceByType('compute')))
-  }, [accountId, price, owner, ddo])
+  }, [accountId, price, owner, ddo, type])
 
   function handleEditButton() {
     // move user's focus to top of screen
