@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import Tabs from '../../../atoms/Tabs'
 import PublishedList from './PublishedList'
 import Downloads from './Downloads'
@@ -47,15 +47,30 @@ export default function HistoryPage({
 }): ReactElement {
   const { accountId } = useWeb3()
   const location = useLocation()
+  const [tabs, setTabs] = useState<HistoryTab[]>([])
+  const [selectedIndex, setSelectedIndex] = useState<number>(0)
 
   const url = new URL(location.href)
   const defaultTab = url.searchParams.get('defaultTab')
-  const tabs = getTabs(accountIdentifier, accountId)
 
-  let defaultTabIndex = 0
-  defaultTab === 'ComputeJobs' ? (defaultTabIndex = 4) : (defaultTabIndex = 0)
+  useEffect(() => {
+    const tabs = getTabs(accountIdentifier, accountId)
+    setTabs(tabs)
+
+    const defaultTabIndex = tabs.findIndex(
+      (tab) =>
+        tab.title.split(' ').join('').toLowerCase() ===
+        defaultTab?.toLowerCase()
+    )
+    setSelectedIndex(defaultTabIndex !== -1 ? defaultTabIndex : 0)
+  }, [accountId, accountIdentifier, defaultTab])
 
   return (
-    <Tabs items={tabs} className={styles.tabs} defaultIndex={defaultTabIndex} />
+    <Tabs
+      items={tabs}
+      className={styles.tabs}
+      selectedIndex={selectedIndex}
+      setSelectedIndex={setSelectedIndex}
+    />
   )
 }
