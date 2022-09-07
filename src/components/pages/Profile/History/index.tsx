@@ -59,7 +59,8 @@ export default function HistoryPage({
 
     const defaultTabIndex = tabs.findIndex(
       (tab) =>
-        tab.title.split(' ').join('').toLowerCase() === defaultTab.toLowerCase()
+        tab.title.split(' ').join('').toLowerCase() ===
+        defaultTab?.toLowerCase()
     )
     setSelectedIndex(defaultTabIndex !== -1 ? defaultTabIndex : 0)
   }, [accountId, accountIdentifier, defaultTab])
