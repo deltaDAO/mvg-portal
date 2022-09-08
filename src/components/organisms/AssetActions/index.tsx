@@ -16,11 +16,12 @@ import { getFileInfo } from '../../../utils/provider'
 import { getOceanConfig } from '../../../utils/ocean'
 import { useCancelToken } from '../../../hooks/useCancelToken'
 import { useIsMounted } from '../../../hooks/useIsMounted'
+import Edge from './Edge'
 
 export default function AssetActions(): ReactElement {
   const { accountId, balance } = useWeb3()
   const { ocean, account } = useOcean()
-  const { price, ddo, isAssetNetwork, isEdgeCtdAvailable } = useAsset()
+  const { price, ddo, isAssetNetwork, isEdgeCtdAvailable, type } = useAsset()
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>()
   const [dtBalance, setDtBalance] = useState<string>()
   const [fileMetadata, setFileMetadata] = useState<FileMetadata>(Object)
@@ -99,25 +100,28 @@ export default function AssetActions(): ReactElement {
     }
   }, [balance, account, price, dtBalance])
 
-  const UseContent = isCompute ? (
-    <Compute
-      dtBalance={dtBalance}
-      file={fileMetadata}
-      fileIsLoading={fileIsLoading}
-      isConsumable={isConsumable}
-      consumableFeedback={consumableFeedback}
-    />
-  ) : (
-    <Consume
-      ddo={ddo}
-      dtBalance={dtBalance}
-      isBalanceSufficient={isBalanceSufficient}
-      file={fileMetadata}
-      fileIsLoading={fileIsLoading}
-      isConsumable={isConsumable}
-      consumableFeedback={consumableFeedback}
-    />
-  )
+  const UseContent =
+    type === 'thing' ? (
+      <Edge ddo={ddo} />
+    ) : isCompute ? (
+      <Compute
+        dtBalance={dtBalance}
+        file={fileMetadata}
+        fileIsLoading={fileIsLoading}
+        isConsumable={isConsumable}
+        consumableFeedback={consumableFeedback}
+      />
+    ) : (
+      <Consume
+        ddo={ddo}
+        dtBalance={dtBalance}
+        isBalanceSufficient={isBalanceSufficient}
+        file={fileMetadata}
+        fileIsLoading={fileIsLoading}
+        isConsumable={isConsumable}
+        consumableFeedback={consumableFeedback}
+      />
+    )
 
   const tabs = [
     {
