@@ -174,7 +174,7 @@ export default function FormStartCompute({
         compareAsBN(balance.ocean, `${totalPrice}`) || Number(dtBalance) >= 1
       )
     }
-  }, [totalPrice])
+  }, [balance.ocean, dtBalance, totalPrice])
 
   return (
     <Form className={styles.form}>
