@@ -82,7 +82,7 @@ export default function ComputeJobs({
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const isMounted = useIsMounted()
 
-  const columnsMinimal = [columns[4], columns[5], columns[3]]
+  const [columnsMinimal] = useState([columns[4], columns[5], columns[3]])
 
   useEffect(() => {
     async function initOcean() {
