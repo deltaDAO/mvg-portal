@@ -98,20 +98,22 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
 
   useEffect(() => {
     if (!isServiceSelfDescriptionVerified) return
-    const { raw, url } = metadata?.additionalInformation?.serviceSelfDescription
-    if (raw) {
+    const serviceSD = metadata?.additionalInformation?.serviceSelfDescription
+    if (serviceSD?.raw) {
       const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-        { body: raw, raw: true }
+        { body: serviceSD?.raw, raw: true }
       )}`
       setServiceSelfDescription(formattedServiceSelfDescription)
     }
-    if (url) {
-      getServiceSelfDescription(url).then((serviceSelfDescription) => {
-        const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-          { body: serviceSelfDescription }
-        )}`
-        setServiceSelfDescription(formattedServiceSelfDescription)
-      })
+    if (serviceSD?.url) {
+      getServiceSelfDescription(serviceSD?.url).then(
+        (serviceSelfDescription) => {
+          const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
+            { body: serviceSelfDescription }
+          )}`
+          setServiceSelfDescription(formattedServiceSelfDescription)
+        }
+      )
     }
   }, [
     isServiceSelfDescriptionVerified,
