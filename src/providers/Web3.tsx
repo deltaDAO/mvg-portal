@@ -5,8 +5,7 @@ import React, {
   createContext,
   ReactElement,
   ReactNode,
-  useCallback,
-  useRef
+  useCallback
 } from 'react'
 import Web3 from 'web3'
 import Web3Modal, { getProviderInfo, IProviderInfo } from 'web3modal'
@@ -116,8 +115,6 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
     eth: '0',
     ocean: '0'
   })
-  const balanceRef = useRef(balance)
-  balanceRef.current = balance
 
   // -----------------------------------
   // Helper: connect to web3
@@ -162,14 +159,13 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   const getUserBalance = useCallback(async () => {
     if (!accountId || !networkId || !web3) return
     setBalanceLoading(true)
-    const { eth, ocean } = balanceRef.current
 
     try {
       const balance = {
         eth: web3.utils.fromWei(await web3.eth.getBalance(accountId, 'latest')),
         ocean: await getOceanBalance(accountId, networkId, web3)
       }
-      if (balance.eth !== eth || balance.ocean !== ocean) setBalance(balance)
+      setBalance(balance)
       Logger.log('[web3] Balance: ', balance)
     } catch (error) {
       Logger.error('[web3] Error: ', error.message)
