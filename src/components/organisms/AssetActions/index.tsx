@@ -21,11 +21,13 @@ import Edge from './Edge'
 export default function AssetActions(): ReactElement {
   const { accountId, balance } = useWeb3()
   const { ocean, account } = useOcean()
-  const { price, ddo, isAssetNetwork, isEdgeCtdAvailable, type } = useAsset()
+  const { price, ddo, isAssetNetwork, isEdgeCtdAvailable } = useAsset()
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>()
   const [dtBalance, setDtBalance] = useState<string>()
   const [fileMetadata, setFileMetadata] = useState<FileMetadata>(Object)
   const [fileIsLoading, setFileIsLoading] = useState<boolean>(false)
+  const isEdge =
+    ddo?.findServiceByType('metadata').attributes.main.type === 'thing'
   const isCompute = Boolean(ddo?.findServiceByType('compute'))
 
   const [isConsumable, setIsConsumable] = useState<boolean>(true)
@@ -100,28 +102,27 @@ export default function AssetActions(): ReactElement {
     }
   }, [balance, account, price, dtBalance])
 
-  const UseContent =
-    type === 'thing' ? (
-      <Edge ddo={ddo} />
-    ) : isCompute ? (
-      <Compute
-        dtBalance={dtBalance}
-        file={fileMetadata}
-        fileIsLoading={fileIsLoading}
-        isConsumable={isConsumable}
-        consumableFeedback={consumableFeedback}
-      />
-    ) : (
-      <Consume
-        ddo={ddo}
-        dtBalance={dtBalance}
-        isBalanceSufficient={isBalanceSufficient}
-        file={fileMetadata}
-        fileIsLoading={fileIsLoading}
-        isConsumable={isConsumable}
-        consumableFeedback={consumableFeedback}
-      />
-    )
+  const UseContent = isEdge ? (
+    <Edge ddo={ddo} />
+  ) : isCompute ? (
+    <Compute
+      dtBalance={dtBalance}
+      file={fileMetadata}
+      fileIsLoading={fileIsLoading}
+      isConsumable={isConsumable}
+      consumableFeedback={consumableFeedback}
+    />
+  ) : (
+    <Consume
+      ddo={ddo}
+      dtBalance={dtBalance}
+      isBalanceSufficient={isBalanceSufficient}
+      file={fileMetadata}
+      fileIsLoading={fileIsLoading}
+      isConsumable={isConsumable}
+      consumableFeedback={consumableFeedback}
+    />
+  )
 
   const tabs = [
     {
