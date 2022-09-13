@@ -140,16 +140,13 @@ async function getProviders(
       }
       const provider = await Provider.getInstance(instanceConfig)
       await provider.setBaseUrl(serviceEndpoints[i])
-      const hasSameCompute =
-        providers.filter((x) => x.computeAddress === provider.computeAddress)
-          .length > 0
-      if (!hasSameCompute) providers.push(provider)
+      providers.push(provider)
     }
   } catch (err) {
     Logger.error(err.message)
   }
 
-  return providers
+  return [...new Set(providers)]
 }
 
 async function getJobs(
@@ -203,7 +200,20 @@ async function getJobs(
     }
   }
 
-  return computeJobs
+  const uniqueAgreementIds = new Set()
+  const uniqueComputeJobs = computeJobs
+    .filter((e) => {
+      const isDuplicate = !uniqueAgreementIds.has(e.agreementId)
+      uniqueAgreementIds.add(e.agreementId)
+      return isDuplicate
+    })
+    .sort(
+      (a, b) =>
+        new Date(Number(b.dateCreated) * 1000).getTime() -
+        new Date(Number(a.dateCreated) * 1000).getTime()
+    )
+
+  return uniqueComputeJobs
 }
 
 function getDtList(data: TokenOrder[]): string[] {
