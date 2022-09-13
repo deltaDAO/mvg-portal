@@ -22,7 +22,9 @@ const useUserPreferences: UserPreferencesValue = {
   showOnboardingModule: false,
   setShowOnboardingModule: jest.fn(),
   isSearchBarVisible: false,
-  setSearchBarVisible: jest.fn()
+  setSearchBarVisible: jest.fn(),
+  homeSearchBarFocus: false,
+  setHomeSearchBarFocus: jest.fn()
 }
 
 export default useUserPreferences

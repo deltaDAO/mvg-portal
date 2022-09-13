@@ -10,6 +10,7 @@ const cx = classNames.bind(styles)
 
 export default function PageHeader({
   title,
+  isHome,
   showSearch,
   searchPlaceholder,
   description,
@@ -18,6 +19,7 @@ export default function PageHeader({
   isEdgeProvider
 }: {
   title: string
+  isHome: boolean
   showSearch: boolean
   searchPlaceholder: string
   description?: string
@@ -27,7 +29,8 @@ export default function PageHeader({
 }): ReactElement {
   const styleClasses = cx({
     header: true,
-    center: center
+    center,
+    isHome
   })
 
   return (

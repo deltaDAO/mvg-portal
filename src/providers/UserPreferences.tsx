@@ -32,6 +32,8 @@ interface UserPreferencesValue {
   setShowOnboardingModule: (value: boolean) => void
   isSearchBarVisible: boolean
   setSearchBarVisible: (value: boolean) => void
+  homeSearchBarFocus: boolean
+  setHomeSearchBarFocus: (value: boolean) => void
   locale: string
 }
 
@@ -95,6 +97,7 @@ function UserPreferencesProvider({
   )
 
   const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(false)
+  const [homeSearchBarFocus, setHomeSearchBarFocus] = useState<boolean>(false)
 
   // Write values to localStorage on change
   useEffect(() => {
@@ -181,7 +184,9 @@ function UserPreferencesProvider({
           showOnboardingModule,
           setShowOnboardingModule,
           isSearchBarVisible,
-          setSearchBarVisible
+          setSearchBarVisible,
+          homeSearchBarFocus,
+          setHomeSearchBarFocus
         } as UserPreferencesValue
       }
     >
