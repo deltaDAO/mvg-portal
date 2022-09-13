@@ -67,6 +67,8 @@ export default function Page({
       {title && !noPageHeader && (
         <PageHeader
           title={title}
+          showSearch={isHome}
+          searchPlaceholder={placeholder}
           description={description}
           center={headerCenter}
           isEdgeProvider={isEdgeProvider}

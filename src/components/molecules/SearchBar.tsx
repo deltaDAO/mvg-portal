@@ -44,22 +44,21 @@ export default function SearchBar({
   const [value, setValue] = useState(initialValue || '')
   const parsed = queryString.parse(location.search)
   const { text, owner } = parsed
-  const { isScrollingToSearchBar, isSearchBarVisible } = useUserPreferences()
+  const { isSearchBarVisible } = useUserPreferences()
   const isHome = window.location.pathname === '/'
 
   const searchBarRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    ;(text || owner) && setValue((text || owner) as string)
+    if (text || owner) setValue((text || owner) as string)
   }, [text, owner])
 
   useEffect(() => {
-    if (isHome && !isScrollingToSearchBar) return
-    if (!isHome && !isSearchBarVisible) return
+    if (!isSearchBarVisible) return
     if (searchBarRef?.current) {
       searchBarRef.current.focus()
     }
-  }, [isHome, isScrollingToSearchBar, isSearchBarVisible])
+  }, [isSearchBarVisible])
 
   async function startSearch(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
