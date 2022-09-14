@@ -201,19 +201,18 @@ async function getJobs(
   }
 
   const uniqueAgreementIds = new Set()
-  const uniqueComputeJobs = computeJobs
-    .filter((e) => {
-      const isDuplicate = !uniqueAgreementIds.has(e.agreementId)
-      uniqueAgreementIds.add(e.agreementId)
-      return isDuplicate
-    })
-    .sort(
-      (a, b) =>
-        new Date(Number(b.dateCreated) * 1000).getTime() -
-        new Date(Number(a.dateCreated) * 1000).getTime()
-    )
+  const uniqueComputeJobs = computeJobs.filter((e) => {
+    const isDuplicate = uniqueAgreementIds.has(e.agreementId)
+    uniqueAgreementIds.add(e.agreementId)
+    return !isDuplicate
+  })
+  const sortedComputeJobs = uniqueComputeJobs.sort(
+    (a, b) =>
+      new Date(Number(b.dateCreated) * 1000).getTime() -
+      new Date(Number(a.dateCreated) * 1000).getTime()
+  )
 
-  return uniqueComputeJobs
+  return sortedComputeJobs
 }
 
 function getDtList(data: TokenOrder[]): string[] {
