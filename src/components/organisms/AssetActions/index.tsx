@@ -16,6 +16,7 @@ import { getFileInfo } from '../../../utils/provider'
 import { getOceanConfig } from '../../../utils/ocean'
 import { useCancelToken } from '../../../hooks/useCancelToken'
 import { useIsMounted } from '../../../hooks/useIsMounted'
+import Edge from './Edge'
 
 export default function AssetActions(): ReactElement {
   const { accountId, balance } = useWeb3()
@@ -25,6 +26,8 @@ export default function AssetActions(): ReactElement {
   const [dtBalance, setDtBalance] = useState<string>()
   const [fileMetadata, setFileMetadata] = useState<FileMetadata>(Object)
   const [fileIsLoading, setFileIsLoading] = useState<boolean>(false)
+  const isEdge =
+    ddo?.findServiceByType('metadata').attributes.main.type === 'thing'
   const isCompute = Boolean(ddo?.findServiceByType('compute'))
 
   const [isConsumable, setIsConsumable] = useState<boolean>(true)
@@ -99,7 +102,9 @@ export default function AssetActions(): ReactElement {
     }
   }, [balance, account, price, dtBalance])
 
-  const UseContent = isCompute ? (
+  const UseContent = isEdge ? (
+    <Edge ddo={ddo} />
+  ) : isCompute ? (
     <Compute
       dtBalance={dtBalance}
       file={fileMetadata}

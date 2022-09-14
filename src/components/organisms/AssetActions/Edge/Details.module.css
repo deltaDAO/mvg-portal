@@ -1,0 +1,50 @@
+.detailsContainer {
+  display: flex;
+  flex-direction: row;
+  gap: calc(var(--spacer) / 2);
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: calc(var(--spacer) / 3) calc(var(--spacer) / 2);
+  width: 100%;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: calc(var(--spacer) / 2);
+}
+
+.detailsContainer svg {
+  width: 3rem;
+  margin: 0;
+}
+
+h5,
+p {
+  margin-bottom: 0;
+}
+
+p {
+  font-size: var(--font-size-small);
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(var(--spacer) / 4);
+}
+
+.badge {
+  background: var(--brand-alert-green);
+  width: min-content;
+}
+
+.unavailable {
+  background: var(--brand-alert-red);
+}
+
+.assets {
+  margin-top: var(--spacer);
+}

@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useMemo, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { graphql, useStaticQuery } from 'gatsby'
 import Markdown from '../../atoms/Markdown'
 import MetaFull from './MetaFull'
@@ -24,8 +24,6 @@ import {
   getFormattedCodeString,
   getServiceSelfDescription
 } from '../../../utils/metadata'
-import EdgeDetails from './EdgeDetails'
-import { EdgeDDO } from '../../../@types/edge/DDO'
 export interface AssetContentProps {
   path?: string
 }
@@ -73,11 +71,6 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   const [serviceSelfDescription, setServiceSelfDescription] = useState<string>()
   const { appConfig } = useSiteMetadata()
 
-  const showEdgeDetails: boolean = useMemo(
-    () => !!(ddo as EdgeDDO)?.findServiceByType('edge'),
-    [ddo]
-  )
-
   useEffect(() => {
     if (!accountId || !owner) return
 
@@ -105,20 +98,22 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
 
   useEffect(() => {
     if (!isServiceSelfDescriptionVerified) return
-    const { raw, url } = metadata?.additionalInformation?.serviceSelfDescription
-    if (raw) {
+    const serviceSD = metadata?.additionalInformation?.serviceSelfDescription
+    if (serviceSD?.raw) {
       const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-        { body: raw, raw: true }
+        { body: serviceSD?.raw, raw: true }
       )}`
       setServiceSelfDescription(formattedServiceSelfDescription)
     }
-    if (url) {
-      getServiceSelfDescription(url).then((serviceSelfDescription) => {
-        const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-          { body: serviceSelfDescription }
-        )}`
-        setServiceSelfDescription(formattedServiceSelfDescription)
-      })
+    if (serviceSD?.url) {
+      getServiceSelfDescription(serviceSD?.url).then(
+        (serviceSelfDescription) => {
+          const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
+            { body: serviceSelfDescription }
+          )}`
+          setServiceSelfDescription(formattedServiceSelfDescription)
+        }
+      )
     }
   }, [
     isServiceSelfDescriptionVerified,
@@ -153,7 +148,6 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
               />
             ) : (
               <>
-                {showEdgeDetails && <EdgeDetails ddo={ddo} />}
                 <Markdown
                   className={styles.description}
                   text={metadata?.additionalInformation?.description || ''}
@@ -209,11 +203,9 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
             {debug === true && <DebugOutput title="DDO" output={ddo} />}
           </div>
         </div>
-        {!showEdgeDetails && (
-          <div className={styles.actions}>
-            <AssetActions />
-          </div>
-        )}
+        <div className={styles.actions}>
+          <AssetActions />
+        </div>
       </article>
     </>
   )

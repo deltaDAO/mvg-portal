@@ -14,6 +14,10 @@ import { ReactComponent as SearchIcon } from '../../images/search.svg'
 import InputElement from '../atoms/Input/InputElement'
 import styles from './SearchBar.module.css'
 import { useUserPreferences } from '../../providers/UserPreferences'
+import classNames from 'classnames/bind'
+import { animated, useSpring } from 'react-spring'
+
+const cx = classNames.bind(styles)
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window.location.href)
@@ -44,22 +48,31 @@ export default function SearchBar({
   const [value, setValue] = useState(initialValue || '')
   const parsed = queryString.parse(location.search)
   const { text, owner } = parsed
-  const { isScrollingToSearchBar, isSearchBarVisible } = useUserPreferences()
+  const {
+    isSearchBarVisible,
+    setSearchBarVisible,
+    homeSearchBarFocus,
+    setHomeSearchBarFocus
+  } = useUserPreferences()
   const isHome = window.location.pathname === '/'
 
   const searchBarRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    ;(text || owner) && setValue((text || owner) as string)
+    if (text || owner) setValue((text || owner) as string)
   }, [text, owner])
 
   useEffect(() => {
-    if (isHome && !isScrollingToSearchBar) return
-    if (!isHome && !isSearchBarVisible) return
+    setSearchBarVisible(false)
+    setHomeSearchBarFocus(false)
+  }, [setSearchBarVisible, setHomeSearchBarFocus])
+
+  useEffect(() => {
+    if (!isSearchBarVisible && !homeSearchBarFocus) return
     if (searchBarRef?.current) {
       searchBarRef.current.focus()
     }
-  }, [isHome, isScrollingToSearchBar, isSearchBarVisible])
+  }, [isSearchBarVisible, homeSearchBarFocus])
 
   async function startSearch(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
@@ -91,38 +104,45 @@ export default function SearchBar({
     await startSearch(e)
   }
 
+  const formStyles = cx({
+    search: true,
+    visibleInputSearch: isSearchPage
+  })
+
+  const springStile = useSpring({
+    transform:
+      isHome || isSearchPage || isSearchBarVisible
+        ? 'translateY(0%)'
+        : 'translateY(-150%)',
+    config: { mass: 1, tension: 140, friction: 12 }
+  })
+
   return (
-    <form
-      className={
-        isHome
-          ? styles.visibleInputSearchHome
-          : isSearchPage
-          ? styles.visibleInputSearch
-          : styles.search
-      }
-    >
-      <InputElement
-        type="search"
-        name={name || 'search'}
-        placeholder={placeholder || 'Search...'}
-        value={value}
-        onChange={handleChange}
-        required
-        size="small"
-        className={visibleInput ? styles.visibleInput : styles.input}
-        onKeyPress={handleKeyPress}
-        ref={searchBarRef}
-      />
-      <button
-        onClick={handleButtonClick}
-        className={visibleInput ? styles.visibleInputButton : styles.button}
-      >
-        <SearchIcon
-          className={
-            visibleInput ? styles.visibleInputSearchIcon : styles.searchIcon
-          }
+    <form className={formStyles} autoComplete={!value ? 'off' : 'on'}>
+      <animated.div style={springStile} className={styles.springContainer}>
+        <InputElement
+          type="search"
+          name={name || 'search'}
+          placeholder={placeholder || 'Search...'}
+          value={value}
+          onChange={handleChange}
+          required
+          size="small"
+          className={visibleInput ? styles.visibleInput : styles.input}
+          onKeyPress={handleKeyPress}
+          ref={searchBarRef}
         />
-      </button>
+        <button
+          onClick={handleButtonClick}
+          className={visibleInput ? styles.visibleInputButton : styles.button}
+        >
+          <SearchIcon
+            className={
+              visibleInput ? styles.visibleInputSearchIcon : styles.searchIcon
+            }
+          />
+        </button>
+      </animated.div>
     </form>
   )
 }

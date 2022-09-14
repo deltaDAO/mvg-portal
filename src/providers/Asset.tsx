@@ -38,7 +38,7 @@ import { GX_NETWORK_ID } from '../../chains.config'
 interface AssetProviderValue {
   isInPurgatory: boolean
   purgatoryData: PurgatoryData
-  ddo: DDO
+  ddo: EdgeDDO
   did: string
   metadata: MetadataMarket
   title: string
