@@ -502,11 +502,9 @@ export async function getAssetsForProviders(
       }
     }
 
-    const response = await queryMetadata(query, cancelToken)
-    if (!response) return []
-
-    return response.results || []
-  } catch (error: any) {
+    const computeDatasets = await queryMetadata(query, cancelToken)
+    return computeDatasets.totalResults === 0 ? [] : computeDatasets.results
+  } catch (error) {
     Logger.error(
       `Could not load assets for provider ${provider}:`,
       error.message
