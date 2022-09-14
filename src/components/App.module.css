@@ -18,13 +18,6 @@
 }
 
 .main {
-  padding: calc(var(--spacer) * 1.5) 0 calc(var(--spacer) * 2) 0;
-
-  /* sticky footer technique */
-  flex: 1;
-}
-
-.mainNoPaddingTop {
   padding: 0 0 calc(var(--spacer) * 2) 0;
 
   /* sticky footer technique */

@@ -4,17 +4,24 @@ import styles from './PageHeader.module.css'
 import Markdown from '../atoms/Markdown'
 import Logo from '../atoms/Logo'
 import Badge from '../atoms/Badge'
+import SearchBar from './SearchBar'
 
 const cx = classNames.bind(styles)
 
 export default function PageHeader({
   title,
+  isHome,
+  showSearch,
+  searchPlaceholder,
   description,
   center,
   powered,
   isEdgeProvider
 }: {
   title: string
+  isHome: boolean
+  showSearch: boolean
+  searchPlaceholder: string
   description?: string
   center?: boolean
   powered?: boolean
@@ -22,7 +29,8 @@ export default function PageHeader({
 }): ReactElement {
   const styleClasses = cx({
     header: true,
-    center: center
+    center,
+    isHome
   })
 
   return (
@@ -33,9 +41,18 @@ export default function PageHeader({
       {description && (
         <Markdown text={description} className={styles.description} />
       )}
+      {showSearch && (
+        <div className={styles.search}>
+          <SearchBar
+            visibleInput
+            name="searchInput"
+            placeholder={searchPlaceholder}
+          />
+        </div>
+      )}
       {powered && (
-        <>
-          <p className={styles.powered}>powered by</p>
+        <div className={styles.poweredByContainer}>
+          <p>powered by</p>
           <a
             href="https://oceanprotocol.com/"
             target="_blank"
@@ -43,7 +60,7 @@ export default function PageHeader({
           >
             <Logo />
           </a>
-        </>
+        </div>
       )}
     </header>
   )

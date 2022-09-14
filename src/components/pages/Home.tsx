@@ -28,7 +28,6 @@ import OnboardingSection from './Home/Onboarding'
 import SectionTitle from '../molecules/SectionTitle'
 import PromotionBanner from '../molecules/PromotionBanner'
 import { graphql, useStaticQuery } from 'gatsby'
-import SearchForm from '../organisms/SearchForm'
 
 function sortElements(items: DDO[], sorted: string[]) {
   items.sort(function (a, b) {
@@ -227,10 +226,6 @@ export default function HomePage(): ReactElement {
             <OnboardingSection />
           </section>
         )}
-
-        <Container>
-          <SearchForm />
-        </Container>
         <Container>
           <SectionTitle {...featuredAssets.childIndexJson} />
           {queryLatest?.length > 0 &&

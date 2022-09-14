@@ -1,4 +1,4 @@
-import React, { ReactNode, ReactElement } from 'react'
+import React, { ReactNode, ReactElement, useEffect } from 'react'
 import PageHeader from '../molecules/PageHeader'
 import Seo from '../atoms/Seo'
 import Container from '../atoms/Container'
@@ -46,27 +46,23 @@ export default function Page({
   const { placeholder } = data.file.childSearchFormJson
   const isHome = uri === '/'
   const isSearch = uri === '/search'
-  const { isSearchBarVisible, setSearchBarVisible } = useUserPreferences()
-
-  React.useLayoutEffect(() => {
-    setSearchBarVisible(false)
-  }, [isHome, setSearchBarVisible])
 
   const childElements = (
     <>
-      {((!isHome && isSearchBarVisible) || isSearch) && (
-        <>
-          <SearchBar
-            visibleInput
-            name="searchInput"
-            placeholder={placeholder}
-            isSearchPage={isSearch}
-          />
-        </>
+      {!isHome && (
+        <SearchBar
+          visibleInput
+          name="searchInput"
+          placeholder={placeholder}
+          isSearchPage={isSearch}
+        />
       )}
       {title && !noPageHeader && (
         <PageHeader
           title={title}
+          isHome={isHome}
+          showSearch={isHome}
+          searchPlaceholder={placeholder}
           description={description}
           center={headerCenter}
           isEdgeProvider={isEdgeProvider}

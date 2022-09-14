@@ -42,14 +42,10 @@ export default function App({
   const { accountId } = useWeb3()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
 
-  const { isSearchBarVisible } = useUserPreferences()
-  const isHome = window.location.pathname === '/'
-  const isSearch = window.location.pathname === '/search'
-
   return (
     <Styles>
       <div className={styles.app}>
-        {(props as PageProps).uri === '/' && (
+        {(props as PageProps).uri === '/' && warning.main && (
           <AnnouncementBanner text={warning.main} />
         )}
         <Header />
@@ -62,15 +58,7 @@ export default function App({
             state="error"
           />
         )}
-        <main
-          className={
-            isHome || isSearch || !isSearchBarVisible
-              ? styles.main
-              : styles.mainNoPaddingTop
-          }
-        >
-          {children}
-        </main>
+        <main className={styles.main}>{children}</main>
         <Footer />
 
         {appConfig.privacyPreferenceCenter === 'true' && (
