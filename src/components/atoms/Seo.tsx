@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react'
 import { Helmet } from 'react-helmet'
 import { useSiteMetadata } from '../../hooks/useSiteMetadata'
-import { isBrowser } from '../../utils'
 
 export default function Seo({
   title,
@@ -17,10 +16,12 @@ export default function Seo({
   // Remove trailing slash from all URLs
   const canonical = `${siteUrl}${uri}`.replace(/\/$/, '')
 
+  const titleTemplate = uri === '/' ? siteTitle : `%s — ${siteTitle}`
+
   return (
     <Helmet
       defaultTitle={`${siteTitle} — ${siteTagline}`}
-      titleTemplate={`%s — ${siteTitle}`}
+      titleTemplate={titleTemplate}
       title={title}
     >
       <html lang="en" />

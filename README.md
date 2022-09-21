@@ -1,6 +1,6 @@
 [![banner](https://github.com/deltaDAO/files/raw/main/github_banner.png)](https://portal.minimal-gaia-x.eu)
 
-<h1 align="center">Minimal Gaia-X Portal</h1>
+<h1 align="center">Pontus-X - Gaia-X Web3 Ecosystem</h1>
 
 **Table of Contents**
 
