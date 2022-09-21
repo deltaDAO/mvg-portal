@@ -5,6 +5,10 @@ import {
   validationSchema,
   getInitialValues
 } from '../../../../models/FormEditMetadata'
+import {
+  edgeValidationSchema,
+  getInitialEdgeValues
+} from '../../../../models/FormEditEdgeMetadata'
 import { useAsset } from '../../../../providers/Asset'
 import { useUserPreferences } from '../../../../providers/UserPreferences'
 import { MetadataPreview } from '../../../molecules/MetadataPreview'
@@ -16,7 +20,7 @@ import {
   updateServiceSelfDescription
 } from '../../../../utils/metadata'
 import styles from './index.module.css'
-import { Logger } from '@oceanprotocol/lib'
+import { EditableMetadata, Logger } from '@oceanprotocol/lib'
 import MetadataFeedback from '../../../molecules/MetadataFeedback'
 import { graphql, useStaticQuery } from 'gatsby'
 import { useWeb3 } from '../../../../providers/Web3'
@@ -25,10 +29,39 @@ import {
   setMinterToDispenser,
   setMinterToPublisher
 } from '../../../../utils/freePrice'
+import FormEditEdgeMetadata from './FormEditEdgeMetadata'
 
 const contentQuery = graphql`
   query EditMetadataQuery {
     content: allFile(filter: { relativePath: { eq: "pages/edit.json" } }) {
+      edges {
+        node {
+          childPagesJson {
+            description
+            form {
+              success
+              successAction
+              error
+              data {
+                name
+                placeholder
+                label
+                help
+                type
+                min
+                required
+                sortOptions
+                options
+                rows
+              }
+            }
+          }
+        }
+      }
+    }
+    edgeContent: allFile(
+      filter: { relativePath: { eq: "pages/editEdge.json" } }
+    ) {
       edges {
         node {
           childPagesJson {
@@ -59,13 +92,17 @@ const contentQuery = graphql`
 
 export default function Edit({
   setShowEdit,
-  isComputeType
+  isComputeType,
+  isEdge
 }: {
   setShowEdit: (show: boolean) => void
   isComputeType?: boolean
+  isEdge?: boolean
 }): ReactElement {
   const data = useStaticQuery(contentQuery)
-  const content = data.content.edges[0].node.childPagesJson
+  const content = isEdge
+    ? data.edgeContent.edges[0].node.childPagesJson
+    : data.content.edges[0].node.childPagesJson
 
   const { debug } = useUserPreferences()
   const { accountId } = useWeb3()
@@ -74,7 +111,9 @@ export default function Edit({
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
   const [timeoutStringValue, setTimeoutStringValue] = useState<string>()
-  const timeout = ddo.findServiceByType('access')
+  const timeout = isEdge
+    ? undefined
+    : ddo.findServiceByType('access')
     ? ddo.findServiceByType('access').attributes.main.timeout
     : ddo.findServiceByType('compute').attributes.main.timeout
 
@@ -107,18 +146,26 @@ export default function Edit({
         if (!tx) return
       }
       // Construct new DDO with new values
-      const ddoEditedMetdata = await ocean.assets.editMetadata(ddo, {
-        title: values.name,
-        description: values.description,
-        links: typeof values.links !== 'string' ? values.links : [],
-        author: values.author === '' ? ' ' : values.author
-      })
+      const updatedValues: EditableMetadata = {
+        title: values?.name || '',
+        description: values?.description || '',
+        author: values?.author || ''
+      }
+      if (!isEdge) {
+        updatedValues.links =
+          typeof values.links !== 'string' ? values.links : []
+      }
+
+      const ddoEditedMetadata = await ocean.assets.editMetadata(
+        ddo,
+        updatedValues
+      )
 
       price.type === 'exchange' &&
         values.price !== price.value &&
         (await updateFixedPrice(values.price))
 
-      if (!ddoEditedMetdata) {
+      if (!ddoEditedMetadata) {
         setError(content.form.error)
         Logger.error(content.form.error)
         return
@@ -128,18 +175,17 @@ export default function Edit({
       // updated in ocean.assets.editMetadata()
       let ddoEdited = values?.serviceSelfDescription
         ? updateServiceSelfDescription(
-            ddoEditedMetdata,
+            ddoEditedMetadata,
             values.serviceSelfDescription[0]
           )
-        : ddoEditedMetdata
-
-      if (timeoutStringValue !== values.timeout) {
+        : ddoEditedMetadata
+      if (!isEdge && timeoutStringValue !== values.timeout) {
         const service =
-          ddoEditedMetdata.findServiceByType('access') ||
-          ddoEditedMetdata.findServiceByType('compute')
+          ddoEditedMetadata.findServiceByType('access') ||
+          ddoEditedMetadata.findServiceByType('compute')
         const timeout = mapTimeoutStringToSeconds(values.timeout)
         ddoEdited = await ocean.assets.editServiceTimeout(
-          ddoEditedMetdata,
+          ddoEditedMetadata,
           service.index,
           timeout
         )
@@ -151,8 +197,8 @@ export default function Edit({
         return
       }
 
-      const storedddo = await ocean.assets.updateMetadata(ddoEdited, accountId)
-      if (!storedddo) {
+      const storedDdo = await ocean.assets.updateMetadata(ddoEdited, accountId)
+      if (!storedDdo) {
         setError(content.form.error)
         Logger.error(content.form.error)
         return
@@ -178,8 +224,12 @@ export default function Edit({
 
   return (
     <Formik
-      initialValues={getInitialValues(metadata, timeout, price.value)}
-      validationSchema={validationSchema}
+      initialValues={
+        isEdge
+          ? getInitialEdgeValues(metadata)
+          : getInitialValues(metadata, timeout, price.value)
+      }
+      validationSchema={isEdge ? edgeValidationSchema : validationSchema}
       onSubmit={async (values, { resetForm }) => {
         // move user's focus to top of screen
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
@@ -206,15 +256,21 @@ export default function Edit({
           <>
             <p className={styles.description}>{content.description}</p>
             <article className={styles.grid}>
-              <FormEditMetadata
-                data={content.form.data}
-                setShowEdit={setShowEdit}
-                setTimeoutStringValue={setTimeoutStringValue}
-                values={initialValues}
-                showPrice={price.type === 'exchange'}
-                isComputeDataset={isComputeType}
-              />
-
+              {isEdge ? (
+                <FormEditEdgeMetadata
+                  data={content.form.data}
+                  setShowEdit={setShowEdit}
+                />
+              ) : (
+                <FormEditMetadata
+                  data={content.form.data}
+                  setShowEdit={setShowEdit}
+                  setTimeoutStringValue={setTimeoutStringValue}
+                  values={initialValues}
+                  showPrice={price.type === 'exchange'}
+                  isComputeDataset={isComputeType}
+                />
+              )}
               <aside>
                 <MetadataPreview values={values} />
                 <Web3Feedback />

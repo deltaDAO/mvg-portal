@@ -111,7 +111,11 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
   ])
 
   return showEdit ? (
-    <Edit setShowEdit={setShowEdit} isComputeType={isComputeType} />
+    <Edit
+      setShowEdit={setShowEdit}
+      isComputeType={isComputeType}
+      isEdge={type === 'thing'}
+    />
   ) : showEditCompute ? (
     <EditComputeDataset setShowEdit={setShowEditCompute} />
   ) : showEditAdvancedSettings ? (
@@ -158,7 +162,7 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
                 )}
 
                 <MetaSecondary />
-                {isOwner && isAssetNetwork && type !== 'thing' && (
+                {isOwner && isAssetNetwork && (
                   <div className={styles.ownerActions}>
                     <Button
                       style="text"

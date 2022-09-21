@@ -1,0 +1,32 @@
+{
+  "description": "Update selected metadata of this edge device. Updating metadata will create an on-chain transaction you have to approve in your wallet.",
+  "form": {
+    "success": "🎉 Successfully updated. 🎉",
+    "successAction": "Close",
+    "error": "Updating DDO failed.",
+    "data": [
+      {
+        "name": "name",
+        "label": "New Name",
+        "placeholder": "e.g. deltaDAO - ceto mini Demonstrator",
+        "help": "Enter a concise name.",
+        "required": true
+      },
+      {
+        "name": "description",
+        "label": "New Description",
+        "help": "Add a thorough description with as much detail as possible. You can use [Markdown](https://daringfireball.net/projects/markdown/basics).",
+        "type": "textarea",
+        "rows": 10,
+        "required": true
+      },
+      {
+        "name": "serviceSelfDescription",
+        "label": "Service Self-Description",
+        "placeholder": "e.g. https://file.com/service-self-description.json",
+        "help": "Please enter a valid service self description or a URL that point to it and click \"ADD FILE\" to validate the data. This file URL and its content will be publicly available after publishing",
+        "type": "serviceSelfDescription"
+      }
+    ]
+  }
+}
