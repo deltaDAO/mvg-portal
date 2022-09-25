@@ -12,7 +12,7 @@ module.exports = {
 
   complianceUri:
     process.env.GATSBY_COMPLIANCE_URI ||
-    'https://compliance.gaia-x.eu/api/v2204',
+    'https://compliance.gaia-x.eu/v2206/api',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
