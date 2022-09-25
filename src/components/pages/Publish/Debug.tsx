@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import { MetadataPublishFormDataset } from '../../../@types/MetaData'
 import DebugOutput from '../../atoms/DebugOutput'
-import styles from './index.module.css'
+import styles from './Debug.module.css'
 import { transformPublishFormToMetadata } from '../../../utils/metadata'
 
 export default function Debug({
@@ -30,7 +30,7 @@ export default function Debug({
   }
 
   return (
-    <div className={styles.grid}>
+    <div className={styles.container}>
       <DebugOutput title="Collected Form Values" output={values} />
       <DebugOutput title="Transformed DDO Values" output={ddo} />
     </div>
