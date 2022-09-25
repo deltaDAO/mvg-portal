@@ -1,0 +1,16 @@
+.container {
+  --gap: var(--spacer);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+@media screen and (min-width: 55rem) {
+  .container {
+    flex-direction: row;
+  }
+  .container > * {
+    width: calc((100% - var(--gap)) / 2);
+  }
+}
