@@ -30,7 +30,7 @@ export default function ServiceSelfDescription(
   props: InputProps
 ): ReactElement {
   const [field, meta, helpers] = useField(props.name)
-  const [userSelection, setUserSelection] = useState<string>()
+  const [userSelection, setUserSelection] = useState<string>('url')
   const [isVerified, setIsVerified] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -93,7 +93,7 @@ export default function ServiceSelfDescription(
 
   return (
     <div>
-      <div>
+      {/* <div>
         <BoxSelection
           name="serviceSelfDescriptionOptions"
           options={serviceSelfDescriptionOptions}
@@ -102,10 +102,10 @@ export default function ServiceSelfDescription(
             setUserSelection(e.target.value)
           }}
         />
-      </div>
+      </div> */}
       <div>
         {userSelection === 'url' && <Input type="files" {...props} />}
-        {userSelection === 'raw' &&
+        {/* {userSelection === 'raw' &&
           (!isVerified ? (
             <div>
               <Input type="textarea" {...props} placeholder="" />
@@ -129,7 +129,7 @@ export default function ServiceSelfDescription(
                 Edit
               </Button>
             </div>
-          ))}
+          ))} */}
       </div>
     </div>
   )
