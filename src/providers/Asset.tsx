@@ -168,27 +168,35 @@ function AssetProvider({
       const { attributes } = ddo.findServiceByType(
         'metadata'
       ) as ServiceMetadataMarket
-      if (attributes.main.type === 'thing') return
+      const serviceSelfDescription =
+        attributes?.additionalInformation?.serviceSelfDescription
 
-      const { serviceSelfDescription } = attributes.additionalInformation
-      if (serviceSelfDescription?.raw || serviceSelfDescription?.url) {
-        const requestBody = serviceSelfDescription?.url
-          ? { body: serviceSelfDescription?.url }
-          : { body: serviceSelfDescription?.raw, raw: true }
-        const { verified } = await verifyServiceSelfDescription(requestBody)
-        const serviceSelfDescriptionContent = serviceSelfDescription?.url
-          ? await getServiceSelfDescription(serviceSelfDescription?.url)
-          : serviceSelfDescription?.raw
-
-        setIsServiceSelfDescriptionVerified(
-          verified && !!serviceSelfDescriptionContent
-        )
-        const serviceProviderName = await getPublisherFromServiceSD(
-          serviceSelfDescriptionContent
-        )
-        setVerifiedServiceProviderName(serviceProviderName)
+      if (
+        !serviceSelfDescription ||
+        !Object.keys(serviceSelfDescription).length
+      ) {
+        setIsServiceSelfDescriptionVerified(false)
+        setVerifiedServiceProviderName(undefined)
+        return
       }
+
+      const requestBody = serviceSelfDescription?.url
+        ? { body: serviceSelfDescription?.url }
+        : { body: serviceSelfDescription?.raw, raw: true }
+      const { verified } = await verifyServiceSelfDescription(requestBody)
+      const serviceSelfDescriptionContent = serviceSelfDescription?.url
+        ? await getServiceSelfDescription(serviceSelfDescription?.url)
+        : serviceSelfDescription?.raw
+      setIsServiceSelfDescriptionVerified(
+        verified && !!serviceSelfDescriptionContent
+      )
+      const serviceProviderName = await getPublisherFromServiceSD(
+        serviceSelfDescriptionContent
+      )
+      setVerifiedServiceProviderName(serviceProviderName)
     } catch (error) {
+      setIsServiceSelfDescriptionVerified(false)
+      setVerifiedServiceProviderName(undefined)
       Logger.error(error)
     } finally {
       setIsVerifyingSD(false)
