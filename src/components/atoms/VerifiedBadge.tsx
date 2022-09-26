@@ -10,7 +10,6 @@ const cx = classNames.bind(styles)
 
 export default function VerifiedBadge({
   text,
-  fillBackground,
   className,
   isInvalid,
   isLoading,
@@ -27,9 +26,7 @@ export default function VerifiedBadge({
 }): ReactElement {
   const styleClasses = cx({
     verifiedBadge: true,
-    fillBackground,
     isInvalid,
-    timestamp,
     [className]: className
   })
 
@@ -39,26 +36,30 @@ export default function VerifiedBadge({
   return (
     <div className={styles.container}>
       <div className={styleClasses}>
-        {isLoading ? (
-          <div className={styles.loader}>
-            <Loader />
-          </div>
-        ) : isInvalid ? (
-          <Cross />
-        ) : (
-          <VerifiedPatch />
-        )}
-        <span>{text}</span>
-        {apiVersion && (
-          <span className={styles.apiVersion}>
-            version: {formattedApiVersion}
-          </span>
-        )}
-        {timestamp && (
-          <span className={styles.lastVerified}>
-            last check: <Time date={new Date().toString()} relative />
-          </span>
-        )}
+        <div className={styles.mainLabel}>
+          {isLoading ? (
+            <div className={styles.loader}>
+              <Loader />
+            </div>
+          ) : isInvalid ? (
+            <Cross />
+          ) : (
+            <VerifiedPatch />
+          )}
+          <span>{text}</span>
+        </div>
+        <div className={styles.details}>
+          {apiVersion && (
+            <span className={styles.apiVersion}>
+              version: {formattedApiVersion}
+            </span>
+          )}
+          {timestamp && (
+            <span className={styles.lastVerified}>
+              last check: <Time date={new Date().toString()} relative />
+            </span>
+          )}
+        </div>
       </div>
     </div>
   )
