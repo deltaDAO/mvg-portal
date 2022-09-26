@@ -20,10 +20,7 @@ import styles from './index.module.css'
 import EditAdvancedSettings from '../AssetActions/Edit/EditAdvancedSettings'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import NetworkName from '../../atoms/NetworkName'
-import {
-  getFormattedCodeString,
-  getServiceSelfDescription
-} from '../../../utils/metadata'
+import { getFormattedCodeString, getServiceSD } from '../../../utils/metadata'
 export interface AssetContentProps {
   path?: string
 }
@@ -101,19 +98,17 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     const serviceSD = metadata?.additionalInformation?.serviceSelfDescription
     if (serviceSD?.raw) {
       const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-        { body: serviceSD?.raw, raw: true }
+        JSON.parse(serviceSD?.raw)
       )}`
       setServiceSelfDescription(formattedServiceSelfDescription)
     }
     if (serviceSD?.url) {
-      getServiceSelfDescription(serviceSD?.url).then(
-        (serviceSelfDescription) => {
-          const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-            { body: serviceSelfDescription }
-          )}`
-          setServiceSelfDescription(formattedServiceSelfDescription)
-        }
-      )
+      getServiceSD(serviceSD?.url).then((serviceSelfDescription) => {
+        const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
+          JSON.parse(serviceSelfDescription)
+        )}`
+        setServiceSelfDescription(formattedServiceSelfDescription)
+      })
     }
   }, [
     isServiceSelfDescriptionVerified,

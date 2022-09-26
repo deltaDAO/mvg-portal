@@ -43,6 +43,7 @@ interface UseSiteMetadata {
   appConfig: {
     metadataCacheUri: string
     complianceUri: string
+    complianceApiVersion: string
     infuraProjectId: string
     chainIds: number[]
     chainIdsSupported: number[]
@@ -101,6 +102,7 @@ const query = graphql`
         appConfig {
           metadataCacheUri
           complianceUri
+          complianceApiVersion
           infuraProjectId
           chainIds
           chainIdsSupported

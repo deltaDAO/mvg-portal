@@ -29,8 +29,8 @@ import { BestPrice } from '../models/BestPrice'
 import { useCancelToken } from '../hooks/useCancelToken'
 import {
   getPublisherFromServiceSD,
-  getServiceSelfDescription,
-  verifyServiceSelfDescription
+  getServiceSD,
+  verifyRawServiceSD
 } from '../utils/metadata'
 import { EdgeDDO } from '../@types/edge/DDO'
 import { GX_NETWORK_ID } from '../../chains.config'
@@ -55,6 +55,7 @@ interface AssetProviderValue {
   loading: boolean
   isVerifyingSD: boolean
   isServiceSelfDescriptionVerified: boolean
+  serviceSDVersion: string
   verifiedServiceProviderName: string
   refreshDdo: (token?: CancelToken) => Promise<void>
 }
@@ -95,6 +96,7 @@ function AssetProvider({
     isServiceSelfDescriptionVerified,
     setIsServiceSelfDescriptionVerified
   ] = useState<boolean>()
+  const [serviceSDVersion, setServiceSDVersion] = useState<string>()
   const [verifiedServiceProviderName, setVerifiedServiceProviderName] =
     useState<string>()
   const newCancelToken = useCancelToken()
@@ -176,26 +178,28 @@ function AssetProvider({
         !Object.keys(serviceSelfDescription).length
       ) {
         setIsServiceSelfDescriptionVerified(false)
+        setServiceSDVersion(undefined)
         setVerifiedServiceProviderName(undefined)
         return
       }
 
-      const requestBody = serviceSelfDescription?.url
-        ? { body: serviceSelfDescription?.url }
-        : { body: serviceSelfDescription?.raw, raw: true }
-      const { verified } = await verifyServiceSelfDescription(requestBody)
       const serviceSelfDescriptionContent = serviceSelfDescription?.url
-        ? await getServiceSelfDescription(serviceSelfDescription?.url)
+        ? await getServiceSD(serviceSelfDescription?.url)
         : serviceSelfDescription?.raw
+      const { verified, complianceApiVersion } = await verifyRawServiceSD(
+        serviceSelfDescriptionContent
+      )
       setIsServiceSelfDescriptionVerified(
         verified && !!serviceSelfDescriptionContent
       )
+      setServiceSDVersion(complianceApiVersion)
       const serviceProviderName = await getPublisherFromServiceSD(
         serviceSelfDescriptionContent
       )
       setVerifiedServiceProviderName(serviceProviderName)
     } catch (error) {
       setIsServiceSelfDescriptionVerified(false)
+      setServiceSDVersion(undefined)
       setVerifiedServiceProviderName(undefined)
       Logger.error(error)
     } finally {
@@ -379,6 +383,7 @@ function AssetProvider({
           isEdgeDeviceAvailable,
           isEdgeCtdAvailable,
           isServiceSelfDescriptionVerified,
+          serviceSDVersion,
           verifiedServiceProviderName
         } as AssetProviderValue
       }
