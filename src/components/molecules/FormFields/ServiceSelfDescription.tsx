@@ -4,6 +4,7 @@ import { toast } from 'react-toastify'
 import {
   getFormattedCodeString,
   signServiceSelfDescription,
+  storeRawServiceSD,
   verifyServiceSelfDescription
 } from '../../../utils/metadata'
 import Button from '../../atoms/Button'
@@ -30,9 +31,10 @@ export default function ServiceSelfDescription(
   props: InputProps
 ): ReactElement {
   const [field, meta, helpers] = useField(props.name)
-  const [userSelection, setUserSelection] = useState<string>('url')
+  const [userSelection, setUserSelection] = useState<string>()
   const [isVerified, setIsVerified] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [rawServiceSDPreview, setRawServiceSDPreview] = useState<string>()
 
   const verifyRawBody = async (rawServiceSelfDescription: string) => {
     try {
@@ -44,9 +46,8 @@ export default function ServiceSelfDescription(
           ? parsedServiceSelfDescription
           : await signServiceSelfDescription(parsedServiceSelfDescription)
 
-      const { verified } = await verifyServiceSelfDescription({
-        body: signedServiceSelfDescription,
-        raw: true
+      const { verified, storedSdUrl } = await storeRawServiceSD({
+        signedServiceSelfDescription
       })
       setIsVerified(verified)
 
@@ -57,7 +58,8 @@ export default function ServiceSelfDescription(
         return
       }
 
-      helpers.setValue([{ raw: signedServiceSelfDescription }])
+      setRawServiceSDPreview(signedServiceSelfDescription)
+      helpers.setValue([{ url: storedSdUrl }])
       toast.success(
         'Great! The provided service self-description looks good. 🐳'
       )
@@ -93,7 +95,7 @@ export default function ServiceSelfDescription(
 
   return (
     <div>
-      {/* <div>
+      <div>
         <BoxSelection
           name="serviceSelfDescriptionOptions"
           options={serviceSelfDescriptionOptions}
@@ -102,10 +104,10 @@ export default function ServiceSelfDescription(
             setUserSelection(e.target.value)
           }}
         />
-      </div> */}
+      </div>
       <div>
         {userSelection === 'url' && <Input type="files" {...props} />}
-        {/* {userSelection === 'raw' &&
+        {userSelection === 'raw' &&
           (!isVerified ? (
             <div>
               <Input type="textarea" {...props} placeholder="" />
@@ -121,7 +123,7 @@ export default function ServiceSelfDescription(
             <div className={styles.previewContainer}>
               <Markdown
                 text={getFormattedCodeString({
-                  body: field.value[0].raw,
+                  body: rawServiceSDPreview,
                   raw: true
                 })}
               />
@@ -129,7 +131,7 @@ export default function ServiceSelfDescription(
                 Edit
               </Button>
             </div>
-          ))} */}
+          ))}
       </div>
     </div>
   )

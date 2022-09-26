@@ -153,6 +153,37 @@ export async function signServiceSelfDescription(body: any): Promise<any> {
   }
 }
 
+export async function storeRawServiceSD({
+  signedServiceSelfDescription
+}: {
+  signedServiceSelfDescription: string
+}): Promise<{
+  verified: boolean
+  storedSdUrl: string | undefined
+}> {
+  if (!signedServiceSelfDescription)
+    return { verified: false, storedSdUrl: undefined }
+
+  const baseUrl = `${complianceUri}/service-offering/verify/raw?store=true`
+  try {
+    const response = await axios.post(baseUrl, signedServiceSelfDescription)
+    if (response?.status === 409) {
+      return {
+        verified: false,
+        storedSdUrl: undefined
+      }
+    }
+    if (response?.status === 200) {
+      return { verified: true, storedSdUrl: response.data.storedSdUrl }
+    }
+
+    return { verified: false, storedSdUrl: undefined }
+  } catch (error) {
+    Logger.error(error.message)
+    return { verified: false, storedSdUrl: undefined }
+  }
+}
+
 export async function verifyServiceSelfDescription({
   body,
   raw
