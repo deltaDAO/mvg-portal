@@ -156,7 +156,7 @@ export async function signServiceSD(body: any): Promise<any> {
   if (!body) return
   try {
     const response = await axios.post(
-      `${complianceUri}/v${getComplianceApiVersion()}/sign`,
+      `${complianceUri}/v${getComplianceApiVersion()}/api/sign`,
       body
     )
     const signedServiceSD = {
