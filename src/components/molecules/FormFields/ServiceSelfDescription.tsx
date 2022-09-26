@@ -117,12 +117,7 @@ export default function ServiceSelfDescription(
             </div>
           ) : (
             <div className={styles.previewContainer}>
-              <Markdown
-                text={getFormattedCodeString({
-                  body: rawServiceSDPreview,
-                  raw: true
-                })}
-              />
+              <Markdown text={getFormattedCodeString(rawServiceSDPreview)} />
               <Button style="text" onClick={(e) => handleEdit(e)}>
                 Edit
               </Button>
