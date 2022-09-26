@@ -8,20 +8,27 @@ export default function Visualizer({
   text,
   title,
   displayBadge,
-  invalidBadge
+  invalidBadge,
+  apiVersion
 }: {
   badgeLabel: string
   text: string
   title: string
   displayBadge?: boolean
   invalidBadge?: boolean
+  apiVersion?: string
 }): ReactElement {
   return (
     <div>
       <div className={styles.header}>
         <h4>{title}</h4>
         {displayBadge && (
-          <VerifiedBadge isInvalid={invalidBadge} text={badgeLabel} timestamp />
+          <VerifiedBadge
+            isInvalid={invalidBadge}
+            text={badgeLabel}
+            apiVersion={apiVersion}
+            timestamp
+          />
         )}
       </div>
       <Markdown text={text} />

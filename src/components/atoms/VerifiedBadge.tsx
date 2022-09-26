@@ -14,6 +14,7 @@ export default function VerifiedBadge({
   className,
   isInvalid,
   isLoading,
+  apiVersion,
   timestamp
 }: {
   text: string
@@ -21,6 +22,7 @@ export default function VerifiedBadge({
   className?: string
   isInvalid?: boolean
   isLoading?: boolean
+  apiVersion?: string
   timestamp?: boolean
 }): ReactElement {
   const styleClasses = cx({
@@ -30,6 +32,9 @@ export default function VerifiedBadge({
     timestamp,
     [className]: className
   })
+
+  const formattedApiVersion =
+    apiVersion && apiVersion.slice(0, 2) + '.' + apiVersion.slice(2, 4)
 
   return (
     <div className={styles.container}>
@@ -44,6 +49,11 @@ export default function VerifiedBadge({
           <VerifiedPatch />
         )}
         <span>{text}</span>
+        {apiVersion && (
+          <span className={styles.apiVersion}>
+            version: {formattedApiVersion}
+          </span>
+        )}
         {timestamp && (
           <span className={styles.lastVerified}>
             last check: <Time date={new Date().toString()} relative />

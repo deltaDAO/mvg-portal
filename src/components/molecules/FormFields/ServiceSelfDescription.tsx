@@ -4,8 +4,7 @@ import { toast } from 'react-toastify'
 import {
   getFormattedCodeString,
   signServiceSelfDescription,
-  storeRawServiceSD,
-  verifyServiceSelfDescription
+  storeRawServiceSD
 } from '../../../utils/metadata'
 import Button from '../../atoms/Button'
 import Input, { InputProps } from '../../atoms/Input'

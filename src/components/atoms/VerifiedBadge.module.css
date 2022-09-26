@@ -48,8 +48,10 @@
   fill: var(--color-primary);
 }
 
+.apiVersion,
 .lastVerified {
   grid-column: 2;
+  justify-self: end;
   font-size: var(--font-size-mini);
   color: var(--color-secondary);
 }
