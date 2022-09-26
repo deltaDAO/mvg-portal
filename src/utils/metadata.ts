@@ -152,19 +152,19 @@ export function getComplianceApiVersion(context?: string[]): string {
   return '2204'
 }
 
-export async function signServiceSelfDescription(body: any): Promise<any> {
+export async function signServiceSD(body: any): Promise<any> {
   if (!body) return
   try {
     const response = await axios.post(
       `${complianceUri}/v${getComplianceApiVersion()}/sign`,
       body
     )
-    const signedServiceSelfDescription = {
+    const signedServiceSD = {
       selfDescriptionCredential: { ...body },
       ...response.data
     }
 
-    return signedServiceSelfDescription
+    return signedServiceSD
   } catch (error) {
     Logger.error(error.message)
   }

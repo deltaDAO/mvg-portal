@@ -3,7 +3,7 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import {
   getFormattedCodeString,
-  signServiceSelfDescription,
+  signServiceSD,
   storeRawServiceSD
 } from '../../../utils/metadata'
 import Button from '../../atoms/Button'
@@ -35,19 +35,16 @@ export default function ServiceSelfDescription(
   const [isLoading, setIsLoading] = useState(false)
   const [rawServiceSDPreview, setRawServiceSDPreview] = useState<string>()
 
-  const verifyRawBody = async (rawServiceSelfDescription: string) => {
+  const verifyRawBody = async (rawServiceSD: string) => {
     try {
       setIsLoading(true)
 
-      const parsedServiceSelfDescription = JSON.parse(rawServiceSelfDescription)
-      const signedServiceSelfDescription =
-        parsedServiceSelfDescription?.complianceCredential
-          ? parsedServiceSelfDescription
-          : await signServiceSelfDescription(parsedServiceSelfDescription)
+      const parsedServiceSD = JSON.parse(rawServiceSD)
+      const signedServiceSD = parsedServiceSD?.complianceCredential
+        ? parsedServiceSD
+        : await signServiceSD(parsedServiceSD)
 
-      const { verified, storedSdUrl } = await storeRawServiceSD(
-        signedServiceSelfDescription
-      )
+      const { verified, storedSdUrl } = await storeRawServiceSD(signedServiceSD)
       setIsVerified(verified)
 
       if (!verified) {
@@ -57,7 +54,7 @@ export default function ServiceSelfDescription(
         return
       }
 
-      setRawServiceSDPreview(signedServiceSelfDescription)
+      setRawServiceSDPreview(signedServiceSD)
       helpers.setValue([{ url: storedSdUrl }])
       toast.success(
         'Great! The provided service self-description looks good. 🐳'
