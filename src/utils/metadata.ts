@@ -170,20 +170,18 @@ export async function signServiceSelfDescription(body: any): Promise<any> {
   }
 }
 
-export async function storeRawServiceSD({
-  signedServiceSelfDescription
-}: {
-  signedServiceSelfDescription: string[]
+export async function storeRawServiceSD(signedSD: {
+  complianceCredentials: any
+  selfDescriptionCredential: any
 }): Promise<{
   verified: boolean
   storedSdUrl: string | undefined
 }> {
-  if (!signedServiceSelfDescription)
-    return { verified: false, storedSdUrl: undefined }
+  if (!signedSD) return { verified: false, storedSdUrl: undefined }
 
-  const baseUrl = `${complianceUri}/v${getComplianceApiVersion()}/service-offering/verify/raw?store=true`
+  const baseUrl = `${complianceUri}/v${getComplianceApiVersion()}/api/service-offering/verify/raw?store=true`
   try {
-    const response = await axios.post(baseUrl, signedServiceSelfDescription)
+    const response = await axios.post(baseUrl, signedSD)
     if (response?.status === 409) {
       return {
         verified: false,

@@ -45,9 +45,9 @@ export default function ServiceSelfDescription(
           ? parsedServiceSelfDescription
           : await signServiceSelfDescription(parsedServiceSelfDescription)
 
-      const { verified, storedSdUrl } = await storeRawServiceSD({
+      const { verified, storedSdUrl } = await storeRawServiceSD(
         signedServiceSelfDescription
-      })
+      )
       setIsVerified(verified)
 
       if (!verified) {
