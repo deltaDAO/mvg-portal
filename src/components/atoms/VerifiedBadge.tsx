@@ -17,7 +17,6 @@ export default function VerifiedBadge({
   timestamp
 }: {
   text: string
-  fillBackground?: boolean
   className?: string
   isInvalid?: boolean
   isLoading?: boolean
