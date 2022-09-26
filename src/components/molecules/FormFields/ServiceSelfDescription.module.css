@@ -3,3 +3,7 @@
   flex-direction: column;
   align-items: flex-end;
 }
+
+.inputContainer textarea {
+  min-height: 30rem;
+}

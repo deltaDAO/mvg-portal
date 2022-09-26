@@ -105,7 +105,7 @@ export default function ServiceSelfDescription(
         {userSelection === 'url' && <Input type="files" {...props} />}
         {userSelection === 'raw' &&
           (!isVerified ? (
-            <div>
+            <div className={styles.inputContainer}>
               <Input type="textarea" {...props} placeholder="" />
               <Button
                 disabled={!field.value}
