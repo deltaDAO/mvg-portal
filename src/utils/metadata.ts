@@ -140,12 +140,17 @@ function getValidUrlArrayContent<T extends File | EditableMetadataLinks>(
 
 export function getComplianceApiVersion(context?: string[]): string {
   const latest = complianceApiVersion
+
+  const allowedRegistryDomains = [
+    'https://registry.gaia-x.eu/v2206',
+    'https://registry.lab.gaia-x.eu/v2206'
+  ]
   if (
     !context ||
     !context.length ||
-    context.findIndex((e) =>
-      e.startsWith('https://registry.gaia-x.eu/v2206')
-    ) !== -1
+    context.some(
+      (e) => allowedRegistryDomains.findIndex((x) => e.startsWith(x)) !== -1
+    )
   )
     return latest
 
