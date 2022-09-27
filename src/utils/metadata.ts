@@ -278,19 +278,26 @@ export async function getPublisherFromServiceSD(
   try {
     const parsedServiceSD =
       typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
-    const providedByUrl =
+    const providedBy =
       parsedServiceSD?.selfDescriptionCredential?.credentialSubject?.[
         'gx-service-offering:providedBy'
-      ]?.['@value']
+      ]
+    const providedByUrl =
+      typeof providedBy === 'string' ? providedBy : providedBy?.['@value']
 
     if (!isSanitizedUrl(providedByUrl)) return
 
     const response = await axios.get(providedByUrl)
     if (!response || response.status !== 200 || !response?.data) return
 
-    return response.data?.selfDescriptionCredential?.credentialSubject?.[
-      'gx-participant:name'
-    ]?.['@value']
+    const legalName =
+      response.data?.selfDescriptionCredential?.credentialSubject?.[
+        'gx-participant:legalName'
+      ]
+    const publisher =
+      typeof legalName === 'string' ? legalName : legalName?.['@value']
+
+    return publisher
   } catch (error) {
     Logger.error(error.message)
   }
