@@ -217,7 +217,10 @@ export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
   )
 
   const versionedComplianceUri = `${complianceUri}/v${complianceApiVersion}/api`
-  const baseUrl = `${versionedComplianceUri}/service-offering/verify/raw`
+
+  // skip participant verification for 22.04 service SDs
+  const verifyParticipantOption = complianceApiVersion !== '2204'
+  const baseUrl = `${versionedComplianceUri}/service-offering/verify/raw?verifyParticipant=${verifyParticipantOption}`
 
   try {
     const response = await axios.post(baseUrl, parsedServiceSD)
@@ -275,19 +278,26 @@ export async function getPublisherFromServiceSD(
   try {
     const parsedServiceSD =
       typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
-    const providedByUrl =
+    const providedBy =
       parsedServiceSD?.selfDescriptionCredential?.credentialSubject?.[
         'gx-service-offering:providedBy'
-      ]?.['@value']
+      ]
+    const providedByUrl =
+      typeof providedBy === 'string' ? providedBy : providedBy?.['@value']
 
     if (!isSanitizedUrl(providedByUrl)) return
 
     const response = await axios.get(providedByUrl)
     if (!response || response.status !== 200 || !response?.data) return
 
-    return response.data?.selfDescriptionCredential?.credentialSubject?.[
-      'gx-participant:name'
-    ]?.['@value']
+    const legalName =
+      response.data?.selfDescriptionCredential?.credentialSubject?.[
+        'gx-participant:legalName'
+      ]
+    const publisher =
+      typeof legalName === 'string' ? legalName : legalName?.['@value']
+
+    return publisher
   } catch (error) {
     Logger.error(error.message)
   }
