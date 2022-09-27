@@ -217,7 +217,10 @@ export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
   )
 
   const versionedComplianceUri = `${complianceUri}/v${complianceApiVersion}/api`
-  const baseUrl = `${versionedComplianceUri}/service-offering/verify/raw`
+
+  // skip participant verification for 22.04 service SDs
+  const verifyParticipantOption = complianceApiVersion !== '2204'
+  const baseUrl = `${versionedComplianceUri}/service-offering/verify/raw?verifyParticipant=${verifyParticipantOption}`
 
   try {
     const response = await axios.post(baseUrl, parsedServiceSD)
