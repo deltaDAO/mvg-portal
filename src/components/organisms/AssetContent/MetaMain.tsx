@@ -66,7 +66,9 @@ export default function MetaMain(): ReactElement {
           Published By{' '}
           <Publisher
             account={owner}
-            verifiedServiceProviderName={verifiedServiceProviderName}
+            verifiedServiceProviderName={
+              isServiceSelfDescriptionVerified && verifiedServiceProviderName
+            }
           />
           <p>
             <Time date={ddo?.created} relative />
