@@ -8,10 +8,7 @@ import { fileinfo } from '../../../../utils/provider'
 import { useWeb3 } from '../../../../providers/Web3'
 import { getOceanConfig } from '../../../../utils/ocean'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
-import {
-  getServiceSelfDescription,
-  verifyServiceSelfDescription
-} from '../../../../utils/metadata'
+import { getServiceSD, verifyRawServiceSD } from '../../../../utils/metadata'
 import { GX_NETWORK_ID } from '../../../../../chains.config'
 
 export default function FilesInput(props: InputProps): ReactElement {
@@ -29,12 +26,8 @@ export default function FilesInput(props: InputProps): ReactElement {
         setIsLoading(true)
 
         if (field.name === 'serviceSelfDescription') {
-          const { verified } = await verifyServiceSelfDescription({
-            body: fileUrl
-          })
-          const serviceSelfDescription = await getServiceSelfDescription(
-            fileUrl
-          )
+          const serviceSelfDescription = await getServiceSD(fileUrl)
+          const { verified } = await verifyRawServiceSD(serviceSelfDescription)
 
           if (!verified) {
             toast.error(

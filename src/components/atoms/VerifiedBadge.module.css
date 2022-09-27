@@ -6,50 +6,32 @@
 
 .verifiedBadge {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: calc(var(--spacer) / 3);
-  height: calc(var(--spacer) * 1.5);
-  border-radius: var(--border-radius);
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
   font-weight: var(--font-weight-bold);
-}
-
-.fillBackground {
-  background: var(--color-primary);
-  color: var(--brand-white);
-}
-
-.verifiedBadge svg {
-  display: inline-block;
-  height: 100%;
-}
-
-.verifiedBadge svg path {
-  fill: var(--brand-white);
-}
-
-.verifiedBadge span {
-  padding: 0 calc(var(--spacer) / 4);
-}
-
-.timestamp {
-  display: grid;
-  grid-template-columns: 1fr 9fr;
-  padding-top: 0;
-  padding-right: 0;
-  padding-left: 0;
-  max-width: max-content;
-  background-color: transparent;
   color: var(--color-primary);
 }
 
-.timestamp svg path {
+.mainLabel {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 4);
+}
+
+.verifiedBadge svg path {
   margin: 0;
   fill: var(--color-primary);
 }
 
+.details {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.apiVersion,
 .lastVerified {
-  grid-column: 2;
   font-size: var(--font-size-mini);
   color: var(--color-secondary);
 }

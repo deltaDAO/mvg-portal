@@ -3,8 +3,8 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import {
   getFormattedCodeString,
-  signServiceSelfDescription,
-  verifyServiceSelfDescription
+  signServiceSD,
+  storeRawServiceSD
 } from '../../../utils/metadata'
 import Button from '../../atoms/Button'
 import Input, { InputProps } from '../../atoms/Input'
@@ -30,24 +30,21 @@ export default function ServiceSelfDescription(
   props: InputProps
 ): ReactElement {
   const [field, meta, helpers] = useField(props.name)
-  const [userSelection, setUserSelection] = useState<string>('url')
+  const [userSelection, setUserSelection] = useState<string>()
   const [isVerified, setIsVerified] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [rawServiceSDPreview, setRawServiceSDPreview] = useState<string>()
 
-  const verifyRawBody = async (rawServiceSelfDescription: string) => {
+  const verifyRawBody = async (rawServiceSD: string) => {
     try {
       setIsLoading(true)
 
-      const parsedServiceSelfDescription = JSON.parse(rawServiceSelfDescription)
-      const signedServiceSelfDescription =
-        parsedServiceSelfDescription?.complianceCredential
-          ? parsedServiceSelfDescription
-          : await signServiceSelfDescription(parsedServiceSelfDescription)
+      const parsedServiceSD = JSON.parse(rawServiceSD)
+      const signedServiceSD = parsedServiceSD?.complianceCredential
+        ? parsedServiceSD
+        : await signServiceSD(parsedServiceSD)
 
-      const { verified } = await verifyServiceSelfDescription({
-        body: signedServiceSelfDescription,
-        raw: true
-      })
+      const { verified, storedSdUrl } = await storeRawServiceSD(signedServiceSD)
       setIsVerified(verified)
 
       if (!verified) {
@@ -57,7 +54,8 @@ export default function ServiceSelfDescription(
         return
       }
 
-      helpers.setValue([{ raw: signedServiceSelfDescription }])
+      setRawServiceSDPreview(signedServiceSD)
+      helpers.setValue([{ url: storedSdUrl }])
       toast.success(
         'Great! The provided service self-description looks good. 🐳'
       )
@@ -93,7 +91,7 @@ export default function ServiceSelfDescription(
 
   return (
     <div>
-      {/* <div>
+      <div>
         <BoxSelection
           name="serviceSelfDescriptionOptions"
           options={serviceSelfDescriptionOptions}
@@ -102,12 +100,12 @@ export default function ServiceSelfDescription(
             setUserSelection(e.target.value)
           }}
         />
-      </div> */}
+      </div>
       <div>
         {userSelection === 'url' && <Input type="files" {...props} />}
-        {/* {userSelection === 'raw' &&
+        {userSelection === 'raw' &&
           (!isVerified ? (
-            <div>
+            <div className={styles.inputContainer}>
               <Input type="textarea" {...props} placeholder="" />
               <Button
                 disabled={!field.value}
@@ -119,17 +117,12 @@ export default function ServiceSelfDescription(
             </div>
           ) : (
             <div className={styles.previewContainer}>
-              <Markdown
-                text={getFormattedCodeString({
-                  body: field.value[0].raw,
-                  raw: true
-                })}
-              />
+              <Markdown text={getFormattedCodeString(rawServiceSDPreview)} />
               <Button style="text" onClick={(e) => handleEdit(e)}>
                 Edit
               </Button>
             </div>
-          ))} */}
+          ))}
       </div>
     </div>
   )

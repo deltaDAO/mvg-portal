@@ -13,12 +13,12 @@ import Button from '../../atoms/Button'
 import Input from '../../atoms/Input'
 import {
   getFormattedCodeString,
-  getServiceSelfDescription,
-  verifyServiceSelfDescription
+  getServiceSD,
+  verifyRawServiceSD
 } from '../../../utils/metadata'
 import { Logger } from '@oceanprotocol/lib'
 import Loader from '../../atoms/Loader'
-import { MetadataMarket, ServiceMetadataMarket } from '../../../@types/MetaData'
+import { ServiceMetadataMarket } from '../../../@types/MetaData'
 import Visualizer from './Visualizer'
 
 interface Content {
@@ -60,6 +60,7 @@ export default function VerifyPage({
   const [serviceSelfDescription, setServiceSelfDescription] = useState<string>()
   const [isServiceSelfDescriptionVerified, setServiceSelfDescriptionVerified] =
     useState<boolean>()
+  const [serviceSDVersion, setServiceSDVersion] = useState<string>()
   const [serviceSelfDescriptionErrors, setServiceSelfDescriptionErrors] =
     useState<string>()
   const [error, setError] = useState<keyof typeof errorList>()
@@ -97,19 +98,21 @@ export default function VerifyPage({
           setError('noServiceSelfDescription')
           return
         }
-        const { raw, url } =
-          attributes.additionalInformation?.serviceSelfDescription
-
-        const requestBody = url ? { body: url } : { body: raw, raw: true }
-        if (!requestBody) {
+        const { serviceSelfDescription } = attributes.additionalInformation
+        if (!serviceSelfDescription) {
           setError('noServiceSelfDescription')
           return
         }
 
-        const { responseBody, verified } = await verifyServiceSelfDescription(
-          requestBody
-        )
+        const { raw, url } = serviceSelfDescription
+        const serviceSelfDescriptionContent = url
+          ? await getServiceSD(url)
+          : raw
+
+        const { responseBody, verified, complianceApiVersion } =
+          await verifyRawServiceSD(serviceSelfDescriptionContent)
         setServiceSelfDescriptionVerified(verified)
+        setServiceSDVersion(complianceApiVersion)
 
         if (!verified && !responseBody) {
           setError('default')
@@ -119,11 +122,8 @@ export default function VerifyPage({
           setServiceSelfDescriptionErrors(responseBody)
         }
 
-        const serviceSelfDescriptionContent = url
-          ? { body: await getServiceSelfDescription(url) }
-          : { body: raw, raw: true }
         const formattedServiceSelfDescription = getFormattedCodeString(
-          serviceSelfDescriptionContent
+          JSON.parse(serviceSelfDescriptionContent)
         )
         setServiceSelfDescription(formattedServiceSelfDescription)
         setIsLoading(false)
@@ -180,12 +180,10 @@ export default function VerifyPage({
               {serviceSelfDescriptionErrors && (
                 <Visualizer
                   badgeLabel={errorSection.badgeLabel}
-                  text={getFormattedCodeString({
-                    body: serviceSelfDescriptionErrors,
-                    raw: true
-                  })}
+                  text={getFormattedCodeString(serviceSelfDescriptionErrors)}
                   title={errorSection.title}
                   displayBadge={!isServiceSelfDescriptionVerified}
+                  apiVersion={serviceSDVersion}
                   invalidBadge
                 />
               )}
@@ -194,6 +192,7 @@ export default function VerifyPage({
                 text={serviceSelfDescription || ''}
                 title={serviceSelfDescriptionSection.title}
                 displayBadge={isServiceSelfDescriptionVerified}
+                apiVersion={serviceSDVersion}
               />
             </div>
           )}
