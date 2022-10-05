@@ -6,10 +6,12 @@ import Button from '../../atoms/Button'
 import styles from './FormActions.module.css'
 
 export default function FormActions({
+  status,
   isValid,
   resetFormAndClearStorage,
   walletDisclaimer
 }: {
+  status: any
   isValid: boolean
   resetFormAndClearStorage: (e: FormEvent<Element>) => void
   walletDisclaimer: string
@@ -28,6 +30,7 @@ export default function FormActions({
             !account ||
             !isValid ||
             status === 'empty' ||
+            status === 'loading' ||
             !isChainIdAllowed
           }
         >

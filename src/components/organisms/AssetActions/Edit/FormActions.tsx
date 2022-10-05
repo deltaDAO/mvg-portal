@@ -17,14 +17,21 @@ export default function FormActions({
   const { accountId } = useWeb3()
   const { ocean } = useOcean()
   const { isAssetNetwork } = useAsset()
-  const { isValid }: FormikContextType<Partial<AdvancedSettingsForm>> =
+  const { status, isValid }: FormikContextType<Partial<AdvancedSettingsForm>> =
     useFormikContext()
 
   return (
     <footer className={styles.actions}>
       <Button
         style="primary"
-        disabled={!ocean || !accountId || !isValid || !isAssetNetwork}
+        disabled={
+          !ocean ||
+          !accountId ||
+          !isValid ||
+          !isAssetNetwork ||
+          status === 'empty' ||
+          status === 'loading'
+        }
         onClick={handleClick}
       >
         Submit

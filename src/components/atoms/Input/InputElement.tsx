@@ -61,6 +61,7 @@ const InputElement = forwardRef(
       additionalComponent,
       disclaimer,
       disclaimerValues,
+      setStatus,
       ...props
     }: InputProps,
     ref: RefObject<HTMLInputElement>
@@ -145,9 +146,18 @@ const InputElement = forwardRef(
           />
         )
       case 'files':
-        return <FilesInput name={name} {...field} {...props} />
+        return (
+          <FilesInput name={name} setStatus={setStatus} {...field} {...props} />
+        )
       case 'serviceSelfDescription':
-        return <ServiceSelfDescription name={name} {...field} {...props} />
+        return (
+          <ServiceSelfDescription
+            name={name}
+            setStatus={setStatus}
+            {...field}
+            {...props}
+          />
+        )
       case 'providerUri':
         return <CustomProvider name={name} {...field} {...props} />
       case 'datatoken':
@@ -156,7 +166,12 @@ const InputElement = forwardRef(
         return (
           <BoxSelection
             name={name}
-            options={options as unknown as BoxSelectionOption[]}
+            options={(options as unknown as BoxSelectionOption[]).map(
+              (option) => ({
+                ...option,
+                checked: field?.value === option.name
+              })
+            )}
             {...field}
             {...props}
           />

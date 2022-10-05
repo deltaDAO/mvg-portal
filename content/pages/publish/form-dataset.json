@@ -80,7 +80,7 @@
     {
       "name": "noPersonalData",
       "label": "Metadata confirmation",
-      "type": "terms",
+      "type": "checkbox",
       "options": [
         "I confirm that I did not provide personal data in the metadata, which will be stored permanently on-chain on the Gaia-X testnet."
       ],
