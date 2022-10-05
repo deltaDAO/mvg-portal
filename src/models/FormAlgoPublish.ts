@@ -30,7 +30,10 @@ export const validationSchema: Yup.SchemaOf<MetadataPublishFormAlgorithm> =
       containerTag: Yup.string().required('Required'),
       entrypoint: Yup.string().required('Required'),
       author: Yup.string().required('Required'),
-      noPersonalData: Yup.boolean().required('Required'),
+      noPersonalData: Yup.boolean()
+        .required('Required')
+        .oneOf([true], 'Field must be checked')
+        .required('Required'),
       // ---- optional fields ----
       termsAndConditions: Yup.boolean(),
       algorithmPrivacy: Yup.boolean().nullable(),
