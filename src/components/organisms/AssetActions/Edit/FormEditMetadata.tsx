@@ -114,8 +114,6 @@ export default function FormEditMetadata({
       )}
 
       <FormActions
-        status={status}
-        isValid={isValid}
         setShowEdit={setShowEdit}
         handleClick={() => setTimeoutStringValue(values.timeout)}
       />
