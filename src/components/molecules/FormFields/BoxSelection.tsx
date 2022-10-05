@@ -2,6 +2,8 @@ import React, { ChangeEvent } from 'react'
 import classNames from 'classnames/bind'
 import Loader from '../../atoms/Loader'
 import styles from './BoxSelection.module.css'
+import { FormikContextType, useFormikContext } from 'formik'
+import { MetadataPublishFormDataset } from '../../../@types/MetaData'
 
 const cx = classNames.bind(styles)
 
@@ -46,7 +48,7 @@ export default function BoxSelection({
               id={value.name}
               type="radio"
               className={styleClassesInput}
-              defaultChecked={value.checked}
+              checked={value.checked}
               onChange={(event) => handleChange(event)}
               {...props}
               disabled={disabled}

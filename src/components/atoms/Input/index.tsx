@@ -61,6 +61,7 @@ export interface InputProps {
   checked?: boolean
   disclaimer?: string
   disclaimerValues?: string[]
+  setStatus?: (value: string) => void
 }
 
 export default function Input(props: Partial<InputProps>): ReactElement {
