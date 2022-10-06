@@ -14,9 +14,16 @@
   margin-bottom: 0;
 }
 
+.homeTitleContainer > h1:first-of-type {
+  font-size: var(--font-size-h2);
+}
+
 @media (min-width: 40rem) {
   .title {
     font-size: var(--font-size-h2);
+  }
+  .homeTitleContainer > h1:first-of-type {
+    font-size: var(--font-size-h1);
   }
 }
 
