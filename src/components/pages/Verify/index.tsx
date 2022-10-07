@@ -122,10 +122,7 @@ export default function VerifyPage({
           setServiceSelfDescriptionErrors(responseBody)
         }
 
-        const formattedServiceSelfDescription = getFormattedCodeString(
-          JSON.parse(serviceSelfDescriptionContent)
-        )
-        setServiceSelfDescription(formattedServiceSelfDescription)
+        setServiceSelfDescription(JSON.parse(serviceSelfDescriptionContent))
         setIsLoading(false)
       } catch (error) {
         Logger.error(error)
@@ -189,10 +186,14 @@ export default function VerifyPage({
               )}
               <Visualizer
                 badgeLabel={serviceSelfDescriptionSection.badgeLabel}
-                text={serviceSelfDescription || ''}
+                text={getFormattedCodeString(serviceSelfDescription) || ''}
                 title={serviceSelfDescriptionSection.title}
                 displayBadge={isServiceSelfDescriptionVerified}
                 apiVersion={serviceSDVersion}
+                copyText={
+                  serviceSelfDescription &&
+                  JSON.stringify(serviceSelfDescription, null, 2)
+                }
               />
             </div>
           )}

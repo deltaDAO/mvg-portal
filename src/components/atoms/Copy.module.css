@@ -19,17 +19,3 @@
 .button:hover .icon {
   fill: var(--font-color-text);
 }
-
-.copied .icon,
-.button.copied:hover .icon {
-  fill: var(--brand-alert-green);
-}
-
-.copied::after {
-  content: 'Copied!';
-  position: absolute;
-  top: -150%;
-  left: -140%;
-  font-size: var(--font-size-mini);
-  color: var(--brand-alert-green);
-}
