@@ -16,7 +16,7 @@
 
 ## 🏄 Get Started
 
-The MVG portal demonstrator is built on top of [Ocean Market](https://github.com/oceanprotocol/market), an Open Source React app utilizing DLT, built by @oceanprotocol. For details on code structure, design principles and more, please head over to the repository located at https://github.com/oceanprotocol/market.
+The Pontus-X - Gaia-X Web3 Ecosystem is built on top of [Ocean Market](https://github.com/oceanprotocol/market), an Open Source React app utilizing DLT, built by @oceanprotocol. For details on code structure, design principles and more, please head over to the repository located at https://github.com/oceanprotocol/market.
 
 The app is a React app built with [Gatsby.js](https://www.gatsbyjs.org) + TypeScript + CSS modules and will connect to Ocean remote components hosted by [deltaDAO](https://delta-dao.com) by default.
 
@@ -41,7 +41,7 @@ To explore the generated GraphQL data structure fire up the accompanying GraphiQ
 
 ## 🧊 Important Components
 
-This portal uses Ocean Protocol under the hood. There are multiple Ocean components at work, for mor information please head to the [Ocean Market repository](https://github.com/oceanprotocol/market). To get a brief overview of important components at use in the MVG context let's have a look at some of them:
+The Pontus-X - Gaia-X Web3 Ecosystem uses Ocean Protocol under the hood. There are multiple Ocean components at work, for mor information please head to the [Ocean Market repository](https://github.com/oceanprotocol/market). To get a brief overview of important components at use in the Pontus-X context let's have a look at some of them:
 
 ### Environment variables
 
@@ -80,14 +80,14 @@ We welcome contributions in form of bug reports, feature requests, code changes,
 
 ## 🍴 Forking
 
-We encourage you to fork this repository and create your own Minimal Viable Gaia-X portal. When you publish your forked version of this portal there are a few elements that you are required to change for copyright reasons:
+We encourage you to fork this repository and create your own Gaia-X Web3 Ecosystem. When you publish your forked version of the Pontus-X - Gaia-X Web3 Ecosystem there are a few elements that you are required to change for copyright reasons:
 
-- The Gaia-X logo is a trademark of the Gaia-X AISBL and must be removed from forked versions of the portal.
-- The deltaDAO logo is a trademark of deltaDAO AG and must be removed from forked versions of the portal.
+- The Gaia-X logo is a trademark of the Gaia-X AISBL and must be removed from forked versions of the Pontus-X - Gaia-X Web3 Ecosystem.
+- The deltaDAO logo is a trademark of deltaDAO AG and must be removed from forked versions of the Pontus-X - Gaia-X Web3 Ecosystem.
 
-Additionally, we would also advise that your retain the text saying "Powered by Ocean Protocol" on your forked version of this portal in order to give credit for the development work done by the Ocean Protocol team.
+Additionally, we would also advise that your retain the text saying "Powered by Ocean Protocol" on your forked version of the Pontus-X - Gaia-X Web3 Ecosystem in order to give credit for the development work done by the Ocean Protocol team.
 
-Everything else is made open according to the Apache-2.0 license. We look forward to seeing your MVG portal!
+Everything else is made open according to the Apache-2.0 license. We look forward to seeing your implementation of the Pontus-X - Gaia-X Web3 Ecosystem!
 
 ## 🏛 License
 
