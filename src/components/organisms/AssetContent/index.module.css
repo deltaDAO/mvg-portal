@@ -22,6 +22,14 @@
   position: relative;
 }
 
+.sdVisualizer {
+  margin-top: calc(var(--spacer) / 2);
+}
+
+.sdVisualizer h4 {
+  margin-bottom: 0;
+}
+
 @media (min-width: 60rem) {
   .grid {
     grid-template-columns: 1.5fr 1fr;

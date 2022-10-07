@@ -5,18 +5,18 @@ import VerifiedBadge from '../../atoms/VerifiedBadge'
 import styles from './Visualizer.module.css'
 
 export default function Visualizer({
-  badgeLabel,
   text,
   title,
   displayBadge,
+  badgeLabel,
   invalidBadge,
   apiVersion,
   copyText
 }: {
-  badgeLabel: string
   text: string
   title: string
   displayBadge?: boolean
+  badgeLabel?: string
   invalidBadge?: boolean
   apiVersion?: string
   copyText?: string

@@ -21,6 +21,7 @@ import EditAdvancedSettings from '../AssetActions/Edit/EditAdvancedSettings'
 import { useSiteMetadata } from '../../../hooks/useSiteMetadata'
 import NetworkName from '../../atoms/NetworkName'
 import { getFormattedCodeString, getServiceSD } from '../../../utils/metadata'
+import Visualizer from '../../pages/Verify/Visualizer'
 export interface AssetContentProps {
   path?: string
 }
@@ -97,18 +98,12 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
     if (!isServiceSelfDescriptionVerified) return
     const serviceSD = metadata?.additionalInformation?.serviceSelfDescription
     if (serviceSD?.raw) {
-      const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-        JSON.parse(serviceSD?.raw)
-      )}`
-      setServiceSelfDescription(formattedServiceSelfDescription)
+      setServiceSelfDescription(JSON.parse(serviceSD?.raw))
     }
     if (serviceSD?.url) {
-      getServiceSD(serviceSD?.url).then((serviceSelfDescription) => {
-        const formattedServiceSelfDescription = `## Service Self-Description\n${getFormattedCodeString(
-          JSON.parse(serviceSelfDescription)
-        )}`
-        setServiceSelfDescription(formattedServiceSelfDescription)
-      })
+      getServiceSD(serviceSD?.url).then((serviceSelfDescription) =>
+        setServiceSelfDescription(JSON.parse(serviceSelfDescription))
+      )
     }
   }, [
     isServiceSelfDescriptionVerified,
@@ -148,10 +143,18 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
                   text={metadata?.additionalInformation?.description || ''}
                 />
                 {isServiceSelfDescriptionVerified && (
-                  <Markdown
-                    className={styles.description}
-                    text={serviceSelfDescription || ''}
-                  />
+                  <div className={styles.sdVisualizer}>
+                    <Visualizer
+                      text={
+                        getFormattedCodeString(serviceSelfDescription) || ''
+                      }
+                      title="Service Self-Description"
+                      copyText={
+                        serviceSelfDescription &&
+                        JSON.stringify(serviceSelfDescription, null, 2)
+                      }
+                    />
+                  </div>
                 )}
 
                 <MetaSecondary />
