@@ -35,9 +35,19 @@ export default function PageHeader({
 
   return (
     <header className={styleClasses}>
-      <h1 className={styles.title}>
-        {title} {isEdgeProvider && <Badge label="EDGE" large />}
-      </h1>
+      {isHome ? (
+        <div className={styles.homeTitleContainer}>
+          {title.split(' - ').map((text, i) => (
+            <h1 key={i} className={styles.title}>
+              {text}
+            </h1>
+          ))}
+        </div>
+      ) : (
+        <h1 className={styles.title}>
+          {title} {isEdgeProvider && <Badge label="EDGE" large />}
+        </h1>
+      )}
       {description && (
         <Markdown text={description} className={styles.description} />
       )}
