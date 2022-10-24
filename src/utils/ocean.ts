@@ -15,13 +15,14 @@ export function getOceanConfig(network: string | number): ConfigHelperConfig {
       network === 'gaiaxtestnet' ||
       network === 2021000 ||
       network === 'catenaxtestnet' ||
-      network === 2021001
+      network === 2021001 ||
+      network === 100
       ? undefined
       : process.env.GATSBY_INFURA_PROJECT_ID
   ) as ConfigHelperConfig
 
-  const configOverwrite = (chains as ConfigHelperConfigOverwrite[]).find(
-    (c) => c.networkId === config.networkId
+  const configOverwrite = (chains as ConfigHelperConfigOverwrite[]).find((c) =>
+    config ? c.networkId === config.networkId : c.networkId === network
   )
 
   return configOverwrite

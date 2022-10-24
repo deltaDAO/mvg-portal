@@ -13,6 +13,19 @@ const chains = [
     metadataCacheUri: 'https://aquarius.delta-dao.com/',
     explorerUri: 'https://blockscout.gaiaxtestnet.oceanprotocol.com/',
     isDefault: true
+  },
+  {
+    name: 'GEN-X',
+    network: 'testnet',
+    networkId: 100,
+    nodeUri: 'http://194.182.169.98:8545/',
+    providerUri: 'https://provider.genx.delta-dao.com',
+    metadataCacheUri: 'https://aquarius.delta-dao.com/',
+    explorerUri: 'http://89.145.161.253:4000/',
+    isDefault: true,
+    factoryAddress: '0x8f0483125FCb9aaAEFA9209D8E9d7b9C8B9Fb90F',
+    fixedRateExchangeAddress: '0x30753E4A8aad7F8597332E813735Def5dD395028',
+    metadataContractAddress: '0xFB88dE099e13c3ED21F80a7a1E49f8CAEcF10df6'
   }
 ]
 
