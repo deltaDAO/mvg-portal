@@ -25,7 +25,10 @@ const chains = [
     isDefault: true,
     factoryAddress: '0x8f0483125FCb9aaAEFA9209D8E9d7b9C8B9Fb90F',
     fixedRateExchangeAddress: '0x30753E4A8aad7F8597332E813735Def5dD395028',
-    metadataContractAddress: '0xFB88dE099e13c3ED21F80a7a1E49f8CAEcF10df6'
+    metadataContractAddress: '0xFB88dE099e13c3ED21F80a7a1E49f8CAEcF10df6',
+    oceanTokenAddress: '0xa240c4d34b12dA624eCFE2e2adc88a18db93b02e',
+    dispenserAddress: '0xAa588d3737B611baFD7bD713445b314BD453a5C8',
+    BFactory: '0x2C2B9C9a4a25e24B174f26114e8926a9f2128FE4'
   }
 ]
 
