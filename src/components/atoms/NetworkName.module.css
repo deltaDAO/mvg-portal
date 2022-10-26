@@ -19,8 +19,7 @@
   position: relative;
 }
 
-.minimal .name,
-.name {
+.minimal .name {
   opacity: 0;
   width: 0;
 }
@@ -30,9 +29,9 @@
   opacity: 1;
 }
 
-@media screen and (min-width: 35rem) {
-  .name,
-  .name:hover {
+@media screen and (min-width: 40rem) {
+  .minimal .name,
+  .minimal .name:hover {
     width: auto;
     opacity: 1;
   }
