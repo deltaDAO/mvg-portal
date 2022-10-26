@@ -3,33 +3,24 @@ import contractAddresses from '@oceanprotocol/contracts/artifacts/address.json'
 import { AbiItem } from 'web3-utils/types'
 import Web3 from 'web3'
 import { chains } from '../../chains.config'
-import { ConfigHelperConfigOverwrite } from '../@types/Chains'
 
 export function getOceanConfig(network: string | number): ConfigHelperConfig {
-  const config = new ConfigHelper().getConfig(
-    network,
-    network === 'moonbeamalpha' ||
-      network === 1287 ||
-      network === 'bsc' ||
-      network === 56 ||
-      network === 'gaiaxtestnet' ||
-      network === 2021000 ||
-      network === 'catenaxtestnet' ||
-      network === 2021001
-      ? undefined
-      : process.env.GATSBY_INFURA_PROJECT_ID
-  ) as ConfigHelperConfig
+  // ETH mainnet config is needed to initialize the urql client
+  if (network === 1) {
+    return new ConfigHelper().getConfig(
+      network,
+      process.env.GATSBY_INFURA_PROJECT_ID
+    ) as ConfigHelperConfig
+  }
 
-  const configOverwrite = (chains as ConfigHelperConfigOverwrite[]).find(
-    (c) => c.networkId === config.networkId
-  )
+  const filterBy = typeof network === 'string' ? 'network' : 'chainId'
+  const config = chains.find((c) => c[filterBy] === network)
 
-  return configOverwrite
-    ? {
-        ...config,
-        ...configOverwrite
-      }
-    : config
+  if (!config) {
+    Logger.error(`No config found for given network '${network}'`)
+    return null
+  }
+  return config
 }
 
 export function getDevelopmentConfig(): Partial<ConfigHelperConfig> {

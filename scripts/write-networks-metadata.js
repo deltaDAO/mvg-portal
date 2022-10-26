@@ -7,7 +7,10 @@ const axios = require('axios')
 const chainDataUrl = 'https://chainid.network/chains.json'
 
 axios(chainDataUrl).then((response) => {
-  response.data.push({
+  // avoid having 2 nodes with the same chainId
+  const filteredData = response.data.filter((node) => node.chainId !== 100)
+
+  filteredData.push({
     name: 'Gaia-X Testnet',
     chain: 'GX',
     network: 'testnet',
@@ -23,7 +26,7 @@ axios(chainDataUrl).then((response) => {
     chainId: 2021000,
     networkId: 2021000
   })
-  response.data.push({
+  filteredData.push({
     name: 'Catena-X Testnet',
     chain: 'CX',
     network: 'testnet',
@@ -39,5 +42,21 @@ axios(chainDataUrl).then((response) => {
     chainId: 2021001,
     networkId: 2021001
   })
-  process.stdout.write(JSON.stringify(response.data, null, '  '))
+  filteredData.push({
+    name: 'GEN-X Testnet',
+    chain: 'GEN-X',
+    network: 'testnet',
+    rpc: ['http://194.182.169.98:8545'],
+    faucets: [],
+    nativeCurrency: {
+      name: 'GEN-X',
+      symbol: 'GX',
+      decimals: 18
+    },
+    infoURL: '',
+    shortName: 'GEN-X',
+    chainId: 100,
+    networkId: 100
+  })
+  process.stdout.write(JSON.stringify(filteredData, null, '  '))
 })
