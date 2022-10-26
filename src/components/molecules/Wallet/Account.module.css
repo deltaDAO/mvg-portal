@@ -63,7 +63,7 @@ svg.caret {
   display: none;
 }
 
-@media screen and (min-width: 30rem) {
+@media screen and (min-width: 35rem) {
   .button.initial span {
     display: inline;
   }

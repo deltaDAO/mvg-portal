@@ -2,14 +2,15 @@
   text-transform: capitalize;
   display: inline-flex;
   align-items: center;
-  color: var(--color-secondary);
+  color: var(--color-primary);
+  font-weight: var(--font-weight-bold);
 }
 
 .icon {
   display: inline-block;
   width: 1.2em;
   height: 1.2em;
-  fill: currentColor;
+  fill: var(--color-primary);
   margin-right: calc(var(--spacer) / 8);
 }
 
@@ -17,7 +18,8 @@
   position: relative;
 }
 
-.minimal .name {
+.minimal .name,
+.name {
   opacity: 0;
   width: 0;
 }
@@ -25,4 +27,12 @@
 .minimal:hover .name {
   width: auto;
   opacity: 1;
+}
+
+@media screen and (min-width: 35rem) {
+  .name,
+  .name:hover {
+    width: auto;
+    opacity: 1;
+  }
 }

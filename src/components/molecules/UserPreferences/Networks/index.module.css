@@ -1,5 +1,4 @@
 .networks {
-  margin-right: calc(var(--spacer) / 3);
   position: relative;
   overflow: hidden;
 }

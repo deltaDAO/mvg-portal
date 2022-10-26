@@ -26,7 +26,7 @@ svg.caret {
   display: none;
 }
 
-@media screen and (min-width: 42rem) {
+@media screen and (min-width: 35rem) {
   .caret,
   svg.caret {
     display: inline-block;
@@ -38,13 +38,6 @@ svg.caret {
   transition: 0.2s ease-out;
   width: 1em;
   height: 1em;
-}
-
-.preferences:hover .icon,
-.preferences:focus .icon,
-.preferences:active .icon,
-.preferences[aria-expanded='true'] .icon {
-  fill: var(--color-menu-active);
 }
 
 .preferencesDetails {
