@@ -2,7 +2,7 @@
   text-transform: capitalize;
   display: inline-flex;
   align-items: center;
-  color: var(--color-primary);
+  color: var(--color-secondary);
   font-weight: var(--font-weight-bold);
   cursor: default;
 }
@@ -11,7 +11,7 @@
   display: inline-block;
   width: 1.2em;
   height: 1.2em;
-  fill: var(--color-primary);
+  fill: currentColor;
   margin-right: calc(var(--spacer) / 8);
 }
 
