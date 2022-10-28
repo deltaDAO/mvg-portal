@@ -3,6 +3,8 @@
   display: inline-flex;
   align-items: center;
   color: var(--color-secondary);
+  font-weight: var(--font-weight-bold);
+  cursor: default;
 }
 
 .icon {
@@ -25,4 +27,12 @@
 .minimal:hover .name {
   width: auto;
   opacity: 1;
+}
+
+@media screen and (min-width: 40rem) {
+  .minimal .name,
+  .minimal .name:hover {
+    width: auto;
+    opacity: 1;
+  }
 }
