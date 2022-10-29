@@ -4,6 +4,7 @@ import Status from '../atoms/Status'
 import styles from './Web3Feedback.module.css'
 import WalletNetworkSwitcher from './WalletNetworkSwitcher'
 import { useGraphSyncStatus } from '../../hooks/useGraphSyncStatus'
+import { useAsset } from '../../providers/Asset'
 
 export declare type Web3Error = {
   status: 'error' | 'warning' | 'success'
@@ -17,6 +18,7 @@ export default function Web3Feedback({
   isAssetNetwork?: boolean
 }): ReactElement {
   const { accountId, isChainIdAllowed } = useWeb3()
+  const { ddo } = useAsset()
   const { isGraphSynced, blockGraph, blockHead } = useGraphSyncStatus()
   const [state, setState] = useState<string>()
   const [title, setTitle] = useState<string>()
@@ -57,8 +59,9 @@ export default function Web3Feedback({
     <section className={styles.feedback}>
       <Status state={state} aria-hidden />
       <h3 className={styles.title}>{title}</h3>
-      {isAssetNetwork === false || isChainIdAllowed === false ? (
-        <WalletNetworkSwitcher />
+      {ddo?.chainId &&
+      (isAssetNetwork === false || isChainIdAllowed === false) ? (
+        <WalletNetworkSwitcher chainId={ddo?.chainId} />
       ) : (
         message && <p className={styles.error}>{message}</p>
       )}
