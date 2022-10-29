@@ -12,7 +12,7 @@ const chains = [
     factoryAddress: '0x2720d405ef7cDC8a2E2e5AeBC8883C99611d893C',
     fixedRateExchangeAddress: '0x3c21a90599b5B7f37014cA5Bf30d3f1b73d7e391',
     gasFeeMultiplier: 1,
-    isDefault: true,
+    isDefault: false,
     metadataCacheUri: 'https://aquarius.delta-dao.com/',
     metadataContractAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
     name: 'Gaia-X',
