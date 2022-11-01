@@ -69,9 +69,7 @@ function UserPreferencesProvider({
   )
   const [locale, setLocale] = useState<string>()
   const [bookmarks, setBookmarks] = useState(localStorage?.bookmarks || [])
-  const [chainIds, setChainIds] = useState(
-    localStorage?.chainIds || appConfig.chainIds
-  )
+  const [chainIds, setChainIds] = useState(appConfig.chainIds)
   const { defaultPrivacyPolicySlug } = useSiteMetadata().appConfig
 
   const [privacyPolicySlug, setPrivacyPolicySlug] = useState<string>(
