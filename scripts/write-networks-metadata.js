@@ -46,7 +46,7 @@ axios(chainDataUrl).then((response) => {
     name: 'GEN-X Testnet',
     chain: 'GEN-X',
     network: 'testnet',
-    rpc: ['http://194.182.169.98:8545'],
+    rpc: ['https://rpc.genx.minimal-gaia-x.eu'],
     faucets: [],
     nativeCurrency: {
       name: 'GEN-X',
