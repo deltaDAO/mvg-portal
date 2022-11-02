@@ -22,7 +22,7 @@ export default function Navigation({
   setNavigationDirection: (direction: NavigationDirections) => void
   totalStepsCount: number
 }): ReactElement {
-  const { accountId, balance, networkId, web3Provider } = useWeb3()
+  const { accountId, networkId, web3Provider } = useWeb3()
 
   const handlePreviousStep = () => {
     if (currentStep === 0) return
@@ -37,8 +37,7 @@ export default function Navigation({
         getErrorMessage({
           accountId,
           web3Provider: !!web3Provider,
-          networkId,
-          balance
+          networkId
         })
       )
       return

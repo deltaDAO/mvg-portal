@@ -8,10 +8,10 @@ import styles from './StepAction.module.css'
 export interface IStepAction {
   buttonLabel: string
   buttonAction: (e: FormEvent) => void
-  successMessage?: string
   loading: boolean
   completed: boolean
   loadingMessage?: string
+  successMessage?: string
 }
 
 export default function StepAction({
@@ -26,7 +26,7 @@ export default function StepAction({
     <div className={styles.container}>
       {loading ? (
         <Loader message={loadingMessage} useDefaultMessage />
-      ) : completed ? (
+      ) : completed && successMessage ? (
         <Alert
           text={successMessage}
           state="success"
