@@ -133,8 +133,6 @@ export async function addCustomNetwork(
     network.explorers && network.explorers[0].url
   ]
 
-  console.log(network.rpc)
-
   const newNetworkData = {
     chainId: `0x${network.chainId.toString(16)}`,
     chainName: getNetworkDisplayName(network, network.chainId),
