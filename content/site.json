@@ -56,11 +56,7 @@
           "links": [
             {
               "name": "Log",
-              "link": "https://exchangelog.minimal-gaia-x.eu"
-            },
-            {
-              "name": " Statistics",
-              "link": "https://stats.minimal-gaia-x.eu"
+              "link": "https://explorer.genx.minimal-gaia-x.eu/"
             }
           ]
         },
