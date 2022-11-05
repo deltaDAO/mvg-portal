@@ -1,20 +1,7 @@
 {
   "title": "Get some test tokens",
   "subtitle": "To publish or consume the assets in the portal you'll need some GX and OCEAN test tokens to spend",
-  "body": "Click on the buttons below to claim your test tokens.",
+  "body": "To request some tokens you can contact us at [contact@delta-dao.com](mailto:contact@delta-dao.com).",
   "image": "../../../../../src/images/onboarding/claim_tokens.png",
-  "buttons": [
-    {
-      "label": "Claim 1 GX",
-      "balance": "You already have some GX test tokens in your wallet 🎉",
-      "success": "Successfully claimed 1 GX",
-      "key": "gx"
-    },
-    {
-      "label": "Claim 100 OCEAN",
-      "balance": "You already have some OCEAN test tokens in your wallet 🎉",
-      "success": "Successfully claimed 100 OCEAN",
-      "key": "ocean"
-    }
-  ]
+  "buttonLabel": "Contact Us"
 }

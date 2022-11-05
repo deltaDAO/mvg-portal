@@ -2,7 +2,7 @@ import { graphql, useStaticQuery } from 'gatsby'
 import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
-import { GX_NETWORK_ID } from '../../../../../../chains.config'
+import { GEN_X_NETWORK_ID } from '../../../../../../chains.config'
 import useNetworkMetadata from '../../../../../hooks/useNetworkMetadata'
 import { useWeb3 } from '../../../../../providers/Web3'
 import { getErrorMessage } from '../../../../../utils/onboarding'
@@ -50,7 +50,7 @@ export default function ConnectNetwork(): ReactElement {
   const [completed, setCompleted] = useState(false)
 
   useEffect(() => {
-    if (accountId && !!web3Provider && networkId === GX_NETWORK_ID) {
+    if (accountId && !!web3Provider && networkId === GEN_X_NETWORK_ID) {
       setCompleted(true)
     } else {
       setCompleted(false)
@@ -61,7 +61,7 @@ export default function ConnectNetwork(): ReactElement {
     setLoading(true)
     try {
       const networkNode = await networksList.find(
-        (data) => data.node.chainId === GX_NETWORK_ID
+        (data) => data.node.chainId === GEN_X_NETWORK_ID
       ).node
       addCustomNetwork(web3Provider, networkNode)
     } catch (error) {
@@ -69,8 +69,7 @@ export default function ConnectNetwork(): ReactElement {
         getErrorMessage({
           accountId,
           web3Provider: !!web3Provider,
-          networkId,
-          balance: null
+          networkId
         })
       )
       console.error(error.message)

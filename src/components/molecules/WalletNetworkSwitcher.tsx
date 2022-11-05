@@ -8,27 +8,24 @@ import {
 import Button from '../atoms/Button'
 import styles from './WalletNetworkSwitcher.module.css'
 import useNetworkMetadata from '../../hooks/useNetworkMetadata'
-import { chains } from '../../../chains.config'
 
-export default function WalletNetworkSwitcher(): ReactElement {
+export default function WalletNetworkSwitcher({
+  chainId
+}: {
+  chainId: number
+}): ReactElement {
   const { web3Provider } = useWeb3()
 
-  const targetNetwork = chains[0]
   const { networksList } = useNetworkMetadata()
-  const targetNetworkData = getNetworkDataById(
-    networksList,
-    targetNetwork.networkId
-  )
+  const targetNetworkData = getNetworkDataById(networksList, chainId)
 
   const targetNetworkName = (
-    <strong>
-      {getNetworkDisplayName(targetNetworkData, targetNetwork.networkId)}
-    </strong>
+    <strong>{getNetworkDisplayName(targetNetworkData, chainId)}</strong>
   )
 
   async function switchWalletNetwork() {
     const networkNode = await networksList.find(
-      (data) => data.node.chainId === targetNetwork.networkId
+      (data) => data.node.chainId === chainId
     ).node
     addCustomNetwork(web3Provider, networkNode)
   }
