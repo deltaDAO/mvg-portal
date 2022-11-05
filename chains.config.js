@@ -42,7 +42,7 @@ const chains = [
     name: 'GEN-X',
     network: 'genxtestnet',
     networkId: GEN_X_NETWORK_ID,
-    nodeUri: 'http://194.182.169.98:8545/',
+    nodeUri: 'https://rpc.genx.minimal-gaia-x.eu',
     oceanTokenAddress: '0x0995527d3473b3A98C471f1ED8787ACD77fBF009',
     oceanTokenSymbol: 'OCEAN',
     providerUri: 'https://provider.genx.delta-dao.com',

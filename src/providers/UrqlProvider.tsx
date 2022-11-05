@@ -2,7 +2,7 @@ import { createClient, Provider, Client } from 'urql'
 import React, { useState, useEffect, ReactNode, ReactElement } from 'react'
 import { Logger } from '@oceanprotocol/lib'
 import { getOceanConfig } from '../utils/ocean'
-import { GX_NETWORK_ID } from '../../chains.config'
+import { GEN_X_NETWORK_ID } from '../../chains.config'
 
 let urqlClient: Client
 
@@ -31,7 +31,7 @@ export default function UrqlClientProvider({
   const [client, setClient] = useState<Client>()
 
   useEffect(() => {
-    const oceanConfig = getOceanConfig(GX_NETWORK_ID)
+    const oceanConfig = getOceanConfig(GEN_X_NETWORK_ID)
 
     if (!oceanConfig?.subgraphUri) {
       Logger.error(

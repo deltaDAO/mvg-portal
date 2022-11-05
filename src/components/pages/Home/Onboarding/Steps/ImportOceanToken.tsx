@@ -2,7 +2,7 @@ import { graphql, useStaticQuery } from 'gatsby'
 import React, { ReactElement, useState } from 'react'
 import { toast } from 'react-toastify'
 import { OnboardingStep } from '..'
-import { GX_NETWORK_ID } from '../../../../../../chains.config'
+import { GEN_X_NETWORK_ID } from '../../../../../../chains.config'
 import { useWeb3 } from '../../../../../providers/Web3'
 import { getOceanConfig } from '../../../../../utils/ocean'
 import { getErrorMessage } from '../../../../../utils/onboarding'
@@ -51,7 +51,7 @@ export default function ImportOceanToken(): ReactElement {
   const importOceanToken = async () => {
     setLoading(true)
     try {
-      if (networkId !== GX_NETWORK_ID) throw new Error()
+      if (networkId !== GEN_X_NETWORK_ID) throw new Error()
       const oceanConfig = getOceanConfig(networkId)
       await addTokenToWallet(
         web3Provider,
@@ -65,8 +65,7 @@ export default function ImportOceanToken(): ReactElement {
         getErrorMessage({
           accountId,
           web3Provider: !!web3Provider,
-          networkId,
-          balance: null
+          networkId
         })
       )
       if (error.message) console.error(error.message)

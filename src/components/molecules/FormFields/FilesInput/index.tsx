@@ -9,7 +9,7 @@ import { useWeb3 } from '../../../../providers/Web3'
 import { getOceanConfig } from '../../../../utils/ocean'
 import { useCancelToken } from '../../../../hooks/useCancelToken'
 import { getServiceSD, verifyRawServiceSD } from '../../../../utils/metadata'
-import { GX_NETWORK_ID } from '../../../../../chains.config'
+import { GEN_X_NETWORK_ID } from '../../../../../chains.config'
 
 export default function FilesInput({
   setStatus,
@@ -22,7 +22,7 @@ export default function FilesInput({
   const newCancelToken = useCancelToken()
 
   function loadFileInfo() {
-    const config = getOceanConfig(chainId || GX_NETWORK_ID)
+    const config = getOceanConfig(chainId || GEN_X_NETWORK_ID)
 
     async function validateUrl() {
       try {

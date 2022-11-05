@@ -13,7 +13,7 @@ import Ready from './Steps/Ready'
 import ClaimTokens from './Steps/ClaimTokens'
 import { useUserPreferences } from '../../../../providers/UserPreferences'
 import { useWeb3 } from '../../../../providers/Web3'
-import { GX_NETWORK_ID } from '../../../../../chains.config'
+import { GEN_X_NETWORK_ID } from '../../../../../chains.config'
 
 export interface OnboardingStep {
   title: string
@@ -57,13 +57,7 @@ export default function OnboardingSection(): ReactElement {
   }, [onboardingStep, setOnboardingStep])
 
   useEffect(() => {
-    if (
-      accountId &&
-      web3Provider &&
-      networkId === GX_NETWORK_ID &&
-      Number(balance?.eth) > 0 &&
-      Number(balance?.ocean) > 0
-    ) {
+    if (accountId && web3Provider && networkId === GEN_X_NETWORK_ID) {
       setOnboardingCompleted(true)
     }
   }, [accountId, balance, networkId, web3Provider])

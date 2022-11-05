@@ -1,8 +1,8 @@
 {
-  "title": "Connect to the Gaia-X testnet",
+  "title": "Connect to the GEN-X Testnet",
   "subtitle": "To interact with the assets in this portal you need to be connected to the correct network",
-  "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the Gaia-X testnet confirm the request inside the popup.",
+  "body": "After you click on this button a popup from MetaMask will appear.\n\n To connect to the GEN-X Testnet confirm the request inside the popup.",
   "image": "../../../../../src/images/onboarding/connect_network.png",
-  "buttonLabel": "Connect to Gaia-X testnet",
-  "buttonSuccess": "Your account is connected to the Gaia-X testnet"
+  "buttonLabel": "Connect to GEN-X Testnet",
+  "buttonSuccess": "Your account is connected to the GEN-X Testnet"
 }

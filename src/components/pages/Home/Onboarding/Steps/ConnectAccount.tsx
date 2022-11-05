@@ -62,8 +62,7 @@ export default function ConnectAccount(): ReactElement {
         getErrorMessage({
           accountId,
           web3Provider: !!web3Provider,
-          networkId,
-          balance: null
+          networkId
         })
       )
       console.error(error.message)

@@ -22,7 +22,7 @@ export default function Stepper({
   setCurrentStep: (step: number) => void
   setNavigationDirection: (direction: NavigationDirections) => void
 }): ReactElement {
-  const { accountId, balance, networkId, web3Provider } = useWeb3()
+  const { accountId, networkId, web3Provider } = useWeb3()
 
   const getNavigationDirection = (
     currentStep: number,
@@ -39,8 +39,7 @@ export default function Stepper({
         getErrorMessage({
           accountId,
           web3Provider: !!web3Provider,
-          networkId,
-          balance
+          networkId
         })
       )
       return
