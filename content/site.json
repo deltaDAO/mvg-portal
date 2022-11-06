@@ -48,7 +48,7 @@
     "badge": "Powered by Ocean Protocol",
     "footer": {
       "subtitle": "data economy solutions - GDPR compliant",
-      "copyright": "Built by [deltaDAO](https://delta-dao.com). Powered by [Ocean Protocol](https://oceanprotocol.com).",
+      "copyright": "Built by [deltaDAO](https://delta-dao.com)",
       "privacyTitle": "Privacy",
       "content": [
         {
@@ -56,11 +56,7 @@
           "links": [
             {
               "name": "Log",
-              "link": "https://exchangelog.minimal-gaia-x.eu"
-            },
-            {
-              "name": " Statistics",
-              "link": "https://stats.minimal-gaia-x.eu"
+              "link": "https://explorer.genx.minimal-gaia-x.eu/"
             }
           ]
         },
