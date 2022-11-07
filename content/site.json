@@ -33,6 +33,18 @@
           {
             "name": "Future Mobility",
             "link": "https://marketplace.future-mobility-alliance.org"
+          },
+          {
+            "name": "PEAQ",
+            "link": "https://gaia-x.portal.peaq.network/"
+          },
+          {
+            "name": "Berlin State Library",
+            "link": "https://sbb.portal.minimal-gaia-x.eu/"
+          },
+          {
+            "name": "Universitat de Lleida",
+            "link": "https://udl.portal.minimal-gaia-x.eu/"
           }
         ]
       }
