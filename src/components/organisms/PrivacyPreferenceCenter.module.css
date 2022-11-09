@@ -32,7 +32,7 @@
 
 .header {
   font-size: var(--font-size-large);
-  font-weight: bold;
+  font-weight: var(--font-weight-bold);
   margin-bottom: calc(var(--spacer) / 2);
 }
 
