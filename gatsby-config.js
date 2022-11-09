@@ -90,15 +90,5 @@ module.exports = {
         cache_busting_mode: 'none'
       }
     }
-    // 'gatsby-plugin-webpack-size',
-    // {
-    //   resolve: 'gatsby-plugin-web-font-loader',
-    //   options: {
-    //     custom: {
-    //       families: ['Titillium Web'],
-    //       urls: ['/fonts/fonts.css']
-    //     }
-    //   }
-    // }
   ]
 }
