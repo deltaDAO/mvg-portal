@@ -33,6 +33,13 @@ module.exports = {
       }
     },
     {
+      resolve: 'gatsby-source-filesystem',
+      options: {
+        name: 'fonts',
+        path: `${__dirname}/src/static/fonts/`
+      }
+    },
+    {
       resolve: 'gatsby-plugin-sharp',
       options: {
         defaultQuality: 80
@@ -82,7 +89,6 @@ module.exports = {
         display: 'standalone',
         cache_busting_mode: 'none'
       }
-    },
-    'gatsby-plugin-webpack-size'
+    }
   ]
 }
