@@ -89,6 +89,7 @@ module.exports = {
         display: 'standalone',
         cache_busting_mode: 'none'
       }
-    }
+    },
+    'gatsby-plugin-webpack-size'
   ]
 }
