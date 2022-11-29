@@ -7,6 +7,7 @@ import Copy from '../../../atoms/Copy'
 import Blockies from '../../../atoms/Blockies'
 import styles from './Account.module.css'
 import { useProfile } from '../../../../providers/Profile'
+import VerifiedPatch from './VerifiedPatch'
 
 export default function Account({
   accountId
@@ -39,7 +40,10 @@ export default function Account({
       </figure>
 
       <div>
-        <h3 className={styles.name}>{profile?.name}</h3>
+        <h3 className={styles.name}>
+          {profile?.name}
+          <VerifiedPatch />
+        </h3>
         {accountId && (
           <code
             className={styles.accountId}

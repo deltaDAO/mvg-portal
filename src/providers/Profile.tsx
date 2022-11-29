@@ -36,6 +36,7 @@ interface ProfileProviderValue {
   downloadsTotal: number
   isDownloadsLoading: boolean
   sales: number
+  isVerifiedMember: boolean
 }
 
 const ProfileContext = createContext({} as ProfileProviderValue)
@@ -299,6 +300,36 @@ function ProfileProvider({
     getUserSalesNumber()
   }, [accountId, chainIds])
 
+  // POLYGON ID MEMBERSHIP
+  const [isVerifiedMember, setIsVerifiedMember] = useState<boolean>()
+  useEffect(() => {
+    const apiBaseUri = appConfig.verifierApi || 'http://localhost:3000'
+    const apiRoute = '/api/status/'
+
+    const getVerificationStatus = async () => {
+      try {
+        const response = await axios.get(`${apiBaseUri}${apiRoute}${accountId}`)
+        const verified = response?.data?.verified
+        Logger.log(`[profile] Verification status for ${accountId}:`, {
+          verified
+        })
+        if (verified) setIsVerifiedMember(true)
+        else setIsVerifiedMember(false)
+      } catch (error) {
+        const { message } = error
+        Logger.error('Could not verify membership with verifier:', {
+          accountId,
+          apiBaseUri,
+          apiRoute,
+          message
+        })
+        setIsVerifiedMember(false)
+      }
+    }
+
+    getVerificationStatus()
+  }, [accountId])
+
   return (
     <ProfileContext.Provider
       value={{
@@ -311,7 +342,8 @@ function ProfileProvider({
         downloads,
         downloadsTotal,
         isDownloadsLoading,
-        sales
+        sales,
+        isVerifiedMember
       }}
     >
       {children}

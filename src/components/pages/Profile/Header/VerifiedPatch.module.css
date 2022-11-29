@@ -1,0 +1,4 @@
+.patch > svg {
+  fill: var(--color-primary);
+  display: inline;
+}
