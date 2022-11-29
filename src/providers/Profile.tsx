@@ -37,6 +37,7 @@ interface ProfileProviderValue {
   isDownloadsLoading: boolean
   sales: number
   isVerifiedMember: boolean
+  refreshVerificationStatus: () => void
 }
 
 const ProfileContext = createContext({} as ProfileProviderValue)
@@ -302,32 +303,32 @@ function ProfileProvider({
 
   // POLYGON ID MEMBERSHIP
   const [isVerifiedMember, setIsVerifiedMember] = useState<boolean>()
-  useEffect(() => {
+  const refreshVerificationStatus = async () => {
     const apiBaseUri = appConfig.verifierApi || 'http://localhost:3000'
     const apiRoute = '/api/status/'
 
-    const getVerificationStatus = async () => {
-      try {
-        const response = await axios.get(`${apiBaseUri}${apiRoute}${accountId}`)
-        const verified = response?.data?.verified
-        Logger.log(`[profile] Verification status for ${accountId}:`, {
-          verified
-        })
-        if (verified) setIsVerifiedMember(true)
-        else setIsVerifiedMember(false)
-      } catch (error) {
-        const { message } = error
-        Logger.error('Could not verify membership with verifier:', {
-          accountId,
-          apiBaseUri,
-          apiRoute,
-          message
-        })
-        setIsVerifiedMember(false)
-      }
+    try {
+      const response = await axios.get(`${apiBaseUri}${apiRoute}${accountId}`)
+      const verified = response?.data?.verified
+      Logger.log(`[profile] Verification status for ${accountId}:`, {
+        verified
+      })
+      if (verified) setIsVerifiedMember(true)
+      else setIsVerifiedMember(false)
+    } catch (error) {
+      const { message } = error
+      Logger.error('Could not verify membership with verifier:', {
+        accountId,
+        apiBaseUri,
+        apiRoute,
+        message
+      })
+      setIsVerifiedMember(false)
     }
+  }
 
-    getVerificationStatus()
+  useEffect(() => {
+    refreshVerificationStatus()
   }, [accountId])
 
   return (
@@ -343,7 +344,8 @@ function ProfileProvider({
         downloadsTotal,
         isDownloadsLoading,
         sales,
-        isVerifiedMember
+        isVerifiedMember,
+        refreshVerificationStatus
       }}
     >
       {children}

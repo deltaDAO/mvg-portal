@@ -1,13 +1,16 @@
+import jellyfish from '@oceanprotocol/art/creatures/jellyfish/jellyfish-grid.svg'
 import React, { ReactElement } from 'react'
+import { useProfile } from '../../../../providers/Profile'
 import { useUserPreferences } from '../../../../providers/UserPreferences'
+import Blockies from '../../../atoms/Blockies'
+import Copy from '../../../atoms/Copy'
 import ExplorerLink from '../../../atoms/ExplorerLink'
 import NetworkName from '../../../atoms/NetworkName'
-import jellyfish from '@oceanprotocol/art/creatures/jellyfish/jellyfish-grid.svg'
-import Copy from '../../../atoms/Copy'
-import Blockies from '../../../atoms/Blockies'
 import styles from './Account.module.css'
-import { useProfile } from '../../../../providers/Profile'
 import VerifiedPatch from './VerifiedPatch'
+
+import { useWeb3 } from '../../../../providers/Web3'
+import VerificationModal from './VerificationModal'
 
 export default function Account({
   accountId
@@ -15,7 +18,8 @@ export default function Account({
   accountId: string
 }): ReactElement {
   const { chainIds } = useUserPreferences()
-  const { profile } = useProfile()
+  const { profile, isVerifiedMember } = useProfile()
+  const { accountId: userAccount } = useWeb3()
 
   return (
     <div className={styles.account}>
@@ -42,8 +46,11 @@ export default function Account({
       <div>
         <h3 className={styles.name}>
           {profile?.name}
-          <VerifiedPatch />
+          {isVerifiedMember && <VerifiedPatch />}
         </h3>
+        {accountId === userAccount && !isVerifiedMember && (
+          <VerificationModal />
+        )}
         {accountId && (
           <code
             className={styles.accountId}
