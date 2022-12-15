@@ -184,7 +184,7 @@ export async function storeRawServiceSD(signedSD: {
 }> {
   if (!signedSD) return { verified: false, storedSdUrl: undefined }
 
-  const baseUrl = `${complianceUri}/v${getComplianceApiVersion()}/api/service-offering/verify/raw?store=true`
+  const baseUrl = `${complianceUri}/v${getComplianceApiVersion()}/api/service-offering/verify/raw?store=true&verifyParticipant=false`
   try {
     const response = await axios.post(baseUrl, signedSD)
     if (response?.status === 409) {
@@ -220,7 +220,7 @@ export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
 
   // skip participant verification for 22.04 service SDs
   const verifyParticipantOption = complianceApiVersion !== '2204'
-  const baseUrl = `${versionedComplianceUri}/service-offering/verify/raw?verifyParticipant=${verifyParticipantOption}`
+  const baseUrl = `${versionedComplianceUri}/service-offering/verify/raw?verifyParticipant=false`
 
   try {
     const response = await axios.post(baseUrl, parsedServiceSD)
