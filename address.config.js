@@ -11,7 +11,8 @@ module.exports = {
         'did:op:57F7F6e1a8a5D37dd028Abdd6f6EA213cB156f5f',
         'did:op:3D3ABebA09077f354cf13D232bdbF1F1e97ca351',
         'did:op:1075369913a092028a4C8fd18ccAdD85aC800144',
-        'did:op:3a0b09246457571009899C35B292057cA42DB773'
+        'did:op:3a0b09246457571009899C35B292057cA42DB773',
+        'did:op:0E8cEa497d897f8D18283B86b20eD6416281dC73'
       ]
     },
     {

@@ -41,7 +41,9 @@ export default function ClaimTokens(): ReactElement {
       buttonLabel,
       buttonAction: () => {
         const anchor = document.createElement('a')
-        anchor.href = 'mailto:contact@delta-dao.com'
+        anchor.href = 'https://faucet.genx.minimal-gaia-x.eu'
+        anchor.target = '_blank'
+        anchor.rel = 'noopener noreferrer'
         anchor.click()
       },
       loading: false,
