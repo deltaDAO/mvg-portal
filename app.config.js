@@ -84,5 +84,6 @@ module.exports = {
     process.env.GATSBY_PRIVACY_PREFERENCE_CENTER || 'true',
 
   // Base URI of the Polygon ID verifier API used to verify any claims/credentials
-  verifierApi: process.env.GATSBY_VERIFIER_API || 'http://localhost:3000'
+  verifierApi:
+    process.env.GATSBY_VERIFIER_API || 'https://verifier.id.delta-dao.com'
 }
