@@ -61,7 +61,7 @@ export default function VerificationModal(): ReactElement {
   }, [authStatus])
 
   useEffect(() => {
-    if (!sessionId || !qrCodeVisible) return
+    if (!sessionId || !qrCodeVisible || !isOpen) return
     const delay = 3000 // request delay in ms
     const interval = setInterval(async () => {
       try {
@@ -94,7 +94,7 @@ export default function VerificationModal(): ReactElement {
     return () => {
       clearInterval(interval)
     }
-  }, [sessionId, qrCodeVisible])
+  }, [sessionId, qrCodeVisible, isOpen])
 
   return (
     <>
