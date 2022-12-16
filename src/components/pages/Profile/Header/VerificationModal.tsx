@@ -60,6 +60,8 @@ export default function VerificationModal(): ReactElement {
     }
   }, [authStatus])
 
+  // Interval to poll status from verifier once qrCode has been displayed
+  // TODO: limit number of requests
   useEffect(() => {
     if (!sessionId || !qrCodeVisible || !isOpen) return
     const delay = 3000 // request delay in ms
@@ -74,7 +76,7 @@ export default function VerificationModal(): ReactElement {
               setAuthStatus('success')
               break
             default:
-              console.log('NAY', {
+              console.log('Error polling verification status', {
                 status: response.status,
                 data: response.data
               })
@@ -83,6 +85,7 @@ export default function VerificationModal(): ReactElement {
           clearInterval(interval)
         }
       } catch (error) {
+        // Status will be 401 as long as claim has not been verified
         if (error.response.status !== 401) {
           console.error(error)
           setAuthStatus('error')
