@@ -1,0 +1,28 @@
+.verifyButton {
+  margin: 0 0 calc(var(--spacer) / 4);
+}
+
+.qrcodeButton {
+  display: block;
+  margin: auto;
+}
+
+.qrcode {
+  margin: calc(var(--spacer) / 2) auto;
+}
+
+.mobile {
+  display: block;
+  margin-top: calc(var(--spacer) / 2);
+}
+
+.mobile > a {
+  display: block;
+  margin-top: calc(var(--spacer) / 4);
+}
+
+.footer {
+  display: flex;
+  margin-top: var(--spacer);
+  justify-content: space-between;
+}
