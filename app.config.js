@@ -81,5 +81,9 @@ module.exports = {
   // is used to create and show a privacy preference center / cookie banner
   // To learn more about how to configure and use this, please refer to the readme
   privacyPreferenceCenter:
-    process.env.GATSBY_PRIVACY_PREFERENCE_CENTER || 'true'
+    process.env.GATSBY_PRIVACY_PREFERENCE_CENTER || 'true',
+
+  // Base URI of the Polygon ID verifier API used to verify any claims/credentials
+  verifierApi:
+    process.env.GATSBY_VERIFIER_API || 'https://verifier.id.delta-dao.com'
 }
