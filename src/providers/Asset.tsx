@@ -33,7 +33,7 @@ import {
   verifyRawServiceSD
 } from '../utils/metadata'
 import { EdgeDDO } from '../@types/edge/DDO'
-import { GX_NETWORK_ID } from '../../chains.config'
+import { GEN_X_NETWORK_ID } from '../../chains.config'
 
 interface AssetProviderValue {
   isInPurgatory: boolean
@@ -255,7 +255,7 @@ function AssetProvider({
       const filters = [getFilterTerm('service.type', 'edge')]
       const thingDDOs = await getAssetsForProviders(
         [computeService?.serviceEndpoint],
-        [GX_NETWORK_ID],
+        [GEN_X_NETWORK_ID],
         token,
         filters
       )
