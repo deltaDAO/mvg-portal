@@ -11,38 +11,6 @@ axios(chainDataUrl).then((response) => {
   const filteredData = response.data.filter((node) => node.chainId !== 100)
 
   filteredData.push({
-    name: 'Gaia-X Testnet',
-    chain: 'GX',
-    network: 'testnet',
-    rpc: ['https://rpc.gaiaxtestnet.oceanprotocol.com'],
-    faucets: [],
-    nativeCurrency: {
-      name: 'Gaia-X',
-      symbol: 'GX',
-      decimals: 18
-    },
-    infoURL: 'https://gaia-x.eu',
-    shortName: 'GX',
-    chainId: 2021000,
-    networkId: 2021000
-  })
-  filteredData.push({
-    name: 'Catena-X Testnet',
-    chain: 'CX',
-    network: 'testnet',
-    rpc: ['https://rpc.catenaxtestnet.oceanprotocol.com'],
-    faucets: [],
-    nativeCurrency: {
-      name: 'Catena-X',
-      symbol: 'CX',
-      decimals: 18
-    },
-    infoURL: 'https://catena-x.net',
-    shortName: 'CX',
-    chainId: 2021001,
-    networkId: 2021001
-  })
-  filteredData.push({
     name: 'GEN-X Testnet',
     chain: 'GEN-X',
     network: 'testnet',
