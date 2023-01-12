@@ -31,7 +31,7 @@ export function getDevelopmentConfig(): Partial<ConfigHelperConfig> {
     metadataContractAddress: contractAddresses.development?.Metadata,
     oceanTokenAddress: contractAddresses.development?.Ocean,
     // There is no subgraph in barge so we hardcode the Rinkeby one for now
-    subgraphUri: 'https://subgraph.gaiaxtestnet.oceanprotocol.com'
+    subgraphUri: 'https://subgraph.genx.minimal-gaia-x.eu'
   }
 }
 
