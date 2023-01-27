@@ -87,8 +87,7 @@ export default function Pool(): ReactElement {
   const { accountId } = useWeb3()
   const [dtSymbol, setDtSymbol] = useState<string>()
   const [oceanSymbol, setOceanSymbol] = useState<string>()
-  const { isInPurgatory, ddo, owner, price, refreshInterval, isAssetNetwork } =
-    useAsset()
+  const { ddo, owner, price, refreshInterval, isAssetNetwork } = useAsset()
 
   const [poolTokens, setPoolTokens] = useState<string>()
   const [totalPoolTokens, setTotalPoolTokens] = useState<string>()
@@ -275,8 +274,8 @@ export default function Pool(): ReactElement {
   }, [dataLiquidity, ddo.dataToken, price.datatoken, price.ocean, price?.value])
 
   useEffect(() => {
-    setIsRemoveDisabled(isInPurgatory && owner === accountId)
-  }, [isInPurgatory, owner, accountId])
+    setIsRemoveDisabled(owner === accountId)
+  }, [owner, accountId])
 
   useEffect(() => {
     if (!dataLiquidity) return
@@ -486,7 +485,6 @@ export default function Pool(): ReactElement {
               style="primary"
               size="small"
               onClick={() => setShowAdd(true)}
-              disabled={isInPurgatory}
             >
               Add Liquidity
             </Button>

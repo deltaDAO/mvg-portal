@@ -32,8 +32,6 @@ import { Logger, Metadata, MetadataMain } from '@oceanprotocol/lib'
 import { Persist } from '../../atoms/FormikPersist'
 import Debug from './Debug'
 import MetadataFeedback from '../../molecules/MetadataFeedback'
-import { useAccountPurgatory } from '../../../hooks/useAccountPurgatory'
-import { useWeb3 } from '../../../providers/Web3'
 
 export enum publishFormKeys {
   FORM_NAME_DATASETS = 'ocean-publish-form-datasets',
@@ -71,8 +69,6 @@ export default function PublishPage({
   content: { warning: string }
 }): ReactElement {
   const { debug } = useUserPreferences()
-  const { accountId } = useWeb3()
-  const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
   const { publish, publishError, isLoading, publishStepText } = usePublish()
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -213,7 +209,7 @@ export default function PublishPage({
       Logger.error(error.message)
     }
   }
-  return isInPurgatory && purgatoryData ? null : (
+  return (
     <Permission eventType="publish">
       <Formik
         initialValues={

@@ -15,7 +15,6 @@ export default function PageTemplateAssetDetails({
     ddo,
     title,
     error,
-    isInPurgatory,
     loading,
     isAssetNetworkAllowed,
     isEdgeAsset,
@@ -29,8 +28,8 @@ export default function PageTemplateAssetDetails({
       return
     }
 
-    setPageTitle(isInPurgatory ? '' : title)
-  }, [ddo, error, isInPurgatory, title])
+    setPageTitle(title)
+  }, [ddo, error, title])
 
   return ddo && pageTitle !== undefined && !loading && isAssetNetworkAllowed ? (
     <Page

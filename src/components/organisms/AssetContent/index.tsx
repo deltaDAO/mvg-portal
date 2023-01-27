@@ -1,5 +1,4 @@
 import React, { ReactElement, useEffect, useState } from 'react'
-import { graphql, useStaticQuery } from 'gatsby'
 import Markdown from '../../atoms/Markdown'
 import MetaFull from './MetaFull'
 import MetaSecondary from './MetaSecondary'
@@ -8,7 +7,6 @@ import { useUserPreferences } from '../../../providers/UserPreferences'
 import Pricing from './Pricing'
 import Bookmark from './Bookmark'
 import { useAsset } from '../../../providers/Asset'
-import Alert from '../../atoms/Alert'
 import Button from '../../atoms/Button'
 import Edit from '../AssetActions/Edit'
 import EditComputeDataset from '../AssetActions/Edit/EditComputeDataset'
@@ -26,37 +24,16 @@ export interface AssetContentProps {
   path?: string
 }
 
-const contentQuery = graphql`
-  query AssetContentQuery {
-    purgatory: allFile(filter: { relativePath: { eq: "purgatory.json" } }) {
-      edges {
-        node {
-          childContentJson {
-            asset {
-              title
-              description
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
 export default function AssetContent(props: AssetContentProps): ReactElement {
-  const data = useStaticQuery(contentQuery)
-  const content = data.purgatory.edges[0].node.childContentJson.asset
   const { debug } = useUserPreferences()
   const { accountId } = useWeb3()
   const {
     ddo,
     isAssetNetwork,
-    isInPurgatory,
     isServiceSelfDescriptionVerified,
     metadata,
     owner,
     price,
-    purgatoryData,
     type
   } = useAsset()
   const [showPricing, setShowPricing] = useState(false)
@@ -128,74 +105,54 @@ export default function AssetContent(props: AssetContentProps): ReactElement {
           <div className={styles.content}>
             <MetaMain />
             <Bookmark did={ddo.id} />
-
-            {isInPurgatory ? (
-              <Alert
-                title={content.title}
-                badge={`Reason: ${purgatoryData?.reason}`}
-                text={content.description}
-                state="error"
-              />
-            ) : (
-              <>
-                <Markdown
-                  className={styles.description}
-                  text={metadata?.additionalInformation?.description || ''}
+            <Markdown
+              className={styles.description}
+              text={metadata?.additionalInformation?.description || ''}
+            />
+            {isServiceSelfDescriptionVerified && (
+              <div className={styles.sdVisualizer}>
+                <Visualizer
+                  text={getFormattedCodeString(serviceSelfDescription) || ''}
+                  title="Service Self-Description"
+                  copyText={
+                    serviceSelfDescription &&
+                    JSON.stringify(serviceSelfDescription, null, 2)
+                  }
                 />
-                {isServiceSelfDescriptionVerified && (
-                  <div className={styles.sdVisualizer}>
-                    <Visualizer
-                      text={
-                        getFormattedCodeString(serviceSelfDescription) || ''
-                      }
-                      title="Service Self-Description"
-                      copyText={
-                        serviceSelfDescription &&
-                        JSON.stringify(serviceSelfDescription, null, 2)
-                      }
-                    />
-                  </div>
-                )}
-
-                <MetaSecondary />
-                {isOwner && isAssetNetwork && type !== 'thing' && (
-                  <div className={styles.ownerActions}>
+              </div>
+            )}
+            <MetaSecondary />
+            {isOwner && isAssetNetwork && type !== 'thing' && (
+              <div className={styles.ownerActions}>
+                <Button style="text" size="small" onClick={handleEditButton}>
+                  Edit Metadata
+                </Button>
+                {accountId && appConfig.allowAdvancedSettings === 'true' && (
+                  <>
+                    <span className={styles.separator}>|</span>
                     <Button
                       style="text"
                       size="small"
-                      onClick={handleEditButton}
+                      onClick={handleEditAdvancedSettingsButton}
                     >
-                      Edit Metadata
+                      Edit Advanced Settings
                     </Button>
-                    {accountId && appConfig.allowAdvancedSettings === 'true' && (
-                      <>
-                        <span className={styles.separator}>|</span>
-                        <Button
-                          style="text"
-                          size="small"
-                          onClick={handleEditAdvancedSettingsButton}
-                        >
-                          Edit Advanced Settings
-                        </Button>
-                      </>
-                    )}
-                    {ddo.findServiceByType('compute') && type === 'dataset' && (
-                      <>
-                        <span className={styles.separator}>|</span>
-                        <Button
-                          style="text"
-                          size="small"
-                          onClick={handleEditComputeButton}
-                        >
-                          Edit Compute Settings
-                        </Button>
-                      </>
-                    )}
-                  </div>
+                  </>
                 )}
-              </>
+                {ddo.findServiceByType('compute') && type === 'dataset' && (
+                  <>
+                    <span className={styles.separator}>|</span>
+                    <Button
+                      style="text"
+                      size="small"
+                      onClick={handleEditComputeButton}
+                    >
+                      Edit Compute Settings
+                    </Button>
+                  </>
+                )}
+              </div>
             )}
-
             <MetaFull />
             <EditHistory />
             {debug === true && <DebugOutput title="DDO" output={ddo} />}
