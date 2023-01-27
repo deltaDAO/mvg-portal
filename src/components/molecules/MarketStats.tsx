@@ -1,6 +1,5 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import { gql, OperationContext } from 'urql'
-import Conversion from '../atoms/Price/Conversion'
 import PriceUnit from '../atoms/Price/PriceUnit'
 import Tooltip from '../atoms/Tooltip'
 import NetworkName from '../atoms/NetworkName'
@@ -26,7 +25,6 @@ interface Value {
 }
 
 function MarketNetworkStats({
-  totalValueLocked,
   poolCount,
   totalOceanLiquidity
 }: {
@@ -36,7 +34,6 @@ function MarketNetworkStats({
 }): ReactElement {
   return (
     <>
-      <Conversion price={totalValueLocked} hideApproximateSymbol />{' '}
       <abbr title="Total Value Locked">TVL</abbr> across{' '}
       <strong>{poolCount}</strong> asset pools that contain{' '}
       <PriceUnit price={totalOceanLiquidity} small className={styles.total} />,
@@ -66,12 +63,6 @@ function MarketNetworkStatsTooltip({
             <li className={styles.tooltipStats} key={key}>
               <NetworkName networkId={chainId} className={styles.network} />
               <br />
-              <Conversion
-                price={totalValueLocked[chainId] || '0'}
-                hideApproximateSymbol
-              />{' '}
-              <abbr title="Total Value Locked">TVL</abbr>
-              {' | '}
               <strong>{poolCount[chainId] || '0'}</strong> pools
               {' | '}
               <PriceUnit price={totalOceanLiquidity[chainId] || '0'} small />

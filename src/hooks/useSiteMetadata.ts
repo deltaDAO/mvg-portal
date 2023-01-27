@@ -48,7 +48,6 @@ interface UseSiteMetadata {
     chainIds: number[]
     chainIdsSupported: number[]
     marketFeeAddress: string
-    currencies: string[]
     portisId: string
     allowFixedPricing: string
     allowDynamicPricing: string
@@ -108,7 +107,6 @@ const query = graphql`
           chainIds
           chainIdsSupported
           marketFeeAddress
-          currencies
           portisId
           allowFixedPricing
           allowDynamicPricing

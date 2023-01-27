@@ -31,24 +31,6 @@ module.exports = {
     process.env.GATSBY_MARKET_FEE_ADDRESS ||
     '0x9984b2453eC7D99a73A5B3a46Da81f197B753C8d',
 
-  // Used for conversion display, can be whatever coingecko API supports
-  // see: https://api.coingecko.com/api/v3/simple/supported_vs_currencies
-  currencies: [
-    'EUR',
-    'USD',
-    'CAD',
-    'GBP',
-    'SGD',
-    'HKD',
-    'CNY',
-    'JPY',
-    'INR',
-    'RUB',
-    'ETH',
-    'BTC',
-    'LINK'
-  ],
-
   // Config for https://github.com/donavon/use-dark-mode
   darkModeConfig: {
     classNameDark: 'dark',
