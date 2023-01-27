@@ -18,7 +18,6 @@ import {
   getNetworkDataById,
   getNetworkDisplayName
 } from '../utils/web3'
-import { getEnsName } from '../utils/ens'
 import { UserBalance } from '../@types/TokenBalance'
 import { getOceanBalance } from '../utils/ocean'
 import useNetworkMetadata from '../hooks/useNetworkMetadata'
@@ -30,7 +29,6 @@ interface Web3ProviderValue {
   web3Modal: Web3Modal
   web3ProviderInfo: IProviderInfo
   accountId: string
-  accountEns: string
   balance: UserBalance
   balanceLoading: boolean
   networkId: number
@@ -108,7 +106,6 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   const [block, setBlock] = useState<number>()
   const [isTestnet, setIsTestnet] = useState<boolean>()
   const [accountId, setAccountId] = useState<string>()
-  const [accountEns, setAccountEns] = useState<string>()
   const [web3Loading, setWeb3Loading] = useState<boolean>(true)
   const [balanceLoading, setBalanceLoading] = useState<boolean>(false)
   const [balance, setBalance] = useState<UserBalance>({
@@ -175,27 +172,6 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   }, [accountId, networkId, web3])
 
   // -----------------------------------
-  // Helper: Get user ENS name
-  // -----------------------------------
-  const getUserEnsName = useCallback(async () => {
-    if (!accountId) return
-
-    try {
-      // const accountEns = await getEnsNameWithWeb3(
-      //   accountId,
-      //   web3Provider,
-      //   `${networkId}`
-      // )
-      const accountEns = await getEnsName(accountId)
-      setAccountEns(accountEns)
-      accountEns &&
-        Logger.log(`[web3] ENS name found for ${accountId}:`, accountEns)
-    } catch (error) {
-      Logger.error('[web3] Error: ', error.message)
-    }
-  }, [accountId])
-
-  // -----------------------------------
   // Create initial Web3Modal instance
   // -----------------------------------
   useEffect(() => {
@@ -242,13 +218,6 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
       clearInterval(balanceInterval)
     }
   }, [getUserBalance])
-
-  // -----------------------------------
-  // Get and set user ENS name
-  // -----------------------------------
-  useEffect(() => {
-    getUserEnsName()
-  }, [getUserEnsName])
 
   // -----------------------------------
   // Get and set network metadata
@@ -363,7 +332,6 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
         web3Modal,
         web3ProviderInfo,
         accountId,
-        accountEns,
         balance,
         balanceLoading,
         networkId,

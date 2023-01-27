@@ -42,7 +42,6 @@ export default function Account({
           />
         )}
       </figure>
-
       <div>
         <h3 className={styles.name}>
           {profile?.name}
@@ -52,11 +51,8 @@ export default function Account({
           <VerificationModal />
         )}
         {accountId && (
-          <code
-            className={styles.accountId}
-            title={profile?.accountEns ? accountId : null}
-          >
-            {profile?.accountEns || accountId} <Copy text={accountId} />
+          <code className={styles.accountId}>
+            {accountId} <Copy text={accountId} />
           </code>
         )}
         <p>
