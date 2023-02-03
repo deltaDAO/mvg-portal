@@ -19,7 +19,7 @@
       "name": "files",
       "label": "File",
       "placeholder": "e.g. https://file.com/file.json",
-      "help": "Please enter the URL to your algorithm file and click \"ADD FILE\" to validate the data. This URL will be stored permanently encrypted on-chain on the Gaia-X testnet after publishing. Some restrictions apply:\n\n- max. running time: 1 min.\n- [Writing Algorithms for Compute to Data](https://docs.oceanprotocol.com/tutorials/compute-to-data-algorithms/)",
+      "help": "Please enter the URL to your algorithm file and click \"ADD FILE\" to validate the data. This URL will be stored permanently encrypted on-chain on the Gaia-X testnet after publishing. Some restrictions apply:\n\n- max. running time: 1 min.\n- [Writing Algorithms for Compute to Data](https://docs.oceanprotocol.com/building-with-ocean/compute-to-data/compute-to-data-algorithms)",
       "type": "files",
       "required": true
     },
