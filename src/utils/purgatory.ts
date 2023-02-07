@@ -11,13 +11,15 @@ export interface PurgatoryDataAccount {
 export default async function getAssetPurgatoryData(
   did: string
 ): Promise<PurgatoryDataAsset> {
-  const data = await fetchData(`${purgatoryUrl}asset?did=${did}`)
-  return { did: data[0]?.did, reason: data[0]?.reason }
+  // const data = await fetchData(`${purgatoryUrl}asset?did=${did}`)
+  // return { did: data[0]?.did, reason: data[0]?.reason }
+  return { did: undefined, reason: undefined }
 }
 
 export async function getAccountPurgatoryData(
   address: string
 ): Promise<PurgatoryDataAccount> {
-  const data = await fetchData(`${purgatoryUrl}account?address=${address}`)
-  return { address: data[0]?.address, reason: data[0]?.reason }
+  // const data = await fetchData(`${purgatoryUrl}account?address=${address}`)
+  // return { address: data[0]?.address, reason: data[0]?.reason }
+  return { address: undefined, reason: undefined }
 }
