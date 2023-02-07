@@ -5,7 +5,7 @@ import Publisher from '../../atoms/Publisher'
 import { useAsset } from '../../../providers/Asset'
 
 export default function MetaFull(): ReactElement {
-  const { ddo, type } = useAsset()
+  const { ddo, metadata, isInPurgatory, type } = useAsset()
   const { algorithm } = ddo.findServiceByType('metadata').attributes.main
 
   function DockerImage() {

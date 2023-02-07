@@ -56,7 +56,7 @@ export default function Consume({
   const { appConfig } = useSiteMetadata()
   const [hasPreviousOrder, setHasPreviousOrder] = useState(false)
   const [previousOrderId, setPreviousOrderId] = useState<string>()
-  const { price, type, isAssetNetwork } = useAsset()
+  const { isInPurgatory, price, type, isAssetNetwork } = useAsset()
   const { buyDT, pricingStepText, pricingError, pricingIsLoading } =
     usePricing()
   const { consumeStepText, consume, consumeError, isLoading } = useConsume()
@@ -220,7 +220,7 @@ export default function Consume({
         </div>
       </div>
       <div className={styles.purchaseWrapper}>
-        <PurchaseButton />
+        {!isInPurgatory && <PurchaseButton />}
       </div>
       {type === 'algorithm' && (
         <AlgorithmDatasetsListForCompute algorithmDid={ddo.id} dataset={ddo} />

@@ -8,6 +8,8 @@ import React, {
   ReactNode
 } from 'react'
 import { Logger, DDO } from '@oceanprotocol/lib'
+import { PurgatoryData } from '@oceanprotocol/lib/dist/node/ddo/interfaces/PurgatoryData'
+import getAssetPurgatoryData from '../utils/purgatory'
 import axios, { CancelToken } from 'axios'
 import {
   getAssetsForProviders,
@@ -34,6 +36,8 @@ import { EdgeDDO } from '../@types/edge/DDO'
 import { GEN_X_NETWORK_ID } from '../../chains.config'
 
 interface AssetProviderValue {
+  isInPurgatory: boolean
+  purgatoryData: PurgatoryData
   ddo: EdgeDDO
   did: string
   metadata: MetadataMarket
@@ -70,6 +74,8 @@ function AssetProvider({
   const { appConfig } = useSiteMetadata()
 
   const { networkId } = useWeb3()
+  const [isInPurgatory, setIsInPurgatory] = useState(false)
+  const [purgatoryData, setPurgatoryData] = useState<PurgatoryData>()
   const [ddo, setDDO] = useState<DDO>()
   const [did, setDID] = useState<string>()
   const [metadata, setMetadata] = useState<MetadataMarket>()
@@ -142,6 +148,19 @@ function AssetProvider({
       isMounted = false
     }
   }, [asset, appConfig.metadataCacheUri])
+
+  const setPurgatory = useCallback(async (did: string): Promise<void> => {
+    if (!did) return
+
+    try {
+      const result = await getAssetPurgatoryData(did)
+      const isInPurgatory = result?.did !== undefined
+      setIsInPurgatory(isInPurgatory)
+      isInPurgatory && setPurgatoryData(result)
+    } catch (error) {
+      Logger.error(error)
+    }
+  }, [])
 
   const checkServiceSD = useCallback(async (ddo: DDO): Promise<void> => {
     if (!ddo) return
@@ -270,40 +289,39 @@ function AssetProvider({
     []
   )
 
-  const initMetadata = useCallback(
-    async (ddo: DDO): Promise<void> => {
-      if (!ddo) return
-      setLoading(true)
-      // Get metadata from DDO
-      const { attributes } = ddo.findServiceByType(
-        'metadata'
-      ) as ServiceMetadataMarket
-      setMetadata(attributes)
-      setTitle(attributes?.main.name)
-      setType(attributes.main.type)
-      setOwner(ddo.publicKey[0].owner)
+  const initMetadata = useCallback(async (ddo: DDO): Promise<void> => {
+    if (!ddo) return
+    setLoading(true)
+    // Get metadata from DDO
+    const { attributes } = ddo.findServiceByType(
+      'metadata'
+    ) as ServiceMetadataMarket
+    setMetadata(attributes)
+    setTitle(attributes?.main.name)
+    setType(attributes.main.type)
+    setOwner(ddo.publicKey[0].owner)
 
-      Logger.log('[asset] Got Metadata from DDO', attributes)
+    Logger.log('[asset] Got Metadata from DDO', attributes)
 
+    setIsInPurgatory(ddo.isInPurgatory === 'true')
+    await setPurgatory(ddo.id)
+    setLoading(false)
+
+    // load price
+    const returnedPrice = await getPrice(ddo)
+    if (
+      appConfig.allowDynamicPricing !== 'true' &&
+      returnedPrice.type === 'pool'
+    ) {
+      setError(
+        `[asset] The asset ${ddo.id} can not be displayed on this market.`
+      )
+      setDDO(undefined)
       setLoading(false)
-
-      // load price
-      const returnedPrice = await getPrice(ddo)
-      if (
-        appConfig.allowDynamicPricing !== 'true' &&
-        returnedPrice.type === 'pool'
-      ) {
-        setError(
-          `[asset] The asset ${ddo.id} can not be displayed on this market.`
-        )
-        setDDO(undefined)
-        setLoading(false)
-        return
-      }
-      setPrice({ ...returnedPrice })
-    },
-    [appConfig.allowDynamicPricing]
-  )
+      return
+    }
+    setPrice({ ...returnedPrice })
+  }, [])
 
   useEffect(() => {
     if (!ddo) return
@@ -353,6 +371,8 @@ function AssetProvider({
           price,
           type,
           error,
+          isInPurgatory,
+          purgatoryData,
           refreshInterval,
           loading,
           isVerifyingSD,
