@@ -29,35 +29,23 @@ module.exports = {
     {
       title: 'Science',
       assets: [
-<<<<<<< Updated upstream
-        'did:op:1ea7A7F278669CfF1D0dD6CA608dd763fCcf8EE6',
-        'did:op:5A3E99a1d126F2546589bCF5f6cB541ab87Aad83',
-        'did:op:F4910E1B433Ad21140683c04D25309f08d6E1946',
-        'did:op:0a7cEc708Dd76f82fE2a510135Ab1C3BAaEC1E88'
-=======
         'did:op:1ea7A7F278669CfF1D0dD6CA608dd763fCcf8EE6', 
         'did:op:5A3E99a1d126F2546589bCF5f6cB541ab87Aad83', 
         'did:op:F4910E1B433Ad21140683c04D25309f08d6E1946', 
         'did:op:0a7cEc708Dd76f82fE2a510135Ab1C3BAaEC1E88', 
         'did:op:4e81030329976f1850a194F0171fcaDA7343C1bb', 
         'did:op:Dd9c865F4070837017e0E7Ae238BAe5A841d2725' 
->>>>>>> Stashed changes
       ]
     },
     {
       title: 'Health, Finance, Business Analytics, Energy and more',
       assets: [
-<<<<<<< Updated upstream
-        'did:op:048BdCeba7f43620302Cd7e593451e40f9e194F5',
-        'did:op:700b5C28396B4ceA3450A8DFA6297DF7c40C240f'
-=======
         'did:op:048BdCeba7f43620302Cd7e593451e40f9e194F5', 
         'did:op:700b5C28396B4ceA3450A8DFA6297DF7c40C240f', 
         'did:op:35800A3Ec424581A78912A4fd0f1e3260CCe6286',
         'did:op:F599C138aF580eF9ADBE11170a7ef4161551dc96',
         'did:op:960b599a70abfa60EC39dE900071ba750B8f807b',
         'did:op:34a6236F6D55618F527382733EBb3259F001f53D'
->>>>>>> Stashed changes
       ]
     }
   ]
