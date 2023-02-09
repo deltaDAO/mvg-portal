@@ -25,7 +25,7 @@ configHelperNetworks.push({
   chainId: 100,
   network: 'genx',
   dispenserAddress: v4Contracts.Dispenser,
-  subgraphUri: 'https://subgraph.genx.minimal-gaia-x.eu',
+  subgraphUri: 'https://subgraph.v4.genx.minimal-gaia-x.eu',
   explorerUri: 'https://logging.genx.minimal-gaia-x.eu',
   metadataCacheUri: 'https://aquarius.v4.genx.delta-dao.com',
   providerUri: 'https://provider.v4.genx.delta-dao.com',

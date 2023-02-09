@@ -42,7 +42,7 @@ export function getFilterTerm(
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams
 ): SearchQuery {
-  const filters: unknown[] = [getFilterTerm('_index', 'aquarius')]
+  const filters: unknown[] = [getFilterTerm('_index', 'oceanv4')]
   baseQueryParams.filters && filters.push(...baseQueryParams.filters)
   baseQueryParams.chainIds &&
     filters.push(getFilterTerm('chainId', baseQueryParams.chainIds))

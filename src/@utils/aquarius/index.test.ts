@@ -9,7 +9,7 @@ const defaultBaseQueryReturn = {
   query: {
     bool: {
       filter: [
-        { term: { _index: 'aquarius' } },
+        { term: { _index: 'oceanv4' } },
         { terms: { chainId: [1, 3] } },
         { term: { 'purgatory.state': false } },
         { bool: { must_not: [{ term: { 'nft.state': 5 } }] } }
