@@ -1,4 +1,3 @@
-import Conversion from '../../../../atoms/Price/Conversion'
 import { useField } from 'formik'
 import React, { ReactElement, useState, useEffect } from 'react'
 import Input from '../../../../atoms/Input'
@@ -62,19 +61,14 @@ export default function Price({
         </div>
         <div className={styles.datatoken}>
           <h4>
-            = <strong>1</strong> {dtSymbol}{' '}
-            <Conversion price={field.value} className={styles.conversion} />
+            = <strong>1</strong> {dtSymbol}
           </h4>
         </div>
       </div>
       {firstPrice && (
         <aside className={styles.firstPrice}>
           Expected first price:{' '}
-          <PriceUnit
-            price={Number(firstPrice) > 0 ? firstPrice : '-'}
-            small
-            conversion
-          />
+          <PriceUnit price={Number(firstPrice) > 0 ? firstPrice : '-'} small />
         </aside>
       )}
     </div>

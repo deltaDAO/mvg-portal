@@ -1,6 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import Table from '../../../atoms/Table'
-import Conversion from '../../../atoms/Price/Conversion'
 import styles from './PoolShares.module.css'
 import AssetTitle from '../../../molecules/AssetListTitle'
 import {
@@ -76,11 +75,6 @@ function Liquidity({ row, type }: { row: Asset; type: string }) {
   }
   return (
     <div className={styles.userLiquidity}>
-      <Conversion
-        price={price}
-        className={styles.totalLiquidity}
-        hideApproximateSymbol
-      />
       <Token
         symbol={findTokenByType(row.poolShare.poolId.tokens, 'ocean')}
         balance={oceanTokenBalance}

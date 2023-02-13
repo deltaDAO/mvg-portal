@@ -46,11 +46,9 @@ const refreshInterval = 10000 // 10 sec.
 
 function ProfileProvider({
   accountId,
-  accountEns,
   children
 }: {
   accountId: string
-  accountEns: string
   children: ReactNode
 }): ReactElement {
   const { chainIds } = useUserPreferences()
@@ -73,14 +71,8 @@ function ProfileProvider({
   const [profile, setProfile] = useState<Profile>()
 
   useEffect(() => {
-    if (!accountEns) return
-    Logger.log(`[profile] ENS name found for ${accountId}:`, accountEns)
-  }, [accountId, accountEns])
-
-  useEffect(() => {
     const clearedProfile: Profile = {
       name: null,
-      accountEns: null,
       image: null,
       description: null,
       links: null
@@ -94,7 +86,7 @@ function ProfileProvider({
     const cancelTokenSource = axios.CancelToken.source()
 
     async function getInfo() {
-      setProfile({ name: accountEns || accountTruncate(accountId), accountEns })
+      setProfile({ name: accountTruncate(accountId) })
 
       const profile3Box = await get3BoxProfile(
         accountId,
@@ -124,7 +116,7 @@ function ProfileProvider({
     return () => {
       cancelTokenSource.cancel()
     }
-  }, [accountId, accountEns, isEthAddress])
+  }, [accountId, isEthAddress])
 
   //
   // POOL SHARES
