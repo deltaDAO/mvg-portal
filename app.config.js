@@ -67,5 +67,8 @@ module.exports = {
 
   // Base URI of the Polygon ID verifier API used to verify any claims/credentials
   verifierApi:
-    process.env.GATSBY_VERIFIER_API || 'https://verifier.id.delta-dao.com'
+    process.env.GATSBY_VERIFIER_API || 'https://verifier.id.delta-dao.com',
+
+  // Purgatory URI, if set to be an empty string the API call gets disabled
+  purgatoryUri: process.env.GATSBY_PURGATORY_URI || ''
 }

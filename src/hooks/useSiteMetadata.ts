@@ -58,6 +58,7 @@ interface UseSiteMetadata {
     privacyPreferenceCenter: string
     allowAdvancedPublishSettings: string
     verifierApi: string
+    purgatoryUri: string
   }
 }
 
@@ -116,6 +117,7 @@ const query = graphql`
           credentialType
           defaultPrivacyPolicySlug
           privacyPreferenceCenter
+          purgatoryUri
         }
       }
     }
