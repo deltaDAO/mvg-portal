@@ -1,43 +1,12 @@
+@import url('./_colors.css');
+
 :root {
-  /* Ocean brand color variables */
-  --ocean-white: #ffffff;
-  --ocean-black: #141414;
-  --ocean-pink: #ff4092;
-  --ocean-purple: #7b1173;
-  --ocean-violet: #e000cf;
+  --ocean-primary: var(--ocean-pink);
+  --ocean-secondary: var(--ocean-grey-light);
 
-  --ocean-grey-darker: #201f1f;
-  --ocean-grey-dark: #303030;
-  --ocean-grey: #41474e;
-  --ocean-grey-light: #8b98a9;
-  --ocean-grey-lighter: #e2e2e2;
-  --ocean-grey-dimmed: #f7f7f7;
-
-  --ocean-gradient: linear-gradient(to right bottom, #7b1173, #ff4092);
-
-  --ocean-alert-green: #5fb359;
-  --ocean-alert-red: #d80606;
-  --ocean-alert-orange: #b35f36;
-  --ocean-alert-yellow: #eac146;
-
-  --ocean-primary: #ff4092;
-  --ocean-secondary: #8b98a9;
-
-  /* Portal brand color variables */
-  --brand-white: #ffffff;
-  --brand-black: #000046;
-  --brand-blue: #000094;
-  --brand-light-blue: #465aff;
-  --brand-cyan: #46daff;
-  --brand-purple: #7300f3;
-  --brand-violet: #b900ff;
-
-  --brand-grey-darker: #0f183f;
-  --brand-grey-dark: #0c1b5a;
-  --brand-grey: #6c7393;
-  --brand-grey-light: #c6ceef;
-  --brand-grey-lighter: #d4d4e2;
-  --brand-grey-dimmed: #f1f3f8;
+  --color-primary: var(--brand-blue);
+  --color-secondary: var(--brand-grey-light);
+  --color-highlight: var(--brand-cyan);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: #41474e;
@@ -48,6 +17,24 @@
   --background-highlight: #f7f7f7;
   --border-color: #e2e2e2;
   --box-shadow-color: rgba(0, 0, 0, 0.05);
+
+  /* Menubar */
+  --menu-font-color: var(--color-primary);
+  --menu-font-color-active: var(--brand-blue-light);
+  --menu-active-indicator-color: var(--brand-blue);
+  --menu-border-color: var(--color-primary);
+  --menu-mobile-navigation-border-color: var(--brand-grey-lighter);
+  /* --menu-border-radius: 5px; */
+  /* --menu-button-border-size: 2px; */
+  /* --menu-icon-border-size: 0px; */
+  --menu-icon-fill-color: var(--color-primary);
+  --menu-icon-fill-color-inverted: var(--brand-white);
+  --menu-title-font-size: var(--font-size-h4);
+  --menu-link-font-size: var(--font-size-base);
+  --menu-link-font-weight: var(--font-weight-bold);
+  --menu-link-font-weight-active: var(--font-weight-bold);
+  --menu-caret-size: var(--font-size-small);
+  --menu-caret-fill-color: var(--color-primary);
 
   --font-family-base: 'Sharp Sans', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
