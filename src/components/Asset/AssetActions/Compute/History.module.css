@@ -45,7 +45,7 @@
 .title {
   font-size: var(--font-size-base);
   margin-bottom: calc(var(--spacer) / 3);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   margin-bottom: 0;
   display: flex;
   align-items: center;
@@ -54,7 +54,7 @@
 }
 
 .title:hover .toggle {
-  color: var(--color-primary);
+  color: var(--ocean-primary);
 }
 
 .title + div {
@@ -62,7 +62,7 @@
 }
 
 .toggle {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
 }
 
 .toggle svg {

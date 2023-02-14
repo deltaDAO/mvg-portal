@@ -13,20 +13,20 @@ div.Toastify__toast {
 
 div.Toastify__toast--error {
   background: var(--brand-alert-red);
-  color: var(--brand-white);
+  color: var(--ocean-white);
 }
 
 div.Toastify__toast--success {
   background: var(--brand-alert-green);
-  color: var(--brand-white);
+  color: var(--ocean-white);
 }
 
 div.Toastify__toast--info {
-  background: var(--brand-white);
-  color: var(--brand-grey);
+  background: var(--ocean-white);
+  color: var(--ocean-grey);
 }
 
 div.Toastify__toast--warning {
   background: var(--brand-alert-yellow);
-  color: var(--brand-white);
+  color: var(--ocean-white);
 }

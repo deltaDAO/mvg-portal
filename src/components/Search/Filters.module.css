@@ -20,7 +20,7 @@ button.filter,
   border-radius: var(--border-radius);
   margin-right: calc(var(--spacer) / 6);
   margin-bottom: calc(var(--spacer) / 6);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   background: var(--background-content);
 
   /* the only thing not possible to overwrite button style="text" with more specifity of selectors, so sledgehammer */
@@ -48,12 +48,12 @@ button.filter,
 
 .showClear:hover {
   display: inline-flex;
-  color: var(--color-primary);
+  color: var(--ocean-primary);
 }
 .showClear {
   display: inline-flex;
   text-transform: capitalize;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-weight: var(--font-weight-base);
   margin-left: calc(var(--spacer) / 6);
 }

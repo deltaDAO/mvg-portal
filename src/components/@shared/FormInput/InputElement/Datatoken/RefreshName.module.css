@@ -3,7 +3,7 @@
 }
 
 .refresh svg {
-  fill: var(--brand-pink);
+  fill: var(--ocean-pink);
   width: var(--font-size-mini);
   height: var(--font-size-mini);
 }

@@ -2,7 +2,7 @@
   text-transform: capitalize;
   display: inline-flex;
   align-items: center;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
 }
 
 .icon {

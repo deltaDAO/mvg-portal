@@ -29,14 +29,14 @@
 }
 
 .datatoken {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-bold);
 }
 
 .datatoken h4 {
   font-size: var(--font-size-base);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   margin: 0;
 }
 
@@ -45,7 +45,7 @@
 }
 
 .conversion strong {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
 }
 
 .free {

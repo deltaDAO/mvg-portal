@@ -9,5 +9,5 @@
 }
 
 a > .logo:hover path {
-  fill: var(--color-primary);
+  fill: var(--ocean-primary);
 }

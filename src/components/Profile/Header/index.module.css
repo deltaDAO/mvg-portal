@@ -6,7 +6,7 @@
 }
 
 .description {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-small);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -46,7 +46,7 @@
 }
 
 .meta {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-mini);
   position: absolute;
   right: calc(var(--spacer) / 3);

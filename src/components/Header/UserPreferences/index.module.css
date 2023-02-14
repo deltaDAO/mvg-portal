@@ -18,7 +18,7 @@
 }
 
 .icon {
-  fill: var(--brand-grey-light);
+  fill: var(--ocean-grey-light);
   transition: 0.2s ease-out;
   width: 1em;
   height: 1em;

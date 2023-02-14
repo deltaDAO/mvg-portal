@@ -26,7 +26,7 @@
 .input::placeholder {
   font-family: var(--font-family-base);
   font-size: var(--font-size-base);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-weight: var(--font-weight-base);
   transition: 0.2s ease-out;
   opacity: 0.7;
@@ -35,7 +35,7 @@
 .input[readonly],
 .input[disabled] {
   background-color: var(--background-highlight);
-  color: var(--brand-grey-light);
+  color: var(--ocean-grey-light);
   cursor: not-allowed;
   pointer-events: none;
 }
@@ -132,7 +132,7 @@
 }
 
 .input:focus + .postfix {
-  border-color: var(--brand-grey);
+  border-color: var(--ocean-grey);
 }
 
 .input[type='range'] {

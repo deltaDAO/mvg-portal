@@ -56,7 +56,7 @@
   top: -2px;
   position: absolute;
   left: -1.5rem;
-  color: var(--brand-grey-light);
+  color: var(--ocean-grey-light);
   user-select: none;
 }
 
@@ -85,7 +85,7 @@
 
 .content figcaption {
   text-align: center;
-  color: var(--brand-grey-light);
+  color: var(--ocean-grey-light);
   margin-top: calc(var(--spacer) / 4);
   font-size: var(--font-size-small);
 }
@@ -105,12 +105,12 @@
   position: absolute;
   left: -3rem;
   top: -2rem;
-  color: var(--brand-grey-light);
+  color: var(--ocean-grey-light);
 }
 
 .content :global(.anchor) {
   opacity: 0;
-  color: var(--brand-grey-light);
+  color: var(--ocean-grey-light);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-base);
   margin-top: 0.2rem;

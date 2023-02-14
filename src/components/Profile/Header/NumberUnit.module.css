@@ -31,11 +31,11 @@
 
 .unit {
   font-size: var(--font-size-small);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
 }
 
 .unit a {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   display: block;
   padding: 0.5rem 1rem;
   border: 0.1rem solid transparent;
@@ -44,8 +44,8 @@
 
 .unit a:hover,
 .unit a:focus {
-  background: var(--brand-white);
-  border: 0.1rem solid var(--brand-pink);
+  background: var(--ocean-white);
+  border: 0.1rem solid var(--ocean-pink);
 }
 
 .tooltip svg {

@@ -14,7 +14,7 @@
 
 .required {
   font-size: var(--font-size-base);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   display: inline-block;
   margin-left: 0.1rem;
 }
@@ -24,7 +24,7 @@
   font-size: var(--font-size-mini);
   line-height: 1.2;
   font-weight: var(--font-weight-bold);
-  color: var(--brand-white);
+  color: var(--ocean-white);
   background: var(--brand-alert-red);
   border-radius: var(--border-radius);
   padding: 0.2rem 0.4rem;

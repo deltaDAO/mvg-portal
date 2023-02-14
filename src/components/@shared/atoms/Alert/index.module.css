@@ -17,7 +17,7 @@
 
 .alert,
 .title {
-  color: var(--brand-white);
+  color: var(--ocean-white);
 }
 
 .title {
@@ -67,7 +67,7 @@ button.action {
   top: 0;
   right: 0;
   font-size: var(--font-size-large);
-  color: var(--brand-grey);
+  color: var(--ocean-grey);
 }
 
 .close:hover,

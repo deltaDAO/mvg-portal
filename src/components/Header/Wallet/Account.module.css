@@ -28,7 +28,7 @@
 }
 
 .button.initial {
-  color: var(--color-primary);
+  color: var(--ocean-primary);
 }
 
 .button.initial span {

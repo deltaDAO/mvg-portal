@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
 }
 
 li:first-child .number,
@@ -43,7 +43,7 @@ li:last-child .number {
 }
 
 .number:hover {
-  color: var(--brand-pink);
+  color: var(--ocean-pink);
 }
 
 .current,

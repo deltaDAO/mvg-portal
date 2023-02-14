@@ -39,7 +39,7 @@
 }
 
 .hover:hover {
-  color: var(--color-primary);
+  color: var(--ocean-primary);
 }
 
 .price {

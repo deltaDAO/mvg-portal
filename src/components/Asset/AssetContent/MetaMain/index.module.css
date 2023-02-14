@@ -2,7 +2,7 @@
   margin-left: calc(var(--spacer) * -0.75);
   margin-right: calc(var(--spacer) * -0.75);
   margin-bottom: calc(var(--spacer) / 1.5);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-small);
 }
 

@@ -11,7 +11,7 @@
 .tooltip {
   width: 0.5em;
   height: 0.5em;
-  fill: var(--color-secondary);
+  fill: var(--ocean-secondary);
 }
 .error {
   fill: var(--brand-alert-red);

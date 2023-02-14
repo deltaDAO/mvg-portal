@@ -3,7 +3,7 @@
   margin-left: auto;
   margin-right: auto;
   max-width: var(--layout-max-width);
-  color: var(--brand-grey-light);
+  color: var(--ocean-grey-light);
   font-size: var(--font-size-small);
 }
 
@@ -22,7 +22,7 @@
 .footer a:focus,
 .footer button:hover,
 .footer button:focus {
-  color: var(--color-primary);
+  color: var(--ocean-primary);
 }
 
 .copyright > div,

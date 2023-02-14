@@ -7,7 +7,7 @@
   composes: box from '@shared/atoms/Box.module.css';
   font-size: var(--font-size-small);
   height: 100%;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   position: relative;
   padding-top: calc(var(--spacer) / 2);
   padding-bottom: calc(var(--spacer) / 2);

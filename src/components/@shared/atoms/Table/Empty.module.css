@@ -1,7 +1,7 @@
 .empty {
   width: 100%;
   text-align: left;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-small);
   font-style: italic;
 }

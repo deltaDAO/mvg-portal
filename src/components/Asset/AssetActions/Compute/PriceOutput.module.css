@@ -8,7 +8,7 @@
   border-bottom: 1px solid var(--border-color);
   padding-bottom: calc(var(--spacer) / 3);
   text-align: center;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-small);
 }
 
@@ -24,7 +24,7 @@
   display: block;
   text-align: right;
   font-size: var(--font-size-mini);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
 }
 
 .calculation .price {
@@ -49,13 +49,13 @@
 .sign {
   display: inline-block;
   text-align: left;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-base);
 }
 
 .type {
   display: inline-block;
   text-align: left;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-mini);
 }

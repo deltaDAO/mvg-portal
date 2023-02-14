@@ -15,7 +15,7 @@
 .button,
 .button:hover,
 .button:active {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   border: 1px solid var(--border-color);
 }
 
@@ -28,7 +28,7 @@
 
 .button.selected {
   color: var(--font-color-text);
-  border-color: var(--color-secondary);
+  border-color: var(--ocean-secondary);
 }
 
 .appearances div[class*='boxSelectionsWrapper'] {

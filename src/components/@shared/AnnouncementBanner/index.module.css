@@ -7,17 +7,17 @@
 
 .banner.error {
   background-color: var(--brand-alert-red);
-  color: var(--brand-white);
+  color: var(--ocean-white);
 }
 
 .banner.warning {
   background-color: var(--brand-alert-yellow);
-  color: var(--brand-white);
+  color: var(--ocean-white);
 }
 
 .banner.success {
   background-color: var(--brand-alert-green);
-  color: var(--brand-white);
+  color: var(--ocean-white);
 }
 
 .banner > div {

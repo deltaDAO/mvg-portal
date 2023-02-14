@@ -71,7 +71,7 @@
   .title {
     margin: 0;
     display: block;
-    color: var(--color-secondary);
+    color: var(--ocean-secondary);
     font-size: var(--font-size-h4);
     margin-right: calc(var(--spacer) / 6);
   }
@@ -101,7 +101,7 @@
   display: block;
   padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
   text-transform: uppercase;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-base);
   position: relative;
@@ -153,7 +153,7 @@ svg.caret {
 }
 
 .badge .caret {
-  fill: var(--brand-white);
+  fill: var(--ocean-white);
   opacity: 0.7;
   width: var(--font-size-mini);
   height: var(--font-size-mini);

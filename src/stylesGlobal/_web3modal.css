@@ -90,7 +90,7 @@ div.walletconnect-modal__mobile__toggle {
 }
 
 div.walletconnect-modal__mobile__toggle a {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-small);
   padding: calc(var(--spacer) / 12) var(--spacer);
@@ -110,7 +110,7 @@ div.walletconnect-modal__header p {
 }
 
 p.walletconnect-qrcode__text {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
 }
 
 h3.walletconnect-modal__base__row__h3 {

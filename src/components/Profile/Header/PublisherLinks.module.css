@@ -5,7 +5,7 @@
 .links,
 .links a {
   font-size: var(--font-size-small);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
 }
 
 .links a {
@@ -20,12 +20,12 @@
 
 .links a:hover,
 .links a:focus {
-  color: var(--brand-pink);
+  color: var(--ocean-pink);
 }
 
 .linksExternal {
   width: 6px;
   height: 6px;
   display: inline-block;
-  fill: var(--color-secondary);
+  fill: var(--ocean-secondary);
 }

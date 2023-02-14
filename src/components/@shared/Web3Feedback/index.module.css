@@ -20,6 +20,6 @@
 
 .error {
   font-size: var(--font-size-small);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   margin-bottom: 0;
 }

@@ -19,7 +19,7 @@
   font-weight: var(--font-weight-bold);
   font-size: var(--font-size-small);
   text-transform: uppercase;
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   margin-right: -1px;
   background: none;
   border: 0;

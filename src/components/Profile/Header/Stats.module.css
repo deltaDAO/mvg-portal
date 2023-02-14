@@ -6,14 +6,14 @@
 }
 
 .stats [class^='PriceUnit_symbol'] {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-weight: var(--font-weight-base);
   font-size: var(--font-size-small);
 }
 
 .stats .link,
 .stats .link:hover {
-  color: var(--color-primary);
+  color: var(--ocean-primary);
   font-size: var(--font-size-small);
   text-decoration: none;
   padding: 0;
@@ -21,7 +21,7 @@
 }
 
 .stats [class^='PriceUnit_price'] {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-weight: var(--font-weight-base);
   font-size: var(--font-size-small);
 }

@@ -5,7 +5,7 @@
 }
 
 .tag {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-size: var(--font-size-small);
   padding: 0.1rem 1.2rem 0.1rem 1.2rem;
   margin-left: calc(var(--spacer) / 8);
@@ -21,7 +21,7 @@
 
 .tag:hover:not(span),
 .tag:focus:not(span) {
-  color: var(--color-primary);
+  color: var(--ocean-primary);
 }
 
 .more {

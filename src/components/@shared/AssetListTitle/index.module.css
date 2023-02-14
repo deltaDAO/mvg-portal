@@ -11,5 +11,5 @@
 
 .title a:hover,
 .title a:focus {
-  color: var(--color-primary);
+  color: var(--ocean-primary);
 }

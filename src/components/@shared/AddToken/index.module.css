@@ -17,7 +17,7 @@
 
 .logoWrap::before {
   content: '+';
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-base);
   font-size: 1.25em;
@@ -33,7 +33,7 @@
   display: inline-block;
   margin-bottom: -0.35em;
   border-radius: 50%;
-  border: 0.065rem solid var(--color-secondary);
+  border: 0.065rem solid var(--ocean-secondary);
   margin-right: calc(var(--spacer) / 10);
   transition: 0.2s ease-out;
 }
@@ -44,12 +44,12 @@
 
 .button:hover .logo,
 .button:focus .logo {
-  border-color: var(--color-primary);
+  border-color: var(--ocean-primary);
 }
 
 .button:hover .logoWrap::before,
 .button:focus .logoWrap::before {
-  color: var(--color-primary);
+  color: var(--ocean-primary);
 }
 
 .text {

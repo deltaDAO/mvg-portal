@@ -4,7 +4,7 @@
 }
 
 .button {
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   cursor: pointer;
   background: var(--background-content);
   border: none;

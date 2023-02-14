@@ -10,7 +10,7 @@
 .teaser {
   composes: box from '@shared/atoms/Box.module.css';
   padding: calc(var(--spacer) / 3) calc(var(--spacer) / 2);
-  color: var(--color-secondary);
+  color: var(--ocean-secondary);
   position: relative;
   display: flex;
   flex-direction: row;
