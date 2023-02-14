@@ -34,7 +34,7 @@ export default function SearchBar({
   const { text, owner } = parsed
 
   useEffect(() => {
-    ;(text || owner) && setValue((text || owner) as string)
+    if (text || owner) setValue((text || owner) as string)
   }, [text, owner])
 
   async function startSearch(e: FormEvent<HTMLButtonElement>) {

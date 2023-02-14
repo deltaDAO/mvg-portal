@@ -4,7 +4,7 @@
 }
 
 .button {
-  color: var(--ocean-secondary);
+  color: var(--menu-icon-fill-color);
   cursor: pointer;
   background: var(--background-content);
   border: none;

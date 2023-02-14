@@ -5,18 +5,20 @@
   --ocean-secondary: var(--ocean-grey-light);
 
   --color-primary: var(--brand-blue);
-  --color-secondary: var(--brand-grey-light);
+  --color-secondary: var(--brand-grey-lighter);
   --color-highlight: var(--brand-cyan);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
-  --font-color-text: #41474e;
-  --font-color-heading: #141414;
+  --font-color-text: var(--brand-grey);
+  --font-color-heading: var(--brand-black);
+  --font-color-light: var(--brand-secondary);
   --background-body: #fcfcfc;
   --background-body-transparent: rgba(255, 255, 255, 0.8);
   --background-content: #fff;
   --background-highlight: #f7f7f7;
-  --border-color: #e2e2e2;
+  --border-color: var(--color-secondary);
   --box-shadow-color: rgba(0, 0, 0, 0.05);
+  --checkbox-selected-background: var(--color-primary);
 
   /* Menubar */
   --menu-logo-color: var(--color-primary);
@@ -28,7 +30,7 @@
   --menu-active-indicator-color: var(--brand-blue);
   --menu-border-color: var(--color-primary);
   --menu-mobile-navigation-border-color: var(--brand-grey-lighter);
-  /* --menu-border-radius: 5px; */
+  --menu-border-radius: var(--border-radius-sm);
   /* --menu-button-border-size: 2px; */
   /* --menu-icon-border-size: 0px; */
   --menu-icon-fill-color: var(--color-primary);
@@ -65,6 +67,7 @@
   --line-height: 1.6;
 
   --spacer: 2rem;
+  --border-radius-sm: 2px;
   --border-radius: 0.2rem;
 
   --layout-max-width: 85rem;
