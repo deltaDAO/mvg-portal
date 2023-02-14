@@ -28,13 +28,13 @@
   --menu-font-color: var(--color-primary);
   --menu-font-color-active: var(--brand-blue-light);
   --menu-active-indicator-color: var(--brand-blue);
-  --menu-border-color: var(--color-primary);
+  --menu-mobile-navigation-border-size: var(--border-size-sm);
   --menu-mobile-navigation-border-color: var(--brand-grey-lighter);
+  --menu-border-color: var(--color-primary);
   --menu-border-radius: var(--border-radius-sm);
-  /* --menu-button-border-size: 2px; */
-  /* --menu-icon-border-size: 0px; */
+  --menu-border-size: var(--border-size);
   --menu-icon-fill-color: var(--color-primary);
-  --menu-icon-fill-color-inverted: var(--brand-white);
+  --menu-icon-fill-color-hover: var(--color-primary);
   --menu-title-font-size: var(--font-size-h4);
   --menu-link-font-size: var(--font-size-base);
   --menu-link-font-weight: var(--font-weight-bold);
@@ -69,6 +69,8 @@
   --spacer: 2rem;
   --border-radius-sm: 2px;
   --border-radius: 0.2rem;
+  --border-size-sm: 1px;
+  --border-size: 2px;
 
   --layout-max-width: 85rem;
   --checkbox-size: 1.6em;
