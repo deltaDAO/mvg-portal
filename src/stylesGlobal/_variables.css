@@ -42,6 +42,12 @@
   --menu-caret-size: var(--font-size-small);
   --menu-caret-fill-color: var(--color-primary);
 
+  /* Footer */
+  --footer-background-color: var(--color-primary);
+  --footer-font-color: var(--brand-white);
+  --footer-font-color-highlight: var(--color-highlight);
+  --footer-link-category-font-color: var(--font-color-text);
+
   --bookmark-icon-fill-color: var(--brand-purple);
 
   --font-family-base: 'Sharp Sans', -apple-system, BlinkMacSystemFont,

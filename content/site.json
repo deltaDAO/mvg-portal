@@ -1,9 +1,9 @@
 {
-  "siteTitle": "Ocean Market",
-  "siteTagline": "A marketplace to find, publish and trade datasets in the Ocean Network.",
-  "siteUrl": "https://market.oceanprotocol.com",
+  "siteTitle": "Pontus-X - Gaia-X Web3 Ecosystem",
+  "siteTagline": "A platform to find, publish and consume Service Offerings in the Gaia-X Test Network.",
+  "siteUrl": "https://portal.minimal-gaia-x.eu",
   "siteImage": "/share.png",
-  "copyright": "All Rights Reserved. Powered by ",
+  "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
   "menu": [
     {
       "name": "Publish",
@@ -17,5 +17,50 @@
   "announcement": "",
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
+  },
+  "footer": {
+    "subtitle": "data economy solutions - GDPR compliant",
+    "copyright": "Built by [deltaDAO](https://delta-dao.com)",
+    "privacyTitle": "Privacy",
+    "content": [
+      {
+        "title": "External",
+        "links": [
+          {
+            "name": "Log",
+            "link": "https://explorer.genx.minimal-gaia-x.eu/"
+          },
+          {
+            "name": "GEN-X Faucet",
+            "link": "https://faucet.genx.minimal-gaia-x.eu/"
+          }
+        ]
+      },
+      {
+        "title": "Navigation",
+        "links": [
+          {
+            "name": "Bookmarks",
+            "link": "/bookmarks"
+          },
+          {
+            "name": "Catalogue",
+            "link": "/search?sort=_score&sortOrder=desc&text="
+          },
+          {
+            "name": "Profile",
+            "link": "/profile"
+          },
+          {
+            "name": "Publish",
+            "link": "/publish"
+          },
+          {
+            "name": "Verify",
+            "link": "/verify"
+          }
+        ]
+      }
+    ]
   }
 }

@@ -42,6 +42,18 @@ export interface SiteContent {
   warning: {
     ctd: string
   }
+  footer: {
+    subtitle: string
+    copyright: string
+    privacyTitle: string
+    content: {
+      title: string
+      links: {
+        name: string
+        link: string
+      }[]
+    }[]
+  }
 }
 
 export interface MarketMetadataProviderValue {

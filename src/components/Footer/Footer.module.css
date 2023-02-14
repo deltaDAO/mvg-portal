@@ -1,69 +1,60 @@
 .footer {
-  padding: var(--spacer) calc(var(--spacer) / 2);
-  margin-left: auto;
-  margin-right: auto;
-  max-width: var(--layout-max-width);
-  color: var(--ocean-grey-light);
+  padding: var(--spacer);
+  padding-bottom: calc(var(--spacer) / 2);
+  text-align: center;
+  color: var(--footer-font-color);
+  background-color: var(--footer-background-color);
   font-size: var(--font-size-small);
 }
 
-.footer a,
-.footer button {
-  color: inherit;
-}
-
-.footer button {
-  text-transform: none;
-  transform: none !important;
-  font-weight: var(--font-weight-normal);
-}
-
-.footer a:hover,
-.footer a:focus,
-.footer button:hover,
-.footer button:focus {
-  color: var(--ocean-primary);
-}
-
-.copyright > div,
-.copyright > div > p {
-  display: inline;
-}
-
-.copyright,
-.grid > div:first-child {
-  text-align: center;
-}
-
-.grid {
-  display: grid;
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: flex-start;
   gap: var(--spacer);
+  margin: auto;
+  margin-bottom: var(--spacer);
 }
 
-@media (min-width: 40rem) {
-  .grid {
-    display: grid;
-    gap: var(--spacer);
-    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  }
-
-  .grid > div:first-child {
-    text-align: left;
-  }
-
-  .copyright {
-    text-align: right;
-  }
-}
-.grid a {
-  text-transform: none;
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-base);
+.siteTitle {
+  text-align: left;
+  margin-bottom: 0;
 }
 
-.svg {
-  display: inline;
-  fill: currentColor;
-  width: 0.6em;
-  height: 0.6em;
+.main {
+  margin-top: auto;
+  position: relative;
+  text-align: left;
+  color: var(--footer-font-color);
+}
+
+.main svg {
+  width: 15rem;
+  height: 6rem !important;
+  margin-left: -0.7rem;
+  margin-top: auto;
+}
+
+.subtitle {
+  position: absolute;
+  width: max-content;
+  top: 4rem;
+  left: 5rem;
+}
+
+.copyright a {
+  color: var(--footer-font-color-highlight);
+}
+
+@media screen and (min-width: 55rem) {
+  .footer {
+    padding: calc(var(--spacer) * 2);
+    padding-bottom: calc(var(--spacer) / 2);
+  }
+  .container {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: calc(var(--spacer) / 2);
+  }
 }
