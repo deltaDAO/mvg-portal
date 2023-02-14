@@ -23,6 +23,22 @@
   --ocean-primary: #ff4092;
   --ocean-secondary: #8b98a9;
 
+  /* Portal brand color variables */
+  --brand-white: #ffffff;
+  --brand-black: #000046;
+  --brand-blue: #000094;
+  --brand-light-blue: #465aff;
+  --brand-cyan: #46daff;
+  --brand-purple: #7300f3;
+  --brand-violet: #b900ff;
+
+  --brand-grey-darker: #0f183f;
+  --brand-grey-dark: #0c1b5a;
+  --brand-grey: #6c7393;
+  --brand-grey-light: #c6ceef;
+  --brand-grey-lighter: #d4d4e2;
+  --brand-grey-dimmed: #f1f3f8;
+
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: #41474e;
   --font-color-heading: #141414;
