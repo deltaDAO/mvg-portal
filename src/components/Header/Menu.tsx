@@ -8,25 +8,42 @@ import SearchBar from './SearchBar'
 import styles from './Menu.module.css'
 import { useRouter } from 'next/router'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import classNames from 'classnames/bind'
 const Wallet = loadable(() => import('./Wallet'))
+
+const cx = classNames.bind(styles)
 
 declare type MenuItem = {
   name: string
   link: string
+  className?: string
 }
 
 function MenuLink({ item }: { item: MenuItem }) {
   const router = useRouter()
 
-  const classes =
-    router?.pathname === item.link
-      ? `${styles.link} ${styles.active}`
-      : styles.link
+  const basePath = router?.pathname.split(/[/?]/)[1]
+  const baseLink = item.link.split(/[/?]/)[1]
 
-  return (
+  const classes = cx({
+    link: true,
+    active: item.link.startsWith('/') && basePath === baseLink,
+    [item?.className]: item?.className
+  })
+
+  return item.link.startsWith('/') ? (
     <Link key={item.name} href={item.link} className={classes}>
       {item.name}
     </Link>
+  ) : (
+    <a
+      href={item.link}
+      className={classes}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {item.name} &#8599;
+    </a>
   )
 }
 
@@ -36,8 +53,7 @@ export default function Menu(): ReactElement {
   return (
     <nav className={styles.menu}>
       <Link href="/" className={styles.logo}>
-        <Logo noWordmark />
-        <h1 className={styles.title}>{siteContent?.siteTitle}</h1>
+        <Logo branding />
       </Link>
 
       <ul className={styles.navigation}>

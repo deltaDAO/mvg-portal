@@ -6,8 +6,7 @@
   flex-wrap: wrap;
 }
 
-.logo,
-.badge {
+.logo {
   white-space: nowrap;
   display: flex;
 }
@@ -17,18 +16,12 @@
   align-items: center;
 }
 
-.badge {
-  cursor: pointer;
-  margin-top: -0.25rem;
-  padding: calc(var(--spacer) / 5) calc(var(--spacer) / 4);
-}
-
 .navigation {
   order: 3;
   margin-top: calc(var(--spacer) / 2);
   text-align: center;
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+  border-top: 1px solid var(--menu-mobile-navigation-border-color);
+  border-bottom: 1px solid var(--menu-mobile-navigation-border-color);
   margin-left: -1rem;
   margin-right: -1rem;
   width: calc(100% + 2rem);
@@ -38,10 +31,6 @@
   order: 2;
   display: flex;
   margin-left: auto;
-}
-
-.title {
-  display: none;
 }
 
 @media screen and (min-width: 42rem) {
@@ -66,14 +55,6 @@
 @media screen and (min-width: 55rem) {
   .menu {
     padding: var(--spacer);
-  }
-
-  .title {
-    margin: 0;
-    display: block;
-    color: var(--ocean-secondary);
-    font-size: var(--font-size-h4);
-    margin-right: calc(var(--spacer) / 6);
   }
 }
 
@@ -101,9 +82,9 @@
   display: block;
   padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
   text-transform: uppercase;
-  color: var(--ocean-secondary);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-base);
+  color: var(--menu-font-color);
+  font-weight: var(--menu-link-font-weight);
+  font-size: var(--menu-link-font-size);
   position: relative;
   z-index: 1;
 }
@@ -112,13 +93,13 @@
 .link:hover,
 .link:focus,
 .link:active {
-  color: var(--font-color-text);
+  color: var(--menu-font-color-active);
 }
 
 .link[aria-current],
 .link[aria-current]:hover,
 .link[aria-current]:focus {
-  color: var(--font-color-heading);
+  color: var(--menu-font-color);
 }
 
 .link:last-child {
@@ -140,9 +121,9 @@
 .caret,
 svg.caret {
   display: none;
-  width: var(--font-size-small);
-  height: var(--font-size-small);
-  fill: var(--border-color);
+  width: var(--menu-caret-size);
+  height: var(--menu-caret-size);
+  fill: var(--menu-caret-fill-color);
   transition: transform 0.2s ease-out;
   vertical-align: middle;
   margin-left: calc(var(--spacer) / 4);
@@ -150,14 +131,6 @@ svg.caret {
 
 [aria-expanded='true'] .caret {
   transform: rotate(180deg);
-}
-
-.badge .caret {
-  fill: var(--ocean-white);
-  opacity: 0.7;
-  width: var(--font-size-mini);
-  height: var(--font-size-mini);
-  margin-left: calc(var(--spacer) / 12);
 }
 
 @media screen and (min-width: 42rem) {
@@ -169,15 +142,4 @@ svg.caret {
   .navigation {
     margin-left: calc(var(--spacer) / 2);
   }
-}
-
-.versions {
-  padding: calc(var(--spacer) / 4);
-}
-
-.versions .link {
-  display: inline-block;
-  margin: 0 calc(var(--spacer) / 4);
-  padding: 0;
-  font-size: var(--font-size-small);
 }
