@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react'
 import Link from 'next/link'
 import loadable from '@loadable/component'
 import Logo from '@shared/atoms/Logo'
-import UserPreferences from './UserPreferences'
 import Networks from './UserPreferences/Networks'
 import SearchBar from './SearchBar'
 import styles from './Menu.module.css'
@@ -19,30 +18,30 @@ declare type MenuItem = {
   className?: string
 }
 
-function MenuLink({ item }: { item: MenuItem }) {
+export function MenuLink({ name, link, className }: MenuItem) {
   const router = useRouter()
 
   const basePath = router?.pathname.split(/[/?]/)[1]
-  const baseLink = item.link.split(/[/?]/)[1]
+  const baseLink = link.split(/[/?]/)[1]
 
   const classes = cx({
     link: true,
-    active: item.link.startsWith('/') && basePath === baseLink,
-    [item?.className]: item?.className
+    active: link.startsWith('/') && basePath === baseLink,
+    [className]: className
   })
 
-  return item.link.startsWith('/') ? (
-    <Link key={item.name} href={item.link} className={classes}>
-      {item.name}
+  return link.startsWith('/') ? (
+    <Link key={name} href={link} className={classes}>
+      {name}
     </Link>
   ) : (
     <a
-      href={item.link}
+      href={link}
       className={classes}
       target="_blank"
       rel="noopener noreferrer"
     >
-      {item.name} &#8599;
+      {name} &#8599;
     </a>
   )
 }
@@ -60,7 +59,7 @@ export default function Menu(): ReactElement {
       <ul className={styles.navigation}>
         {siteContent?.menu.map((item: MenuItem) => (
           <li key={item.name}>
-            <MenuLink item={item} />
+            <MenuLink {...item} />
           </li>
         ))}
       </ul>
@@ -69,7 +68,6 @@ export default function Menu(): ReactElement {
         <SearchBar />
         {appConfig.chainIdsSupported.length > 1 && <Networks />}
         <Wallet />
-        <UserPreferences />
       </div>
     </nav>
   )

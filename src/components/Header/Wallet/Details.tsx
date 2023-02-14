@@ -1,26 +1,25 @@
 import React, { ReactElement, useEffect, useState } from 'react'
-import { formatCurrency } from '@coingecko/cryptoformat'
-import { useUserPreferences } from '@context/UserPreferences'
 import Button from '@shared/atoms/Button'
 import AddToken from '@shared/AddToken'
-import Conversion from '@shared/Price/Conversion'
 import { useWeb3 } from '@context/Web3'
 import { getOceanConfig } from '@utils/ocean'
 import styles from './Details.module.css'
+import Debug from '../UserPreferences/Debug'
+import Avatar from '@components/@shared/atoms/Avatar'
+import Bookmark from '@images/bookmark.svg'
+import { MenuLink } from '../Menu'
 
 export default function Details(): ReactElement {
   const {
+    accountId,
     web3ProviderInfo,
     web3Modal,
     connect,
     logout,
     networkData,
-    networkId,
-    balance
+    networkId
   } = useWeb3()
-  const { locale } = useUserPreferences()
 
-  const [mainCurrency, setMainCurrency] = useState<string>()
   const [oceanTokenMetadata, setOceanTokenMetadata] = useState<{
     address: string
     symbol: string
@@ -28,9 +27,6 @@ export default function Details(): ReactElement {
 
   useEffect(() => {
     if (!networkId) return
-
-    const symbol = networkData?.nativeCurrency.symbol
-    setMainCurrency(symbol)
 
     const oceanConfig = getOceanConfig(networkId)
 
@@ -44,24 +40,22 @@ export default function Details(): ReactElement {
   return (
     <div className={styles.details}>
       <ul>
-        {Object.entries(balance).map(([key, value]) => (
-          <li className={styles.balance} key={key}>
-            <span className={styles.symbol}>
-              {key === 'eth' ? mainCurrency : key.toUpperCase()}
-            </span>
-            <span className={styles.value}>
-              {formatCurrency(Number(value), '', locale, false, {
-                significantFigures: 4
-              })}
-            </span>
-            <Conversion
-              className={styles.conversion}
-              price={Number(value)}
-              symbol={key}
-            />
-          </li>
-        ))}
-
+        <li className={styles.profileLink}>
+          <Avatar accountId={accountId} />
+          <MenuLink
+            link="/profile"
+            name="View Profile"
+            className={styles.profileButton}
+          />
+        </li>
+        <li className={styles.bookmarksLink}>
+          <Bookmark />
+          <MenuLink
+            link="/bookmarks"
+            name="View Bookmarks"
+            className={styles.bookmarksButton}
+          />
+        </li>
         <li className={styles.actions}>
           <div title="Connected provider" className={styles.walletInfo}>
             <span className={styles.walletLogoWrap}>
@@ -98,6 +92,9 @@ export default function Details(): ReactElement {
               Disconnect
             </Button>
           </p>
+        </li>
+        <li className={styles.debug}>
+          <Debug />
         </li>
       </ul>
     </div>
