@@ -48,6 +48,7 @@ function MenuLink({ item }: { item: MenuItem }) {
 }
 
 export default function Menu(): ReactElement {
+  const { appConfig } = useMarketMetadata()
   const { siteContent } = useMarketMetadata()
 
   return (
@@ -66,7 +67,7 @@ export default function Menu(): ReactElement {
 
       <div className={styles.actions}>
         <SearchBar />
-        <Networks />
+        {appConfig.chainIdsSupported.length > 1 && <Networks />}
         <Wallet />
         <UserPreferences />
       </div>
