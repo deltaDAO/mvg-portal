@@ -1,5 +1,8 @@
-import { ConfigHelper, Config } from '@oceanprotocol/lib'
+import { ConfigHelper, Config, configHelperNetworks } from '@oceanprotocol/lib'
+import { chains } from '../../chains.config'
 // import contractAddresses from '@oceanprotocol/contracts/artifacts/address.json'
+
+configHelperNetworks.push(...chains)
 
 export function getOceanConfig(network: string | number): Config {
   const config = new ConfigHelper().getConfig(
@@ -10,7 +13,9 @@ export function getOceanConfig(network: string | number): Config {
       network === 'bsc' ||
       network === 56 ||
       network === 'gaiaxtestnet' ||
-      network === 2021000
+      network === 2021000 ||
+      network === 'genx' ||
+      network === 100
       ? undefined
       : process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
   ) as Config
