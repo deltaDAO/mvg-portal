@@ -5,9 +5,28 @@
 }
 
 .logo path {
-  fill: var(--font-color-heading);
+  fill: var(--ocean-black);
 }
 
 a > .logo:hover path {
   fill: var(--ocean-primary);
+}
+
+.branding {
+  width: var(--menu-logo-size-sm);
+  height: auto;
+}
+
+.branding path {
+  fill: var(--menu-logo-color);
+}
+
+a > .branding:hover path {
+  fill: var(--menu-logo-color-hover);
+}
+
+@media screen and (min-width: 55rem) {
+  .branding {
+    width: var(--menu-logo-size-lg);
+  }
 }
