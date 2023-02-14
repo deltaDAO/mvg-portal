@@ -1,7 +1,6 @@
 import React, { ReactElement } from 'react'
 import { formatCurrency } from '@coingecko/cryptoformat'
 import classNames from 'classnames/bind'
-import Conversion from './Conversion'
 import styles from './PriceUnit.module.css'
 import { useUserPreferences } from '../../../providers/UserPreferences'
 import Badge from '../Badge'
@@ -21,7 +20,6 @@ export default function PriceUnit({
   price,
   className,
   small,
-  conversion,
   symbol,
   type
 }: {
@@ -29,7 +27,6 @@ export default function PriceUnit({
   type?: string
   className?: string
   small?: boolean
-  conversion?: boolean
   symbol?: string
 }): ReactElement {
   const { locale } = useUserPreferences()
@@ -53,7 +50,6 @@ export default function PriceUnit({
               <Badge label="pool" className={styles.badge} />
             )}
           </div>
-          {conversion && <Conversion price={price} />}
         </>
       )}
     </div>

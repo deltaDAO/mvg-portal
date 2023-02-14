@@ -17,7 +17,6 @@ import Graph from './Graph'
 import { useAsset } from '../../../../providers/Asset'
 import { gql, OperationResult } from 'urql'
 import { PoolLiquidity } from '../../../../@types/apollo/PoolLiquidity'
-import { useOcean } from '../../../../providers/Ocean'
 import { useWeb3 } from '../../../../providers/Web3'
 import PoolTransactions from '../../../molecules/PoolTransactions'
 import { fetchData, getQueryContext } from '../../../../utils/subgraph'
@@ -438,7 +437,6 @@ export default function Pool(): ReactElement {
             dt={`${userLiquidity?.datatoken}`}
             dtSymbol={dtSymbol}
             poolShares={poolTokens}
-            conversion={totalUserLiquidityInOcean}
             highlight
           >
             <Token symbol="% of pool" balance={poolShare} noIcon />
@@ -451,7 +449,6 @@ export default function Pool(): ReactElement {
             dt={`${creatorLiquidity?.datatoken}`}
             dtSymbol={dtSymbol}
             poolShares={creatorPoolTokens}
-            conversion={creatorTotalLiquidityInOcean}
           >
             <Token symbol="% of pool" balance={creatorPoolShare} noIcon />
           </TokenList>
@@ -476,8 +473,6 @@ export default function Pool(): ReactElement {
             dt={`${price?.datatoken}`}
             dtSymbol={dtSymbol}
             poolShares={totalPoolTokens}
-            conversion={totalLiquidityInOcean}
-            showTVLLabel
           >
             <Token symbol="% swap fee" balance={swapFee} noIcon />
           </TokenList>

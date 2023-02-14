@@ -430,7 +430,7 @@ export default function Compute({
     <>
       <div className={styles.info}>
         <File file={file} isLoading={fileIsLoading} small />
-        <Price price={price} conversion />
+        <Price price={price} />
       </div>
 
       {type === 'algorithm' ? (

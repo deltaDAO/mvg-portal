@@ -48,7 +48,6 @@ interface UseSiteMetadata {
     chainIds: number[]
     chainIdsSupported: number[]
     marketFeeAddress: string
-    currencies: string[]
     portisId: string
     allowFixedPricing: string
     allowDynamicPricing: string
@@ -59,6 +58,7 @@ interface UseSiteMetadata {
     privacyPreferenceCenter: string
     allowAdvancedPublishSettings: string
     verifierApi: string
+    purgatoryUri: string
   }
 }
 
@@ -108,7 +108,6 @@ const query = graphql`
           chainIds
           chainIdsSupported
           marketFeeAddress
-          currencies
           portisId
           allowFixedPricing
           allowDynamicPricing
@@ -118,6 +117,7 @@ const query = graphql`
           credentialType
           defaultPrivacyPolicySlug
           privacyPreferenceCenter
+          purgatoryUri
         }
       }
     }

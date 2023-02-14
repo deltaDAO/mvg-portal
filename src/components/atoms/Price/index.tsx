@@ -8,13 +8,11 @@ import { BestPrice } from '../../../models/BestPrice'
 export default function Price({
   price,
   className,
-  small,
-  conversion
+  small
 }: {
   price: BestPrice
   className?: string
   small?: boolean
-  conversion?: boolean
 }): ReactElement {
   return price?.value || price?.type === 'free' ? (
     <PriceUnit
@@ -22,7 +20,6 @@ export default function Price({
       symbol={price.oceanSymbol}
       className={className}
       small={small}
-      conversion={conversion}
       type={price.type}
     />
   ) : !price || price?.type === '' ? (

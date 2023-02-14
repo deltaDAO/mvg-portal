@@ -7,9 +7,6 @@ import Web3 from 'web3'
 import { ConfigHelperConfig } from '@oceanprotocol/lib/dist/node/utils/ConfigHelper'
 
 const blockDifferenceThreshold = 30
-const ethGraphUrl = `https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks`
-const ethGraphQuery =
-  '{"query":"  query Blocks{   blocks(first: 1, skip: 0, orderBy: number, orderDirection: desc, where: {number_gt: 9300000}) { id number timestamp  author  difficulty  gasUsed  gasLimit } }","variables":{},"operationName":"Blocks"}'
 const graphQuery =
   '{"query":"  query Meta {   _meta {      block {        hash       number     }      deployment      hasIndexingErrors    }  }","variables":{},"operationName":"Meta"}'
 
@@ -33,13 +30,6 @@ async function fetchGraph(url: string, queryBody: string): Promise<Response> {
 }
 
 async function getBlockHead(config: ConfigHelperConfig) {
-  // for ETH main, get block from graph fetch
-  if (config.network === 'mainnet') {
-    const response: any = await fetchGraph(ethGraphUrl, ethGraphQuery)
-    return Number(response.data.blocks[0].number)
-  }
-
-  // for everything else, create new web3 instance with infura
   const web3Instance = new Web3(config.nodeUri)
   const blockHead = await web3Instance.eth.getBlockNumber()
   return blockHead

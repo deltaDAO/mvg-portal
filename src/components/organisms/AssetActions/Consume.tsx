@@ -18,7 +18,6 @@ import { secondsToString } from '../../../utils/metadata'
 import AlgorithmDatasetsListForCompute from '../AssetContent/AlgorithmDatasetsListForCompute'
 import styles from './Consume.module.css'
 import { useIsMounted } from '../../../hooks/useIsMounted'
-import Alert from '../../atoms/Alert'
 import { CredentialType } from './Edit/EditAdvancedSettings'
 
 const previousOrderQuery = gql`
@@ -217,7 +216,7 @@ export default function Consume({
           <File file={file} isLoading={fileIsLoading} />
         </div>
         <div className={styles.priceWrapper}>
-          <Price price={price} conversion />
+          <Price price={price} />
         </div>
       </div>
       <div className={styles.purchaseWrapper}>
