@@ -19,6 +19,7 @@
   --border-color: var(--color-secondary);
   --box-shadow-color: rgba(0, 0, 0, 0.05);
   --checkbox-selected-background: var(--color-primary);
+  --bookmark-icon-fill-color: var(--brand-purple);
 
   /* Menubar */
   --menu-logo-color: var(--color-primary);
@@ -48,7 +49,15 @@
   --footer-font-color-highlight: var(--color-highlight);
   --footer-link-category-font-color: var(--font-color-text);
 
-  --bookmark-icon-fill-color: var(--brand-purple);
+  /* Input elements */
+  --input-font-color: var(--font-color-heading);
+  --input-placeholder-font-color: var(--ocean-secondary);
+  --input-disabled-font-color: var(--font-color-light);
+  --input-border-color: var(--ocean-secondary);
+  --input-border-size: var(--border-size-sm);
+  --input-border-radius: var(--border-radius);
+  --input-background: var(--brand-white);
+  --input-selected-background: var(--color-primary);
 
   --font-family-base: 'Sharp Sans', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;

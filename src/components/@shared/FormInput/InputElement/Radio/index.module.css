@@ -29,7 +29,7 @@
 
 .radio:focus,
 .checkbox:focus {
-  box-shadow: 0 0 0 var(--ocean-primary);
+  box-shadow: 0 0 0 var(--input-selected-background);
 }
 
 .radio::after,
@@ -53,13 +53,13 @@
   height: 8px;
   top: 4px;
   left: 4px;
-  background: var(--ocean-white);
+  background: var(--input-background);
 }
 
 .checkbox::after {
   width: 6px;
   height: 9px;
-  border: 2px solid var(--ocean-white);
+  border: 2px solid var(--input-background);
   border-top: 0;
   border-left: 0;
   left: 5px;
@@ -69,8 +69,8 @@
 
 .radio:checked,
 .checkbox:checked {
-  border-color: var(--ocean-primary);
-  background: var(--ocean-primary);
+  border-color: var(--input-selected-background);
+  background: var(--input-selected-background);
 }
 
 .radio:checked::after,
