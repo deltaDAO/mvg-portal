@@ -14,7 +14,7 @@ module.exports = {
   chainIds: [100],
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: [100, 80001],
+  chainIdsSupported: [100],
 
   infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
 
