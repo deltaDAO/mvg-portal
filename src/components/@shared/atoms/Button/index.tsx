@@ -2,7 +2,6 @@ import React, { ReactNode, FormEvent, ReactElement } from 'react'
 import Link from 'next/link'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'
-import Arrow from '@images/arrow.svg'
 
 const cx = classNames.bind(styles)
 
@@ -46,20 +45,12 @@ export default function Button({
   return to ? (
     <Link href={to} className={styleClasses} {...props}>
       {children}
-      {arrow && (
-        <>
-          &nbsp; <Arrow fill="currentColor" />
-        </>
-      )}
+      {arrow && <>&nbsp;&#8594;</>}
     </Link>
   ) : href ? (
     <a href={href} className={styleClasses} {...props}>
       {children}
-      {arrow && (
-        <>
-          &nbsp; <Arrow fill="currentColor" />
-        </>
-      )}
+      {arrow && <>&nbsp;&#8594;</>}
     </a>
   ) : (
     <button className={styleClasses} {...props}>

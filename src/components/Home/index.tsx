@@ -35,23 +35,15 @@ export default function HomePage(): ReactElement {
         title="Recently Published"
         query={queryLatest}
         action={
-          <Button style="text" to="/search?sort=nft.created&sortOrder=desc">
-            All datasets and algorithms →
+          <Button
+            style="text"
+            arrow
+            to="/search?sort=nft.created&sortOrder=desc"
+          >
+            All datasets and algorithms
           </Button>
         }
       />
-      <Button style="primary">Primary</Button>
-      <Button style="primary" size="small">
-        Primary
-      </Button>
-      <Button style="ghost">Ghost</Button>
-      <Button style="ghost" size="small">
-        Ghost
-      </Button>
-      <Button style="text">Text</Button>
-      <Button style="text" size="small">
-        Text
-      </Button>
     </>
   )
 }
