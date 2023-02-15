@@ -40,6 +40,18 @@ export default function HomePage(): ReactElement {
           </Button>
         }
       />
+      <Button style="primary">Primary</Button>
+      <Button style="primary" size="small">
+        Primary
+      </Button>
+      <Button style="ghost">Ghost</Button>
+      <Button style="ghost" size="small">
+        Ghost
+      </Button>
+      <Button style="text">Text</Button>
+      <Button style="text" size="small">
+        Text
+      </Button>
     </>
   )
 }

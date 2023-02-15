@@ -2,6 +2,7 @@ import React, { ReactNode, FormEvent, ReactElement } from 'react'
 import Link from 'next/link'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'
+import Arrow from '@images/arrow.svg'
 
 const cx = classNames.bind(styles)
 
@@ -20,6 +21,7 @@ export interface ButtonProps {
   target?: string
   rel?: string
   title?: string
+  arrow?: boolean
 }
 
 export default function Button({
@@ -29,6 +31,7 @@ export default function Button({
   to,
   size,
   style,
+  arrow,
   ...props
 }: ButtonProps): ReactElement {
   const styleClasses = cx({
@@ -43,10 +46,20 @@ export default function Button({
   return to ? (
     <Link href={to} className={styleClasses} {...props}>
       {children}
+      {arrow && (
+        <>
+          &nbsp; <Arrow fill="currentColor" />
+        </>
+      )}
     </Link>
   ) : href ? (
     <a href={href} className={styleClasses} {...props}>
       {children}
+      {arrow && (
+        <>
+          &nbsp; <Arrow fill="currentColor" />
+        </>
+      )}
     </a>
   ) : (
     <button className={styleClasses} {...props}>

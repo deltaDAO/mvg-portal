@@ -59,6 +59,20 @@
   --input-background: var(--brand-white);
   --input-selected-background: var(--color-primary);
 
+  /* Buttons */
+  --button-border-radius: var(--border-radius);
+  --button-font-color: var(--brand-white);
+  --button-background: var(--font-color-light);
+  --button-hover-font-color: var(--brand-white);
+  --button-hover-background: var(--font-color-light);
+  --button-active-font-color: var(--brand-white);
+  --button-active-background: var(--font-color-light);
+  --button-primary-font-color: var(--brand-white);
+  --button-primary-background: var(--color-primary);
+  --button-ghost-font-color: var(--color-primary);
+  --button-ghost-background: var(--brand-white);
+  --button-text-font-color: var(--color-highlight);
+
   --font-family-base: 'Sharp Sans', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
   --font-family-heading: 'Sharp Sans Display', -apple-system, BlinkMacSystemFont,
