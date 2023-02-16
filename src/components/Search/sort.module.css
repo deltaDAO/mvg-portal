@@ -2,9 +2,9 @@
   padding: 0 calc(var(--spacer) / 10);
   display: flex;
   align-items: center;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
-  background: var(--background-content);
+  border-radius: var(--filter-border-radius);
+  border: var(--filter-border-size) solid var(--filter-border-color);
+  background: var(--filter-background);
   overflow-y: auto;
 }
 
@@ -15,7 +15,7 @@
   margin-left: calc(var(--spacer) / 2);
   margin-right: calc(var(--spacer) / 1.5);
   text-transform: uppercase;
-  color: var(--ocean-secondary);
+  color: var(--filter-font-color);
   font-size: var(--font-size-small);
 }
 
@@ -23,11 +23,11 @@
   display: inline-block;
   padding: calc(var(--spacer) / 6) calc(var(--spacer) / 2);
   margin-right: calc(var(--spacer) / 4);
-  color: var(--ocean-secondary);
+  color: var(--filter-font-color);
   text-transform: capitalize;
   border-radius: 0;
   font-weight: var(--font-weight-base);
-  background: var(--background-content);
+  background: var(--filter-background);
   box-shadow: none;
   white-space: nowrap;
 }
@@ -35,7 +35,7 @@
 .sorted:hover,
 .sorted:focus,
 .sorted.selected {
-  color: var(--font-color-text);
+  color: var(--filter-hover-font-color);
   background: inherit;
   transform: none;
   box-shadow: none;

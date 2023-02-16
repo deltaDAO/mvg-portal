@@ -104,6 +104,19 @@
   --pagination-selected-font-color: var(--font-color-heading);
   --pagination-hover-font-color: var(--color-highlight);
 
+  /* Filter and sort */
+  --filter-font-color: var(--ocean-secondary);
+  --filter-hover-font-color: var(--font-color-text);
+  --filter-selected-font-color: var(--background-body);
+  --filter-background: var(--background-content);
+  --filter-selected-background: var(--font-color-text);
+  --filter-border-radius: var(--border-radius);
+  --filter-border-size: var(--border-size-sm);
+  --filter-border-color: var(--border-color);
+  --filter-selected-border-color: var(--background-body);
+  --filter-clear-font-color: var(--ocean-secondary);
+  --filter-clear-hover-font-color: var(--color-highlight);
+
   --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
   --font-family-heading: 'Titillium Web', -apple-system, BlinkMacSystemFont,
