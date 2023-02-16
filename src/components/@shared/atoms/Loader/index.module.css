@@ -10,22 +10,22 @@
   width: 1.2rem;
   height: 1.2rem;
   border-radius: 50%;
-  border: 2px solid var(--ocean-purple);
-  border-top-color: var(--ocean-violet);
+  border: var(--loader-border-size) solid var(--loader-border-color);
+  border-top-color: var(--loader-top-border-color);
   animation: loader 0.6s linear infinite;
 }
 
 .message {
   font-weight: var(--font-weight-base);
   font-size: var(--font-size-small);
-  color: var(--ocean-secondary);
+  color: var(--loader-message-color);
   display: block;
   margin-left: calc(var(--spacer) / 4);
 }
 
 .loader.white {
   border-color: rgba(255 255 255 / 0.3);
-  border-top-color: var(--ocean-white);
+  border-top-color: var(--brand-white);
 }
 
 @keyframes loader {
