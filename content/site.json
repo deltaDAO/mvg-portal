@@ -6,12 +6,12 @@
   "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
   "menu": [
     {
-      "name": "Publish",
-      "link": "/publish/1"
+      "name": "Catalogue",
+      "link": "/search?sort=nft.created&sortOrder=desc"
     },
     {
-      "name": "Profile",
-      "link": "/profile"
+      "name": "Publish",
+      "link": "/publish/1"
     }
   ],
   "announcement": "",
