@@ -32,6 +32,7 @@
   margin: 0;
   outline: 0;
   padding-right: var(--spacer);
+  border: var(--menu-border-size) solid var(--menu-border-color);
   width: 0;
   transition: none;
 }
@@ -41,6 +42,7 @@
   background-color: var(--background-content);
   position: fixed;
   left: calc(var(--spacer) / 2);
+  border: var(--menu-border-size) solid var(--menu-border-color);
   right: 0;
   z-index: 2;
 }

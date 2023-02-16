@@ -1,6 +1,5 @@
 .button {
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
   font-size: var(--font-size-small);
   text-transform: uppercase;
   border: var(--menu-border-size) solid var(--menu-border-color);
