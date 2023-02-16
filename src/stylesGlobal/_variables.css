@@ -99,6 +99,11 @@
   --teaser-box-shadow: 0 6px 17px 0 var(--box-shadow-color);
   --teaser-hover-box-shadow: 0 10px 25px 0 var(--box-shadow-color);
 
+  /* Pagination component */
+  --pagination-font-color: var(--ocean-secondary);
+  --pagination-selected-font-color: var(--font-color-heading);
+  --pagination-hover-font-color: var(--color-highlight);
+
   --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
   --font-family-heading: 'Titillium Web', -apple-system, BlinkMacSystemFont,
