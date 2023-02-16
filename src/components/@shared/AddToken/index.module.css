@@ -44,12 +44,12 @@
 
 .button:hover .logo,
 .button:focus .logo {
-  border-color: var(--ocean-primary);
+  border-color: var(--color-highlight);
 }
 
 .button:hover .logoWrap::before,
 .button:focus .logoWrap::before {
-  color: var(--ocean-primary);
+  color: var(--color-highlight);
 }
 
 .text {
