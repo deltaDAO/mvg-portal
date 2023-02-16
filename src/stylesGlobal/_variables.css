@@ -20,7 +20,8 @@
   --border-color: var(--color-secondary);
   --box-shadow-color: rgba(0, 0, 0, 0.05);
   --checkbox-selected-background: var(--color-primary);
-  --bookmark-icon-fill-color: var(--brand-purple);
+  --bookmark-icon-fill-color: var(--ocean-secondary);
+  --bookmark-icon-selected-fill-color: var(--brand-purple);
   --link-font-color: var(--color-highlight);
 
   /* Menubar */

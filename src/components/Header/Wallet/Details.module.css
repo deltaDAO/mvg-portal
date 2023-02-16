@@ -34,7 +34,7 @@
 .bookmarksLink svg {
   width: var(--font-size-large);
   height: var(--font-size-large);
-  fill: var(--bookmark-icon-fill-color);
+  fill: var(--bookmark-icon-selected-fill-color);
 }
 
 .profileButton,

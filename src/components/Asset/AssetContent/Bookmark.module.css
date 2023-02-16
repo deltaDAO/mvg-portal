@@ -12,7 +12,7 @@
 }
 
 .bookmark svg {
-  fill: var(--ocean-grey-light);
+  fill: var(--bookmark-icon-fill-color);
   height: 40px;
   width: 40px;
   filter: drop-shadow(0 4px 6px var(--box-shadow-color));
@@ -24,5 +24,5 @@
 }
 
 .bookmark.active svg {
-  fill: var(--ocean-violet);
+  fill: var(--bookmark-icon-selected-fill-color);
 }
