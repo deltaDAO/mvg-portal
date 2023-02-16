@@ -21,6 +21,7 @@
   --box-shadow-color: rgba(0, 0, 0, 0.05);
   --checkbox-selected-background: var(--color-primary);
   --bookmark-icon-fill-color: var(--brand-purple);
+  --link-font-color: var(--color-highlight);
 
   /* Menubar */
   --menu-logo-color: var(--color-primary);
