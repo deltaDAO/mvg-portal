@@ -1,8 +1,8 @@
 .select [class$='control'] {
-  border-color: var(--border-color);
-  border-radius: var(--border-radius);
+  border-color: var(--input-border-color);
+  border-radius: var(--input-border-radius);
   box-shadow: none;
-  background-color: var(--background-content);
+  background-color: var(--input-background);
   font-size: var(--font-size-base);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
@@ -11,11 +11,11 @@
 }
 
 .select [class$='control']:hover {
-  border-color: var(--border-color);
+  border-color: var(--input-border-color);
 }
 
 .select [class$='control']:focus-within {
-  border-color: var(--font-color-text);
+  border-color: var(--input-border-color);
 }
 
 .select [class$='ValueContainer'] {
@@ -37,7 +37,7 @@
 
 .select [class$='menu'] {
   background-color: var(--background-highlight);
-  border-radius: var(--border-radius);
+  border-radius: var(--input-border-radius);
 }
 
 .select [class$='option'] {
@@ -54,9 +54,9 @@
 .select [class$='multiValue'],
 .select [class$='multiValue'] > *,
 .select [class$='multiValue']:hover > * {
-  border-radius: var(--border-radius);
+  border-radius: var(--input-border-radius);
   background-color: var(--background-highlight);
-  color: var(--font-color-text);
+  color: var(--input-font-color);
   font-size: var(--font-size-base);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
@@ -82,7 +82,7 @@
   background-color: var(--background-content);
   margin-top: -2px;
   border: 1px solid var(--font-color-text);
-  border-top-color: var(--border-color);
+  border-top-color: var(--input-border-color);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   box-shadow: none;
