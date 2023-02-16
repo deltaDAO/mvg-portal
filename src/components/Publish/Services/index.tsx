@@ -9,6 +9,9 @@ import { FormPublishData } from '../_types'
 import Alert from '@shared/atoms/Alert'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import styles from '../index.module.css'
+import isUrl from 'is-url-superb'
+import { getFileInfo } from '../../../@utils/provider'
+import { FileInfo } from '@oceanprotocol/lib'
 
 const accessTypeOptionsTitles = getFieldContent(
   'access',
@@ -57,6 +60,34 @@ export default function ServicesFields(): ReactElement {
       values.services[0].algorithmPrivacy === true ? 'compute' : 'access'
     )
   }, [values.services[0].algorithmPrivacy, setFieldValue])
+
+  // compute checksum for valid accessTermsAndConditions url
+  useEffect(() => {
+    const accessTermsUrl =
+      values.metadata.gaiaXInformation.termsAndConditions[0]?.url
+
+    if (!isUrl(accessTermsUrl)) return
+
+    const computeChecksum = async () => {
+      // TODO: replace hardcoded providerURL
+      const fileinfo = (await getFileInfo(
+        accessTermsUrl,
+        'https://provider.v4.genx.delta-dao.com',
+        'url',
+        true
+      )) as (FileInfo & { checksumType?: string })[]
+
+      const hash = `${fileinfo[0]?.checksumType || 'sha256'}:${
+        fileinfo[0].checksum
+      }`
+      setFieldValue(
+        'metadata.gaiaXInformation.termsAndConditions[0].hash',
+        hash
+      )
+    }
+
+    computeChecksum()
+  }, [values.metadata.gaiaXInformation.termsAndConditions[0].url])
 
   return (
     <>
@@ -123,7 +154,7 @@ export default function ServicesFields(): ReactElement {
           content.metadata.fields
         )}
         component={Input}
-        name="metadata.gaiaXInformation.termsAndConditions.url"
+        name="metadata.gaiaXInformation.termsAndConditions[0].url"
       />
     </>
   )

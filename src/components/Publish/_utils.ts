@@ -15,7 +15,7 @@ import {
 } from '@oceanprotocol/lib'
 import { mapTimeoutStringToSeconds } from '@utils/ddo'
 import { generateNftCreateData } from '@utils/nft'
-import { getEncryptedFiles } from '@utils/provider'
+import { getEncryptedFiles, getFileInfo } from '@utils/provider'
 import slugify from 'slugify'
 import Web3 from 'web3'
 import { algorithmContainerPresets } from './_constants'
