@@ -78,7 +78,7 @@
 
 .link svg {
   margin: 0;
-  fill: var(--ocean-primary);
+  fill: var(--link-font-color);
   width: 0.7em;
   height: 0.7em;
 }

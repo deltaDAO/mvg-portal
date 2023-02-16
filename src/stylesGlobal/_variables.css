@@ -12,7 +12,7 @@
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
   --font-color-heading: var(--brand-black);
-  --font-color-light: var(--color-secondary);
+  --font-color-light: var(--ocean-secondary);
   --background-body: #fcfcfc;
   --background-body-transparent: rgba(255, 255, 255, 0.8);
   --background-content: #fff;

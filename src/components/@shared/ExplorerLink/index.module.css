@@ -6,7 +6,7 @@
   width: 0.6em;
   height: 0.6em;
   display: inline-block;
-  fill: var(--ocean-grey-light);
+  fill: var(--font-color-light);
 }
 
 .link code {
@@ -20,5 +20,5 @@
 .link:focus,
 .link:hover *,
 .link:focus * {
-  color: var(--ocean-pink);
+  color: var(--link-font-color);
 }
