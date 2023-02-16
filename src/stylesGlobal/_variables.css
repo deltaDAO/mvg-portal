@@ -1,4 +1,5 @@
 @import url('./_colors.css');
+@import url('../../public//static/fonts/fonts.css');
 
 :root {
   --ocean-primary: var(--ocean-pink);
@@ -73,9 +74,9 @@
   --button-ghost-background: var(--brand-white);
   --button-text-font-color: var(--color-highlight);
 
-  --font-family-base: 'Sharp Sans', -apple-system, BlinkMacSystemFont,
+  --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
-  --font-family-heading: 'Sharp Sans Display', -apple-system, BlinkMacSystemFont,
+  --font-family-heading: 'Titillium Web', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
   --font-family-monospace: 'Fira Code', 'Fira Mono', Menlo, Monaco, Consolas,
     'Courier New', monospace;
