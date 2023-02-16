@@ -68,7 +68,15 @@ export const initialValues: FormPublishData = {
     dockerImage: '',
     dockerImageCustom: '',
     dockerImageCustomTag: '',
-    dockerImageCustomEntrypoint: ''
+    dockerImageCustomEntrypoint: '',
+    gaiaXInformation: {
+      termsAndConditions: {
+        url: '',
+        hash: ''
+      },
+      containsPII: false,
+      PIIInformation: undefined
+    }
   },
   services: [
     {

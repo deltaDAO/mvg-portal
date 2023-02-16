@@ -108,6 +108,23 @@ export default function ServicesFields(): ReactElement {
         component={Input}
         name="services[0].timeout"
       />
+
+      {/*
+       Licensing and Terms
+      */}
+      <Field
+        {...getFieldContent('license', content.metadata.fields)}
+        component={Input}
+        name="metadata.license"
+      />
+      <Field
+        {...getFieldContent(
+          'accessTermsAndConditions',
+          content.metadata.fields
+        )}
+        component={Input}
+        name="metadata.gaiaXInformation.termsAndConditions.url"
+      />
     </>
   )
 }

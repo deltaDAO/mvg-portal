@@ -1,6 +1,7 @@
 import { FileInfo, ServiceComputeOptions } from '@oceanprotocol/lib'
 import { NftMetadata } from '@utils/nft'
 import { ReactElement } from 'react'
+import { GaiaXInformation2210 } from '../../@types/gaia-x/2210/GXInformation'
 export interface FormPublishService {
   files: FileInfo[]
   links?: FileInfo[]
@@ -26,6 +27,8 @@ export interface FormPublishData {
     description: string
     author: string
     termsAndConditions: boolean
+    gaiaXInformation: GaiaXInformation2210
+    license?: string
     tags?: string[]
     dockerImage?: string
     dockerImageCustom?: string

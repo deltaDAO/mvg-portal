@@ -77,7 +77,8 @@ export async function transformPublishFormToDdo(
     dockerImageCustom,
     dockerImageCustomTag,
     dockerImageCustomEntrypoint,
-    dockerImageCustomChecksum
+    dockerImageCustomChecksum,
+    gaiaXInformation
   } = metadata
   const { access, files, links, providerUrl, timeout } = services[0]
 
@@ -104,10 +105,18 @@ export async function transformPublishFormToDdo(
     description,
     tags: transformTags(tags),
     author,
-    license: 'https://market.oceanprotocol.com/terms',
+    license:
+      values.metadata.license || 'https://market.oceanprotocol.com/terms',
     links: linksTransformed,
     additionalInformation: {
-      termsAndConditions
+      termsAndConditions,
+      gaiaXInformation: {
+        termsAndConditions: gaiaXInformation.termsAndConditions,
+        ...(type === 'dataset' && {
+          containsPII: gaiaXInformation.containsPII,
+          PIIInformation: gaiaXInformation.PIIInformation
+        })
+      }
     },
     ...(type === 'algorithm' &&
       dockerImage !== '' && {
