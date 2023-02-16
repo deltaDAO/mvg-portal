@@ -80,6 +80,24 @@
   --loader-border-size: var(--border-size);
   --loader-message-color: var(--ocean-secondary);
 
+  /* Box template */
+  --box-template-background: var(--background-content);
+  --box-template-border-radius: var(--border-radius);
+  --box-template-border-size: var(--border-size-sm);
+  --box-template-border-color: var(--border-color);
+  --box-template-box-shadow: 0 6px 17px 0 var(--box-shadow-color);
+  --box-template-hover-box-shadow: 0 10px 25px 0 var(--box-shadow-color);
+
+  /* Asset teaser */
+  --teaser-font-color: var(--ocean-secondary);
+  --teaser-title-font-color: var(--font-color-heading);
+  --teaser-background: var(--background-content);
+  --teaser-border-radius: var(--border-radius);
+  --teaser-border-size: var(--border-size-sm);
+  --teaser-border-color: var(--border-color);
+  --teaser-box-shadow: 0 6px 17px 0 var(--box-shadow-color);
+  --teaser-hover-box-shadow: 0 10px 25px 0 var(--box-shadow-color);
+
   --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
   --font-family-heading: 'Titillium Web', -apple-system, BlinkMacSystemFont,
