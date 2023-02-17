@@ -72,8 +72,8 @@ export const initialValues: FormPublishData = {
     gaiaXInformation: {
       termsAndConditions: [
         {
-          url: defaultAccessTerms,
-          hash: ''
+          url: '',
+          type: 'url'
         }
       ],
       containsPII: false,

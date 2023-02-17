@@ -50,9 +50,14 @@
       },
       {
         "name": "accessTermsAndConditions",
+        "value": "url",
+        "title": "URL",
         "label": "Terms and Conditions",
+        "placeholder": "e.g. https://file.com/tandc.md",
         "help": "The Terms and Conditions under which this service can be accessed. A resolvable link to the T&C document is expected. If no Terms are given the default [terms of this portal](/terms) will be applied.",
-        "placeholder": "e.g. https://domain.com/my-terms"
+        "prominentHelp": true,
+        "type": "files",
+        "required": false
       },
       {
         "name": "dockerImage",

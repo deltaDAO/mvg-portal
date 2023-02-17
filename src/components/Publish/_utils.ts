@@ -15,7 +15,7 @@ import {
 } from '@oceanprotocol/lib'
 import { mapTimeoutStringToSeconds } from '@utils/ddo'
 import { generateNftCreateData } from '@utils/nft'
-import { getEncryptedFiles, getFileInfo } from '@utils/provider'
+import { getEncryptedFiles } from '@utils/provider'
 import slugify from 'slugify'
 import Web3 from 'web3'
 import { algorithmContainerPresets } from './_constants'
@@ -24,10 +24,12 @@ import {
   marketFeeAddress,
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
-  defaultDatatokenTemplateIndex
+  defaultDatatokenTemplateIndex,
+  defaultAccessTerms
 } from '../../../app.config'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
+import { GaiaXInformation2210 } from '../../@types/gaia-x/2210/GXInformation'
 
 function getUrlFileExtension(fileUrl: string): string {
   const splittedFileUrl = fileUrl.split('.')
@@ -63,7 +65,13 @@ export async function transformPublishFormToDdo(
   // so we can always assume if they are not passed, we are on preview.
   datatokenAddress?: string,
   nftAddress?: string
-): Promise<DDO> {
+): Promise<
+  DDO & {
+    metadata: {
+      additionalInformation: { gaiaXInformation: GaiaXInformation2210 }
+    }
+  }
+> {
   const { metadata, services, user } = values
   const { chainId, accountId } = user
   const {
@@ -97,6 +105,10 @@ export async function transformPublishFormToDdo(
   const linksTransformed = links?.length &&
     links[0].valid && [sanitizeUrl(links[0].url)]
 
+  const accessTermsFileInfo = gaiaXInformation.termsAndConditions
+  const accessTermsUrlTransformed = accessTermsFileInfo?.length &&
+    accessTermsFileInfo[0].valid && [sanitizeUrl(accessTermsFileInfo[0].url)]
+
   const newMetadata: Metadata = {
     created: currentTime,
     updated: currentTime,
@@ -111,7 +123,9 @@ export async function transformPublishFormToDdo(
     additionalInformation: {
       termsAndConditions,
       gaiaXInformation: {
-        termsAndConditions: gaiaXInformation.termsAndConditions,
+        termsAndConditions: [
+          { url: accessTermsUrlTransformed || defaultAccessTerms }
+        ],
         ...(type === 'dataset' && {
           containsPII: gaiaXInformation.containsPII,
           PIIInformation: gaiaXInformation.PIIInformation

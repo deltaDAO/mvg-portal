@@ -27,7 +27,11 @@ export interface FormPublishData {
     description: string
     author: string
     termsAndConditions: boolean
-    gaiaXInformation: GaiaXInformation2210
+    gaiaXInformation: {
+      termsAndConditions: FileInfo[]
+      containsPII: GaiaXInformation2210['containsPII']
+      PIIInformation?: GaiaXInformation2210['PIIInformation']
+    }
     license?: string
     tags?: string[]
     dockerImage?: string
