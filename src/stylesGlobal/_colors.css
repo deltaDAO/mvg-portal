@@ -15,6 +15,11 @@
   --brand-grey-lighter: #d4d4e2;
   --brand-grey-dimmed: #f1f3f8;
 
+  --brand-alert-green: #5fb359;
+  --brand-alert-red: #d80606;
+  --brand-alert-orange: #b35f36;
+  --brand-alert-yellow: #eac146;
+
   /* Ocean brand color variables */
   --ocean-white: #ffffff;
   --ocean-black: #141414;
@@ -30,9 +35,4 @@
   --ocean-grey-dimmed: #f7f7f7;
 
   --ocean-gradient: linear-gradient(to right bottom, #7b1173, #ff4092);
-
-  --ocean-alert-green: #5fb359;
-  --ocean-alert-red: #d80606;
-  --ocean-alert-orange: #b35f36;
-  --ocean-alert-yellow: #eac146;
 }
