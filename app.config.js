@@ -1,3 +1,5 @@
+const { getDefaultChainIds, getSupportedChainIds } = require('./chains.config')
+
 module.exports = {
   // URI of single metadata cache instance for all networks.
   // While ocean.js includes this value for each network as part of its ConfigHelper,
@@ -11,10 +13,10 @@ module.exports = {
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
-  chainIds: [100],
+  chainIds: getDefaultChainIds(),
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: [100],
+  chainIdsSupported: getSupportedChainIds(),
 
   infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
 
