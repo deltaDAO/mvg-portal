@@ -149,7 +149,7 @@ svg.caret {
   transform: rotate(180deg);
 }
 
-@media screen and (min-width: 42rem) {
+@media screen and (min-width: 65rem) {
   .caret,
   svg.caret {
     display: inline-block;
