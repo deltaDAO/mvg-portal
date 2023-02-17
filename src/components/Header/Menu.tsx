@@ -8,13 +8,15 @@ import styles from './Menu.module.css'
 import { useRouter } from 'next/router'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import classNames from 'classnames/bind'
+import MenuDropdown from '@components/@shared/MenuDropdown'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
 
 declare type MenuItem = {
   name: string
-  link: string
+  link?: string
+  subItems?: MenuItem[]
   className?: string
 }
 
@@ -47,8 +49,7 @@ export function MenuLink({ name, link, className }: MenuItem) {
 }
 
 export default function Menu(): ReactElement {
-  const { appConfig } = useMarketMetadata()
-  const { siteContent } = useMarketMetadata()
+  const { appConfig, siteContent } = useMarketMetadata()
 
   return (
     <nav className={styles.menu}>
@@ -59,7 +60,11 @@ export default function Menu(): ReactElement {
       <ul className={styles.navigation}>
         {siteContent?.menu.map((item: MenuItem) => (
           <li key={item.name}>
-            <MenuLink {...item} />
+            {item?.subItems ? (
+              <MenuDropdown label={item.name} items={item.subItems} />
+            ) : (
+              <MenuLink {...item} />
+            )}
           </li>
         ))}
       </ul>

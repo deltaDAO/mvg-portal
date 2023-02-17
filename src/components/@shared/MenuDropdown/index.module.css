@@ -1,0 +1,25 @@
+.menuItem {
+  composes: link from '../../Header/Menu.module.css';
+  display: flex;
+  align-items: center;
+  padding-right: 0;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.subItem {
+  text-transform: none;
+}
+
+.caret,
+svg.caret {
+  width: var(--font-size-small);
+  height: var(--font-size-small);
+  fill: var(--menu-caret-fill-color);
+  margin-left: calc(var(--spacer) / 4);
+  transition: transform 0.2s ease-out;
+}
+
+[aria-expanded='true'] .caret {
+  transform: rotate(180deg);
+}
