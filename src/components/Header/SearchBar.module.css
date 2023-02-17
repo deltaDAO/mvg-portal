@@ -1,23 +1,37 @@
 .search {
+  --button-size: 38px;
+
+  overflow: hidden;
   display: flex;
+  flex-direction: row-reverse;
+  justify-content: left;
+  width: 100%;
+  padding: 5px 0;
+  padding-bottom: calc(var(--spacer) / 2);
   position: relative;
 }
 
+.springContainer {
+  width: 100%;
+}
+
+.search input {
+  padding-left: var(--button-size);
+}
+
 .button {
-  color: var(--menu-icon-fill-color);
-  cursor: pointer;
-  background: var(--background-content);
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  bottom: 1px;
+  left: 1px;
+  padding: calc(var(--spacer) / 4);
+  width: var(--button-size);
+  color: var(--color-secondary);
+  background: transparent;
   border: none;
   box-shadow: none;
-  padding: 0;
-  position: absolute;
-  padding: calc(var(--spacer) / 4);
-  width: 100%;
-  right: 1px;
-  left: 1px;
-  top: 1px;
-  bottom: 1px;
-  z-index: -1;
+  cursor: pointer;
 }
 
 .button:hover,
@@ -26,47 +40,55 @@
 }
 
 .input {
-  font-size: 16px; /* prevent zoom in on input focus on mobile devices  */
+  font-size: 16px; /* prevent zoom in on input focus on mobile devices */
   background-color: transparent;
-  height: 41px;
+  height: var(--button-size);
   margin: 0;
   outline: 0;
   padding-right: var(--spacer);
-  border: var(--menu-border-size) solid var(--menu-border-color);
   width: 0;
   transition: none;
+  border: none;
+  cursor: pointer;
+}
+
+.visibleInput {
+  background-color: var(--input-background);
+  border: var(--input-border-size) solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  cursor: text;
+  max-width: 100%;
+}
+
+.visibleInput:focus,
+.visibleInput:hover {
+  border-color: var(--input-border-color);
+}
+
+.visibleInput:focus + button svg,
+.visibleInput:hover + button svg {
+  fill: var(--input-font-color);
 }
 
 .input:focus {
   width: calc(100% - var(--spacer));
-  background-color: var(--background-content);
+  background-color: var(--input-background);
   position: fixed;
   left: calc(var(--spacer) / 2);
-  border: var(--menu-border-size) solid var(--menu-border-color);
   right: 0;
   z-index: 2;
-}
-
-@media screen and (min-width: 78rem) {
-  .input,
-  .input:focus {
-    width: auto;
-    position: relative;
-    left: initial;
-    right: initial;
-  }
-
-  .button {
-    width: auto;
-    left: auto;
-    background: none;
-    z-index: 3;
-  }
+  border: var(--input-border-size) solid var(--input-border-color);
+  border-radius: var(--input-border-radius);
+  cursor: text;
 }
 
 .searchIcon {
-  fill: currentColor;
+  fill: var(--input-placeholder-font-color);
   transition: 0.2s ease-out;
-  width: var(--font-size-h5);
-  height: var(--font-size-h5);
+  width: var(--font-size-base);
+  height: var(--font-size-base);
+}
+
+.input:hover .searchIcon {
+  fill: var(--input-font-color);
 }

@@ -9,6 +9,7 @@ import { useRouter } from 'next/router'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import classNames from 'classnames/bind'
 import MenuDropdown from '@components/@shared/MenuDropdown'
+import SearchButton from './SearchButton'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -70,7 +71,7 @@ export default function Menu(): ReactElement {
       </ul>
 
       <div className={styles.actions}>
-        <SearchBar />
+        <SearchButton />
         {appConfig.chainIdsSupported.length > 1 && <Networks />}
         <Wallet />
       </div>
