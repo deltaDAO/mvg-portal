@@ -19,7 +19,7 @@
   --background-highlight: #f7f7f7;
   --border-color: var(--color-secondary);
   --box-shadow-color: rgba(0, 0, 0, 0.05);
-  --checkbox-selected-background: var(--color-primary);
+  --checkbox-selected-background: var(--brand-blue-light);
   --bookmark-icon-fill-color: var(--ocean-secondary);
   --bookmark-icon-selected-fill-color: var(--brand-purple);
   --link-font-color: var(--color-highlight);
@@ -60,7 +60,7 @@
   --input-border-size: var(--border-size-sm);
   --input-border-radius: var(--border-radius);
   --input-background: var(--brand-white);
-  --input-selected-background: var(--color-primary);
+  --input-selected-background: var(--checkbox-selected-background);
 
   /* Buttons */
   --button-border-radius: var(--border-radius);

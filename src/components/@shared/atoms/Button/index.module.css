@@ -46,7 +46,7 @@
 .primary:hover,
 .primary:focus,
 .primary:active {
-  background: var(--button-primary-background);
+  background: var(--brand-gradient);
 }
 
 .ghost,
