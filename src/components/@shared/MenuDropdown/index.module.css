@@ -8,6 +8,7 @@
 }
 
 .subItem {
+  width: fit-content;
   text-transform: none;
 }
 

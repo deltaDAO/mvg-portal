@@ -53,16 +53,8 @@
   cursor: pointer;
 }
 
-.title:hover .toggle {
-  color: var(--ocean-primary);
-}
-
 .title + div {
   margin-top: calc(var(--spacer) / 3);
-}
-
-.toggle {
-  color: var(--ocean-secondary);
 }
 
 .toggle svg {
