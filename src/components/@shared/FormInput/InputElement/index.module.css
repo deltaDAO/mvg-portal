@@ -132,7 +132,7 @@
 }
 
 .input:focus + .postfix {
-  border-color: var(--ocean-grey);
+  border-color: var(--input-border-color);
 }
 
 .input[type='range'] {
