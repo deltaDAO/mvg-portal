@@ -37,7 +37,7 @@ export default function Page({
         )}
         {title && !noPageHeader && (
           <PageHeader
-            title={title}
+            title={isHome ? title : <>{title.slice(0, 400)}</>}
             center={headerCenter}
             description={description}
             isHome={isHome}

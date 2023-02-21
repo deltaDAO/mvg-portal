@@ -13,7 +13,7 @@ export default function PageHeader({
   isHome,
   showSearch
 }: {
-  title: string
+  title: string | ReactElement
   center?: boolean
   description?: string
   isHome?: boolean
@@ -29,7 +29,7 @@ export default function PageHeader({
       {isHome ? (
         <div className={styles.homeTitleContainer}>
           <h1>
-            {title.split(' - ').map((text, i) => (
+            {(title as string).split(' - ').map((text, i) => (
               <span key={i} className={styles.title}>
                 {text}
               </span>
@@ -37,7 +37,7 @@ export default function PageHeader({
           </h1>
         </div>
       ) : (
-        <h1 className={styles.title}>{title.slice(0, 400)}</h1>
+        <h1 className={styles.title}>{title}</h1>
       )}
       {description && (
         <Markdown text={description} className={styles.description} />
