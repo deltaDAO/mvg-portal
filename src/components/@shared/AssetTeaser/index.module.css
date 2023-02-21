@@ -43,6 +43,7 @@ a.link:focus {
 
 .title {
   font-size: var(--font-size-large);
+  color: var(--teaser-title-font-color);
   margin: 0;
   padding-bottom: calc(var(--spacer) / 6);
   overflow-wrap: break-word;
