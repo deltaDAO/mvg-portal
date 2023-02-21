@@ -53,14 +53,14 @@
 
 .assetLink svg {
   margin: 0;
-  fill: var(--ocean-primary);
+  fill: var(--color-highlight);
   width: 0.6em;
   height: 0.6em;
 }
 
 .assetMeta,
 .assetMeta code {
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
   font-size: var(--font-size-small);
   overflow: hidden;
   width: 100%;

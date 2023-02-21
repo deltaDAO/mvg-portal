@@ -45,7 +45,7 @@ See https://github.com/oceanprotocol/market/issues/1143 */
 .accountId {
   display: block;
   font-size: var(--font-size-small);
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
   word-wrap: break-word;
   white-space: pre-wrap;
   padding: 0;

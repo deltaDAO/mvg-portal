@@ -9,7 +9,7 @@
 }
 
 a > .logo:hover path {
-  fill: var(--ocean-primary);
+  fill: var(--ocean-pink);
 }
 
 .branding {

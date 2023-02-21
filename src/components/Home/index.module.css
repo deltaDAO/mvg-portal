@@ -10,12 +10,12 @@
 
 .section h3 {
   font-size: var(--font-size-large);
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
 }
 
 .section h3 span {
   font-size: var(--font-size-small);
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-base);
 }

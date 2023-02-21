@@ -6,7 +6,7 @@
   padding: calc(var(--spacer) / 3);
   padding-bottom: 0;
   font-size: var(--font-size-small);
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
   text-align: center;
 }
 

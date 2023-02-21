@@ -27,7 +27,6 @@
   left: 1px;
   padding: calc(var(--spacer) / 4);
   width: var(--button-size);
-  color: var(--color-secondary);
   background: transparent;
   border: none;
   box-shadow: none;

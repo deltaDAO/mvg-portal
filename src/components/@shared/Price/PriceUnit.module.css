@@ -13,7 +13,7 @@
 
 .symbol {
   font-weight: var(--font-weight-base);
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
   font-size: var(--font-size-base);
 }
 
@@ -42,5 +42,5 @@
 .price .badge {
   vertical-align: middle;
   margin-left: calc(var(--spacer) / 6);
-  background: var(--ocean-secondary);
+  background: var(--color-secondary);
 }

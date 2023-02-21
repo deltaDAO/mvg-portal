@@ -112,7 +112,7 @@
   font-size: 0.63rem;
   display: block;
   text-align: left;
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
   /* makes sure DotDotDot will kick in */
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -122,5 +122,5 @@
 .empty {
   padding: var(--spacer) calc(var(--spacer) / 2);
   text-align: center;
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
 }

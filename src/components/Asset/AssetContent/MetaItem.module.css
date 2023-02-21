@@ -7,7 +7,7 @@
   font-weight: var(--font-weight-base);
   font-size: var(--font-size-small);
   margin-bottom: calc(var(--spacer) / 4);
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
   text-transform: uppercase;
 }
 

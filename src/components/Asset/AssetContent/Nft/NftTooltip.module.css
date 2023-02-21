@@ -12,7 +12,7 @@
 
 .info {
   padding: calc(var(--spacer) / 2);
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
 }
 
 .info h5 {

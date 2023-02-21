@@ -9,7 +9,7 @@
 }
 
 .icon {
-  fill: var(--ocean-secondary);
+  fill: var(--color-secondary);
   transition: 0.15s ease-out;
   width: 10px;
   height: 10px;

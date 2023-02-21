@@ -5,7 +5,7 @@
 .links,
 .links a {
   font-size: var(--font-size-small);
-  color: var(--ocean-secondary);
+  color: var(--color-secondary);
 }
 
 .links a {
@@ -27,5 +27,5 @@
   width: 6px;
   height: 6px;
   display: inline-block;
-  fill: var(--ocean-secondary);
+  fill: var(--color-secondary);
 }

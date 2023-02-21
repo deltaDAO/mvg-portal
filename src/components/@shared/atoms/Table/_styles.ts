@@ -4,8 +4,8 @@ import { createTheme, TableStyles, Theme } from 'react-data-table-component'
 const theme: Partial<Theme> = {
   text: {
     primary: 'var(--font-color-text)',
-    secondary: 'var(--ocean-secondary)',
-    disabled: 'var(--ocean-secondary)'
+    secondary: 'var(--color-secondary)',
+    disabled: 'var(--color-secondary)'
   },
   background: {
     default: 'transparent'
@@ -15,9 +15,9 @@ const theme: Partial<Theme> = {
   },
   button: {
     default: 'var(--font-color-text)',
-    focus: 'var(--ocean-primary)',
-    hover: 'var(--ocean-primary)',
-    disabled: 'var(--ocean-secondary)'
+    focus: 'var(--color-primary)',
+    hover: 'var(--color-primary)',
+    disabled: 'var(--color-secondary)'
   }
 }
 
@@ -39,7 +39,7 @@ export const customStyles: TableStyles = {
   headCells: {
     style: {
       textTransform: 'uppercase',
-      color: 'var(--ocean-secondary)',
+      color: 'var(--color-secondary)',
       fontSize: 'var(--font-size-small)'
     }
   },

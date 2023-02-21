@@ -1,6 +1,6 @@
 .file {
   font-size: var(--font-size-small);
-  background: var(--ocean-secondary);
+  background: var(--color-secondary);
   background-size: 100%;
   padding: var(--spacer) calc(var(--spacer) / 2);
   margin-right: calc(var(--spacer) / 1.5);

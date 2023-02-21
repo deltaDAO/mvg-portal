@@ -3,7 +3,6 @@
 }
 
 .button {
-  color: var(--color-secondary);
   cursor: pointer;
   background: var(--background-content);
   border: none;

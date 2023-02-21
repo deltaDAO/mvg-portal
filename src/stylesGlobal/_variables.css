@@ -2,22 +2,19 @@
 @import url('../../public//static/fonts/fonts.css');
 
 :root {
-  --ocean-primary: var(--ocean-pink);
-  --ocean-secondary: var(--brand-grey-light);
-
   --color-primary: var(--brand-blue);
-  --color-secondary: var(--brand-grey-lighter);
+  --color-secondary: var(--brand-grey-light);
   --color-highlight: var(--brand-blue);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
   --font-color-heading: var(--brand-black);
-  --font-color-light: var(--ocean-secondary);
+  --font-color-light: var(--color-secondary);
   --background-body: var(--brand-white);
   --background-body-transparent: rgba(255, 255, 255, 0.8);
   --background-content: var(--brand-white);
   --background-highlight: var(--brand-grey-dimmed);
-  --border-color: var(--color-secondary);
+  --border-color: var(--brand-grey-lighter);
   --box-shadow-color: rgba(0, 0, 0, 0.05);
   --checkbox-selected-background: var(--brand-blue);
   --bookmark-icon-fill-color: var(--brand-grey-lighter);
@@ -59,7 +56,7 @@
   --input-font-color: var(--font-color-heading);
   --input-placeholder-font-color: var(--brand-grey);
   --input-disabled-font-color: var(--font-color-light);
-  --input-border-color: var(--ocean-secondary);
+  --input-border-color: var(--color-secondary);
   --input-border-size: var(--border-size-sm);
   --input-border-radius: var(--border-radius);
   --input-background: var(--brand-white);
@@ -83,7 +80,7 @@
   --loader-border-color: var(--brand-blue);
   --loader-top-border-color: transparent;
   --loader-border-size: var(--border-size);
-  --loader-message-color: var(--ocean-secondary);
+  --loader-message-color: var(--color-secondary);
 
   /* Box template */
   --box-template-background: var(--background-content);
@@ -94,7 +91,7 @@
   --box-template-hover-box-shadow: 0 10px 25px 0 var(--box-shadow-color);
 
   /* Asset teaser */
-  --teaser-font-color: var(--ocean-secondary);
+  --teaser-font-color: var(--color-secondary);
   --teaser-title-font-color: var(--font-color-heading);
   --teaser-background: var(--background-content);
   --teaser-border-radius: var(--border-radius);
@@ -104,12 +101,12 @@
   --teaser-hover-box-shadow: 0 10px 25px 0 var(--box-shadow-color);
 
   /* Pagination component */
-  --pagination-font-color: var(--ocean-secondary);
+  --pagination-font-color: var(--color-secondary);
   --pagination-selected-font-color: var(--font-color-heading);
   --pagination-hover-font-color: var(--color-highlight);
 
   /* Filter and sort */
-  --filter-font-color: var(--ocean-secondary);
+  --filter-font-color: var(--color-secondary);
   --filter-hover-font-color: var(--font-color-text);
   --filter-selected-font-color: var(--background-body);
   --filter-background: var(--background-content);
@@ -118,7 +115,7 @@
   --filter-border-size: var(--border-size-sm);
   --filter-border-color: var(--border-color);
   --filter-selected-border-color: var(--background-body);
-  --filter-clear-font-color: var(--ocean-secondary);
+  --filter-clear-font-color: var(--color-secondary);
   --filter-clear-hover-font-color: var(--color-highlight);
 
   --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,

@@ -20,7 +20,7 @@
   display: inline-block;
   margin-bottom: -0.1em;
   margin-left: calc(var(--spacer) / 6);
-  fill: var(--ocean-secondary);
+  fill: var(--color-secondary);
 }
 
 .arrow,
