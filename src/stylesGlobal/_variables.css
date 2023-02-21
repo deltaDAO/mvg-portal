@@ -23,6 +23,7 @@
   --bookmark-icon-fill-color: var(--brand-grey-lighter);
   --bookmark-icon-selected-fill-color: var(--brand-grey);
   --link-font-color: var(--color-highlight);
+  --nft-refresh-icon-fill: var(--brand-white);
 
   /* Menubar */
   --menu-logo-color: var(--color-primary);
@@ -119,9 +120,6 @@
   --filter-selected-border-color: var(--background-body);
   --filter-clear-font-color: var(--ocean-secondary);
   --filter-clear-hover-font-color: var(--color-highlight);
-
-  /* Tabs component */
-  --tabs-radio-checked-background: var(--brand-cyan);
 
   --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;

@@ -27,7 +27,8 @@ class Point {
 enum WaveColors {
   Violet = '#e000cf',
   Pink = '#ff4092',
-  Grey = '#8b98a9'
+  Grey = '#8b98a9',
+  Blue = '#1651ed'
 }
 
 export class SvgWaves {
@@ -41,7 +42,7 @@ export class SvgWaves {
    * These are generated with a focus on small file size for the svg
    * meaning low character count.
    * - width & height: default is 2 digits max (99)
-   * - color pink is selected per default
+   * - color blue is selected per default
    * - set coloring to fill or stroke (fill is selected per default)
    * - randomly decide if fill or stroke coloring should be used
    * - create 4 layers with 4 - 5 points per layers
@@ -55,7 +56,7 @@ export class SvgWaves {
       width: 99,
       height: 99,
       viewBox: '0 0 99 99',
-      color: WaveColors.Pink,
+      color: WaveColors.Blue,
       fill: true,
       layerCount: 4,
       pointsPerLayer: randomIntFromInterval(3, 4),
