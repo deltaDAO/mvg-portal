@@ -96,7 +96,6 @@ export default function Bookmarks(): ReactElement {
           ? 'No network selected'
           : 'Your bookmarks will appear here.'
       }
-      noTableHead
     />
   )
 }
