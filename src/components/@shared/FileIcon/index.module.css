@@ -11,7 +11,7 @@
 }
 
 .file li {
-  color: var(--ocean-white);
+  color: var(--brand-white);
 }
 
 .file li.empty {

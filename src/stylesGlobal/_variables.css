@@ -56,7 +56,7 @@
   --input-font-color: var(--font-color-heading);
   --input-placeholder-font-color: var(--brand-grey);
   --input-disabled-font-color: var(--font-color-light);
-  --input-border-color: var(--color-secondary);
+  --input-border-color: var(--brand-grey-lighter);
   --input-border-size: var(--border-size-sm);
   --input-border-radius: var(--border-radius);
   --input-background: var(--brand-white);

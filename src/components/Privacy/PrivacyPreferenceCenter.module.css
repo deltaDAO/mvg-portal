@@ -19,7 +19,7 @@
   justify-content: space-around;
   align-items: center;
   padding: var(--spacer) 0;
-  border-bottom: 1px solid var(--ocean-grey-lighter);
+  border-bottom: 1px solid var(--brand-grey-lighter);
 }
 
 .configureButton {

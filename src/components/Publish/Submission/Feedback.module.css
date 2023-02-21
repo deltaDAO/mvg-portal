@@ -50,7 +50,7 @@
 
 .feedback .error:before {
   content: '✕';
-  color: var(--ocean-white);
+  color: var(--brand-white);
   background: var(--brand-alert-red);
   border-color: transparent;
 }

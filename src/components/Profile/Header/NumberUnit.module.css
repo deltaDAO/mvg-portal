@@ -44,8 +44,8 @@
 
 .unit a:hover,
 .unit a:focus {
-  background: var(--ocean-white);
-  border: 0.1rem solid var(--ocean-pink);
+  background: var(--brand-white);
+  border: 0.1rem solid var(--color-primary);
 }
 
 .tooltip svg {

@@ -18,8 +18,8 @@ const confettiConfig = {
     'var(--ocean-pink)',
     'var(--ocean-purple)',
     'var(--ocean-violet)',
-    'var(--ocean-grey-light)',
-    'var(--ocean-grey-lighter)'
+    'var(--brand-grey-light)',
+    'var(--brand-grey-lighter)'
   ]
 }
 

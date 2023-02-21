@@ -7,7 +7,7 @@
   text-transform: uppercase;
   padding: 0.2rem;
   border-radius: var(--border-radius);
-  color: var(--ocean-white);
+  color: var(--brand-white);
   background: var(--ocean-purple);
   vertical-align: top;
 }

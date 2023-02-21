@@ -83,7 +83,7 @@
 
 .navigation .success:before {
   content: '✓';
-  color: var(--ocean-white);
+  color: var(--brand-white);
   background: var(--brand-alert-green);
   border-color: transparent;
 }

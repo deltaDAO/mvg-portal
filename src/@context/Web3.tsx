@@ -50,7 +50,7 @@ interface Web3ProviderValue {
 const web3ModalTheme = {
   background: 'var(--background-body)',
   main: 'var(--font-color-heading)',
-  secondary: 'var(--ocean-grey-light)',
+  secondary: 'var(--brand-grey-light)',
   border: 'var(--border-color)',
   hover: 'var(--background-highlight)'
 }
