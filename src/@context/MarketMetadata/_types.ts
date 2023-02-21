@@ -19,6 +19,7 @@ export interface AppConfig {
   currencies: string[]
   coingeckoTokenIds: string[]
   allowFixedPricing: string
+  allowDynamicPricing: string
   allowFreePricing: string
   defaultPrivacyPolicySlug: string
   privacyPreferenceCenter: string
