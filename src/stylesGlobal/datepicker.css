@@ -15,7 +15,7 @@
 .react-datepicker__day-name,
 .react-datepicker__day,
 .react-datepicker__time-name {
-  color: var(--ocean-grey-dark);
+  color: var(--ocean-grey);
 }
 
 .react-datepicker__current-month,

@@ -14,13 +14,10 @@
     var(--brand-blue-light)
   );
 
-  --brand-grey-dark: #0c1b5a;
-  --brand-grey: #6c7393;
-  --brand-grey-light: #c6ceef;
-  --brand-grey-lighter: #d4d4e2;
-
-  /* --brand-grey: #2b2e3b; */
-  /* --brand-grey-light: #4c5167; */
+  --brand-grey: #2b2e3b;
+  --brand-grey-light: #4c5167;
+  --brand-grey-lighter: #d0d2dd;
+  --brand-grey-dimmed: #f5f6fb;
 
   --brand-alert-green: #5fb359;
   --brand-alert-red: #d80606;

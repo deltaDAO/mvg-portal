@@ -17,8 +17,8 @@
 
 .badge {
   margin-left: calc(var(--spacer) / 8);
-  background-color: var(--font-color-light);
-  color: var(--menu-font-color);
+  background-color: var(--menu-border-color);
+  color: var(--menu-network-badge-font-color);
   font-size: calc(var(--font-size-mini) * 0.8);
 }
 
