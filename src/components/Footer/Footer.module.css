@@ -3,7 +3,7 @@
   padding-bottom: calc(var(--spacer) / 2);
   text-align: center;
   color: var(--footer-font-color);
-  background-color: var(--footer-background-color);
+  background: var(--footer-background-color);
   font-size: var(--font-size-small);
 }
 
