@@ -37,10 +37,11 @@ export default function Page({
         )}
         {title && !noPageHeader && (
           <PageHeader
-            title={<>{title.slice(0, 400)}</>}
-            description={description}
-            showSearch={isHome}
+            title={title}
             center={headerCenter}
+            description={description}
+            isHome={isHome}
+            showSearch={isHome}
           />
         )}
         {children}

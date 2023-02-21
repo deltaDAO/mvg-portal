@@ -8,13 +8,15 @@ const cx = classNames.bind(styles)
 
 export default function PageHeader({
   title,
-  description,
   center,
+  description,
+  isHome,
   showSearch
 }: {
-  title: ReactElement
-  description?: string
+  title: string
   center?: boolean
+  description?: string
+  isHome?: boolean
   showSearch?: boolean
 }): ReactElement {
   const styleClasses = cx({
@@ -24,7 +26,19 @@ export default function PageHeader({
 
   return (
     <header className={styleClasses}>
-      <h1 className={styles.title}>{title}</h1>
+      {isHome ? (
+        <div className={styles.homeTitleContainer}>
+          <h1>
+            {title.split(' - ').map((text, i) => (
+              <span key={i} className={styles.title}>
+                {text}
+              </span>
+            ))}
+          </h1>
+        </div>
+      ) : (
+        <h1 className={styles.title}>{title.slice(0, 400)}</h1>
+      )}
       {description && (
         <Markdown text={description} className={styles.description} />
       )}

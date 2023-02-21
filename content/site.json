@@ -39,6 +39,10 @@
         {
           "name": "Universitat de Lleida",
           "link": "https://udl.portal.minimal-gaia-x.eu/"
+        },
+        {
+          "name": "Oval",
+          "link": "https://oval.pepro.io/"
         }
       ]
     }
