@@ -78,7 +78,7 @@
 
 .link {
   display: block;
-  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+  padding: calc(var(--spacer) / 8) 0;
   text-transform: uppercase;
   color: var(--menu-font-color);
   font-weight: var(--menu-link-font-weight);
@@ -90,7 +90,7 @@
 .link:after {
   content: '';
   position: absolute;
-  background-color: var(--color-primary);
+  background-color: var(--menu-font-color-hover);
   height: 2px;
   left: 1px;
   right: 1px;
@@ -105,21 +105,17 @@
   transform: scaleX(1);
 }
 
-.actions,
-.link:hover,
-.active {
-  color: var(--menu-font-color-active);
+.link:hover {
+  color: var(--menu-font-color-hover);
 }
 
 .active,
-.active[aria-current],
-.link[aria-current]:hover,
-.link[aria-current]:focus {
-  color: var(--font-color-heading);
+.active:hover {
+  color: var(--menu-font-color-active);
 }
 
-.link:last-child {
-  padding-right: 0;
+.active:after {
+  background-color: var(--menu-font-color-active);
 }
 
 .link[aria-disabled] {
