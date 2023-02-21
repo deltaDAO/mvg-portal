@@ -40,6 +40,7 @@
 
 .logo svg {
   height: 100%;
+  fill: var(--ocean-violet);
 }
 
 .button:hover .logo,
