@@ -18,6 +18,7 @@ import { useIsMounted } from '@hooks/useIsMounted'
 import { useMarketMetadata } from './MarketMetadata'
 import { assetStateToString } from '@utils/assetState'
 import { isValidDid } from '@utils/ddo'
+import { useAddressConfig } from '@hooks/useAddressConfig'
 
 export interface AssetProviderValue {
   isInPurgatory: boolean
@@ -46,6 +47,7 @@ function AssetProvider({
   const { appConfig } = useMarketMetadata()
 
   const { chainId, accountId } = useWeb3()
+  const { isDDOWhitelisted } = useAddressConfig()
   const [isInPurgatory, setIsInPurgatory] = useState(false)
   const [purgatoryData, setPurgatoryData] = useState<Purgatory>()
   const [asset, setAsset] = useState<AssetExtended>()
@@ -78,11 +80,20 @@ function AssetProvider({
       LoggerInstance.log('[asset] Fetching asset...')
       setLoading(true)
       const asset = await getAsset(did, token)
+      const isWhitelisted = isDDOWhitelisted(asset)
 
       if (!asset) {
         setError(
           `\`${did}\`` +
             '\n\nWe could not find an asset for this DID in the cache. If you just published a new asset, wait some seconds and refresh this page.'
+        )
+        LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
+        return
+      }
+
+      if (!isWhitelisted) {
+        setError(
+          `\`${did}\`` + '\n\nThis DID can not be retrieved on this portal.'
         )
         LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
         return
