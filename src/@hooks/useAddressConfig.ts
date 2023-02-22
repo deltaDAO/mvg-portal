@@ -27,7 +27,7 @@ function isWhitelistEnabled() {
 }
 
 function hasFeaturedAssets() {
-  return featured?.length > 0
+  return featured?.some((section) => section?.assets?.length > 0)
 }
 
 export function useAddressConfig(): UseAddressConfig {
