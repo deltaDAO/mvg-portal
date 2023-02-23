@@ -94,6 +94,7 @@ export default function PublishedList({
         }}
         className={styles.assets}
         noPublisher
+        showAssetViewSelector
       />
     </>
   ) : (
