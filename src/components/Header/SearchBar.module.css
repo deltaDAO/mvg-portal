@@ -15,10 +15,6 @@
   width: 100%;
 }
 
-.search input {
-  padding-left: var(--button-size);
-}
-
 .button {
   position: absolute;
   top: 1px;
@@ -27,67 +23,45 @@
   left: 1px;
   padding: calc(var(--spacer) / 4);
   width: var(--button-size);
+  color: var(--font-color-text);
   background: transparent;
   border: none;
   box-shadow: none;
   cursor: pointer;
 }
 
-.button:hover,
-.button:focus {
-  color: var(--font-color-text);
-}
-
 .input {
-  font-size: 16px; /* prevent zoom in on input focus on mobile devices */
-  background-color: transparent;
-  height: var(--button-size);
   margin: 0;
   outline: 0;
   padding-right: var(--spacer);
-  width: 0;
-  transition: none;
-  border: none;
-  cursor: pointer;
-}
-
-.visibleInput {
-  background-color: var(--input-background);
+  padding-left: var(--button-size);
+  height: var(--button-size);
+  max-width: 100%;
   border: var(--input-border-size) solid var(--input-border-color);
   border-radius: var(--input-border-radius);
+  background-color: var(--input-background);
+  font-size: 16px; /* prevent zoom in on input focus on mobile devices */
   cursor: text;
-  max-width: 100%;
-}
-
-.visibleInput:focus,
-.visibleInput:hover {
-  border-color: var(--input-border-color);
-}
-
-.visibleInput:focus + button svg,
-.visibleInput:hover + button svg {
-  fill: var(--input-font-color);
+  transition: 0.1s ease-out;
 }
 
 .input:focus {
-  width: calc(100% - var(--spacer));
-  background-color: var(--input-background);
-  position: fixed;
-  left: calc(var(--spacer) / 2);
-  right: 0;
-  z-index: 2;
-  border: var(--input-border-size) solid var(--input-border-color);
-  border-radius: var(--input-border-radius);
-  cursor: text;
+  /* prevent the placeholder to move when increasing the border size*/
+  padding-left: calc(var(--button-size) - 1px);
+
+  border: var(--input-selected-border-size) solid
+    var(--input-selected-border-color);
 }
 
 .searchIcon {
   fill: var(--input-placeholder-font-color);
-  transition: 0.2s ease-out;
+  transition: 0.1s ease-out;
   width: var(--font-size-base);
   height: var(--font-size-base);
 }
 
-.input:hover .searchIcon {
+.search:has(.input:focus) .searchIcon,
+.button:hover .searchIcon,
+.button:focus .searchIcon {
   fill: var(--input-font-color);
 }

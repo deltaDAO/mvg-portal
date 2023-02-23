@@ -61,6 +61,8 @@
   --input-border-radius: var(--border-radius);
   --input-background: var(--brand-white);
   --input-selected-background: var(--checkbox-selected-background);
+  --input-selected-border-size: var(--border-size);
+  --input-selected-border-color: var(--font-color-heading);
 
   /* Buttons */
   --button-border-radius: var(--border-radius);

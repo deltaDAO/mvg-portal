@@ -27,12 +27,10 @@ async function emptySearch() {
 export default function SearchBar({
   placeholder,
   initialValue,
-  visibleInput,
   isSearchPage
 }: {
   placeholder?: string
   initialValue?: string
-  visibleInput?: boolean
   isSearchPage?: boolean
 }): ReactElement {
   const router = useRouter()
@@ -115,7 +113,7 @@ export default function SearchBar({
           onChange={handleChange}
           required
           size="small"
-          className={visibleInput ? styles.visibleInput : styles.input}
+          className={styles.input}
           onKeyPress={handleKeyPress}
         />
         <button onClick={handleButtonClick} className={styles.button}>

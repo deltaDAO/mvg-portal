@@ -44,7 +44,7 @@ export default function PageHeader({
       )}
       {showSearch && (
         <div className={styles.search}>
-          <SearchBar visibleInput placeholder="Search for service offerings" />
+          <SearchBar placeholder="Search for service offerings" />
         </div>
       )}
     </header>

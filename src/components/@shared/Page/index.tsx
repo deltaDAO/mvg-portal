@@ -30,7 +30,6 @@ export default function Page({
       <Container>
         {!isHome && (
           <SearchBar
-            visibleInput
             placeholder="Search for service offerings"
             isSearchPage={isSearch}
           />
