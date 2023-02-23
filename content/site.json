@@ -78,7 +78,7 @@
           },
           {
             "name": "Catalogue",
-            "link": "/search?sort=_score&sortOrder=desc&text="
+            "link": "/search?sort=nft.created&sortOrder=desc"
           },
           {
             "name": "Profile",
