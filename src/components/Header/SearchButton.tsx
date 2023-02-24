@@ -1,7 +1,7 @@
 import React, { FormEvent, ReactElement } from 'react'
 import SearchIcon from '@images/search.svg'
 import styles from './SearchButton.module.css'
-import { useUserPreferences } from '@context/UserPreferences'
+import { useSearchBarStatus } from '@context/SearchBarStatus'
 
 export default function SearchButton(): ReactElement {
   const isHome = window.location.pathname === '/'
@@ -10,7 +10,7 @@ export default function SearchButton(): ReactElement {
     setSearchBarVisible,
     homeSearchBarFocus,
     setHomeSearchBarFocus
-  } = useUserPreferences()
+  } = useSearchBarStatus()
 
   async function handleButtonClick(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()

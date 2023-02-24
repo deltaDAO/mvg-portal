@@ -24,10 +24,6 @@ interface UserPreferencesValue {
   removeBookmark: (did: string) => void
   setPrivacyPolicySlug: (slug: string) => void
   setShowPPC: (value: boolean) => void
-  isSearchBarVisible: boolean
-  setSearchBarVisible: (value: boolean) => void
-  homeSearchBarFocus: boolean
-  setHomeSearchBarFocus: (value: boolean) => void
   locale: string
 }
 
@@ -74,9 +70,6 @@ function UserPreferencesProvider({
   const [showPPC, setShowPPC] = useState<boolean>(
     localStorage?.showPPC !== false
   )
-
-  const [isSearchBarVisible, setSearchBarVisible] = useState<boolean>(false)
-  const [homeSearchBarFocus, setHomeSearchBarFocus] = useState<boolean>(false)
 
   // Write values to localStorage on change
   useEffect(() => {
@@ -150,11 +143,7 @@ function UserPreferencesProvider({
           addBookmark,
           removeBookmark,
           setPrivacyPolicySlug,
-          setShowPPC,
-          isSearchBarVisible,
-          setSearchBarVisible,
-          homeSearchBarFocus,
-          setHomeSearchBarFocus
+          setShowPPC
         } as UserPreferencesValue
       }
     >
