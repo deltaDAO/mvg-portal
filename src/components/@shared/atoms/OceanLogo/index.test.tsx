@@ -1,13 +1,13 @@
 import React from 'react'
 import testRender from '../../../../../.jest/testRender'
-import Logo from '@shared/atoms/Logo'
+import OceanLogo from '@shared/atoms/OceanLogo'
 import { Default, WithoutWordmark } from './index.stories'
 import { render } from '@testing-library/react'
 
-describe('Logo', () => {
-  testRender(<Logo {...Default.args} />)
+describe('OceanLogo', () => {
+  testRender(<OceanLogo {...Default.args} />)
 
   it('renders without wordmark', () => {
-    render(<Logo {...WithoutWordmark.args} />)
+    render(<OceanLogo {...WithoutWordmark.args} />)
   })
 })
