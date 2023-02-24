@@ -2,7 +2,6 @@ import React, { ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useGdprMetadata } from '@hooks/useGdprMetadata'
 import Button from '@shared/atoms/Button'
-import Link from 'next/link'
 import styles from './Links.module.css'
 import { useMarketMetadata } from '@context/MarketMetadata'
 
@@ -19,34 +18,33 @@ export default function Links(): ReactElement {
         <div key={i} className={styles.section}>
           <p className={styles.title}>{section.title}</p>
           <div className={styles.links}>
-            {section.links.map((e, i) =>
-              e.link.startsWith('/') ? (
-                <Link key={i} href={e.link}>
+            {section.links.map((e, i) => {
+              const linkDestination = e.link.startsWith('/')
+                ? { to: e.link }
+                : { href: e.link }
+
+              return (
+                <Button key={i} className={styles.link} {...linkDestination}>
                   {e.name}
-                </Link>
-              ) : (
-                <a
-                  key={i}
-                  href={e.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {e.name} &#8599;
-                </a>
+                </Button>
               )
-            )}
+            })}
           </div>
         </div>
       ))}
       <div className={styles.section}>
         <p className={styles.title}>{privacyTitle}</p>
         <div className={styles.links}>
-          <Link href="/imprint">Imprint</Link>
-          <Link href={privacyPolicySlug}>Privacy</Link>
+          <Button to="/imprint" className={styles.link}>
+            Imprint
+          </Button>
+          <Button to={privacyPolicySlug} className={styles.link}>
+            Privacy
+          </Button>
           {appConfig.privacyPreferenceCenter === 'true' && (
             <Button
+              className={styles.link}
               style="text"
-              size="small"
               onClick={() => {
                 setShowPPC(true)
               }}

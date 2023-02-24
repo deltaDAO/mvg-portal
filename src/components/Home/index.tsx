@@ -6,7 +6,6 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { SortTermOptions } from '../../@types/aquarius/SearchQuery'
 import SectionQueryResult from './SectionQueryResult'
 import styles from './index.module.css'
-import SuccessConfetti from '@components/@shared/SuccessConfetti'
 
 export default function HomePage(): ReactElement {
   const { chainIds } = useUserPreferences()
@@ -28,7 +27,6 @@ export default function HomePage(): ReactElement {
 
   return (
     <>
-      <SuccessConfetti success="done" />
       <section className={styles.section}>
         <h3>Your Bookmarks</h3>
         <Bookmarks />
