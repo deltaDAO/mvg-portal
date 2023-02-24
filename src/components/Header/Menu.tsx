@@ -9,6 +9,7 @@ import { useMarketMetadata } from '@context/MarketMetadata'
 import classNames from 'classnames/bind'
 import MenuDropdown from '@components/@shared/MenuDropdown'
 import SearchButton from './SearchButton'
+import Button from '@components/@shared/atoms/Button'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -32,19 +33,13 @@ export function MenuLink({ name, link, className }: MenuItem) {
     [className]: className
   })
 
-  return link.startsWith('/') ? (
-    <Link key={name} href={link} className={classes}>
-      {name}
-    </Link>
-  ) : (
-    <a
-      href={link}
+  return (
+    <Button
       className={classes}
-      target="_blank"
-      rel="noopener noreferrer"
+      {...(link.startsWith('/') ? { to: link } : { href: link })}
     >
-      {name} &#8599;
-    </a>
+      {name}
+    </Button>
   )
 }
 

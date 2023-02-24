@@ -1,5 +1,11 @@
 .menuItem {
   composes: link from '../../Header/Menu.module.css';
+}
+
+.menuItem,
+.menuItem:hover,
+.menuItem:focus,
+.menuItem:active {
   display: flex;
   align-items: center;
   padding-right: 0;
@@ -9,7 +15,7 @@
 
 .subItem {
   width: fit-content;
-  text-transform: none;
+  text-transform: none !important;
 }
 
 .caret,

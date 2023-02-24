@@ -18,17 +18,17 @@ export default function Links(): ReactElement {
         <div key={i} className={styles.section}>
           <p className={styles.title}>{section.title}</p>
           <div className={styles.links}>
-            {section.links.map((e, i) => {
-              const linkDestination = e.link.startsWith('/')
-                ? { to: e.link }
-                : { href: e.link }
-
-              return (
-                <Button key={i} className={styles.link} {...linkDestination}>
-                  {e.name}
-                </Button>
-              )
-            })}
+            {section.links.map((e, i) => (
+              <Button
+                key={i}
+                className={styles.link}
+                {...(e.link.startsWith('/')
+                  ? { to: e.link }
+                  : { href: e.link })}
+              >
+                {e.name}
+              </Button>
+            ))}
           </div>
         </div>
       ))}

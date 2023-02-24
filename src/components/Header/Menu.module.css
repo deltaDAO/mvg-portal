@@ -77,12 +77,22 @@
 }
 
 .link {
-  display: block;
-  padding: calc(var(--spacer) / 8) 0;
-  text-transform: uppercase;
+  composes: text from '../@shared/atoms/Button/index.module.css';
+
   color: var(--menu-font-color);
   font-weight: var(--menu-link-font-weight);
   font-size: var(--menu-link-font-size);
+}
+
+.link,
+.link:hover,
+.link:focus,
+.link:active,
+.active {
+  display: block;
+  padding: calc(var(--spacer) / 8) 0;
+  text-transform: uppercase;
+  transform: none;
   position: relative;
   z-index: 1;
 }
@@ -109,6 +119,8 @@
   color: var(--menu-font-color-hover);
 }
 
+.link:active,
+.link:focus,
 .active,
 .active:hover {
   color: var(--menu-font-color-active);
