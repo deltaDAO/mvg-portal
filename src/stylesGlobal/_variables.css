@@ -21,6 +21,7 @@
   --bookmark-icon-selected-fill-color: var(--brand-grey);
   --link-font-color: var(--color-highlight);
   --nft-refresh-icon-fill: var(--brand-white);
+  --badge-background-color: var(--color-primary);
 
   /* Menubar */
   --menu-logo-color: var(--color-primary);
