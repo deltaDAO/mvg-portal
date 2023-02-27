@@ -11,6 +11,11 @@ module.exports = {
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
     'https://aquarius.v4.delta-dao.com',
 
+  complianceUri:
+    process.env.GATSBY_COMPLIANCE_URI || 'https://compliance.gaia-x.eu',
+
+  complianceApiVersion: process.env.GATSBY_COMPLIANCE_API_VERSION || '2206',
+
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
   chainIds: getDefaultChainIds(),
