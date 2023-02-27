@@ -9,6 +9,9 @@ import { FormPublishData } from '../_types'
 import Alert from '@shared/atoms/Alert'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import styles from '../index.module.css'
+import isUrl from 'is-url-superb'
+import { getFileInfo } from '../../../@utils/provider'
+import { FileInfo } from '@oceanprotocol/lib'
 
 const accessTypeOptionsTitles = getFieldContent(
   'access',
@@ -107,6 +110,23 @@ export default function ServicesFields(): ReactElement {
         {...getFieldContent('timeout', content.services.fields)}
         component={Input}
         name="services[0].timeout"
+      />
+
+      {/*
+       Licensing and Terms
+      */}
+      <Field
+        {...getFieldContent('license', content.metadata.fields)}
+        component={Input}
+        name="metadata.license"
+      />
+      <Field
+        {...getFieldContent(
+          'accessTermsAndConditions',
+          content.metadata.fields
+        )}
+        component={Input}
+        name="metadata.gaiaXInformation.termsAndConditions"
       />
     </>
   )

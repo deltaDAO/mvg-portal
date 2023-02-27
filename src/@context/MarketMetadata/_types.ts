@@ -30,6 +30,7 @@ export interface AppConfig {
     classNameLight: string
     storageKey: string
   }
+  defaultAccessTerms: string
 }
 export interface SiteContent {
   siteTitle: string

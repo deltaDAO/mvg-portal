@@ -50,6 +50,23 @@
         "placeholder": "e.g. logistics"
       },
       {
+        "name": "license",
+        "label": "License",
+        "placeholder": "e.g. MIT",
+        "help": "A SPDX identifier of the license applicable to this service."
+      },
+      {
+        "name": "accessTermsAndConditions",
+        "value": "url",
+        "title": "URL",
+        "label": "Terms and Conditions",
+        "placeholder": "e.g. https://file.com/tandc.md",
+        "help": "The Terms and Conditions under which this service can be accessed. A resolvable link to the T&C document is expected. If no Terms are given the default [terms of this portal](/terms) will be applied.",
+        "prominentHelp": true,
+        "type": "files",
+        "required": false
+      },
+      {
         "name": "dockerImage",
         "label": "Docker Image",
         "help": "Please select an image to run your algorithm.",
@@ -79,6 +96,44 @@
         "label": "Docker Image Entrypoint",
         "placeholder": "e.g. python $ALGO",
         "help": "Provide the entrypoint for your algorithm.",
+        "required": true
+      },
+      {
+        "name": "containsPII",
+        "label": "Personally Identifiable Information",
+        "type": "checkbox",
+        "options": ["The dataset offered contains PII"],
+        "required": true
+      },
+      {
+        "name": "dataController",
+        "label": "Data Controller",
+        "help": "The responsible data controller, as defined in the GDPR.",
+        "default": "",
+        "required": true
+      },
+      {
+        "name": "legalBasis",
+        "label": "Legal Basis",
+        "help": "The legal basis for processing PII. Defined in GDPR.",
+        "placeholder": "e.g. GDPR2016:6.1.a",
+        "required": true
+      },
+      {
+        "name": "purpose",
+        "label": "Purposes",
+        "help": "The purpose of processing the contained PII. It is recommended to use [established vocabulary](https://w3c.github.io/dpv/dpv/#vocab-purpose).",
+        "placeholder": "e.g. ServiceOptimization, UserInterfacePersonalization",
+        "required": true
+      },
+      {
+        "name": "dataProtectionContactPoint",
+        "label": "Data Protection Contact Point",
+        "required": true
+      },
+      {
+        "name": "consentWithdrawalContactPoint",
+        "label": "Consent Withdrawal Contact Point",
         "required": true
       },
       {

@@ -12,9 +12,10 @@ module.exports = {
     'https://aquarius.v4.delta-dao.com',
 
   complianceUri:
-    process.env.GATSBY_COMPLIANCE_URI || 'https://compliance.gaia-x.eu',
+    process.env.NEXT_PUBLIC_COMPLIANCE_URI || 'https://compliance.gaia-x.eu',
 
-  complianceApiVersion: process.env.GATSBY_COMPLIANCE_API_VERSION || '2206',
+  complianceApiVersion:
+    process.env.NEXT_PUBLIC_COMPLIANCE_API_VERSION || '2206',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
@@ -89,5 +90,9 @@ module.exports = {
   // is used to create and show a privacy preference center / cookie banner
   // To learn more about how to configure and use this, please refer to the readme
   privacyPreferenceCenter:
-    process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'true'
+    process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'true',
+
+  // Default terms to be used for service offerings made on this marketplace
+  defaultAccessTerms:
+    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md'
 }

@@ -24,10 +24,12 @@ import {
   marketFeeAddress,
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
-  defaultDatatokenTemplateIndex
+  defaultDatatokenTemplateIndex,
+  defaultAccessTerms
 } from '../../../app.config'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
+import { GaiaXInformation2210 } from '../../@types/gaia-x/2210/GXInformation'
 
 function getUrlFileExtension(fileUrl: string): string {
   const splittedFileUrl = fileUrl.split('.')
@@ -63,7 +65,13 @@ export async function transformPublishFormToDdo(
   // so we can always assume if they are not passed, we are on preview.
   datatokenAddress?: string,
   nftAddress?: string
-): Promise<DDO> {
+): Promise<
+  DDO & {
+    metadata: {
+      additionalInformation: { gaiaXInformation: GaiaXInformation2210 }
+    }
+  }
+> {
   const { metadata, services, user } = values
   const { chainId, accountId } = user
   const {
@@ -77,7 +85,8 @@ export async function transformPublishFormToDdo(
     dockerImageCustom,
     dockerImageCustomTag,
     dockerImageCustomEntrypoint,
-    dockerImageCustomChecksum
+    dockerImageCustomChecksum,
+    gaiaXInformation
   } = metadata
   const { access, files, links, providerUrl, timeout } = services[0]
 
@@ -96,6 +105,10 @@ export async function transformPublishFormToDdo(
   const linksTransformed = links?.length &&
     links[0].valid && [sanitizeUrl(links[0].url)]
 
+  const accessTermsFileInfo = gaiaXInformation.termsAndConditions
+  const accessTermsUrlTransformed = accessTermsFileInfo?.length &&
+    accessTermsFileInfo[0].valid && [sanitizeUrl(accessTermsFileInfo[0].url)]
+
   const newMetadata: Metadata = {
     created: currentTime,
     updated: currentTime,
@@ -104,10 +117,20 @@ export async function transformPublishFormToDdo(
     description,
     tags: transformTags(tags),
     author,
-    license: 'https://market.oceanprotocol.com/terms',
+    license:
+      values.metadata.license || 'https://market.oceanprotocol.com/terms',
     links: linksTransformed,
     additionalInformation: {
-      termsAndConditions
+      termsAndConditions,
+      gaiaXInformation: {
+        termsAndConditions: [
+          { url: accessTermsUrlTransformed || defaultAccessTerms }
+        ],
+        ...(type === 'dataset' && {
+          containsPII: gaiaXInformation.containsPII,
+          PIIInformation: gaiaXInformation.PIIInformation
+        })
+      }
     },
     ...(type === 'algorithm' &&
       dockerImage !== '' && {
