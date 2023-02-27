@@ -48,9 +48,15 @@ export default function Button({
       {arrow && <>&nbsp;&#8594;</>}
     </Link>
   ) : href ? (
-    <a href={href} className={styleClasses} {...props}>
+    <a
+      href={href}
+      className={styleClasses}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    >
       {children}
-      {arrow && <>&nbsp;&#8594;</>}
+      &nbsp;&#8599;
     </a>
   ) : (
     <button className={styleClasses} {...props}>

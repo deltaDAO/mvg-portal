@@ -1,14 +1,16 @@
 import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 
-import Logo, { LogoProps } from '@shared/atoms/Logo'
+import OceanLogo, { LogoProps } from '@shared/atoms/OceanLogo'
 
 export default {
   title: 'Component/@shared/atoms/Logo',
-  component: Logo
-} as ComponentMeta<typeof Logo>
+  component: OceanLogo
+} as ComponentMeta<typeof OceanLogo>
 
-const Template: ComponentStory<typeof Logo> = (args) => <Logo {...args} />
+const Template: ComponentStory<typeof OceanLogo> = (args) => (
+  <OceanLogo {...args} />
+)
 
 interface Props {
   args: LogoProps

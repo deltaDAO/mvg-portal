@@ -21,6 +21,7 @@
   --bookmark-icon-selected-fill-color: var(--brand-grey);
   --link-font-color: var(--color-highlight);
   --nft-refresh-icon-fill: var(--brand-white);
+  --badge-background-color: var(--color-primary);
 
   /* Menubar */
   --menu-logo-color: var(--color-primary);
@@ -119,6 +120,13 @@
   --filter-selected-border-color: var(--background-body);
   --filter-clear-font-color: var(--color-secondary);
   --filter-clear-hover-font-color: var(--color-highlight);
+
+  /* Confetti */
+  --confetti-color-one: var(--brand-blue-light);
+  --confetti-color-two: var(--brand-cyan);
+  --confetti-color-three: var(--brand-violet);
+  --confetti-color-four: var(--brand-grey-light);
+  --confetti-color-five: var(--brand-grey-lighter);
 
   --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;

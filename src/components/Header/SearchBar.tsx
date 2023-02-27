@@ -13,7 +13,7 @@ import styles from './SearchBar.module.css'
 import { addExistingParamsToUrl } from '../Search/utils'
 import { useRouter } from 'next/router'
 import { animated, useSpring } from 'react-spring'
-import { useUserPreferences } from '@context/UserPreferences'
+import { useSearchBarStatus } from '@context/SearchBarStatus'
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window?.location.href)
@@ -42,7 +42,7 @@ export default function SearchBar({
     setSearchBarVisible,
     homeSearchBarFocus,
     setHomeSearchBarFocus
-  } = useUserPreferences()
+  } = useSearchBarStatus()
   const isHome = window.location.pathname === '/'
 
   const searchBarRef = useRef<HTMLInputElement>(null)

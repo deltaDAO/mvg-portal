@@ -6,12 +6,13 @@ import { UserPreferencesProvider } from '@context/UserPreferences'
 import PricesProvider from '@context/Prices'
 import UrqlProvider from '@context/UrqlProvider'
 import ConsentProvider from '@context/CookieConsent'
+import MarketMetadataProvider from '@context/MarketMetadata'
+import { SearchBarStatusProvider } from '@context/SearchBarStatus'
 import App from '../../src/components/App'
 
 import '@oceanprotocol/typographies/css/ocean-typo.css'
 import '../stylesGlobal/styles.css'
 import Decimal from 'decimal.js'
-import MarketMetadataProvider from '@context/MarketMetadata'
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
@@ -22,9 +23,11 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
           <UserPreferencesProvider>
             <PricesProvider>
               <ConsentProvider>
-                <App>
-                  <Component {...pageProps} />
-                </App>
+                <SearchBarStatusProvider>
+                  <App>
+                    <Component {...pageProps} />
+                  </App>
+                </SearchBarStatusProvider>
               </ConsentProvider>
             </PricesProvider>
           </UserPreferencesProvider>

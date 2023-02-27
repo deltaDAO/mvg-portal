@@ -25,20 +25,22 @@
   text-transform: capitalize;
 }
 
-.links a {
+.link {
+  composes: text from '../@shared/atoms/Button/index.module.css';
+}
+
+.link,
+.link:focus,
+.link:active {
+  text-transform: none;
   color: var(--footer-font-color);
+  font-weight: var(--font-weight-normal);
+  transform: none;
 }
 
-.links button {
-  transform: none !important;
-  color: inherit;
-  text-transform: capitalize;
-  font-weight: var(--font-weight-base);
-}
-
-.links a:hover,
-.links button:hover {
+.link:hover {
   color: var(--footer-font-color-highlight);
+  transform: none;
 }
 
 @media screen and (min-width: 55rem) {
