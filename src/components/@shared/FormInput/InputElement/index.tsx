@@ -1,4 +1,5 @@
 import React, { forwardRef, ReactElement, RefObject } from 'react'
+import CodeMirror from '@uiw/react-codemirror'
 import styles from './index.module.css'
 import { InputProps } from '..'
 import FilesInput from './FilesInput'
@@ -12,6 +13,7 @@ import InputRadio from './Radio'
 import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
 import TagsAutoComplete from './TagsAutoComplete'
 import TabsFile from '@shared/atoms/TabsFile'
+import { extensions, oceanTheme } from '@utils/codemirror'
 import ServiceSD from './ServiceSD'
 
 const cx = classNames.bind(styles)
@@ -171,6 +173,21 @@ const InputElement = forwardRef(
         )
       case 'tags':
         return <TagsAutoComplete {...field} {...props} />
+      case 'codeeditor':
+        return (
+          <CodeMirror
+            id={props.name}
+            className={styles.codemirror}
+            value={`${props.value ? props.value : ''}`}
+            height="200px"
+            placeholder={props.placeholder}
+            theme={oceanTheme('light', props)}
+            extensions={[extensions]}
+            onChange={(value) => {
+              form.setFieldValue(`${props.name}`, value)
+            }}
+          />
+        )
       default:
         return prefix || postfix ? (
           <div
