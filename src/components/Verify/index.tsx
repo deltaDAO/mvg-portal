@@ -161,31 +161,31 @@ export default function VerifyPage({
           </Button>
         </InputGroup>
       </form>
-      <>
-        {error && <p className={styles.error}>{errorList[error]}</p>}
-        {serviceSD && (
-          <div className={styles.sdContainer}>
-            {serviceSDErrors && (
-              <SDVisualizer
-                badgeLabel={errorSection.badgeLabel}
-                text={getFormattedCodeString(serviceSDErrors)}
-                title={errorSection.title}
-                displayBadge={!isServiceSDVerified}
-                apiVersion={serviceSDVersion}
-                invalidBadge
-              />
-            )}
+      {!isServiceSDVerified && error && (
+        <p className={styles.error}>{errorList[error]}</p>
+      )}
+      {serviceSD && (
+        <div className={styles.sdContainer}>
+          {serviceSDErrors && (
             <SDVisualizer
-              badgeLabel={serviceSDSection.badgeLabel}
-              text={getFormattedCodeString(serviceSD) || ''}
-              title={serviceSDSection.title}
-              displayBadge={isServiceSDVerified}
+              badgeLabel={errorSection.badgeLabel}
+              text={getFormattedCodeString(serviceSDErrors)}
+              title={errorSection.title}
+              displayBadge={!isServiceSDVerified}
               apiVersion={serviceSDVersion}
-              copyText={serviceSD && JSON.stringify(serviceSD, null, 2)}
+              invalidBadge
             />
-          </div>
-        )}
-      </>
+          )}
+          <SDVisualizer
+            badgeLabel={serviceSDSection.badgeLabel}
+            text={getFormattedCodeString(serviceSD) || ''}
+            title={serviceSDSection.title}
+            displayBadge={isServiceSDVerified}
+            apiVersion={serviceSDVersion}
+            copyText={serviceSD && JSON.stringify(serviceSD, null, 2)}
+          />
+        </div>
+      )}
     </div>
   )
 }
