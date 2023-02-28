@@ -19,6 +19,11 @@ import { useMarketMetadata } from './MarketMetadata'
 import { assetStateToString } from '@utils/assetState'
 import { isValidDid } from '@utils/ddo'
 import { useAddressConfig } from '@hooks/useAddressConfig'
+import {
+  getPublisherFromServiceSD,
+  getServiceSD,
+  verifyRawServiceSD
+} from '@components/Publish/_utils'
 
 export interface AssetProviderValue {
   isInPurgatory: boolean
@@ -32,6 +37,10 @@ export interface AssetProviderValue {
   oceanConfig: Config
   loading: boolean
   assetState: string
+  isVerifyingSD: boolean
+  isServiceSDVerified: boolean
+  serviceSDVersion: string
+  verifiedServiceProviderName: string
   fetchAsset: (token?: CancelToken) => Promise<void>
 }
 
@@ -59,6 +68,11 @@ function AssetProvider({
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
   const [oceanConfig, setOceanConfig] = useState<Config>()
   const [assetState, setAssetState] = useState<string>()
+  const [isVerifyingSD, setIsVerifyingSD] = useState(false)
+  const [isServiceSDVerified, setIsServiceSDVerified] = useState<boolean>()
+  const [serviceSDVersion, setServiceSDVersion] = useState<string>()
+  const [verifiedServiceProviderName, setVerifiedServiceProviderName] =
+    useState<string>()
 
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
@@ -148,6 +162,51 @@ function AssetProvider({
   }, [asset?.chainId, asset?.services, accountId, did])
 
   // -----------------------------------
+  // Helper: Get and set asset Self-Description state
+  // -----------------------------------
+  const checkServiceSD = useCallback(
+    async (asset: AssetExtended): Promise<void> => {
+      if (!asset) return
+      setIsVerifyingSD(true)
+
+      try {
+        const { additionalInformation } = asset.metadata
+        const serviceSD = additionalInformation?.gaiaXInformation?.serviceSD
+
+        if (!serviceSD || !Object.keys(serviceSD)?.length) {
+          setIsServiceSDVerified(false)
+          setServiceSDVersion(undefined)
+          setVerifiedServiceProviderName(undefined)
+          return
+        }
+
+        const serviceSDContent = serviceSD?.url
+          ? await getServiceSD(serviceSD?.url)
+          : serviceSD?.raw
+
+        const { verified, complianceApiVersion } = await verifyRawServiceSD(
+          serviceSDContent
+        )
+
+        setIsServiceSDVerified(verified && !!serviceSDContent)
+        setServiceSDVersion(complianceApiVersion)
+        const serviceProviderName = await getPublisherFromServiceSD(
+          serviceSDContent
+        )
+        setVerifiedServiceProviderName(serviceProviderName)
+      } catch (error) {
+        setIsServiceSDVerified(false)
+        setServiceSDVersion(undefined)
+        setVerifiedServiceProviderName(undefined)
+        LoggerInstance.error(error)
+      } finally {
+        setIsVerifyingSD(false)
+      }
+    },
+    []
+  )
+
+  // -----------------------------------
   // 1. Get and set asset based on passed DID
   // -----------------------------------
   useEffect(() => {
@@ -207,8 +266,18 @@ function AssetProvider({
   // -----------------------------------
   useEffect(() => {
     if (!asset?.nft) return
+
     setAssetState(assetStateToString(asset.nft.state))
   }, [asset])
+
+  // -----------------------------------
+  // Set Asset Self-Description state
+  // -----------------------------------
+  useEffect(() => {
+    if (!asset) return
+
+    checkServiceSD(asset)
+  }, [asset, checkServiceSD])
 
   return (
     <AssetContext.Provider
@@ -226,7 +295,11 @@ function AssetProvider({
           isAssetNetwork,
           isOwner,
           oceanConfig,
-          assetState
+          assetState,
+          isVerifyingSD,
+          isServiceSDVerified,
+          serviceSDVersion,
+          verifiedServiceProviderName
         } as AssetProviderValue
       }
     >

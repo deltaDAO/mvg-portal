@@ -56,7 +56,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
         return
       }
 
-      helpers.setValue([{ url, valid: true }])
+      helpers.setValue({ url })
       toast.success('Great! The provided service self-description looks good.')
     } catch (error) {
       toast.error('Could not fetch file info. Please check URL and try again')
@@ -86,7 +86,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
       }
 
       setRawServiceSDPreview(signedServiceSD)
-      helpers.setValue([{ url: storedSdUrl }])
+      helpers.setValue({ url: storedSdUrl })
       toast.success('Great! The provided service self-description looks good.')
     } catch (error) {
       toast.error(
@@ -117,7 +117,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
     helpers.setTouched(false)
     e.preventDefault()
 
-    helpers.setValue(JSON.stringify(field.value[0].raw, null, 4))
+    helpers.setValue(JSON.stringify(field.value.raw, null, 4))
     setIsVerified(false)
   }
 
@@ -140,9 +140,9 @@ export default function ServiceSD(props: InputProps): ReactElement {
       {userSelection && (
         <div>
           {userSelection === 'url' &&
-            (field?.value?.[0]?.valid === true ? (
+            (isVerified ? (
               <FileInfo
-                file={field.value[0]}
+                file={field.value}
                 handleClose={() => {
                   helpers.setTouched(false)
                   helpers.setValue(undefined)
