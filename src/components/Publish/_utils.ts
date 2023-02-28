@@ -25,11 +25,14 @@ import {
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
-  defaultAccessTerms
+  defaultAccessTerms,
+  complianceApiVersion,
+  complianceUri
 } from '../../../app.config'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
-import { GaiaXInformation2210 } from '../../@types/gaia-x/2210/GXInformation'
+import axios from 'axios'
+import { ServiceSD } from 'src/@types/gaia-x/2210/ServiceSD'
 
 function getUrlFileExtension(fileUrl: string): string {
   const splittedFileUrl = fileUrl.split('.')
@@ -65,13 +68,7 @@ export async function transformPublishFormToDdo(
   // so we can always assume if they are not passed, we are on preview.
   datatokenAddress?: string,
   nftAddress?: string
-): Promise<
-  DDO & {
-    metadata: {
-      additionalInformation: { gaiaXInformation: GaiaXInformation2210 }
-    }
-  }
-> {
+): Promise<DDO> {
   const { metadata, services, user } = values
   const { chainId, accountId } = user
   const {
@@ -129,7 +126,8 @@ export async function transformPublishFormToDdo(
         ...(type === 'dataset' && {
           containsPII: gaiaXInformation.containsPII,
           PIIInformation: gaiaXInformation.PIIInformation
-        })
+        }),
+        serviceSD: gaiaXInformation?.serviceSD
       }
     },
     ...(type === 'algorithm' &&
@@ -325,4 +323,168 @@ export async function createTokensAndPricing(
   }
 
   return { erc721Address, datatokenAddress, txHash }
+}
+
+export function getComplianceApiVersion(context?: string[]): string {
+  const latest = complianceApiVersion
+
+  const allowedRegistryDomains = [
+    'https://registry.gaia-x.eu/v2206',
+    'https://registry.lab.gaia-x.eu/v2206'
+  ]
+  if (
+    !context ||
+    !context.length ||
+    context.some(
+      (e) => allowedRegistryDomains.findIndex((x) => e.startsWith(x)) !== -1
+    )
+  )
+    return latest
+
+  return '2204'
+}
+
+export async function signServiceSD(rawServiceSD: any): Promise<any> {
+  if (!rawServiceSD) return
+  try {
+    const response = await axios.post(
+      `${complianceUri}/v${getComplianceApiVersion()}/api/sign`,
+      rawServiceSD
+    )
+    const signedServiceSD = {
+      selfDescriptionCredential: { ...rawServiceSD },
+      ...response.data
+    }
+
+    return signedServiceSD
+  } catch (error) {
+    LoggerInstance.error(error.message)
+  }
+}
+
+export async function storeRawServiceSD(signedSD: {
+  complianceCredentials: any
+  selfDescriptionCredential: any
+}): Promise<{
+  verified: boolean
+  storedSdUrl: string | undefined
+}> {
+  if (!signedSD) return { verified: false, storedSdUrl: undefined }
+
+  const baseUrl = `${complianceUri}/v${getComplianceApiVersion()}/api/service-offering/verify/raw?store=true&verifyParticipant=false`
+  try {
+    const response = await axios.post(baseUrl, signedSD)
+    if (response?.status === 409) {
+      return {
+        verified: false,
+        storedSdUrl: undefined
+      }
+    }
+    if (response?.status === 200) {
+      return { verified: true, storedSdUrl: response.data.storedSdUrl }
+    }
+
+    return { verified: false, storedSdUrl: undefined }
+  } catch (error) {
+    LoggerInstance.error(error.message)
+    return { verified: false, storedSdUrl: undefined }
+  }
+}
+
+export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
+  verified: boolean
+  complianceApiVersion?: string
+  responseBody?: any
+}> {
+  if (!rawServiceSD) return { verified: false }
+
+  const parsedServiceSD = JSON.parse(rawServiceSD)
+  const complianceApiVersion = getComplianceApiVersion(
+    parsedServiceSD?.selfDescriptionCredential?.['@context']
+  )
+
+  const versionedComplianceUri = `${complianceUri}/v${complianceApiVersion}/api`
+
+  // skip participant verification for 22.04 service SDs
+  const verifyParticipantOption = complianceApiVersion !== '2204'
+  // TODO: reinstate participant check
+  const baseUrl = `${versionedComplianceUri}/service-offering/verify/raw?verifyParticipant=false`
+
+  try {
+    const response = await axios.post(baseUrl, parsedServiceSD)
+    if (response?.status === 409) {
+      return {
+        verified: false,
+        responseBody: response.data.body
+      }
+    }
+    if (response?.status === 200) {
+      return { verified: true, complianceApiVersion }
+    }
+
+    return { verified: false }
+  } catch (error) {
+    LoggerInstance.error(error.message)
+    return { verified: false }
+  }
+}
+
+export async function getServiceSD(url: string): Promise<string> {
+  if (!url) return
+
+  try {
+    const serviceSD = await axios.get(url)
+    return JSON.stringify(serviceSD.data, null, 2)
+  } catch (error) {
+    LoggerInstance.error(error.message)
+  }
+}
+
+export function getFormattedCodeString(parsedCodeBlock: any): string {
+  const formattedString = JSON.stringify(parsedCodeBlock, null, 2)
+  return `\`\`\`\n${formattedString}\n\`\`\``
+}
+
+export function updateServiceSelfDescription(
+  ddo: DDO,
+  serviceSelfDescription: ServiceSD
+): DDO {
+  const { raw, url } = serviceSelfDescription
+  ddo.metadata.additionalInformation.gaiaXInformation.serviceSelfDescription = {
+    raw,
+    url
+  }
+
+  return ddo
+}
+
+export async function getPublisherFromServiceSD(
+  serviceSD: any
+): Promise<string> {
+  if (!serviceSD) return
+
+  try {
+    const parsedServiceSD =
+      typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
+    const providedBy =
+      parsedServiceSD?.selfDescriptionCredential?.credentialSubject?.[
+        'gx-service-offering:providedBy'
+      ]
+    const providedByUrl =
+      typeof providedBy === 'string' ? providedBy : providedBy?.['@value']
+
+    const response = await axios.get(sanitizeUrl(providedByUrl))
+    if (!response || response.status !== 200 || !response?.data) return
+
+    const legalName =
+      response.data?.selfDescriptionCredential?.credentialSubject?.[
+        'gx-participant:legalName'
+      ]
+    const publisher =
+      typeof legalName === 'string' ? legalName : legalName?.['@value']
+
+    return publisher
+  } catch (error) {
+    LoggerInstance.error(error.message)
+  }
 }

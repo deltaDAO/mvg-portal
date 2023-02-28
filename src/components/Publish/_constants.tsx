@@ -77,7 +77,8 @@ export const initialValues: FormPublishData = {
         }
       ],
       containsPII: false,
-      PIIInformation: undefined
+      PIIInformation: undefined,
+      serviceSD: { url: '' }
     }
   },
   services: [

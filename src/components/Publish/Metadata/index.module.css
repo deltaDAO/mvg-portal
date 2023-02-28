@@ -10,7 +10,7 @@
 }
 
 .gdpr {
-  border: 1px solid var(--border-color);
+  border: var(--input-border-size) solid var(--input-border-color);
   padding: calc(var(--spacer) / 2);
   margin-top: calc(var(--spacer) * -0.5);
   margin-bottom: var(--spacer);

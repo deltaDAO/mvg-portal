@@ -1,10 +1,4 @@
-import React, {
-  forwardRef,
-  ReactElement,
-  RefObject,
-  useCallback,
-  useState
-} from 'react'
+import React, { forwardRef, ReactElement, RefObject } from 'react'
 import styles from './index.module.css'
 import { InputProps } from '..'
 import FilesInput from './FilesInput'
@@ -18,6 +12,7 @@ import InputRadio from './Radio'
 import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
 import TagsAutoComplete from './TagsAutoComplete'
 import TabsFile from '@shared/atoms/TabsFile'
+import ServiceSD from './ServiceSD'
 
 const cx = classNames.bind(styles)
 
@@ -156,6 +151,8 @@ const InputElement = forwardRef(
         )
       case 'files':
         return <FilesInput {...field} form={form} {...props} />
+      case 'serviceSD':
+        return <ServiceSD name={name} {...field} {...props} />
       case 'container':
         return <ContainerInput {...field} {...props} />
       case 'providerUrl':

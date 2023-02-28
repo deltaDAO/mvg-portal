@@ -9,9 +9,6 @@ import { FormPublishData } from '../_types'
 import Alert from '@shared/atoms/Alert'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import styles from '../index.module.css'
-import isUrl from 'is-url-superb'
-import { getFileInfo } from '../../../@utils/provider'
-import { FileInfo } from '@oceanprotocol/lib'
 
 const accessTypeOptionsTitles = getFieldContent(
   'access',
