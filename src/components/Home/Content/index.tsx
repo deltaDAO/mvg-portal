@@ -52,12 +52,7 @@ export default function HomeContent(): ReactElement {
               <div className={styles.content}>
                 <h2>{paragraph.title}</h2>
                 <Markdown text={paragraph.body} />
-                <Button
-                  href={paragraph.ctaTo}
-                  style="primary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Button href={paragraph.ctaTo} style="primary">
                   {paragraph.cta}
                 </Button>
               </div>
