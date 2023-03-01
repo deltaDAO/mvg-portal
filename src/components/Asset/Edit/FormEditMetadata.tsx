@@ -7,6 +7,8 @@ import { FormPublishData } from '@components/Publish/_types'
 import { getFileInfo } from '@utils/provider'
 import { getFieldContent } from '@utils/form'
 import { isGoogleUrl } from '@utils/url'
+import { GaiaXInformation2210 } from 'src/@types/gaia-x/2210/GXInformation'
+import styles from './FormEditMetadata.module.css'
 
 export function checkIfTimeoutInPredefinedValues(
   timeout: string,
@@ -28,7 +30,9 @@ export default function FormEditMetadata({
   isComputeDataset: boolean
 }): ReactElement {
   const { asset } = useAsset()
-  const { values, setFieldValue } = useFormikContext<FormPublishData>()
+  const { values, setFieldValue } = useFormikContext<
+    FormPublishData & { gaiaXInformation: GaiaXInformation2210 }
+  >()
 
   // This component is handled by Formik so it's not rendered like a "normal" react component,
   // so handleTimeoutCustomOption is called only once.
@@ -140,7 +144,63 @@ export default function FormEditMetadata({
         component={Input}
         name="assetState"
       />
+      <Field
+        {...getFieldContent('serviceSD', data)}
+        component={Input}
+        name="gaiaXInformation.serviceSD"
+      />
+      <Field
+        {...getFieldContent('accessTermsAndConditions', data)}
+        component={Input}
+        name="gaiaXInformation.termsAndConditions"
+      />
+      <Field
+        {...getFieldContent('license', data)}
+        component={Input}
+        name="license"
+      />
+      {asset.metadata.type === 'dataset' && (
+        <>
+          <Field
+            {...getFieldContent('containsPII', data)}
+            component={Input}
+            name="gaiaXInformation.containsPII"
+          />
+          {values.gaiaXInformation.containsPII === true && (
+            <div className={styles.gdpr}>
+              <Field
+                {...getFieldContent('dataController', data)}
+                component={Input}
+                name="gaiaXInformation.PIIInformation.legitimateProcessing.dataController"
+              />
 
+              <Field
+                {...getFieldContent('legalBasis', data)}
+                component={Input}
+                name="gaiaXInformation.PIIInformation.legitimateProcessing.legalBasis"
+              />
+
+              <Field
+                {...getFieldContent('purpose', data)}
+                component={Input}
+                name="gaiaXInformation.PIIInformation.legitimateProcessing.purpose"
+              />
+
+              <Field
+                {...getFieldContent('dataProtectionContactPoint', data)}
+                component={Input}
+                name="gaiaXInformation.PIIInformation.legitimateProcessing.dataProtectionContactPoint"
+              />
+
+              <Field
+                {...getFieldContent('consentWithdrawalContactPoint', data)}
+                component={Input}
+                name="gaiaXInformation.PIIInformation.legitimateProcessing.consentWithdrawalContactPoint"
+              />
+            </div>
+          )}
+        </>
+      )}
       <FormActions />
     </Form>
   )

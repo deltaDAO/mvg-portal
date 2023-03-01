@@ -95,7 +95,11 @@ export default function Edit({
         description: values.description,
         links: linksTransformed,
         author: values.author,
-        tags: values.tags
+        tags: values.tags,
+        additionalInformation: {
+          ...asset.metadata?.additionalInformation,
+          gaiaXInformation: values.gaiaXInformation
+        }
       }
 
       asset?.accessDetails?.type === 'fixed' &&
