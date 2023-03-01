@@ -9,6 +9,7 @@ import { useAddressConfig } from '@hooks/useAddressConfig'
 import MostViews from './MostViews'
 import TopSales from './TopSales'
 import TopTags from './TopTags'
+import HomeContent from './Content'
 
 interface FeaturedSection {
   title: string
@@ -103,6 +104,7 @@ export default function HomePage(): ReactElement {
       <MostViews />
       <TopSales title="Publishers With Most Sales" />
       <TopTags title="Top Tags By Sales" />
+      <HomeContent />
     </>
   )
 }

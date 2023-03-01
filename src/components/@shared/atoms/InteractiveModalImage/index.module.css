@@ -1,0 +1,44 @@
+.imagePreview {
+  cursor: zoom-in;
+}
+
+.modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  cursor: zoom-out;
+}
+
+#close {
+  display: block;
+  align-self: flex-end;
+  overflow: hidden;
+  position: relative;
+  border: none;
+  padding: 0;
+  width: 2em;
+  height: 2em;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--brand-grey);
+  font: inherit;
+  text-indent: 100%;
+  cursor: pointer;
+}
+
+#close:before,
+#close:after {
+  position: absolute;
+  top: 15%;
+  left: calc(50% - 0.0625em);
+  width: 0.125em;
+  height: 70%;
+  border-radius: 0.125em;
+  transform: rotate(45deg);
+  background: currentcolor;
+  content: '';
+}
+#close:after {
+  transform: rotate(-45deg);
+}
