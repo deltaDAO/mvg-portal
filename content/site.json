@@ -14,10 +14,6 @@
       "link": "/publish/1"
     },
     {
-      "name": "Verify",
-      "link": "/verify"
-    },
-    {
       "name": "Ecosystem",
       "subItems": [
         {
@@ -91,10 +87,6 @@
           {
             "name": "Publish",
             "link": "/publish"
-          },
-          {
-            "name": "Verify",
-            "link": "/verify"
           }
         ]
       }
