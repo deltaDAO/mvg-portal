@@ -2,57 +2,72 @@ import React, { ReactElement } from 'react'
 import Link from 'next/link'
 import loadable from '@loadable/component'
 import Logo from '@shared/atoms/Logo'
-import UserPreferences from './UserPreferences'
 import Networks from './UserPreferences/Networks'
-import SearchBar from './SearchBar'
 import styles from './Menu.module.css'
 import { useRouter } from 'next/router'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import classNames from 'classnames/bind'
+import MenuDropdown from '@components/@shared/MenuDropdown'
+import SearchButton from './SearchButton'
+import Button from '@components/@shared/atoms/Button'
 const Wallet = loadable(() => import('./Wallet'))
+
+const cx = classNames.bind(styles)
 
 declare type MenuItem = {
   name: string
-  link: string
+  link?: string
+  subItems?: MenuItem[]
+  className?: string
 }
 
-function MenuLink({ item }: { item: MenuItem }) {
+export function MenuLink({ name, link, className }: MenuItem) {
   const router = useRouter()
 
-  const classes =
-    router?.pathname === item.link
-      ? `${styles.link} ${styles.active}`
-      : styles.link
+  const basePath = router?.pathname.split(/[/?]/)[1]
+  const baseLink = link.split(/[/?]/)[1]
+
+  const classes = cx({
+    link: true,
+    active: link.startsWith('/') && basePath === baseLink,
+    [className]: className
+  })
 
   return (
-    <Link key={item.name} href={item.link} className={classes}>
-      {item.name}
-    </Link>
+    <Button
+      className={classes}
+      {...(link.startsWith('/') ? { to: link } : { href: link })}
+    >
+      {name}
+    </Button>
   )
 }
 
 export default function Menu(): ReactElement {
-  const { siteContent } = useMarketMetadata()
+  const { appConfig, siteContent } = useMarketMetadata()
 
   return (
     <nav className={styles.menu}>
       <Link href="/" className={styles.logo}>
-        <Logo noWordmark />
-        <h1 className={styles.title}>{siteContent?.siteTitle}</h1>
+        <Logo />
       </Link>
 
       <ul className={styles.navigation}>
         {siteContent?.menu.map((item: MenuItem) => (
           <li key={item.name}>
-            <MenuLink item={item} />
+            {item?.subItems ? (
+              <MenuDropdown label={item.name} items={item.subItems} />
+            ) : (
+              <MenuLink {...item} />
+            )}
           </li>
         ))}
       </ul>
 
       <div className={styles.actions}>
-        <SearchBar />
-        <Networks />
+        <SearchButton />
+        {appConfig.chainIdsSupported.length > 1 && <Networks />}
         <Wallet />
-        <UserPreferences />
       </div>
     </nav>
   )

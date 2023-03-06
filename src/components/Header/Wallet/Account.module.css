@@ -1,10 +1,9 @@
 .button {
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
   font-size: var(--font-size-small);
   text-transform: uppercase;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
+  border: var(--menu-border-size) solid var(--menu-border-color);
+  border-radius: var(--menu-border-radius);
   padding: calc(var(--spacer) / 4) calc(var(--spacer) / 3);
   white-space: nowrap;
   background: var(--background-content);
@@ -18,7 +17,7 @@
 
 .button,
 .address {
-  color: var(--font-color-text);
+  color: var(--menu-font-color);
 }
 
 .button:hover,
@@ -28,36 +27,33 @@
 }
 
 .button.initial {
-  color: var(--color-primary);
+  color: var(--menu-font-color);
 }
 
 .button.initial span {
   display: none;
 }
 
-@media screen and (min-width: 42rem) {
-  .button.initial span {
-    display: inline;
-    margin-left: 0.2rem;
-  }
-}
-
 .address {
   display: none;
   text-transform: none;
-  border-right: 1px solid var(--border-color);
+  border-right: var(--menu-border-size) solid var(--menu-border-color);
   padding-right: calc(var(--spacer) / 3);
   padding-left: calc(var(--spacer) / 8);
 }
 
-@media screen and (min-width: 60rem) {
-  .address {
-    display: inline-block;
-  }
+.button svg {
+  width: 1em;
+  height: 1em;
+  fill: var(--menu-icon-color-fill);
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: calc(var(--spacer) / 3);
+  transition: transform 0.2s ease-out;
+}
 
-  .blockies {
-    margin-right: calc(var(--spacer) / 6);
-  }
+[aria-expanded='true'] .button svg {
+  transform: rotate(180deg);
 }
 
 .status {
@@ -66,6 +62,27 @@
   top: 1px;
 }
 
-.caret {
-  composes: caret from '../Menu.module.css';
+.caret,
+svg.caret {
+  display: none;
+}
+
+@media screen and (min-width: 25rem) {
+  .button.initial span {
+    display: inline;
+  }
+  .caret,
+  svg.caret {
+    display: inline-block;
+    fill: var(--menu-icon-fill-color);
+  }
+}
+
+@media screen and (min-width: 40rem) {
+  .address {
+    display: inline-block;
+  }
+  .blockies {
+    margin-right: calc(var(--spacer) / 6);
+  }
 }

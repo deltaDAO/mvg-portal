@@ -1,13 +1,19 @@
 .logo {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: var(--menu-logo-size-sm);
+  height: auto;
   margin: 0;
 }
 
 .logo path {
-  fill: var(--font-color-heading);
+  fill: var(--menu-logo-color);
 }
 
 a > .logo:hover path {
-  fill: var(--color-primary);
+  fill: var(--menu-logo-color-hover);
+}
+
+@media screen and (min-width: 55rem) {
+  .logo {
+    width: var(--menu-logo-size-lg);
+  }
 }

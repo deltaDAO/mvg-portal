@@ -165,7 +165,7 @@ describe('@shared/FormInput/InputElement/FilesInput', () => {
     ])
     render(<FilesInput {...props} field={mockField} />)
     expect(
-      screen.getByText('https://oceanprotocol/placeholder')
+      screen.getByText('https://delta-dao/the-future-is-now')
     ).toBeInTheDocument()
   })
 })

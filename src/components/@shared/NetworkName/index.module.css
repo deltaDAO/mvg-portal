@@ -2,7 +2,7 @@
   text-transform: capitalize;
   display: inline-flex;
   align-items: center;
-  color: var(--color-secondary);
+  cursor: default;
 }
 
 .icon {
@@ -22,7 +22,13 @@
   width: 0;
 }
 
-@media screen and (min-width: 42rem) {
+.minimal:hover .name {
+  width: auto;
+  opacity: 1;
+}
+
+@media screen and (min-width: 40rem) {
+  .minimal .name,
   .minimal:hover .name {
     width: auto;
     opacity: 1;

@@ -15,9 +15,20 @@
   hyphens: auto;
 }
 
+.homeTitleContainer h1 span {
+  display: block;
+}
+
+.homeTitleContainer > h1 span:first-of-type {
+  font-size: var(--font-size-h2);
+}
+
 @media (min-width: 40rem) {
   .title {
     font-size: var(--font-size-h2);
+  }
+  .homeTitleContainer > h1 span:first-of-type {
+    font-size: var(--font-size-h1);
   }
 }
 
@@ -27,8 +38,16 @@
   margin-bottom: 0;
 }
 
-.center {
+.center,
+.search {
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+}
+
+.search {
+  display: flex;
+  justify-content: center;
+  margin-top: calc(var(--spacer) / 2);
+  max-width: 30rem;
 }

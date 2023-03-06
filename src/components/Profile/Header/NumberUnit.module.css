@@ -45,7 +45,7 @@
 .unit a:hover,
 .unit a:focus {
   background: var(--brand-white);
-  border: 0.1rem solid var(--brand-pink);
+  border: 0.1rem solid var(--color-primary);
 }
 
 .tooltip svg {

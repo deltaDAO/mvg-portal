@@ -1,7 +1,5 @@
 .app {
   height: 100%;
-  background: url('../../../node_modules/@oceanprotocol/art/waves/waves.svg')
-    no-repeat center 13.5rem;
 
   /* sticky footer technique */
   display: flex;
@@ -9,18 +7,12 @@
   flex-direction: column;
 }
 
-@media (min-width: 2000px) {
-  .app {
-    background-size: contain;
-  }
-}
-
 .app > * {
   width: 100%;
 }
 
 .main {
-  padding: calc(var(--spacer) * 1.5) 0 calc(var(--spacer) * 2) 0;
+  padding: 0 0 calc(var(--spacer) * 2) 0;
 
   /* sticky footer technique */
   flex: 1;

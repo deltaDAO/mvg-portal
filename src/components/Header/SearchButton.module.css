@@ -1,0 +1,30 @@
+.search {
+  display: block;
+}
+
+.button {
+  cursor: pointer;
+  background: var(--background-content);
+  border: none;
+  box-shadow: none;
+  padding: calc(var(--spacer) / 4);
+  width: 38px;
+  height: 38px;
+  right: 1px;
+  left: 1px;
+  top: 1px;
+  bottom: 1px;
+  z-index: -1;
+}
+
+.button:hover,
+.button:focus {
+  color: var(--font-color-text);
+}
+
+.searchIcon {
+  fill: var(--menu-icon-fill-color);
+  transition: 0.2s ease-out;
+  width: var(--font-size-base);
+  height: var(--font-size-base);
+}

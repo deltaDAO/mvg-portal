@@ -53,7 +53,7 @@
 
 .assetLink svg {
   margin: 0;
-  fill: var(--color-primary);
+  fill: var(--color-highlight);
   width: 0.6em;
   height: 0.6em;
 }

@@ -1,0 +1,42 @@
+:root {
+  /* Portal brand color variables */
+  --brand-white: #ffffff;
+  --brand-black: #000046;
+  --brand-blue: #000094;
+  --brand-blue-light: #1651ed;
+  --brand-cyan: #46daff;
+  --brand-purple: #7300f3;
+  --brand-violet: #b900ff;
+
+  --brand-gradient: linear-gradient(
+    to right bottom,
+    var(--brand-cyan),
+    var(--brand-blue-light)
+  );
+
+  --brand-grey: #2b2e3b;
+  --brand-grey-light: #4c5167;
+  --brand-grey-lighter: #d0d2dd;
+  --brand-grey-dimmed: #f5f6fb;
+
+  --brand-alert-green: #5fb359;
+  --brand-alert-red: #d80606;
+  --brand-alert-orange: #b35f36;
+  --brand-alert-yellow: #eac146;
+
+  /* Ocean brand color variables */
+  --ocean-white: #ffffff;
+  --ocean-black: #141414;
+  --ocean-pink: #ff4092;
+  --ocean-purple: #7b1173;
+  --ocean-violet: #e000cf;
+
+  --ocean-grey-darker: #201f1f;
+  --ocean-grey-dark: #303030;
+  --ocean-grey: #41474e;
+  --ocean-grey-light: #8b98a9;
+  --ocean-grey-lighter: #e2e2e2;
+  --ocean-grey-dimmed: #f7f7f7;
+
+  --ocean-gradient: linear-gradient(to right bottom, #7b1173, #ff4092);
+}

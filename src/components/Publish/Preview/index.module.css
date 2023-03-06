@@ -18,7 +18,6 @@
 }
 
 .previewTitle {
-  font-size: var(--font-size-small);
   text-transform: uppercase;
   color: var(--color-secondary);
   margin-bottom: calc(var(--spacer) / 2);

@@ -1,12 +1,50 @@
-.links a {
-  text-transform: none;
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-base);
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: calc(var(--spacer) * 2);
+  width: 100%;
 }
 
-.links svg {
-  display: inline;
-  fill: currentColor;
-  width: 0.6em;
-  height: 0.6em;
+.section {
+  text-align: left;
+}
+
+.title {
+  margin-bottom: calc(var(--spacer) / 2);
+  text-transform: uppercase;
+  font-weight: var(--font-weight-bold);
+  color: var(--footer-link-category-font-color);
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: calc(var(--spacer) / 4);
+  text-transform: capitalize;
+}
+
+.link {
+  composes: text from '../@shared/atoms/Button/index.module.css';
+}
+
+.link,
+.link:focus,
+.link:active {
+  text-transform: none;
+  color: var(--footer-font-color);
+  font-weight: var(--font-weight-normal);
+  transform: none;
+}
+
+.link:hover {
+  color: var(--footer-font-color-highlight);
+  transform: none;
+}
+
+@media screen and (min-width: 55rem) {
+  .container {
+    width: auto;
+  }
 }

@@ -3,7 +3,7 @@
 }
 
 .refresh svg {
-  fill: var(--brand-pink);
+  fill: var(--color-primary);
   width: var(--font-size-mini);
   height: var(--font-size-mini);
 }

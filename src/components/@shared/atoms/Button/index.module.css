@@ -11,10 +11,10 @@
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
   text-transform: uppercase;
-  border-radius: var(--border-radius);
+  border-radius: var(--button-border-radius);
   transition: 0.2s ease-out;
-  color: var(--brand-white);
-  background: var(--brand-grey-light);
+  color: var(--button-font-color);
+  background: var(--button-background);
   box-shadow: 0 9px 18px 0 rgba(0, 0, 0, 0.1);
   user-select: none;
   text-align: center;
@@ -22,15 +22,15 @@
 
 .button:hover,
 .button:focus {
-  color: var(--brand-white);
-  background: var(--brand-grey-light);
+  color: var(--button-hover-font-color);
+  background: var(--button-hover-background);
   text-decoration: none;
   box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.1);
   transform: translate3d(0, -0.05rem, 0);
 }
 
 .button:active {
-  background: var(--brand-grey-light);
+  background: var(--button-active-background);
   transition: none;
   transform: none;
   box-shadow: 0 5px 18px 0 rgba(0, 0, 0, 0.1);
@@ -46,15 +46,15 @@
 .primary:hover,
 .primary:focus,
 .primary:active {
-  background: var(--brand-gradient);
+  background: var(--button-primary-background);
 }
 
 .ghost,
 .ghost:hover,
 .ghost:focus,
 .ghost:active {
-  color: var(--brand-grey);
-  background: var(--brand-white);
+  color: var(--button-ghost-font-color);
+  background: var(--button-ghost-background);
 }
 
 .text,
@@ -67,7 +67,7 @@
   padding: 0;
   display: inline-block;
   background: 0;
-  color: var(--brand-pink);
+  color: var(--button-text-font-color);
   box-shadow: none;
   cursor: pointer;
   min-width: auto;

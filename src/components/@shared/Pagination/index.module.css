@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-secondary);
+  color: var(--pagination-font-color);
 }
 
 li:first-child .number,
@@ -43,7 +43,7 @@ li:last-child .number {
 }
 
 .number:hover {
-  color: var(--brand-pink);
+  color: var(--pagination-hover-font-color);
 }
 
 .current,
@@ -62,7 +62,7 @@ li:last-child .number {
 .current:hover,
 .current:focus,
 .current:active {
-  color: var(--text-color);
+  color: var(--pagination-selected-font-color);
 }
 
 .next {

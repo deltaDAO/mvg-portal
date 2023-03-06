@@ -1,0 +1,13 @@
+.logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  margin: 0;
+}
+
+.logo path {
+  fill: var(--ocean-black);
+}
+
+a > .logo:hover path {
+  fill: var(--ocean-pink);
+}

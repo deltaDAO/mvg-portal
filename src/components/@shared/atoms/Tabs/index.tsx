@@ -39,6 +39,7 @@ export default function Tabs({
             >
               {showRadio ? (
                 <InputRadio
+                  className={styles.radioInput}
                   name={item.title}
                   type="radio"
                   checked={index === defaultIndex}

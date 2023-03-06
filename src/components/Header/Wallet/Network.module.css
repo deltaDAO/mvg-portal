@@ -1,29 +1,24 @@
 .network {
-  border: 1px solid var(--border-color);
+  border: var(--menu-border-size) solid var(--menu-border-color);
   border-right: none;
-  border-top-left-radius: var(--border-radius);
-  border-bottom-left-radius: var(--border-radius);
-  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 8);
+  border-top-left-radius: var(--menu-border-radius);
+  border-bottom-left-radius: var(--menu-border-radius);
+  padding: calc(var(--spacer) / 6) calc(var(--spacer) / 3);
   white-space: nowrap;
   margin-right: -3px;
   display: inline-flex;
   align-items: center;
 }
 
-@media screen and (min-width: 42rem) {
-  .network {
-    padding: calc(var(--spacer) / 4);
-  }
-}
-
 .name {
   font-size: var(--font-size-small);
+  color: var(--menu-font-color);
 }
 
 .badge {
-  margin-left: -0.25rem;
-  background-color: var(--border-color);
-  color: var(--font-color-text);
+  margin-left: calc(var(--spacer) / 8);
+  background-color: var(--menu-border-color);
+  color: var(--menu-network-badge-font-color);
   font-size: calc(var(--font-size-mini) * 0.8);
 }
 

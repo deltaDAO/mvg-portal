@@ -13,7 +13,7 @@
 
 .stats .link,
 .stats .link:hover {
-  color: var(--color-primary);
+  color: var(--color-highlight);
   font-size: var(--font-size-small);
   text-decoration: none;
   padding: 0;

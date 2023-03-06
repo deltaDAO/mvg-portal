@@ -1,13 +1,12 @@
 .menu {
   width: 100%;
-  padding: calc(var(--spacer) / 2) calc(var(--spacer) / 3);
+  padding: calc(var(--spacer) / 2);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.logo,
-.badge {
+.logo {
   white-space: nowrap;
   display: flex;
 }
@@ -17,18 +16,14 @@
   align-items: center;
 }
 
-.badge {
-  cursor: pointer;
-  margin-top: -0.25rem;
-  padding: calc(var(--spacer) / 5) calc(var(--spacer) / 4);
-}
-
 .navigation {
   order: 3;
   margin-top: calc(var(--spacer) / 2);
   text-align: center;
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--border-color);
+  border-top: var(--menu-mobile-navigation-border-size) solid
+    var(--menu-mobile-navigation-border-color);
+  border-bottom: var(--menu-mobile-navigation-border-size) solid
+    var(--menu-mobile-navigation-border-color);
   margin-left: -1rem;
   margin-right: -1rem;
   width: calc(100% + 2rem);
@@ -37,18 +32,11 @@
 .actions {
   order: 2;
   display: flex;
+  gap: calc(var(--spacer) / 3);
   margin-left: auto;
 }
 
-.title {
-  display: none;
-}
-
-@media screen and (min-width: 42rem) {
-  .menu {
-    padding: calc(var(--spacer) / 2);
-  }
-
+@media screen and (min-width: 55rem) {
   .navigation {
     order: 2;
     width: auto;
@@ -56,7 +44,6 @@
     text-align: left;
     border: none;
   }
-
   .actions {
     order: 3;
     margin-left: auto;
@@ -65,15 +52,7 @@
 
 @media screen and (min-width: 55rem) {
   .menu {
-    padding: var(--spacer);
-  }
-
-  .title {
-    margin: 0;
-    display: block;
-    color: var(--color-secondary);
-    font-size: var(--font-size-h4);
-    margin-right: calc(var(--spacer) / 6);
+    padding: calc(var(--spacer) / 1.5);
   }
 }
 
@@ -98,31 +77,57 @@
 }
 
 .link {
+  composes: text from '../@shared/atoms/Button/index.module.css';
+
+  color: var(--menu-font-color);
+  font-weight: var(--menu-link-font-weight);
+  font-size: var(--menu-link-font-size);
+}
+
+.link,
+.link:hover,
+.link:focus,
+.link:active,
+.active {
   display: block;
-  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+  padding: calc(var(--spacer) / 8) 0;
   text-transform: uppercase;
-  color: var(--color-secondary);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-base);
+  transform: none;
   position: relative;
   z-index: 1;
 }
 
-.actions,
-.link:hover,
+.link:after {
+  content: '';
+  position: absolute;
+  background-color: var(--menu-font-color-hover);
+  height: 2px;
+  left: 1px;
+  right: 1px;
+  bottom: 0;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.link:hover:after,
+.active:after {
+  transform: scaleX(1);
+}
+
+.link:hover {
+  color: var(--menu-font-color-hover);
+}
+
+.link:active,
 .link:focus,
-.link:active {
-  color: var(--font-color-text);
+.active,
+.active:hover {
+  color: var(--menu-font-color-active);
 }
 
-.link[aria-current],
-.link[aria-current]:hover,
-.link[aria-current]:focus {
-  color: var(--font-color-heading);
-}
-
-.link:last-child {
-  padding-right: 0;
+.active:after {
+  background-color: var(--menu-font-color-active);
 }
 
 .link[aria-disabled] {
@@ -140,9 +145,9 @@
 .caret,
 svg.caret {
   display: none;
-  width: var(--font-size-small);
-  height: var(--font-size-small);
-  fill: var(--border-color);
+  width: var(--menu-caret-size);
+  height: var(--menu-caret-size);
+  fill: var(--menu-caret-fill-color);
   transition: transform 0.2s ease-out;
   vertical-align: middle;
   margin-left: calc(var(--spacer) / 4);
@@ -152,15 +157,7 @@ svg.caret {
   transform: rotate(180deg);
 }
 
-.badge .caret {
-  fill: var(--brand-white);
-  opacity: 0.7;
-  width: var(--font-size-mini);
-  height: var(--font-size-mini);
-  margin-left: calc(var(--spacer) / 12);
-}
-
-@media screen and (min-width: 42rem) {
+@media screen and (min-width: 55rem) {
   .caret,
   svg.caret {
     display: inline-block;
@@ -169,15 +166,4 @@ svg.caret {
   .navigation {
     margin-left: calc(var(--spacer) / 2);
   }
-}
-
-.versions {
-  padding: calc(var(--spacer) / 4);
-}
-
-.versions .link {
-  display: inline-block;
-  margin: 0 calc(var(--spacer) / 4);
-  padding: 0;
-  font-size: var(--font-size-small);
 }

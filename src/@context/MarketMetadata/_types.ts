@@ -36,11 +36,31 @@ export interface SiteContent {
   copyright: string
   menu: {
     name: string
-    link: string
+    link?: string
+    subItems?: {
+      name: string
+      link?: string
+      subItems?: {
+        name: string
+        link: string
+      }[]
+    }[]
   }[]
   announcement: string
   warning: {
     ctd: string
+  }
+  footer: {
+    subtitle: string
+    copyright: string
+    privacyTitle: string
+    content: {
+      title: string
+      links: {
+        name: string
+        link: string
+      }[]
+    }[]
   }
 }
 

@@ -21,7 +21,7 @@
 
 .tag:hover:not(span),
 .tag:focus:not(span) {
-  color: var(--color-primary);
+  color: var(--color-highlight);
 }
 
 .more {

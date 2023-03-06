@@ -43,7 +43,7 @@ export default function Networks(): ReactElement {
           </li>
         </ul>
       }
-      trigger="click focus"
+      trigger="click focus mouseenter"
       className={`${stylesIndex.preferences} ${styles.networks}`}
     >
       <>

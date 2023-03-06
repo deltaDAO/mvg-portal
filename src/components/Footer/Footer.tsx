@@ -1,35 +1,36 @@
 import React, { ReactElement } from 'react'
 import styles from './Footer.module.css'
 import Markdown from '@shared/Markdown'
-import MarketStats from './MarketStats'
-import BuildId from './BuildId'
 import Links from './Links'
-import Button from '@shared/atoms/Button'
-import External from '@images/external.svg'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import DeltaDaoLogo from '@images/deltaDAO_Logo_small_RGB_white.svg'
+import Container from '@components/@shared/atoms/Container'
 
 export default function Footer(): ReactElement {
   const { siteContent } = useMarketMetadata()
-  const year = new Date().getFullYear()
+  const { siteTitle, footer } = siteContent
+  const { copyright, subtitle } = footer
 
   return (
     <footer className={styles.footer}>
-      <BuildId />
-      <MarketStats />
-
-      <div className={styles.grid}>
-        <Links />
-        <div className={styles.copyright}>
-          © {year} <Markdown text={siteContent?.copyright} />
-          <Button
-            style="text"
-            size="small"
-            href="https://oceanprotocol.com"
+      <Container className={styles.container}>
+        <div>
+          <p className={styles.siteTitle}>{siteTitle}</p>
+          <a
+            href="https://delta-dao.com"
             target="_blank"
+            rel="noopener noreferrer"
           >
-            Ocean Protocol <External className={styles.svg} />
-          </Button>
+            <div className={styles.main}>
+              <DeltaDaoLogo />
+              <p className={styles.subtitle}>{subtitle}</p>
+            </div>
+          </a>
         </div>
+        <Links />
+      </Container>
+      <div className={styles.copyright}>
+        <Markdown text={copyright} />
       </div>
     </footer>
   )

@@ -20,7 +20,7 @@
 
 .links a:hover,
 .links a:focus {
-  color: var(--brand-pink);
+  color: var(--color-primary);
 }
 
 .linksExternal {
