@@ -11,7 +11,8 @@ module.exports = {
     process.env.GATSBY_METADATACACHE_URI || 'https://aquarius.delta-dao.com',
 
   complianceUri:
-    process.env.GATSBY_COMPLIANCE_URI || 'https://compliance.gaia-x.eu',
+    process.env.GATSBY_COMPLIANCE_URI ||
+    'https://compliance.lab.gaia-x.eu/development',
 
   complianceApiVersion: process.env.GATSBY_COMPLIANCE_API_VERSION || '2206',
 
