@@ -16,7 +16,7 @@ module.exports = {
     'https://compliance.lab.gaia-x.eu/development',
 
   complianceApiVersion:
-    process.env.NEXT_PUBLIC_COMPLIANCE_API_VERSION || '2206',
+    process.env.NEXT_PUBLIC_COMPLIANCE_API_VERSION || '2210',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
