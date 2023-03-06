@@ -12,7 +12,8 @@ module.exports = {
     'https://aquarius.v4.delta-dao.com',
 
   complianceUri:
-    process.env.NEXT_PUBLIC_COMPLIANCE_URI || 'https://compliance.gaia-x.eu',
+    process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
+    'https://compliance.lab.gaia-x.eu/development',
 
   complianceApiVersion:
     process.env.NEXT_PUBLIC_COMPLIANCE_API_VERSION || '2206',
