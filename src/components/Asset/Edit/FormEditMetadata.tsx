@@ -145,6 +145,11 @@ export default function FormEditMetadata({
         name="assetState"
       />
       <Field
+        {...getFieldContent('serviceSD', data)}
+        component={Input}
+        name="gaiaXInformation.serviceSD"
+      />
+      <Field
         {...getFieldContent('accessTermsAndConditions', data)}
         component={Input}
         name="gaiaXInformation.termsAndConditions"
