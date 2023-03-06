@@ -57,7 +57,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
         return
       }
 
-      helpers.setValue({ url })
+      helpers.setValue({ url, isVerified: verified })
       toast.success('Great! The provided service self-description looks good.')
     } catch (error) {
       toast.error('Could not fetch file info. Please check URL and try again')
@@ -104,14 +104,12 @@ export default function ServiceSD(props: InputProps): ReactElement {
   }, [userSelection])
 
   const handleVerify = async (e: React.FormEvent<Element>, body: string) => {
+    e.preventDefault()
+
     if (isLoading) return
     helpers.setTouched(false)
 
-    e.preventDefault()
-
-    userSelection === 'url'
-      ? await validateUrl(body)
-      : await verifyRawBody(body)
+    validateUrl(body)
   }
 
   const handleEdit = (e: React.FormEvent<Element>) => {
@@ -125,78 +123,25 @@ export default function ServiceSD(props: InputProps): ReactElement {
   return (
     <div>
       {/* Check if there is a url coming from the edit form */}
-      {isVerified || (!userSelection && field?.value?.url) ? (
-        <div>
-          {(userSelection === 'url' ||
-            (!userSelection && field?.value?.url)) && (
-            <FileInfo
-              file={field.value}
-              handleClose={() => {
-                helpers.setTouched(false)
-                helpers.setValue(undefined)
-              }}
-            />
-          )}
-          {userSelection === 'raw' && (
-            <div className={styles.previewContainer}>
-              <Markdown text={getFormattedCodeString(rawServiceSDPreview)} />
-              <Button style="text" onClick={(e) => handleEdit(e)}>
-                Edit
-              </Button>
-            </div>
-          )}
-        </div>
+      {isVerified || (field?.value?.isVerified && field?.value?.url) ? (
+        <FileInfo
+          file={field.value}
+          handleClose={() => {
+            setIsVerified(false)
+            helpers.setTouched(false)
+            helpers.setValue(undefined)
+          }}
+        />
       ) : (
-        <>
-          <div className={styles.boxSelection}>
-            <BoxSelection
-              name="serviceSelfDescriptionOptions"
-              options={serviceSelfDescriptionOptions.map((option) => ({
-                ...option,
-                checked: field.value && userSelection === option.name
-              }))}
-              handleChange={(e) => {
-                helpers.setTouched(false)
-                helpers.setValue(undefined)
-                setUserSelection(e.target.value)
-              }}
-            />
-          </div>
-          {userSelection && (
-            <div>
-              {userSelection === 'url' && (
-                <URLInput
-                  submitText="Validate"
-                  {...props}
-                  name={`${field.name}[0].url`}
-                  isLoading={isLoading}
-                  handleButtonClick={handleVerify}
-                  checkUrl={true}
-                  storageType="url"
-                />
-              )}
-              {userSelection === 'raw' && (
-                <div className={styles.inputContainer}>
-                  <Input
-                    type="textarea"
-                    value={field.value}
-                    onChange={(e) =>
-                      helpers.setValue((e.target as HTMLInputElement).value)
-                    }
-                    placeholder=""
-                  />
-                  <Button
-                    disabled={!field.value}
-                    style="primary"
-                    onClick={async (e) => await handleVerify(e, field.value)}
-                  >
-                    {!isLoading ? 'Verify' : <Loader />}
-                  </Button>
-                </div>
-              )}
-            </div>
-          )}
-        </>
+        <URLInput
+          submitText="Validate"
+          {...props}
+          name={`${field.name}[0].url`}
+          isLoading={isLoading}
+          handleButtonClick={handleVerify}
+          checkUrl={true}
+          storageType="url"
+        />
       )}
     </div>
   )
