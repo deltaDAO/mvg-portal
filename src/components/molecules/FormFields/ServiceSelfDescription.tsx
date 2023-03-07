@@ -93,46 +93,7 @@ export default function ServiceSelfDescription(
 
   return (
     <div>
-      <div>
-        <BoxSelection
-          name="serviceSelfDescriptionOptions"
-          options={serviceSelfDescriptionOptions.map((option) => ({
-            ...option,
-            checked: field.value !== '' && userSelection === option.name
-          }))}
-          handleChange={(e) => {
-            helpers.setValue(undefined)
-            setUserSelection(e.target.value)
-          }}
-        />
-      </div>
-      {field.value !== '' && (
-        <div>
-          {userSelection === 'url' && (
-            <Input type="files" setStatus={props?.setStatus} {...props} />
-          )}
-          {userSelection === 'raw' &&
-            (!isVerified ? (
-              <div className={styles.inputContainer}>
-                <Input type="textarea" {...props} placeholder="" />
-                <Button
-                  disabled={!field.value}
-                  style="primary"
-                  onClick={(e) => handleVerify(e, field.value)}
-                >
-                  {!isLoading ? 'Verify' : <Loader />}
-                </Button>
-              </div>
-            ) : (
-              <div className={styles.previewContainer}>
-                <Markdown text={getFormattedCodeString(rawServiceSDPreview)} />
-                <Button style="text" onClick={(e) => handleEdit(e)}>
-                  Edit
-                </Button>
-              </div>
-            ))}
-        </div>
-      )}
+      <Input type="files" setStatus={props?.setStatus} {...props} />
     </div>
   )
 }
