@@ -273,11 +273,11 @@ function AssetProvider({
   // -----------------------------------
   // Set Asset Self-Description state
   // -----------------------------------
-  useEffect(() => {
-    if (!asset) return
+  // useEffect(() => {
+  //   if (!asset) return
 
-    checkServiceSD(asset)
-  }, [asset, checkServiceSD])
+  //   checkServiceSD(asset)
+  // }, [asset, checkServiceSD])
 
   return (
     <AssetContext.Provider
