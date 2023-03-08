@@ -117,7 +117,7 @@ export default function AssetContent({
               </Button>
             </div>
           )} */}
-          <RelatedAssets />
+          {/* <RelatedAssets /> */}
         </div>
       </article>
     </>
