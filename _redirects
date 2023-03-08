@@ -1,3 +1,2 @@
-/asset/* /asset/index.html 200
-/profile/* /profile/index.html 200
-/publish/* /publish/1.html 200
+/asset/* /asset/:did 200
+/publish/* /publish/:step 200
