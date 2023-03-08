@@ -71,7 +71,7 @@ export default function AssetContent({
       </div>
 
       <article className={styles.grid}>
-        <div>
+        {/* <div>
           <div className={styles.content}>
             <MetaMain asset={asset} nftPublisher={nftPublisher} />
             {asset?.accessDetails?.datatoken !== null && (
@@ -106,7 +106,7 @@ export default function AssetContent({
             <EditHistory receipts={receipts} setReceipts={setReceipts} />
             {debug === true && <DebugOutput title="DDO" output={asset} />}
           </div>
-        </div>
+        </div> */}
 
         <div className={styles.actions}>
           <AssetActions asset={asset} />
