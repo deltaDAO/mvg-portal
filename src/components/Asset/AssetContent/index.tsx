@@ -109,14 +109,14 @@ export default function AssetContent({
         </div>
 
         <div className={styles.actions}>
-          <AssetActions asset={asset} />
+          {/* <AssetActions asset={asset} />
           {isOwner && isAssetNetwork && (
             <div className={styles.ownerActions}>
               <Button style="text" size="small" to={`/asset/${asset?.id}/edit`}>
                 Edit Asset
               </Button>
             </div>
-          )}
+          )} */}
           <RelatedAssets />
         </div>
       </article>
