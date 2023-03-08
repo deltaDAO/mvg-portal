@@ -108,7 +108,7 @@ export default function AssetContent({
           </div>
         </div>
 
-        {/* <div className={styles.actions}>
+        <div className={styles.actions}>
           <AssetActions asset={asset} />
           {isOwner && isAssetNetwork && (
             <div className={styles.ownerActions}>
@@ -118,7 +118,7 @@ export default function AssetContent({
             </div>
           )}
           <RelatedAssets />
-        </div> */}
+        </div>
       </article>
     </>
   )
