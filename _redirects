@@ -1,2 +1,2 @@
-/asset/* /asset/:did 200
-/publish/* /publish/:step 200
+/asset/* /asset/:did.html 200
+/publish/* /publish/:step.html 200
