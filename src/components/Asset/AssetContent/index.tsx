@@ -47,22 +47,22 @@ export default function AssetContent({
     )
   }, [receipts])
 
-  useEffect(() => {
-    if (!isServiceSDVerified) return
-    const serviceSD =
-      asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
-    if (serviceSD?.raw) {
-      setServiceSD(JSON.parse(serviceSD?.raw))
-    }
-    if (serviceSD?.url) {
-      getServiceSD(serviceSD?.url).then((serviceSelfDescription) =>
-        setServiceSD(JSON.parse(serviceSelfDescription))
-      )
-    }
-  }, [
-    isServiceSDVerified,
-    asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
-  ])
+  // useEffect(() => {
+  //   if (!isServiceSDVerified) return
+  //   const serviceSD =
+  //     asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
+  //   if (serviceSD?.raw) {
+  //     setServiceSD(JSON.parse(serviceSD?.raw))
+  //   }
+  //   if (serviceSD?.url) {
+  //     getServiceSD(serviceSD?.url).then((serviceSD) =>
+  //       setServiceSD(JSON.parse(serviceSD))
+  //     )
+  //   }
+  // }, [
+  //   isServiceSDVerified,
+  //   asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
+  // ])
 
   return (
     <>
