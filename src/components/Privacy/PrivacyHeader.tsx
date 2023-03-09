@@ -18,8 +18,7 @@ export default function PrivacyPolicyHeader({
   return (
     <div>
       <PrivacyLanguages label={params.languageLabel} />
-      {/* TODO: reinstate automatic table of content */}
-      {/* <p>
+      <p>
         {params?.updated || 'Last updated on'}{' '}
         <Time date={date} displayFormat={params?.dateFormat || 'MM-dd-yyyy'} />
       </p>
@@ -29,7 +28,7 @@ export default function PrivacyPolicyHeader({
           className={styles.tocList}
           dangerouslySetInnerHTML={{ __html: tableOfContents }}
         />
-      </div> */}
+      </div>
     </div>
   )
 }

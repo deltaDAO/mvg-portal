@@ -3,156 +3,238 @@ title: Terms and Conditions
 description: Thanks for using our product and services.
 ---
 
-Ocean Marketplace Terms and Conditions (this “**Agreement**”) is made and entered into by and between Ocean Protocol Foundation Ltd., with office at The Commerze @ Irving, 1 Irving Place, #08-11, Singapore, 369546 Singapore (“**Ocean**”) and the legal entity set forth in the Account Information (“**Customer**”). It governs Customer’s access to and use of the Ocean Marketplace (as defined below) and takes effect on the date of its acceptance by Customer (the “**Effective Date**”). Customer represents being lawfully able to enter into contracts and having legal authority to bind Customer’s entity.
+# deltaDAO DATA PORTAL - TERMS AND CONDITIONS
 
-**DEFINITIONS**
+deltaDAO (as defined below) provides a technical infrastructure for a digital portal enabling access to Data (as defined below). Based on these terms and conditions, a customer (as defined below) and deltaDAO enter into an agreement which governs the customer’s access to and use of the data portal (as defined below) and takes effect on the date of deltaDAO’s acceptance of such customer’s offer.
 
-“**Service**“** **means all websites, software and services offered and operated by Ocean.
+### Table of contents
 
-“**API**” means an application program interface.
+1. DEFINITIONS AND INTERPRETATION
+2. REGISTRATION, ACCESS TO AND USE OF THE DATA PORTAL
+3. CUSTOMER’S RESPONSIBILITIES
+4. FEES AND PAYMENT
+5. SUSPENSION
+6. SELF-DESCRIPTION LIFECYCLE MANAGEMENT
+7. SECURITY AND DATA PROTECTION
+8. TERM AND TERMINATION
+9. INTELLECTUAL PROPERTY RIGHTS
+10. PERFORMANCE QUALITY AND WARRANTIES
+11. LIABILITY
+12. MODIFICATIONS
+13. MISCELLANEOUS
 
-“**Customer**” means any individual or entity that directly or indirectly through another user: (a) accesses or uses published assets; or (b) otherwise accesses or uses the Ocean Marketplace.
+## 1. Definitions and Interpretation <a name="definitions"></a>
 
-“**Data Buyer**” means any Customer or legal entity and its employees that sources or intends to source external data
+**1.1 Definitions**  
+Capitalised terms shall have the meaning given to them in this Agreement; and:
 
-“**Data Vendor**” means any Customer or legal entity and its employees that provides or intends to provide data.
+**"Access Controllers"** means an infrastructure component of the Data ecosystem managing access to Data.
 
-“**Documentation**” means the user guides (in each case exclusive of content referenced via hyperlink) for the Ocean Marketplace, as such user guides may be updated by Ocean from time to time.
+**"Agreement"** means the agreement between the Customer and deltaDAO based on these terms and conditions.
 
-“**Ocean Website**” means the website at https://market.oceanprotocol.com  (and any successor or related site designated by Ocean), as may be updated by Ocean from time to time.
+**"Consumption"** means the transfer of the Data Token to the respective Publisher by which the respective Customer redeems the Data Token for the respective Data Service Offering and creates the respective Data audit trail (i.e., documentation of access activities to the Data).
 
-“**Modifications Effective Date**” will have the meaning as set out in Section 2.2.
+**"Customer"** means any natural person or legal entity acting as an entrepreneur pursuant to § 14 of the German Civil Code, duly registered on the Data Portal, that: (a) creates a Data Service Offering, (b) uses (including compute-to-data) such Data Service Offering, or (c) otherwise accesses or uses the Data Portal, including pseudonymous users.
 
-“**Policies**” means the Privacy Policy, the Platform Terms, the Service Terms, all restrictions described in the Ocean Marketplace and on the Ocean Website, and any other policy or terms referenced in or incorporated into this Agreement, but does not include whitepapers or other marketing materials referenced on the Ocean Website.
+**"Customer Account"** means the functionality by means of which the Customer gains permission for the Consumption and Publication of Data Service Offerings on the Data Portal by SSI/DID and Verifiable Credentials and, if applicable, further authentication data or alternative authentication techniques (e.g. entering user name and password) if available.
 
-“**Privacy Policy**” means the privacy policy located at https://www.oceanprotocol.com (and any successor or related locations designated by Ocean), as it may be updated by Ocean from time to time.
+**"Data"** means any data for which a Data Service Offering is created by a Publisher on the Data Portal.
 
-“**Purgatory**” means a state in which a publisher or data asset is tagged in Ocean Market. The purgatory policies are located at https://github.com/oceanprotocol/list-purgatory/tree/main/policies
+**"Data Buyer"** means any Customer that acquires Data Token.
 
-“**Service**” means each of the services made available by Ocean or its affiliates, including those web services described in the Service Terms. Services do not include Third-Party Content.
+**"Data Portal"** means a portal including an API-connector, establishing links to metadata-caches which query the underlying EVM Compatible Blockchain and hereby enabling (a) the discovery/display of Data Service Offerings and (b) the Consumption of Data Service Offerings and (c) the Publication of a Data Service Offering.
 
-“**Service Terms**” means the rights and restrictions for particular Services located at [https://market.oceanprotocol.com](https://market.oceanprotocol.com/) (and any successor or related locations designated by Ocean), as may be updated by Ocean from time to time.
+**"Data Service Offerings"** means service offers, of various kinds, relating to the utilization of Data, such as access-, organization-, allocation- traceability- and security-data-services.
 
-“**Website Terms**” means the terms of use located at [https://www.oceanprotocol.com](https://www.oceanprotocol.com/) (and any successor or related locations designated by Ocean), as may be updated by Ocean from time to time.
+**"Data Token"** means a token created by the Publisher enabling the use of the related Data Service Offering and creating the respective Data audit trail via the selected EVM Compatible Blockchain (i.e., documentation of access activities to the Data).
 
-“**Term**” means the term of this Agreement described in Section 7.1.
+**"deltaDAO"** means deltaDAO AG, Katharinenstraße 30a, 20457 Hamburg, Germany as provider of the Data Portal.
 
-“**Termination Date**” means the effective date of termination provided in accordance with Section 7.1.
+**"deltaDAO Content"** means software or data which deltaDAO is entitled to.
 
- 
+**"EVM Compatible Blockchain"** means any blockchain or distributed ledger technology solutions compatible with the Ethereum Virtual Machine technology.
 
-**1 ACCESS TO AND USE OF THE PLATFORM SERVICES**
+**"Gas Fee"** means the transaction fee required by EVM Compatible Blockchains for processing a transaction, if any.
 
-**1.1**	The Customer can access and use the Ocean Marketplace in accordance with this Agreement. Customer undertakes to comply with the terms of this Agreement and all laws, rules and regulations applicable to Customer’s use of the Ocean Marketplace.
+**"German Civil Code"** means the Bürgerliches Gesetzbuch as amended from time to time.
 
-**1.2**	To access the Ocean Marketplace, Customer must have a Web3 wallet (e.g. MetaMask) and must have Ocean tokens in their wallet.
+**"Lifecycle State"** means the following properties of metadata: "active", "end-of-life", "deprecated" "revoked", “disabled”, and “unlisted”, describing the state of Data Service Offerings throughout their lifecycles and being subject to the Self-Description Lifecycle Management pursuant to respective Policies, made available on the Data Portal.
 
-**1.3**    Ocean Marketplace connects Data Buyers and Data Vendors directly, without any 3rd party control via the marketplace. This means that Customers are responsible for their own activity on the marketplace. Customers must adhere to the laws in their own legal jurisdiction as well as their conscience. Ocean is not responsible for any malicious use of the Ocean Marketplace or any losses associated with the use of the Ocean Marketplace of any source.  
+**"Personal data"** means any information relating to an identified or identifiable natural person.
 
-**1.4**	By clicking any button or box marked “accept” or “agree” (or a similar term) in connection with this Agreement, or by accessing or using the Ocean Marketplace, you agree to be bound by this Agreement, a current version of which is available at the Ocean Website, and which may be modified from time to time at our sole discretion. We are only providing our services if you accept all of these terms. By using the Ocean Marketplace, the Customer confirms their understanding and agrees to be bound by all of these terms. If Customer accepts these terms on behalf of a company or other legal entity, Customer represents that they have the legal authority to accept these terms on that entity’s behalf, in which case Customer will mean that entity.  If Customer does not accept all of these terms, then you may not access or use the Ocean Marketplace.  
+**"Policies"** means any policy or guideline and all restrictions described on the Data Portal and on the Website that may i.a. determine sanctions such as the withdrawal of authorizations/access rights to be imposed as a result of a violation.
 
-**2 MODIFICATIONS**
+**"Publication"** means placing a Data Service Offering on the Data Portal.
 
-**2.1**	Ocean may modify this Agreement, change or discontinue any Service (including any policies and Service Level Agreements) at any time with no prior notification  Ocean will provide 15 days advance notice prior to the effective date of software modifications (“**Modifications Effective Date**”).
+**"Publisher"** means any Customer that provides or intends to provide Data Service Offerings.
 
-**2.2**	If Customer continues to use the Ocean Marketplace after the Modifications Effective Date, Customer will be deemed to be bound by the modified terms as of the Modifications Effective Date.
+**“Self-Description Lifecycle Management”** means a mechanism to change the visibility of any Data Service Offering from the Data Portal depending on the Lifecycle State.
 
-**2.3**	If Customer objects to the software modifications , the Customer may cease to use the Ocean Market.
+**"Service"** means all websites, software and services offered and operated by deltaDAO in connection with the provision of the Data Portal from time to time.
 
-**3 SECURITY – DATA PROTECTION**
+**“Terms”** means these terms and conditions.
 
-**3.1**    Without limiting Customer obligations under Section 4.2, Ocean will implement reasonable and appropriate measures designed to help Customer secure published assets against accidental or unlawful loss, access or disclosure.
+**"Third-Party Content"** means Data Service Offerings published by other parties but the Customer.
 
-**3.2**	Published assets will be stored on-chain. Ocean will not store any information.
+**"Website"** means the website at https://portal.minimal-gaia-x.eu/ (and any successor or related site designated by deltaDAO), as may be updated by deltaDAO from time to time.
 
-**3.3**	Transactions that take place on the Ocean Marketplace are managed and confirmed via the Ethereum blockchain. Your Ethereum public address will be made publicly visible whenever you engage in a transaction on the Ocean Marketplace.
+**1.2 Interpretation**  
+**1.1.1** Unless specified otherwise, these Terms shall be construed as follows:
 
-**3.4**	We neither own nor control MetaMask, Coinbase, Google Chrome, the Ethereum network, or any other third parties site, product, or service that you might access, visit, or use for the purpose of enabling you to use the various features of the Ocean Market. We will not be liable for the acts or omissions of any such third parties, nor will we be liable for any damage that you may suffer as a result of your transactions or any other interaction with any such third parties.
+**_1.1.1.1_** insofar as the context permits, a reference to the singular includes the plural and vice versa;
 
-**3.5**	We use the minimum amount of cookies and similar tracking technologies to track the activity on our websites and hold certain information. Cookies are files with a small amount of data which may include an anonymous unique identifier. Cookies are sent to your browser from a website and stored on your device. Tracking technologies also used are beacons, tags, and scripts to collect and track information and to improve and analyze our services. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, if you do not accept cookies, you may not be able to use some portions of our services.
+**_1.1.1.2_** a defined document or statutory provision is a reference to that exact defined document or provision as amended, supplemented, restated or modified from time to time;
 
-**3.6**	The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security and we do not take any liability in case of security breaches.
+**_1.1.1.3_** headings are for convenience only and shall not be considered in interpreting these Terms;
 
-**4 CUSTOMER’S RESPONSIBILITIES**
+**_1.1.1.4_** insofar as the context permits, a reference to the feminine form shall include the masculine form and vice versa.
 
-**4.1**    Customer is responsible for all activities, regardless of whether the activities are authorized by Customer or undertaken by Customer, Customer’s employees or a third party (including Customer’s contractors, agents or End Users). Ocean and its affiliates are not responsible for unauthorized access to Customer Account.
+**1.1.2** This Agreement is made in the English language. For the avoidance of doubt, the English language version of this Agreement shall prevail over any translation of this Agreement. However, where a German language term has been added to an English language term, such German term shall be decisive throughout.
 
-**4.2**    Customer will ensure that published assets and Customer and End Users’ use of published assets or the Ocean Market will not violate any of the Policies or any applicable law. The Customer is solely responsible for the development, content, operation, maintenance, and use of published assets.
+## 2. Registration, Access to and Use of the Data Portal <a name="registration"></a>
 
-**4.3**    Where Customer permits, assists or facilitates such action, Customer will be deemed to have taken any action by any person or entity related to this Agreement, published assets or use of the Ocean Market. Customer is responsible for End Users’ use of published assets and the Ocean Market. Customer will ensure that all End Users comply with obligations mirroring those of Customer under this Agreement and that the terms of Customer’s agreements with each End User are consistent with this Agreement. If Customer becomes aware of any violation of Customer’s obligations under this Agreement caused by an End User, Customer will immediately suspend access to published assets and the Ocean Marketplace by such End User. Ocean does not provide any support or services to End Users, unless Ocean has a separate agreement with Customer or an End User obligating Ocean to provide such support or services.
+**2.1** The use of the Data Portal requires the registration of the Customer. The Customer shall complete the accreditation process and provide all specified information and documents. The Customer confirms their offer to consume or publish Data Service Offerings via the Data Portal by actively selecting the respective Terms and Conditions checkbox and thereby accepting this Terms. Upon deltaDAO accepting such offer, an Agreement is concluded which entitles the Customer to the Consumption and Publication of Data Service Offering on the Data Portal. The Customer waives the receipt of the acceptance declaration pursuant to section 151 German Civil Code.
 
-**5 FEES, PAYMENT**
+**2.2** The Customer can access and use the Data Portal in accordance with the Agreement. The Customer undertakes to comply with this Agreement and all laws, rules and regulations as well as Policies applicable to Customer’s use of the Data Portal.
 
-**5.1**    If you elect to purchase, trade or publish data on Ocean Marketplace, it will be conducted solely through the Ethereum network via MetaMask (or other Ethereum-compatible wallets and browsers). We will have no insight into or control over these payments or transactions, nor do we have the ability to reverse any transactions. With that in mind, we will have no liability to you or to any third party for any claims or damages that may arise as a result of any transactions that you engage in via the App, or using the Smart Contracts, or any other transactions that you conduct via the Ethereum network or MetaMask.
+**2.3** The Data Portal provides a portal enabling Customers to access and utilise Data Service Offerings. Publishers can publish Data Service Offerings on the portal by using the form provided by deltaDAO and then clicking the “SUBMIT” button. The Publisher is responsible for the information provided in the form which describes the Data Service Offering and for the content of Data Service Offering. When publishing the Data Service offering, a Data Token will be created via the respective EVM Compatible Blockchain. The Data Token manages access rights to the respective Data Service Offering and enables Data Buyers to interact directly with Publishers.
 
-**5.2**    Ethereum requires the payment of a transaction fee (a “Gas Fee”) for every transaction that occurs on the Ethereum network. The Gas Fee funds the network of computers that run the decentralized Ethereum network. This means that you will need to pay a Gas Fee for each transaction that occurs via the Ocean Marketplace. In addition to the Gas Fee, we have hardcoded 0.1% of the total value of the transaction for the Ocean Protocol community development fund.
+**2.4** The Data Portal displays published Data Service Offerings including their description and enables Customers to discover Data Service Offerings by means of a query mechanism.
 
-Customer acknowledges and agrees that the Commission will be transferred directly to the Ocean Protocol community development fund through the Ethereum network as part of any transactions or payments. 
+**2.5** The Data Portal further enables the Consumption of Data Service Offerings by acquiring the respective Data Token via the respective EVM Compatible Blockchain and hence access to the Data Service Offering.
 
-**5.3**    Each Party will be responsible, as required under applicable law, for identifying and paying all taxes and other governmental fees and charges (and any penalties, interest, and other additions thereto) that are imposed on that Party upon or with respect to the transactions and payments under this Agreement.
+**2.6** The Customer is responsible for its own activity on the Data Portal. The Customer must adhere to the laws in its own legal jurisdiction as well as their conscience. deltaDAO is not responsible for any malicious use of the Data Portal or any losses associated with the use of the Data Portal of any source. Some layers in Data ecosystems also accessible via the Data Portal may require the Customer to create and keep up to date verified credentials.
 
-**6 SUSPENSION**
+## 3. Customer’s Responsibilities <a name="responsibility"></a>
 
-**6.1**	Ocean may suspend Customer or any End User’s right to access or use any portion or all of the Ocean Marketplace immediately with no notice to Customer if Ocean determines that the Customer or an End User’s use of the Ocean Marketplace:
+**3.1** The Customer is responsible for all activities undertaken from its Customer Account, regardless of whether the activities are authorized by the Customer or undertaken by the Customer, the Customer’s employees or a third party (including the Customer’s contractors and agents). deltaDAO and its affiliates are not responsible for unauthorized access to the Customer Account. The Customer will be deemed to have taken any action relating to its Customer Account.
 
-(b) poses a security risk to the Ocean Marketplace or any third party,
+**3.2** The Customer will ensure that published Data Service Offerings and the Customer’s use of Data Service Offerings or the Data Portal will not violate any of the Policies or any applicable law. The Customer is solely responsible for the development, content, operation, maintenance, availability, and use of published Data Service Offerings. The Publisher is also responsible for ensuring that the content of the metadata provided via the description form complies with applicable law. The Customer will not provide personal data in the metadata.
 
-(c) could adversely impact Ocean systems, the Ocean Marketplace or the systems or Content of any other Ocean customer,
+**3.3** The Customer will ensure that all third parties comply with its obligations according to this Agreement, mirroring those of the Customer under the Agreement and that the terms of any Customer’s agreements with third parties are consistent with this Agreement. If the Customer becomes aware of any violation of Customer’s obligations under this Agreement caused by a third party, the Customer will immediately suspend access to published Data Service Offerings and the Data Portal by such third party. deltaDAO does not provide any support or services to third parties, unless deltaDAO has a separate agreement with the Customer or a third party obligating deltaDAO to provide such support or services.
 
-(d) could subject Ocean, Ocean affiliates, or any third party to liability, and/or
+**3.4** deltaDAO does not store or has access to any sensitive account information including keys. The Customer is responsible for the availability and maintenance of any information related to the Customer Account.
 
-(e) could be fraudulent;
+## 4. Fees and Payment <a name="fees"></a>
 
-(f) Customer or any End User is in breach of this Agreement; or
+**4.1** If a Customer elects to publish or consume Data Service Offerings on the Data Portal, which includes the generation and purchase of the respective Data Token, it will be conducted solely through EVM Compatible Blockchains via compatible Web3 wallets. deltaDAO will have no insight into or control over these activities, nor does deltaDAO have the ability to reverse any of these or any transaction resulting therefrom.
 
-(g) Customer has ceased to operate in the ordinary course, made an assignment for the benefit of creditors or similar disposition of Customer assets, or become the subject of any bankruptcy, reorganization, liquidation, dissolution or similar proceeding.
+**4.2** EVM Compatible Blockchains may require the payment of a Gas Fee for every transaction occurring. The Gas Fee typically funds the network of computers that run the EVM Compatible Blockchains. This means that the Customer will need to pay a Gas Fee for each transaction that occurs via the Data Portal and transacting via the Data Portal will require an accordingly funded wallet.
 
-**6.2**	If Ocean, according to Section 6.1, suspends Customer’s right to access or use any portion or all of the Ocean Marketplace:
+**4.3** Each Party will be responsible, as required under applicable law, for identifying and paying all taxes and other governmental fees and charges (and any penalties, interest, and other additions thereto) that are imposed on that Party upon or with respect to the transactions and payments under this Agreement.
 
-(a) Customer remains responsible for all fees and charges Customer incurs during the period of suspension; and
+## 5. Suspension <a name="suspension"></a>
 
-(b) Customer will not be entitled to any service credits under the Service Level Agreements for any period of suspension.
+**5.1** deltaDAO may suspend all or parts of the Customer's or any third party's right to access or use any component or all of the Data Portal immediately with no prior notice to the Customer if deltaDAO determines that the Customer or a third party’s use of the Data Portal:
 
-**7 PURGATORY & TERMINATION**
+**_5.1.1_** poses a security risk to the Data Portal or any other third party;
 
-**7.1**	Purgatory is a state in which a publisher or data asset is tagged as "in purgatory". Being in purgatory has implications into how the asset is displayed in Ocean Market, and what actions are permitted to be performed on the asset. Once in purgatory, the asset or publisher may stay there or leave purgatory if certain conditions are fulfilled. 
+**_5.1.2_** could adversely impact deltaDAO`s systems, the Data Portal or the systems or content of any other deltaDAO user;
 
-**7.2**	This agreement can be terminated at any time by discontinuing Customer access to and use of the Ocean Marketplace. You will not receive any refunds, you agree that we, in our sole discretion and for any or no reason, may terminate these Terms and suspend and/or terminate the access to the Ocean Marketplace and that we will not be liable to you or to any third party for any such suspension or termination.
+**_5.1.3_** could subject deltaDAO, deltaDAO`s affiliates, or any third party to liability, and/or
 
-**8 INTELLECTUAL PROPERTY RIGHTS AND LICENSE**
+**_5.1.4_** could be fraudulent;
 
-**8.1**    Except as provided in this Section 8, Ocean obtains no rights whatsoever under this Agreement from Customer (or Customer’s licensors) to published assets.
+**_5.1.5_** Customer or any of its customers is in breach of essential obligations of this Agreement; or
 
-**8.2**    Customer represents and warrants to Ocean that:
+**_5.1.6_** Customer has ceased to operate in the ordinary course, made an assignment for the benefit of creditors or similar disposition of Customer assets, or become the subject of any bankruptcy, reorganization, liquidation, dissolution or similar proceeding.
 
-(a) Customer or Customer’s licensors own all right, title, and interest in and of the published assets and
+**5.2** If deltaDAO, according to Section 5.1, suspends Customer’s right to access or use any component or all of the Data Portal:
 
-(b) Customer has all rights in published assets necessary to grant the rights contemplated by this Agreement.
+**_5.2.1_** the Customer remains responsible for all fees and charges the Customer incurs during the period of suspension; and
 
-**8.3**    Subject to the terms of this Agreement, Ocean grants Customer a limited, revocable, non-exclusive, non-sublicensable, non-transferable license to access and use the Ocean Marketplace solely in accordance with this Agreement.
+**_5.2.2_** the Customer will not be entitled to any service credits relating to the provision of the Services for any period of suspension.
 
-**8.4**    Except as provided in Section 8.3, the Customer obtains no rights under this Agreement from Ocean, Ocean affiliates or Ocean licensors to the Ocean Marketplace, including any related intellectual property rights.
+## 6. Self-Description Lifecycle Management <a name="sdlm"></a>
 
-**8.5**	Ocean Content and Third-Party Content may be provided to the Customer under a separate agreement and/or a separate license. In the event of a conflict between this Agreement and any separate agreement and/or separate license, the separate agreement and/or separate license will prevail with respect to the Ocean Content or Third-Party Content that is the subject of such separate agreement and/or separate license.
+Data Service Offerings are subject to Self-Description Lifecycle Management. Data Service Offerings on the Data Portal are characterised with a Lifecycle State pursuant to the categories: "active", "end-of-life", "deprecated" "revoked", “disabled”, and “unlisted”. The default state of any Data Service Offering upon initial publication is "active". The Lifecycle States "end-of-live", "deprecated" and "revoked" are terminal, i.e., no further Lifecycle State transitions follow upon them. Being in a Lifecycle State has implications on how the Data Service Offering is displayed in the Data Portal, and what actions are permitted to be performed with regard to the Data Service Offering. The assignment and transition of one Lifecycle State to another is subject to the respective Policy. Customers are bound by the Policy regarding assignment and transition of a Lifecycle State.
 
-**9 WARRANTIES; LIMITATIONS OF LIABILITY**
+## 7. Security and Data Protection <a name="security"></a>
 
-**9.1**    Warranties. The Ocean Marketplace is provided “as is”. Except to the extent prohibited by law, or to the extent any statutory rights apply that cannot be excluded, limited or waived, Ocean its affiliates and licensors:
+**7.1** Without limiting the Customer’s obligations under Section 3.2, deltaDAO will implement reasonable and appropriate measures regarding the Access Controller to help the Customer secure published Data against accidental or unlawful loss, access or disclosure.
 
-(a) make no representations or warranties of any kind, whether express, implied, statutory or otherwise regarding the service offerings or the Third-Party Content, and
+**7.2** Data is always stored off-chain. deltaDAO has no control over this Data. Ensuring the confidentiality, integrity and availability of the Data is in the sole responsibility of the Customer. Only metadata relating to Data is stored on-chain. To provide for the functionality of the Data Portal deltaDAO saves on-chain Data in a custom database.
 
-(b) disclaim all warranties, including any implied or express warranties
+**7.3** Transactions that take place via the Data Portal are managed and confirmed via the respective EVM Compatible Blockchain. The Customer’s public key on such EVM Compatible Blockchain is publicly visible whenever the Customer engages in a transaction on the Data Portal.
 
-(c) of merchantability, satisfactory quality, fitness for a particular purpose, non- infringement, or quiet enjoyment,
+**7.4** deltaDAO neither owns nor controls the EVM Compatible Blockchains, any Customer's Web3 wallets, nor other tools, or any other third parties’ site, product, or service that the Customer might access, visit, or use when interacting via the Data Portal. deltaDAO will not be liable for the acts or omissions of any such third parties, nor will deltaDAO be liable for any damage that the Customer may suffer as a result of transactions or any other interaction with any such third parties.
 
-(d) arising out of any course of dealing or usage of trade,
+**7.5** The security of the Customer's data is important to deltaDAO, but the Customer is aware that no method of transmission over the Internet, or method of electronic storage is 100% secure. While deltaDAO strives to use commercially acceptable means to protect the Customer's Personal Data, deltaDAO cannot guarantee its absolute security.
 
-(e) that any content will be secure or not otherwise lost or altered.
+## 8. Term and Termination <a name="termination"></a>
 
-**10 GOVERNING LAW**
+**8.1** This Agreement is concluded for an unlimited term.
 
-**10.1**	The laws of Singapore, without reference to conflict of law rules, govern this Agreement and any dispute of any sort that might arise between Customer and Ocean. The United Nations Convention for the International Sale of Goods does not apply to this Agreement.
+**8.2** This Agreement can be terminated by either party upon one months' notice to the end of any month.
 
-**10.2**	Any dispute arising from or in connection with this Agreement or the fulfilment thereof will be exclusively adjudicated in the Courts of Singapore and Customer consents to this exclusive jurisdiction and venue.
+**8.3** Each party shall have the right to terminate this Agreement for good cause without the need to adhere to a notice period. Good cause for deltaDAO shall, in particular, include the following: (a) breach of essential obligations of the Agreement by the Customer (b) tortious acts by a Customer or the attempt of any such act, e.g. fraud; circumstances pursuant to section 5.1 relating to the Customer.
 
-**10.3**    Notwithstanding the foregoing Ocean and Customer both agree that Ocean may bring suit against Customer before the court at any of Customer’s business seats and/or at the court where any breach of this Agreement or infringement of Ocean rights occurred.
+**8.4** All notices of termination must be given in writing. Termination notice by e-mail is deemed to comport with the written form requirement.
+
+**8.5** In case of termination, the access to the Data Portal, including the ability to publish, consume, or access consumed Data Service Offerings on the Data Portal, will be suspended. deltaDAO will not be liable to you or to any third party for any such suspension. The Customer will not receive any refunds.
+
+## 9. Intellectual Property Rights <a name="ip"></a>
+
+**9.1** Except as provided in this Section 9, deltaDAO obtains no rights whatsoever under this Agreement from the Customer (or Customer’s licensors) regarding published Data.  
+**9.2** Data will be utilized at the sole discretion of the Customer. Therefore, the Customer represents and warrants to deltaDAO that  
+**_9.2.1_** the Customer or Customer’s licensors own all rights, in particular copyrights, trademark rights, patent rights, utility model rights, design rights, title, and interest in and of the published Data and  
+**_9.2.2_** the Customer will not provide any content that is illegal or infringes third party rights, in particular any copyrights or trademark rights, patent rights, utility model rights and design rights of third parties.  
+**9.3** deltaDAO grants the Customer a limited, revocable, non-exclusive, non-sublicensable, non-transferable license to use the Data Portal solely in accordance with this Agreement.  
+**9.4** Except as provided in Section 9.3, the Customer obtains no rights under this Agreement from deltaDAO, deltaDAO’s affiliates or deltaDAO’s licensors to the Data Portal, including any related intellectual property rights.  
+**9.5** deltaDAO or Third-Party Content may be provided to the Customer under a separate agreement and/or a separate license. In the event of a conflict between this Agreement and any separate agreement and/or separate license, the separate agreement and/or separate license will prevail with respect to the deltaDAO Content or Third-Party Content that is the subject of such separate agreement and/or separate license.
+
+## 10. Performance Quality and Warranties <a name="warranties"></a>
+
+**10.1** The Data Portal and all Services are provided in the manner accessible to the Customer. The Data Portal and all Services may be unavailable at any time as it is a test environment. A shortfall of the Data Portal and all Services can be long-term or permanent.
+
+**10.2** Except to the extent prohibited by law, or to the extent any statutory rights apply that cannot be excluded, limited or waived, deltaDAO its affiliates and licensors:
+
+**_10.2.1_** make no representations or warranties of any kind, whether express, implied, statutory or otherwise regarding the Services or the Third-Party Content, and
+
+**_10.2.2_** disclaim all warranties, including any implied or express warranties (a) of merchantability, satisfactory quality, fitness for a particular purpose, non- infringement, or quiet enjoyment, (b) arising out of any course of dealing or usage of trade and (c) that any content will be secure or not otherwise lost or altered.
+
+## 11. Liability <a name="liability"></a>
+
+**11.1** deltaDAO shall bear unlimited liability for intentional acts and gross negligence but shall only bear liability in cases of slight negligence where it has breached obligations which are material to the Agreement. As material obligations are considered obligations, the fulfilment of which makes the proper execution of the Agreement possible, the violation of which endangers the achievement of the purpose of the Agreement and the compliance with which the Customer may regularly rely on (so-called "cardinal obligations"). In the cases of breach of any such material obligations deltaDAO shall only be liable for the foreseeable damage typical for the Agreement. The above exclusions of liability shall not apply in the event of injury to life, limb and health.
+
+**11.2** deltaDAO assumes no liability for any faults or disruptions within the Data Portal for which it is not responsible.
+
+**11.3** deltaDAO assumes no liability for losses of Data or Data Service Offerings where such a loss would have been unavoidable.
+
+**11.4** deltaDAO assumes no liability for any legal consequences arising from the Publication or Consumption of Data Service Offerings on the Data Portal. This applies in particular to any claims made by third parties due to legal or factual errors regarding the Data underlying such Data Service Offerings. This also applies to claims by third parties regarding Data Service Offerings in the Lifecycle States of "end-of-live", "deprecated" and "revoked".
+
+**11.5** deltaDAO’s liability does not extend to any impairments or damages resulting from the Customer’s improper or incorrect use of the Data Portal.
+
+**11.6** The above limitations on liability shall apply mutatis mutandis in favor of deltaDAO’s vicarious agents, as well.
+
+**11.7** To the extent that Customers may be redirected to databases, websites, services etc. of third parties via the Data Portal deltaDAO shall not be liable either for the accessibility, existence or security of such databases or services or for the contents thereof.
+
+**11.8** deltaDAO has no liability to the Customer or to any third party for any claims or damages that may arise as a result of any transactions that the Customer engages in via a Web3 wallet, or using Smart Contracts, or any other transactions that the Customer conducts via EVM Compatible Blockchains.
+
+## 12. Modifications <a name="modifications"></a>
+
+**12.1** Insofar as the functionality of the Data Portal is preserved, deltaDAO may modify, change or discontinue any Service including any policies at any time with no prior notification. Modifications, changes or discontinuation of Services concerning the essential functionality of the Data Portal will be notified to the Customer one month prior to becoming effective.
+
+**12.2** deltaDAO shall be entitled to amend or modify this Agreement with a reasonable period of notice. deltaDAO shall notify the Customer in writing (e-mail sufficient) of the changes at the latest one month before they take effect. The Customer shall be deemed to have agreed to the notified amendments or modifications if the Customer has not notified deltaDAO in writing (e-mail sufficient) of its rejection by the time the amendments take effect. deltaDAO shall specifically draw the attention of the Customer to this effect of approval in its notification of the amendment or modification of this Agreement.
+
+## 13. Miscellaneous <a name="miscellaneous"></a>
+
+**13.1** All notices and announcements by deltaDAO concerning the Services will be published via the Data Portal.
+
+**13.2** The Customer is not entitled to offset, unless counterclaims are legally established or undisputed.
+
+**13.3** he Customer may transfer the rights and obligations arising from the Agreement to a third party only with the prior written consent of deltaDAO. deltaDAO shall refuse such consent only for good cause. The Customer shall inform deltaDAO immediately if it intends to transfer rights and obligations under the Agreement with deltaDAO.
+
+**13.4** This Agreement (including references) contains the entirety of the terms and conditions applicable between the Customer and deltaDAO with respect to the Service. There are no verbal side agreements.
+
+**13.5** Terms and conditions or other deviating conditions of the Customer shall only apply if deltaDAO has expressly accepted them in writing. The validity of individual conditions or clauses of the Customer that deviate from or supplement this Agreement shall be excluded even if deltaDAO has not objected to them.
+
+**13.6** Should any of the provisions of this Agreement be or become invalid or unenforceable in whole or in part, the validity or the enforceability of the remaining provisions shall not in any way be affected or impaired thereby. In this case, the invalid or unenforceable provision shall be replaced by a provision, which, to the extent legally possible, provides for an interpretation in keeping with the meaning and the economic purposes of this Agreement at the time of the conclusion of the Agreement between the Customer and the deltaDAO. Under circumstances in which this Agreement proves to be incomplete, a supplementary interpretation in accordance with the meaning and the purposes of this Agreement under due considerations of the legitimate interest of the Parties involved shall be applied.
+
+**13.7** Unless otherwise stated in this Agreement, it is sufficient to comply with the written form also by using text form according to sec. 126b German Civil Code, e.g. e-mail.
+
+**13.8** The authentic language of this Agreement is English. The English language shall prevail unless a German language term is added to an English language term then such German term shall be decisive throughout. In case of ambiguity or vagueness of a legal or non-legal term, the term shall be construed in light of German statutory law and in such a way that it corresponds to the German equivalent.
+
+**13.9** This Agreement shall be governed by the laws of the Federal Republic of Germany. The application of the uniform UN Convention on Contracts for the International Sale of Goods (CISG) shall be excluded.
+
+**13.10** Exclusive - also international - place of jurisdiction for all disputes arising from or in connection with the Agreement shall be the registered office of deltaDAO. The above shall not apply if another - legally mandatory - exclusive jurisdiction exists.
