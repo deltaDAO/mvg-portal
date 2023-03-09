@@ -145,7 +145,11 @@ export function transformQueryResult(
   )
 
   result.aggregations = queryResult.aggregations
-  result.totalResults = queryResult.hits.total.value
+  // Temporary fix to handle old Aquarius deployment
+  result.totalResults =
+    queryResult.hits.total?.value ||
+    (queryResult.hits.total as unknown as number)
+
   result.totalPages =
     result.totalResults / size < 1
       ? Math.floor(result.totalResults / size)
@@ -166,6 +170,7 @@ export async function queryMetadata(
       { cancelToken }
     )
     if (!response || response.status !== 200 || !response.data) return
+    console.log(response)
     return transformQueryResult(response.data, query.from, query.size)
   } catch (error) {
     if (axios.isCancel(error)) {
