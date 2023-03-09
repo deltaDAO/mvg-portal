@@ -18,6 +18,10 @@
       "link": "/verify"
     },
     {
+      "name": "Log",
+      "link": "https://explorer.genx.minimal-gaia-x.eu/"
+    },
+    {
       "name": "Ecosystem",
       "subItems": [
         {
