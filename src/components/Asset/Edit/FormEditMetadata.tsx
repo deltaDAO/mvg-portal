@@ -127,12 +127,6 @@ export default function FormEditMetadata({
         name="timeout"
       />
 
-      <Field
-        {...getFieldContent('author', data)}
-        component={Input}
-        name="author"
-      />
-
       <Field {...getFieldContent('tags', data)} component={Input} name="tags" />
       <Field
         {...getFieldContent('paymentCollector', data)}

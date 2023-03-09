@@ -101,13 +101,6 @@
         "required": true
       },
       {
-        "name": "author",
-        "label": "New Author",
-        "placeholder": "e.g. Mrs McJellyfish",
-        "help": "Give proper attribution for your dataset.",
-        "required": false
-      },
-      {
         "name": "serviceSD",
         "label": "Service Self-Description",
         "placeholder": "e.g. https://file.com/service-self-description.json",

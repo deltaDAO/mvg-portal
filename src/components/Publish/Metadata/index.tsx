@@ -96,11 +96,6 @@ export default function MetadataFields(): ReactElement {
         rows={7}
       />
       <Field
-        {...getFieldContent('author', content.metadata.fields)}
-        component={Input}
-        name="metadata.author"
-      />
-      <Field
         {...getFieldContent('serviceSD', content.metadata.fields)}
         component={Input}
         name="metadata.gaiaXInformation.serviceSD"
