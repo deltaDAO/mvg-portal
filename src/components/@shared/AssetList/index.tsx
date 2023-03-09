@@ -118,7 +118,7 @@ export default function AssetList({
   }
 
   const styleClasses = `${styles.assetList} ${className || ''}`
-
+  console.log(assetsWithPrices)
   return loading ? (
     <LoaderArea />
   ) : (
@@ -133,7 +133,12 @@ export default function AssetList({
         {assetsWithPrices?.length > 0 ? (
           <>
             {activeAssetView === AssetViewOptions.List && (
-              <Table columns={columns} data={assetsWithPrices} />
+              <Table
+                columns={columns}
+                data={assetsWithPrices}
+                pagination={false}
+                paginationPerPage={assetsWithPrices?.length}
+              />
             )}
 
             {activeAssetView === AssetViewOptions.Grid &&
