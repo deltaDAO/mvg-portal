@@ -97,7 +97,10 @@ export default function AssetList({
   const isMounted = useIsMounted()
 
   useEffect(() => {
-    if (!assets || !assets.length) return
+    if (!assets || !assets.length) {
+      setAssetsWithPrices([])
+      return
+    }
 
     setAssetsWithPrices(assets as AssetExtended[])
     setLoading(false)
@@ -118,7 +121,7 @@ export default function AssetList({
   }
 
   const styleClasses = `${styles.assetList} ${className || ''}`
-  console.log(assetsWithPrices)
+
   return loading ? (
     <LoaderArea />
   ) : (

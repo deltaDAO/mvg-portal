@@ -170,7 +170,7 @@ export async function queryMetadata(
       { cancelToken }
     )
     if (!response || response.status !== 200 || !response.data) return
-    console.log(response)
+
     return transformQueryResult(response.data, query.from, query.size)
   } catch (error) {
     if (axios.isCancel(error)) {
