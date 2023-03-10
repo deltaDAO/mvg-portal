@@ -166,7 +166,17 @@ export async function getOpcsApprovedTokens(
 
   try {
     const response = await fetchData(OpcsApprovedTokensQuery, null, context)
-    return response?.data?.opcs[0].approvedTokens
+    if (!response?.data) return []
+
+    return [
+      ...response.data.opcs[0].approvedTokens,
+      {
+        address: '0xe974c4894996e012399dedbda0be7314a73bbff1',
+        decimals: 6,
+        name: 'EUROe',
+        symbol: 'EUROe'
+      }
+    ]
   } catch (error) {
     LoggerInstance.error('Error getOpcsApprovedTokens: ', error.message)
     throw Error(error.message)
