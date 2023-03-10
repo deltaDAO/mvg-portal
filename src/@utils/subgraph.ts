@@ -164,19 +164,23 @@ export async function getOpcsApprovedTokens(
 ): Promise<TokenInfo[]> {
   const context = getQueryContext(chainId)
 
+  const tokenDetailsEUROe = {
+    address: '0xe974c4894996e012399dedbda0be7314a73bbff1',
+    decimals: 6,
+    name: 'EUROe',
+    symbol: 'EUROe'
+  }
+
   try {
     const response = await fetchData(OpcsApprovedTokensQuery, null, context)
-    if (!response?.data) return []
+    if (!response?.data) return
 
-    return [
-      ...response.data.opcs[0].approvedTokens,
-      {
-        address: '0xe974c4894996e012399dedbda0be7314a73bbff1',
-        decimals: 6,
-        name: 'EUROe',
-        symbol: 'EUROe'
-      }
-    ]
+    // TODO: remove mocked EUROe integration
+    return response.data.opcs[0].approvedTokens.includes(
+      (token) => token.address === tokenDetailsEUROe.address
+    )
+      ? response.data.opcs[0].approvedTokens
+      : [...response.data.opcs[0].approvedTokens, tokenDetailsEUROe]
   } catch (error) {
     LoggerInstance.error('Error getOpcsApprovedTokens: ', error.message)
     throw Error(error.message)
