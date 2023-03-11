@@ -77,13 +77,6 @@ export default function MetadataFields(): ReactElement {
         name="metadata.type"
         options={assetTypeOptions}
       />
-      {values.services[0].access === 'compute' && (
-        <Alert
-          className={styles.fieldWarning}
-          state="info"
-          text={siteContent.warning.ctd}
-        />
-      )}
       <Field
         {...getFieldContent('name', content.metadata.fields)}
         component={Input}
@@ -94,11 +87,6 @@ export default function MetadataFields(): ReactElement {
         component={Input}
         name="metadata.description"
         rows={7}
-      />
-      <Field
-        {...getFieldContent('author', content.metadata.fields)}
-        component={Input}
-        name="metadata.author"
       />
       <Field
         {...getFieldContent('serviceSD', content.metadata.fields)}

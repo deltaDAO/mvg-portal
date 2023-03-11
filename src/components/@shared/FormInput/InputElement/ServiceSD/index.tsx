@@ -42,6 +42,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
       setIsLoading(true)
       const serviceSD = await getServiceSD(url)
       const { verified } = await verifyRawServiceSD(serviceSD)
+      setIsVerified(verified)
 
       if (!verified) {
         toast.error(
@@ -56,7 +57,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
         return
       }
 
-      helpers.setValue([{ url, valid: true }])
+      helpers.setValue({ url, isVerified: verified })
       toast.success('Great! The provided service self-description looks good.')
     } catch (error) {
       toast.error('Could not fetch file info. Please check URL and try again')
@@ -86,7 +87,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
       }
 
       setRawServiceSDPreview(signedServiceSD)
-      helpers.setValue([{ url: storedSdUrl }])
+      helpers.setValue({ url: storedSdUrl })
       toast.success('Great! The provided service self-description looks good.')
     } catch (error) {
       toast.error(
@@ -103,90 +104,44 @@ export default function ServiceSD(props: InputProps): ReactElement {
   }, [userSelection])
 
   const handleVerify = async (e: React.FormEvent<Element>, body: string) => {
+    e.preventDefault()
+
     if (isLoading) return
     helpers.setTouched(false)
 
-    e.preventDefault()
-
-    userSelection === 'url'
-      ? await validateUrl(body)
-      : await verifyRawBody(body)
+    validateUrl(body)
   }
 
   const handleEdit = (e: React.FormEvent<Element>) => {
-    helpers.setTouched(false)
     e.preventDefault()
 
-    helpers.setValue(JSON.stringify(field.value[0].raw, null, 4))
+    helpers.setTouched(false)
+    helpers.setValue(JSON.stringify(field.value.raw, null, 4))
     setIsVerified(false)
   }
 
   return (
     <div>
-      <div className={styles.boxSelection}>
-        <BoxSelection
-          name="serviceSelfDescriptionOptions"
-          options={serviceSelfDescriptionOptions.map((option) => ({
-            ...option,
-            checked: field.value && userSelection === option.name
-          }))}
-          handleChange={(e) => {
+      {/* Check if there is a url coming from the edit form */}
+      {isVerified || (field?.value?.isVerified && field?.value?.url) ? (
+        <FileInfo
+          file={field.value}
+          handleClose={() => {
+            setIsVerified(false)
             helpers.setTouched(false)
             helpers.setValue(undefined)
-            setUserSelection(e.target.value)
           }}
         />
-      </div>
-      {userSelection && (
-        <div>
-          {userSelection === 'url' &&
-            (field?.value?.[0]?.valid === true ? (
-              <FileInfo
-                file={field.value[0]}
-                handleClose={() => {
-                  helpers.setTouched(false)
-                  helpers.setValue(undefined)
-                }}
-              />
-            ) : (
-              <URLInput
-                submitText="Validate"
-                {...props}
-                name={`${field.name}[0].url`}
-                isLoading={isLoading}
-                handleButtonClick={handleVerify}
-                checkUrl={true}
-                storageType="url"
-              />
-            ))}
-          {userSelection === 'raw' &&
-            (!isVerified ? (
-              <div className={styles.inputContainer}>
-                <Input
-                  type="textarea"
-                  value={field.value}
-                  onChange={(e) =>
-                    helpers.setValue((e.target as HTMLInputElement).value)
-                  }
-                  placeholder=""
-                />
-                <Button
-                  disabled={!field.value}
-                  style="primary"
-                  onClick={async (e) => await handleVerify(e, field.value)}
-                >
-                  {!isLoading ? 'Verify' : <Loader />}
-                </Button>
-              </div>
-            ) : (
-              <div className={styles.previewContainer}>
-                <Markdown text={getFormattedCodeString(rawServiceSDPreview)} />
-                <Button style="text" onClick={(e) => handleEdit(e)}>
-                  Edit
-                </Button>
-              </div>
-            ))}
-        </div>
+      ) : (
+        <URLInput
+          submitText="Validate"
+          {...props}
+          name={`${field.name}[0].url`}
+          isLoading={isLoading}
+          handleButtonClick={handleVerify}
+          checkUrl={true}
+          storageType="url"
+        />
       )}
     </div>
   )

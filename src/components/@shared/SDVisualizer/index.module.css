@@ -1,0 +1,34 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.markdownContainer {
+  position: relative;
+}
+
+.copyContainer {
+  position: absolute;
+  top: calc(var(--spacer) / 2);
+  right: var(--spacer);
+}
+
+.copyContainer {
+  height: 1.5rem;
+  width: 1.5rem;
+  background-color: var(--background-highlight);
+  padding: 3px;
+}
+
+.copyContainer * {
+  height: 100%;
+  width: 100%;
+}
+
+@media screen and (min-width: 30rem) {
+  .header {
+    flex-direction: row;
+  }
+}

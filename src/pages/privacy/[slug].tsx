@@ -21,10 +21,11 @@ export default function PageMarkdown(page: PageData): ReactElement {
       headerCenter
     >
       <Container narrow>
-        <PrivacyPolicyHeader
+        {/* TODO: reinstate automatic table of content */}
+        {/* <PrivacyPolicyHeader
           // tableOfContents={tableOfContents}
           policy={slug.replace('/privacy/', '')}
-        />
+        /> */}
         <div
           className={styles.content}
           dangerouslySetInnerHTML={{ __html: content }}

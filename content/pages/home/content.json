@@ -1,0 +1,22 @@
+{
+  "teaser": {
+    "title": "Gaia-X: Data Sovereignty for Europe",
+    "text": "Gaia-X represents the next generation of data infrastructure: an **open, transparent and secure digital ecosystem**, where data and services can be made available, collated and shared in an environment of trust. The architecture of Gaia-X is based on the principle of decentralisation."
+  },
+  "paragraphs": [
+    {
+      "title": "The Gaia-X Web3 Ecosystem on DLT",
+      "body": "The principle of decentralization is a perfect fit for **Distributed Ledger Technology**. [Ocean Protocol](https://oceanprotocol.com) is a fully open-source technology stack, leveraging DLT and decentralization, aiming to give control back to the owners of data services. Pontus-X is built on top of Ocean Protocol showcasing how the Gaia-X Web3 Ecosystem on DLT and Ocean Protocol can look like, already today.",
+      "cta": "Learn More",
+      "ctaTo": "https://docs.genx.minimal-gaia-x.eu/docs/Community/Introduction",
+      "image": "/images/genx_validators.png"
+    },
+    {
+      "title": "Compute-to-Data and its benefits",
+      "body": "One core concept of Ocean Protocol is the **Compute-to-Data (CtD)** approach. Compute-to-Data is the functionality that solves the current trade-off between the benefits of using private data and the risks of exposing it. It allows data consumers to run compute jobs on private data while the data stays on-premise with the data provider.",
+      "cta": "Learn More",
+      "ctaTo": "https://youtu.be/W8PuM0lSm4s",
+      "image": "/images/ctd_benefits.png"
+    }
+  ]
+}

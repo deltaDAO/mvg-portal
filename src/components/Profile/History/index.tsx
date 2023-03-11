@@ -103,7 +103,7 @@ export default function HistoryPage({
     return () => {
       clearInterval(balanceInterval)
     }
-  }, [refetchJobs])
+  }, [accountId, refetchJobs])
 
   const tabs = getTabs(
     accountIdentifier,

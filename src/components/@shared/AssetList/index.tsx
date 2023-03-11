@@ -97,7 +97,10 @@ export default function AssetList({
   const isMounted = useIsMounted()
 
   useEffect(() => {
-    if (!assets || !assets.length) return
+    if (!assets || !assets.length) {
+      setAssetsWithPrices([])
+      return
+    }
 
     setAssetsWithPrices(assets as AssetExtended[])
     setLoading(false)
@@ -133,7 +136,12 @@ export default function AssetList({
         {assetsWithPrices?.length > 0 ? (
           <>
             {activeAssetView === AssetViewOptions.List && (
-              <Table columns={columns} data={assetsWithPrices} />
+              <Table
+                columns={columns}
+                data={assetsWithPrices}
+                pagination={false}
+                paginationPerPage={assetsWithPrices?.length}
+              />
             )}
 
             {activeAssetView === AssetViewOptions.Grid &&

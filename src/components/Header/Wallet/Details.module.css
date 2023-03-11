@@ -22,7 +22,7 @@
 .bookmarksLink {
   display: flex;
   align-items: center;
-  padding-top: var(--sub-section-spacing);
+  padding-top: calc(var(--sub-section-spacing) / 2);
 }
 
 .profileLink img,
@@ -39,7 +39,7 @@
 
 .profileButton,
 .bookmarksButton {
-  padding: 0;
+  composes: link from '../../../components/Header/Menu.module.css';
 }
 
 .actions {

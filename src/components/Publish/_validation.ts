@@ -22,7 +22,6 @@ const validationMetadata = {
       (param) => `Description must have maximum ${param.max} characters`
     )
     .required('Required'),
-  author: Yup.string().required('Required'),
   tags: Yup.array<string[]>().nullable(),
   termsAndConditions: Yup.boolean()
     .required('Required')

@@ -35,7 +35,6 @@ export const validationSchema = Yup.object().shape({
     })
   ),
   timeout: Yup.string().required('Required'),
-  author: Yup.string().nullable(),
   tags: Yup.array<string[]>().nullable(),
   paymentCollector: Yup.string().test(
     'ValidAddress',

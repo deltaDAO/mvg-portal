@@ -1,5 +1,6 @@
 .publisher {
   margin: 0;
+  margin-right: 1rem;
 }
 
 @media (min-width: 32rem) {

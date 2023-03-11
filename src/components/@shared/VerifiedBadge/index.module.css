@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-width: max-content;
+}
+
+.verifiedBadge {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  font-weight: var(--font-weight-bold) !important;
+  color: var(--color-primary);
+}
+
+.mainLabel {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 4);
+}
+
+.verifiedBadge svg path {
+  margin: 0;
+  fill: var(--color-primary);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.apiVersion,
+.lastVerified {
+  font-weight: var(--font-weight-base);
+  color: var(--color-secondary);
+}
+
+.isInvalid {
+  color: var(--brand-alert-red);
+}
+
+.isInvalid svg path {
+  fill: var(--brand-alert-red);
+}
+
+.loader span {
+  padding: 0;
+}
