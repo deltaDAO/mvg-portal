@@ -16,12 +16,13 @@ export default function PageTemplateMarkdown(props: PageProps): ReactElement {
   return (
     <Page title={title} description={description} uri={props.uri} headerCenter>
       <Container narrow>
-        {isPrivacy && (
+        {/* TODO: reinstate automatic table of content */}
+        {/* {isPrivacy && (
           <PrivacyPolicyHeader
             tableOfContents={tableOfContents}
             policy={slug.replace('/privacy/', '')}
           />
-        )}
+        )} */}
         <div
           className={styles.content}
           dangerouslySetInnerHTML={{ __html: html }}
