@@ -19,7 +19,13 @@ export function getInitialValues(
     author: metadata?.author,
     tags: metadata?.tags,
     paymentCollector,
-    assetState
+    assetState,
+    gaiaXInformation: {
+      ...metadata?.additionalInformation?.gaiaXInformation,
+      containsPII:
+        metadata?.additionalInformation?.gaiaXInformation?.containsPII || false
+    },
+    license: metadata?.license
   }
 }
 

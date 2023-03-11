@@ -8,3 +8,14 @@
 .fieldWarning {
   composes: fieldWarning from '../index.module.css';
 }
+
+.gdpr {
+  border: var(--input-border-size) solid var(--input-border-color);
+  padding: calc(var(--spacer) / 2);
+  margin-top: calc(var(--spacer) * -0.5);
+  margin-bottom: var(--spacer);
+}
+
+.gdpr > div {
+  margin-bottom: calc(var(--spacer) / 2);
+}

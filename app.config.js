@@ -11,6 +11,13 @@ module.exports = {
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
     'https://aquarius.v4.delta-dao.com',
 
+  complianceUri:
+    process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
+    'https://compliance.lab.gaia-x.eu/development',
+
+  complianceApiVersion:
+    process.env.NEXT_PUBLIC_COMPLIANCE_API_VERSION || '2210',
+
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
   chainIds: getDefaultChainIds(),
@@ -68,9 +75,10 @@ module.exports = {
     storageKey: 'oceanDarkMode'
   },
 
-  // Used to show or hide the fixed or free price options
+  // Used to show or hide the fixed, dynamic or free price options
   // tab to publishers during the price creation.
   allowFixedPricing: process.env.NEXT_PUBLIC_ALLOW_FIXED_PRICING || 'true',
+  allowDynamicPricing: process.env.NEXT_PUBLIC_ALLOW_DYNAMIC_PRICING || 'false',
   allowFreePricing: process.env.NEXT_PUBLIC_ALLOW_FREE_PRICING || 'true',
 
   // Set the default privacy policy to initially display
@@ -83,5 +91,9 @@ module.exports = {
   // is used to create and show a privacy preference center / cookie banner
   // To learn more about how to configure and use this, please refer to the readme
   privacyPreferenceCenter:
-    process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'true'
+    process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'true',
+
+  // Default terms to be used for service offerings made on this marketplace
+  defaultAccessTerms:
+    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md'
 }

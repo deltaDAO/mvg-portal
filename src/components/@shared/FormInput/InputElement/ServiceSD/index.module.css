@@ -1,0 +1,13 @@
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.inputContainer textarea {
+  min-height: 30rem;
+}
+
+.boxSelection {
+  margin-bottom: calc(var(--spacer) / 2);
+}

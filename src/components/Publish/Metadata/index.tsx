@@ -77,13 +77,6 @@ export default function MetadataFields(): ReactElement {
         name="metadata.type"
         options={assetTypeOptions}
       />
-      {values.services[0].access === 'compute' && (
-        <Alert
-          className={styles.fieldWarning}
-          state="info"
-          text={siteContent.warning.ctd}
-        />
-      )}
       <Field
         {...getFieldContent('name', content.metadata.fields)}
         component={Input}
@@ -96,9 +89,9 @@ export default function MetadataFields(): ReactElement {
         rows={7}
       />
       <Field
-        {...getFieldContent('author', content.metadata.fields)}
+        {...getFieldContent('serviceSD', content.metadata.fields)}
         component={Input}
-        name="metadata.author"
+        name="metadata.gaiaXInformation.serviceSD"
       />
       <Field
         {...getFieldContent('tags', content.metadata.fields)}
@@ -144,6 +137,56 @@ export default function MetadataFields(): ReactElement {
                 name="metadata.dockerImageCustomEntrypoint"
               />
             </>
+          )}
+        </>
+      )}
+
+      {values.metadata.type === 'dataset' && (
+        <>
+          <Field
+            {...getFieldContent('containsPII', content.metadata.fields)}
+            component={Input}
+            name="metadata.gaiaXInformation.containsPII"
+          />
+
+          {values.metadata.gaiaXInformation.containsPII === true && (
+            <div className={styles.gdpr}>
+              <Field
+                {...getFieldContent('dataController', content.metadata.fields)}
+                component={Input}
+                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.dataController"
+              />
+
+              <Field
+                {...getFieldContent('legalBasis', content.metadata.fields)}
+                component={Input}
+                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.legalBasis"
+              />
+
+              <Field
+                {...getFieldContent('purpose', content.metadata.fields)}
+                component={Input}
+                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.purpose"
+              />
+
+              <Field
+                {...getFieldContent(
+                  'dataProtectionContactPoint',
+                  content.metadata.fields
+                )}
+                component={Input}
+                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.dataProtectionContactPoint"
+              />
+
+              <Field
+                {...getFieldContent(
+                  'consentWithdrawalContactPoint',
+                  content.metadata.fields
+                )}
+                component={Input}
+                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.consentWithdrawalContactPoint"
+              />
+            </div>
           )}
         </>
       )}

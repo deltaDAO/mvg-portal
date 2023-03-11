@@ -14,6 +14,14 @@
       "link": "/publish/1"
     },
     {
+      "name": "Verify",
+      "link": "/verify"
+    },
+    {
+      "name": "Log",
+      "link": "https://explorer.genx.minimal-gaia-x.eu/"
+    },
+    {
       "name": "Ecosystem",
       "subItems": [
         {
@@ -86,7 +94,7 @@
           },
           {
             "name": "Publish",
-            "link": "/publish"
+            "link": "/publish/1"
           },
           {
             "name": "Verify",

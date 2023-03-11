@@ -2,12 +2,13 @@ import { Asset, LoggerInstance } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import axios, { CancelToken, AxiosResponse } from 'axios'
 import { OrdersData_orders as OrdersData } from '../../@types/subgraph/OrdersData'
-import { metadataCacheUri } from '../../../app.config'
+import { metadataCacheUri, allowDynamicPricing } from '../../../app.config'
 import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
 import { transformAssetToAssetSelection } from '../assetConvertor'
+import addressConfig from 'address.config'
 
 export interface UserSales {
   id: string
@@ -27,39 +28,52 @@ export function escapeEsReservedCharacters(value: string): string {
  * @param value the value of the filter
  * @returns json structure of the es filter
  */
+type TFilterValue = string | number | boolean | number[] | string[]
+type TFilterKey = 'terms' | 'term' | 'match' | 'match_phrase'
+
 export function getFilterTerm(
   filterField: string,
-  value: string | number | boolean | number[] | string[]
+  value: TFilterValue,
+  key: TFilterKey = 'term'
 ): FilterTerm {
   const isArray = Array.isArray(value)
+  const useKey = key === 'term' ? (isArray ? 'terms' : 'term') : key
   return {
-    [isArray ? 'terms' : 'term']: {
+    [useKey]: {
       [filterField]: value
     }
   }
 }
 
+export function getWhitelistShould(): // eslint-disable-next-line camelcase
+{ should: FilterTerm[]; minimum_should_match: 1 } | undefined {
+  const { whitelists } = addressConfig
+
+  const whitelistFilterTerms = Object.entries(whitelists)
+    .filter(([field, whitelist]) => whitelist.length > 0)
+    .map(([field, whitelist]) =>
+      whitelist.map((address) => getFilterTerm(field, address, 'match'))
+    )
+    .reduce((prev, cur) => prev.concat(cur), [])
+
+  return whitelistFilterTerms.length > 0
+    ? {
+        should: whitelistFilterTerms,
+        minimum_should_match: 1
+      }
+    : undefined
+}
+
+export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcase
+FilterTerm | undefined {
+  return allowDynamicPricing === 'true'
+    ? undefined
+    : getFilterTerm('price.type', 'pool')
+}
+
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams
 ): SearchQuery {
-  const filters: unknown[] = [getFilterTerm('_index', 'oceanv4')]
-  baseQueryParams.filters && filters.push(...baseQueryParams.filters)
-  baseQueryParams.chainIds &&
-    filters.push(getFilterTerm('chainId', baseQueryParams.chainIds))
-  !baseQueryParams.ignorePurgatory &&
-    filters.push(getFilterTerm('purgatory.state', false))
-  !baseQueryParams.ignoreState &&
-    filters.push({
-      bool: {
-        must_not: [
-          {
-            term: {
-              'nft.state': 5
-            }
-          }
-        ]
-      }
-    })
   const generatedQuery = {
     from: baseQueryParams.esPaginationOptions?.from || 0,
     size:
@@ -69,7 +83,33 @@ export function generateBaseQuery(
     query: {
       bool: {
         ...baseQueryParams.nestedQuery,
-        filter: filters
+        filter: [
+          ...(baseQueryParams.filters || []),
+          baseQueryParams.chainIds
+            ? getFilterTerm('chainId', baseQueryParams.chainIds)
+            : [],
+          getFilterTerm('_index', 'oceanv4'),
+          ...(baseQueryParams.ignorePurgatory
+            ? []
+            : [getFilterTerm('purgatory.state', false)]),
+          ...(baseQueryParams.ignoreState
+            ? []
+            : [
+                {
+                  bool: {
+                    must_not: [
+                      {
+                        term: {
+                          'nft.state': 5
+                        }
+                      },
+                      getDynamicPricingMustNot()
+                    ]
+                  }
+                }
+              ])
+        ],
+        ...getWhitelistShould()
       }
     }
   } as SearchQuery
@@ -105,7 +145,11 @@ export function transformQueryResult(
   )
 
   result.aggregations = queryResult.aggregations
-  result.totalResults = queryResult.hits.total.value
+  // Temporary fix to handle old Aquarius deployment
+  result.totalResults =
+    queryResult.hits.total?.value ||
+    (queryResult.hits.total as unknown as number)
+
   result.totalPages =
     result.totalResults / size < 1
       ? Math.floor(result.totalResults / size)
@@ -126,6 +170,7 @@ export async function queryMetadata(
       { cancelToken }
     )
     if (!response || response.status !== 200 || !response.data) return
+
     return transformQueryResult(response.data, query.from, query.size)
   } catch (error) {
     if (axios.isCancel(error)) {
@@ -231,7 +276,8 @@ export async function getAlgorithmDatasetsForCompute(
 
   const query = generateBaseQuery(baseQueryParams)
   const computeDatasets = await queryMetadata(query, cancelToken)
-  if (computeDatasets?.totalResults === 0) return []
+  // TODO: check why aquarius gives back totalResults === NaN
+  if (computeDatasets?.results?.length === 0) return []
 
   const datasets = await transformAssetToAssetSelection(
     datasetProviderUri,

@@ -88,7 +88,8 @@ export async function getFileDidInfo(
 export async function getFileInfo(
   file: string,
   providerUrl: string,
-  storageType: string
+  storageType: string,
+  withChecksum = false
 ): Promise<FileInfo[]> {
   try {
     let response
@@ -99,7 +100,11 @@ export async function getFileInfo(
           hash: file
         }
 
-        response = await ProviderInstance.getFileInfo(fileIPFS, providerUrl)
+        response = await ProviderInstance.getFileInfo(
+          fileIPFS,
+          providerUrl,
+          withChecksum
+        )
 
         break
       }
@@ -109,7 +114,11 @@ export async function getFileInfo(
           transactionId: file
         }
 
-        response = await ProviderInstance.getFileInfo(fileArweave, providerUrl)
+        response = await ProviderInstance.getFileInfo(
+          fileArweave,
+          providerUrl,
+          withChecksum
+        )
         break
       }
       default: {
@@ -120,7 +129,11 @@ export async function getFileInfo(
           method: 'get'
         }
 
-        response = await ProviderInstance.getFileInfo(fileUrl, providerUrl)
+        response = await ProviderInstance.getFileInfo(
+          fileUrl,
+          providerUrl,
+          withChecksum
+        )
         break
       }
     }

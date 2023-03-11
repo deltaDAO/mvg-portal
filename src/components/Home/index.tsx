@@ -1,19 +1,39 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import Button from '@shared/atoms/Button'
-import Bookmarks from './Bookmarks'
-import { generateBaseQuery } from '@utils/aquarius'
+import { generateBaseQuery, getFilterTerm } from '@utils/aquarius'
 import { useUserPreferences } from '@context/UserPreferences'
 import { SortTermOptions } from '../../@types/aquarius/SearchQuery'
 import SectionQueryResult from './SectionQueryResult'
 import styles from './index.module.css'
-import MostViews from './MostViews'
+import { useAddressConfig } from '@hooks/useAddressConfig'
 import TopSales from './TopSales'
 import TopTags from './TopTags'
+import HomeContent from './Content'
+
+interface FeaturedSection {
+  title: string
+  query: SearchQuery
+}
+
+function AllAssetsButton(): ReactElement {
+  return (
+    <Button
+      className={styles.allAssetsButton}
+      style="text"
+      to="/search?sort=nft.created&sortOrder=desc"
+      arrow
+    >
+      All datasets and algorithms
+    </Button>
+  )
+}
 
 export default function HomePage(): ReactElement {
   const { chainIds } = useUserPreferences()
+  const { featured, hasFeaturedAssets } = useAddressConfig()
 
-  const [queryLatest, setQueryLatest] = useState<SearchQuery>()
+  const [queryFeatured, setQueryFeatured] = useState<FeaturedSection[]>([])
+  const [queryRecent, setQueryRecent] = useState<SearchQuery>()
   const [queryMostSales, setQueryMostSales] = useState<SearchQuery>()
 
   useEffect(() => {
@@ -26,7 +46,6 @@ export default function HomePage(): ReactElement {
         sortBy: SortTermOptions.Created
       } as SortOptions
     } as BaseQueryParams
-    setQueryLatest(generateBaseQuery(baseParams))
 
     const baseParamsSales = {
       chainIds,
@@ -37,32 +56,53 @@ export default function HomePage(): ReactElement {
         sortBy: SortTermOptions.Orders
       } as SortOptions
     } as BaseQueryParams
+
+    setQueryRecent(generateBaseQuery(baseParams))
     setQueryMostSales(generateBaseQuery(baseParamsSales))
-  }, [chainIds])
+
+    if (hasFeaturedAssets()) {
+      const featuredSections = featured.map((section) => ({
+        title: section.title,
+        query: generateBaseQuery({
+          ...baseParams,
+          esPaginationOptions: {
+            size: section.assets.length
+          },
+          filters: [getFilterTerm('_id', section.assets)]
+        })
+      }))
+
+      setQueryFeatured(featuredSections)
+    }
+  }, [chainIds, featured, hasFeaturedAssets])
 
   return (
     <>
-      <section className={styles.section}>
-        <h3>Your Bookmarks</h3>
-        <Bookmarks />
-      </section>
+      {hasFeaturedAssets() && (
+        <>
+          {queryFeatured.map((section, i) => (
+            <SectionQueryResult
+              key={`${section.title}-${i}`}
+              title={section.title}
+              query={section.query}
+            />
+          ))}
+          <AllAssetsButton />
+        </>
+      )}
       <SectionQueryResult
         title="Recently Published"
-        query={queryLatest}
-        action={
-          <Button
-            style="text"
-            arrow
-            to="/search?sort=nft.created&sortOrder=desc"
-          >
-            All datasets and algorithms
-          </Button>
-        }
+        query={queryRecent}
+        action={<AllAssetsButton />}
       />
-      <SectionQueryResult title="Most Sales" query={queryMostSales} />
-      <MostViews />
+      <SectionQueryResult
+        title="Most Sales"
+        query={queryMostSales}
+        action={<AllAssetsButton />}
+      />
       <TopSales title="Publishers With Most Sales" />
       <TopTags title="Top Tags By Sales" />
+      <HomeContent />
     </>
   )
 }

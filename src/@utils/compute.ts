@@ -202,6 +202,8 @@ export async function getAlgorithmAssetSelectionList(
   asset: Asset,
   algorithms: Asset[]
 ): Promise<AssetSelectionAsset[]> {
+  if (!algorithms || algorithms?.length === 0) return []
+
   const computeService: Service = getServiceByName(asset, 'compute')
   let algorithmSelectionList: AssetSelectionAsset[]
   if (!computeService.compute) {

@@ -28,6 +28,7 @@ import { setNftMetadata } from '@utils/nft'
 import { sanitizeUrl } from '@utils/url'
 import { getEncryptedFiles } from '@utils/provider'
 import { assetStateToNumber } from '@utils/assetState'
+import { setMinterToPublisher, setMinterToDispenser } from '@utils/dispenser'
 
 export default function Edit({
   asset
@@ -95,7 +96,11 @@ export default function Edit({
         description: values.description,
         links: linksTransformed,
         author: values.author,
-        tags: values.tags
+        tags: values.tags,
+        additionalInformation: {
+          ...asset.metadata?.additionalInformation,
+          gaiaXInformation: values.gaiaXInformation
+        }
       }
 
       asset?.accessDetails?.type === 'fixed' &&
@@ -148,6 +153,19 @@ export default function Edit({
         services: [updatedService]
       }
 
+      if (
+        asset?.accessDetails?.type === 'free' &&
+        asset?.accessDetails?.isPurchasable
+      ) {
+        const tx = await setMinterToPublisher(
+          web3,
+          asset?.accessDetails?.datatoken?.address,
+          accountId,
+          setError
+        )
+        if (!tx) return
+      }
+
       // delete custom helper properties injected in the market so we don't write them on chain
       delete (updatedAsset as AssetExtended).accessDetails
       delete (updatedAsset as AssetExtended).datatokens
@@ -159,7 +177,9 @@ export default function Edit({
         newAbortController()
       )
 
+      console.log({ state: values.assetState, assetState })
       if (values.assetState !== assetState) {
+        console.log('update state')
         const nft = new Nft(web3)
 
         await nft.setMetadataState(
@@ -175,6 +195,16 @@ export default function Edit({
         setError(content.form.error)
         LoggerInstance.error(content.form.error)
         return
+      } else {
+        if (asset.accessDetails.type === 'free') {
+          const tx = await setMinterToDispenser(
+            web3,
+            asset?.accessDetails?.datatoken?.address,
+            accountId,
+            setError
+          )
+          if (!tx) return
+        }
       }
       // Edit succeeded
       setSuccess(content.form.success)

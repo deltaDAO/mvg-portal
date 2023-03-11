@@ -1,5 +1,5 @@
 import React from 'react'
-import { allowFixedPricing } from '../../../app.config'
+import { allowFixedPricing, defaultAccessTerms } from '../../../app.config'
 import {
   FormPublishData,
   MetadataAlgorithmContainer,
@@ -68,7 +68,18 @@ export const initialValues: FormPublishData = {
     dockerImage: '',
     dockerImageCustom: '',
     dockerImageCustomTag: '',
-    dockerImageCustomEntrypoint: ''
+    dockerImageCustomEntrypoint: '',
+    gaiaXInformation: {
+      termsAndConditions: [
+        {
+          url: '',
+          type: 'url'
+        }
+      ],
+      containsPII: false,
+      PIIInformation: undefined,
+      serviceSD: { url: '' }
+    }
   },
   services: [
     {

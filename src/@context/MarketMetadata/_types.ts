@@ -7,6 +7,8 @@ export interface OpcFee {
 
 export interface AppConfig {
   metadataCacheUri: string
+  complianceUri: string
+  complianceApiVersion: string
   infuraProjectId: string
   chainIds: number[]
   chainIdsSupported: number[]
@@ -19,6 +21,7 @@ export interface AppConfig {
   currencies: string[]
   coingeckoTokenIds: string[]
   allowFixedPricing: string
+  allowDynamicPricing: string
   allowFreePricing: string
   defaultPrivacyPolicySlug: string
   privacyPreferenceCenter: string
@@ -27,6 +30,7 @@ export interface AppConfig {
     classNameLight: string
     storageKey: string
   }
+  defaultAccessTerms: string
 }
 export interface SiteContent {
   siteTitle: string

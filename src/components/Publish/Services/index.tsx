@@ -79,13 +79,6 @@ export default function ServicesFields(): ReactElement {
             name="services[0].access"
             options={accessTypeOptions}
           />
-          {values.services[0].access === 'compute' && (
-            <Alert
-              className={styles.fieldWarning}
-              state="info"
-              text={siteContent.warning.ctd}
-            />
-          )}
         </>
       )}
       <Field
@@ -107,6 +100,23 @@ export default function ServicesFields(): ReactElement {
         {...getFieldContent('timeout', content.services.fields)}
         component={Input}
         name="services[0].timeout"
+      />
+
+      {/*
+       Licensing and Terms
+      */}
+      <Field
+        {...getFieldContent('license', content.metadata.fields)}
+        component={Input}
+        name="metadata.license"
+      />
+      <Field
+        {...getFieldContent(
+          'accessTermsAndConditions',
+          content.metadata.fields
+        )}
+        component={Input}
+        name="metadata.gaiaXInformation.termsAndConditions"
       />
     </>
   )

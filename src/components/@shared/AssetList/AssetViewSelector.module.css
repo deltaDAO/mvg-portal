@@ -1,0 +1,36 @@
+.viewSelectorContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: calc(var(--spacer) / 2);
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.viewSelector,
+.viewSelector:hover,
+.viewSelector:focus {
+  --icon-size: 1.5rem;
+
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  width: min-content;
+  min-width: var(--icon-size);
+  transform: none;
+}
+
+.viewSelector svg {
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+.viewSelector svg path {
+  fill: var(--teaser-border-color);
+  transition: 0.2s ease-in-out;
+}
+
+.viewSelector:hover svg path,
+.selected svg path {
+  fill: var(--teaser-title-font-color);
+  transition: 0.2s ease-in-out;
+}

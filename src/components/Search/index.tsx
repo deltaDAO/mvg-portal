@@ -106,6 +106,7 @@ export default function SearchPage({
           page={queryResult?.page}
           totalPages={queryResult?.totalPages}
           onPageChange={updatePage}
+          showAssetViewSelector
         />
       </div>
     </>

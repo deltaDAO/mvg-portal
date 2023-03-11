@@ -16,16 +16,28 @@ import content from '../../../../content/purgatory.json'
 import Web3 from 'web3'
 import Button from '@shared/atoms/Button'
 import RelatedAssets from '../RelatedAssets'
+import {
+  getFormattedCodeString,
+  getServiceSD
+} from '@components/Publish/_utils'
+import SDVisualizer from '@components/@shared/SDVisualizer'
 
 export default function AssetContent({
   asset
 }: {
   asset: AssetExtended
 }): ReactElement {
-  const { isInPurgatory, purgatoryData, isOwner, isAssetNetwork } = useAsset()
+  const {
+    isInPurgatory,
+    purgatoryData,
+    isOwner,
+    isAssetNetwork,
+    isServiceSDVerified
+  } = useAsset()
   const { debug } = useUserPreferences()
   const [receipts, setReceipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
+  const [serviceSD, setServiceSD] = useState<string>()
 
   useEffect(() => {
     setNftPublisher(
@@ -34,6 +46,23 @@ export default function AssetContent({
       )
     )
   }, [receipts])
+
+  useEffect(() => {
+    if (!isServiceSDVerified) return
+    const serviceSD =
+      asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
+    if (serviceSD?.raw) {
+      setServiceSD(JSON.parse(serviceSD?.raw))
+    }
+    if (serviceSD?.url) {
+      getServiceSD(serviceSD?.url).then((serviceSelfDescription) =>
+        setServiceSD(JSON.parse(serviceSelfDescription))
+      )
+    }
+  }, [
+    isServiceSDVerified,
+    asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
+  ])
 
   return (
     <>
@@ -61,6 +90,15 @@ export default function AssetContent({
                   className={styles.description}
                   text={asset?.metadata?.description || ''}
                 />
+                {isServiceSDVerified && (
+                  <div className={styles.sdVisualizer}>
+                    <SDVisualizer
+                      text={getFormattedCodeString(serviceSD) || ''}
+                      title="Service Self-Description"
+                      copyText={serviceSD && JSON.stringify(serviceSD, null, 2)}
+                    />
+                  </div>
+                )}
                 <MetaSecondary ddo={asset} />
               </>
             )}

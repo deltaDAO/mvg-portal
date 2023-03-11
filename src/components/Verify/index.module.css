@@ -1,0 +1,12 @@
+.didInput {
+  composes: input from '@shared/FormInput/InputElement/index.module.css';
+}
+
+.error {
+  color: var(--brand-alert-red);
+  margin-top: var(--spacer);
+}
+
+.sdContainer {
+  margin-top: calc(var(--spacer) * 2);
+}
