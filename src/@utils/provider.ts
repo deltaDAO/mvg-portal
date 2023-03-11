@@ -97,12 +97,12 @@ export async function getFileInfo(
   file: string,
   providerUrl: string,
   storageType: string,
-  withChecksum = false,
   query?: string,
   headers?: QueryHeader[],
   abi?: string,
   chainId?: number,
-  method?: string
+  method?: string,
+  withChecksum = false
 ): Promise<FileInfo[]> {
   try {
     let response
