@@ -174,6 +174,7 @@ export default function Edit({
       delete (updatedAsset as AssetExtended).accessDetails
       delete (updatedAsset as AssetExtended).datatokens
       delete (updatedAsset as AssetExtended).stats
+      // TODO: revert to setMetadata function
       const setMetadataTx = await setNFTMetadataAndTokenURI(
         updatedAsset,
         accountId,
