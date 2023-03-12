@@ -24,7 +24,11 @@ import DebugEditMetadata from './DebugEditMetadata'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
-import { setNftMetadata } from '@utils/nft'
+import {
+  decodeTokenURI,
+  setNftMetadata,
+  setNFTMetadataAndTokenURI
+} from '@utils/nft'
 import { sanitizeUrl } from '@utils/url'
 import { getEncryptedFiles } from '@utils/provider'
 import { assetStateToNumber } from '@utils/assetState'
@@ -170,12 +174,19 @@ export default function Edit({
       delete (updatedAsset as AssetExtended).accessDetails
       delete (updatedAsset as AssetExtended).datatokens
       delete (updatedAsset as AssetExtended).stats
-      const setMetadataTx = await setNftMetadata(
+      const setMetadataTx = await setNFTMetadataAndTokenURI(
         updatedAsset,
         accountId,
         web3,
+        decodeTokenURI(asset.nft.tokenURI),
         newAbortController()
       )
+      // const setMetadataTx = await setNftMetadata(
+      //   updatedAsset,
+      //   accountId,
+      //   web3,
+      //   newAbortController()
+      // )
 
       console.log({ state: values.assetState, assetState })
       if (values.assetState !== assetState) {
