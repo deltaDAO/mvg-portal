@@ -10,7 +10,9 @@ export default function Datatoken(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
 
   async function generateName() {
-    const datatokenOptions = generateDtName()
+    // TODO: create proper random DT names
+    // const datatokenOptions = generateDtName()
+    const datatokenOptions = { name: 'Datatoken', symbol: 'DT' }
     helpers.setValue({ ...datatokenOptions })
   }
 
@@ -29,7 +31,7 @@ export default function Datatoken(props: InputProps): ReactElement {
       <div className={styles.token}>
         <strong>{field?.value?.name}</strong> —{' '}
         <strong>{field?.value?.symbol}</strong>
-        <RefreshName generateName={generateName} />
+        {/* <RefreshName generateName={generateName} /> */}
       </div>
     </div>
   )
