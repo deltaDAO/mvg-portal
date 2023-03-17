@@ -2,7 +2,6 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import Link from 'next/link'
 import { accountTruncate } from '@utils/web3'
-import { getEnsName } from '@utils/ens'
 import { useIsMounted } from '@hooks/useIsMounted'
 
 export interface PublisherProps {
@@ -28,16 +27,8 @@ export default function Publisher({
 
     // set default name on hook
     // to avoid side effect (UI not updating on account's change)
-    setName(verifiedServiceProviderName || accountTruncate(account))
-
-    async function getExternalName() {
-      const accountEns = await getEnsName(account)
-      if (accountEns && isMounted()) {
-        setName(accountEns)
-      }
-    }
-
-    if (!verifiedServiceProviderName) getExternalName()
+    if (verifiedServiceProviderName && isMounted())
+      setName(verifiedServiceProviderName || accountTruncate(account))
   }, [account, isMounted, verifiedServiceProviderName])
 
   return (
