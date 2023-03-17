@@ -29,6 +29,7 @@ export interface AppConfig {
     storageKey: string
   }
   defaultAccessTerms: string
+  purgatoryUrl: string
 }
 export interface SiteContent {
   siteTitle: string

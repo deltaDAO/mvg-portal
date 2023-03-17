@@ -73,5 +73,8 @@ module.exports = {
 
   // Default terms to be used for service offerings made on this marketplace
   defaultAccessTerms:
-    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md'
+    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md',
+
+  // Purgatory URI, leave as an empty string to disable the API call
+  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || ''
 }
