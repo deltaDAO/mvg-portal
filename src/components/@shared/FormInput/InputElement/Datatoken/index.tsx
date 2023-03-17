@@ -6,13 +6,16 @@ import RefreshName from './RefreshName'
 import styles from './index.module.css'
 import { generateDtName } from '@oceanprotocol/lib'
 
-export default function Datatoken(props: InputProps): ReactElement {
-  const [field, meta, helpers] = useField(props.name)
+export default function Datatoken({
+  randomize,
+  ...props
+}: InputProps & { randomize?: boolean }): ReactElement {
+  const [field, meta, helpers] = useField(props?.name)
 
   async function generateName() {
-    // TODO: create proper random DT names
-    // const datatokenOptions = generateDtName()
-    const datatokenOptions = { name: 'Datatoken', symbol: 'DT' }
+    const datatokenOptions = randomize
+      ? generateDtName()
+      : { name: 'Datatoken', symbol: 'DT' }
     helpers.setValue({ ...datatokenOptions })
   }
 
@@ -31,7 +34,7 @@ export default function Datatoken(props: InputProps): ReactElement {
       <div className={styles.token}>
         <strong>{field?.value?.name}</strong> —{' '}
         <strong>{field?.value?.symbol}</strong>
-        {/* <RefreshName generateName={generateName} /> */}
+        {randomize && <RefreshName generateName={generateName} />}
       </div>
     </div>
   )
