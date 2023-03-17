@@ -7,7 +7,7 @@ test('returns correct markup when href or to is passed', async () => {
     <Button href="https://oceanprotocol.com">Hello Button</Button>
   )
 
-  let button = screen.getByText('Hello Button')
+  let button = screen.getByText(`Hello Button ${String.fromCharCode(8599)}`)
   expect(button).toHaveAttribute('href', 'https://oceanprotocol.com')
   expect(button).toContainHTML('<a')
 
