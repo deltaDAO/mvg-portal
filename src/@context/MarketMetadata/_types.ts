@@ -18,8 +18,6 @@ export interface AppConfig {
   publisherMarketFixedSwapFee: string
   consumeMarketOrderFee: string
   consumeMarketFixedSwapFee: string
-  currencies: string[]
-  coingeckoTokenIds: string[]
   allowFixedPricing: string
   allowDynamicPricing: string
   allowFreePricing: string

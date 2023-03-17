@@ -1,4 +1,3 @@
-import Conversion from '@shared/Price/Conversion'
 import { Field, useField, useFormikContext } from 'formik'
 import React, { ReactElement } from 'react'
 import Input from '@shared/FormInput'
@@ -51,12 +50,7 @@ export default function Price({
             </div>
             <div className={styles.datatoken}>
               <h4>
-                = <strong>1</strong> {dataTokenOptions.symbol}{' '}
-                <Conversion
-                  price={field.value}
-                  symbol={values.pricing?.baseToken?.symbol}
-                  className={styles.conversion}
-                />
+                = <strong>1</strong> {dataTokenOptions.symbol}
               </h4>
             </div>
           </div>

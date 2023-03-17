@@ -46,28 +46,6 @@ module.exports = {
   consumeMarketFixedSwapFee:
     process.env.NEXT_PUBLIC_CONSUME_MARKET_FIXED_SWAP_FEE || '0',
 
-  // Used for conversion display, can be whatever coingecko API supports
-  // see: https://api.coingecko.com/api/v3/simple/supported_vs_currencies
-  currencies: [
-    'EUR',
-    'USD',
-    'CAD',
-    'GBP',
-    'SGD',
-    'HKD',
-    'CNY',
-    'JPY',
-    'INR',
-    'RUB',
-    'ETH',
-    'BTC',
-    'LINK'
-  ],
-
-  // Tokens to fetch the spot prices from coingecko, against above currencies.
-  // Refers to Coingecko API tokenIds.
-  coingeckoTokenIds: ['ocean-protocol', 'h2o', 'ethereum', 'matic-network'],
-
   // Config for https://github.com/oceanprotocol/use-dark-mode
   darkModeConfig: {
     classNameDark: 'dark',
