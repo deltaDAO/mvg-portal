@@ -8,7 +8,7 @@ import {
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
 import { transformAssetToAssetSelection } from '../assetConvertor'
-import addressConfig from 'address.config'
+import addressConfig from '../../../address.config'
 
 export interface UserSales {
   id: string

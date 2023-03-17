@@ -36,20 +36,19 @@ export default function SearchBar({
   const router = useRouter()
   const [value, setValue] = useState(initialValue || '')
   const parsed = router.query
-  const { text, owner } = parsed
+  const isHome = window.location.pathname === '/'
+  const searchBarRef = useRef<HTMLInputElement>(null)
   const {
     isSearchBarVisible,
     setSearchBarVisible,
     homeSearchBarFocus,
     setHomeSearchBarFocus
   } = useSearchBarStatus()
-  const isHome = window.location.pathname === '/'
-
-  const searchBarRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (text || owner) setValue((text || owner) as string)
-  }, [text, owner])
+    if (parsed?.text || parsed?.owner)
+      setValue((parsed?.text || parsed?.owner) as string)
+  }, [parsed?.text, parsed?.owner])
 
   useEffect(() => {
     setSearchBarVisible(false)
