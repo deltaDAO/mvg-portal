@@ -96,11 +96,7 @@ export function generateBaseQuery(
             {
               bool: {
                 must_not: [
-                  !baseQueryParams.ignoreState && {
-                    term: {
-                      'nft.state': 5
-                    }
-                  },
+                  !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
                   getDynamicPricingMustNot()
                 ]
               }
