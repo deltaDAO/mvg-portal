@@ -92,22 +92,20 @@ export function generateBaseQuery(
           ...(baseQueryParams.ignorePurgatory
             ? []
             : [getFilterTerm('purgatory.state', false)]),
-          ...(baseQueryParams.ignoreState
-            ? []
-            : [
-                {
-                  bool: {
-                    must_not: [
-                      {
-                        term: {
-                          'nft.state': 5
-                        }
-                      },
-                      getDynamicPricingMustNot()
-                    ]
-                  }
-                }
-              ])
+          [
+            {
+              bool: {
+                must_not: [
+                  !baseQueryParams.ignoreState && {
+                    term: {
+                      'nft.state': 5
+                    }
+                  },
+                  getDynamicPricingMustNot()
+                ]
+              }
+            }
+          ]
         ],
         ...getWhitelistShould()
       }
@@ -276,7 +274,6 @@ export async function getAlgorithmDatasetsForCompute(
 
   const query = generateBaseQuery(baseQueryParams)
   const computeDatasets = await queryMetadata(query, cancelToken)
-  // TODO: check why aquarius gives back totalResults === NaN
   if (computeDatasets?.results?.length === 0) return []
 
   const datasets = await transformAssetToAssetSelection(
@@ -320,7 +317,7 @@ export async function getPublishedAssets(
         }
       }
     },
-    ignorePurgatory: true,
+    ignorePurgatory: false,
     ignoreState,
     esPaginationOptions: {
       from: (Number(page) - 1 || 0) * 9,
