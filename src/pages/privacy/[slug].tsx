@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { markdownToHtml } from '@utils/markdown'
+import { markdownToHtmlWithToc } from '@utils/markdown'
 import { getPageBySlug, getAllPages, PageData } from '@utils/markdownPages'
 import Page from '@shared/Page'
 import styles from '@shared/Page/PageMarkdown.module.css'
@@ -21,11 +21,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
       headerCenter
     >
       <Container narrow>
-        {/* TODO: reinstate automatic table of content */}
-        {/* <PrivacyPolicyHeader
-          // tableOfContents={tableOfContents}
-          policy={slug.replace('/privacy/', '')}
-        /> */}
+        <PrivacyPolicyHeader policy={slug.replace('/privacy/', '')} />
         <div
           className={styles.content}
           dangerouslySetInnerHTML={{ __html: content }}
@@ -41,7 +37,7 @@ export async function getStaticProps({
   params: { slug: string }
 }): Promise<{ props: PageData }> {
   const page = getPageBySlug(params.slug, 'privacy')
-  const content = markdownToHtml(page?.content || '')
+  const content = markdownToHtmlWithToc(page?.content || '')
 
   return {
     props: { ...page, content }
