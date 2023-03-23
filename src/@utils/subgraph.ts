@@ -175,7 +175,7 @@ export async function getOpcsApprovedTokens(
     const response = await fetchData(OpcsApprovedTokensQuery, null, context)
     if (!response?.data) return
 
-    // TODO: remove mocked EUROe integration
+    // TODO: remove the mocked EUROe integration
     return response.data.opcs[0].approvedTokens.includes(
       (token) => token.address === tokenDetailsEUROe.address
     )
