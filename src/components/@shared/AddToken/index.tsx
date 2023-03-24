@@ -56,7 +56,12 @@ export default function AddToken({
       </span>
 
       <span className={styles.text}>
-        {text || 'Add'} <span className={styles.symbol}>{symbol}</span>
+        {text || (
+          <>
+            {'Add '}
+            <span className={styles.symbol}>{symbol}</span>
+          </>
+        )}
       </span>
     </Button>
   )
