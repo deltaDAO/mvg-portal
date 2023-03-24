@@ -58,6 +58,10 @@
   position: relative;
 }
 
+.symbol {
+  text-transform: none;
+}
+
 .minimal .text {
   opacity: 0;
   transform: translate3d(-1rem, 0, 0);

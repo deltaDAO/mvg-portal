@@ -7,7 +7,6 @@ export interface UsePrivacyMetadata {
     date: string
     params: {
       languageLabel: string
-      tocHeader: string
       updated: string
       dateFormat: string
     }

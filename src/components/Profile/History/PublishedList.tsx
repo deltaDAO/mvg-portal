@@ -23,6 +23,7 @@ export default function PublishedList({
   const [page, setPage] = useState<number>(1)
   const [service, setServiceType] = useState<string>()
   const [access, setAccessType] = useState<string>()
+  const [ignorePurgatory, setIgnorePurgatory] = useState<boolean>(true)
   const newCancelToken = useCancelToken()
 
   const getPublished = useCallback(
@@ -32,6 +33,7 @@ export default function PublishedList({
       page: number,
       service: string,
       access: string,
+      ignorePurgatory: boolean,
       cancelToken: CancelToken
     ) => {
       try {
@@ -40,6 +42,7 @@ export default function PublishedList({
           accountId.toLowerCase(),
           chainIds,
           cancelToken,
+          ownAccount && ignorePurgatory,
           ownAccount,
           page,
           service,
@@ -62,7 +65,15 @@ export default function PublishedList({
   useEffect(() => {
     if (!accountId) return
 
-    getPublished(accountId, chainIds, page, service, access, newCancelToken())
+    getPublished(
+      accountId,
+      chainIds,
+      page,
+      service,
+      access,
+      ignorePurgatory,
+      newCancelToken()
+    )
   }, [
     accountId,
     page,
@@ -71,7 +82,8 @@ export default function PublishedList({
     newCancelToken,
     getPublished,
     service,
-    access
+    access,
+    ignorePurgatory
   ])
 
   return accountId ? (
@@ -81,6 +93,8 @@ export default function PublishedList({
         setServiceType={setServiceType}
         accessType={access}
         setAccessType={setAccessType}
+        ignorePurgatory={ownAccount ? ignorePurgatory : undefined}
+        setIgnorePurgatory={ownAccount ? setIgnorePurgatory : undefined}
         className={styles.filters}
       />
       <AssetList
