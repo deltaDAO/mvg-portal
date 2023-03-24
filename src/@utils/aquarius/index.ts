@@ -284,6 +284,7 @@ export async function getPublishedAssets(
   accountId: string,
   chainIds: number[],
   cancelToken: CancelToken,
+  ignorePurgatory = false,
   ignoreState = false,
   page?: number,
   type?: string,
@@ -313,7 +314,7 @@ export async function getPublishedAssets(
         }
       }
     },
-    ignorePurgatory: false,
+    ignorePurgatory,
     ignoreState,
     esPaginationOptions: {
       from: (Number(page) - 1 || 0) * 9,

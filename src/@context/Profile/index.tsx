@@ -114,6 +114,7 @@ function ProfileProvider({
           accountId,
           chainIds,
           cancelTokenSource.token,
+          ownAccount,
           ownAccount
         )
         setAssets(result.results)

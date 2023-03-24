@@ -41,6 +41,7 @@ export default function PublishedList({
           chainIds,
           cancelToken,
           ownAccount,
+          ownAccount,
           page,
           service,
           access
