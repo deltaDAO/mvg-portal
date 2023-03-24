@@ -1,9 +1,8 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, ReactNode } from 'react'
 import classNames from 'classnames/bind'
 import { addTokenToWallet } from '@utils/web3'
 import { useWeb3 } from '@context/Web3'
 import Button from '@shared/atoms/Button'
-import OceanLogo from '@images/logo.svg'
 import styles from './index.module.css'
 
 const cx = classNames.bind(styles)
@@ -11,6 +10,11 @@ const cx = classNames.bind(styles)
 export interface AddTokenProps {
   address: string
   symbol: string
+  decimals?: number
+  logo?: {
+    image?: ReactNode
+    url?: string
+  }
   text?: string
   className?: string
   minimal?: boolean
@@ -19,6 +23,8 @@ export interface AddTokenProps {
 export default function AddToken({
   address,
   symbol,
+  decimals,
+  logo,
   text,
   className,
   minimal
@@ -34,7 +40,7 @@ export default function AddToken({
   async function handleAddToken() {
     if (!web3Provider) return
 
-    await addTokenToWallet(web3Provider, address, symbol)
+    await addTokenToWallet(web3Provider, address, symbol, decimals, logo?.url)
   }
 
   return (
@@ -45,12 +51,12 @@ export default function AddToken({
       onClick={handleAddToken}
     >
       <span className={styles.logoWrap}>
-        <div className={styles.logo}>
-          <OceanLogo />
-        </div>
+        <div className={styles.logo}>{logo?.image}</div>
       </span>
 
-      <span className={styles.text}>{text || `Add ${symbol}`}</span>
+      <span className={styles.text}>
+        {text || 'Add'} <span className={styles.symbol}>{symbol}</span>
+      </span>
     </Button>
   )
 }
