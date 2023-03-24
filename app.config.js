@@ -8,7 +8,7 @@ module.exports = {
   // const { appConfig } = useMarketMetadata()
   // return appConfig.metadataCacheUri
   metadataCacheUri:
-    process.env.NEXT_PUBLIC_METADATACACHE_URI ||
+    process.env.NEXT_PUBLIC_METADATA_CACHE_URI ||
     'https://aquarius.v4.delta-dao.com',
 
   complianceUri:
