@@ -19,9 +19,11 @@ const serviceFilterItems = [
 ]
 
 const accessFilterItems = [
-  { display: 'download ', value: FilterByAccessOptions.Download },
-  { display: 'compute ', value: FilterByAccessOptions.Compute }
+  { display: 'download', value: FilterByAccessOptions.Download },
+  { display: 'compute', value: FilterByAccessOptions.Compute }
 ]
+
+const purgatoryFilterItem = { display: 'purgatory ', value: 'purgatory' }
 
 export default function FilterPrice({
   serviceType,
@@ -29,6 +31,8 @@ export default function FilterPrice({
   setServiceType,
   setAccessType,
   addFiltersToUrl,
+  ignorePurgatory,
+  setIgnorePurgatory,
   className
 }: {
   serviceType: string
@@ -36,6 +40,8 @@ export default function FilterPrice({
   setServiceType: React.Dispatch<React.SetStateAction<string>>
   setAccessType: React.Dispatch<React.SetStateAction<string>>
   addFiltersToUrl?: boolean
+  ignorePurgatory?: boolean
+  setIgnorePurgatory?: (value: boolean) => void
   className?: string
 }): ReactElement {
   const router = useRouter()
@@ -120,6 +126,9 @@ export default function FilterPrice({
     setAccessSelections([])
     setServiceType(undefined)
     setAccessType(undefined)
+    if (ignorePurgatory !== undefined && setIgnorePurgatory !== undefined)
+      setIgnorePurgatory(true)
+
     if (addFiltersToUrl) {
       let urlLocation = await addExistingParamsToUrl(location, [
         'accessType',
@@ -182,6 +191,21 @@ export default function FilterPrice({
             </Button>
           )
         })}
+      </div>
+      <div>
+        {ignorePurgatory !== undefined && setIgnorePurgatory !== undefined && (
+          <Button
+            size="small"
+            style="text"
+            className={cx({
+              [styles.selected]: ignorePurgatory,
+              [styles.filter]: true
+            })}
+            onClick={() => setIgnorePurgatory(!ignorePurgatory)}
+          >
+            {purgatoryFilterItem.display}
+          </Button>
+        )}
         {clearFilters.map((e, index) => {
           const showClear =
             accessSelections.length > 0 || serviceSelections.length > 0
