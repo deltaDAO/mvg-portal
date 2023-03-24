@@ -3,6 +3,7 @@ import classNames from 'classnames/bind'
 import { addTokenToWallet } from '@utils/web3'
 import { useWeb3 } from '@context/Web3'
 import Button from '@shared/atoms/Button'
+import OceanLogo from '@images/logo.svg'
 import styles from './index.module.css'
 
 const cx = classNames.bind(styles)
@@ -51,7 +52,7 @@ export default function AddToken({
       onClick={handleAddToken}
     >
       <span className={styles.logoWrap}>
-        <div className={styles.logo}>{logo?.image}</div>
+        <div className={styles.logo}>{logo?.image || <OceanLogo />}</div>
       </span>
 
       <span className={styles.text}>

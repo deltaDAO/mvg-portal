@@ -12,10 +12,6 @@ const tokenLogos = {
   OCEAN: {
     image: <OceanLogo />,
     url: 'https://raw.githubusercontent.com/oceanprotocol/art/main/logo/token.png'
-  },
-  default: {
-    image: <OceanLogo />,
-    url: 'https://raw.githubusercontent.com/oceanprotocol/art/main/logo/token.png'
   }
 }
 
@@ -30,7 +26,7 @@ export default function AddTokenList(): ReactElement {
           address={token.address}
           symbol={token.symbol}
           decimals={token.decimals}
-          logo={tokenLogos?.[token.symbol] || tokenLogos.default}
+          logo={tokenLogos?.[token.symbol]}
         />
       ))}
     </div>
