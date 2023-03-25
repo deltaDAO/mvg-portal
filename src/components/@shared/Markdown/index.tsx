@@ -15,7 +15,7 @@ const Markdown = ({
     ? markdownToHtml(text)
     : markdownToHtml(text).replaceAll(
         /<img[\w\W]+?\/?>/g,
-        '<img src="about:blank" alt="External content not allowed" />'
+        '<img src="/images/image_blocked_placeholder.png" alt="Blocked image placeholder" />'
       )
 
   return (
