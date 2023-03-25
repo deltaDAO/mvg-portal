@@ -4,12 +4,19 @@ import styles from './index.module.css'
 
 const Markdown = ({
   text,
+  blockImages,
   className
 }: {
   text: string
+  blockImages?: boolean
   className?: string
 }): ReactElement => {
-  const content = markdownToHtml(text)
+  const content = !blockImages
+    ? markdownToHtml(text)
+    : markdownToHtml(text).replaceAll(
+        /<img[\w\W]+?\/?>/g,
+        `<img src="/images/image_blocked_placeholder.png" alt="Blocked image placeholder" class="${styles.blockedContentImage}" />`
+      )
 
   return (
     <div

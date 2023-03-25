@@ -26,7 +26,7 @@ export default function MetaInfo({
         className={styles.assetType}
       />
       <div className={styles.byline}>
-        <p>
+        <div>
           Published <Time date={asset?.metadata.created} relative />
           {(verifiedServiceProviderName ||
             (nftPublisher && nftPublisher !== nftOwner)) && (
@@ -46,7 +46,7 @@ export default function MetaInfo({
               </span>
             </>
           )}
-        </p>
+        </div>
       </div>
     </div>
   )

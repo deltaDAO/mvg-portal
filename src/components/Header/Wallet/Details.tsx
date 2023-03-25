@@ -7,6 +7,7 @@ import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
 import AddTokenList from './AddTokenList'
+import ExternalContent from '../UserPreferences/ExternalContent'
 
 export default function Details(): ReactElement {
   const { accountId, web3ProviderInfo, web3Modal, connect, logout } = useWeb3()
@@ -60,6 +61,9 @@ export default function Details(): ReactElement {
               Disconnect
             </Button>
           </p>
+        </li>
+        <li className={styles.externalContent}>
+          <ExternalContent />
         </li>
         <li className={styles.debug}>
           <Debug />

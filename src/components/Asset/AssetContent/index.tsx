@@ -34,7 +34,7 @@ export default function AssetContent({
     isAssetNetwork,
     isServiceSDVerified
   } = useAsset()
-  const { debug } = useUserPreferences()
+  const { allowExternalContent, debug } = useUserPreferences()
   const [receipts, setReceipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
   const [serviceSD, setServiceSD] = useState<string>()
@@ -89,6 +89,7 @@ export default function AssetContent({
                 <Markdown
                   className={styles.description}
                   text={asset?.metadata?.description || ''}
+                  blockImages={!allowExternalContent}
                 />
                 {isServiceSDVerified && (
                   <div className={styles.sdVisualizer}>
