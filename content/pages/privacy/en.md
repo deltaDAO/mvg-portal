@@ -3,22 +3,9 @@ title: Privacy Policy
 description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO) processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
 ---
 
-_Last updated on March 13, 2023._
+## Table of contents
 
-### Table of contents
-
-1. Contact details of the controller and Data Protection Officer
-2. What's personal data?
-3. Recipients and cross-border data transfer
-4. Processing operations according to Article 13 GDPR
-5. Automated decision making including profiling according to Article 13(2)(f) GDPR
-6. Cookies and web storage
-7. External links
-8. Your rights
-9. Questions
-10. Changes to the Privacy Policy
-
-## 1. Contact details of the controller and Data Protection Officer <a name="contact"></a>
+## 1. Contact details of the controller and Data Protection Officer
 
 The controller pursuant to the EU General Data Protection Regulation ("GDPR") for the processing of your personal data is:
 
@@ -37,7 +24,7 @@ Katharinenstraße 30a
 Germany  
 E-mail: <privacy@delta-dao.com>
 
-## 2. What's personal data? <a name="personaldata"></a>
+## 2. What's personal data?
 
 Personal data is any information that can be (directly or indirectly) related to you. deltaDAO processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
 
@@ -46,7 +33,7 @@ Personal data is any information that can be (directly or indirectly) related to
 
 For detailed information about the processing operations, lawfulness, purposes, and how your personal data serves to reach these purposes, please take a look at the chapter "Processing operations according to Article 13 GDPR".
 
-## 3. Recipients and cross-border data transfer <a name="recipients"></a>
+## 3. Recipients and cross-border data transfer
 
 **Visiting our portal demonstrator**  
 When visiting our portal demonstrator, your IP address is processed by Netlify, a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Netlify using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely be processed on a Netlify server within the EEA. We signed Standard Contractual Clauses (SCC) with Netlify to ensure a data protection compliant processing of your personal data. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
@@ -57,7 +44,7 @@ When visiting our portal demonstrator, your IP address is processed by Netlify, 
 **Contact via e-mail**  
 When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
 
-## 4. Processing operations according to Article 13 GDPR <a name="processing"></a>
+## 4. Processing operations according to Article 13 GDPR
 
 We process your personal data for the following purposes.
 
@@ -95,21 +82,21 @@ Our legitimate interest is to answer your inquiries.
 **Retention period:**  
 deltaDAO deletes your personal data as soon as we no longer require them for processing your inquiry, except deltaDAO is obliged to comply with legal retention periods or in case of legal disputes.
 
-## 5. Automated decision making including profiling according to Article 13(2)(f) GDPR <a name="profiling"></a>
+## 5. Automated decision making including profiling according to Article 13(2)(f) GDPR
 
 Automated decision making including profiling does not take place.
 
-## 6. Cookies and web storage <a name="cookies"></a>
+## 6. Cookies and web storage
 
 A cookie is a small file that stores Internet settings. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content. Web storage (local storage and session storage) has similar functionality to cookies.
 
 Our portal demonstrator does not use cookies or web storage for analytics or marketing purposes. We use your web storage to remember your page preferences, enable functionalities and to enhance your user experience. Your browser will remove the session storage once you close your browser. You have the option of disabling cookies and deleting cookies and web storage from your computer's hard disk at any time in your browser settings.
 
-## 7. External links <a name="links"></a>
+## 7. External links
 
 Our portal demonstrator contains links to external websites that are beyond the control and responsibility of deltaDAO.
 
-## 8. Your rights <a name="rights"></a>
+## 8. Your rights
 
 If you want to make use of your rights described below, do not hesitate to contact us.
 
@@ -138,10 +125,10 @@ You have the right to lodge a complaint with a supervisory authority if you cons
 - in the Member State of your place of work, and
 - in the place of the alleged infringement.
 
-## 9. Questions <a name="questions"></a>
+## 9. Questions
 
 For any requests regarding our privacy policy, please send us an e-mail to <privacy@delta-dao.com>.
 
-## 10. Changes to the Privacy Policy <a name="changes"></a>
+## 10. Changes to the Privacy Policy
 
 We adjust this policy from time to time, by publishing a new version on our portal demonstrator. You can find the date of the current version at the beginning of this policy. The latest version of this policy applies to the processing of your personal data.
