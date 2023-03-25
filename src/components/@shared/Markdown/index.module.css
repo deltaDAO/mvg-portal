@@ -79,6 +79,6 @@
 }
 
 /* targeting the blocked image placeholder */
-.markdown span img {
+.blockedContentImage {
   height: 200px;
 }
