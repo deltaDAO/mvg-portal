@@ -15,7 +15,8 @@ const Markdown = ({
     ? markdownToHtml(text)
     : markdownToHtml(text).replaceAll(
         /<img[\w\W]+?\/?>/g,
-        '<img src="/images/image_blocked_placeholder.png" alt="Blocked image placeholder" />'
+        // enclosing the img into a <span> element to target in css
+        `<span><img src="/images/image_blocked_placeholder.png" alt="Blocked image placeholder" /></span>`
       )
 
   return (
