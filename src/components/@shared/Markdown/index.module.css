@@ -78,7 +78,6 @@
   margin-bottom: calc(var(--spacer) / 2);
 }
 
-/* targeting the blocked image placeholder */
 .blockedContentImage {
   height: 200px;
 }
