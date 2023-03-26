@@ -73,8 +73,9 @@ function UserPreferencesProvider({
     localStorage?.showPPC !== false
   )
 
-  const [allowExternalContent, setAllowExternalContent] =
-    useState<boolean>(false)
+  const [allowExternalContent, setAllowExternalContent] = useState<boolean>(
+    localStorage?.allowExternalContent || false
+  )
 
   // Write values to localStorage on change
   useEffect(() => {
