@@ -4,7 +4,7 @@ description: Thanks for using our product and services.
 ---
 
 deltaDAO AG<br/>
-Katharinenstraße 30a (Contor)<br/>
+Katharinenstraße 30a<br/>
 20457 Hamburg<br/>
 Germany<br/><br/>
 
