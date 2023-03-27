@@ -37,7 +37,7 @@ module.exports = {
   consumeMarketOrderFee: process.env.NEXT_PUBLIC_CONSUME_MARKET_ORDER_FEE,
   // fee recieved by the consume market when a dt is bought from a fixed rate exchange, percent
   consumeMarketFixedSwapFee:
-    process.env.NEXT_PUBLIC_CONSUME_MARKET_FIXED_SWAP_FEE || '0',
+    process.env.NEXT_PUBLIC_CONSUME_MARKET_FIXED_SWAP_FEE,
 
   // Config for https://github.com/oceanprotocol/use-dark-mode
   darkModeConfig: {
@@ -67,5 +67,5 @@ module.exports = {
   defaultAccessTerms: process.env.NEXT_PUBLIC_DEFAULT_ACCESS_TERMS,
 
   // Purgatory URI, leave as an empty string to disable the API call
-  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || ''
+  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI
 }
