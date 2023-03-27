@@ -9,8 +9,7 @@ import Avatar from '@shared/atoms/Avatar'
 // Forward ref for Tippy.js
 // eslint-disable-next-line
 const Account = React.forwardRef((props, ref: any) => {
-  const { accountId, accountEns, accountEnsAvatar, web3Modal, connect } =
-    useWeb3()
+  const { accountId, web3Modal, connect } = useWeb3()
 
   async function handleActivation(e: FormEvent<HTMLButtonElement>) {
     // prevent accidentially submitting a form the button might be in
@@ -31,9 +30,9 @@ const Account = React.forwardRef((props, ref: any) => {
       ref={ref}
       onClick={(e) => e.preventDefault()}
     >
-      <Avatar accountId={accountId} src={accountEnsAvatar} />
+      <Avatar accountId={accountId} />
       <span className={styles.address} title={accountId}>
-        {accountTruncate(accountEns || accountId)}
+        {accountTruncate(accountId)}
       </span>
       <Caret aria-hidden="true" className={styles.caret} />
     </button>

@@ -1,6 +1,5 @@
 import { fetchData } from './fetch'
-
-const purgatoryUrl = 'https://market-purgatory.oceanprotocol.com/api/'
+import { purgatoryUrl } from '../../app.config'
 
 export interface PurgatoryDataAccount {
   address: string
@@ -10,6 +9,8 @@ export interface PurgatoryDataAccount {
 export async function getAccountPurgatoryData(
   address: string
 ): Promise<PurgatoryDataAccount> {
+  if (!purgatoryUrl) return { address: undefined, reason: undefined }
+
   const data = (await fetchData(
     `${purgatoryUrl}account?address=${address}`
   )) as PurgatoryDataAccount[]

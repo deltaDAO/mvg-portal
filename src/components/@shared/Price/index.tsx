@@ -5,13 +5,11 @@ export default function Price({
   accessDetails,
   orderPriceAndFees,
   className,
-  size,
-  conversion
+  size
 }: {
   accessDetails: AccessDetails
   orderPriceAndFees?: OrderPriceAndFees
   className?: string
-  conversion?: boolean
   size?: 'small' | 'mini' | 'large'
 }): ReactElement {
   const isSupported =
@@ -25,7 +23,6 @@ export default function Price({
       symbol={accessDetails?.baseToken?.symbol}
       className={className}
       size={size}
-      conversion={conversion}
       type={accessDetails?.type}
     />
   ) : null

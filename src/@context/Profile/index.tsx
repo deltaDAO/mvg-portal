@@ -18,10 +18,8 @@ import {
 import axios, { CancelToken } from 'axios'
 import web3 from 'web3'
 import { useMarketMetadata } from '../MarketMetadata'
-import { getEnsProfile } from '@utils/ens'
 
 interface ProfileProviderValue {
-  profile: Profile
   assets: Asset[]
   assetsTotal: number
   isEthAddress: boolean
@@ -36,22 +34,12 @@ const ProfileContext = createContext({} as ProfileProviderValue)
 
 const refreshInterval = 10000 // 10 sec.
 
-const clearedProfile: Profile = {
-  name: null,
-  avatar: null,
-  url: null,
-  description: null,
-  links: null
-}
-
 function ProfileProvider({
   accountId,
-  accountEns,
   ownAccount,
   children
 }: {
   accountId: string
-  accountEns: string
   ownAccount: boolean
   children: ReactNode
 }): ReactElement {
@@ -67,34 +55,6 @@ function ProfileProvider({
     const isEthAddress = web3.utils.isAddress(accountId)
     setIsEthAddress(isEthAddress)
   }, [accountId])
-
-  //
-  // User profile: ENS
-  //
-  const [profile, setProfile] = useState<Profile>({ name: accountEns })
-
-  useEffect(() => {
-    if (!accountEns) return
-    LoggerInstance.log(`[profile] ENS name found for ${accountId}:`, accountEns)
-  }, [accountId, accountEns])
-
-  useEffect(() => {
-    if (
-      !accountId ||
-      accountId === '0x0000000000000000000000000000000000000000' ||
-      !isEthAddress
-    ) {
-      setProfile(clearedProfile)
-      return
-    }
-
-    async function getInfo() {
-      const profile = await getEnsProfile(accountId)
-      setProfile(profile)
-      LoggerInstance.log(`[profile] ENS metadata for ${accountId}:`, profile)
-    }
-    getInfo()
-  }, [accountId, isEthAddress])
 
   //
   // PUBLISHED ASSETS
@@ -235,7 +195,6 @@ function ProfileProvider({
   return (
     <ProfileContext.Provider
       value={{
-        profile,
         assets,
         assetsTotal,
         isEthAddress,

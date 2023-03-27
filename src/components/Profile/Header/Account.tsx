@@ -6,7 +6,6 @@ import Jellyfish from '@oceanprotocol/art/creatures/jellyfish/jellyfish-grid.svg
 import Copy from '@shared/atoms/Copy'
 import Avatar from '@shared/atoms/Avatar'
 import styles from './Account.module.css'
-import { useProfile } from '@context/Profile'
 import { accountTruncate } from '@utils/web3'
 
 export default function Account({
@@ -15,31 +14,21 @@ export default function Account({
   accountId: string
 }): ReactElement {
   const { chainIds } = useUserPreferences()
-  const { profile } = useProfile()
 
   return (
     <div className={styles.account}>
       <figure className={styles.imageWrap}>
         {accountId ? (
-          <Avatar
-            accountId={accountId}
-            src={profile?.avatar}
-            className={styles.image}
-          />
+          <Avatar accountId={accountId} className={styles.image} />
         ) : (
           <Jellyfish className={styles.image} />
         )}
       </figure>
 
       <div>
-        <h3 className={styles.name}>
-          {profile?.name || accountTruncate(accountId)}
-        </h3>
+        <h3 className={styles.name}>{accountTruncate(accountId)}</h3>
         {accountId && (
-          <code
-            className={styles.accountId}
-            title={profile?.name ? accountId : null}
-          >
+          <code className={styles.accountId}>
             {accountId} <Copy text={accountId} />
           </code>
         )}
