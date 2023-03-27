@@ -8,46 +8,31 @@ const chains = [
     chainId: 100,
     network: 'genx',
     isDefault: true,
-    metadataCacheUri:
-      process.env.NEXT_PUBLIC_GENX_METADATA_CACHE_URI ||
-      'https://aquarius.v4.genx.delta-dao.com',
-    nodeUri:
-      process.env.NEXT_PUBLIC_GENX_NODE_URI ||
-      'https://rpc.genx.minimal-gaia-x.eu',
-    providerUri:
-      process.env.NEXT_PUBLIC_GENX_PROVIDER_URI ||
-      'https://provider.v4.genx.delta-dao.com',
-    subgraphUri:
-      process.env.NEXT_PUBLIC_GENX_SUBGRAPH_URI ||
-      'https://subgraph.v4.genx.minimal-gaia-x.eu',
-    explorerUri:
-      process.env.NEXT_PUBLIC_GENX_EXPLORER_URI ||
-      'https://logging.genx.minimal-gaia-x.eu',
-    oceanTokenAddress:
-      process.env.NEXT_PUBLIC_GENX_OCEAN_TOKEN_ADDRESS ||
-      '0x0995527d3473b3a98c471f1ed8787acd77fbf009',
-    oceanTokenSymbol: 'OCEAN',
+    metadataCacheUri: process.env.NEXT_PUBLIC_GENX_METADATA_CACHE_URI,
+    nodeUri: process.env.NEXT_PUBLIC_GENX_NODE_URI,
+    providerUri: process.env.NEXT_PUBLIC_GENX_PROVIDER_URI,
+    subgraphUri: process.env.NEXT_PUBLIC_GENX_SUBGRAPH_URI,
+    explorerUri: process.env.NEXT_PUBLIC_GENX_EXPLORER_URI,
+    oceanTokenAddress: process.env.NEXT_PUBLIC_GENX_OCEAN_TOKEN_ADDRESS,
+    oceanTokenSymbol: process.env.NEXT_PUBLIC_GENX_OCEAN_TOKEN_SYMBOL,
     fixedRateExchangeAddress:
-      process.env.NEXT_PUBLIC_GENX_FIXED_RATE_EXCHANGE_ADDRESS ||
-      '0xAD8E7d2aFf5F5ae7c2645a52110851914eE6664b',
-    dispenserAddress:
-      process.env.NEXT_PUBLIC_GENX_DISPENSER_ADDRESS ||
-      '0x94cb8FC8719Ed09bE3D9c696d2037EA95ef68d3e',
-    startBlock: Number(process.env.NEXT_PUBLIC_GENX_START_BLOCK) || 3665369,
-    transactionBlockTimeout: 50,
-    transactionConfirmationBlocks: 1,
-    transactionPollingTimeout: 750,
-    gasFeeMultiplier:
-      Number(process.env.NEXT_PUBLIC_GENX_GAS_FEE_MULTIPLIER) || 1.1,
-    nftFactoryAddress:
-      process.env.NEXT_PUBLIC_GENX_NFT_FACTORY_ADDRESS ||
-      '0x6cb85858183B82154921f68b434299EC4281da53',
+      process.env.NEXT_PUBLIC_GENX_FIXED_RATE_EXCHANGE_ADDRESS,
+    dispenserAddress: process.env.NEXT_PUBLIC_GENX_DISPENSER_ADDRESS,
+    startBlock: Number(process.env.NEXT_PUBLIC_GENX_START_BLOCK),
+    transactionBlockTimeout: Number(
+      process.env.NEXT_PUBLIC_GENX_TRANSACTION_BLOCK_TIMEOUT
+    ),
+    transactionConfirmationBlocks: Number(
+      process.env.NEXT_PUBLIC_GENX_TRANSACTION_CONFIRMATION_BLOCK
+    ),
+    transactionPollingTimeout: Number(
+      process.env.NEXT_PUBLIC_GENX_TRANSACTION_POLLING_TIMEOUT
+    ),
+    gasFeeMultiplier: Number(process.env.NEXT_PUBLIC_GENX_GAS_FEE_MULTIPLIER),
+    nftFactoryAddress: process.env.NEXT_PUBLIC_GENX_NFT_FACTORY_ADDRESS,
     opfCommunityFeeCollector:
-      process.env.NEXT_PUBLIC_GENX_COMMUNITY_FEE_COLLECTOR ||
-      '0x2e0C9e15A45c9884F7768BB852E7399B9153525d',
-    providerAddress:
-      process.env.NEXT_PUBLIC_GENX_PROVIDER_ADDRESS ||
-      '0x68C24FA5b2319C81b34f248d1f928601D2E5246B'
+      process.env.NEXT_PUBLIC_GENX_COMMUNITY_FEE_COLLECTOR,
+    providerAddress: process.env.NEXT_PUBLIC_GENX_PROVIDER_ADDRESS
   }
 ]
 
