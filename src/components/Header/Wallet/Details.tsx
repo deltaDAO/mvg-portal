@@ -1,41 +1,16 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement } from 'react'
 import Button from '@shared/atoms/Button'
-import AddToken from '@shared/AddToken'
 import { useWeb3 } from '@context/Web3'
-import { getOceanConfig } from '@utils/ocean'
 import styles from './Details.module.css'
 import Debug from '../UserPreferences/Debug'
 import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
+import AddTokenList from './AddTokenList'
+import ExternalContent from '../UserPreferences/ExternalContent'
 
 export default function Details(): ReactElement {
-  const {
-    accountId,
-    web3ProviderInfo,
-    web3Modal,
-    connect,
-    logout,
-    networkData,
-    networkId
-  } = useWeb3()
-
-  const [oceanTokenMetadata, setOceanTokenMetadata] = useState<{
-    address: string
-    symbol: string
-  }>()
-
-  useEffect(() => {
-    if (!networkId) return
-
-    const oceanConfig = getOceanConfig(networkId)
-
-    oceanConfig &&
-      setOceanTokenMetadata({
-        address: oceanConfig.oceanTokenAddress,
-        symbol: oceanConfig.oceanTokenSymbol
-      })
-  }, [networkData, networkId])
+  const { accountId, web3ProviderInfo, web3Modal, connect, logout } = useWeb3()
 
   return (
     <div className={styles.details}>
@@ -62,13 +37,7 @@ export default function Details(): ReactElement {
               <img className={styles.walletLogo} src={web3ProviderInfo?.logo} />
               {web3ProviderInfo?.name}
             </span>
-            {web3ProviderInfo?.name === 'MetaMask' && (
-              <AddToken
-                address={oceanTokenMetadata?.address}
-                symbol={oceanTokenMetadata?.symbol}
-                className={styles.addToken}
-              />
-            )}
+            {web3ProviderInfo?.name === 'MetaMask' && <AddTokenList />}
           </div>
           <p>
             <Button
@@ -92,6 +61,9 @@ export default function Details(): ReactElement {
               Disconnect
             </Button>
           </p>
+        </li>
+        <li className={styles.externalContent}>
+          <ExternalContent />
         </li>
         <li className={styles.debug}>
           <Debug />

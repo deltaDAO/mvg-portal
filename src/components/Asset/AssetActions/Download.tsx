@@ -216,7 +216,6 @@ export default function Download({
                   <Price
                     accessDetails={asset.accessDetails}
                     orderPriceAndFees={orderPriceAndFees}
-                    conversion
                     size="large"
                   />
                 )}

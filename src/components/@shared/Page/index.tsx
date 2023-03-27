@@ -3,6 +3,8 @@ import PageHeader from './PageHeader'
 import Seo from './Seo'
 import Container from '@shared/atoms/Container'
 import SearchBar from '@components/Header/SearchBar'
+import { useUserPreferences } from '@context/UserPreferences'
+import ExternalContentWarning from '../ExternalContentWarning'
 
 export interface PageProps {
   children: ReactNode
@@ -21,8 +23,11 @@ export default function Page({
   noPageHeader,
   headerCenter
 }: PageProps): ReactElement {
+  const { allowExternalContent } = useUserPreferences()
+
   const isHome = uri === '/'
-  const isSearch = uri.startsWith('/search')
+  const isSearchPage = uri.startsWith('/search')
+  const isAssetPage = uri.startsWith('/asset')
 
   return (
     <>
@@ -31,9 +36,10 @@ export default function Page({
         {!isHome && (
           <SearchBar
             placeholder="Search for service offerings"
-            isSearchPage={isSearch}
+            isSearchPage={isSearchPage}
           />
         )}
+        {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
         {title && !noPageHeader && (
           <PageHeader
             title={isHome ? title : <>{title.slice(0, 400)}</>}

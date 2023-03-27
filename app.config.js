@@ -37,29 +37,7 @@ module.exports = {
   consumeMarketOrderFee: process.env.NEXT_PUBLIC_CONSUME_MARKET_ORDER_FEE,
   // fee recieved by the consume market when a dt is bought from a fixed rate exchange, percent
   consumeMarketFixedSwapFee:
-    process.env.NEXT_PUBLIC_CONSUME_MARKET_FIXED_SWAP_FEE,
-
-  // Used for conversion display, can be whatever coingecko API supports
-  // see: https://api.coingecko.com/api/v3/simple/supported_vs_currencies
-  currencies: [
-    'EUR',
-    'USD',
-    'CAD',
-    'GBP',
-    'SGD',
-    'HKD',
-    'CNY',
-    'JPY',
-    'INR',
-    'RUB',
-    'ETH',
-    'BTC',
-    'LINK'
-  ],
-
-  // Tokens to fetch the spot prices from coingecko, against above currencies.
-  // Refers to Coingecko API tokenIds.
-  coingeckoTokenIds: ['ocean-protocol', 'h2o', 'ethereum', 'matic-network'],
+    process.env.NEXT_PUBLIC_CONSUME_MARKET_FIXED_SWAP_FEE || '0',
 
   // Config for https://github.com/oceanprotocol/use-dark-mode
   darkModeConfig: {
@@ -86,5 +64,8 @@ module.exports = {
   privacyPreferenceCenter: process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER,
 
   // Default terms to be used for service offerings made on this marketplace
-  defaultAccessTerms: process.env.NEXT_PUBLIC_DEFAULT_ACCESS_TERMS
+  defaultAccessTerms: process.env.NEXT_PUBLIC_DEFAULT_ACCESS_TERMS,
+
+  // Purgatory URI, leave as an empty string to disable the API call
+  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || ''
 }

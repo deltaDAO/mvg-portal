@@ -49,7 +49,7 @@ export default function CookieBanner({
             <Markdown text={cookies.title} className={styles.header} />
             <Markdown text={cookies.text} />
           </div>
-          {cookies.optionalCookies && (
+          {cookies?.optionalCookies?.length > 0 && (
             <>
               <div className={styles.buttons}>
                 <Button
@@ -86,7 +86,9 @@ export default function CookieBanner({
             </>
           )}
         </div>
-        {(!smallBanner || !cookies.optionalCookies) && (
+        {(!smallBanner ||
+          !cookies?.optionalCookies ||
+          cookies?.optionalCookies?.length === 0) && (
           <Button
             size="small"
             style="primary"

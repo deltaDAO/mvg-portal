@@ -79,6 +79,7 @@ export async function addTokenToWallet(
   web3Provider: any,
   address: string,
   symbol: string,
+  decimals?: number,
   logo?: string
 ): Promise<void> {
   const image =
@@ -87,7 +88,7 @@ export async function addTokenToWallet(
 
   const tokenMetadata = {
     type: 'ERC20',
-    options: { address, symbol, image, decimals: 18 }
+    options: { address, symbol, image, decimals: decimals || 18 }
   }
 
   web3Provider.sendAsync(
