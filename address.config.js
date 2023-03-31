@@ -9,7 +9,10 @@ module.exports = {
       assets: [
         'did:op:dd456754dc659ef111cc5fa87662cda1a67ca390c3f86fee4d5592ecb3bbffd5',
         'did:op:bd2d41775c5041361d899f30734920af6383c3ca5838d06fa4649cba9c94192e',
-        'did:op:adb67df12b41a4089e0d3f4933bab5254bb905657b92b35bcd1cbcefc836fee5'
+        'did:op:adb67df12b41a4089e0d3f4933bab5254bb905657b92b35bcd1cbcefc836fee5',
+        'did:op:48638f1e3d5b40350f17883629eb8cbd67cca5ecfd0103ab922a08d7d62e3e7b',
+        'did:op:bd74d6a281ba414de2b4d8ee4087277575f95676bd74e20ee9e2960c9c38d7c5',
+        'did:op:a3da777fd3711da36d5e1e5904a8c074b6e8df51549db2b6c8a5bc7ec3ab60cf'
       ]
     },
     {
