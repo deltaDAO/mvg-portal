@@ -6,7 +6,8 @@ import { useField } from 'formik'
 jest.mock('formik')
 
 const props = {
-  name: 'Datatoken'
+  name: 'Datatoken',
+  randomize: true
 }
 
 const mockMeta = {
