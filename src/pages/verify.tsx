@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react'
 import { useRouter } from 'next/router'
-import PageVerify from '../components/Verify'
+import Verify from '../components/Verify'
 import AssetProvider from '@context/Asset'
 import content from '../../content/pages/verify.json'
 import Page from '@components/@shared/Page'
 
-export default function PageAssetDetails(): ReactElement {
+export default function PageVerify(): ReactElement {
   const router = useRouter()
   const { did } = router.query
 
@@ -16,7 +16,7 @@ export default function PageAssetDetails(): ReactElement {
         description={content.description}
         uri={router.route}
       >
-        <PageVerify didQueryString={did as string} />
+        <Verify didQueryString={did as string} />
       </Page>
     </AssetProvider>
   )
