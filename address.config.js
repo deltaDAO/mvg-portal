@@ -10,9 +10,12 @@ module.exports = {
         'did:op:dd456754dc659ef111cc5fa87662cda1a67ca390c3f86fee4d5592ecb3bbffd5',
         'did:op:bd2d41775c5041361d899f30734920af6383c3ca5838d06fa4649cba9c94192e',
         'did:op:adb67df12b41a4089e0d3f4933bab5254bb905657b92b35bcd1cbcefc836fee5',
-        'did:op:48638f1e3d5b40350f17883629eb8cbd67cca5ecfd0103ab922a08d7d62e3e7b',
+        'did:op:df64a2b05a8de027a94c0f4a99af63650667d2e5e723bebc9229a368ac452447',
         'did:op:bd74d6a281ba414de2b4d8ee4087277575f95676bd74e20ee9e2960c9c38d7c5',
-        'did:op:a3da777fd3711da36d5e1e5904a8c074b6e8df51549db2b6c8a5bc7ec3ab60cf'
+        'did:op:a3da777fd3711da36d5e1e5904a8c074b6e8df51549db2b6c8a5bc7ec3ab60cf',
+        'did:op:104f5b221177ced601fb501e992fac93b762946e3636e6b897af2e08803dd0e6',
+        'did:op:bb31dedd26cbf37c83f71cc427f5a27dbf0f8190bcb5724b7fbe8c7895f39e21',
+        'did:op:14a708141e6cee588b8ee31aab3bee5b54e0cb12689ccee183d031e36b5f474d'
       ]
     },
     {
