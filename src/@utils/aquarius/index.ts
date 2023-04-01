@@ -255,7 +255,7 @@ export async function getAlgorithmDatasetsForCompute(
     chainIds: [datasetChainId],
     nestedQuery: {
       must: {
-        match: {
+        match_phrase: {
           'services.compute.publisherTrustedAlgorithms.did': {
             query: algorithmId
           }
