@@ -38,7 +38,7 @@ module.exports = {
         'did:op:13731acde4143a7dc1c0dcfbd999b7574ea5f1ee75ba5bb77e2c1485601d2b4a', // CrossAsia Probability Calculation Algorithm for Topics in Time
         'did:op:21d53b2a3e227bf57c6ed9d1823ff6a2149f429346648e503146e2ff712aa39b', // CrossAsia Probability Calculation Data for Topics in Time
         'did:op:dc0765630d1ca3fbfb8f03d7ef63743ab5c4b585b599723476c8122106f34271', // CrossAsia Text Analysis - State Library of Berlin
-        'did:op:bff53f8c36f2156cff80e5fa18f39d76cb3c52617694a7cde4635826209c259c'  // CrossAsia Text Analysis Algorithm
+        'did:op:bff53f8c36f2156cff80e5fa18f39d76cb3c52617694a7cde4635826209c259c', // CrossAsia Text Analysis Algorithm
         'did:op:9308b56b84b2475ff8e9a8251adba96dbd9461bd528ef4b0c98638d11ab5375b', // BIMKIT Text Localization in Architectural Floor Plans
         'did:op:1c77a8c28444f5405d8a23ad88d5579c12be574712378ca5b5a6385730412e1c'  // BIMKIT Algorithm for Text Localization in Architectural Floor Plans
       ]
