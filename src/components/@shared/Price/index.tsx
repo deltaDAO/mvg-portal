@@ -22,7 +22,6 @@ export default function Price({
       symbol={price?.tokenSymbol}
       className={className}
       size={size}
-      type={accessDetails?.type}
     />
   )
 }
