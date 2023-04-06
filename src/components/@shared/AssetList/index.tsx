@@ -8,23 +8,22 @@ import Price from '../Price'
 import AssetType from '../AssetType'
 import { getServiceByName } from '@utils/ddo'
 import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
+import Time from '../atoms/Time'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Dataset',
     selector: (row) => {
-      const { metadata } = row
-      return <AssetTitle title={metadata.name} asset={row} />
+      const { metadata, nft } = row
+      return (
+        <div>
+          <AssetTitle title={metadata.name} asset={row} />
+          <p>{nft.owner}</p>
+        </div>
+      )
     },
-    maxWidth: '40rem',
+    maxWidth: '35rem',
     grow: 1
-  },
-  {
-    name: 'Price',
-    selector: (row) => {
-      return <Price price={row.stats.price} size="small" />
-    },
-    maxWidth: '10rem'
   },
   {
     name: 'Type',
@@ -40,7 +39,28 @@ const columns: TableOceanColumn<AssetExtended>[] = [
         />
       )
     },
-    maxWidth: '10rem'
+    maxWidth: '9rem'
+  },
+  {
+    name: 'Price',
+    selector: (row) => {
+      return <Price price={row.stats.price} size="small" />
+    },
+    maxWidth: '7rem'
+  },
+  {
+    name: 'Sales',
+    selector: (row) => {
+      return <strong>{row.stats.orders < 0 ? 'N/A' : row.stats.orders}</strong>
+    },
+    maxWidth: '7rem'
+  },
+  {
+    name: 'Published',
+    selector: (row) => {
+      return <Time date={row.nft.created} />
+    },
+    maxWidth: '7rem'
   }
 ]
 
@@ -100,6 +120,7 @@ export default function AssetList({
                 data={assets}
                 pagination={false}
                 paginationPerPage={assets?.length}
+                dense
               />
             )}
 
