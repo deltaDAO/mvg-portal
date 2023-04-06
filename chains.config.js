@@ -8,7 +8,7 @@ const chains = [
     chainId: 100,
     network: 'genx',
     isDefault: true,
-    metadataCacheUri: 'https://aquarius.v4.genx.delta-dao.com',
+    metadataCacheUri: 'https://aquarius510.v4.delta-dao.com',
     nodeUri: 'https://rpc.genx.minimal-gaia-x.eu',
     providerUri: 'https://provider.v4.genx.delta-dao.com',
     subgraphUri: 'https://subgraph.v4.genx.minimal-gaia-x.eu',

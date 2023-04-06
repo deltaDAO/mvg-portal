@@ -12,7 +12,7 @@ import { Orbis } from '@orbisclub/orbis-sdk'
 import { useWeb3 } from '../Web3'
 import { accountTruncate } from '@utils/web3'
 import { didToAddress, sleep } from '@shared/DirectMessages/_utils'
-import { getEnsName } from '@utils/ens'
+// import { getEnsName } from '@utils/ens'
 import usePrevious from '@hooks/usePrevious'
 import useLocalStorage from '@hooks/useLocalStorage'
 import DirectMessages from '@shared/DirectMessages'
@@ -382,10 +382,13 @@ function OrbisProvider({ children }: { children: ReactNode }): ReactElement {
       const did = conversation.recipients.find((o: string) => o !== account.did)
       const address = didToAddress(did)
 
+      // TODO: decide if we want to utilize ens names
       // Get ens name if exists
-      const ensName = await getEnsName(address)
+      // const ensName = await getEnsName(address)
 
-      return ensName || accountTruncate(address)
+      // return ensName || accountTruncate(address)
+
+      return accountTruncate(address)
     } else {
       return null
     }

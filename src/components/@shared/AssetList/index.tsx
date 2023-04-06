@@ -1,11 +1,7 @@
 import AssetTeaser from '@shared/AssetTeaser'
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useState } from 'react'
 import Pagination from '@shared/Pagination'
 import styles from './index.module.css'
-import Loader from '@shared/atoms/Loader'
-import { useIsMounted } from '@hooks/useIsMounted'
-import { getAccessDetailsForAssets } from '@utils/accessDetailsAndPricing'
-import { useWeb3 } from '@context/Web3'
 import AssetTitle from '@shared/AssetListTitle'
 import Table, { TableOceanColumn } from '../atoms/Table'
 import Price from '../Price'
@@ -26,8 +22,7 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Price',
     selector: (row) => {
-      const { accessDetails } = row
-      return <Price accessDetails={accessDetails} size="small" />
+      return <Price price={row.stats.price} size="small" />
     },
     maxWidth: '10rem'
   },
@@ -77,6 +72,10 @@ export default function AssetList({
   showAssetViewSelector,
   defaultAssetView
 }: AssetListProps): ReactElement {
+  const [activeAssetView, setActiveAssetView] = useState<AssetViewOptions>(
+    defaultAssetView || AssetViewOptions.Grid
+  )
+
   // This changes the page field inside the query
   function handlePageChange(selected: number) {
     onPageChange(selected + 1)
@@ -98,9 +97,9 @@ export default function AssetList({
             {activeAssetView === AssetViewOptions.List && (
               <Table
                 columns={columns}
-                data={assetsWithPrices}
+                data={assets}
                 pagination={false}
-                paginationPerPage={assetsWithPrices?.length}
+                paginationPerPage={assets?.length}
               />
             )}
 

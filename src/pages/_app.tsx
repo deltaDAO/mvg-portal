@@ -51,9 +51,9 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
                     <App>
                       <Component {...pageProps} />
                     </App>
-              </SearchBarStatusProvider>
                   </PostHogProvider>
                 </OrbisProvider>
+              </SearchBarStatusProvider>
             </ConsentProvider>
           </UserPreferencesProvider>
         </UrqlProvider>

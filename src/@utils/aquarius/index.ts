@@ -92,16 +92,14 @@ export function generateBaseQuery(
           ...(baseQueryParams.ignorePurgatory
             ? []
             : [getFilterTerm('purgatory.state', false)]),
-          [
-            {
-              bool: {
-                must_not: [
-                  !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
-                  getDynamicPricingMustNot()
-                ]
-              }
+          {
+            bool: {
+              must_not: [
+                !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
+                getDynamicPricingMustNot()
+              ]
             }
-          ]
+          }
         ],
         ...getWhitelistShould()
       }

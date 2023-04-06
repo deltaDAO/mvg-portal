@@ -13,8 +13,6 @@ import InputRadio from './Radio'
 import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
 import TagsAutoComplete from './TagsAutoComplete'
 import TabsFile from '@shared/atoms/TabsFile'
-import useDarkMode from '@oceanprotocol/use-dark-mode'
-import appConfig from '../../../../../app.config'
 import { extensions, oceanTheme } from '@utils/codemirror'
 import ServiceSD from './ServiceSD'
 
@@ -135,7 +133,7 @@ const InputElement = forwardRef(
             value={`${props.value ? props.value : ''}`}
             height="200px"
             placeholder={props.placeholder}
-            theme={oceanTheme(darkMode ? 'dark' : 'light', props)}
+            theme={oceanTheme('light', props)}
             extensions={[extensions]}
             onChange={(value) => {
               form.setFieldValue(`${props.name}`, value)
