@@ -21,6 +21,9 @@ import {
   getServiceSD
 } from '@components/Publish/_utils'
 import SDVisualizer from '@components/@shared/SDVisualizer'
+import DmButton from '@shared/DirectMessages/DmButton'
+import Web3Feedback from '@components/@shared/Web3Feedback'
+import { useWeb3 } from '@context/Web3'
 
 export default function AssetContent({
   asset
@@ -34,6 +37,7 @@ export default function AssetContent({
     isAssetNetwork,
     isServiceSDVerified
   } = useAsset()
+  const { accountId } = useWeb3()
   const { allowExternalContent, debug } = useUserPreferences()
   const [receipts, setReceipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
@@ -118,6 +122,14 @@ export default function AssetContent({
               </Button>
             </div>
           )}
+          <div className={styles.ownerActions}>
+            <DmButton accountId={asset?.nft?.owner} />
+          </div>
+          <Web3Feedback
+            networkId={asset?.chainId}
+            accountId={accountId}
+            isAssetNetwork={isAssetNetwork}
+          />
           <RelatedAssets />
         </div>
       </article>

@@ -1,5 +1,5 @@
 import AssetTeaser from '@shared/AssetTeaser'
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement } from 'react'
 import Pagination from '@shared/Pagination'
 import styles from './index.module.css'
 import Loader from '@shared/atoms/Loader'
@@ -49,14 +49,6 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   }
 ]
 
-function LoaderArea() {
-  return (
-    <div className={styles.loaderWrap}>
-      <Loader />
-    </div>
-  )
-}
-
 export declare type AssetListProps = {
   assets: AssetExtended[]
   showPagination: boolean
@@ -77,7 +69,6 @@ export default function AssetList({
   showPagination,
   page,
   totalPages,
-  isLoading,
   onPageChange,
   className,
   noPublisher,
@@ -86,45 +77,14 @@ export default function AssetList({
   showAssetViewSelector,
   defaultAssetView
 }: AssetListProps): ReactElement {
-  const { accountId } = useWeb3()
-  const [assetsWithPrices, setAssetsWithPrices] =
-    useState<AssetExtended[]>(assets)
-  const [loading, setLoading] = useState<boolean>(isLoading)
-  const [activeAssetView, setActiveAssetView] = useState<AssetViewOptions>(
-    defaultAssetView || AssetViewOptions.Grid
-  )
-
-  const isMounted = useIsMounted()
-
-  useEffect(() => {
-    if (!assets || !assets.length) {
-      setAssetsWithPrices([])
-      return
-    }
-
-    setAssetsWithPrices(assets as AssetExtended[])
-    setLoading(false)
-    async function fetchPrices() {
-      const assetsWithPrices = await getAccessDetailsForAssets(
-        assets,
-        accountId || ''
-      )
-      if (!isMounted() || !assetsWithPrices) return
-      setAssetsWithPrices([...assetsWithPrices])
-    }
-    fetchPrices()
-  }, [assets, isMounted, accountId])
-
-  // // This changes the page field inside the query
+  // This changes the page field inside the query
   function handlePageChange(selected: number) {
     onPageChange(selected + 1)
   }
 
   const styleClasses = `${styles.assetList} ${className || ''}`
 
-  return loading ? (
-    <LoaderArea />
-  ) : (
+  return (
     <>
       {showAssetViewSelector && (
         <AssetViewSelector
@@ -133,7 +93,7 @@ export default function AssetList({
         />
       )}
       <div className={styleClasses}>
-        {assetsWithPrices?.length > 0 ? (
+        {assets?.length > 0 ? (
           <>
             {activeAssetView === AssetViewOptions.List && (
               <Table
@@ -145,10 +105,10 @@ export default function AssetList({
             )}
 
             {activeAssetView === AssetViewOptions.Grid &&
-              assetsWithPrices?.map((assetWithPrice) => (
+              assets?.map((asset) => (
                 <AssetTeaser
-                  asset={assetWithPrice}
-                  key={assetWithPrice.id}
+                  asset={asset}
+                  key={asset.id}
                   noPublisher={noPublisher}
                   noDescription={noDescription}
                   noPrice={noPrice}
