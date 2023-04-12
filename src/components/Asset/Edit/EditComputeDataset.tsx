@@ -22,7 +22,11 @@ import { useAbortController } from '@hooks/useAbortController'
 import DebugEditCompute from './DebugEditCompute'
 import { useAsset } from '@context/Asset'
 import EditFeedback from './EditFeedback'
-import { setNftMetadata } from '@utils/nft'
+import {
+  decodeTokenURI,
+  setNFTMetadataAndTokenURI,
+  setNftMetadata
+} from '@utils/nft'
 import { ComputeEditForm } from './_types'
 
 export default function EditComputeDataset({
@@ -81,12 +85,20 @@ export default function EditComputeDataset({
         services: [updatedService]
       }
 
-      const setMetadataTx = await setNftMetadata(
+      // TODO: revert to setMetadata function
+      const setMetadataTx = await setNFTMetadataAndTokenURI(
         updatedAsset,
         accountId,
         web3,
+        decodeTokenURI(asset.nft.tokenURI),
         newAbortController()
       )
+      // const setMetadataTx = await setNftMetadata(
+      //   updatedAsset,
+      //   accountId,
+      //   web3,
+      //   newAbortController()
+      // )
 
       LoggerInstance.log('[edit] setMetadata result', setMetadataTx)
 
