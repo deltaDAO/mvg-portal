@@ -1,9 +1,9 @@
 {
-  "name": "@oceanprotocol/market",
-  "description": "🧜‍♀️ THE Data Market for Ocean Protocol.",
+  "name": "@deltaDAO/mvg-portal",
+  "description": "Pontus-X - Gaia-X Web3 Ecosystem",
   "version": "1.0.0",
   "license": "Apache-2.0",
-  "homepage": "https://market.oceanprotocol.com",
+  "homepage": "https://minimal-gaia-x.eu",
   "scripts": {
     "start": "npm run pregenerate && next dev -p 8000",
     "build": "npm run pregenerate && next build",
