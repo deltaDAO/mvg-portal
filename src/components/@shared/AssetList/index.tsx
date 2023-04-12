@@ -14,11 +14,11 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Dataset',
     selector: (row) => {
-      const { metadata, nft } = row
+      const { metadata } = row
       return (
         <div>
           <AssetTitle title={metadata.name} asset={row} />
-          <p>{nft.owner}</p>
+          <p>{row.id}</p>
         </div>
       )
     },
