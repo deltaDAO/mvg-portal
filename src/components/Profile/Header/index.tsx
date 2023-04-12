@@ -16,11 +16,11 @@ export default function AccountHeader({
         <Stats />
       </div>
 
-      <div>
+      {/* <div>
         <div className={styles.directMessage}>
           <DmButton accountId={accountId} />
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

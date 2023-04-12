@@ -122,9 +122,9 @@ export default function AssetContent({
               </Button>
             </div>
           )}
-          <div className={styles.ownerActions}>
+          {/* <div className={styles.ownerActions}>
             <DmButton accountId={asset?.nft?.owner} />
-          </div>
+          </div> */}
           <Web3Feedback
             networkId={asset?.chainId}
             accountId={accountId}

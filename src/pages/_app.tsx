@@ -6,38 +6,38 @@ import { UserPreferencesProvider } from '@context/UserPreferences'
 import UrqlProvider from '@context/UrqlProvider'
 import ConsentProvider from '@context/CookieConsent'
 import { SearchBarStatusProvider } from '@context/SearchBarStatus'
-import { OrbisProvider } from '@context/DirectMessages'
+// import { OrbisProvider } from '@context/DirectMessages'
 import App from 'src/components/App'
 
 import '@oceanprotocol/typographies/css/ocean-typo.css'
 import '../stylesGlobal/styles.css'
 import Decimal from 'decimal.js'
 import MarketMetadataProvider from '@context/MarketMetadata'
-import posthog from 'posthog-js'
+// import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 import { useRouter } from 'next/router'
 
 // Check that PostHog is client-side (used to handle Next.js SSR)
-if (typeof window !== 'undefined') {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.posthog.com',
-    persistence: 'memory'
-  })
-}
+// if (typeof window !== 'undefined') {
+//   posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+//     api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://eu.posthog.com',
+//     persistence: 'memory'
+//   })
+// }
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
-  const router = useRouter()
+  // const router = useRouter()
 
-  useEffect(() => {
-    // Track page views
-    const handleRouteChange = () => posthog?.capture('$pageview')
-    router.events.on('routeChangeComplete', handleRouteChange)
+  // useEffect(() => {
+  //   // Track page views
+  //   const handleRouteChange = () => posthog?.capture('$pageview')
+  //   router.events.on('routeChangeComplete', handleRouteChange)
 
-    return () => {
-      router.events.off('routeChangeComplete', handleRouteChange)
-    }
-  }, [router.events])
+  //   return () => {
+  //     router.events.off('routeChangeComplete', handleRouteChange)
+  //   }
+  // }, [router.events])
 
   return (
     <MarketMetadataProvider>
@@ -46,13 +46,13 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
           <UserPreferencesProvider>
             <ConsentProvider>
               <SearchBarStatusProvider>
-                <OrbisProvider>
-                  <PostHogProvider client={posthog}>
-                    <App>
-                      <Component {...pageProps} />
-                    </App>
-                  </PostHogProvider>
-                </OrbisProvider>
+                {/* <OrbisProvider> */}
+                {/* <PostHogProvider client={posthog}> */}
+                <App>
+                  <Component {...pageProps} />
+                </App>
+                {/* </PostHogProvider> */}
+                {/* </OrbisProvider> */}
               </SearchBarStatusProvider>
             </ConsentProvider>
           </UserPreferencesProvider>
