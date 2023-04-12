@@ -44,16 +44,20 @@ function encodeSvg(svgString: string): string {
     .replace(/\s+/g, ' ')
 }
 
+const nftMetadataTemplate = {
+  name: 'GX Data NFT',
+  symbol: 'GX-NFT',
+  description: `This NFT represents an asset in Ocean Protocol v4 ecosystems.`,
+  external_url: 'https://minimal-gaia-x.eu'
+}
+
 export function generateNftMetadata(): NftMetadata {
   const waves = new SvgWaves()
   const svg = waves.generateSvg()
   const imageData = `data:image/svg+xml,${encodeSvg(svg.outerHTML)}`
 
   const newNft: NftMetadata = {
-    name: 'Ocean Data NFT',
-    symbol: 'OCEAN-NFT',
-    description: `This NFT represents an asset in the Ocean Protocol v4 ecosystem.`,
-    external_url: 'https://market.oceanprotocol.com',
+    ...nftMetadataTemplate,
     background_color: '141414', // dark background
     image_data: imageData
   }
@@ -134,7 +138,7 @@ export async function setNFTMetadataAndTokenURI(
   asset: Asset | DDO,
   accountId: string,
   web3: Web3,
-  nftMetadata: NftMetadata,
+  nftMetadata: NftMetadata | undefined,
   signal: AbortSignal
 ): Promise<TransactionReceipt> {
   const encryptedDdo = await ProviderInstance.encrypt(
@@ -151,13 +155,25 @@ export async function setNFTMetadataAndTokenURI(
   const metadataHash = getHash(JSON.stringify(asset))
 
   // add final did to external_url and asset link to description in nftMetadata before encoding
-  const externalUrl = `${nftMetadata.external_url}/asset/${asset.id}`
+  const externalUrl = `${
+    nftMetadata?.external_url || nftMetadataTemplate.external_url
+  }/asset/${asset.id}`
+  //  TODO: restore to old structure where nftMetadata is always provided
   const encodedMetadata = Buffer.from(
-    JSON.stringify({
-      ...nftMetadata,
-      description: `${nftMetadata.description}\n\nView on Ocean Market: ${externalUrl}`,
-      external_url: externalUrl
-    })
+    JSON.stringify(
+      nftMetadata
+        ? {
+            ...nftMetadata,
+            description: `${nftMetadata.description}`,
+            external_url: externalUrl
+          }
+        : {
+            name: (asset as AssetExtended).nft.name,
+            symbol: (asset as AssetExtended).nft.symbol,
+            description: `${nftMetadataTemplate.description}\n\nView on Pontus-X: ${externalUrl}`,
+            external_url: externalUrl
+          }
+    )
   ).toString('base64')
   const nft = new Nft(web3)
 
