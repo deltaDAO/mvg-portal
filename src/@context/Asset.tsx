@@ -190,9 +190,7 @@ function AssetProvider({
 
         setIsServiceSDVerified(verified && !!serviceSDContent)
         setServiceSDVersion(complianceApiVersion)
-        const serviceProviderName = await getPublisherFromServiceSD(
-          serviceSDContent
-        )
+        const serviceProviderName = getPublisherFromServiceSD(serviceSDContent)
         setVerifiedServiceProviderName(serviceProviderName)
       } catch (error) {
         setIsServiceSDVerified(false)

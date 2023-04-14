@@ -401,7 +401,7 @@ export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
   //   parsedServiceSD?.selfDescriptionCredential?.['@context']
   // )
 
-  const baseUrl = `${complianceUri}/api/service-offering/verify/raw`
+  const baseUrl = `${complianceUri}/v1/api/credential-offers`
 
   try {
     const response = await axios.post(baseUrl, parsedServiceSD)
@@ -411,7 +411,7 @@ export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
         responseBody: response.data.body
       }
     }
-    if (response?.status === 200) {
+    if (response?.status === 201) {
       return { verified: true, complianceApiVersion }
     }
 
@@ -451,33 +451,17 @@ export function updateServiceSelfDescription(
   return ddo
 }
 
-export async function getPublisherFromServiceSD(
-  serviceSD: any
-): Promise<string> {
+export function getPublisherFromServiceSD(serviceSD: any): string {
   if (!serviceSD) return
+  const parsedServiceSD =
+    typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
 
-  try {
-    const parsedServiceSD =
-      typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
-    const providedBy =
-      parsedServiceSD?.selfDescriptionCredential?.credentialSubject?.[
-        'gx-service-offering:providedBy'
-      ]
-    const providedByUrl =
-      typeof providedBy === 'string' ? providedBy : providedBy?.['@value']
+  const legalName =
+    parsedServiceSD?.verifiableCredential?.[0]?.credentialSubject?.[
+      'gx:legalName'
+    ]
+  const publisher =
+    typeof legalName === 'string' ? legalName : legalName?.['@value']
 
-    const response = await axios.get(sanitizeUrl(providedByUrl))
-    if (!response || response.status !== 200 || !response?.data) return
-
-    const legalName =
-      response.data?.selfDescriptionCredential?.credentialSubject?.[
-        'gx-participant:legalName'
-      ]
-    const publisher =
-      typeof legalName === 'string' ? legalName : legalName?.['@value']
-
-    return publisher
-  } catch (error) {
-    LoggerInstance.error(error.message)
-  }
+  return publisher
 }
