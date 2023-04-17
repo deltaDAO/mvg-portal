@@ -9,7 +9,7 @@ module.exports = {
   // return appConfig.metadataCacheUri
   metadataCacheUri:
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
-    'https://aquarius.v4.delta-dao.com',
+    'https://aquarius510.v4.delta-dao.com',
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||

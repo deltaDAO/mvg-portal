@@ -1,29 +1,27 @@
 import React, { ReactElement } from 'react'
+import { AssetPrice } from '@oceanprotocol/lib'
 import PriceUnit from './PriceUnit'
 
 export default function Price({
-  accessDetails,
+  price,
   orderPriceAndFees,
   className,
   size
 }: {
-  accessDetails: AccessDetails
+  price: AssetPrice
   orderPriceAndFees?: OrderPriceAndFees
+  assetId?: string
   className?: string
   size?: 'small' | 'mini' | 'large'
 }): ReactElement {
-  const isSupported =
-    accessDetails?.type === 'free' ||
-    (accessDetails?.type === 'fixed' && accessDetails?.baseToken?.symbol)
-  const price = `${orderPriceAndFees?.price || accessDetails?.price}`
+  if (!price && !orderPriceAndFees) return
 
-  return isSupported ? (
+  return (
     <PriceUnit
-      price={Number(price)}
-      symbol={accessDetails?.baseToken?.symbol}
+      price={Number(orderPriceAndFees?.price) || price?.value}
+      symbol={price?.tokenSymbol}
       className={className}
       size={size}
-      type={accessDetails?.type}
     />
-  ) : null
+  )
 }

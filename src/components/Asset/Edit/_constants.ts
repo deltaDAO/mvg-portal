@@ -23,7 +23,9 @@ export function getInitialValues(
     gaiaXInformation: {
       ...metadata?.additionalInformation?.gaiaXInformation,
       containsPII:
-        metadata?.additionalInformation?.gaiaXInformation?.containsPII || false
+        metadata?.additionalInformation?.gaiaXInformation?.containsPII || false,
+      termsAndConditions: metadata?.additionalInformation?.gaiaXInformation
+        ?.termsAndConditions || [{ url: '' }]
     },
     license: metadata?.license
   }
