@@ -30,6 +30,15 @@ interface ProfileProviderValue {
   ownAccount: boolean
 }
 
+interface ExtendedPagedAssets extends Omit<PagedAssets, 'totalResults'> {
+  totalResults:
+    | number
+    | {
+        relation: string
+        value: number
+      }
+}
+
 const ProfileContext = createContext({} as ProfileProviderValue)
 
 const refreshInterval = 10000 // 10 sec.
@@ -70,15 +79,20 @@ function ProfileProvider({
 
     async function getAllPublished() {
       try {
-        const result = await getPublishedAssets(
+        const result: ExtendedPagedAssets = await getPublishedAssets(
           accountId,
           chainIds,
           cancelTokenSource.token,
           ownAccount,
           ownAccount
         )
+
         setAssets(result.results)
-        setAssetsTotal(result.totalResults)
+        setAssetsTotal(
+          typeof result.totalResults === 'number'
+            ? result.totalResults
+            : result.totalResults?.value
+        )
         LoggerInstance.log(
           `[profile] Fetched ${result.totalResults} assets.`,
           result.results
