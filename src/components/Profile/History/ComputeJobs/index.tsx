@@ -81,6 +81,7 @@ export default function ComputeJobs({
         defaultSortFieldId="row.dateCreated"
         defaultSortAsc={false}
         emptyMessage={chainIds.length === 0 ? 'No network selected' : null}
+        onChangePage={async () => await refetchJobs(true)}
       />
     </>
   ) : (
