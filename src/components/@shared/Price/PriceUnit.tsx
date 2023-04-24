@@ -8,21 +8,23 @@ export default function PriceUnit({
   className,
   size = 'small',
   symbol,
-  decimals
+  decimals,
+  explicitZero
 }: {
   price: number
   className?: string
   size?: 'small' | 'mini' | 'large'
   symbol?: string
   decimals?: string
+  explicitZero?: boolean
 }): ReactElement {
   const { locale } = useUserPreferences()
 
   return (
     <div className={`${styles.price} ${styles[size]} ${className}`}>
-      {price === 0 ? (
+      {price === 0 && !explicitZero ? (
         <div>Free</div>
-      ) : !price || Number.isNaN(price) ? (
+      ) : (!price && price !== 0) || Number.isNaN(price) ? (
         <div>-</div>
       ) : (
         <div>
