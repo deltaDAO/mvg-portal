@@ -81,7 +81,7 @@
     "urql": "^3.0.3",
     "web3": "^1.8.1",
     "web3modal": "^1.9.12",
-    "yup": "^0.32.11"
+    "yup": "^1.1.1"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^6.5.13",
