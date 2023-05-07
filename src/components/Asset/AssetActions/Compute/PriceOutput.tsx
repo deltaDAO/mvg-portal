@@ -5,7 +5,6 @@ import Tooltip from '@shared/atoms/Tooltip'
 import styles from './PriceOutput.module.css'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
-import { useWeb3 } from '@context/Web3'
 
 interface PriceOutputProps {
   hasPreviousOrder: boolean
@@ -52,6 +51,7 @@ function Row({
           symbol={symbol}
           size="small"
           className={styles.price}
+          explicitZero
         />
         <span className={styles.timeout}>
           {timeout &&
@@ -90,11 +90,11 @@ export default function PriceOutput({
         <div key={item.symbol}>
           <PriceUnit
             price={Number(item.value)}
-            symbol={
-              index < totalPrices.length - 1 ? `${item.symbol} & ` : item.symbol
-            }
+            symbol={item.symbol}
             size="small"
+            explicitZero
           />
+          {index < totalPrices.length - 1 && <>&nbsp;{'&'}&nbsp;</>}
         </div>
       ))}
       <Tooltip
