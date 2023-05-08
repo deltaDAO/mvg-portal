@@ -101,7 +101,6 @@ export default function HomePage(): ReactElement {
         action={<AllAssetsButton />}
       />
 
-      <SectionQueryResult title="Most Sales" query={queryMostSales} />
       {/* <MostViews /> */}
       <TopSales title="Publishers With Most Sales" />
       <TopTags title="Top Tags By Sales" />
