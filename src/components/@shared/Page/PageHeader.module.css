@@ -15,6 +15,17 @@
   hyphens: auto;
 }
 
+.homeTitleContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.homeTitleContainer h1 {
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
 .homeTitleContainer h1 span {
   display: block;
 }
@@ -36,6 +47,11 @@
   font-size: var(--font-size-large);
   margin-top: calc(var(--spacer) / 4);
   margin-bottom: 0;
+}
+
+.homeTitleContainer svg {
+  width: 15rem;
+  height: 5rem;
 }
 
 .center,
