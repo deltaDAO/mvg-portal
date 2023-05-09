@@ -10,6 +10,7 @@ module.exports = {
   metadataCacheUri:
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
     'https://aquarius510.v4.delta-dao.com',
+  //'https://v4.aquarius.oceanprotocol.com',
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
@@ -23,7 +24,9 @@ module.exports = {
   chainIds: getDefaultChainIds(),
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: getSupportedChainIds(),
+  chainIdsSupported: getSupportedChainIds()
+    // Mumbai
+    .concat([80001]),
 
   infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
 
