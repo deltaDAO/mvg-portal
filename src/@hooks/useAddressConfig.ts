@@ -38,10 +38,14 @@ export function useAddressConfig(): UseAddressConfig {
     if (!isWhitelistEnabled()) return true
     return field
       ? whitelists[field].some(
-          (whitelistedAddress) => whitelistedAddress === address
+          (whitelistedAddress) =>
+            whitelistedAddress.toLowerCase() === address.toLowerCase()
         )
       : Object.values(whitelists).some((whitelist) =>
-          whitelist.some((whitelistedAddress) => whitelistedAddress === address)
+          whitelist.some(
+            (whitelistedAddress) =>
+              whitelistedAddress.toLowerCase() === address.toLowerCase()
+          )
         )
   }
 
