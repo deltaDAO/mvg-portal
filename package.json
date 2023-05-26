@@ -41,7 +41,7 @@
     "axios": "^1.2.0",
     "classnames": "^2.3.2",
     "date-fns": "^2.29.3",
-    "decimal.js": "^10.4.2",
+    "decimal.js": "^10.4.3",
     "dom-confetti": "^0.2.2",
     "dotenv": "^16.0.3",
     "filesize": "^10.0.7",
