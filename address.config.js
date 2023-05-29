@@ -17,7 +17,7 @@ module.exports = {
         'did:op:8e3f2acad2b9d856038f23c86190c7052ba9f7472675e302bd44867d6bb974e0', // Lidar Sensor Model
         'did:op:87b0133e6979419919d8526e3bac2604bd8b04d0fca43e21fb3fde67497a7860', // Traffic Object Annotation for Highway Image Data
         'did:op:f3e162d564b5a925edaf2ce9d8cb3f52347f63376f337b4c6b910d22d93f02bc', // Morning Rush Intensities / INWEVA Spitsen 2020 (RWS)
-        'did:op:8c2cc9d84e76c14fdf3c833f5dd8fbeec7748ec7ec21511434fc52f30153101a' // Traffic Data for Object Annotation (RWS)
+        'did:op:8c2cc9d84e76c14fdf3c833f5dd8fbeec7748ec7ec21511434fc52f30153101a', // Traffic Data for Object Annotation (RWS)
       ]
     },
     {
@@ -31,7 +31,7 @@ module.exports = {
         'did:op:a3da777fd3711da36d5e1e5904a8c074b6e8df51549db2b6c8a5bc7ec3ab60cf', // CO2-Estimate Algorithm - EuProGigant 
         'did:op:104f5b221177ced601fb501e992fac93b762946e3636e6b897af2e08803dd0e6', // Quality Data of IFT TU Wien Material Number 00.954669 Serial Number 1
         'did:op:bb31dedd26cbf37c83f71cc427f5a27dbf0f8190bcb5724b7fbe8c7895f39e21', // Quality Data of PTW TUDa Material Number 00.954668 Serial Number 1
-        'did:op:14a708141e6cee588b8ee31aab3bee5b54e0cb12689ccee183d031e36b5f474d'  // Data Part No. 593
+        'did:op:14a708141e6cee588b8ee31aab3bee5b54e0cb12689ccee183d031e36b5f474d',  // Data Part No. 593
       ]
     },
     {
@@ -45,7 +45,7 @@ module.exports = {
         'did:op:1c77a8c28444f5405d8a23ad88d5579c12be574712378ca5b5a6385730412e1c'  // BIMKIT Algorithm for Text Localization in Architectural Floor Plans
         'did:op:f231ad11244f2c2e86d694a24765d49dccdaddf1b48b4b0b74ebd586a44bac39', // Die Handelswege und Verkehrsmittel der Gegenwart
         'did:op:b6e20571d7b403895aed65e0d5156e4a1dad809c969c38c6fc2154bb26c33d12', // Stanley's sämtliche Reisen in Afrika
-        'did:op:2add32a20d0ee146c51424907c1a4397f50d985cb88f0738c79cc5602e2b70a7' // Eines deutschen Matrosen Nordpolarfahrten
+        'did:op:2add32a20d0ee146c51424907c1a4397f50d985cb88f0738c79cc5602e2b70a7', // Eines deutschen Matrosen Nordpolarfahrten
       ]
     },
     {
