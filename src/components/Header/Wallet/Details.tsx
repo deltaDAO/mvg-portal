@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react'
 import Button from '@shared/atoms/Button'
-import { useWeb3 } from '@context/Web3'
 // import { useOrbis } from '@context/DirectMessages'
+import { useDisconnect, useAccount, useConnect } from 'wagmi'
 import styles from './Details.module.css'
 import Debug from '../UserPreferences/Debug'
 import Avatar from '@components/@shared/atoms/Avatar'
@@ -11,8 +11,9 @@ import AddTokenList from './AddTokenList'
 import ExternalContent from '../UserPreferences/ExternalContent'
 
 export default function Details(): ReactElement {
-  const { accountId, web3ProviderInfo, web3Modal, connect, logout } = useWeb3()
-  // const { checkOrbisConnection, disconnectOrbis } = useOrbis()
+  const { connector: activeConnector, address: accountId } = useAccount()
+  const { connect } = useConnect()
+  const { disconnect } = useDisconnect()
 
   return (
     <div className={styles.details}>
@@ -36,17 +37,16 @@ export default function Details(): ReactElement {
         <li className={styles.actions}>
           <div title="Connected provider" className={styles.walletInfo}>
             <span className={styles.walletLogoWrap}>
-              <img className={styles.walletLogo} src={web3ProviderInfo?.logo} />
-              {web3ProviderInfo?.name}
+              {/* <img className={styles.walletLogo} src={activeConnector?.logo} /> */}
+              {activeConnector?.name}
             </span>
-            {web3ProviderInfo?.name === 'MetaMask' && <AddTokenList />}
+            {activeConnector?.name === 'MetaMask' && <AddTokenList />}
           </div>
           <p>
             <Button
               style="text"
               size="small"
               onClick={async () => {
-                await web3Modal?.clearCachedProvider()
                 connect()
                 // checkOrbisConnection({ address: accountId })
               }}
@@ -57,7 +57,7 @@ export default function Details(): ReactElement {
               style="text"
               size="small"
               onClick={() => {
-                logout()
+                disconnect()
                 // disconnectOrbis(accountId)
                 location.reload()
               }}

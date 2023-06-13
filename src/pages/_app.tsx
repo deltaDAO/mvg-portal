@@ -1,19 +1,19 @@
-// import App from "next/app";
 import React, { ReactElement, useEffect } from 'react'
-import type { AppProps /*, AppContext */ } from 'next/app'
-import Web3Provider from '@context/Web3'
+import type { AppProps } from 'next/app'
 import { UserPreferencesProvider } from '@context/UserPreferences'
 import UrqlProvider from '@context/UrqlProvider'
 import ConsentProvider from '@context/CookieConsent'
 import { SearchBarStatusProvider } from '@context/SearchBarStatus'
-// import { OrbisProvider } from '@context/DirectMessages'
-import App from 'src/components/App'
-
+import App from '../../src/components/App'
+import { OrbisProvider } from '@context/DirectMessages'
 import '@oceanprotocol/typographies/css/ocean-typo.css'
 import '../stylesGlobal/styles.css'
 import Decimal from 'decimal.js'
 import MarketMetadataProvider from '@context/MarketMetadata'
-// import posthog from 'posthog-js'
+import { WagmiConfig } from 'wagmi'
+import { ConnectKitProvider } from 'connectkit'
+import { connectKitTheme, wagmiClient } from '@utils/wallet'
+import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 import { useRouter } from 'next/router'
 
@@ -40,25 +40,32 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
   // }, [router.events])
 
   return (
-    <MarketMetadataProvider>
-      <Web3Provider>
-        <UrqlProvider>
-          <UserPreferencesProvider>
-            <ConsentProvider>
-              <SearchBarStatusProvider>
-                {/* <OrbisProvider> */}
-                {/* <PostHogProvider client={posthog}> */}
-                <App>
-                  <Component {...pageProps} />
-                </App>
-                {/* </PostHogProvider> */}
-                {/* </OrbisProvider> */}
-              </SearchBarStatusProvider>
-            </ConsentProvider>
-          </UserPreferencesProvider>
-        </UrqlProvider>
-      </Web3Provider>
-    </MarketMetadataProvider>
+    <>
+      <WagmiConfig client={wagmiClient}>
+        <ConnectKitProvider
+          options={{ initialChainId: 0 }}
+          customTheme={connectKitTheme}
+        >
+          <MarketMetadataProvider>
+            <UrqlProvider>
+              <UserPreferencesProvider>
+                <ConsentProvider>
+                  <SearchBarStatusProvider>
+                    {/* <OrbisProvider> */}
+                    {/* <PostHogProvider client={posthog}> */}
+                    <App>
+                      <Component {...pageProps} />
+                    </App>
+                    {/* </PostHogProvider> */}
+                    {/* </OrbisProvider> */}
+                  </SearchBarStatusProvider>
+                </ConsentProvider>
+              </UserPreferencesProvider>
+            </UrqlProvider>
+          </MarketMetadataProvider>
+        </ConnectKitProvider>
+      </WagmiConfig>
+    </>
   )
 }
 
