@@ -36,36 +36,35 @@ For detailed information about the processing operations, lawfulness, purposes, 
 ## 3. Recipients and cross-border data transfer
 
 **Visiting our portal demonstrator**  
-When visiting our portal demonstrator, your IP address is processed by Netlify, a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Netlify using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely be processed on a Netlify server within the EEA. We signed Standard Contractual Clauses (SCC) with Netlify to ensure a data protection compliant processing of your personal data. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+When visiting our portal demonstrator, your IP address is processed by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA. Vercel is a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Vercel using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely be processed on a Vercel server within the EEA. We signed a Data Processing Agreement (DPA) including Standard Contractual Clauses (SCC) with Vercel to ensure a data protection compliant processing of your personal data. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
 
-- Here you can find Netlify&#39;s current [**SCC** &#8599;](https://www.netlify.com/v3/static/pdf/netlify-dpa.pdf).
-- Here you can find Netlify&#39;s [**privacy policy** &#8599;](https://www.netlify.com/gdpr-ccpa).
+- Here you can find Vercel&#39;s current [**DPA including SCC** &#8599;](https://vercel.com/legal/dpa).
+- Here you can find Vercel&#39;s [**privacy policy** &#8599;](https://vercel.com/legal/privacy-policy).
 
 **Contact via e-mail**  
-When you contact us via e-mail, our (mail) service provider Microsoft supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+When you contact us via e-mail, our (mail) service provider Microsoft (located at One Microsoft Way Redmond, WA 98052-6399, USA) supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+
+- Here you can find Microsoft&#39;s current [**DPA including SCC** &#8599;](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
+- Here you can find Microsoft&#39;s [**privacy policy** &#8599;](https://privacy.microsoft.com/de-de/privacystatement).
 
 ## 4. Processing operations according to Article 13 GDPR
 
 We process your personal data for the following purposes.
 
-**4.1 Providing our portal demonstrator and its functionalities and creating logfiles**  
-We collect and use your IP address for providing our portal demonstrator and its functionalities. Our portal demonstrator is hosted externally by our service provider Netlify (see also chapter 3), which stores your IP address in a server logfile. deltaDAO does not store your data and will not receive your personal data from Netlify.
+**4.1 Providing our portal demonstrator and its functionalities and ensuring its security**  
+Your IP address is collected, used, and stored for providing our portal demonstrator and its functionalities and to maintain its security. Our portal demonstrator is hosted externally by our service provider Vercel (see also chapter 3).
 
-**Purposes:**  
-Collecting and using your IP address is necessary for providing our portal demonstrator and its functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator.
-
-Logfiles are created to troubleshoot connectivity issues, maintain security, and to ensure an error free usage of the portal demonstrator.
+**Purpose:**  
+Collecting and using your IP address is necessary for providing our portal demonstrator and its functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator. Your IP address is also processed for security, fraud-prevention, abuse-prevention, and troubleshooting purposes.
 
 **Legal basis:**  
 The legal basis for this processing is our legitimate interest, pursuant to Art. 6(1)(f) GDPR.
 
-**Legitimate interests:**  
-Our legitimate interest is to provide our portal demonstrator and its functionalities to you.
-
-Your IP address is stored by Netlify in a logfile because of the legitimate interest in the technically error-free presentation, security, and optimization of the website.
+**Legitimate interest:**  
+Our legitimate interest is to provide our portal demonstrator and its functionalities to you and to enable security, a technically error-free presentation, and the optimization of the portal demonstrator.
 
 **Retention period:**  
-Netlify stores your IP address for 30 days.
+Vercel retains your personal data for as long as needed to provide their services. Additionally, Vercel does not delete the data when it is needed for the establishment, exercise, or defense of legal claims. In this case, the information is retained as long as needed for exercising respective potential legal claims.
 
 **4.2 Contact via e-mail**  
 If you contact us via e-mail, deltaDAO collects, uses and stores your e-mail address, and any other information you provide us in your message, such as your name.
