@@ -73,8 +73,35 @@ export const moonriver = {
   testnet: false
 } as Chain
 
+export const genx = {
+  id: 100,
+  name: 'GEN-X Testnet',
+  network: 'genx',
+  nativeCurrency: {
+    decimals: 18,
+    name: 'GX',
+    symbol: 'GX'
+  },
+  rpcUrls: {
+    public: { http: ['https://rpc.genx.minimal-gaia-x.eu'] },
+    default: { http: ['https://rpc.genx.minimal-gaia-x.eu'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'GEN-X Testnet Explorer',
+      url: 'https://explorer.genx.minimal-gaia-x.eu'
+    }
+  }
+  // contracts: {
+  //   multicall3: {
+  //     address: '0xca11bde05977b3631167028862be2a173976ca11',
+  //     blockCreated: 11_907_934
+  //   }
+  // }
+} as Chain
+
 export const getSupportedChains = (chainIdsSupported: number[]): Chain[] => {
-  const chains = [wagmiChains, energyWeb, moonriver].map((chain) => {
+  const chains = [wagmiChains, energyWeb, moonriver, genx].map((chain) => {
     return Object.values(chain).filter((chain) =>
       chainIdsSupported.includes(chain.id)
     )
