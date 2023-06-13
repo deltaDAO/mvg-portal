@@ -20,7 +20,6 @@ import {
   getServiceSD
 } from '@components/Publish/_utils'
 import SDVisualizer from '@components/@shared/SDVisualizer'
-import DmButton from '@shared/DirectMessages/DmButton'
 import Web3Feedback from '@components/@shared/Web3Feedback'
 import { useAccount } from 'wagmi'
 
@@ -121,9 +120,6 @@ export default function AssetContent({
               </Button>
             </div>
           )}
-          {/* <div className={styles.ownerActions}>
-            <DmButton accountId={asset?.nft?.owner} />
-          </div> */}
           <Web3Feedback
             networkId={asset?.chainId}
             accountId={accountId}
