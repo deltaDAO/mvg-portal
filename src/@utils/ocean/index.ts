@@ -1,5 +1,8 @@
 import { ConfigHelper, Config } from '@oceanprotocol/lib'
-import { chains } from '../../chains.config'
+import { chains } from '../../../chains.config'
+import { ethers } from 'ethers'
+
+import abiDatatoken from '@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json'
 
 export function getOceanConfig(network: string | number): Config {
   const filterBy = typeof network === 'string' ? 'network' : 'chainId'
@@ -33,4 +36,19 @@ export function getDevelopmentConfig(): Config {
     // There is no subgraph in barge so we hardcode the Goerli one for now
     subgraphUri: 'https://v4.subgraph.goerli.oceanprotocol.com'
   } as Config
+}
+
+/**
+ * getPaymentCollector - returns the current paymentCollector
+ * @param dtAddress datatoken address
+ * @param provider the ethers.js web3 provider
+ * @return {Promise<string>}
+ */
+export async function getPaymentCollector(
+  dtAddress: string,
+  provider: ethers.providers.Provider
+): Promise<string> {
+  const dtContract = new ethers.Contract(dtAddress, abiDatatoken.abi, provider)
+  const paymentCollector = await dtContract.getPaymentCollector()
+  return paymentCollector
 }
