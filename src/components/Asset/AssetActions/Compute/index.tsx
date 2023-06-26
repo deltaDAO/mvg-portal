@@ -30,7 +30,7 @@ import {
   isOrderable,
   getAlgorithmAssetSelectionList,
   getAlgorithmsForAsset,
-  getComputeEnviroment,
+  getComputeEnvironment,
   getComputeJobs
 } from '@utils/compute'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -207,7 +207,7 @@ export default function Compute({
 
   async function initPriceAndFees() {
     try {
-      const computeEnv = await getComputeEnviroment(asset)
+      const computeEnv = await getComputeEnvironment(asset)
       if (!computeEnv || !computeEnv.id)
         throw new Error(`Error getting compute environments!`)
 
