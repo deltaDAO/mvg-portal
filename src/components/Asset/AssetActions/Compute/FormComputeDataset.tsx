@@ -16,8 +16,7 @@ import Decimal from 'decimal.js'
 import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import Loader from '@components/@shared/atoms/Loader'
-import Alert from '@components/@shared/atoms/Alert'
+import ComputeEnvSelection from './ComputeEnvSelection'
 
 export default function FormStartCompute({
   algorithms,
@@ -269,24 +268,12 @@ export default function FormStartCompute({
         }
         if (field.name === 'computeEnv') {
           return (
-            <div key={field.name} className={styles.computeEnvironmentSelector}>
-              {computeEnvs?.length === 0 ? (
-                <Alert
-                  state="warning"
-                  title="No Compute Environment available"
-                  text="It's not possible to start a compute job for this asset"
-                />
-              ) : computeEnvs ? (
-                <Field
-                  name="computeEnv"
-                  options={computeEnvs?.map((environment) => environment.id)}
-                  component={Input}
-                  disabled={isLoading || isComputeButtonDisabled}
-                />
-              ) : (
-                <Loader message="Loading Available Compute Environments" />
-              )}
-            </div>
+            <ComputeEnvSelection
+              key={field.name}
+              {...field}
+              computeEnvs={computeEnvs}
+              disabled={isLoading || isComputeButtonDisabled}
+            />
           )
         }
         return (

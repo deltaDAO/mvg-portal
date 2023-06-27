@@ -4,12 +4,13 @@
 }
 
 .form > div > label,
-.computeEnvironmentSelector > div > label,
+.form > div > div > label,
 .form [class*='ButtonBuy-module--actions'] {
   text-align: center;
 }
 
-.form > div > label {
+.form > div > label,
+.form > div > div > label {
   margin-bottom: calc(var(--spacer) / 2);
   margin-left: -1rem;
 }
@@ -26,18 +27,4 @@
 
 .warning {
   margin-bottom: var(--spacer);
-}
-
-.computeEnvironmentSelector {
-  padding-bottom: calc(var(--spacer) * var(--line-height) / 2);
-  margin-bottom: calc(var(--spacer) * var(--line-height) / 2);
-  margin-left: -2rem;
-  margin-right: -2rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.computeEnvironmentSelector > div {
-  margin-bottom: 0;
 }
