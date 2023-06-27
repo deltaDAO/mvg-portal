@@ -10,7 +10,6 @@ import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
 import { Asset, ComputeEnvironment, ZERO_ADDRESS } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
-import { useMarketMetadata } from '@context/MarketMetadata'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
@@ -18,6 +17,7 @@ import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import Loader from '@components/@shared/atoms/Loader'
+import Alert from '@components/@shared/atoms/Alert'
 
 export default function FormStartCompute({
   algorithms,
@@ -255,30 +255,44 @@ export default function FormStartCompute({
 
   return (
     <Form className={styles.form}>
-      <div className={styles.computeEnvironmentSelector}>
-        {computeEnvs?.length === 0 ? (
-          <>No Compute Environment available</>
-        ) : computeEnvs ? (
-          <Field
-            name="computeEnv"
-            label="Select a Compute Environment"
-            type="select"
-            options={computeEnvs?.map((environment) => environment.id)}
-            sortOptions
-            component={Input}
-          />
-        ) : (
-          <Loader message="Loading Available Compute Environments" />
-        )}
-      </div>
-
       {content.form.data.map((field: FormFieldContent) => {
+        if (field.name === 'algorithm') {
+          return (
+            <Field
+              key={field.name}
+              {...field}
+              options={algorithms}
+              component={Input}
+              disabled={isLoading || isComputeButtonDisabled}
+            />
+          )
+        }
+        if (field.name === 'computeEnv') {
+          return (
+            <div key={field.name} className={styles.computeEnvironmentSelector}>
+              {computeEnvs?.length === 0 ? (
+                <Alert
+                  state="warning"
+                  title="No Compute Environment available"
+                  text="It's not possible to start a compute job for this asset"
+                />
+              ) : computeEnvs ? (
+                <Field
+                  name="computeEnv"
+                  options={computeEnvs?.map((environment) => environment.id)}
+                  component={Input}
+                  disabled={isLoading || isComputeButtonDisabled}
+                />
+              ) : (
+                <Loader message="Loading Available Compute Environments" />
+              )}
+            </div>
+          )
+        }
         return (
           <Field
             key={field.name}
             {...field}
-            options={algorithms}
-            component={Input}
             disabled={isLoading || isComputeButtonDisabled}
           />
         )

@@ -4,6 +4,14 @@
     "error": "Compute job could not be started.",
     "data": [
       {
+        "name": "computeEnv",
+        "label": "Select a Compute Environment",
+        "type": "select",
+        "value": false,
+        "options": [],
+        "sortOptions": true
+      },
+      {
         "name": "algorithm",
         "label": "Select an algorithm to start a compute job",
         "type": "assetSelection",

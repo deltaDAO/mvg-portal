@@ -449,7 +449,6 @@ export default function Compute({
       setIsOrdering(false)
     }
   }
-  console.log(selectedComputeEnv)
 
   return (
     <>
