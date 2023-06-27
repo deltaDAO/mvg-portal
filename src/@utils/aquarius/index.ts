@@ -89,7 +89,7 @@ export function generateBaseQuery(
           baseQueryParams.chainIds
             ? getFilterTerm('chainId', baseQueryParams.chainIds)
             : [],
-          getFilterTerm('_index', 'aquarius'),
+          getFilterTerm('_index', 'v510'),
           ...(baseQueryParams.ignorePurgatory
             ? []
             : [getFilterTerm('purgatory.state', false)]),
