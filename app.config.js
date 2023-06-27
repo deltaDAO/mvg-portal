@@ -20,10 +20,10 @@ module.exports = {
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
-  chainIds: getDefaultChainIds(),
+  chainIds: [100, 80001],
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: getSupportedChainIds(),
+  chainIdsSupported: [100, 80001],
 
   defaultDatatokenTemplateIndex: 2,
   // The ETH address the marketplace fee will be sent to.
