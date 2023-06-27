@@ -1,5 +1,3 @@
-const { getDefaultChainIds, getSupportedChainIds } = require('./chains.config')
-
 module.exports = {
   // URI of single metadata cache instance for all networks.
   // While ocean.js includes this value for each network as part of its ConfigHelper,
@@ -9,7 +7,7 @@ module.exports = {
   // return appConfig.metadataCacheUri
   metadataCacheUri:
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
-    'https://aquarius510.v4.delta-dao.com',
+    'https://v4.aquarius.oceanprotocol.com',
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
@@ -20,10 +18,10 @@ module.exports = {
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
-  chainIds: getDefaultChainIds(),
+  chainIds: [100, 80001],
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: getSupportedChainIds(),
+  chainIdsSupported: [100, 80001],
 
   defaultDatatokenTemplateIndex: 2,
   // The ETH address the marketplace fee will be sent to.
