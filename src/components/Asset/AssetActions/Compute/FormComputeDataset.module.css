@@ -4,6 +4,7 @@
 }
 
 .form > div > label,
+.computeEnvironmentSelector > div > label,
 .form [class*='ButtonBuy-module--actions'] {
   text-align: center;
 }
@@ -25,4 +26,18 @@
 
 .warning {
   margin-bottom: var(--spacer);
+}
+
+.computeEnvironmentSelector {
+  padding-bottom: calc(var(--spacer) * var(--line-height) / 2);
+  margin-bottom: calc(var(--spacer) * var(--line-height) / 2);
+  margin-left: -2rem;
+  margin-right: -2rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.computeEnvironmentSelector > div {
+  margin-bottom: 0;
 }
