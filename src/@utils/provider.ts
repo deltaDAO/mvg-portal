@@ -214,12 +214,14 @@ export async function checkValidProvider(
 }
 
 export async function getComputeEnvironments(
-  providerUrl: string
-): Promise<{ [chainId: number]: ComputeEnvironment[] }> {
+  providerUrl: string,
+  chainId: number
+): Promise<ComputeEnvironment[]> {
   try {
-    console.log(providerUrl)
     const response = await ProviderInstance.getComputeEnvironments(providerUrl)
-    return response
+    const computeEnvs = Array.isArray(response) ? response : response[chainId]
+
+    return computeEnvs
   } catch (error) {
     LoggerInstance.error(error.message)
   }

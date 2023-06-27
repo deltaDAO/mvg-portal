@@ -295,9 +295,10 @@ export default function Compute({
 
   const initializeComputeEnvironment = useCallback(async () => {
     const computeEnvs = await getComputeEnvironments(
-      asset.services[0].serviceEndpoint
+      asset.services[0].serviceEndpoint,
+      asset.chainId
     )
-    setComputeEnvs(computeEnvs[asset.chainId] || [])
+    setComputeEnvs(computeEnvs || [])
   }, [asset])
 
   useEffect(() => {
