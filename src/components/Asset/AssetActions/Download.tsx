@@ -3,7 +3,7 @@ import FileIcon from '@shared/FileIcon'
 import Price from '@shared/Price'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from './ButtonBuy'
-import { secondsToString } from '@utils/ddo'
+import { isAddressWhitelisted, secondsToString } from '@utils/ddo'
 import AlgorithmDatasetsListForCompute from './Compute/AlgorithmDatasetsListForCompute'
 import styles from './Download.module.css'
 import { FileInfo, LoggerInstance, ZERO_ADDRESS } from '@oceanprotocol/lib'
@@ -18,6 +18,7 @@ import Alert from '@shared/atoms/Alert'
 import Loader from '@shared/atoms/Loader'
 import { useAccount, useSigner } from 'wagmi'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
+import WhitelistIndicator from './Compute/WhitelistIndicator'
 
 export default function Download({
   asset,
@@ -257,11 +258,16 @@ export default function Download({
         </div>
         <AssetAction asset={asset} />
       </div>
-
       {asset?.metadata?.type === 'algorithm' && (
         <AlgorithmDatasetsListForCompute
           algorithmDid={asset.id}
           asset={asset}
+        />
+      )}
+      {accountId && (
+        <WhitelistIndicator
+          accountId={accountId}
+          isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
         />
       )}
     </aside>
