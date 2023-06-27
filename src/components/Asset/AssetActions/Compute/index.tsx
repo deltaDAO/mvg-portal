@@ -493,7 +493,7 @@ export default function Compute({
           validateOnMount
           validationSchema={validationSchema}
           onSubmit={async (values) => {
-            if (!values.algorithm) return
+            if (!values.algorithm || !values.computeEnv) return
             await startJob()
           }}
         >
