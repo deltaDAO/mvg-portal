@@ -219,9 +219,9 @@ export async function getComputeEnvironments(
 ): Promise<ComputeEnvironment[]> {
   try {
     const response = await ProviderInstance.getComputeEnvironments(providerUrl)
-    const computeEnvs = Array.isArray(response) ? response : response[chainId]
 
-    return computeEnvs
+    if (!response[chainId]) return null
+    return response[chainId]
   } catch (error) {
     LoggerInstance.error(error.message)
   }
