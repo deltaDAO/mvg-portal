@@ -16,7 +16,7 @@ import Decimal from 'decimal.js'
 import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import ComputeEnvSelection from './ComputeEnvSelection'
+import { ComputeDatasetForm } from './_constants'
 
 export default function FormStartCompute({
   algorithms,
@@ -86,15 +86,10 @@ export default function FormStartCompute({
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const {
-    isValid,
-    values
-  }: FormikContextType<{
-    algorithm: string
-    computeEnv: string
-  }> = useFormikContext()
+  const { isValid, values, errors }: FormikContextType<ComputeDatasetForm> =
+    useFormikContext()
   const { asset, isAssetNetwork } = useAsset()
-
+  console.log(errors)
   const [datasetOrderPrice, setDatasetOrderPrice] = useState(
     asset?.accessDetails?.price
   )
@@ -254,36 +249,21 @@ export default function FormStartCompute({
 
   return (
     <Form className={styles.form}>
-      {content.form.data.map((field: FormFieldContent) => {
-        if (field.name === 'algorithm') {
-          return (
-            <Field
-              key={field.name}
-              {...field}
-              options={algorithms}
-              component={Input}
-              disabled={isLoading || isComputeButtonDisabled}
-            />
-          )
-        }
-        if (field.name === 'computeEnv') {
-          return (
-            <ComputeEnvSelection
-              key={field.name}
-              {...field}
-              computeEnvs={computeEnvs}
-              disabled={isLoading || isComputeButtonDisabled}
-            />
-          )
-        }
-        return (
-          <Field
-            key={field.name}
-            {...field}
-            disabled={isLoading || isComputeButtonDisabled}
-          />
-        )
-      })}
+      {content.form.data.map((field: FormFieldContent) => (
+        <Field
+          key={field.name}
+          {...field}
+          component={Input}
+          disabled={isLoading || isComputeButtonDisabled}
+          options={
+            field.name === 'algorithm'
+              ? algorithms
+              : field.name === 'computeEnv'
+              ? computeEnvs
+              : field?.options
+          }
+        />
+      ))}
 
       <PriceOutput
         hasPreviousOrder={hasPreviousOrder}

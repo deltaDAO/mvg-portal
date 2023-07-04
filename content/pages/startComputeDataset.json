@@ -6,7 +6,7 @@
       {
         "name": "computeEnv",
         "label": "Select a Compute Environment",
-        "type": "select",
+        "type": "computeEnvSelection",
         "options": [],
         "sortOptions": true
       },
