@@ -1,5 +1,3 @@
-const { getDefaultChainIds, getSupportedChainIds } = require('./chains.config')
-
 module.exports = {
   // URI of single metadata cache instance for all networks.
   // While ocean.js includes this value for each network as part of its ConfigHelper,
