@@ -173,7 +173,15 @@ export async function getResults(
     accessType
   )
   const queryResult = await queryMetadata(searchQuery, cancelToken)
-  return queryResult
+
+  // update queryResult to workaround the wrong return datatype of totalPages and totalResults
+  return queryResult?.results?.length === 0
+    ? {
+        ...queryResult,
+        totalPages: 0,
+        totalResults: 0
+      }
+    : queryResult
 }
 
 export async function addExistingParamsToUrl(
