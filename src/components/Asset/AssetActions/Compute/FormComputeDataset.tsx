@@ -8,16 +8,15 @@ import ButtonBuy from '../ButtonBuy'
 import PriceOutput from './PriceOutput'
 import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
-import { Asset, ZERO_ADDRESS } from '@oceanprotocol/lib'
+import { Asset, ComputeEnvironment, ZERO_ADDRESS } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
-import { useMarketMetadata } from '@context/MarketMetadata'
-import Alert from '@shared/atoms/Alert'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
 import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
+import { ComputeDatasetForm } from './_constants'
 
 export default function FormStartCompute({
   algorithms,
@@ -40,6 +39,8 @@ export default function FormStartCompute({
   dtBalanceSelectedComputeAsset,
   selectedComputeAssetType,
   selectedComputeAssetTimeout,
+  computeEnvs,
+  setSelectedComputeEnv,
   stepText,
   isConsumable,
   consumableFeedback,
@@ -69,6 +70,10 @@ export default function FormStartCompute({
   dtBalanceSelectedComputeAsset?: string
   selectedComputeAssetType?: string
   selectedComputeAssetTimeout?: string
+  computeEnvs: ComputeEnvironment[]
+  setSelectedComputeEnv: React.Dispatch<
+    React.SetStateAction<ComputeEnvironment>
+  >
   stepText: string
   isConsumable: boolean
   consumableFeedback: string
@@ -78,11 +83,10 @@ export default function FormStartCompute({
   validUntil?: string
   retry: boolean
 }): ReactElement {
-  const { siteContent } = useMarketMetadata()
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { isValid, values }: FormikContextType<{ algorithm: string }> =
+  const { isValid, values }: FormikContextType<ComputeDatasetForm> =
     useFormikContext()
   const { asset, isAssetNetwork } = useAsset()
 
@@ -122,6 +126,13 @@ export default function FormStartCompute({
     }
     fetchAlgorithmAssetExtended()
   }, [values.algorithm, accountId, isConsumable])
+
+  useEffect(() => {
+    if (!values.computeEnv) return
+    setSelectedComputeEnv(
+      computeEnvs.find((env) => env.id === values.computeEnv)
+    )
+  }, [computeEnvs, setSelectedComputeEnv, values.computeEnv])
 
   //
   // Set price for calculation output
@@ -238,17 +249,21 @@ export default function FormStartCompute({
 
   return (
     <Form className={styles.form}>
-      {content.form.data.map((field: FormFieldContent) => {
-        return (
-          <Field
-            key={field.name}
-            {...field}
-            options={algorithms}
-            component={Input}
-            disabled={isLoading || isComputeButtonDisabled}
-          />
-        )
-      })}
+      {content.form.data.map((field: FormFieldContent) => (
+        <Field
+          key={field.name}
+          {...field}
+          component={Input}
+          disabled={isLoading || isComputeButtonDisabled}
+          options={
+            field.name === 'algorithm'
+              ? algorithms
+              : field.name === 'computeEnv'
+              ? computeEnvs
+              : field?.options
+          }
+        />
+      ))}
 
       <PriceOutput
         hasPreviousOrder={hasPreviousOrder}

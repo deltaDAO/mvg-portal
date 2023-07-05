@@ -15,6 +15,8 @@ import TagsAutoComplete from './TagsAutoComplete'
 import TabsFile from '@shared/atoms/TabsFile'
 import { extensions, oceanTheme } from '@utils/codemirror'
 import ServiceSD from './ServiceSD'
+import ComputeEnvSelection from './ComputeEnvSelection'
+import { ComputeEnvironment } from '@oceanprotocol/lib'
 
 const cx = classNames.bind(styles)
 
@@ -160,6 +162,15 @@ const InputElement = forwardRef(
         return (
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
+            {...field}
+            {...props}
+          />
+        )
+
+      case 'computeEnvSelection':
+        return (
+          <ComputeEnvSelection
+            computeEnvs={options as ComputeEnvironment[]}
             {...field}
             {...props}
           />

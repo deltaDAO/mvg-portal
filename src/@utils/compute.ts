@@ -135,7 +135,7 @@ export function getValidUntilTime(
   return Math.floor(mytime.getTime() / 1000)
 }
 
-export async function getComputeEnviroment(
+export async function getComputeEnvironment(
   asset: Asset
 ): Promise<ComputeEnvironment> {
   if (asset?.services[0]?.type !== 'compute') return null
@@ -150,7 +150,7 @@ export async function getComputeEnviroment(
     if (!computeEnv) return null
     return computeEnv
   } catch (e) {
-    LoggerInstance.error('[compute] Fetch compute enviroment: ', e.message)
+    LoggerInstance.error('[compute] Fetch compute environment: ', e.message)
   }
 }
 
