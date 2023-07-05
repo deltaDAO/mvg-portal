@@ -86,10 +86,10 @@ export default function FormStartCompute({
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { isValid, values, errors }: FormikContextType<ComputeDatasetForm> =
+  const { isValid, values }: FormikContextType<ComputeDatasetForm> =
     useFormikContext()
   const { asset, isAssetNetwork } = useAsset()
-  console.log(errors)
+
   const [datasetOrderPrice, setDatasetOrderPrice] = useState(
     asset?.accessDetails?.price
   )
