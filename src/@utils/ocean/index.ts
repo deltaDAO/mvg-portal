@@ -8,6 +8,8 @@ export function getOceanConfig(network: string | number): Config {
   const filterBy = typeof network === 'string' ? 'network' : 'chainId'
   const customConfig = chains.find((c) => c[filterBy] === network)
 
+  if (network === 100) return customConfig as Config
+
   const config = new ConfigHelper().getConfig(
     network,
     network === 'polygon' ||
@@ -16,9 +18,7 @@ export function getOceanConfig(network: string | number): Config {
       network === 'bsc' ||
       network === 56 ||
       network === 'gaiaxtestnet' ||
-      network === 2021000 ||
-      network === 'genx' ||
-      network === 100
+      network === 2021000
       ? undefined
       : process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
   ) as Config
