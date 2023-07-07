@@ -289,7 +289,8 @@ export async function getPublishedAssets(
   ignoreState = false,
   page?: number,
   type?: string,
-  accesType?: string
+  accesType?: string,
+  complianceType?: string
 ): Promise<PagedAssets> {
   if (!accountId) return
 
@@ -300,6 +301,13 @@ export async function getPublishedAssets(
   accesType !== undefined &&
     filters.push(getFilterTerm('services.type', accesType))
   type !== undefined && filters.push(getFilterTerm('metadata.type', type))
+  complianceType &&
+    filters.push(
+      getFilterTerm(
+        'metadata.additionalInformation.compliance.keyword',
+        complianceType
+      )
+    )
 
   const baseQueryParams = {
     chainIds,
