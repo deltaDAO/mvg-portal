@@ -28,6 +28,18 @@ export function getOceanConfig(network: string | number): Config {
     : (config as Config)
 }
 
+export function getDevelopmentConfig(): Config {
+  return {
+    // factoryAddress: contractAddresses.development?.DTFactory,
+    // poolFactoryAddress: contractAddresses.development?.BFactory,
+    // fixedRateExchangeAddress: contractAddresses.development?.FixedRateExchange,
+    // metadataContractAddress: contractAddresses.development?.Metadata,
+    // oceanTokenAddress: contractAddresses.development?.Ocean,
+    // There is no subgraph in barge so we hardcode the Goerli one for now
+    subgraphUri: 'https://v4.subgraph.goerli.oceanprotocol.com'
+  } as Config
+}
+
 /**
  * getPaymentCollector - returns the current paymentCollector
  * @param dtAddress datatoken address
