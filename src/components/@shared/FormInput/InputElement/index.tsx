@@ -16,7 +16,6 @@ import TabsFile from '@shared/atoms/TabsFile'
 import { extensions, oceanTheme } from '@utils/codemirror'
 import ServiceSD from './ServiceSD'
 import ComputeEnvSelection from './ComputeEnvSelection'
-import { ComputeEnvironment } from '@oceanprotocol/lib'
 
 const cx = classNames.bind(styles)
 
@@ -170,7 +169,7 @@ const InputElement = forwardRef(
       case 'computeEnvSelection':
         return (
           <ComputeEnvSelection
-            computeEnvs={options as ComputeEnvironment[]}
+            computeEnvs={options as ComputeEnvironmentExtended[]}
             {...field}
             {...props}
           />
