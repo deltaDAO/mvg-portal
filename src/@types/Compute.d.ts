@@ -1,4 +1,4 @@
-import { ComputeJob } from '@oceanprotocol/lib'
+import { ComputeEnvironment, ComputeJob } from '@oceanprotocol/lib'
 import { OrdersData_orders_datatoken as OrdersDatatoken } from '../@types/subgraph/OrdersData'
 
 // declaring into global scope to be able to use this as
@@ -31,5 +31,9 @@ declare global {
   interface totalPriceMap {
     value: string
     symbol: string
+  }
+
+  interface ComputeEnvironmentExtended extends ComputeEnvironment {
+    feeToken: string
   }
 }
