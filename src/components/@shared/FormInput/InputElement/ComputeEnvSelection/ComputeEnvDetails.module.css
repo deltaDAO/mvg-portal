@@ -1,0 +1,32 @@
+.container {
+  min-width: 12rem;
+}
+
+.row {
+  width: 100%;
+  border-bottom: 1px solid var(--border-color);
+  padding-top: calc(var(--spacer) / 7);
+  padding-bottom: calc(var(--spacer) / 7);
+  display: inline-block;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.header {
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.title {
+  margin-top: calc(var(--spacer) / 12);
+  margin-bottom: calc(var(--spacer) / 4);
+}
+
+.description {
+  margin-bottom: 0 !important;
+}
+
+.value {
+  font-weight: var(--font-weight-bold);
+}

@@ -14,6 +14,6 @@ export const validationSchema: Yup.SchemaOf<ComputeDatasetForm> =
 export function getInitialValues(): ComputeDatasetForm {
   return {
     algorithm: undefined,
-    computeEnv: ''
+    computeEnv: undefined
   }
 }
