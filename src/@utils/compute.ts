@@ -169,7 +169,12 @@ export function getQueryString(
   algorithmDidList?.length > 0 &&
     baseParams.filters.push(getFilterTerm('_id', algorithmDidList))
   trustedPublishersList?.length > 0 &&
-    baseParams.filters.push(getFilterTerm('nft.owner', trustedPublishersList))
+    baseParams.filters.push(
+      getFilterTerm(
+        'nft.owner',
+        trustedPublishersList.map((address) => address.toLowerCase())
+      )
+    )
   const query = generateBaseQuery(baseParams)
 
   return query
