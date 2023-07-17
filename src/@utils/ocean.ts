@@ -4,6 +4,7 @@ import { chains } from 'chains.config'
 export function getOceanConfig(network: string | number): Config {
   const filterBy = typeof network === 'string' ? 'network' : 'chainId'
   const customConfig = chains.find((c) => c[filterBy] === network)
+  if (network === 100 && customConfig) return customConfig as Config
 
   const config = new ConfigHelper().getConfig(
     network,

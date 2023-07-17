@@ -37,8 +37,7 @@ const chains = [
   {
     chainId: 80001,
     metadataCacheUri: 'https://aquarius510.v4.delta-dao.com',
-    providerUri: 'https://provider.dev-v4.mumbai.delta-dao.com',
-    subgraphUri: 'https://subgraph.v4.genx.minimal-gaia-x.eu'
+    providerUri: 'https://provider.dev-v4.mumbai.delta-dao.com'
   }
 ]
 
