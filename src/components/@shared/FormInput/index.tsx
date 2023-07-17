@@ -18,6 +18,7 @@ import Markdown from '@shared/Markdown'
 import FormHelp from './Help'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { BoxSelectionOption } from '@shared/FormInput/InputElement/BoxSelection'
+import { ComputeEnvironment } from '@oceanprotocol/lib'
 
 const cx = classNames.bind(styles)
 
@@ -30,7 +31,11 @@ export interface InputProps {
   prominentHelp?: boolean
   tag?: string
   type?: string
-  options?: string[] | AssetSelectionAsset[] | BoxSelectionOption[]
+  options?:
+    | string[]
+    | AssetSelectionAsset[]
+    | BoxSelectionOption[]
+    | ComputeEnvironment[]
   sortOptions?: boolean
   fields?: FieldInputProps<any>[]
   methods?: boolean

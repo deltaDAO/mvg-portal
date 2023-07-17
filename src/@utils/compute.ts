@@ -137,7 +137,7 @@ export function getValidUntilTime(
   return Math.floor(mytime.getTime() / 1000)
 }
 
-export async function getComputeEnviroment(
+export async function getComputeEnvironment(
   asset: Asset
 ): Promise<ComputeEnvironment> {
   if (asset?.services[0]?.type !== 'compute') return null

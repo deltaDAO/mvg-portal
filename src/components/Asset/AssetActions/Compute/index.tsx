@@ -31,7 +31,6 @@ import {
   isOrderable,
   getAlgorithmAssetSelectionList,
   getAlgorithmsForAsset,
-  getComputeEnviroment,
   getComputeJobs
 } from '@utils/compute'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -44,7 +43,10 @@ import { useAbortController } from '@hooks/useAbortController'
 import { getOrderPriceAndFees } from '@utils/accessDetailsAndPricing'
 import { handleComputeOrder } from '@utils/order'
 import { getComputeFeedback } from '@utils/feedback'
-import { initializeProviderForCompute } from '@utils/provider'
+import {
+  getComputeEnvironments,
+  initializeProviderForCompute
+} from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useAccount, useSigner } from 'wagmi'
 import { getDummySigner } from '@utils/wallet'
@@ -91,7 +93,9 @@ export default function Compute({
   const [isConsumableaAlgorithmPrice, setIsConsumableAlgorithmPrice] =
     useState(true)
   const [computeStatusText, setComputeStatusText] = useState('')
-  const [computeEnv, setComputeEnv] = useState<ComputeEnvironment>()
+  const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
+  const [selectedComputeEnv, setSelectedComputeEnv] =
+    useState<ComputeEnvironment>()
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
   const [providerFeeAmount, setProviderFeeAmount] = useState<string>('0')
@@ -208,16 +212,14 @@ export default function Compute({
 
   async function initPriceAndFees() {
     try {
-      const computeEnv = await getComputeEnviroment(asset)
-      if (!computeEnv || !computeEnv.id)
-        throw new Error(`Error getting compute environments!`)
+      if (!selectedComputeEnv || !selectedComputeEnv.id)
+        throw new Error(`Error getting compute environment!`)
 
-      setComputeEnv(computeEnv)
       const initializedProvider = await initializeProviderForCompute(
         asset,
         selectedAlgorithmAsset,
         accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
-        computeEnv
+        selectedComputeEnv
       )
 
       if (
@@ -260,7 +262,7 @@ export default function Compute({
   }, [asset?.accessDetails, accountId, isUnsupportedPricing])
 
   useEffect(() => {
-    if (!selectedAlgorithmAsset?.accessDetails) return
+    if (!selectedAlgorithmAsset?.accessDetails || !selectedComputeEnv) return
 
     setIsRequestingAlgoOrderPrice(true)
     setIsConsumableAlgorithmPrice(
@@ -278,7 +280,7 @@ export default function Compute({
     }
 
     initSelectedAlgo()
-  }, [selectedAlgorithmAsset, accountId])
+  }, [selectedAlgorithmAsset, accountId, selectedComputeEnv])
 
   useEffect(() => {
     if (!asset?.accessDetails || isUnsupportedPricing) return
@@ -292,6 +294,18 @@ export default function Compute({
       )
     })
   }, [asset, isUnsupportedPricing])
+
+  const initializeComputeEnvironment = useCallback(async () => {
+    const computeEnvs = await getComputeEnvironments(
+      asset.services[0].serviceEndpoint,
+      asset.chainId
+    )
+    setComputeEnvs(computeEnvs || [])
+  }, [asset])
+
+  useEffect(() => {
+    initializeComputeEnvironment()
+  }, [initializeComputeEnvironment])
 
   const fetchJobs = useCallback(
     async (type: string) => {
@@ -379,7 +393,7 @@ export default function Compute({
         accountId,
         initializedProviderResponse.algorithm,
         hasAlgoAssetDatatoken,
-        computeEnv.consumerAddress
+        selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
 
@@ -398,7 +412,7 @@ export default function Compute({
         accountId,
         initializedProviderResponse.datasets[0],
         hasDatatoken,
-        computeEnv.consumerAddress
+        selectedComputeEnv.consumerAddress
       )
       if (!datasetOrderTx) throw new Error('Failed to order dataset.')
 
@@ -417,7 +431,7 @@ export default function Compute({
       const response = await ProviderInstance.computeStart(
         asset.services[0].serviceEndpoint,
         signer,
-        computeEnv?.id,
+        selectedComputeEnv?.id,
         computeAsset,
         computeAlgorithm,
         newAbortController(),
@@ -483,7 +497,7 @@ export default function Compute({
           validateOnMount
           validationSchema={validationSchema}
           onSubmit={async (values) => {
-            if (!values.algorithm) return
+            if (!values.algorithm || !values.computeEnv) return
             await startJob()
           }}
         >
@@ -518,6 +532,8 @@ export default function Compute({
             selectedComputeAssetTimeout={secondsToString(
               selectedAlgorithmAsset?.services[0]?.timeout
             )}
+            computeEnvs={computeEnvs}
+            setSelectedComputeEnv={setSelectedComputeEnv}
             // lazy comment when removing pricingStepText
             stepText={computeStatusText}
             isConsumable={isConsumablePrice}
