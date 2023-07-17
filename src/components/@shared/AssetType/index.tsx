@@ -22,7 +22,9 @@ export default function AssetType({
       ) : (
         <Compute role="img" aria-label="Compute" className={styles.icon} />
       )}
-
+      <div className={styles.accessLabel}>
+        {accessType === 'access' ? 'download' : 'compute'}
+      </div>
       <div className={styles.typeLabel}>
         {type === 'dataset' ? 'dataset' : 'algorithm'}
       </div>

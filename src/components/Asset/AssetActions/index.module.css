@@ -1,5 +1,7 @@
 .actions {
   composes: box from '@shared/atoms/Box.module.css';
+
   max-width: 35rem;
   margin: auto;
+  padding: var(--spacer) calc(var(--spacer) / 1.5);
 }

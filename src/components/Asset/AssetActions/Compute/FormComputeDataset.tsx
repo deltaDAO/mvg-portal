@@ -32,6 +32,7 @@ export default function FormStartCompute({
   assetTimeout,
   hasPreviousOrderSelectedComputeAsset,
   hasDatatokenSelectedComputeAsset,
+  isAccountIdWhitelisted,
   datasetSymbol,
   algorithmSymbol,
   providerFeesSymbol,
@@ -63,6 +64,7 @@ export default function FormStartCompute({
   assetTimeout: string
   hasPreviousOrderSelectedComputeAsset?: boolean
   hasDatatokenSelectedComputeAsset?: boolean
+  isAccountIdWhitelisted: boolean
   datasetSymbol?: string
   algorithmSymbol?: string
   providerFeesSymbol?: string
@@ -292,7 +294,8 @@ export default function FormStartCompute({
           !isValid ||
           !isBalanceSufficient ||
           !isAssetNetwork ||
-          !selectedAlgorithmAsset?.accessDetails?.isPurchasable
+          !selectedAlgorithmAsset?.accessDetails?.isPurchasable ||
+          !isAccountIdWhitelisted
         }
         hasPreviousOrder={hasPreviousOrder}
         hasDatatoken={hasDatatoken}
