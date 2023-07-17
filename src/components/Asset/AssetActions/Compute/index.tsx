@@ -13,7 +13,9 @@ import {
   ComputeOutput,
   ProviderComputeInitializeResults,
   unitsToAmount,
-  ProviderFees
+  minAbi,
+  ProviderFees,
+  getErrorMessage
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
 import Price from '@shared/Price'
@@ -443,9 +445,10 @@ export default function Compute({
       setRefetchJobs(!refetchJobs)
       initPriceAndFees()
     } catch (error) {
-      setError(error.message)
+      const message = getErrorMessage(JSON.parse(error.message))
+      LoggerInstance.error('[Compute] Error:', message)
+      setError(message)
       setRetry(true)
-      LoggerInstance.error(`[compute] ${error.message} `)
     } finally {
       setIsOrdering(false)
     }

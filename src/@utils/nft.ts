@@ -6,10 +6,12 @@ import {
   ProviderInstance,
   DDO,
   MetadataAndTokenURI,
-  NftCreateData
+  NftCreateData,
+  getErrorMessage
 } from '@oceanprotocol/lib'
 import { SvgWaves } from './SvgWaves'
 import { Signer, ethers } from 'ethers'
+import { toast } from 'react-toastify'
 
 // https://docs.opensea.io/docs/metadata-standards
 export interface NftMetadata {
@@ -105,12 +107,19 @@ export async function setNftMetadata(
   signer: Signer,
   signal: AbortSignal
 ): Promise<ethers.providers.TransactionResponse> {
-  const encryptedDdo = await ProviderInstance.encrypt(
-    asset,
-    asset.chainId,
-    asset.services[0].serviceEndpoint,
-    signal
-  )
+  let encryptedDdo
+  try {
+    encryptedDdo = await ProviderInstance.encrypt(
+      asset,
+      asset.chainId,
+      asset.services[0].serviceEndpoint,
+      signal
+    )
+  } catch (err) {
+    const message = getErrorMessage(JSON.parse(err.message))
+    LoggerInstance.error('[Encrypt Data] Error:', message)
+    toast.error(message)
+  }
   LoggerInstance.log('[setNftMetadata] Got encrypted DDO', encryptedDdo)
 
   const metadataHash = getHash(JSON.stringify(asset))
@@ -140,12 +149,19 @@ export async function setNFTMetadataAndTokenURI(
   nftMetadata: NftMetadata | undefined,
   signal: AbortSignal
 ): Promise<ethers.providers.TransactionResponse> {
-  const encryptedDdo = await ProviderInstance.encrypt(
-    asset,
-    asset.chainId,
-    asset.services[0].serviceEndpoint,
-    signal
-  )
+  let encryptedDdo
+  try {
+    encryptedDdo = await ProviderInstance.encrypt(
+      asset,
+      asset.chainId,
+      asset.services[0].serviceEndpoint,
+      signal
+    )
+  } catch (err) {
+    const message = getErrorMessage(JSON.parse(err.message))
+    LoggerInstance.error('[Encrypt Data] Error:', message)
+    toast.error(message)
+  }
   LoggerInstance.log(
     '[setNFTMetadataAndTokenURI] Got encrypted DDO',
     encryptedDdo
