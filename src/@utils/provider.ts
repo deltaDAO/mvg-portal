@@ -253,3 +253,17 @@ export async function checkValidProvider(
     toast.error(message)
   }
 }
+
+export async function getComputeEnvironments(
+  providerUrl: string,
+  chainId: number
+): Promise<ComputeEnvironment[]> {
+  try {
+    const response = await ProviderInstance.getComputeEnvironments(providerUrl)
+    const computeEnvs = Array.isArray(response) ? response : response[chainId]
+
+    return computeEnvs
+  } catch (error) {
+    LoggerInstance.error(error.message)
+  }
+}
