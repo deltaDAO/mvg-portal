@@ -28,10 +28,11 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
 // Wagmi client
 export const wagmiClient = createClient(
   getDefaultClient({
-    appName: 'Ocean Market',
+    appName: 'Pontus-X',
     infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
     // TODO: mapping between appConfig.chainIdsSupported and wagmi chainId
-    chains: [genx, polygonMumbai]
+    chains: [genx, polygonMumbai],
+    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
   })
 )
 
