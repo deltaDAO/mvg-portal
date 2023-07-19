@@ -129,11 +129,14 @@ export default function VerifyPage({
           </Button>
         </InputGroup>
       </form>
-      {!isLoading && !isVerifyingServiceCredential && (!asset || error) ? (
+      {!isLoading && !isVerifyingServiceCredential && error ? (
         <div className={styles.errorContainer}>
           <Alert title="Asset unavailable" text={error} state="error" />
         </div>
-      ) : !isLoading && !isVerifyingServiceCredential && !serviceCredential ? (
+      ) : !isLoading &&
+        !isVerifyingServiceCredential &&
+        asset &&
+        !serviceCredential ? (
         <div className={styles.errorContainer}>
           <Alert
             title="Service Credential unavailable"
