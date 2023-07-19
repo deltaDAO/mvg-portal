@@ -176,7 +176,7 @@ const InputElement = forwardRef(
         )
       case 'files':
         return <FilesInput {...field} form={form} {...props} />
-      case 'serviceSD':
+      case 'serviceCredential':
         return <ServiceCredential {...field} {...props} />
       case 'container':
         return <ContainerInput {...field} {...props} />

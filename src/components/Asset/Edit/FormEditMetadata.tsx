@@ -139,7 +139,7 @@ export default function FormEditMetadata({
         name="assetState"
       />
       <Field
-        {...getFieldContent('serviceSD', data)}
+        {...getFieldContent('serviceCredential', data)}
         component={Input}
         name="gaiaXInformation.serviceSD"
       />
