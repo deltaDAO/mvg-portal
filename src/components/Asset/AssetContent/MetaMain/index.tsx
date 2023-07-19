@@ -40,7 +40,7 @@ export default function MetaMain({
         {(isVerifyingSD || isServiceSDVerified) && (
           <div className={styles.badgeContainer}>
             <VerifiedBadge
-              text="Service Self-Description"
+              text="Service Credential"
               isLoading={isVerifyingSD}
               apiVersion={serviceSDVersion}
               timestamp={isServiceSDVerified}

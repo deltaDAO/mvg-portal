@@ -58,7 +58,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
       }
 
       helpers.setValue({ url, isVerified: verified })
-      toast.success('Great! The provided service self-description looks good.')
+      toast.success('Great! The provided service credential looks good.')
     } catch (error) {
       toast.error('Could not fetch file info. Please check URL and try again')
       console.error(error.message)
@@ -81,17 +81,17 @@ export default function ServiceSD(props: InputProps): ReactElement {
 
       if (!verified) {
         toast.error(
-          'The data you entered appears to be invalid. Please check the provided service self-description and try again'
+          'The data you entered appears to be invalid. Please check the provided service credential and try again'
         )
         return
       }
 
       setRawServiceSDPreview(signedServiceSD)
       helpers.setValue({ url: storedSdUrl })
-      toast.success('Great! The provided service self-description looks good.')
+      toast.success('Great! The provided service credential looks good.')
     } catch (error) {
       toast.error(
-        'Something went wrong. Please check the provided service self-description and try again'
+        'Something went wrong. Please check the provided service credential and try again'
       )
       console.error(error.message)
     } finally {

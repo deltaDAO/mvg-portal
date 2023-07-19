@@ -99,7 +99,7 @@ export default function AssetContent({
                   <div className={styles.sdVisualizer}>
                     <SDVisualizer
                       text={getFormattedCodeString(serviceSD) || ''}
-                      title="Service Self-Description"
+                      title="Service Credential"
                       copyText={serviceSD && JSON.stringify(serviceSD, null, 2)}
                     />
                   </div>

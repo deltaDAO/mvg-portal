@@ -162,7 +162,7 @@ function AssetProvider({
   }, [asset?.chainId, asset?.services, accountId, did])
 
   // -----------------------------------
-  // Helper: Get and set asset Self-Description state
+  // Helper: Get and set asset Service Credential state
   // -----------------------------------
   const checkServiceSD = useCallback(
     async (asset: AssetExtended): Promise<void> => {
@@ -269,7 +269,7 @@ function AssetProvider({
   }, [asset])
 
   // -----------------------------------
-  // Set Asset Self-Description state
+  // Set Asset Service Credential state
   // -----------------------------------
   useEffect(() => {
     if (!asset) return
