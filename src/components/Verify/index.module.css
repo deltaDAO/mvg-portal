@@ -7,6 +7,7 @@
   margin-top: var(--spacer);
 }
 
-.sdContainer {
+.sdContainer,
+.errorContainer {
   margin-top: calc(var(--spacer) * 2);
 }

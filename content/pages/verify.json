@@ -5,18 +5,5 @@
     "label": "Enter a valid did:op",
     "placeholder": "did:op:87152E582e3B05Cc6940E9763b9e0c22eA812448",
     "buttonLabel": "Verify"
-  },
-  "serviceSDSection": {
-    "title": "Service Credential",
-    "badgeLabel": "Verified Credential"
-  },
-  "errorSection": {
-    "title": "Validation Errors",
-    "badgeLabel": "Invalid Credential"
-  },
-  "errorList": {
-    "invalidDid": "The provided DID:OP does not refer to any DDO.",
-    "noServiceSD": "The requested DDO does not contain a service credential.",
-    "default": "An unexpected error occurred. Please try again later."
   }
 }

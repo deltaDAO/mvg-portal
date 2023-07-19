@@ -1,6 +1,6 @@
 import { FileInfo } from '@oceanprotocol/lib'
 import { GaiaXInformation2210 } from 'src/@types/gaia-x/2210/GXInformation'
-import { ServiceSD } from 'src/@types/gaia-x/2210/ServiceSD'
+import { ServiceSD } from 'src/@types/gaia-x/2210/ServiceCredential'
 export interface MetadataEditForm {
   name: string
   description: string
