@@ -194,6 +194,7 @@ export async function getOrderPriceAndFees(
 
     // Customize error message for accountId non included in allow list
     if (
+      // TODO: verify if the error code is correctly resolved by the provider
       message.includes(
         'ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST' || 'denied with code: 3'
       )
@@ -206,6 +207,7 @@ export async function getOrderPriceAndFees(
     // Customize error message for accountId included in deny list
     if (
       message.includes(
+        // TODO: verify if the error code is correctly resolved by the provider
         'ConsumableCodes.CREDENTIAL_IN_DENY_LIST' || 'denied with code: 4'
       )
     ) {
