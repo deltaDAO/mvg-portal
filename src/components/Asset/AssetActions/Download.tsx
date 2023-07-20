@@ -38,7 +38,6 @@ export default function Download({
   const { address: accountId, isConnected } = useAccount()
   const { data: signer } = useSigner()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { getOpcFeeForToken } = useMarketMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
   const isMounted = useIsMounted()
 
@@ -85,7 +84,7 @@ export default function Download({
 
         const _orderPriceAndFees = await getOrderPriceAndFees(
           asset,
-          ZERO_ADDRESS
+          accountId || ZERO_ADDRESS
         )
         setOrderPriceAndFees(_orderPriceAndFees)
         !orderPriceAndFees && setIsPriceLoading(false)
@@ -103,7 +102,7 @@ export default function Download({
      * Not adding isLoading and getOpcFeeForToken because we set these here. It is a compromise
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asset, getOpcFeeForToken, isUnsupportedPricing])
+  }, [asset, isUnsupportedPricing])
 
   useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
