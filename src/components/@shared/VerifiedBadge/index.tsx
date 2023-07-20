@@ -10,10 +10,10 @@ const cx = classNames.bind(styles)
 
 function Badge({
   isValid,
-  label
+  verifiedService
 }: {
   isValid: boolean
-  label: string
+  verifiedService: string
 }): ReactElement {
   return (
     <div
@@ -22,7 +22,7 @@ function Badge({
         isValid
       })}
     >
-      <span>{label}</span>
+      <span>{verifiedService}</span>
       {isValid ? <VerifiedPatch /> : <Cross />}
     </div>
   )
@@ -57,8 +57,8 @@ export default function VerifiedBadge({
         <Loader message="Verifying Service Credential" />
       ) : (
         <div className={styleClasses}>
-          <Badge isValid={isValid} label="Service Credential" />
-          <Badge isValid={idMatch} label="Credential ID match" />
+          <Badge isValid={isValid} verifiedService="Service Credential" />
+          <Badge isValid={idMatch} verifiedService="Credential ID match" />
           <div className={styles.details}>
             {apiVersion && (
               <span className={styles.apiVersion}>
