@@ -19,7 +19,7 @@
   padding: var(--spacer);
   background: var(--background-body);
   border: 1px solid var(--border-color);
-  fill: var(--ocean-violet);
+  fill: var(--color-primary);
   border-radius: 50%;
   margin: 0;
 }
