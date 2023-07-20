@@ -1,22 +1,9 @@
 {
-  "title": "Service Self-Description Verifier",
-  "description": "Visualize and verify service self-descriptions via DID.",
+  "title": "Service Credential Verifier",
+  "description": "Visualize and verify service credentials via DID.",
   "input": {
     "label": "Enter a valid did:op",
     "placeholder": "did:op:87152E582e3B05Cc6940E9763b9e0c22eA812448",
     "buttonLabel": "Verify"
-  },
-  "serviceSDSection": {
-    "title": "Service Self-Description",
-    "badgeLabel": "Verified Self-Description"
-  },
-  "errorSection": {
-    "title": "Validation Errors",
-    "badgeLabel": "Invalid Self-Description"
-  },
-  "errorList": {
-    "invalidDid": "The provided DID:OP does not refer to any DDO.",
-    "noServiceSD": "The requested DDO does not contain a service self-description.",
-    "default": "An unexpected error occurred. Please try again later."
   }
 }

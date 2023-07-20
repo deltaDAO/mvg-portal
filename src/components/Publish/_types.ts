@@ -1,7 +1,7 @@
 import { FileInfo, ServiceComputeOptions } from '@oceanprotocol/lib'
 import { NftMetadata } from '@utils/nft'
 import { ReactElement } from 'react'
-import { ServiceSD } from 'src/@types/gaia-x/2210/ServiceSD'
+import { ServiceCredential } from 'src/@types/gaia-x/2210/ServiceCredential'
 import { GaiaXInformation2210 } from '../../@types/gaia-x/2210/GXInformation'
 
 export interface FormPublishService {
@@ -33,7 +33,7 @@ export interface FormPublishData {
       termsAndConditions: FileInfo[]
       containsPII: GaiaXInformation2210['containsPII']
       PIIInformation?: GaiaXInformation2210['PIIInformation']
-      serviceSD?: ServiceSD
+      serviceSD?: ServiceCredential
     }
     license?: string
     tags?: string[]

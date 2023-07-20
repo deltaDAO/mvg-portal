@@ -16,9 +16,10 @@ export default function MetaMain({
   nftPublisher: string
 }): ReactElement {
   const {
-    isServiceSDVerified,
-    serviceSDVersion,
-    isVerifyingSD,
+    isServiceCredentialVerified,
+    serviceCredentialIdMatch,
+    serviceCredentialVersion,
+    isVerifyingServiceCredential,
     verifiedServiceProviderName
   } = useAsset()
   const isBlockscoutExplorer = blockscoutNetworks.includes(asset?.chainId)
@@ -34,16 +35,17 @@ export default function MetaMain({
           asset={asset}
           nftPublisher={nftPublisher}
           verifiedServiceProviderName={
-            isServiceSDVerified && verifiedServiceProviderName
+            isServiceCredentialVerified && verifiedServiceProviderName
           }
         />
-        {(isVerifyingSD || isServiceSDVerified) && (
+        {(isVerifyingServiceCredential || isServiceCredentialVerified) && (
           <div className={styles.badgeContainer}>
             <VerifiedBadge
-              text="Service Self-Description"
-              isLoading={isVerifyingSD}
-              apiVersion={serviceSDVersion}
-              timestamp={isServiceSDVerified}
+              isLoading={isVerifyingServiceCredential}
+              isValid={isServiceCredentialVerified}
+              idMatch={serviceCredentialIdMatch}
+              apiVersion={serviceCredentialVersion}
+              timestamp={isServiceCredentialVerified}
             />
           </div>
         )}

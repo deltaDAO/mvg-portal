@@ -4,31 +4,31 @@ import Markdown from '../Markdown'
 import VerifiedBadge from '../VerifiedBadge'
 import styles from './index.module.css'
 
-export default function Visualizer({
+export default function ServiceCredentialVisualizer({
   text,
   title,
   displayBadge,
-  badgeLabel,
-  invalidBadge,
+  isValid,
+  idMatch,
   apiVersion,
   copyText
 }: {
   text: string
   title: string
   displayBadge?: boolean
-  badgeLabel?: string
-  invalidBadge?: boolean
+  isValid?: boolean
+  idMatch?: boolean
   apiVersion?: string
   copyText?: string
 }): ReactElement {
   return (
-    <div>
+    <div className={styles.container}>
       <div className={styles.header}>
-        <h4>{title}</h4>
+        <h5>{title}</h5>
         {displayBadge && (
           <VerifiedBadge
-            isInvalid={invalidBadge}
-            text={badgeLabel}
+            isValid={isValid}
+            idMatch={idMatch}
             apiVersion={apiVersion}
             timestamp
           />

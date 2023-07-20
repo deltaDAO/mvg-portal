@@ -14,7 +14,7 @@ import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
 import TagsAutoComplete from './TagsAutoComplete'
 import TabsFile from '@shared/atoms/TabsFile'
 import { extensions, oceanTheme } from '@utils/codemirror'
-import ServiceSD from './ServiceSD'
+import ServiceCredential from './ServiceCredential'
 
 const cx = classNames.bind(styles)
 
@@ -176,8 +176,8 @@ const InputElement = forwardRef(
         )
       case 'files':
         return <FilesInput {...field} form={form} {...props} />
-      case 'serviceSD':
-        return <ServiceSD {...field} {...props} />
+      case 'serviceCredential':
+        return <ServiceCredential {...field} {...props} />
       case 'container':
         return <ContainerInput {...field} {...props} />
       case 'providerUrl':

@@ -8,6 +8,7 @@ import Page from '@components/@shared/Page'
 export default function PageVerify(): ReactElement {
   const router = useRouter()
   const { did } = router.query
+  console.log(did)
 
   return (
     <AssetProvider did={did as string}>

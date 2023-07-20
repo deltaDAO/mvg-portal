@@ -20,9 +20,9 @@ import { assetStateToString } from '@utils/assetState'
 import { isValidDid } from '@utils/ddo'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 import {
-  getPublisherFromServiceSD,
-  getServiceSD,
-  verifyRawServiceSD
+  getPublisherFromServiceCredential,
+  getServiceCredential,
+  verifyRawServiceCredential
 } from '@components/Publish/_utils'
 
 export interface AssetProviderValue {
@@ -37,9 +37,10 @@ export interface AssetProviderValue {
   oceanConfig: Config
   loading: boolean
   assetState: string
-  isVerifyingSD: boolean
-  isServiceSDVerified: boolean
-  serviceSDVersion: string
+  isVerifyingServiceCredential: boolean
+  isServiceCredentialVerified: boolean
+  serviceCredentialIdMatch?: boolean
+  serviceCredentialVersion: string
   verifiedServiceProviderName: string
   fetchAsset: (token?: CancelToken) => Promise<void>
 }
@@ -68,9 +69,14 @@ function AssetProvider({
   const [isAssetNetwork, setIsAssetNetwork] = useState<boolean>()
   const [oceanConfig, setOceanConfig] = useState<Config>()
   const [assetState, setAssetState] = useState<string>()
-  const [isVerifyingSD, setIsVerifyingSD] = useState(false)
-  const [isServiceSDVerified, setIsServiceSDVerified] = useState<boolean>()
-  const [serviceSDVersion, setServiceSDVersion] = useState<string>()
+  const [isVerifyingServiceCredential, setIsVerifyingServiceCredential] =
+    useState(false)
+  const [isServiceCredentialVerified, setIsServiceCredentialVerified] =
+    useState<boolean>()
+  const [serviceCredentialIdMatch, setServiceCredentialIdMatch] =
+    useState<boolean>()
+  const [serviceCredentialVersion, setServiceCredentialVersion] =
+    useState<string>()
   const [verifiedServiceProviderName, setVerifiedServiceProviderName] =
     useState<string>()
 
@@ -162,43 +168,50 @@ function AssetProvider({
   }, [asset?.chainId, asset?.services, accountId, did])
 
   // -----------------------------------
-  // Helper: Get and set asset Self-Description state
+  // Helper: Get and set asset Service Credential state
   // -----------------------------------
-  const checkServiceSD = useCallback(
+  const checkServiceCredential = useCallback(
     async (asset: AssetExtended): Promise<void> => {
       if (!asset) return
-      setIsVerifyingSD(true)
+      setIsVerifyingServiceCredential(true)
 
       try {
         const { additionalInformation } = asset.metadata
-        const serviceSD = additionalInformation?.gaiaXInformation?.serviceSD
+        const serviceCredential =
+          additionalInformation?.gaiaXInformation?.serviceSD
 
-        if (!serviceSD || !Object.keys(serviceSD)?.length) {
-          setIsServiceSDVerified(false)
-          setServiceSDVersion(undefined)
+        if (!serviceCredential || !Object.keys(serviceCredential)?.length) {
+          setIsServiceCredentialVerified(false)
+          setServiceCredentialIdMatch(false)
+          setServiceCredentialVersion(undefined)
           setVerifiedServiceProviderName(undefined)
           return
         }
 
-        const serviceSDContent = serviceSD?.url
-          ? await getServiceSD(serviceSD?.url)
-          : serviceSD?.raw
+        const serviceCredentialContent = serviceCredential?.url
+          ? await getServiceCredential(serviceCredential?.url)
+          : serviceCredential?.raw
 
-        const { verified, complianceApiVersion } = await verifyRawServiceSD(
-          serviceSDContent
+        const { verified, complianceApiVersion, idMatch } =
+          await verifyRawServiceCredential(serviceCredentialContent, asset.id)
+
+        setIsServiceCredentialVerified(verified && !!serviceCredentialContent)
+        setServiceCredentialIdMatch(
+          verified && !!serviceCredentialContent && idMatch
         )
-
-        setIsServiceSDVerified(verified && !!serviceSDContent)
-        setServiceSDVersion(complianceApiVersion)
-        const serviceProviderName = getPublisherFromServiceSD(serviceSDContent)
+        setServiceCredentialVersion(complianceApiVersion)
+        const serviceProviderName = getPublisherFromServiceCredential(
+          serviceCredentialContent
+        )
         setVerifiedServiceProviderName(serviceProviderName)
       } catch (error) {
-        setIsServiceSDVerified(false)
-        setServiceSDVersion(undefined)
+        setIsServiceCredentialVerified(false)
+        setServiceCredentialIdMatch(false)
+        setServiceCredentialVersion(undefined)
         setVerifiedServiceProviderName(undefined)
         LoggerInstance.error(error)
       } finally {
-        setIsVerifyingSD(false)
+        setIsVerifyingServiceCredential(false)
       }
     },
     []
@@ -269,13 +282,13 @@ function AssetProvider({
   }, [asset])
 
   // -----------------------------------
-  // Set Asset Self-Description state
+  // Set Asset Service Credential state
   // -----------------------------------
   useEffect(() => {
     if (!asset) return
 
-    checkServiceSD(asset)
-  }, [asset, checkServiceSD])
+    checkServiceCredential(asset)
+  }, [asset, checkServiceCredential])
 
   return (
     <AssetContext.Provider
@@ -294,9 +307,10 @@ function AssetProvider({
           isOwner,
           oceanConfig,
           assetState,
-          isVerifyingSD,
-          isServiceSDVerified,
-          serviceSDVersion,
+          isVerifyingServiceCredential,
+          isServiceCredentialVerified,
+          serviceCredentialIdMatch,
+          serviceCredentialVersion,
           verifiedServiceProviderName
         } as AssetProviderValue
       }

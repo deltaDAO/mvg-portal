@@ -1,3 +1,7 @@
+.container {
+  margin-top: var(--spacer);
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -7,6 +11,10 @@
 
 .markdownContainer {
   position: relative;
+}
+
+.markdownContainer pre {
+  margin-top: 0;
 }
 
 .copyContainer {

@@ -1,44 +1,27 @@
-import React, {
-  FormEvent,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useState
-} from 'react'
+import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
 import {
   getFormattedCodeString,
-  getServiceSD,
-  verifyRawServiceSD
+  getServiceCredential
 } from '@components/Publish/_utils'
 import InputGroup from '@components/@shared/FormInput/InputGroup'
 import InputElement from '@components/@shared/FormInput/InputElement'
 import Button from '@components/@shared/atoms/Button'
 import Loader from '@components/@shared/atoms/Loader'
-import SDVisualizer from '@components/@shared/SDVisualizer'
+import ServiceCredentialVisualizer from '@components/@shared/ServiceCredentialVisualizer'
 import content from '../../../content/pages/verify.json'
 import { useAsset } from '@context/Asset'
+import Alert from '@components/@shared/atoms/Alert'
 
 interface Content {
+  title: string
+  description: string
   input: {
     label: string
     placeholder: string
     buttonLabel: string
-  }
-  serviceSDSection: {
-    title: string
-    badgeLabel: string
-  }
-  errorSection: {
-    title: string
-    badgeLabel: string
-  }
-  errorList: {
-    invalidDid: string
-    noServiceSD: string
-    default: string
   }
 }
 
@@ -48,25 +31,21 @@ export default function VerifyPage({
   didQueryString?: string
 }): ReactElement {
   const router = useRouter()
-  const { asset } = useAsset()
+  const {
+    asset,
+    error,
+    isVerifyingServiceCredential,
+    isServiceCredentialVerified,
+    serviceCredentialIdMatch,
+    serviceCredentialVersion
+  } = useAsset()
 
-  const { input, errorList, serviceSDSection, errorSection }: Content = content
+  const { input }: Content = content
   const { label, placeholder, buttonLabel } = input
 
   const [isLoading, setIsLoading] = useState(false)
   const [did, setDid] = useState<string>()
-  const [serviceSD, setServiceSD] = useState<string>()
-  const [isServiceSDVerified, setServiceSDVerified] = useState<boolean>()
-  const [serviceSDVersion, setServiceSDVersion] = useState<string>()
-  const [serviceSDErrors, setServiceSDErrors] = useState<string>()
-  const [error, setError] = useState<keyof typeof errorList>()
-
-  const resetState = () => {
-    setServiceSD(undefined)
-    setServiceSDVerified(undefined)
-    setServiceSDErrors(undefined)
-    setError(undefined)
-  }
+  const [serviceCredential, setServiceCredential] = useState<string>()
 
   const getDidString = (did: string): string => {
     if (!did) return
@@ -75,35 +54,20 @@ export default function VerifyPage({
 
   const handleVerify = useCallback(async () => {
     if (!asset) return
-    resetState()
+    setServiceCredential(undefined)
     setIsLoading(true)
 
     try {
-      const serviceSD =
+      const serviceCredential =
         asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
-      if (!serviceSD) {
-        setError('noServiceSD')
-        return
-      }
+      if (!serviceCredential) return
 
-      const serviceSDContent = serviceSD?.url
-        ? await getServiceSD(serviceSD?.url)
-        : serviceSD?.raw
+      const serviceCredentialContent = serviceCredential?.url
+        ? await getServiceCredential(serviceCredential?.url)
+        : serviceCredential?.raw
+      if (!serviceCredentialContent) return
 
-      const { responseBody, verified, complianceApiVersion } =
-        await verifyRawServiceSD(serviceSDContent)
-      setServiceSDVerified(verified)
-      setServiceSDVersion(complianceApiVersion)
-
-      if (!verified && !responseBody) {
-        setError('default')
-        return
-      }
-      if (responseBody) {
-        setServiceSDErrors(responseBody)
-      }
-
-      setServiceSD(JSON.parse(serviceSDContent))
+      setServiceCredential(JSON.parse(serviceCredentialContent))
       setIsLoading(false)
     } catch (error) {
       LoggerInstance.error(error)
@@ -112,19 +76,16 @@ export default function VerifyPage({
     }
   }, [asset])
 
-  const handleSearchStart = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-
+  const handleSearchStart = () => {
     const didString = getDidString(did)
-    const { basePath, pathname } = router
-    const url = `${basePath}${pathname}?did=${didString}`
+    const { pathname } = router
 
     if (didQueryString === getDidString(did)) {
       setDid(getDidString(didQueryString))
       handleVerify()
       return
     }
-    router.push(url)
+    router.push({ pathname, query: { did: didString } })
   }
 
   useEffect(() => {
@@ -138,7 +99,10 @@ export default function VerifyPage({
     <div>
       <form
         className={styles.form}
-        onSubmit={async (e) => handleSearchStart(e)}
+        onSubmit={async (e) => {
+          e.preventDefault()
+          handleSearchStart()
+        }}
       >
         <InputGroup>
           <InputElement
@@ -157,34 +121,47 @@ export default function VerifyPage({
             size="small"
             type="submit"
           >
-            {isLoading ? <Loader /> : buttonLabel}
+            {isLoading || isVerifyingServiceCredential ? (
+              <Loader />
+            ) : (
+              buttonLabel
+            )}
           </Button>
         </InputGroup>
       </form>
-      {!isServiceSDVerified && error && (
-        <p className={styles.error}>{errorList[error]}</p>
-      )}
-      {serviceSD && (
-        <div className={styles.sdContainer}>
-          {serviceSDErrors && (
-            <SDVisualizer
-              badgeLabel={errorSection.badgeLabel}
-              text={getFormattedCodeString(serviceSDErrors)}
-              title={errorSection.title}
-              displayBadge={!isServiceSDVerified}
-              apiVersion={serviceSDVersion}
-              invalidBadge
-            />
-          )}
-          <SDVisualizer
-            badgeLabel={serviceSDSection.badgeLabel}
-            text={getFormattedCodeString(serviceSD) || ''}
-            title={serviceSDSection.title}
-            displayBadge={isServiceSDVerified}
-            apiVersion={serviceSDVersion}
-            copyText={serviceSD && JSON.stringify(serviceSD, null, 2)}
+      {!isLoading && !isVerifyingServiceCredential && error ? (
+        <div className={styles.errorContainer}>
+          <Alert title="Asset unavailable" text={error} state="error" />
+        </div>
+      ) : !isLoading &&
+        !isVerifyingServiceCredential &&
+        asset &&
+        !serviceCredential ? (
+        <div className={styles.errorContainer}>
+          <Alert
+            title="Service Credential unavailable"
+            text="This asset does not include a Service Credential."
+            state="error"
           />
         </div>
+      ) : (
+        !isLoading &&
+        !isVerifyingServiceCredential &&
+        serviceCredential && (
+          <div className={styles.sdContainer}>
+            <ServiceCredentialVisualizer
+              text={getFormattedCodeString(serviceCredential) || ''}
+              title="Service Credential"
+              isValid={isServiceCredentialVerified}
+              idMatch={serviceCredentialIdMatch}
+              displayBadge
+              apiVersion={serviceCredentialVersion}
+              copyText={
+                serviceCredential && JSON.stringify(serviceCredential, null, 2)
+              }
+            />
+          </div>
+        )
       )}
     </div>
   )

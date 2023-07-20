@@ -30,11 +30,11 @@
         "required": true
       },
       {
-        "name": "serviceSD",
-        "label": "Service Self-Description",
-        "placeholder": "e.g. https://file.com/service-self-description.json",
-        "help": "Please enter the URL to a valid service self-description and click \"ADD FILE\" to validate the data. This file URL and its content will be publicly available after publishing",
-        "type": "serviceSD"
+        "name": "serviceCredential",
+        "label": "Service Credential",
+        "placeholder": "e.g. https://file.com/service-credential.json",
+        "help": "Please enter the URL to a valid service credential and click \"ADD FILE\" to validate the data. This file URL and its content will be publicly available after publishing",
+        "type": "serviceCredential"
       },
       {
         "name": "tags",

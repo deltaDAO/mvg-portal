@@ -10,7 +10,7 @@
   justify-content: flex-start;
   align-items: flex-end;
   font-weight: var(--font-weight-bold) !important;
-  color: var(--color-primary);
+  color: var(--brand-alert-red);
 }
 
 .mainLabel {
@@ -21,7 +21,7 @@
 
 .verifiedBadge svg path {
   margin: 0;
-  fill: var(--color-primary);
+  fill: var(--brand-alert-red);
 }
 
 .details {
@@ -36,14 +36,10 @@
   color: var(--color-secondary);
 }
 
-.isInvalid {
-  color: var(--brand-alert-red);
+.isValid {
+  color: var(--color-primary);
 }
 
-.isInvalid svg path {
-  fill: var(--brand-alert-red);
-}
-
-.loader span {
-  padding: 0;
+.isValid svg path {
+  fill: var(--color-primary);
 }
