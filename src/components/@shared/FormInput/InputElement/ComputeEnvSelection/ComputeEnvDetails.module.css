@@ -1,12 +1,9 @@
 .container {
-  min-width: 12rem;
+  min-width: 18rem;
 }
 
 .row {
   width: 100%;
-  border-bottom: 1px solid var(--border-color);
-  padding-top: calc(var(--spacer) / 7);
-  padding-bottom: calc(var(--spacer) / 7);
   display: inline-block;
 }
 
@@ -15,16 +12,49 @@
 }
 
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: calc(var(--spacer) / 2);
+  margin-top: calc(var(--spacer) / 12);
+}
+
+.header,
+.clusterDetails {
   margin-bottom: calc(var(--spacer) / 2);
 }
 
+.header svg {
+  min-width: 3rem;
+  min-height: 3rem;
+  margin: 0;
+  fill: var(--color-secondary);
+}
+
 .title {
-  margin-top: calc(var(--spacer) / 12);
-  margin-bottom: calc(var(--spacer) / 4);
+  margin-bottom: calc(var(--spacer) / 12);
+}
+
+.clusterDetails .title {
+  font-weight: var(--font-weight-bold);
 }
 
 .description {
   margin-bottom: 0 !important;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--spacer) / 12);
+}
+
+.row:first-child {
+  grid-column: span 2;
+}
+
+.footer {
+  margin-top: calc(var(--spacer) / 2);
 }
 
 .value {
