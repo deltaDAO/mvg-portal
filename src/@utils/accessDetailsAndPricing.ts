@@ -191,6 +191,32 @@ export async function getOrderPriceAndFees(
   } catch (error) {
     const message = getErrorMessage(JSON.parse(error.message))
     LoggerInstance.error('[Initialize Provider] Error:', message)
+
+    // Customize error message for accountId non included in allow list
+    if (
+      // TODO: verify if the error code is correctly resolved by the provider
+      message.includes(
+        'ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST' || 'denied with code: 3'
+      )
+    ) {
+      toast.error(
+        `Consumer address not found in allow list for service ${asset?.id}. Access has been denied.`
+      )
+      return
+    }
+    // Customize error message for accountId included in deny list
+    if (
+      message.includes(
+        // TODO: verify if the error code is correctly resolved by the provider
+        'ConsumableCodes.CREDENTIAL_IN_DENY_LIST' || 'denied with code: 4'
+      )
+    ) {
+      toast.error(
+        `Consumer address found in deny list for service ${asset?.id}. Access has been denied.`
+      )
+      return
+    }
+
     toast.error(message)
   }
   orderPriceAndFee.providerFee = providerFees || initializeData.providerFee

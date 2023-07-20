@@ -26,7 +26,7 @@ export default function NetworkName({
       }`}
       title={networkName}
     >
-      <NetworkIcon name={networkName} />{' '}
+      <NetworkIcon name={networkName} />
       <span className={styles.name}>{networkName}</span>
     </span>
   )
