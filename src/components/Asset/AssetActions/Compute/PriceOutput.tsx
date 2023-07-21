@@ -85,64 +85,70 @@ export default function PriceOutput({
 
   return (
     <div className={styles.priceComponent}>
-      You will pay{' '}
-      {totalPrices.map((item, index) => (
-        <div key={item.symbol}>
-          <PriceUnit
-            price={Number(item.value)}
-            symbol={item.symbol}
-            size="small"
-            explicitZero
-          />
-          {index < totalPrices.length - 1 && <>&nbsp;{'&'}&nbsp;</>}
-        </div>
-      ))}
-      <Tooltip
-        content={
-          <div className={styles.calculation}>
-            <Row
-              hasPreviousOrder={hasPreviousOrder}
-              hasDatatoken={hasDatatoken}
-              price={new Decimal(
-                datasetOrderPrice || asset?.accessDetails?.price || 0
-              )
-                .toDecimalPlaces(MAX_DECIMALS)
-                .toString()}
-              timeout={assetTimeout}
-              symbol={symbol}
-              type="DATASET"
-            />
-            <Row
-              hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
-              hasDatatoken={hasDatatokenSelectedComputeAsset}
-              price={new Decimal(
-                algoOrderPrice || algorithmConsumeDetails?.price || 0
-              )
-                .toDecimalPlaces(MAX_DECIMALS)
-                .toString()}
-              timeout={selectedComputeAssetTimeout}
-              symbol={algorithmSymbol}
-              sign="+"
-              type="ALGORITHM"
-            />
-            <Row
-              price={providerFeeAmount} // initializeCompute.provider fee amount
-              timeout={`${validUntil} seconds`} // valid until value
-              symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
-              sign="+"
-              type="C2D RESOURCES"
-            />
-            {totalPrices.map((item, index) => (
-              <Row
-                price={item.value}
+      {totalPrices ? (
+        <>
+          You will pay{' '}
+          {totalPrices.map((item, index) => (
+            <div key={item.symbol}>
+              <PriceUnit
+                price={Number(item.value)}
                 symbol={item.symbol}
-                sign={index === 0 ? '=' : '&'}
-                key={item.symbol}
+                size="small"
+                explicitZero
               />
-            ))}
-          </div>
-        }
-      />
+              {index < totalPrices.length - 1 && <>&nbsp;{'&'}&nbsp;</>}
+            </div>
+          ))}
+          <Tooltip
+            content={
+              <div className={styles.calculation}>
+                <Row
+                  hasPreviousOrder={hasPreviousOrder}
+                  hasDatatoken={hasDatatoken}
+                  price={new Decimal(
+                    datasetOrderPrice || asset?.accessDetails?.price || 0
+                  )
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .toString()}
+                  timeout={assetTimeout}
+                  symbol={symbol}
+                  type="DATASET"
+                />
+                <Row
+                  hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
+                  hasDatatoken={hasDatatokenSelectedComputeAsset}
+                  price={new Decimal(
+                    algoOrderPrice || algorithmConsumeDetails?.price || 0
+                  )
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .toString()}
+                  timeout={selectedComputeAssetTimeout}
+                  symbol={algorithmSymbol}
+                  sign="+"
+                  type="ALGORITHM"
+                />
+                <Row
+                  price={providerFeeAmount} // initializeCompute.provider fee amount
+                  timeout={`${validUntil} seconds`} // valid until value
+                  symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
+                  sign="+"
+                  type="C2D RESOURCES"
+                />
+                {totalPrices.map((item, index) => (
+                  <Row
+                    price={item.value}
+                    symbol={item.symbol}
+                    sign={index === 0 ? '=' : '&'}
+                    key={item.symbol}
+                  />
+                ))}
+              </div>
+            }
+          />
+        </>
+      ) : (
+        <>The price will be calculated once you select an algorithm.</>
+      )}
     </div>
   )
 }

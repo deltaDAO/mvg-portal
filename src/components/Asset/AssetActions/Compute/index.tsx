@@ -26,7 +26,11 @@ import { getInitialValues, validationSchema } from './_constants'
 import FormStartComputeDataset from './FormComputeDataset'
 import styles from './index.module.css'
 import SuccessConfetti from '@shared/SuccessConfetti'
-import { getServiceByName, secondsToString } from '@utils/ddo'
+import {
+  getServiceByName,
+  isAddressWhitelisted,
+  secondsToString
+} from '@utils/ddo'
 import {
   isOrderable,
   getAlgorithmAssetSelectionList,
@@ -52,6 +56,7 @@ import { useAccount, useSigner } from 'wagmi'
 import { getDummySigner } from '@utils/wallet'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
+import WhitelistIndicator from './WhitelistIndicator'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -515,6 +520,7 @@ export default function Compute({
             assetTimeout={secondsToString(asset?.services[0].timeout)}
             hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
             hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+            isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
             datasetSymbol={
               asset?.accessDetails?.baseToken?.symbol ||
               (asset?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
@@ -552,6 +558,12 @@ export default function Compute({
           <SuccessConfetti success="Your job started successfully! Watch the progress below or on your profile." />
         )}
       </footer>
+      {accountId && (
+        <WhitelistIndicator
+          accountId={accountId}
+          isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
+        />
+      )}
       {accountId && asset?.accessDetails?.datatoken && (
         <ComputeHistory
           title="Your Compute Jobs"
