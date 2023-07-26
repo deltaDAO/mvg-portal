@@ -16,13 +16,10 @@ export async function getContainerChecksum(
     checksum: null
   }
   try {
-    const response = await axios.post(
-      `https://dockerhub-proxy.oceanprotocol.com`,
-      {
-        image,
-        tag
-      }
-    )
+    const response = await axios.post(`https://dockerhub-proxy.delta-dao.com`, {
+      image,
+      tag
+    })
     if (
       !response ||
       response.status !== 200 ||
