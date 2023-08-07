@@ -4,6 +4,7 @@ import slugify from 'slugify'
 import PriceUnit from '@shared/Price/PriceUnit'
 import Loader from '@shared/atoms/Loader'
 import styles from './index.module.css'
+import assetSelectionStyles from '../AssetSelection/index.module.css'
 import { Empty } from '../AssetSelection'
 import { formatDuration, intervalToDuration } from 'date-fns'
 import { useMarketMetadata } from '@context/MarketMetadata'
@@ -20,7 +21,7 @@ export default function ComputeEnvSelection({
 }): JSX.Element {
   const { approvedBaseTokens } = useMarketMetadata()
   const styleClassesWrapper = `${styles.selection} ${
-    disabled ? styles.disabled : ''
+    disabled ? assetSelectionStyles.disabled : ''
   }`
 
   return (
@@ -35,23 +36,27 @@ export default function ComputeEnvSelection({
             <div className={styles.row} key={env.id}>
               <input
                 id={slugify(env.id)}
-                className={`${styles.input} ${styles.radio}`}
+                className={`${assetSelectionStyles.input} ${assetSelectionStyles.radio}`}
                 {...props}
                 type="radio"
                 value={env.id}
               />
               <label
-                className={styles.label}
+                className={assetSelectionStyles.label}
                 htmlFor={slugify(env.id)}
                 title={env.id}
               >
-                <h3 className={styles.title}>
+                <h3 className={assetSelectionStyles.title}>
                   <Dotdotdot clamp={1} tagName="span">
                     {env.id}
                   </Dotdotdot>
                   <Tooltip content={<ComputeEnvDetails computeEnv={env} />} />
                 </h3>
-                <Dotdotdot clamp={1} tagName="code" className={styles.details}>
+                <Dotdotdot
+                  clamp={1}
+                  tagName="code"
+                  className={assetSelectionStyles.details}
+                >
                   {env?.cpuNumber > 0 && 'CPU | '}
                   {env?.gpuNumber > 0 && 'GPU | '}
                   {'max duration: '}
@@ -65,7 +70,7 @@ export default function ComputeEnvSelection({
                 <PriceUnit
                   price={env.priceMin}
                   size="small"
-                  className={styles.price}
+                  className={assetSelectionStyles.price}
                   symbol={`${
                     approvedBaseTokens.find(
                       (token) =>

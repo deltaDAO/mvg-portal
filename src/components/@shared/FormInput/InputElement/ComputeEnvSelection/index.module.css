@@ -4,10 +4,6 @@
   min-height: 150px;
 }
 
-.disabled {
-  composes: disabled from '../AssetSelection/index.module.css';
-}
-
 .selection [class*='loaderWrap'] {
   margin: calc(var(--spacer) / 3);
 }
@@ -25,43 +21,4 @@
 
 .row:last-child {
   border-bottom: none;
-}
-
-.label {
-  composes: label from '../AssetSelection/index.module.css';
-}
-
-.input {
-  composes: input from '../AssetSelection/index.module.css';
-}
-
-.radio {
-  composes: radio from '@shared/FormInput/InputElement/Radio/index.module.css';
-}
-
-.titleContainer {
-}
-
-.title {
-  composes: title from '../AssetSelection/index.module.css';
-}
-
-/* .link {
-  display: inline-block;
-  margin-left: calc(var(--spacer) / 8);
-}
-
-.link svg {
-  margin: 0;
-  fill: var(--link-font-color);
-  width: 0.7em;
-  height: 0.7em;
-} */
-
-.price {
-  composes: price from '../AssetSelection/index.module.css';
-}
-
-.details {
-  composes: did from '../AssetSelection/index.module.css';
 }
