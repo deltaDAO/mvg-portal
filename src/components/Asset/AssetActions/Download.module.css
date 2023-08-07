@@ -9,6 +9,10 @@
   width: auto;
 }
 
+.priceWrapper > div {
+  justify-content: flex-start;
+}
+
 .filewrapper {
   flex-shrink: 0;
 }

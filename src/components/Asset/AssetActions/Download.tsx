@@ -216,7 +216,7 @@ export default function Download({
                 text={`No pricing schema available for this asset.`}
               />
             ) : (
-              <>
+              <div className={styles.priceWrapper}>
                 {isPriceLoading ? (
                   <Loader message="Calculating full price (including fees)" />
                 ) : (
@@ -228,7 +228,7 @@ export default function Download({
                 )}
 
                 {!isInPurgatory && <PurchaseButton />}
-              </>
+              </div>
             )}
           </>
         )}
