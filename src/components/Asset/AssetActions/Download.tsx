@@ -4,7 +4,7 @@ import Price from '@shared/Price'
 import { useAsset } from '@context/Asset'
 import { useWeb3 } from '@context/Web3'
 import ButtonBuy from './ButtonBuy'
-import { secondsToString } from '@utils/ddo'
+import { isAddressWhitelisted, secondsToString } from '@utils/ddo'
 import AlgorithmDatasetsListForCompute from './Compute/AlgorithmDatasetsListForCompute'
 import styles from './Download.module.css'
 import { FileInfo, LoggerInstance, ZERO_ADDRESS } from '@oceanprotocol/lib'
@@ -17,6 +17,7 @@ import { useIsMounted } from '@hooks/useIsMounted'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import Alert from '@shared/atoms/Alert'
 import Loader from '@shared/atoms/Loader'
+import WhitelistIndicator from './Compute/WhitelistIndicator'
 
 export default function Download({
   asset,
@@ -113,16 +114,20 @@ export default function Download({
      * - if the user is on the wrong network
      * - if user balance is not sufficient
      * - if user has no datatokens
+     * - if user is not whitelisted or blacklisted
      */
     const isDisabled =
       !asset?.accessDetails.isPurchasable ||
       !isAssetNetwork ||
-      ((!isBalanceSufficient || !isAssetNetwork) && !isOwned && !hasDatatoken)
+      ((!isBalanceSufficient || !isAssetNetwork) &&
+        !isOwned &&
+        !hasDatatoken) ||
+      !isAddressWhitelisted(asset, accountId)
 
     setIsDisabled(isDisabled)
   }, [
     isMounted,
-    asset?.accessDetails,
+    asset,
     isBalanceSufficient,
     isAssetNetwork,
     hasDatatoken,
@@ -239,11 +244,16 @@ export default function Download({
         </div>
         <AssetAction asset={asset} />
       </div>
-
       {asset?.metadata?.type === 'algorithm' && (
         <AlgorithmDatasetsListForCompute
           algorithmDid={asset.id}
           asset={asset}
+        />
+      )}
+      {accountId && (
+        <WhitelistIndicator
+          accountId={accountId}
+          isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
         />
       )}
     </aside>

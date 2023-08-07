@@ -188,3 +188,37 @@ export function previewDebugPatch(
 
   return buildValuesPreview
 }
+
+export function isAddressWhitelisted(
+  ddo: AssetExtended,
+  accountId: string
+): boolean {
+  if (!ddo || !accountId) return false
+
+  // All addresses can access
+  if (!ddo.credentials) return true
+
+  const { credentials } = ddo
+
+  const isAddressWhitelisted =
+    credentials.allow?.length === 0 ||
+    credentials.allow?.some((credential) => {
+      if (credential.type === 'address') {
+        return credential.values.some((address) => address === accountId)
+      }
+
+      return true
+    })
+
+  const isAddressBlacklisted =
+    credentials.deny?.length > 0 &&
+    credentials.deny?.some((credential) => {
+      if (credential.type === 'address') {
+        return credential.values.some((address) => address === accountId)
+      }
+
+      return false
+    })
+
+  return isAddressWhitelisted && !isAddressBlacklisted
+}

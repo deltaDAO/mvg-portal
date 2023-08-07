@@ -9,8 +9,6 @@
   .container {
     padding-left: var(--spacer);
     padding-right: var(--spacer);
-    margin-left: calc(-1 * var(--spacer));
-    margin-right: calc(-1 * var(--spacer));
   }
 }
 
@@ -19,10 +17,6 @@
 
   border-top: 1px solid var(--border-color);
   position: relative;
-}
-
-.section.highlight {
-  background: var(--background-highlight);
 }
 
 .section:first-child {
@@ -34,7 +28,6 @@
   composes: section;
   margin-top: calc(var(--spacer) / 1.5);
   padding: calc(var(--spacer) / 1.5);
-  background: var(--background-highlight);
   margin-bottom: -1rem;
 }
 
