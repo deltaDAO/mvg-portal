@@ -25,32 +25,28 @@
       "name": "Ecosystem",
       "subItems": [
         {
+          "name": "Clinical Insights Exchange",
+          "link": "https://cix.triall.io/"
+        },
+        {
+          "name": "EnergySHR",
+          "link": "https://www.energyshr.nl/"
+        },
+        {
           "name": "EuProGigant",
-          "link": "https://euprogigant.portal.minimal-gaia-x.eu"
+          "link": "https://portal.euprogigant.io/"
         },
         {
-          "name": "moveID",
-          "link": "https://portal.moveid.eu"
+          "name": "Future Mobility Marketplace",
+          "link": "https://marketplace.future-mobility-alliance.org/"
         },
         {
-          "name": "Future Mobility",
-          "link": "https://marketplace.future-mobility-alliance.org"
+          "name": "GX4M moveID",
+          "link": "https://portal.moveid.eu/"
         },
         {
-          "name": "PEAQ",
-          "link": "https://gaia-x.portal.peaq.network/"
-        },
-        {
-          "name": "Berlin State Library",
-          "link": "https://sbb.portal.minimal-gaia-x.eu/"
-        },
-        {
-          "name": "Universitat de Lleida",
-          "link": "https://udl.portal.minimal-gaia-x.eu/"
-        },
-        {
-          "name": "Oval",
-          "link": "https://oval.pepro.io/"
+          "name": "UdL Research Data Space",
+          "link": "https://dataspace.angliru.udl.cat/"
         }
       ]
     }
