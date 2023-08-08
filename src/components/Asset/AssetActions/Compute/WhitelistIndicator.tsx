@@ -1,5 +1,6 @@
 import React from 'react'
 import { Badge } from '@components/@shared/VerifiedBadge'
+import { accountTruncate } from '@utils/web3'
 import styles from './WhitelistIndicator.module.css'
 
 export default function WhitelistIndicator({
@@ -20,7 +21,9 @@ export default function WhitelistIndicator({
       />
       {!isAccountIdWhitelisted && (
         <p className={styles.invalidAddressMessage}>
-          {`The address ${accountId} is not allowed to access this asset. Please, connect with a different account and try again.`}
+          {`The address ${accountTruncate(
+            accountId
+          )} is not allowed to access this asset. Please, connect with a different account and try again.`}
         </p>
       )}
     </div>
