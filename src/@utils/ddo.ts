@@ -201,6 +201,7 @@ export function isAddressWhitelisted(
   const { credentials } = ddo
 
   const isAddressWhitelisted =
+    !credentials.allow ||
     credentials.allow?.length === 0 ||
     credentials.allow?.some((credential) => {
       if (credential.type === 'address') {
