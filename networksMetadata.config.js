@@ -21,7 +21,7 @@ const networksMetadata = [
     explorers: [
       {
         name: 'Exchange Logging Service',
-        url: 'https://logging.genx.minimal-gaia-x.eu/',
+        url: 'https://explorer.pontus-x.eu',
         standard: ''
       }
     ]

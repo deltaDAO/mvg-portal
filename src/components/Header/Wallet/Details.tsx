@@ -9,6 +9,8 @@ import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
 import AddTokenList from './AddTokenList'
 import ExternalContent from '../UserPreferences/ExternalContent'
+import { GEN_X_NETWORK_ID } from 'chains.config'
+import AddNetwork from '@components/@shared/AddNetwork'
 
 export default function Details(): ReactElement {
   const { accountId, web3ProviderInfo, web3Modal, connect, logout } = useWeb3()
@@ -39,6 +41,10 @@ export default function Details(): ReactElement {
               <img className={styles.walletLogo} src={web3ProviderInfo?.logo} />
               {web3ProviderInfo?.name}
             </span>
+            <AddNetwork
+              chainId={GEN_X_NETWORK_ID}
+              networkName="GEN-X Testnet"
+            />
             {web3ProviderInfo?.name === 'MetaMask' && <AddTokenList />}
           </div>
           <p>
