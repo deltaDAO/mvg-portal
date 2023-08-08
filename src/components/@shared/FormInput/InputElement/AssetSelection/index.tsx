@@ -11,12 +11,13 @@ export interface AssetSelectionAsset {
   did: string
   name: string
   price: number
+  tokenSymbol: string
   checked: boolean
   symbol: string
 }
 
-function Empty() {
-  return <div className={styles.empty}>No assets found.</div>
+export function Empty({ message }: { message: string }) {
+  return <div className={styles.empty}>{message}</div>
 }
 
 export default function AssetSelection({
@@ -58,7 +59,7 @@ export default function AssetSelection({
         {!assets ? (
           <Loader />
         ) : assets && !assets.length ? (
-          <Empty />
+          <Empty message="No assets found." />
         ) : (
           assets
             .filter((asset: AssetSelectionAsset) =>
@@ -103,13 +104,13 @@ export default function AssetSelection({
                   <Dotdotdot clamp={1} tagName="code" className={styles.did}>
                     {asset.symbol} | {asset.did}
                   </Dotdotdot>
+                  <PriceUnit
+                    price={asset.price}
+                    size="small"
+                    className={styles.price}
+                    symbol={asset.tokenSymbol}
+                  />
                 </label>
-
-                <PriceUnit
-                  price={asset.price}
-                  size="small"
-                  className={styles.price}
-                />
               </div>
             ))
         )}
