@@ -5,6 +5,7 @@ import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelecti
 import AssetComputeList from './AssetComputeList'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { getServiceByName } from '@utils/ddo'
+import { useWeb3 } from '@context/Web3'
 
 export default function AlgorithmDatasetsListForCompute({
   asset,
@@ -13,6 +14,7 @@ export default function AlgorithmDatasetsListForCompute({
   asset: AssetExtended
   algorithmDid: string
 }): ReactElement {
+  const { accountId } = useWeb3()
   const newCancelToken = useCancelToken()
   const [datasetsForCompute, setDatasetsForCompute] =
     useState<AssetSelectionAsset[]>()
@@ -29,13 +31,14 @@ export default function AlgorithmDatasetsListForCompute({
       const datasets = await getAlgorithmDatasetsForCompute(
         algorithmDid,
         datasetComputeService?.serviceEndpoint,
+        accountId,
         asset?.chainId,
         newCancelToken()
       )
       setDatasetsForCompute(datasets)
     }
     asset.metadata.type === 'algorithm' && getDatasetsAllowedForCompute()
-  }, [asset, algorithmDid, newCancelToken])
+  }, [accountId, asset, algorithmDid, newCancelToken])
 
   return (
     <div className={styles.datasetsContainer}>

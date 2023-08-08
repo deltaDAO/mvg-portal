@@ -1,17 +1,27 @@
 import React from 'react'
 import { Badge } from '@components/@shared/VerifiedBadge'
 import { accountTruncate } from '@utils/web3'
+import classNames from 'classnames/bind'
 import styles from './WhitelistIndicator.module.css'
+
+const cx = classNames.bind(styles)
 
 export default function WhitelistIndicator({
   accountId,
-  isAccountIdWhitelisted
+  isAccountIdWhitelisted,
+  minimal
 }: {
   accountId: string
   isAccountIdWhitelisted: boolean
+  minimal?: boolean
 }) {
+  const styleClasses = cx({
+    container: true,
+    minimal
+  })
+
   return (
-    <div className={styles.container}>
+    <div className={styleClasses}>
       <Badge
         isValid={isAccountIdWhitelisted}
         verifiedService={

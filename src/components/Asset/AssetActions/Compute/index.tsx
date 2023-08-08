@@ -290,13 +290,13 @@ export default function Compute({
 
     getAlgorithmsForAsset(asset, newCancelToken()).then((algorithmsAssets) => {
       setDdoAlgorithmList(algorithmsAssets)
-      getAlgorithmAssetSelectionList(asset, algorithmsAssets).then(
+      getAlgorithmAssetSelectionList(asset, algorithmsAssets, accountId).then(
         (algorithmSelectionList) => {
           setAlgorithmList(algorithmSelectionList)
         }
       )
     })
-  }, [asset, isUnsupportedPricing])
+  }, [accountId, asset, isUnsupportedPricing])
 
   const fetchJobs = useCallback(
     async (type: string) => {

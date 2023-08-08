@@ -209,7 +209,8 @@ export async function getAlgorithmsForAsset(
 
 export async function getAlgorithmAssetSelectionList(
   asset: Asset,
-  algorithms: Asset[]
+  algorithms: Asset[],
+  accountId: string
 ): Promise<AssetSelectionAsset[]> {
   if (!algorithms || algorithms?.length === 0) return []
 
@@ -221,6 +222,7 @@ export async function getAlgorithmAssetSelectionList(
     algorithmSelectionList = await transformAssetToAssetSelection(
       computeService?.serviceEndpoint,
       algorithms,
+      accountId,
       []
     )
   }
