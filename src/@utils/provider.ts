@@ -15,6 +15,8 @@ import {
   AbiItem,
   getErrorMessage
 } from '@oceanprotocol/lib'
+// if customProviderUrl is set, we need to call provider using this custom endpoint
+import { customProviderUrl } from '../../app.config'
 import { QueryHeader } from '@shared/FormInput/InputElement/Headers'
 import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
@@ -50,7 +52,7 @@ export async function initializeProviderForCompute(
       computeAlgo,
       computeEnv?.id,
       validUntil,
-      dataset.services[0].serviceEndpoint,
+      customProviderUrl || dataset.services[0].serviceEndpoint,
       accountId
     )
   } catch (error) {
@@ -69,7 +71,11 @@ export async function getEncryptedFiles(
 ): Promise<string> {
   try {
     // https://github.com/oceanprotocol/provider/blob/v4main/API.md#encrypt-endpoint
-    const response = await ProviderInstance.encrypt(files, chainId, providerUrl)
+    const response = await ProviderInstance.encrypt(
+      files,
+      chainId,
+      customProviderUrl || providerUrl
+    )
     return response
   } catch (error) {
     const message = getErrorMessage(JSON.parse(error.message))
@@ -88,7 +94,7 @@ export async function getFileDidInfo(
     const response = await ProviderInstance.checkDidFiles(
       did,
       serviceId,
-      providerUrl,
+      customProviderUrl || providerUrl,
       withChecksum
     )
     return response
@@ -128,7 +134,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileIPFS,
-          providerUrl,
+          customProviderUrl || providerUrl,
           withChecksum
         )
       } catch (error) {
@@ -146,7 +152,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileArweave,
-          providerUrl,
+          customProviderUrl || providerUrl,
           withChecksum
         )
       } catch (error) {
@@ -164,7 +170,10 @@ export async function getFileInfo(
         query
       }
       try {
-        response = await ProviderInstance.getFileInfo(fileGraphql, providerUrl)
+        response = await ProviderInstance.getFileInfo(
+          fileGraphql,
+          customProviderUrl || providerUrl
+        )
       } catch (error) {
         const message = getErrorMessage(JSON.parse(error.message))
         LoggerInstance.error('[Provider Get File info] Error:', message)
@@ -183,7 +192,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileSmartContract,
-          providerUrl
+          customProviderUrl || providerUrl
         )
       } catch (error) {
         const message = getErrorMessage(JSON.parse(error.message))
@@ -203,7 +212,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileUrl,
-          providerUrl,
+          customProviderUrl || providerUrl,
           withChecksum
         )
       } catch (error) {
@@ -230,7 +239,7 @@ export async function downloadFile(
       asset.services[0].id,
       0,
       validOrderTx || asset.accessDetails.validOrderTx,
-      asset.services[0].serviceEndpoint,
+      customProviderUrl || asset.services[0].serviceEndpoint,
       signer
     )
   } catch (error) {
