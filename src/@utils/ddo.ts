@@ -205,7 +205,9 @@ export function isAddressWhitelisted(
     credentials.allow?.length === 0 ||
     credentials.allow?.some((credential) => {
       if (credential.type === 'address') {
-        return credential.values.some((address) => address === accountId)
+        return credential.values.some(
+          (address) => address.toLowerCase() === accountId.toLowerCase()
+        )
       }
 
       return true
@@ -215,7 +217,9 @@ export function isAddressWhitelisted(
     credentials.deny?.length > 0 &&
     credentials.deny?.some((credential) => {
       if (credential.type === 'address') {
-        return credential.values.some((address) => address === accountId)
+        return credential.values.some(
+          (address) => address.toLowerCase() === accountId.toLowerCase()
+        )
       }
 
       return false

@@ -4,7 +4,7 @@ import Price from '@shared/Price'
 import { useAsset } from '@context/Asset'
 import { useWeb3 } from '@context/Web3'
 import ButtonBuy from './ButtonBuy'
-import { isAddressWhitelisted, secondsToString } from '@utils/ddo'
+import { secondsToString } from '@utils/ddo'
 import AlgorithmDatasetsListForCompute from './Compute/AlgorithmDatasetsListForCompute'
 import styles from './Download.module.css'
 import { FileInfo, LoggerInstance, ZERO_ADDRESS } from '@oceanprotocol/lib'
@@ -24,6 +24,7 @@ export default function Download({
   file,
   isBalanceSufficient,
   dtBalance,
+  isAccountIdWhitelisted,
   fileIsLoading,
   consumableFeedback
 }: {
@@ -31,10 +32,12 @@ export default function Download({
   file: FileInfo
   isBalanceSufficient: boolean
   dtBalance: string
+  isAccountIdWhitelisted: boolean
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
   const { accountId, web3, isSupportedOceanNetwork } = useWeb3()
+
   const { getOpcFeeForToken } = useMarketMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
   const isMounted = useIsMounted()
@@ -122,7 +125,7 @@ export default function Download({
       ((!isBalanceSufficient || !isAssetNetwork) &&
         !isOwned &&
         !hasDatatoken) ||
-      !isAddressWhitelisted(asset, accountId)
+      !isAccountIdWhitelisted
 
     setIsDisabled(isDisabled)
   }, [
@@ -134,7 +137,8 @@ export default function Download({
     accountId,
     isOwned,
     isUnsupportedPricing,
-    orderPriceAndFees
+    orderPriceAndFees,
+    isAccountIdWhitelisted
   ])
 
   async function handleOrderOrDownload() {
@@ -253,7 +257,7 @@ export default function Download({
       {accountId && (
         <WhitelistIndicator
           accountId={accountId}
-          isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
         />
       )}
     </aside>

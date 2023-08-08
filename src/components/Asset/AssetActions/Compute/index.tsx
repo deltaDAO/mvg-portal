@@ -26,11 +26,7 @@ import { getInitialValues, validationSchema } from './_constants'
 import FormStartComputeDataset from './FormComputeDataset'
 import styles from './index.module.css'
 import SuccessConfetti from '@shared/SuccessConfetti'
-import {
-  getServiceByName,
-  isAddressWhitelisted,
-  secondsToString
-} from '@utils/ddo'
+import { getServiceByName, secondsToString } from '@utils/ddo'
 import {
   isOrderable,
   getAlgorithmAssetSelectionList,
@@ -59,16 +55,18 @@ export default function Compute({
   asset,
   dtBalance,
   file,
+  isAccountIdWhitelisted,
   fileIsLoading,
   consumableFeedback
 }: {
   asset: AssetExtended
   dtBalance: string
   file: FileInfo
+  isAccountIdWhitelisted: boolean
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
-  const { accountId, web3, isSupportedOceanNetwork, networkId } = useWeb3()
+  const { accountId, web3, isSupportedOceanNetwork } = useWeb3()
   const { chainIds } = useUserPreferences()
   const { isAssetNetwork } = useAsset()
 
@@ -504,7 +502,7 @@ export default function Compute({
             assetTimeout={secondsToString(asset?.services[0].timeout)}
             hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
             hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
-            isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
             datasetSymbol={
               asset?.accessDetails?.baseToken?.symbol ||
               (asset?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
@@ -543,7 +541,7 @@ export default function Compute({
       {accountId && (
         <WhitelistIndicator
           accountId={accountId}
-          isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
         />
       )}
       {accountId && asset?.accessDetails?.datatoken && (
