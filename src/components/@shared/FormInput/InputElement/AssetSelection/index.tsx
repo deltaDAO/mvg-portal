@@ -17,7 +17,7 @@ export interface AssetSelectionAsset {
   price: number
   checked: boolean
   symbol: string
-  isAccountWhitelisted: boolean
+  isAccountIdWhitelisted: boolean
 }
 
 function Empty() {
@@ -85,7 +85,7 @@ export default function AssetSelection({
                   {...props}
                   defaultChecked={asset.checked}
                   type={multiple ? 'checkbox' : 'radio'}
-                  disabled={disabled || !asset.isAccountWhitelisted}
+                  disabled={disabled || !asset.isAccountIdWhitelisted}
                   value={asset.did}
                 />
                 <label
@@ -97,7 +97,9 @@ export default function AssetSelection({
                     <Dotdotdot
                       clamp={1}
                       tagName="span"
-                      className={!asset.isAccountWhitelisted && styles.disabled}
+                      className={
+                        !asset.isAccountIdWhitelisted && styles.disabled
+                      }
                     >
                       {asset.name}
                     </Dotdotdot>
@@ -115,12 +117,12 @@ export default function AssetSelection({
                     clamp={1}
                     tagName="code"
                     className={`${styles.did} ${
-                      !asset.isAccountWhitelisted && styles.disabled
+                      !asset.isAccountIdWhitelisted && styles.disabled
                     }`}
                   >
                     {asset.symbol} | {asset.did}
                   </Dotdotdot>
-                  {!asset.isAccountWhitelisted && (
+                  {!asset.isAccountIdWhitelisted && (
                     <Tooltip
                       content={
                         <WhitelistIndicator
@@ -139,7 +141,7 @@ export default function AssetSelection({
                   price={asset.price}
                   size="small"
                   className={`${styles.price} ${
-                    !asset.isAccountWhitelisted && styles.disabled
+                    !asset.isAccountIdWhitelisted && styles.disabled
                   }`}
                 />
               </div>

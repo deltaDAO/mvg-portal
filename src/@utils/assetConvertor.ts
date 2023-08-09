@@ -30,7 +30,7 @@ export async function transformAssetToAssetSelection(
         price: asset.stats.price.value,
         checked: selected,
         symbol: asset.datatokens[0].symbol,
-        isAccountWhitelisted: isAddressWhitelisted(asset, accountId)
+        isAccountIdWhitelisted: isAddressWhitelisted(asset, accountId)
       }
       selected
         ? algorithmList.unshift(algorithmAsset)

@@ -62,7 +62,7 @@ describe('@shared/FormInput', () => {
         price: 10,
         checked: false,
         symbol: 'OCEAN',
-        isAccountWhitelisted: true
+        isAccountIdWhitelisted: true
       },
       {
         did: 'did:op:yyy',
@@ -70,7 +70,7 @@ describe('@shared/FormInput', () => {
         price: 10,
         checked: true,
         symbol: 'OCEAN',
-        isAccountWhitelisted: true
+        isAccountIdWhitelisted: true
       }
     ]
     render(<FormInput type="assetSelection" options={assets} />)
