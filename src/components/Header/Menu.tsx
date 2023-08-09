@@ -10,6 +10,7 @@ import classNames from 'classnames/bind'
 import MenuDropdown from '@components/@shared/MenuDropdown'
 import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
+import UserPreferences from './UserPreferences'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -68,6 +69,7 @@ export default function Menu(): ReactElement {
         <SearchButton />
         {appConfig.chainIdsSupported.length > 1 && <Networks />}
         <Wallet />
+        <UserPreferences />
       </div>
     </nav>
   )

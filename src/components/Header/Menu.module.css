@@ -36,7 +36,7 @@
   margin-left: auto;
 }
 
-@media screen and (min-width: 60rem) {
+@media screen and (min-width: 65rem) {
   .navigation {
     order: 2;
     width: auto;
@@ -50,7 +50,7 @@
   }
 }
 
-@media screen and (min-width: 60rem) {
+@media screen and (min-width: 65rem) {
   .menu {
     padding: calc(var(--spacer) / 1.5);
   }
@@ -157,7 +157,7 @@ svg.caret {
   transform: rotate(180deg);
 }
 
-@media screen and (min-width: 60rem) {
+@media screen and (min-width: 65rem) {
   .caret,
   svg.caret {
     display: inline-block;

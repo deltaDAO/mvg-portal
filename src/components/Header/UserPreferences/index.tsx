@@ -4,26 +4,22 @@ import Cog from '@images/cog.svg'
 import styles from './index.module.css'
 import Debug from './Debug'
 import Caret from '@images/caret.svg'
-import useDarkMode from '@oceanprotocol/use-dark-mode'
-import Appearance from './Appearance'
-import { useMarketMetadata } from '@context/MarketMetadata'
+import ExternalContent from './ExternalContent'
 
 export default function UserPreferences(): ReactElement {
-  const { appConfig } = useMarketMetadata()
-  // Calling this here because <Style /> is not mounted on first load
-  const darkMode = useDarkMode(false, appConfig?.darkModeConfig)
-
   return (
     <Tooltip
       content={
         <ul className={styles.preferencesDetails}>
-          <Appearance darkMode={darkMode} />
+          <li>
+            <ExternalContent />
+          </li>
           <li>
             <Debug />
           </li>
         </ul>
       }
-      trigger="click focus"
+      trigger="click focus mouseenter"
       className={styles.preferences}
     >
       <>

@@ -3,12 +3,10 @@ import Button from '@shared/atoms/Button'
 import { useWeb3 } from '@context/Web3'
 // import { useOrbis } from '@context/DirectMessages'
 import styles from './Details.module.css'
-import Debug from '../UserPreferences/Debug'
 import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
 import AddTokenList from './AddTokenList'
-import ExternalContent from '../UserPreferences/ExternalContent'
 import { GEN_X_NETWORK_ID } from 'chains.config'
 import AddNetwork from '@components/@shared/AddNetwork'
 
@@ -71,12 +69,6 @@ export default function Details(): ReactElement {
               Disconnect
             </Button>
           </p>
-        </li>
-        <li className={styles.externalContent}>
-          <ExternalContent />
-        </li>
-        <li className={styles.debug}>
-          <Debug />
         </li>
       </ul>
     </div>
