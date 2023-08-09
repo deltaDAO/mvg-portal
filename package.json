@@ -3,7 +3,7 @@
   "description": "Pontus-X - Gaia-X Web3 Ecosystem",
   "version": "1.0.0",
   "license": "Apache-2.0",
-  "homepage": "https://minimal-gaia-x.eu",
+  "homepage": "https://pontus-x.eu",
   "scripts": {
     "start": "npm run pregenerate && next dev -p 8000",
     "build": "npm run pregenerate && next build",
@@ -130,7 +130,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/oceanprotocol/market"
+    "url": "https://github.com/deltaDAO/mvg-portal"
   },
   "engines": {
     "node": "18"
