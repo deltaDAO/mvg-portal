@@ -18,9 +18,11 @@ import { transformAssetToAssetSelection } from '@utils/assetConvertor'
 import { ComputeEditForm } from './_types'
 import content from '../../../../content/pages/editComputeDataset.json'
 import { getFieldContent } from '@utils/form'
+import { useWeb3 } from '@context/Web3'
 
 export default function FormEditComputeDataset(): ReactElement {
   const { asset } = useAsset()
+  const { accountId } = useWeb3()
   const { values }: FormikContextType<ComputeEditForm> = useFormikContext()
   const newCancelToken = useCancelToken()
 
@@ -42,11 +44,12 @@ export default function FormEditComputeDataset(): ReactElement {
       const algorithmSelectionList = await transformAssetToAssetSelection(
         datasetComputeService?.serviceEndpoint,
         queryResult?.results,
+        accountId,
         publisherTrustedAlgorithms
       )
       return algorithmSelectionList
     },
-    [asset, newCancelToken]
+    [accountId, asset, newCancelToken]
   )
 
   useEffect(() => {

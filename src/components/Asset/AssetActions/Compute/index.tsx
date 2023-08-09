@@ -48,22 +48,25 @@ import { getDummyWeb3 } from '@utils/web3'
 import { initializeProviderForCompute } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useAsset } from '@context/Asset'
+import WhitelistIndicator from './WhitelistIndicator'
 
 const refreshInterval = 10000 // 10 sec.
 export default function Compute({
   asset,
   dtBalance,
   file,
+  isAccountIdWhitelisted,
   fileIsLoading,
   consumableFeedback
 }: {
   asset: AssetExtended
   dtBalance: string
   file: FileInfo
+  isAccountIdWhitelisted: boolean
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
-  const { accountId, web3, isSupportedOceanNetwork, networkId } = useWeb3()
+  const { accountId, web3, isSupportedOceanNetwork } = useWeb3()
   const { chainIds } = useUserPreferences()
   const { isAssetNetwork } = useAsset()
 
@@ -285,13 +288,13 @@ export default function Compute({
 
     getAlgorithmsForAsset(asset, newCancelToken()).then((algorithmsAssets) => {
       setDdoAlgorithmList(algorithmsAssets)
-      getAlgorithmAssetSelectionList(asset, algorithmsAssets).then(
+      getAlgorithmAssetSelectionList(asset, algorithmsAssets, accountId).then(
         (algorithmSelectionList) => {
           setAlgorithmList(algorithmSelectionList)
         }
       )
     })
-  }, [asset, isUnsupportedPricing])
+  }, [accountId, asset, isUnsupportedPricing])
 
   const fetchJobs = useCallback(
     async (type: string) => {
@@ -499,6 +502,7 @@ export default function Compute({
             assetTimeout={secondsToString(asset?.services[0].timeout)}
             hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
             hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
             datasetSymbol={
               asset?.accessDetails?.baseToken?.symbol ||
               (asset?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
@@ -534,6 +538,12 @@ export default function Compute({
           <SuccessConfetti success="Your job started successfully! Watch the progress below or on your profile." />
         )}
       </footer>
+      {accountId && (
+        <WhitelistIndicator
+          accountId={accountId}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
+        />
+      )}
       {accountId && asset?.accessDetails?.datatoken && (
         <ComputeHistory
           title="Your Compute Jobs"

@@ -5,6 +5,10 @@ import PriceUnit from '@shared/Price/PriceUnit'
 import External from '@images/external.svg'
 import InputElement from '@shared/FormInput/InputElement'
 import Loader from '@shared/atoms/Loader'
+import Tooltip from '@components/@shared/atoms/Tooltip'
+import WhitelistIndicator from '@components/Asset/AssetActions/Compute/WhitelistIndicator'
+import { useWeb3 } from '@context/Web3'
+import { Badge } from '@components/@shared/VerifiedBadge'
 import styles from './index.module.css'
 
 export interface AssetSelectionAsset {
@@ -13,6 +17,7 @@ export interface AssetSelectionAsset {
   price: number
   checked: boolean
   symbol: string
+  isAccountIdWhitelisted: boolean
 }
 
 function Empty() {
@@ -29,6 +34,8 @@ export default function AssetSelection({
   multiple?: boolean
   disabled?: boolean
 }): JSX.Element {
+  const { accountId } = useWeb3()
+
   const [searchValue, setSearchValue] = useState('')
 
   const styleClassesWrapper = `${styles.selection} ${
@@ -78,7 +85,7 @@ export default function AssetSelection({
                   {...props}
                   defaultChecked={asset.checked}
                   type={multiple ? 'checkbox' : 'radio'}
-                  disabled={disabled}
+                  disabled={disabled || !asset.isAccountIdWhitelisted}
                   value={asset.did}
                 />
                 <label
@@ -87,7 +94,13 @@ export default function AssetSelection({
                   title={asset.name}
                 >
                   <h3 className={styles.title}>
-                    <Dotdotdot clamp={1} tagName="span">
+                    <Dotdotdot
+                      clamp={1}
+                      tagName="span"
+                      className={
+                        !asset.isAccountIdWhitelisted && styles.disabled
+                      }
+                    >
                       {asset.name}
                     </Dotdotdot>
                     <a
@@ -100,15 +113,36 @@ export default function AssetSelection({
                     </a>
                   </h3>
 
-                  <Dotdotdot clamp={1} tagName="code" className={styles.did}>
+                  <Dotdotdot
+                    clamp={1}
+                    tagName="code"
+                    className={`${styles.did} ${
+                      !asset.isAccountIdWhitelisted && styles.disabled
+                    }`}
+                  >
                     {asset.symbol} | {asset.did}
                   </Dotdotdot>
+                  {!asset.isAccountIdWhitelisted && (
+                    <Tooltip
+                      content={
+                        <WhitelistIndicator
+                          accountId={accountId}
+                          isAccountIdWhitelisted={false}
+                          minimal
+                        />
+                      }
+                    >
+                      <Badge isValid={false} verifiedService="Access denied" />
+                    </Tooltip>
+                  )}
                 </label>
 
                 <PriceUnit
                   price={asset.price}
                   size="small"
-                  className={styles.price}
+                  className={`${styles.price} ${
+                    !asset.isAccountIdWhitelisted && styles.disabled
+                  }`}
                 />
               </div>
             ))

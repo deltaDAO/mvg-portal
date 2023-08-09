@@ -8,18 +8,21 @@ import Time from '../atoms/Time'
 
 const cx = classNames.bind(styles)
 
-function Badge({
+export function Badge({
   isValid,
-  verifiedService
+  verifiedService,
+  className
 }: {
   isValid: boolean
   verifiedService: string
+  className?: string
 }): ReactElement {
   return (
     <div
       className={cx({
         mainLabel: true,
-        isValid
+        isValid,
+        [className]: className
       })}
     >
       <span>{verifiedService}</span>

@@ -7,7 +7,10 @@
 .info {
   display: flex;
   width: auto;
-  padding: 0 calc(var(--spacer) / 2) 0 calc(var(--spacer) * 1.5);
+}
+
+.priceWrapper > div {
+  justify-content: flex-start;
 }
 
 .filewrapper {

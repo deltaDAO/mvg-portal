@@ -1,0 +1,24 @@
+.container {
+  margin-top: calc(var(--spacer) / 1.5);
+  margin-bottom: -1rem;
+  margin-left: calc(-1 * var(--spacer) / 1.5);
+  margin-right: calc(-1 * var(--spacer) / 1.5);
+  padding: calc(var(--spacer) / 1.5);
+  border-top: 1px solid var(--border-color);
+}
+
+.minimal {
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+}
+
+.whitelistBadge {
+  align-items: flex-start;
+}
+
+.invalidAddressMessage {
+  composes: empty from '../../../@shared/atoms/Table/Empty.module.css';
+
+  margin-bottom: 0;
+}

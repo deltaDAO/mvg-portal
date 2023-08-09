@@ -14,6 +14,7 @@ import { useFormikContext } from 'formik'
 import { FormPublishData } from '@components/Publish/_types'
 import { getTokenBalanceFromSymbol } from '@utils/web3'
 import AssetStats from './AssetStats'
+import { isAddressWhitelisted } from '@utils/ddo'
 
 export default function AssetActions({
   asset
@@ -35,6 +36,9 @@ export default function AssetActions({
   const [dtBalance, setDtBalance] = useState<string>()
   const [fileMetadata, setFileMetadata] = useState<FileInfo>()
   const [fileIsLoading, setFileIsLoading] = useState<boolean>(false)
+  const [isAccountIdWhitelisted, setIsAccountIdWhitelisted] =
+    useState<boolean>()
+
   const isCompute = Boolean(
     asset?.services.filter((service) => service.type === 'compute')[0]
   )
@@ -142,12 +146,20 @@ export default function AssetActions({
     }
   }, [balance, accountId, asset?.accessDetails, dtBalance])
 
+  // check for if user is whitelisted or blacklisted
+  useEffect(() => {
+    if (!asset || !accountId) return
+
+    setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountId))
+  }, [accountId, asset])
+
   return (
     <div className={styles.actions}>
       {isCompute ? (
         <Compute
           asset={asset}
           dtBalance={dtBalance}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
           file={fileMetadata}
           fileIsLoading={fileIsLoading}
         />
@@ -156,6 +168,7 @@ export default function AssetActions({
           asset={asset}
           dtBalance={dtBalance}
           isBalanceSufficient={isBalanceSufficient}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
           file={fileMetadata}
           fileIsLoading={fileIsLoading}
         />

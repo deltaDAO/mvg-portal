@@ -1,10 +1,11 @@
 import { PublisherTrustedAlgorithm, Asset } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
-import { getServiceByName } from './ddo'
+import { getServiceByName, isAddressWhitelisted } from './ddo'
 
 export async function transformAssetToAssetSelection(
   datasetProviderEndpoint: string,
   assets: Asset[],
+  accountId: string,
   selectedAlgorithms?: PublisherTrustedAlgorithm[]
 ): Promise<AssetSelectionAsset[]> {
   const algorithmList: AssetSelectionAsset[] = []
@@ -28,7 +29,8 @@ export async function transformAssetToAssetSelection(
         name: asset.metadata.name,
         price: asset.stats.price.value,
         checked: selected,
-        symbol: asset.datatokens[0].symbol
+        symbol: asset.datatokens[0].symbol,
+        isAccountIdWhitelisted: isAddressWhitelisted(asset, accountId)
       }
       selected
         ? algorithmList.unshift(algorithmAsset)
