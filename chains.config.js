@@ -12,7 +12,7 @@ const chains = [
     nodeUri: 'https://rpc.genx.minimal-gaia-x.eu',
     providerUri: 'https://provider.v4.genx.delta-dao.com',
     subgraphUri: 'https://subgraph.v4.genx.minimal-gaia-x.eu',
-    explorerUri: 'https://logging.genx.minimal-gaia-x.eu',
+    explorerUri: 'https://explorer.pontus-x.eu',
     oceanTokenAddress: '0x0995527d3473b3a98c471f1ed8787acd77fbf009',
     oceanTokenSymbol: 'OCEAN',
     fixedRateExchangeAddress: '0xAD8E7d2aFf5F5ae7c2645a52110851914eE6664b',
