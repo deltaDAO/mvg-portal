@@ -234,17 +234,27 @@ async function getJobs(
   accountId: string,
   assets: Asset[]
 ): Promise<ComputeJobMetaData[]> {
+  const uniqueProviders = [...new Set(providerUrls)]
+  const providersComputeJobsExtended: ComputeJobExtended[] = []
   const computeJobs: ComputeJobMetaData[] = []
-  // commented loop since we decide how to filter jobs
-  // for await (const providerUrl of providerUrls) {
-  try {
-    const providerComputeJobs = (await ProviderInstance.computeStatus(
-      providerUrls[0],
-      accountId
-    )) as ComputeJob[]
 
-    if (providerComputeJobs) {
-      providerComputeJobs.sort((a, b) => {
+  try {
+    for (let i = 0; i < uniqueProviders.length; i++) {
+      const providerComputeJobs = (await ProviderInstance.computeStatus(
+        uniqueProviders[i],
+        accountId
+      )) as ComputeJob[]
+
+      providerComputeJobs.forEach((job) =>
+        providersComputeJobsExtended.push({
+          ...job,
+          providerUrl: uniqueProviders[i]
+        })
+      )
+    }
+
+    if (providersComputeJobsExtended) {
+      providersComputeJobsExtended.sort((a, b) => {
         if (a.dateCreated > b.dateCreated) {
           return -1
         }
@@ -254,7 +264,7 @@ async function getJobs(
         return 0
       })
 
-      providerComputeJobs.forEach((job) => {
+      providersComputeJobsExtended.forEach((job) => {
         const did = job.inputDID[0]
         const asset = assets.filter((x) => x.id === did)[0]
         if (asset) {
@@ -271,7 +281,6 @@ async function getJobs(
   } catch (err) {
     LoggerInstance.error(err.message)
   }
-  // }
   return computeJobs
 }
 
