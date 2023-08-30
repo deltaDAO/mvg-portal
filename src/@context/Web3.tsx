@@ -340,11 +340,9 @@ function Web3Provider({ children }: { children: ReactNode }): ReactElement {
   }
 
   async function handleAccountsChanged(accounts: string[]) {
-    LoggerInstance.log(
-      '[web3] Account changed',
-      Web3.utils.toChecksumAddress(accounts[0])
-    )
-    setAccountId(Web3.utils.toChecksumAddress(accounts[0]))
+    const checksumAddress = Web3.utils.toChecksumAddress(accounts[0])
+    LoggerInstance.log('[web3] Account changed', checksumAddress)
+    setAccountId(checksumAddress)
   }
 
   useEffect(() => {
