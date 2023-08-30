@@ -26,6 +26,10 @@ const columns: TableOceanColumn<ComputeJobMetaData>[] = [
     selector: (row) => <NetworkName networkId={row.networkId} />
   },
   {
+    name: 'Provider',
+    selector: (row) => <span title={row.providerUrl}>{row.providerUrl}</span>
+  },
+  {
     name: 'Created',
     selector: (row) => <Time date={row.dateCreated} isUnix relative />
   },
@@ -57,7 +61,7 @@ export default function ComputeJobs({
 }): ReactElement {
   const { accountId } = useWeb3()
   const { chainIds } = useUserPreferences()
-  const [columnsMinimal] = useState([columns[4], columns[5], columns[3]])
+  const [columnsMinimal] = useState([columns[5], columns[6], columns[4]])
 
   return accountId ? (
     <>
