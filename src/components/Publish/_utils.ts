@@ -408,8 +408,11 @@ export async function verifyRawServiceCredential(
       }
     }
     if (response?.status === 201) {
-      const credentialId =
-        parsedServiceCredential.verifiableCredential[0].credentialSubject.id
+      const serviceOffering = parsedServiceCredential.verifiableCredential.find(
+        (credential) =>
+          credential?.credentialSubject?.type === 'gx:ServiceOffering'
+      )
+      const credentialId = serviceOffering?.credentialSubject?.id
 
       return {
         verified: true,
