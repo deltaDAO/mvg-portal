@@ -231,21 +231,30 @@ export function isAddressWhitelisted(
 
   const { credentials } = ddo
 
-  const isAddressWhitelisted = credentials.allow?.some((credential) => {
-    if (credential.type === 'address') {
-      return credential.values.some((address) => address === accountId)
-    }
+  const isAddressWhitelisted =
+    !credentials.allow ||
+    credentials.allow?.length === 0 ||
+    credentials.allow?.some((credential) => {
+      if (credential.type === 'address') {
+        return credential.values.some(
+          (address) => address.toLowerCase() === accountId.toLowerCase()
+        )
+      }
 
-    return true
-  })
+      return true
+    })
 
-  const isAddressBlacklisted = credentials.deny?.some((credential) => {
-    if (credential.type === 'address') {
-      return credential.values.some((address) => address === accountId)
-    }
+  const isAddressBlacklisted =
+    credentials.deny?.length > 0 &&
+    credentials.deny?.some((credential) => {
+      if (credential.type === 'address') {
+        return credential.values.some(
+          (address) => address.toLowerCase() === accountId.toLowerCase()
+        )
+      }
 
-    return false
-  })
+      return false
+    })
 
   return isAddressWhitelisted && !isAddressBlacklisted
 }

@@ -62,7 +62,8 @@ describe('@shared/FormInput', () => {
         price: 10,
         tokenSymbol: 'OCEAN',
         checked: false,
-        symbol: 'OCEAN'
+        symbol: 'OCEAN',
+        isAccountIdWhitelisted: true
       },
       {
         did: 'did:op:yyy',
@@ -70,7 +71,8 @@ describe('@shared/FormInput', () => {
         price: 10,
         tokenSymbol: 'OCEAN',
         checked: true,
-        symbol: 'OCEAN'
+        symbol: 'OCEAN',
+        isAccountIdWhitelisted: true
       }
     ]
     render(<FormInput type="assetSelection" options={assets} />)

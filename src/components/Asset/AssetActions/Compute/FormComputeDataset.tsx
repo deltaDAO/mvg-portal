@@ -66,7 +66,7 @@ export default function FormStartCompute({
   assetTimeout: string
   hasPreviousOrderSelectedComputeAsset?: boolean
   hasDatatokenSelectedComputeAsset?: boolean
-  isAccountIdWhitelisted: boolean
+  isAccountIdWhitelisted?: boolean
   datasetSymbol?: string
   algorithmSymbol?: string
   providerFeesSymbol?: string

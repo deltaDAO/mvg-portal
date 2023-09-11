@@ -8,6 +8,7 @@ declare global {
     assetName: string
     assetDtSymbol: string
     networkId: number
+    providerUrl?: string
   }
 
   interface AlgorithmOption {
@@ -31,6 +32,10 @@ declare global {
   interface totalPriceMap {
     value: string
     symbol: string
+  }
+
+  interface ComputeJobExtended extends ComputeJob {
+    providerUrl: string
   }
 
   interface ComputeEnvironmentExtended extends ComputeEnvironment {

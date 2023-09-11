@@ -12,7 +12,6 @@ export interface TabsProps {
   items: TabsItem[]
   className?: string
   handleTabChange?: (tabName: string) => void
-  defaultIndex?: number
   showRadio?: boolean
   selectedIndex?: number
   onIndexSelected?: (index: number) => void
@@ -22,7 +21,6 @@ export default function Tabs({
   items,
   className,
   handleTabChange,
-  defaultIndex,
   showRadio,
   selectedIndex,
   onIndexSelected
@@ -32,7 +30,6 @@ export default function Tabs({
       className={`${className || ''}`}
       selectedIndex={selectedIndex}
       onSelect={onIndexSelected}
-      defaultIndex={selectedIndex ? undefined : defaultIndex}
     >
       <div className={styles.tabListContainer}>
         <TabList className={styles.tabList}>
@@ -50,7 +47,7 @@ export default function Tabs({
                   className={styles.radioInput}
                   name={item.title}
                   type="radio"
-                  checked={index === defaultIndex}
+                  checked={index === selectedIndex}
                   options={[item.title]}
                   readOnly
                 />

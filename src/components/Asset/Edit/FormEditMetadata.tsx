@@ -182,7 +182,7 @@ export default function FormEditMetadata({
         )}
       </div>
       <Field
-        {...getFieldContent('serviceSD', data)}
+        {...getFieldContent('serviceCredential', data)}
         component={Input}
         name="gaiaXInformation.serviceSD"
       />

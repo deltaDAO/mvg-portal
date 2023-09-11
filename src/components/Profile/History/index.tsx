@@ -66,6 +66,7 @@ export default function HistoryPage({
   const [refetchJobs, setRefetchJobs] = useState(false)
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
+  const [tabIndex, setTabIndex] = useState(0)
 
   const fetchJobs = useCallback(
     async (type: string) => {
@@ -114,10 +115,12 @@ export default function HistoryPage({
     setRefetchJobs
   )
 
-  let defaultTabIndex = 0
-  defaultTab === 'ComputeJobs' ? (defaultTabIndex = 4) : (defaultTabIndex = 0)
-
   return (
-    <Tabs items={tabs} className={styles.tabs} defaultIndex={defaultTabIndex} />
+    <Tabs
+      items={tabs}
+      className={styles.tabs}
+      selectedIndex={tabIndex}
+      onIndexSelected={setTabIndex}
+    />
   )
 }

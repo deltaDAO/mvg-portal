@@ -42,6 +42,7 @@ export default function ConsumerParameters({
   isLoading?: boolean
 }): ReactElement {
   const [tabs, setTabs] = useState<TabsItem[]>([])
+  const [tabIndex, setTabIndex] = useState(0)
 
   const updateTabs = useCallback(() => {
     const tabs = []
@@ -97,7 +98,12 @@ export default function ConsumerParameters({
   return (
     tabs.length > 0 && (
       <div className={styles.container}>
-        <Tabs className={styles.consumerParametersTabs} items={tabs} />
+        <Tabs
+          className={styles.consumerParametersTabs}
+          items={tabs}
+          selectedIndex={tabIndex}
+          onIndexSelected={setTabIndex}
+        />
       </div>
     )
   )

@@ -1,7 +1,7 @@
 import { FormConsumerParameter } from '@components/Publish/_types'
 import { FileInfo } from '@oceanprotocol/lib'
 import { GaiaXInformation2210 } from 'src/@types/gaia-x/2210/GXInformation'
-import { ServiceSD } from 'src/@types/gaia-x/2210/ServiceSD'
+import { ServiceCredential } from 'src/@types/gaia-x/2210/ServiceCredential'
 export interface MetadataEditForm {
   name: string
   description: string
@@ -23,7 +23,7 @@ export interface MetadataEditForm {
     termsAndConditions: FileInfo[]
     containsPII: GaiaXInformation2210['containsPII']
     PIIInformation?: GaiaXInformation2210['PIIInformation']
-    serviceSD?: ServiceSD
+    serviceSD?: ServiceCredential
   }
   license?: string
 }

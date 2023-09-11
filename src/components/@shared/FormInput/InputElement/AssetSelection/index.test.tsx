@@ -10,7 +10,8 @@ describe('@shared/FormInput/InputElement/AssetSelection', () => {
       price: 10,
       tokenSymbol: 'OCEAN',
       checked: false,
-      symbol: 'OCEAN'
+      symbol: 'OCEAN',
+      isAccountIdWhitelisted: true
     },
     {
       did: 'did:op:yyy',
@@ -18,7 +19,8 @@ describe('@shared/FormInput/InputElement/AssetSelection', () => {
       price: 10,
       tokenSymbol: 'OCEAN',
       checked: true,
-      symbol: 'OCEAN'
+      symbol: 'OCEAN',
+      isAccountIdWhitelisted: true
     },
     {
       did: 'did:op:zzz',
@@ -26,7 +28,8 @@ describe('@shared/FormInput/InputElement/AssetSelection', () => {
       price: 0,
       tokenSymbol: 'OCEAN',
       checked: false,
-      symbol: 'OCEAN'
+      symbol: 'OCEAN',
+      isAccountIdWhitelisted: true
     }
   ]
 

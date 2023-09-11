@@ -43,7 +43,7 @@ WithRadio.args = {
 export const WithDefaultIndex: Props = Template.bind({})
 WithDefaultIndex.args = {
   items,
-  defaultIndex: 1
+  selectedIndex: 1
 }
 
 export const LotsOfTabs: Props = Template.bind({})

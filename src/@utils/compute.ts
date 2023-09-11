@@ -176,7 +176,12 @@ export function getQueryString(
   algorithmDidList?.length > 0 &&
     baseParams.filters.push(getFilterTerm('_id', algorithmDidList))
   trustedPublishersList?.length > 0 &&
-    baseParams.filters.push(getFilterTerm('nft.owner', trustedPublishersList))
+    baseParams.filters.push(
+      getFilterTerm(
+        'nft.owner',
+        trustedPublishersList.map((address) => address.toLowerCase())
+      )
+    )
   const query = generateBaseQuery(baseParams)
 
   return query
@@ -211,7 +216,8 @@ export async function getAlgorithmsForAsset(
 
 export async function getAlgorithmAssetSelectionList(
   asset: Asset,
-  algorithms: Asset[]
+  algorithms: Asset[],
+  accountId: string
 ): Promise<AssetSelectionAsset[]> {
   if (!algorithms || algorithms?.length === 0) return []
 
@@ -223,6 +229,7 @@ export async function getAlgorithmAssetSelectionList(
     algorithmSelectionList = await transformAssetToAssetSelection(
       computeService?.serviceEndpoint,
       algorithms,
+      accountId,
       []
     )
   }
@@ -234,15 +241,27 @@ async function getJobs(
   accountId: string,
   assets: Asset[]
 ): Promise<ComputeJobMetaData[]> {
+  const uniqueProviders = [...new Set(providerUrls)]
+  const providersComputeJobsExtended: ComputeJobExtended[] = []
   const computeJobs: ComputeJobMetaData[] = []
-  try {
-    const providerComputeJobs = (await ProviderInstance.computeStatus(
-      providerUrls[0],
-      accountId
-    )) as ComputeJob[]
 
-    if (providerComputeJobs) {
-      providerComputeJobs.sort((a, b) => {
+  try {
+    for (let i = 0; i < uniqueProviders.length; i++) {
+      const providerComputeJobs = (await ProviderInstance.computeStatus(
+        uniqueProviders[i],
+        accountId
+      )) as ComputeJob[]
+
+      providerComputeJobs.forEach((job) =>
+        providersComputeJobsExtended.push({
+          ...job,
+          providerUrl: uniqueProviders[i]
+        })
+      )
+    }
+
+    if (providersComputeJobsExtended) {
+      providersComputeJobsExtended.sort((a, b) => {
         if (a.dateCreated > b.dateCreated) {
           return -1
         }
@@ -252,7 +271,7 @@ async function getJobs(
         return 0
       })
 
-      providerComputeJobs.forEach((job) => {
+      providersComputeJobsExtended.forEach((job) => {
         const did = job.inputDID[0]
         const asset = assets.filter((x) => x.id === did)[0]
         if (asset) {

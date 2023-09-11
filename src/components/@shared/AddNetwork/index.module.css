@@ -1,0 +1,9 @@
+.logo {
+  composes: logo from '../AddToken/index.module.css';
+}
+
+.logo svg {
+  height: 100%;
+  padding: 1px;
+  fill: var(--color-primary);
+}

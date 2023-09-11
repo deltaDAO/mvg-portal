@@ -60,8 +60,8 @@ import { useAccount, useSigner } from 'wagmi'
 import { getDummySigner } from '@utils/wallet'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
-import { parseConsumerParameterValues } from '../ConsumerParameters'
 import WhitelistIndicator from './WhitelistIndicator'
+import { parseConsumerParameterValues } from '../ConsumerParameters'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -69,12 +69,14 @@ export default function Compute({
   asset,
   dtBalance,
   file,
+  isAccountIdWhitelisted,
   fileIsLoading,
   consumableFeedback
 }: {
   asset: AssetExtended
   dtBalance: string
   file: FileInfo
+  isAccountIdWhitelisted: boolean
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
@@ -297,13 +299,13 @@ export default function Compute({
 
     getAlgorithmsForAsset(asset, newCancelToken()).then((algorithmsAssets) => {
       setDdoAlgorithmList(algorithmsAssets)
-      getAlgorithmAssetSelectionList(asset, algorithmsAssets).then(
+      getAlgorithmAssetSelectionList(asset, algorithmsAssets, accountId).then(
         (algorithmSelectionList) => {
           setAlgorithmList(algorithmSelectionList)
         }
       )
     })
-  }, [asset, isUnsupportedPricing])
+  }, [accountId, asset, isUnsupportedPricing])
 
   const initializeComputeEnvironment = useCallback(async () => {
     const computeEnvs = await getComputeEnvironments(
@@ -559,7 +561,7 @@ export default function Compute({
             assetTimeout={secondsToString(asset?.services[0].timeout)}
             hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
             hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
-            isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
             datasetSymbol={
               asset?.accessDetails?.baseToken?.symbol ||
               (asset?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
@@ -600,7 +602,7 @@ export default function Compute({
       {accountId && (
         <WhitelistIndicator
           accountId={accountId}
-          isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
         />
       )}
       {accountId && asset?.accessDetails?.datatoken && (
