@@ -2,11 +2,16 @@ import React, { ReactElement, useEffect, useState } from 'react'
 import FileIcon from '@shared/FileIcon'
 import Price from '@shared/Price'
 import { useAsset } from '@context/Asset'
-import ButtonBuy from './ButtonBuy'
-import { isAddressWhitelisted, secondsToString } from '@utils/ddo'
-import AlgorithmDatasetsListForCompute from './Compute/AlgorithmDatasetsListForCompute'
-import styles from './Download.module.css'
-import { FileInfo, LoggerInstance, ZERO_ADDRESS } from '@oceanprotocol/lib'
+import ButtonBuy from '../ButtonBuy'
+import { secondsToString } from '@utils/ddo'
+import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
+import styles from './index.module.css'
+import {
+  FileInfo,
+  LoggerInstance,
+  UserCustomParameters,
+  ZERO_ADDRESS
+} from '@oceanprotocol/lib'
 import { order } from '@utils/order'
 import { downloadFile } from '@utils/provider'
 import { getOrderFeedback } from '@utils/feedback'
@@ -18,7 +23,10 @@ import Alert from '@shared/atoms/Alert'
 import Loader from '@shared/atoms/Loader'
 import { useAccount, useSigner } from 'wagmi'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import WhitelistIndicator from './Compute/WhitelistIndicator'
+import { parseConsumerParameterValues } from '../ConsumerParameters'
+import { Form, Formik, useFormikContext } from 'formik'
+import { getDownloadValidationSchema } from './_validation'
+import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
 
 export default function Download({
   asset,
@@ -38,6 +46,7 @@ export default function Download({
   const { address: accountId, isConnected } = useAccount()
   const { data: signer } = useSigner()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
+  const { getOpcFeeForToken } = useMarketMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
   const isMounted = useIsMounted()
 
@@ -84,7 +93,7 @@ export default function Download({
 
         const _orderPriceAndFees = await getOrderPriceAndFees(
           asset,
-          accountId || ZERO_ADDRESS
+          ZERO_ADDRESS
         )
         setOrderPriceAndFees(_orderPriceAndFees)
         !orderPriceAndFees && setIsPriceLoading(false)
@@ -102,7 +111,7 @@ export default function Download({
      * Not adding isLoading and getOpcFeeForToken because we set these here. It is a compromise
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asset, isUnsupportedPricing])
+  }, [asset, getOpcFeeForToken, isUnsupportedPricing])
 
   useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
@@ -142,7 +151,7 @@ export default function Download({
     orderPriceAndFees
   ])
 
-  async function handleOrderOrDownload() {
+  async function handleOrderOrDownload(dataParams?: UserCustomParameters) {
     setIsLoading(true)
 
     try {
@@ -154,7 +163,7 @@ export default function Download({
           )[3]
         )
 
-        await downloadFile(signer, asset, accountId, validOrderTx)
+        await downloadFile(signer, asset, accountId, validOrderTx, dataParams)
       } else {
         setStatusText(
           getOrderFeedback(
@@ -174,7 +183,7 @@ export default function Download({
           throw new Error()
         }
         setIsOwned(true)
-        setValidOrderTx(tx?.transactionHash)
+        setValidOrderTx(tx.transactionHash)
       }
     } catch (error) {
       LoggerInstance.error(error)
@@ -187,16 +196,16 @@ export default function Download({
     setIsLoading(false)
   }
 
-  const PurchaseButton = () => (
+  const PurchaseButton = ({ isValid }: { isValid?: boolean }) => (
     <ButtonBuy
       action="download"
-      disabled={isDisabled}
+      disabled={isDisabled || !isValid}
       hasPreviousOrder={isOwned}
       hasDatatoken={hasDatatoken}
       btSymbol={asset?.accessDetails?.baseToken?.symbol}
       dtSymbol={asset?.datatokens[0]?.symbol}
       dtBalance={dtBalance}
-      onClick={handleOrderOrDownload}
+      type="submit"
       assetTimeout={secondsToString(asset?.services?.[0]?.timeout)}
       assetType={asset?.metadata?.type}
       stepText={statusText}
@@ -212,6 +221,8 @@ export default function Download({
   )
 
   const AssetAction = ({ asset }: { asset: AssetExtended }) => {
+    const { isValid } = useFormikContext()
+
     return (
       <div>
         {isOrderDisabled ? (
@@ -229,7 +240,7 @@ export default function Download({
                 text={`No pricing schema available for this asset.`}
               />
             ) : (
-              <>
+              <div className={styles.priceWrapper}>
                 {isPriceLoading ? (
                   <Loader message="Calculating full price (including fees)" />
                 ) : (
@@ -240,8 +251,8 @@ export default function Download({
                   />
                 )}
 
-                {!isInPurgatory && <PurchaseButton />}
-              </>
+                {!isInPurgatory && <PurchaseButton isValid={isValid} />}
+              </div>
             )}
           </>
         )}
@@ -250,25 +261,40 @@ export default function Download({
   }
 
   return (
-    <aside className={styles.consume}>
-      <div className={styles.info}>
-        <div className={styles.filewrapper}>
-          <FileIcon file={file} isLoading={fileIsLoading} small />
-        </div>
-        <AssetAction asset={asset} />
-      </div>
-      {asset?.metadata?.type === 'algorithm' && (
-        <AlgorithmDatasetsListForCompute
-          algorithmDid={asset.id}
-          asset={asset}
-        />
+    <Formik
+      initialValues={{
+        dataServiceParams: getDefaultValues(
+          asset?.services[0].consumerParameters
+        )
+      }}
+      validationSchema={getDownloadValidationSchema(
+        asset?.services[0].consumerParameters
       )}
-      {accountId && (
-        <WhitelistIndicator
-          accountId={accountId}
-          isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
-        />
-      )}
-    </aside>
+      onSubmit={async (values) => {
+        const dataServiceParams = parseConsumerParameterValues(
+          values?.dataServiceParams,
+          asset.services[0].consumerParameters
+        )
+
+        await handleOrderOrDownload(dataServiceParams)
+      }}
+    >
+      <Form>
+        <aside className={styles.consume}>
+          <div className={styles.info}>
+            <div className={styles.filewrapper}>
+              <FileIcon file={file} isLoading={fileIsLoading} small />
+            </div>
+            <AssetAction asset={asset} />
+          </div>
+          {asset?.metadata?.type === 'algorithm' && (
+            <AlgorithmDatasetsListForCompute
+              algorithmDid={asset.id}
+              asset={asset}
+            />
+          )}
+        </aside>
+      </Form>
+    </Formik>
   )
 }

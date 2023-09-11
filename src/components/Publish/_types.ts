@@ -13,6 +13,8 @@ export interface FormPublishService {
   providerUrl: { url: string; valid: boolean; custom: boolean }
   algorithmPrivacy?: boolean
   computeOptions?: ServiceComputeOptions
+  usesConsumerParameters?: boolean
+  consumerParameters?: FormConsumerParameter[]
 }
 
 export interface FormPublishData {
@@ -42,6 +44,12 @@ export interface FormPublishData {
     dockerImageCustomTag?: string
     dockerImageCustomEntrypoint?: string
     dockerImageCustomChecksum?: string
+    usesConsumerParameters?: boolean
+    consumerParameters?: FormConsumerParameter[]
+    service?: {
+      usesConsumerParameters?: boolean
+      consumerParameters?: FormConsumerParameter[]
+    }
   }
   services: FormPublishService[]
   pricing: PricePublishOptions
@@ -70,4 +78,15 @@ export interface MetadataAlgorithmContainer {
   image: string
   tag: string
   checksum: string
+}
+
+export interface FormConsumerParameter {
+  name: string
+  type: 'text' | 'number' | 'boolean' | 'select'
+  label: string
+  required: string
+  description: string
+  default: string | boolean | number
+  options?: { key: string; value: string }[]
+  value?: string | boolean | number
 }

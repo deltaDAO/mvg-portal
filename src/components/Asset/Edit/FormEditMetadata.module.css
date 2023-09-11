@@ -1,3 +1,8 @@
+.serviceContainer {
+  border-top: 1px solid var(--border-color);
+  padding-top: var(--spacer);
+}
+
 .gdpr {
   border: 1px solid var(--border-color);
   padding: calc(var(--spacer) / 2);

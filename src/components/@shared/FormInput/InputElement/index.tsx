@@ -14,6 +14,7 @@ import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
 import TagsAutoComplete from './TagsAutoComplete'
 import TabsFile from '@shared/atoms/TabsFile'
 import { extensions, oceanTheme } from '@utils/codemirror'
+import { ConsumerParameters } from './ConsumerParameters'
 import ServiceSD from './ServiceSD'
 import ComputeEnvSelection from './ComputeEnvSelection'
 
@@ -141,6 +142,9 @@ const InputElement = forwardRef(
             }}
           />
         )
+
+      case 'consumerParameters':
+        return <ConsumerParameters {...field} form={form} {...props} />
 
       case 'textarea':
         return (

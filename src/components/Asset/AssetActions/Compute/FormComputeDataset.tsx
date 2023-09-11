@@ -16,6 +16,8 @@ import Decimal from 'decimal.js'
 import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
+import ConsumerParameters from '../ConsumerParameters'
+import { FormConsumerParameter } from '@components/Publish/_types'
 import { ComputeDatasetForm } from './_constants'
 
 export default function FormStartCompute({
@@ -266,7 +268,12 @@ export default function FormStartCompute({
           }
         />
       ))}
-
+      {asset && selectedAlgorithmAsset && (
+        <ConsumerParameters
+          asset={asset}
+          selectedAlgorithmAsset={selectedAlgorithmAsset}
+        />
+      )}
       <PriceOutput
         hasPreviousOrder={hasPreviousOrder}
         assetTimeout={assetTimeout}
