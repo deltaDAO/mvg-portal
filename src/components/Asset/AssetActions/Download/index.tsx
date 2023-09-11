@@ -23,7 +23,9 @@ import Alert from '@shared/atoms/Alert'
 import Loader from '@shared/atoms/Loader'
 import { useAccount, useSigner } from 'wagmi'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import { parseConsumerParameterValues } from '../ConsumerParameters'
+import ConsumerParameters, {
+  parseConsumerParameterValues
+} from '../ConsumerParameters'
 import { Form, Formik, useFormikContext } from 'formik'
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
@@ -250,7 +252,9 @@ export default function Download({
                     size="large"
                   />
                 )}
-
+                {asset && (
+                  <ConsumerParameters asset={asset} isLoading={isLoading} />
+                )}
                 {!isInPurgatory && <PurchaseButton isValid={isValid} />}
               </div>
             )}

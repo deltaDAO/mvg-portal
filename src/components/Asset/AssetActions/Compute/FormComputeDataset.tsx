@@ -272,6 +272,7 @@ export default function FormStartCompute({
         <ConsumerParameters
           asset={asset}
           selectedAlgorithmAsset={selectedAlgorithmAsset}
+          isLoading={isLoading}
         />
       )}
       <PriceOutput

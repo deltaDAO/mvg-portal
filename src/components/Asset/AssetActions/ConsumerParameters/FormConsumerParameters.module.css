@@ -14,6 +14,10 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.parametersContainerDisabled {
+  opacity: 0.5;
+}
+
 .parameter > div {
   margin-bottom: 0;
   padding-left: 1rem;

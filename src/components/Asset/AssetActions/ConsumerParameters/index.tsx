@@ -34,10 +34,12 @@ export function parseConsumerParameterValues(
 
 export default function ConsumerParameters({
   asset,
-  selectedAlgorithmAsset
+  selectedAlgorithmAsset,
+  isLoading
 }: {
   asset: AssetExtended
   selectedAlgorithmAsset?: AssetExtended
+  isLoading?: boolean
 }): ReactElement {
   const [tabs, setTabs] = useState<TabsItem[]>([])
 
@@ -50,6 +52,7 @@ export default function ConsumerParameters({
           <FormConsumerParameters
             name="dataServiceParams"
             parameters={asset.services[0].consumerParameters}
+            disabled={isLoading}
           />
         )
       })
@@ -61,6 +64,7 @@ export default function ConsumerParameters({
           <FormConsumerParameters
             name="algoServiceParams"
             parameters={selectedAlgorithmAsset.services[0].consumerParameters}
+            disabled={isLoading}
           />
         )
       })
@@ -77,13 +81,14 @@ export default function ConsumerParameters({
             parameters={
               selectedAlgorithmAsset.metadata?.algorithm.consumerParameters
             }
+            disabled={isLoading}
           />
         )
       })
     }
 
     return tabs
-  }, [asset, selectedAlgorithmAsset])
+  }, [asset, selectedAlgorithmAsset, isLoading])
 
   useEffect(() => {
     setTabs(updateTabs())

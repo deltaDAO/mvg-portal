@@ -4,6 +4,9 @@ import Label from '@shared/FormInput/Label'
 import { Field, useField } from 'formik'
 import styles from './FormConsumerParameters.module.css'
 import { ConsumerParameter, UserCustomParameters } from '@oceanprotocol/lib'
+import classNames from 'classnames/bind'
+
+const cx = classNames.bind(styles)
 
 export function getDefaultValues(
   parameters: ConsumerParameter[]
@@ -25,10 +28,12 @@ export function getDefaultValues(
 
 export default function FormConsumerParameters({
   name,
-  parameters
+  parameters,
+  disabled
 }: {
   name: string
   parameters: ConsumerParameter[]
+  disabled?: boolean
 }): ReactElement {
   const [field] = useField<UserCustomParameters[]>(name)
 
@@ -53,7 +58,12 @@ export default function FormConsumerParameters({
       <Label htmlFor="Input the consumer parameters">
         Input the consumer parameters
       </Label>
-      <div className={styles.parametersContainer}>
+      <div
+        className={cx({
+          parametersContainer: true,
+          parametersContainerDisabled: disabled
+        })}
+      >
         {parameters?.map((param) => {
           const { default: paramDefault, ...rest } = param
 
@@ -62,6 +72,7 @@ export default function FormConsumerParameters({
               <Field
                 {...rest}
                 component={Input}
+                disabled={disabled}
                 help={param.description}
                 name={`${name}.${param.name}`}
                 options={getParameterOptions(param)}
