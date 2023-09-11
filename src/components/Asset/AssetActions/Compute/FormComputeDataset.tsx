@@ -266,6 +266,7 @@ export default function FormStartCompute({
               ? computeEnvs
               : field?.options
           }
+          accountId={accountId}
         />
       ))}
       {asset && selectedAlgorithmAsset && (

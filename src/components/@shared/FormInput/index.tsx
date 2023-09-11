@@ -75,6 +75,7 @@ export interface InputProps {
   checked?: boolean
   disclaimer?: string
   disclaimerValues?: string[]
+  accountId?: string
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {

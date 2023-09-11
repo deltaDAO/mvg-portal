@@ -9,7 +9,6 @@ import Tooltip from '@components/@shared/atoms/Tooltip'
 import WhitelistIndicator from '@components/Asset/AssetActions/Compute/WhitelistIndicator'
 import { Badge } from '@components/@shared/VerifiedBadge'
 import styles from './index.module.css'
-import { useAccount } from 'wagmi'
 import classNames from 'classnames/bind'
 
 const cx = classNames.bind(styles)
@@ -32,14 +31,14 @@ export default function AssetSelection({
   assets,
   multiple,
   disabled,
+  accountId,
   ...props
 }: {
   assets: AssetSelectionAsset[]
   multiple?: boolean
   disabled?: boolean
+  accountId?: string
 }): JSX.Element {
-  const { address: accountId } = useAccount()
-
   const [searchValue, setSearchValue] = useState('')
 
   const styleClassesWrapper = `${styles.selection} ${
@@ -127,6 +126,15 @@ export default function AssetSelection({
                   >
                     {asset.symbol} | {asset.did}
                   </Dotdotdot>
+                  <PriceUnit
+                    price={asset.price}
+                    size="small"
+                    className={cx({
+                      price: true,
+                      disabled: !asset.isAccountIdWhitelisted
+                    })}
+                    symbol={asset.tokenSymbol}
+                  />
                   {!asset.isAccountIdWhitelisted && (
                     <Tooltip
                       content={
@@ -140,15 +148,6 @@ export default function AssetSelection({
                       <Badge isValid={false} verifiedService="Access denied" />
                     </Tooltip>
                   )}
-                  <PriceUnit
-                    price={asset.price}
-                    size="small"
-                    className={cx({
-                      price: true,
-                      disabled: !asset.isAccountIdWhitelisted
-                    })}
-                    symbol={asset.tokenSymbol}
-                  />
                 </label>
               </div>
             ))

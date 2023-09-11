@@ -66,6 +66,7 @@ const InputElement = forwardRef(
       additionalComponent,
       disclaimer,
       disclaimerValues,
+      accountId,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -165,6 +166,7 @@ const InputElement = forwardRef(
         return (
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
+            accountId={accountId}
             {...field}
             {...props}
           />
