@@ -52,11 +52,7 @@ export default function ComputeEnvSelection({
                   </Dotdotdot>
                   <Tooltip content={<ComputeEnvDetails computeEnv={env} />} />
                 </h3>
-                <Dotdotdot
-                  clamp={1}
-                  tagName="code"
-                  className={assetSelectionStyles.details}
-                >
+                <Dotdotdot clamp={1} tagName="code" className={styles.details}>
                   {env?.cpuNumber > 0 && 'CPU | '}
                   {env?.gpuNumber > 0 && 'GPU | '}
                   {'max duration: '}
@@ -72,7 +68,7 @@ export default function ComputeEnvSelection({
                   size="small"
                   className={assetSelectionStyles.price}
                   symbol={`${
-                    approvedBaseTokens.find(
+                    approvedBaseTokens?.find(
                       (token) =>
                         token.address.toLowerCase() ===
                         env.feeToken.toLowerCase()

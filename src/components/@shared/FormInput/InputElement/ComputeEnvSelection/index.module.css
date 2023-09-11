@@ -22,3 +22,7 @@
 .row:last-child {
   border-bottom: none;
 }
+
+.details {
+  composes: did from '../AssetSelection/index.module.css';
+}
