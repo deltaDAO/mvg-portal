@@ -6,3 +6,7 @@
   border-top: 1px solid var(--border-color);
   border-bottom: 1px solid var(--border-color);
 }
+
+.consumerParametersTabs > div > ul {
+  padding: calc(var(--spacer) / 2) var(--spacer);
+}
