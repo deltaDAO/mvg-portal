@@ -15,6 +15,7 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { getAsset } from '@utils/aquarius'
 import { useAccount, useSigner } from 'wagmi'
 import { toast } from 'react-toastify'
+import { prettySize } from '@components/@shared/FormInput/InputElement/FilesInput/utils'
 
 export default function Results({
   job
@@ -38,23 +39,26 @@ export default function Results({
     getAssetMetadata()
   }, [job.inputDID, newCancelToken])
 
-  function getDownloadButtonValue(type: ComputeResultType): string {
+  function getDownloadButtonValue(
+    type: ComputeResultType,
+    name: string
+  ): string {
     let buttonName
     switch (type) {
       case 'output':
-        buttonName = 'results'
+        buttonName = `RESULTS (${name})`
         break
       case 'algorithmLog':
-        buttonName = 'algorithm logs'
+        buttonName = 'ALGORITHM LOGS'
         break
       case 'configrationLog':
-        buttonName = 'configuration logs'
+        buttonName = 'CONFIGURATION LOGS'
         break
       case 'publishLog':
-        buttonName = 'publish logs'
+        buttonName = 'PUBLISH LOGS'
         break
       default:
-        buttonName = 'results'
+        buttonName = `RESULTS (${name})`
         break
     }
     return buttonName
@@ -91,10 +95,14 @@ export default function Results({
                   <Button
                     style="text"
                     size="small"
+                    className={styles.downloadButton}
                     onClick={() => downloadResults(i)}
                     download
                   >
-                    {getDownloadButtonValue(jobResult.type)}
+                    {`${getDownloadButtonValue(
+                      jobResult.type,
+                      jobResult.filename
+                    )} - ${prettySize(jobResult.filesize)}`}
                   </Button>
                 </ListItem>
               ) : (
