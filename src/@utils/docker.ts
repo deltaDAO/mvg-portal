@@ -1,7 +1,7 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-
+import { dockerHubProxyUrl } from '../../app.config'
 export interface dockerContainerInfo {
   exists: boolean
   checksum: string
@@ -16,13 +16,10 @@ export async function getContainerChecksum(
     checksum: null
   }
   try {
-    const response = await axios.post(
-      `https://dockerhub-proxy.oceanprotocol.com`,
-      {
-        image,
-        tag
-      }
-    )
+    const response = await axios.post(dockerHubProxyUrl, {
+      image,
+      tag
+    })
     if (
       !response ||
       response.status !== 200 ||

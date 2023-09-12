@@ -1,7 +1,7 @@
 import { FileInfo, ServiceComputeOptions } from '@oceanprotocol/lib'
 import { NftMetadata } from '@utils/nft'
 import { ReactElement } from 'react'
-import { ServiceSD } from 'src/@types/gaia-x/2210/ServiceSD'
+import { ServiceCredential } from 'src/@types/gaia-x/2210/ServiceCredential'
 import { GaiaXInformation2210 } from '../../@types/gaia-x/2210/GXInformation'
 
 export interface FormPublishService {
@@ -13,6 +13,8 @@ export interface FormPublishService {
   providerUrl: { url: string; valid: boolean; custom: boolean }
   algorithmPrivacy?: boolean
   computeOptions?: ServiceComputeOptions
+  usesConsumerParameters?: boolean
+  consumerParameters?: FormConsumerParameter[]
 }
 
 export interface FormPublishData {
@@ -33,7 +35,7 @@ export interface FormPublishData {
       termsAndConditions: FileInfo[]
       containsPII: GaiaXInformation2210['containsPII']
       PIIInformation?: GaiaXInformation2210['PIIInformation']
-      serviceSD?: ServiceSD
+      serviceSD?: ServiceCredential
     }
     license?: string
     tags?: string[]
@@ -42,6 +44,12 @@ export interface FormPublishData {
     dockerImageCustomTag?: string
     dockerImageCustomEntrypoint?: string
     dockerImageCustomChecksum?: string
+    usesConsumerParameters?: boolean
+    consumerParameters?: FormConsumerParameter[]
+    service?: {
+      usesConsumerParameters?: boolean
+      consumerParameters?: FormConsumerParameter[]
+    }
   }
   services: FormPublishService[]
   pricing: PricePublishOptions
@@ -70,4 +78,15 @@ export interface MetadataAlgorithmContainer {
   image: string
   tag: string
   checksum: string
+}
+
+export interface FormConsumerParameter {
+  name: string
+  type: 'text' | 'number' | 'boolean' | 'select'
+  label: string
+  required: string
+  description: string
+  default: string | boolean | number
+  options?: { key: string; value: string }[]
+  value?: string | boolean | number
 }

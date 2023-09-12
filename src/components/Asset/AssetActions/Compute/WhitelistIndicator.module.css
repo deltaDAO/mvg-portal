@@ -7,6 +7,12 @@
   border-top: 1px solid var(--border-color);
 }
 
+.minimal {
+  margin: 0;
+  padding: 0;
+  border-top: 0;
+}
+
 .whitelistBadge {
   align-items: flex-start;
 }

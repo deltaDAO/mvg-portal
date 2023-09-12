@@ -14,7 +14,8 @@ import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
 import TagsAutoComplete from './TagsAutoComplete'
 import TabsFile from '@shared/atoms/TabsFile'
 import { extensions, oceanTheme } from '@utils/codemirror'
-import ServiceSD from './ServiceSD'
+import { ConsumerParameters } from './ConsumerParameters'
+import ServiceCredential from './ServiceCredential'
 import ComputeEnvSelection from './ComputeEnvSelection'
 
 const cx = classNames.bind(styles)
@@ -65,6 +66,7 @@ const InputElement = forwardRef(
       additionalComponent,
       disclaimer,
       disclaimerValues,
+      accountId,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -142,6 +144,9 @@ const InputElement = forwardRef(
           />
         )
 
+      case 'consumerParameters':
+        return <ConsumerParameters {...field} form={form} {...props} />
+
       case 'textarea':
         return (
           <textarea id={props.name} className={styles.textarea} {...props} />
@@ -161,6 +166,7 @@ const InputElement = forwardRef(
         return (
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
+            accountId={accountId}
             {...field}
             {...props}
           />
@@ -186,8 +192,8 @@ const InputElement = forwardRef(
         )
       case 'files':
         return <FilesInput {...field} form={form} {...props} />
-      case 'serviceSD':
-        return <ServiceSD {...field} {...props} />
+      case 'serviceCredential':
+        return <ServiceCredential {...field} {...props} />
       case 'container':
         return <ContainerInput {...field} {...props} />
       case 'providerUrl':

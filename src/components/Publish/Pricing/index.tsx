@@ -79,6 +79,7 @@ export default function PricingFields(): ReactElement {
   ])
 
   const [tabs, setTabs] = useState(updateTabs())
+  const [tabIndex, setTabIndex] = useState(type === 'free' ? 1 : 0)
 
   useEffect(() => {
     setTabs(updateTabs())
@@ -88,7 +89,8 @@ export default function PricingFields(): ReactElement {
     <Tabs
       items={tabs}
       handleTabChange={handleTabChange}
-      defaultIndex={type === 'free' ? 1 : 0}
+      selectedIndex={tabIndex}
+      onIndexSelected={setTabIndex}
       className={styles.pricing}
       showRadio
     />

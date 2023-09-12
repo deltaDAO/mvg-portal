@@ -2,10 +2,14 @@ import {
   ComputeEditForm,
   MetadataEditForm
 } from '@components/Asset/Edit/_types'
-import { FormPublishData } from '@components/Publish/_types'
+import {
+  FormConsumerParameter,
+  FormPublishData
+} from '@components/Publish/_types'
 import {
   Arweave,
   Asset,
+  ConsumerParameter,
   DDO,
   FileInfo,
   GraphqlQuery,
@@ -189,6 +193,33 @@ export function previewDebugPatch(
   return buildValuesPreview
 }
 
+export function parseConsumerParameters(
+  consumerParameters: ConsumerParameter[]
+): FormConsumerParameter[] {
+  if (!consumerParameters?.length) return []
+
+  return consumerParameters.map((param) => ({
+    ...param,
+    required: param.required ? 'required' : 'optional',
+    options:
+      param.type === 'select'
+        ? JSON.parse(param.options)?.map((option) => {
+            const key = Object.keys(option)[0]
+            return {
+              key,
+              value: option[key]
+            }
+          })
+        : [],
+    default:
+      param.type === 'boolean'
+        ? param.default === 'true'
+        : param.type === 'number'
+        ? Number(param.default)
+        : param.default
+  }))
+}
+
 export function isAddressWhitelisted(
   ddo: AssetExtended,
   accountId: string
@@ -200,21 +231,30 @@ export function isAddressWhitelisted(
 
   const { credentials } = ddo
 
-  const isAddressWhitelisted = credentials.allow?.some((credential) => {
-    if (credential.type === 'address') {
-      return credential.values.some((address) => address === accountId)
-    }
+  const isAddressWhitelisted =
+    !credentials.allow ||
+    credentials.allow?.length === 0 ||
+    credentials.allow?.some((credential) => {
+      if (credential.type === 'address') {
+        return credential.values.some(
+          (address) => address.toLowerCase() === accountId.toLowerCase()
+        )
+      }
 
-    return true
-  })
+      return true
+    })
 
-  const isAddressBlacklisted = credentials.deny?.some((credential) => {
-    if (credential.type === 'address') {
-      return credential.values.some((address) => address === accountId)
-    }
+  const isAddressBlacklisted =
+    credentials.deny?.length > 0 &&
+    credentials.deny?.some((credential) => {
+      if (credential.type === 'address') {
+        return credential.values.some(
+          (address) => address.toLowerCase() === accountId.toLowerCase()
+        )
+      }
 
-    return false
-  })
+      return false
+    })
 
   return isAddressWhitelisted && !isAddressBlacklisted
 }

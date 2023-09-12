@@ -144,17 +144,25 @@
         "required": true
       },
       {
-        "name": "serviceSD",
-        "label": "Service Self-Description",
-        "placeholder": "e.g. https://file.com/service-self-description.json",
-        "help": "Please enter the URL to a valid service self-description and click \"ADD FILE\" to validate the data. This file URL and its content will be publicly available after publishing",
-        "type": "serviceSD"
+        "name": "serviceCredential",
+        "label": "Service Credential",
+        "placeholder": "e.g. https://file.com/service-credential.json",
+        "help": "Please enter the URL to a valid service credential and click \"ADD FILE\" to validate the data. This file URL and its content will be publicly available after publishing",
+        "type": "serviceCredential"
       },
       {
         "name": "tags",
         "label": "New Tags",
         "type": "tags",
         "placeholder": "e.g. logistics",
+        "required": false
+      },
+      {
+        "name": "usesConsumerParameters",
+        "label": "Algorithm custom parameters",
+        "help": "Algorithm custom parameters are used to define required consumer input before running the algorithm in a Compute-to-Data environment.",
+        "type": "checkbox",
+        "options": ["This asset uses algorithm custom parameters"],
         "required": false
       },
       {
@@ -176,6 +184,14 @@
           "Asset unlisted"
         ],
         "sortOptions": false,
+        "required": false
+      },
+      {
+        "name": "usesServiceConsumerParameters",
+        "label": "User defined parameters",
+        "help": "User defined parameters are used to filter or query the published asset.",
+        "type": "checkbox",
+        "options": ["This asset uses user defined parameters"],
         "required": false
       },
       {

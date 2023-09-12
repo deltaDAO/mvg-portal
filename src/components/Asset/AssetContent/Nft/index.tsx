@@ -4,7 +4,6 @@ import { decodeTokenURI } from '@utils/nft'
 import { useFormikContext } from 'formik'
 import React from 'react'
 import { FormPublishData } from '@components/Publish/_types'
-import OceanLogo from '@shared/atoms/OceanLogo'
 import NftTooltip from './NftTooltip'
 import styles from './index.module.css'
 
@@ -39,7 +38,7 @@ export default function Nft({
       {nftImage ? (
         <img src={nftImage} alt={asset?.nft?.name} />
       ) : (
-        <OceanLogo noWordmark />
+        <div className={styles.placeholder} />
       )}
 
       {(nftMetadata || asset?.nftAddress) && (

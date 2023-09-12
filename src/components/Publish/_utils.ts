@@ -7,33 +7,38 @@ import {
   DispenserCreationParams,
   getHash,
   LoggerInstance,
-  Metadata,
   NftCreateData,
   NftFactory,
-  Service,
   ZERO_ADDRESS,
-  getEventFromTx
+  getEventFromTx,
+  ConsumerParameter,
+  Metadata,
+  Service
 } from '@oceanprotocol/lib'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import { generateNftCreateData } from '@utils/nft'
 import { getEncryptedFiles } from '@utils/provider'
 import slugify from 'slugify'
 import { algorithmContainerPresets } from './_constants'
-import { FormPublishData, MetadataAlgorithmContainer } from './_types'
+import {
+  FormConsumerParameter,
+  FormPublishData,
+  MetadataAlgorithmContainer
+} from './_types'
 import {
   marketFeeAddress,
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
+  customProviderUrl,
   defaultAccessTerms,
   complianceApiVersion,
-  complianceUri,
-  customProviderUrl
+  complianceUri
 } from '../../../app.config'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
 import axios from 'axios'
-import { ServiceSD } from 'src/@types/gaia-x/2210/ServiceSD'
+import { ServiceCredential } from 'src/@types/gaia-x/2210/ServiceCredential'
 import { parseEther } from 'ethers/lib/utils'
 
 function getUrlFileExtension(fileUrl: string): string {
@@ -64,6 +69,33 @@ function transformTags(originalTags: string[]): string[] {
   return transformedTags
 }
 
+export function transformConsumerParameters(
+  parameters: FormConsumerParameter[]
+): ConsumerParameter[] {
+  if (!parameters?.length) return
+
+  const transformedValues = parameters.map((param) => {
+    const options =
+      param.type === 'select'
+        ? // Transform from { key: string, value: string } into { key: value }
+          JSON.stringify(
+            param.options?.map((opt) => ({ [opt.key]: opt.value }))
+          )
+        : undefined
+
+    const required = param.required === 'required'
+
+    return {
+      ...param,
+      options,
+      required,
+      default: param.default.toString()
+    }
+  })
+
+  return transformedValues as ConsumerParameter[]
+}
+
 export async function transformPublishFormToDdo(
   values: FormPublishData,
   // Those 2 are only passed during actual publishing process
@@ -85,6 +117,8 @@ export async function transformPublishFormToDdo(
     dockerImageCustomTag,
     dockerImageCustomEntrypoint,
     dockerImageCustomChecksum,
+    usesConsumerParameters,
+    consumerParameters,
     gaiaXInformation
   } = metadata
   const { access, files, links, providerUrl, timeout } = services[0]
@@ -103,6 +137,10 @@ export async function transformPublishFormToDdo(
     files[0].valid && [sanitizeUrl(files[0].url)]
   const linksTransformed = links?.length &&
     links[0].valid && [sanitizeUrl(links[0].url)]
+
+  const consumerParametersTransformed = usesConsumerParameters
+    ? transformConsumerParameters(consumerParameters)
+    : undefined
 
   const accessTermsFileInfo = gaiaXInformation.termsAndConditions
   const accessTermsUrlTransformed = accessTermsFileInfo?.length &&
@@ -156,7 +194,8 @@ export async function transformPublishFormToDdo(
               dockerImage === 'custom'
                 ? dockerImageCustomChecksum
                 : algorithmContainerPresets.checksum
-          }
+          },
+          consumerParameters: consumerParametersTransformed
         }
       })
   }
@@ -182,7 +221,10 @@ export async function transformPublishFormToDdo(
     timeout: mapTimeoutStringToSeconds(timeout),
     ...(access === 'compute' && {
       compute: values.services[0].computeOptions
-    })
+    }),
+    consumerParameters: values.services[0].usesConsumerParameters
+      ? transformConsumerParameters(values.services[0].consumerParameters)
+      : undefined
   }
 
   const newDdo: DDO = {
@@ -343,16 +385,21 @@ export function getComplianceApiVersion(context?: string[]): string {
   return '2204'
 }
 
-export async function signServiceSD(rawServiceSD: any): Promise<any> {
-  if (!rawServiceSD) return
+export async function signServiceCredential(
+  rawServiceCredential: any
+): Promise<any> {
+  if (!rawServiceCredential) return
   try {
-    const response = await axios.post(`${complianceUri}/api/sign`, rawServiceSD)
-    const signedServiceSD = {
-      selfDescriptionCredential: { ...rawServiceSD },
+    const response = await axios.post(
+      `${complianceUri}/api/sign`,
+      rawServiceCredential
+    )
+    const signedServiceCredential = {
+      selfDescriptionCredential: { ...rawServiceCredential },
       ...response.data
     }
 
-    return signedServiceSD
+    return signedServiceCredential
   } catch (error) {
     LoggerInstance.error(error.message)
   }
@@ -387,14 +434,18 @@ export async function storeRawServiceSD(signedSD: {
   }
 }
 
-export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
+export async function verifyRawServiceCredential(
+  rawServiceCredential: string,
+  did?: string
+): Promise<{
   verified: boolean
   complianceApiVersion?: string
+  idMatch?: boolean
   responseBody?: any
 }> {
-  if (!rawServiceSD) return { verified: false }
+  if (!rawServiceCredential) return { verified: false }
 
-  const parsedServiceSD = JSON.parse(rawServiceSD)
+  const parsedServiceCredential = JSON.parse(rawServiceCredential)
   // TODO: put back the compliance API version check
   // const complianceApiVersion = getComplianceApiVersion(
   //   parsedServiceSD?.selfDescriptionCredential?.['@context']
@@ -403,7 +454,7 @@ export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
   const baseUrl = `${complianceUri}/v1/api/credential-offers`
 
   try {
-    const response = await axios.post(baseUrl, parsedServiceSD)
+    const response = await axios.post(baseUrl, parsedServiceCredential)
     if (response?.status === 409) {
       return {
         verified: false,
@@ -411,7 +462,17 @@ export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
       }
     }
     if (response?.status === 201) {
-      return { verified: true, complianceApiVersion }
+      const serviceOffering = parsedServiceCredential.verifiableCredential.find(
+        (credential) =>
+          credential?.credentialSubject?.type === 'gx:ServiceOffering'
+      )
+      const credentialId = serviceOffering?.credentialSubject?.id
+
+      return {
+        verified: true,
+        complianceApiVersion,
+        idMatch: did && did?.toLowerCase() === credentialId?.toLowerCase()
+      }
     }
 
     return { verified: false }
@@ -421,12 +482,12 @@ export async function verifyRawServiceSD(rawServiceSD: string): Promise<{
   }
 }
 
-export async function getServiceSD(url: string): Promise<string> {
+export async function getServiceCredential(url: string): Promise<string> {
   if (!url) return
 
   try {
-    const serviceSD = await axios.get(url)
-    return JSON.stringify(serviceSD.data, null, 2)
+    const serviceCredential = await axios.get(url)
+    return JSON.stringify(serviceCredential.data, null, 2)
   } catch (error) {
     LoggerInstance.error(error.message)
   }
@@ -437,11 +498,11 @@ export function getFormattedCodeString(parsedCodeBlock: any): string {
   return `\`\`\`\n${formattedString}\n\`\`\``
 }
 
-export function updateServiceSelfDescription(
+export function updateServiceCredential(
   ddo: DDO,
-  serviceSelfDescription: ServiceSD
+  serviceCredential: ServiceCredential
 ): DDO {
-  const { raw, url } = serviceSelfDescription
+  const { raw, url } = serviceCredential
   ddo.metadata.additionalInformation.gaiaXInformation.serviceSelfDescription = {
     raw,
     url
@@ -450,13 +511,17 @@ export function updateServiceSelfDescription(
   return ddo
 }
 
-export function getPublisherFromServiceSD(serviceSD: any): string {
-  if (!serviceSD) return
-  const parsedServiceSD =
-    typeof serviceSD === 'string' ? JSON.parse(serviceSD) : serviceSD
+export function getPublisherFromServiceCredential(
+  serviceCredential: any
+): string {
+  if (!serviceCredential) return
+  const parsedServiceCredential =
+    typeof serviceCredential === 'string'
+      ? JSON.parse(serviceCredential)
+      : serviceCredential
 
   const legalName =
-    parsedServiceSD?.verifiableCredential?.[0]?.credentialSubject?.[
+    parsedServiceCredential?.verifiableCredential?.[0]?.credentialSubject?.[
       'gx:legalName'
     ]
   const publisher =

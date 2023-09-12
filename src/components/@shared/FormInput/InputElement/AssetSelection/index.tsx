@@ -5,7 +5,13 @@ import PriceUnit from '@shared/Price/PriceUnit'
 import External from '@images/external.svg'
 import InputElement from '@shared/FormInput/InputElement'
 import Loader from '@shared/atoms/Loader'
+import Tooltip from '@components/@shared/atoms/Tooltip'
+import WhitelistIndicator from '@components/Asset/AssetActions/Compute/WhitelistIndicator'
+import { Badge } from '@components/@shared/VerifiedBadge'
 import styles from './index.module.css'
+import classNames from 'classnames/bind'
+
+const cx = classNames.bind(styles)
 
 export interface AssetSelectionAsset {
   did: string
@@ -14,6 +20,7 @@ export interface AssetSelectionAsset {
   tokenSymbol: string
   checked: boolean
   symbol: string
+  isAccountIdWhitelisted: boolean
 }
 
 export function Empty({ message }: { message: string }) {
@@ -24,11 +31,13 @@ export default function AssetSelection({
   assets,
   multiple,
   disabled,
+  accountId,
   ...props
 }: {
   assets: AssetSelectionAsset[]
   multiple?: boolean
   disabled?: boolean
+  accountId?: string
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
 
@@ -79,7 +88,7 @@ export default function AssetSelection({
                   {...props}
                   defaultChecked={asset.checked}
                   type={multiple ? 'checkbox' : 'radio'}
-                  disabled={disabled}
+                  disabled={disabled || !asset.isAccountIdWhitelisted}
                   value={asset.did}
                 />
                 <label
@@ -88,7 +97,13 @@ export default function AssetSelection({
                   title={asset.name}
                 >
                   <h3 className={styles.title}>
-                    <Dotdotdot clamp={1} tagName="span">
+                    <Dotdotdot
+                      clamp={1}
+                      tagName="span"
+                      className={cx({
+                        disabled: !asset.isAccountIdWhitelisted
+                      })}
+                    >
                       {asset.name}
                     </Dotdotdot>
                     <a
@@ -101,15 +116,38 @@ export default function AssetSelection({
                     </a>
                   </h3>
 
-                  <Dotdotdot clamp={1} tagName="code" className={styles.did}>
+                  <Dotdotdot
+                    clamp={1}
+                    tagName="code"
+                    className={cx({
+                      did: true,
+                      disabled: !asset.isAccountIdWhitelisted
+                    })}
+                  >
                     {asset.symbol} | {asset.did}
                   </Dotdotdot>
                   <PriceUnit
                     price={asset.price}
                     size="small"
-                    className={styles.price}
+                    className={cx({
+                      price: true,
+                      disabled: !asset.isAccountIdWhitelisted
+                    })}
                     symbol={asset.tokenSymbol}
                   />
+                  {!asset.isAccountIdWhitelisted && (
+                    <Tooltip
+                      content={
+                        <WhitelistIndicator
+                          accountId={accountId}
+                          isAccountIdWhitelisted={false}
+                          minimal
+                        />
+                      }
+                    >
+                      <Badge isValid={false} verifiedService="Access denied" />
+                    </Tooltip>
+                  )}
                 </label>
               </div>
             ))

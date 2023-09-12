@@ -47,6 +47,9 @@ When you contact us via e-mail, our (mail) service provider Microsoft (located a
 - Here you can find Microsoft&#39;s current [**DPA including SCC** &#8599;](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
 - Here you can find Microsoft&#39;s [**privacy policy** &#8599;](https://privacy.microsoft.com/de-de/privacystatement).
 
+**Self-Description verification functionality**  
+When you are verifying a Self-Description, your IP address is processed by Gaia-X AISBL (Gaia-X European Association for Data and Cloud AISBL, Avenue des Arts 6-9, 1210 Brussels, Belgium) to resolve your request (see also chapter 4.3).
+
 ## 4. Processing operations according to Article 13 GDPR
 
 We process your personal data for the following purposes.
@@ -80,6 +83,21 @@ Our legitimate interest is to answer your inquiries.
 
 **Retention period:**  
 deltaDAO deletes your personal data as soon as we no longer require them for processing your inquiry, except deltaDAO is obliged to comply with legal retention periods or in case of legal disputes.
+
+**4.3 Providing the Self-Description verification functionality**  
+When you are verifying a Self-Description, your IP address is processed as described in chapter 4.1. Additionally, your IP address is transferred from the portal demonstrator to a load balancer operated by Gaia-X AISBL (see also chapter 3). This load balancer is forwarding your verification request to a Compliance Service instance handling your request. The load balancer does not further transmit your IP address. So, the Compliance Service instances run by the Gaia-X Clearing Houses just receive the request without your IP address.
+
+**Purpose:**  
+The transmission and usage of your IP address is necessary for providing the Self-Description verification functionality because it is a technical requirement for ensuring communication between your device and the load balancer.
+
+**Legal basis:**  
+The legal basis for this processing is our legitimate interest, pursuant to Art. 6(1)(f) GDPR.
+
+**Legitimate interest:**  
+Our legitimate interest is to provide the Self-Description verification functionality to you.
+
+**Retention period:**  
+Gaia-X AISBL retains your personal data for as long as needed to provide their service.
 
 ## 5. Automated decision making including profiling according to Article 13(2)(f) GDPR
 

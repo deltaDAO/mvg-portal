@@ -29,6 +29,7 @@ export interface AppConfig {
   }
   defaultAccessTerms: string
   purgatoryUrl: string
+  dockerHubProxyUrl: string
 }
 export interface SiteContent {
   siteTitle: string

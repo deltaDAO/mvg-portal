@@ -9,15 +9,15 @@ import Loader from '@components/@shared/atoms/Loader'
 import styles from './index.module.css'
 import {
   getFormattedCodeString,
-  getServiceSD,
-  signServiceSD,
+  getServiceCredential,
+  signServiceCredential,
   storeRawServiceSD,
-  verifyRawServiceSD
+  verifyRawServiceCredential
 } from '@components/Publish/_utils'
 import URLInput from '../URLInput'
 import FileInfo from '../FilesInput/Info'
 
-const serviceSelfDescriptionOptions = [
+const serviceCredentialOptions = [
   {
     name: 'url',
     checked: false,
@@ -30,18 +30,19 @@ const serviceSelfDescriptionOptions = [
   }
 ]
 
-export default function ServiceSD(props: InputProps): ReactElement {
+export default function ServiceCredential(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
   const [userSelection, setUserSelection] = useState<string>()
   const [isVerified, setIsVerified] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [rawServiceSDPreview, setRawServiceSDPreview] = useState<string>()
+  const [rawServiceCredentialPreview, setRawServiceCredentialPreview] =
+    useState<string>()
 
   const validateUrl = async (url: string): Promise<string> => {
     try {
       setIsLoading(true)
-      const serviceSD = await getServiceSD(url)
-      const { verified } = await verifyRawServiceSD(serviceSD)
+      const serviceCredential = await getServiceCredential(url)
+      const { verified } = await verifyRawServiceCredential(serviceCredential)
       setIsVerified(verified)
 
       if (!verified) {
@@ -50,7 +51,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
         )
         return
       }
-      if (!serviceSD) {
+      if (!serviceCredential) {
         toast.error(
           'The linked file is not accessible. Please verify your service provider allows access from this domain and try again.'
         )
@@ -58,7 +59,7 @@ export default function ServiceSD(props: InputProps): ReactElement {
       }
 
       helpers.setValue({ url, isVerified: verified })
-      toast.success('Great! The provided service self-description looks good.')
+      toast.success('Great! The provided service credential looks good.')
     } catch (error) {
       toast.error('Could not fetch file info. Please check URL and try again')
       console.error(error.message)
@@ -67,31 +68,34 @@ export default function ServiceSD(props: InputProps): ReactElement {
     }
   }
 
-  const verifyRawBody = async (rawServiceSD: string) => {
+  const verifyRawBody = async (rawServiceCredential: string) => {
     try {
       setIsLoading(true)
 
-      const parsedServiceSD = JSON.parse(rawServiceSD)
-      const signedServiceSD = parsedServiceSD?.complianceCredential
-        ? parsedServiceSD
-        : await signServiceSD(parsedServiceSD)
+      const parsedServiceCredential = JSON.parse(rawServiceCredential)
+      const signedServiceCredential =
+        parsedServiceCredential?.complianceCredential
+          ? parsedServiceCredential
+          : await signServiceCredential(parsedServiceCredential)
 
-      const { verified, storedSdUrl } = await storeRawServiceSD(signedServiceSD)
+      const { verified, storedSdUrl } = await storeRawServiceSD(
+        signedServiceCredential
+      )
       setIsVerified(verified)
 
       if (!verified) {
         toast.error(
-          'The data you entered appears to be invalid. Please check the provided service self-description and try again'
+          'The data you entered appears to be invalid. Please check the provided service credential and try again'
         )
         return
       }
 
-      setRawServiceSDPreview(signedServiceSD)
+      setRawServiceCredentialPreview(signedServiceCredential)
       helpers.setValue({ url: storedSdUrl })
-      toast.success('Great! The provided service self-description looks good.')
+      toast.success('Great! The provided service credential looks good.')
     } catch (error) {
       toast.error(
-        'Something went wrong. Please check the provided service self-description and try again'
+        'Something went wrong. Please check the provided service credential and try again'
       )
       console.error(error.message)
     } finally {

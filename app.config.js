@@ -76,5 +76,10 @@ module.exports = {
     'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md',
 
   // Purgatory URI, leave as an empty string to disable the API call
-  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || ''
+  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || '',
+
+  // The url used to fetch docker hub image info
+  dockerHubProxyUrl:
+    process.env.NEXT_PUBLIC_DOCKER_HUB_PROXY_URL ||
+    'https://dockerhub-proxy.delta-dao.com'
 }

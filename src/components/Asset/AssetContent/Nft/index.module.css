@@ -29,5 +29,11 @@
 }
 
 .nftImage .tooltip svg {
-  fill: var(--font-color-text);
+  fill: var(--nft-refresh-icon-fill);
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--nft-placeholder-background);
 }

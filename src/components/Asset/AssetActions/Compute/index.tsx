@@ -13,8 +13,8 @@ import {
   ComputeOutput,
   ProviderComputeInitializeResults,
   unitsToAmount,
-  minAbi,
   ProviderFees,
+  UserCustomParameters,
   getErrorMessage
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
@@ -22,7 +22,11 @@ import Price from '@shared/Price'
 import FileIcon from '@shared/FileIcon'
 import Alert from '@shared/atoms/Alert'
 import { Formik } from 'formik'
-import { getInitialValues, validationSchema } from './_constants'
+import {
+  ComputeDatasetForm,
+  getComputeValidationSchema,
+  getInitialValues
+} from './_constants'
 import FormStartComputeDataset from './FormComputeDataset'
 import styles from './index.module.css'
 import SuccessConfetti from '@shared/SuccessConfetti'
@@ -57,6 +61,7 @@ import { getDummySigner } from '@utils/wallet'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import WhitelistIndicator from './WhitelistIndicator'
+import { parseConsumerParameterValues } from '../ConsumerParameters'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -64,12 +69,14 @@ export default function Compute({
   asset,
   dtBalance,
   file,
+  isAccountIdWhitelisted,
   fileIsLoading,
   consumableFeedback
 }: {
   asset: AssetExtended
   dtBalance: string
   file: FileInfo
+  isAccountIdWhitelisted: boolean
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
@@ -292,13 +299,13 @@ export default function Compute({
 
     getAlgorithmsForAsset(asset, newCancelToken()).then((algorithmsAssets) => {
       setDdoAlgorithmList(algorithmsAssets)
-      getAlgorithmAssetSelectionList(asset, algorithmsAssets).then(
+      getAlgorithmAssetSelectionList(asset, algorithmsAssets, accountId).then(
         (algorithmSelectionList) => {
           setAlgorithmList(algorithmSelectionList)
         }
       )
     })
-  }, [asset, isUnsupportedPricing])
+  }, [accountId, asset, isUnsupportedPricing])
 
   const initializeComputeEnvironment = useCallback(async () => {
     const computeEnvs = await getComputeEnvironments(
@@ -358,7 +365,11 @@ export default function Compute({
     toast.error(errorMsg)
   }, [error])
 
-  async function startJob(): Promise<void> {
+  async function startJob(userCustomParameters: {
+    dataServiceParams?: UserCustomParameters
+    algoServiceParams?: UserCustomParameters
+    algoParams?: UserCustomParameters
+  }): Promise<void> {
     try {
       setIsOrdering(true)
       setIsOrdered(false)
@@ -366,7 +377,9 @@ export default function Compute({
       const computeService = getServiceByName(asset, 'compute')
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: selectedAlgorithmAsset.id,
-        serviceId: selectedAlgorithmAsset.services[0].id
+        serviceId: selectedAlgorithmAsset.services[0].id,
+        algocustomdata: userCustomParameters?.algoParams,
+        userdata: userCustomParameters?.algoServiceParams
       }
 
       const allowed = await isOrderable(
@@ -425,7 +438,8 @@ export default function Compute({
       const computeAsset: ComputeAsset = {
         documentId: asset.id,
         serviceId: asset.services[0].id,
-        transferTxId: datasetOrderTx
+        transferTxId: datasetOrderTx,
+        userdata: userCustomParameters?.dataServiceParams
       }
       computeAlgorithm.transferTxId = algorithmOrderTx
       const output: ComputeOutput = {
@@ -457,6 +471,27 @@ export default function Compute({
     } finally {
       setIsOrdering(false)
     }
+  }
+
+  const onSubmit = async (values: ComputeDatasetForm) => {
+    if (!values.algorithm || !values.computeEnv) return
+
+    const userCustomParameters = {
+      dataServiceParams: parseConsumerParameterValues(
+        values?.dataServiceParams,
+        asset.services[0].consumerParameters
+      ),
+      algoServiceParams: parseConsumerParameterValues(
+        values?.algoServiceParams,
+        selectedAlgorithmAsset?.services[0].consumerParameters
+      ),
+      algoParams: parseConsumerParameterValues(
+        values?.algoParams,
+        selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters
+      )
+    }
+
+    await startJob(userCustomParameters)
   }
 
   return (
@@ -498,13 +533,19 @@ export default function Compute({
         </>
       ) : (
         <Formik
-          initialValues={getInitialValues()}
+          initialValues={getInitialValues(
+            asset,
+            selectedAlgorithmAsset,
+            selectedComputeEnv
+          )}
           validateOnMount
-          validationSchema={validationSchema}
-          onSubmit={async (values) => {
-            if (!values.algorithm || !values.computeEnv) return
-            await startJob()
-          }}
+          validationSchema={getComputeValidationSchema(
+            asset.services[0].consumerParameters,
+            selectedAlgorithmAsset?.services[0].consumerParameters,
+            selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters
+          )}
+          enableReinitialize
+          onSubmit={onSubmit}
         >
           <FormStartComputeDataset
             algorithms={algorithmList}
@@ -520,7 +561,7 @@ export default function Compute({
             assetTimeout={secondsToString(asset?.services[0].timeout)}
             hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
             hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
-            isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
             datasetSymbol={
               asset?.accessDetails?.baseToken?.symbol ||
               (asset?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
@@ -561,7 +602,7 @@ export default function Compute({
       {accountId && (
         <WhitelistIndicator
           accountId={accountId}
-          isAccountIdWhitelisted={isAddressWhitelisted(asset, accountId)}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
         />
       )}
       {accountId && asset?.accessDetails?.datatoken && (
