@@ -60,13 +60,10 @@ export default function HistoryPage({
   const { chainIds } = useUserPreferences()
   const newCancelToken = useCancelToken()
 
-  const url = new URL(location.href)
-  const defaultTab = url.searchParams.get('defaultTab')
-
   const [refetchJobs, setRefetchJobs] = useState(false)
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
-  const [tabIndex, setTabIndex] = useState(0)
+  const [tabIndex, setTabIndex] = useState<number>()
 
   const fetchJobs = useCallback(
     async (type: string) => {
@@ -106,6 +103,26 @@ export default function HistoryPage({
     }
   }, [accountId, refetchJobs])
 
+  const getDefaultIndex = useCallback((): number => {
+    const url = new URL(location.href)
+    const defaultTabString = url.searchParams.get('defaultTab')
+    const defaultTabIndex = /^\d+$/.test(defaultTabString)
+      ? parseInt(defaultTabString)
+      : 0
+
+    // we need to make sure the default index is not bigger than the highest
+    // tab index available otherwise the Tabs component will display no content
+    if (accountId === accountIdentifier) {
+      return defaultTabIndex > 2 ? 2 : defaultTabIndex
+    }
+
+    return defaultTabIndex > 1 ? 1 : defaultTabIndex
+  }, [accountId, accountIdentifier])
+
+  useEffect(() => {
+    setTabIndex(getDefaultIndex())
+  }, [getDefaultIndex])
+
   const tabs = getTabs(
     accountIdentifier,
     accountId,
@@ -119,7 +136,7 @@ export default function HistoryPage({
     <Tabs
       items={tabs}
       className={styles.tabs}
-      selectedIndex={tabIndex}
+      selectedIndex={tabIndex || 0}
       onIndexSelected={setTabIndex}
     />
   )

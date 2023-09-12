@@ -16,10 +16,10 @@ export default function PageProfile(): ReactElement {
   // Have accountId in path take over, if not present fall back to web3
   useEffect(() => {
     async function init() {
-      if (!router?.asPath) return
+      if (!router?.route) return
 
       // Path is root /profile, have web3 take over
-      if (router.asPath === '/profile') {
+      if (router.route === '/profile') {
         setFinalAccountId(accountId)
         setOwnAccount(true)
         return
