@@ -9,6 +9,7 @@ import React, {
 import { LoggerInstance, LogLevel } from '@oceanprotocol/lib'
 import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from './MarketMetadata'
+import { AutomationMessage } from './Automation/AutomationProvider'
 
 interface UserPreferencesValue {
   debug: boolean
@@ -27,6 +28,9 @@ interface UserPreferencesValue {
   allowExternalContent: boolean
   setAllowExternalContent: (value: boolean) => void
   locale: string
+  automationMessages: AutomationMessage[]
+  addAutomationMessage: (message: AutomationMessage) => void
+  removeAutomationMessage: (address: string) => void
 }
 
 const UserPreferencesContext = createContext(null)
@@ -77,6 +81,10 @@ function UserPreferencesProvider({
     localStorage?.allowExternalContent || false
   )
 
+  const [automationMessages, setAutomationMessages] = useState<
+    AutomationMessage[]
+  >(localStorage?.automationMessages || [])
+
   // Write values to localStorage on change
   useEffect(() => {
     setLocalStorage({
@@ -86,7 +94,8 @@ function UserPreferencesProvider({
       bookmarks,
       privacyPolicySlug,
       showPPC,
-      allowExternalContent
+      allowExternalContent,
+      automationMessages
     })
   }, [
     chainIds,
@@ -95,7 +104,8 @@ function UserPreferencesProvider({
     bookmarks,
     privacyPolicySlug,
     showPPC,
-    allowExternalContent
+    allowExternalContent,
+    automationMessages
   ])
 
   // Set ocean.js log levels, default: Error
@@ -133,6 +143,18 @@ function UserPreferencesProvider({
     setBookmarks(newPinned)
   }, [bookmarks])
 
+  function addAutomationMessage(message: AutomationMessage) {
+    const newMessages = [...automationMessages, message]
+    setAutomationMessages(newMessages)
+  }
+
+  function removeAutomationMessage(address: string) {
+    const newMessages = automationMessages.filter(
+      (message) => message.address.toLowerCase() !== address.toLowerCase()
+    )
+    setAutomationMessages(newMessages)
+  }
+
   // chainIds old data migration
   // remove deprecated networks from user-saved chainIds
   useEffect(() => {
@@ -160,7 +182,10 @@ function UserPreferencesProvider({
           setPrivacyPolicySlug,
           setShowPPC,
           allowExternalContent,
-          setAllowExternalContent
+          setAllowExternalContent,
+          automationMessages,
+          addAutomationMessage,
+          removeAutomationMessage
         } as UserPreferencesValue
       }
     >

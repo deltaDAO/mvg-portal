@@ -9,11 +9,13 @@ import { MenuLink } from '../Menu'
 import AddTokenList from './AddTokenList'
 import { GEN_X_NETWORK_ID } from 'chains.config'
 import AddNetwork from '@components/@shared/AddNetwork'
+import { useAutomation } from '../../../@context/Automation/AutomationProvider'
 
 export default function Details(): ReactElement {
   const { connector: activeConnector, address: accountId } = useAccount()
   const { connect } = useConnect()
   const { disconnect } = useDisconnect()
+  const { setIsAutomationEnabled } = useAutomation()
 
   return (
     <div className={styles.details}>
@@ -67,6 +69,16 @@ export default function Details(): ReactElement {
               }}
             >
               Disconnect
+            </Button>
+            <Button
+              style="text"
+              size="small"
+              onClick={() => {
+                console.log('log log')
+                setIsAutomationEnabled(true)
+              }}
+            >
+              Enable Automation
             </Button>
           </p>
         </li>
