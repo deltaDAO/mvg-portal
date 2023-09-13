@@ -1,8 +1,8 @@
 import { ethers } from 'ethers'
 import React, { ReactElement } from 'react'
 import { usePrepareSendTransaction, useSendTransaction } from 'wagmi'
-import { useAutomation } from '../../../@context/Automation/AutomationProvider'
-import Button from '../../@shared/atoms/Button'
+import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import Button from '../../../@shared/atoms/Button'
 
 export default function SendTransaction(): ReactElement {
   const { autoWallet } = useAutomation()

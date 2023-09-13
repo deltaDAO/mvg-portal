@@ -6,22 +6,22 @@ import {
   useContractWrite,
   usePrepareContractWrite
 } from 'wagmi'
-import { useAutomation } from '../../../@context/Automation/AutomationProvider'
-import { getOceanConfig } from '../../../@utils/ocean'
-import Button from '../../@shared/atoms/Button'
+import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import { getOceanConfig } from '../../../../@utils/ocean'
+import Button from '../../../@shared/atoms/Button'
 
-export default function ApproveToken({
+export default function WithdrawToken({
   token,
   amount
 }: {
-  token: {
+  token?: {
     address: `0x${string}`
     symbol: string
     decimals: number
   }
-  amount: string
+  amount?: string
 }): ReactElement {
-  const { autoWallet } = useAutomation()
+  const { autoWallet, balance, allowance } = useAutomation()
 
   const { config } = usePrepareContractWrite({
     address: token.address,

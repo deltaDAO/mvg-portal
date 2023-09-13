@@ -12,7 +12,7 @@ import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
 import { useAutomation } from '../../@context/Automation/AutomationProvider'
-import Automation from './Automation'
+import Automation from './UserPreferences/Automation'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)

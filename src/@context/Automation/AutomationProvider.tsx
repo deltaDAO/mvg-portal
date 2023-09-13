@@ -1,3 +1,5 @@
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { Wallet, ethers } from 'ethers'
 import React, {
   createContext,
   useCallback,
@@ -5,19 +7,12 @@ import React, {
   useEffect,
   useState
 } from 'react'
-import { LoggerInstance, sendTx } from '@oceanprotocol/lib'
-import { Wallet, ethers } from 'ethers'
-import {
-  useAccount,
-  useProvider,
-  useSignMessage,
-  usePrepareSendTransaction,
-  useSendTransaction
-} from 'wagmi'
+import { useAccount, useChainId, useProvider, useSignMessage } from 'wagmi'
 import { getOceanConfig } from '../../@utils/ocean'
 import { tokenAddressesEUROe } from '../../@utils/subgraph'
-import { getTokenAllowance } from '../../@utils/wallet'
+import { accountTruncate, getTokenAllowance } from '../../@utils/wallet'
 import { useUserPreferences } from '../UserPreferences'
+import { toast } from 'react-toastify'
 
 export type AutomationMessage = { address: string; message: string }
 
@@ -33,11 +28,21 @@ export type AutomationWallet = {
   address: string
 }
 
+export interface AutomationBalance {
+  eth: string
+}
+
+export interface AutomationAllowance extends UserBalance {
+  ocean: string
+  euroe: string
+}
+
 export interface AutomationProviderValue {
   autoWallet: AutomationWallet
-  balance: UserBalance
-  allowance: UserBalance
   isAutomationEnabled: boolean
+  balance: AutomationBalance
+  allowance: AutomationAllowance
+  updateBalance: () => Promise<void>
   setIsAutomationEnabled: (isEnabled: boolean) => void
   exportAutomationWallet: (password: string) => void
   deleteCurrentAutomationWallet: () => void
@@ -51,8 +56,8 @@ const AutomationContext = createContext({} as AutomationProviderValue)
 
 // Provider
 function AutomationProvider({ children }) {
-  const { connector, address } = useAccount()
-  const [chainId, setChainId] = useState<number>()
+  const { address } = useAccount()
+  const chainId = useChainId()
   const { automationMessages, addAutomationMessage, removeAutomationMessage } =
     useUserPreferences()
 
@@ -61,25 +66,15 @@ function AutomationProvider({ children }) {
 
   const { signMessageAsync } = useSignMessage()
 
-  const [balance, setBalance] = useState<UserBalance | undefined>({
+  const [balance, setBalance] = useState<AutomationBalance>({
     eth: '0'
   })
-  const [allowance, setAllowance] = useState<UserBalance | undefined>({
+  const [allowance, setAllowance] = useState<AutomationAllowance>({
     ocean: '0',
     euroe: '0'
   })
 
   const wagmiProvider = useProvider()
-
-  useEffect(() => {
-    if (!connector) return
-
-    const setNewChainId = async () => {
-      setChainId(await connector.getChainId())
-    }
-
-    setNewChainId()
-  }, [connector])
 
   const getAutomationMessage = useCallback(
     (address: string) => {
@@ -149,17 +144,31 @@ function AutomationProvider({ children }) {
 
   useEffect(() => {
     const setAutomationWallet = async () => {
-      console.log('useEffect first check')
-      if (!address || !isAutomationEnabled) return
+      if (!address) return
 
-      console.log('useEffect second check')
+      if (!isAutomationEnabled) {
+        toast.info(`Automation disabled`)
+        return
+      }
+
       // if we already have an autoWallet for current account (address), skip creation
-      if (address === autoWallet?.address) return
+      if (address === autoWallet?.address && autoWallet?.wallet) {
+        toast.success(
+          `Successfully enabled automation wallet with address ${accountTruncate(
+            autoWallet.wallet.address
+          )}`
+        )
+        return
+      }
 
-      console.log('useEffect we need creation')
       const automationMessage = createAutomationMessage()
 
       const newWallet = await createWalletFromMessage(automationMessage.message)
+
+      if (!newWallet) {
+        setIsAutomationEnabled(false)
+        return
+      }
 
       setAutoWallet({ wallet: newWallet, address })
     }
@@ -168,35 +177,11 @@ function AutomationProvider({ children }) {
   }, [
     address,
     autoWallet?.address,
+    autoWallet?.wallet,
     isAutomationEnabled,
     createWalletFromMessage,
     createAutomationMessage
   ])
-
-  const sendEther = async (etherValue: number) => {
-    try {
-      if (!etherValue) {
-        throw new Error('Value must be greater than 0.')
-      }
-      if (!address || !autoWallet) {
-        throw new Error(
-          'Both a connected wallet and an automation wallet must exist.'
-        )
-      }
-
-      const amountToSend = ethers.utils.formatEther(etherValue.toString())
-      await web3.eth.sendTransaction({
-        from: accountId,
-        to: automation.account.address,
-        value: amountToSend
-      })
-      await automation.getBalance()
-
-      setEtherAction({ error: '' })
-    } catch (error: any) {
-      setEtherAction({ error: error.message })
-    }
-  }
 
   const exportAutomationWallet = useCallback(
     async (password: string) => {
@@ -224,34 +209,42 @@ function AutomationProvider({ children }) {
     [createWalletFromMessage, getAutomationMessage, address]
   )
 
+  const getBalance = useCallback(async (): Promise<AutomationBalance> => {
+    return {
+      eth: ethers.utils.formatEther(
+        await wagmiProvider.getBalance(autoWallet.wallet.address, 'latest')
+      )
+    }
+  }, [autoWallet?.wallet, wagmiProvider])
+
+  const getAllowance = useCallback(async (): Promise<AutomationAllowance> => {
+    const oceanConfig = getOceanConfig(chainId)
+
+    return {
+      ocean: await getTokenAllowance(
+        autoWallet.address,
+        autoWallet.wallet.address,
+        18,
+        oceanConfig.oceanTokenAddress,
+        wagmiProvider
+      ),
+      euroe: await getTokenAllowance(
+        autoWallet.address,
+        autoWallet.wallet.address,
+        6,
+        tokenAddressesEUROe[chainId],
+        wagmiProvider
+      )
+    }
+  }, [autoWallet?.wallet, autoWallet?.address, wagmiProvider, chainId])
+
   const updateBalance = useCallback(async () => {
     if (!autoWallet) return
 
     try {
-      const oceanConfig = getOceanConfig(chainId)
+      const balance = await getBalance()
 
-      const balance = {
-        eth: ethers.utils.formatEther(
-          await wagmiProvider.getBalance(autoWallet.wallet.address, 'latest')
-        )
-      }
-
-      const allowance = {
-        ocean: await getTokenAllowance(
-          autoWallet.address,
-          autoWallet.wallet.address,
-          18,
-          oceanConfig.oceanTokenAddress,
-          wagmiProvider
-        ),
-        euroe: await getTokenAllowance(
-          autoWallet.address,
-          autoWallet.wallet.address,
-          6,
-          tokenAddressesEUROe[chainId],
-          wagmiProvider
-        )
-      }
+      const allowance = await getAllowance()
 
       console.log(`[AutomationProvider] autoWallet balance:`, {
         balance,
@@ -263,7 +256,7 @@ function AutomationProvider({ children }) {
     } catch (error: any) {
       LoggerInstance.error('[AutomationProvider] Error: ', error.message)
     }
-  }, [chainId, autoWallet, wagmiProvider])
+  }, [autoWallet, getBalance, getAllowance])
 
   // periodic refresh of automation wallet balance
   useEffect(() => {
@@ -284,6 +277,7 @@ function AutomationProvider({ children }) {
         allowance,
         isAutomationEnabled,
         setIsAutomationEnabled,
+        updateBalance,
         exportAutomationWallet,
         deleteCurrentAutomationWallet
       }}
