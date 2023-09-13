@@ -5,24 +5,42 @@ import React, {
   useEffect,
   useState
 } from 'react'
-import { LoggerInstance } from '@oceanprotocol/lib'
+import { LoggerInstance, sendTx } from '@oceanprotocol/lib'
 import { Wallet, ethers } from 'ethers'
-import { useAccount, useProvider, useSignMessage } from 'wagmi'
+import {
+  useAccount,
+  useProvider,
+  useSignMessage,
+  usePrepareSendTransaction,
+  useSendTransaction
+} from 'wagmi'
 import { getOceanConfig } from '../../@utils/ocean'
 import { tokenAddressesEUROe } from '../../@utils/subgraph'
 import { getTokenAllowance } from '../../@utils/wallet'
 import { useUserPreferences } from '../UserPreferences'
 
 export type AutomationMessage = { address: string; message: string }
-export type AutomationWallet = { wallet: Wallet; address: string }
+
+export type AutomationWallet = {
+  /**
+   * The wallet used for automations
+   */
+  wallet: Wallet
+  /**
+   * The address that the automation wallet is used for (user address)
+   * For address of the automation wallet see: wallet.address
+   */
+  address: string
+}
 
 export interface AutomationProviderValue {
   autoWallet: AutomationWallet
   balance: UserBalance
   allowance: UserBalance
+  isAutomationEnabled: boolean
+  setIsAutomationEnabled: (isEnabled: boolean) => void
   exportAutomationWallet: (password: string) => void
   deleteCurrentAutomationWallet: () => void
-  setIsAutomationEnabled: (isEnabled: boolean) => void
 }
 
 // Refresh interval for balance retrieve - 20 sec
@@ -155,6 +173,31 @@ function AutomationProvider({ children }) {
     createAutomationMessage
   ])
 
+  const sendEther = async (etherValue: number) => {
+    try {
+      if (!etherValue) {
+        throw new Error('Value must be greater than 0.')
+      }
+      if (!address || !autoWallet) {
+        throw new Error(
+          'Both a connected wallet and an automation wallet must exist.'
+        )
+      }
+
+      const amountToSend = ethers.utils.formatEther(etherValue.toString())
+      await web3.eth.sendTransaction({
+        from: accountId,
+        to: automation.account.address,
+        value: amountToSend
+      })
+      await automation.getBalance()
+
+      setEtherAction({ error: '' })
+    } catch (error: any) {
+      setEtherAction({ error: error.message })
+    }
+  }
+
   const exportAutomationWallet = useCallback(
     async (password: string) => {
       const message = getAutomationMessage(address)
@@ -189,21 +232,21 @@ function AutomationProvider({ children }) {
 
       const balance = {
         eth: ethers.utils.formatEther(
-          await wagmiProvider.getBalance(autoWallet.address, 'latest')
+          await wagmiProvider.getBalance(autoWallet.wallet.address, 'latest')
         )
       }
 
       const allowance = {
         ocean: await getTokenAllowance(
-          address,
           autoWallet.address,
+          autoWallet.wallet.address,
           18,
           oceanConfig.oceanTokenAddress,
           wagmiProvider
         ),
         euroe: await getTokenAllowance(
-          address,
           autoWallet.address,
+          autoWallet.wallet.address,
           6,
           tokenAddressesEUROe[chainId],
           wagmiProvider
@@ -220,7 +263,7 @@ function AutomationProvider({ children }) {
     } catch (error: any) {
       LoggerInstance.error('[AutomationProvider] Error: ', error.message)
     }
-  }, [address, chainId, autoWallet, wagmiProvider])
+  }, [chainId, autoWallet, wagmiProvider])
 
   // periodic refresh of automation wallet balance
   useEffect(() => {
@@ -239,8 +282,9 @@ function AutomationProvider({ children }) {
         autoWallet,
         balance,
         allowance,
-        exportAutomationWallet,
+        isAutomationEnabled,
         setIsAutomationEnabled,
+        exportAutomationWallet,
         deleteCurrentAutomationWallet
       }}
     >
