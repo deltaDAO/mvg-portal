@@ -51,6 +51,12 @@ function getTabs(
   return defaultTabs
 }
 
+const tabsIndexList = {
+  published: 0,
+  downloads: 1,
+  computeJobs: 2
+}
+
 export default function HistoryPage({
   accountIdentifier
 }: {
@@ -106,17 +112,16 @@ export default function HistoryPage({
   const getDefaultIndex = useCallback((): number => {
     const url = new URL(location.href)
     const defaultTabString = url.searchParams.get('defaultTab')
-    const defaultTabIndex = /^\d+$/.test(defaultTabString)
-      ? parseInt(defaultTabString)
-      : 0
+    const defaultTabIndex = tabsIndexList?.[defaultTabString]
 
-    // we need to make sure the default index is not bigger than the highest
-    // tab index available otherwise the Tabs component will display no content
-    if (accountId === accountIdentifier) {
-      return defaultTabIndex > 2 ? 2 : defaultTabIndex
-    }
+    if (!defaultTabIndex) return 0
+    if (
+      defaultTabIndex === tabsIndexList.computeJobs &&
+      accountId !== accountIdentifier
+    )
+      return 0
 
-    return defaultTabIndex > 1 ? 1 : defaultTabIndex
+    return defaultTabIndex
   }, [accountId, accountIdentifier])
 
   useEffect(() => {
