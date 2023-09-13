@@ -48,7 +48,13 @@ export default function Automation(): ReactElement {
 
   const indicatorClasses = cx({
     indicator: true,
-    enabled: isAutomationEnabled
+    enabled: isAutomationEnabled,
+    warning:
+      Object.keys(allowance).filter((token) => Number(allowance[token]) <= 0)
+        .length > 0,
+    error:
+      Object.keys(balance).filter((token) => Number(balance[token]) <= 0)
+        .length > 0
   })
 
   return (

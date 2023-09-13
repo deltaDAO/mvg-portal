@@ -26,7 +26,15 @@
   background-color: var(--brand-alert-green);
 }
 
-.indicator.enabled .indicatorPulse {
+.indicator.warning {
+  background-color: var(--brand-alert-yellow);
+}
+
+.indicator.error {
+  background-color: var(--brand-alert-red);
+}
+
+.indicator.enabled:not(.error) .indicatorPulse {
   position: relative;
   width: 100%;
   height: 100%;

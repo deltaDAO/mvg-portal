@@ -46,6 +46,16 @@ export default function Details(): ReactElement {
           amount="1"
         />
       )}
+      {autoWallet?.wallet && (
+        <ApproveToken
+          token={{
+            address: oceanTokenAddress,
+            symbol: 'OCEAN',
+            decimals: 18
+          }}
+          amount="0"
+        />
+      )}
     </div>
   )
 }

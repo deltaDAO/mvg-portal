@@ -146,6 +146,8 @@ function AutomationProvider({ children }) {
     const setAutomationWallet = async () => {
       if (!address) return
 
+      if (address !== autoWallet?.address) setAutoWallet(undefined)
+
       if (!isAutomationEnabled) {
         toast.info(`Automation disabled`)
         return
