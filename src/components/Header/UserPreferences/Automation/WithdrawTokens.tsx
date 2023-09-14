@@ -25,7 +25,8 @@ export default function WithdrawToken({
 }: {
   className?: string
 }): ReactElement {
-  const { autoWallet, balance, updateBalance } = useAutomation()
+  const { autoWallet, balance, updateBalance, hasRetrievableBalance } =
+    useAutomation()
 
   const chainId = useChainId()
 
@@ -95,20 +96,17 @@ export default function WithdrawToken({
 
   const sendBalance = async () => {
     try {
-      const ethBalance = ethers.utils.parseEther(balance.eth)
+      if (!hasRetrievableBalance) {
+        toast.error('Could not withdraw network token. Balance too low.')
+        return
+      }
 
+      const ethBalance = ethers.utils.parseEther(balance.eth)
       const estimatedGas = await autoWallet.wallet.estimateGas({
         to: autoWallet.address,
         value: ethBalance
       })
-
       const gasPrice = await autoWallet.wallet.getGasPrice()
-
-      if (estimatedGas.mul(gasPrice).gt(ethBalance)) {
-        toast.error('Could not withdraw network token. Balance too low.')
-        console.error('Network token balance is too low for withdrawal.')
-        return
-      }
 
       const retrievableEthValue = ethBalance.sub(estimatedGas.mul(gasPrice))
       const tx = await autoWallet.wallet.sendTransaction({
