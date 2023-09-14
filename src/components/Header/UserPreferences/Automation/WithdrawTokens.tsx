@@ -1,24 +1,10 @@
-import React, {
-  ComponentProps,
-  ReactElement,
-  ReactPropTypes,
-  useEffect,
-  useState
-} from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import Button from '../../../@shared/atoms/Button'
 import { ethers } from 'ethers'
-import {
-  erc20ABI,
-  useChainId,
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction
-} from 'wagmi'
-import { getOceanConfig } from '../../../../@utils/ocean'
-import { tokenAddressesEUROe } from '../../../../@utils/subgraph'
 import Loader from '../../../@shared/atoms/Loader'
+import useTokenApproval from '../../../../@hooks/useTokenApproval'
 
 export default function WithdrawToken({
   className
@@ -32,82 +18,28 @@ export default function WithdrawToken({
     hasRetrievableBalance,
     hasAnyAllowance
   } = useAutomation()
+  const { approve, setValue, isLoading: isApprovalLoading } = useTokenApproval()
 
-  const chainId = useChainId()
-
-  const [oceanTokenAddress, setOceanTokenAddress] = useState<`0x${string}`>()
-  const [euroeTokenAddress, setEuroeTokenAddress] = useState<`0x${string}`>()
-
+  const [disabled, setDisabled] = useState<boolean>()
+  const [isTxLoading, setIsTxLoading] = useState<boolean>()
   const [isTransactionSuccess, setIsTransactionSuccess] =
     useState<boolean>(undefined)
-
-  const [isLoading, setIsLoading] = useState<boolean>()
-  const [isWithdrawing, setIsWithdrawing] = useState<boolean>()
-  const [disabled, setDisabled] = useState<boolean>()
 
   useEffect(() => {
     const disable = async () => {
       const hasBalance = await hasRetrievableBalance()
       const hasAllowances = hasAnyAllowance()
 
-      setDisabled((!hasBalance && !hasAllowances) || isLoading)
+      setDisabled(
+        (!hasBalance && !hasAllowances) || isTxLoading || isApprovalLoading
+      )
     }
     disable()
-  }, [isLoading, hasRetrievableBalance, hasAnyAllowance])
-
-  useEffect(() => {
-    const oceanConfig = getOceanConfig(chainId)
-    setOceanTokenAddress(oceanConfig?.oceanTokenAddress as `0x${string}`)
-    setEuroeTokenAddress(tokenAddressesEUROe[chainId] as `0x${string}`)
-  }, [chainId])
-
-  const { config: oceanConfig } = usePrepareContractWrite({
-    address: oceanTokenAddress,
-    abi: erc20ABI,
-    functionName: 'approve',
-    args: [
-      autoWallet?.wallet?.address as `0x${string}`,
-      ethers.utils.parseUnits('0', 18)
-    ]
-  })
-  const {
-    data: oceanData,
-    write: oceanWrite,
-    isLoading: isOceanLoading
-  } = useContractWrite(oceanConfig)
-
-  const { config: euroeConfig } = usePrepareContractWrite({
-    address: euroeTokenAddress,
-    abi: erc20ABI,
-    functionName: 'approve',
-    args: [
-      autoWallet?.wallet?.address as `0x${string}`,
-      ethers.utils.parseUnits('0', 18)
-    ]
-  })
-  const {
-    data: euroeData,
-    write: euroeWrite,
-    isLoading: isEuroeLoading
-  } = useContractWrite(euroeConfig)
-
-  const {
-    isLoading: isOceanTransactionLoading,
-    isSuccess: isOceanTransactionSuccess
-  } = useWaitForTransaction({
-    hash: oceanData?.hash
-  })
-
-  const {
-    isLoading: isEuroeTransactionLoading,
-    isSuccess: isEuroeTransactionSuccess
-  } = useWaitForTransaction({
-    hash: euroeData?.hash
-  })
+  }, [isTxLoading, isApprovalLoading, hasRetrievableBalance, hasAnyAllowance])
 
   const revokeApprovals = async () => {
-    oceanWrite?.()
-    euroeWrite?.()
+    setValue('0')
+    approve()
   }
 
   const sendBalance = async () => {
@@ -119,6 +51,7 @@ export default function WithdrawToken({
         return
       }
 
+      setIsTxLoading(true)
       const ethBalance = ethers.utils.parseEther(balance.eth)
       const estimatedGas = await autoWallet.wallet.estimateGas({
         to: autoWallet.address,
@@ -135,64 +68,26 @@ export default function WithdrawToken({
       const approvedTx = await tx.wait()
 
       setIsTransactionSuccess(!!approvedTx?.transactionHash)
+      setIsTxLoading(false)
     } catch (e) {
       console.error(e)
     }
   }
 
-  /**
-   * Handle balance update and user feedback
-   */
   useEffect(() => {
-    if (!isWithdrawing || isLoading) return
-
-    const updateBalanceAndInformUser = async () => {
-      const success = []
-      const error = []
-
-      if (isOceanTransactionSuccess) {
-        success.push(`OCEAN`)
-      } else {
-        error.push(`OCEAN`)
-      }
-      if (isEuroeTransactionSuccess) {
-        success.push(`EUROe`)
-      } else {
-        error.push(`EUROe`)
-      }
-      if (isTransactionSuccess) {
-        success.push(`Network Token`)
-      } else {
-        error.push(`Network Token`)
-      }
-
-      await updateBalance()
-
-      if (success.length > 0)
-        toast.success(`Successfully withdrew ${success.join(', ')}.`)
-
-      if (error.length > 0)
-        toast.error(`Could not withdraw ${error.join(', ')}. Please try again.`)
-
-      setIsWithdrawing(false)
+    if (isTransactionSuccess === false) {
+      toast.error('Could not transfer network tokens. Please try again.')
+      return
     }
 
-    updateBalanceAndInformUser()
-  }, [
-    isWithdrawing,
-    isLoading,
-    isEuroeTransactionSuccess,
-    isOceanTransactionSuccess,
-    isTransactionSuccess,
-    updateBalance
-  ])
-
-  useEffect(() => {
-    setIsLoading(
-      isWithdrawing &&
-        (isOceanLoading || isEuroeLoading || isTransactionSuccess === undefined)
-    )
-  }, [isWithdrawing, isOceanLoading, isEuroeLoading, isTransactionSuccess])
+    const success = async () => {
+      if (isTransactionSuccess) {
+        await updateBalance()
+        toast.success('Successfully transferred network tokens.')
+      }
+    }
+    success()
+  }, [isTransactionSuccess, updateBalance])
 
   const withdraw = async () => {
     const hasBalance = await hasRetrievableBalance()
@@ -200,7 +95,6 @@ export default function WithdrawToken({
 
     if (!hasBalance && !hasAllowances) return
 
-    setIsWithdrawing(true)
     if (hasBalance) sendBalance()
     if (hasAllowances) revokeApprovals()
   }
@@ -215,8 +109,11 @@ export default function WithdrawToken({
       }}
       className={className}
     >
-      {isLoading && <Loader message="Awaiting transactions" />}
-      Withdraw all tokens
+      {isApprovalLoading || isTxLoading ? (
+        <Loader message="Awaiting transactions" />
+      ) : (
+        `Withdraw all tokens`
+      )}
     </Button>
   )
 }

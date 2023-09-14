@@ -6,7 +6,7 @@ import {
   useWaitForTransaction
 } from 'wagmi'
 import { useAutomation } from '../@context/Automation/AutomationProvider'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { getOceanConfig } from '../@utils/ocean'
 import { tokenAddressesEUROe } from '../@utils/subgraph'
 import { ethers } from 'ethers'
@@ -19,7 +19,7 @@ export type TokenApprovalProviderValue = {
 }
 
 export default function useTokenApproval(): TokenApprovalProviderValue {
-  const { autoWallet, updateBalance } = useAutomation()
+  const { autoWallet, allowance, updateBalance } = useAutomation()
 
   const chainId = useChainId()
 
@@ -162,10 +162,11 @@ export default function useTokenApproval(): TokenApprovalProviderValue {
   /**
    * APPROVAL
    */
-  const approve = () => {
-    oceanWrite?.()
-    euroeWrite?.()
-  }
+  const approve = useCallback(() => {
+    console.log(`[TokenApproval] Approval Request`, { allowance, value })
+    if (Number(allowance.ocean) !== Number(value)) oceanWrite?.()
+    if (Number(allowance.euroe) !== Number(value)) euroeWrite?.()
+  }, [allowance, value, euroeWrite, oceanWrite])
 
   return {
     isLoading,
