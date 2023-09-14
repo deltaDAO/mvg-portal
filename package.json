@@ -122,7 +122,7 @@
     "serve": "^14.1.2",
     "stream-http": "^3.2.0",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.2.2"
   },
   "overrides": {
     "graphql": "15.8.0"
