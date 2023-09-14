@@ -30,6 +30,10 @@ export interface AppConfig {
   defaultAccessTerms: string
   purgatoryUrl: string
   dockerHubProxyUrl: string
+  automationConfig: {
+    networkTokenFundDefaultValue: string
+    erc20ApprovalDefaultValue: string
+  }
 }
 export interface SiteContent {
   siteTitle: string

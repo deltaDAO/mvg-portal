@@ -1,0 +1,36 @@
+.details {
+  max-width: calc(var(--spacer) * 10);
+  padding: calc(var(--spacer) / 2);
+}
+
+.tokenActions {
+  display: flex;
+}
+
+.toggleBtn {
+  width: 100%;
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.walletAddress {
+  display: block;
+  font-size: var(--font-size-base);
+  width: 100%;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: calc(var(--spacer) / 4);
+}
+
+.walletAddress > strong {
+  color: var(--brand-blue);
+}
+
+.walletAddress > button {
+  margin-left: calc(var(--spacer) / 4);
+}
+
+.fundingBtn,
+.withdrawBtn,
+.deleteBtn {
+  margin: calc(var(--spacer) / 4) 0;
+  width: 100%;
+}

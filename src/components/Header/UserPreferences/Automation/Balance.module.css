@@ -1,0 +1,25 @@
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-base);
+  padding-bottom: calc(var(--spacer) / 2);
+  margin-bottom: calc(var(--spacer) / 2);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.balance,
+.allowance {
+  margin: calc(var(--spacer) / 3) 0;
+}
+
+.balance strong,
+.allowance strong {
+  display: block;
+  font-weight: var(--font-weight-base);
+}
+
+.balance ul li span,
+.allowance ul li span {
+  text-transform: uppercase;
+  font-weight: var(--font-weight-bold);
+}

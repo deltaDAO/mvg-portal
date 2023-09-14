@@ -114,12 +114,6 @@ function AutomationProvider({ children }) {
     return newMessage
   }, [address, addAutomationMessage, getAutomationMessage])
 
-  const deleteCurrentAutomationWallet = useCallback(() => {
-    removeAutomationMessage(address)
-    setAutoWallet(undefined)
-    setBalance(undefined)
-  }, [address, removeAutomationMessage])
-
   const createWalletFromMessage = useCallback(
     async (message: string) => {
       try {
@@ -130,44 +124,46 @@ function AutomationProvider({ children }) {
           throw new Error('Failed to create hash for key seed.')
         }
 
-        console.log({ hash })
-
-        const newWallet = new Wallet(hash)
+        const newWallet = new Wallet(hash, wagmiProvider)
 
         return newWallet
       } catch (error: any) {
         console.log('Failed to create automation key: ', error)
       }
     },
-    [signMessageAsync]
+    [signMessageAsync, wagmiProvider]
   )
 
   useEffect(() => {
+    if (!isAutomationEnabled) {
+      toast.info(`Automation disabled`)
+      return
+    }
+
+    if (autoWallet?.wallet?.address)
+      toast.success(
+        `Successfully enabled automation wallet with address ${accountTruncate(
+          autoWallet?.wallet?.address
+        )}`
+      )
+  }, [isAutomationEnabled, autoWallet?.wallet?.address])
+
+  useEffect(() => {
     const setAutomationWallet = async () => {
-      if (!address) return
+      if (!address || !isAutomationEnabled) return
 
-      if (address !== autoWallet?.address) setAutoWallet(undefined)
+      // if we already have an associated autoWallet, we don't need to setup a new one
+      if (address === autoWallet?.address) return
 
-      if (!isAutomationEnabled) {
-        toast.info(`Automation disabled`)
-        return
-      }
-
-      // if we already have an autoWallet for current account (address), skip creation
-      if (address === autoWallet?.address && autoWallet?.wallet) {
-        toast.success(
-          `Successfully enabled automation wallet with address ${accountTruncate(
-            autoWallet.wallet.address
-          )}`
-        )
-        return
-      }
+      // first cleanup potential previous initialized autoWallet
+      setAutoWallet(undefined)
 
       const automationMessage = createAutomationMessage()
 
       const newWallet = await createWalletFromMessage(automationMessage.message)
 
       if (!newWallet) {
+        toast.error('Could not create an automation wallet. Please try again.')
         setIsAutomationEnabled(false)
         return
       }
@@ -270,6 +266,21 @@ function AutomationProvider({ children }) {
       clearInterval(balanceInterval)
     }
   }, [updateBalance])
+
+  const hasBalance = useCallback(async () => {
+    return Object.keys(balance).filter((token) => balance[token] > 0).length > 0
+  }, [balance])
+
+  const hasAllowance = useCallback(async () => {
+    return Object.keys(balance).filter((token) => balance[token] > 0).length > 0
+  }, [balance])
+
+  const deleteCurrentAutomationWallet = useCallback(async () => {
+    removeAutomationMessage(address)
+    setAutoWallet(undefined)
+    setBalance(undefined)
+    setAllowance(undefined)
+  }, [address, removeAutomationMessage])
 
   return (
     <AutomationContext.Provider

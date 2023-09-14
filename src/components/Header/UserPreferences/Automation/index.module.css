@@ -6,9 +6,8 @@
   background-image: var(--brand-gradient);
 }
 
-.automation.enabled svg,
-.automation.enabled:hover svg {
-  fill: var(--brand-white);
+.automation.enabled svg {
+  fill: var(--brand-white) !important;
 }
 
 .indicator {
