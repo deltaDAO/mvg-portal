@@ -25,8 +25,13 @@ export default function WithdrawToken({
 }: {
   className?: string
 }): ReactElement {
-  const { autoWallet, balance, updateBalance, hasRetrievableBalance } =
-    useAutomation()
+  const {
+    autoWallet,
+    balance,
+    updateBalance,
+    hasRetrievableBalance,
+    hasAnyAllowance
+  } = useAutomation()
 
   const chainId = useChainId()
 
@@ -38,6 +43,17 @@ export default function WithdrawToken({
 
   const [isLoading, setIsLoading] = useState<boolean>()
   const [isWithdrawing, setIsWithdrawing] = useState<boolean>()
+  const [disabled, setDisabled] = useState<boolean>()
+
+  useEffect(() => {
+    const disable = async () => {
+      const hasBalance = await hasRetrievableBalance()
+      const hasAllowances = hasAnyAllowance()
+
+      setDisabled((!hasBalance && !hasAllowances) || isLoading)
+    }
+    disable()
+  }, [isLoading, hasRetrievableBalance, hasAnyAllowance])
 
   useEffect(() => {
     const oceanConfig = getOceanConfig(chainId)
@@ -178,15 +194,24 @@ export default function WithdrawToken({
     )
   }, [isWithdrawing, isOceanLoading, isEuroeLoading, isTransactionSuccess])
 
+  const withdraw = async () => {
+    const hasBalance = await hasRetrievableBalance()
+    const hasAllowances = hasAnyAllowance()
+
+    if (!hasBalance && !hasAllowances) return
+
+    setIsWithdrawing(true)
+    if (hasBalance) sendBalance()
+    if (hasAllowances) revokeApprovals()
+  }
+
   return (
     <Button
       style="text"
-      disabled={!autoWallet?.wallet || !autoWallet?.address || isLoading}
+      disabled={disabled}
       onClick={(e) => {
         e.preventDefault()
-        setIsWithdrawing(true)
-        sendBalance()
-        revokeApprovals()
+        withdraw()
       }}
       className={className}
     >
