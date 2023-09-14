@@ -21,11 +21,20 @@ export default function Automation(): ReactElement {
     autoWallet,
     setIsAutomationEnabled,
     isAutomationEnabled,
-    balance,
-    allowance
+    hasRetrievableBalance,
+    hasAnyAllowance
   } = useAutomation()
 
   const [state, setState] = useState<AUTOMATION_STATES>()
+  const [hasError, setHasError] = useState<boolean>()
+
+  useEffect(() => {
+    const setError = async () => {
+      const balanceAvailable = await hasRetrievableBalance()
+      setHasError(!balanceAvailable)
+    }
+    setError()
+  }, [hasRetrievableBalance])
 
   useEffect(() => {
     if (!autoWallet?.wallet) setState(AUTOMATION_STATES.CREATE)
@@ -49,12 +58,8 @@ export default function Automation(): ReactElement {
   const indicatorClasses = cx({
     indicator: true,
     enabled: isAutomationEnabled,
-    warning:
-      Object.keys(allowance).filter((token) => Number(allowance[token]) <= 0)
-        .length > 0,
-    error:
-      Object.keys(balance).filter((token) => Number(balance[token]) <= 0)
-        .length > 0
+    warning: !hasAnyAllowance(),
+    error: hasError
   })
 
   return (

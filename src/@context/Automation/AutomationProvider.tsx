@@ -43,6 +43,7 @@ export interface AutomationProviderValue {
   balance: AutomationBalance
   allowance: AutomationAllowance
   hasRetrievableBalance: () => Promise<boolean>
+  hasAnyAllowance: () => boolean
   updateBalance: () => Promise<void>
   setIsAutomationEnabled: (isEnabled: boolean) => void
   exportAutomationWallet: (password: string) => void
@@ -269,6 +270,8 @@ function AutomationProvider({ children }) {
   }, [updateBalance])
 
   const hasRetrievableBalance = useCallback(async () => {
+    if (!autoWallet || !autoWallet.wallet || !autoWallet.address) return
+
     const ethBalance = ethers.utils.parseEther(balance.eth)
 
     const estimatedGas = await autoWallet.wallet.estimateGas({
@@ -280,6 +283,14 @@ function AutomationProvider({ children }) {
 
     return estimatedGas.mul(gasPrice).lte(ethBalance)
   }, [balance, autoWallet])
+
+  const hasAnyAllowance = useCallback(() => {
+    if (!allowance) return
+    return (
+      Object.keys(allowance).filter((token) => Number(allowance[token]) > 0)
+        .length > 0
+    )
+  }, [allowance])
 
   const deleteCurrentAutomationWallet = useCallback(async () => {
     removeAutomationMessage(address)
@@ -296,6 +307,7 @@ function AutomationProvider({ children }) {
         allowance,
         isAutomationEnabled,
         hasRetrievableBalance,
+        hasAnyAllowance,
         setIsAutomationEnabled,
         updateBalance,
         exportAutomationWallet,

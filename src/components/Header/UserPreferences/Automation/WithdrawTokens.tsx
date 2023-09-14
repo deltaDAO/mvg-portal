@@ -96,6 +96,8 @@ export default function WithdrawToken({
 
   const sendBalance = async () => {
     try {
+      if (!autoWallet) return
+
       if (!hasRetrievableBalance) {
         toast.error('Could not withdraw network token. Balance too low.')
         return

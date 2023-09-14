@@ -10,21 +10,24 @@ export default function Balance(): ReactElement {
       <div className={styles.balance}>
         <strong>Balance</strong>
         <ul>
-          {Object.keys(balance).map((currency) => (
-            <li key={`balance-${currency}`}>
-              <span>{currency}</span>: {Number(balance[currency]).toFixed(4)}
-            </li>
-          ))}
+          {balance &&
+            Object.keys(balance).map((currency) => (
+              <li key={`balance-${currency}`}>
+                <span>{currency}</span>: {Number(balance[currency]).toFixed(4)}
+              </li>
+            ))}
         </ul>
       </div>
       <div className={styles.allowance}>
         <strong>Allowance</strong>
         <ul>
-          {Object.keys(allowance).map((currency) => (
-            <li key={`allowance-${currency}`}>
-              <span>{currency}</span>: {Number(allowance[currency]).toFixed(4)}
-            </li>
-          ))}
+          {allowance &&
+            Object.keys(allowance).map((currency) => (
+              <li key={`allowance-${currency}`}>
+                <span>{currency}</span>:{' '}
+                {Number(allowance[currency]).toFixed(4)}
+              </li>
+            ))}
         </ul>
       </div>
     </div>
