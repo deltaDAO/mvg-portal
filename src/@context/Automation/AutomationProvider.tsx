@@ -42,6 +42,7 @@ export interface AutomationProviderValue {
   isAutomationEnabled: boolean
   balance: AutomationBalance
   allowance: AutomationAllowance
+  isLoading: boolean
   hasRetrievableBalance: () => Promise<boolean>
   hasAnyAllowance: () => boolean
   updateBalance: () => Promise<void>
@@ -65,6 +66,7 @@ function AutomationProvider({ children }) {
 
   const [autoWallet, setAutoWallet] = useState<AutomationWallet>()
   const [isAutomationEnabled, setIsAutomationEnabled] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const { signMessageAsync } = useSignMessage()
 
@@ -152,11 +154,12 @@ function AutomationProvider({ children }) {
 
   useEffect(() => {
     const setAutomationWallet = async () => {
-      if (!address || !isAutomationEnabled) return
+      if (!address || !isAutomationEnabled || isLoading) return
 
       // if we already have an associated autoWallet, we don't need to setup a new one
       if (address === autoWallet?.address) return
 
+      setIsLoading(true)
       // first cleanup potential previous initialized autoWallet
       setAutoWallet(undefined)
 
@@ -171,14 +174,15 @@ function AutomationProvider({ children }) {
       }
 
       setAutoWallet({ wallet: newWallet, address })
+      setIsLoading(false)
     }
 
     setAutomationWallet()
   }, [
     address,
-    autoWallet?.address,
-    autoWallet?.wallet,
+    autoWallet,
     isAutomationEnabled,
+    isLoading,
     createWalletFromMessage,
     createAutomationMessage
   ])
@@ -313,6 +317,7 @@ function AutomationProvider({ children }) {
         balance,
         allowance,
         isAutomationEnabled,
+        isLoading,
         hasRetrievableBalance,
         hasAnyAllowance,
         setIsAutomationEnabled,
