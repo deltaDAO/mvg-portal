@@ -304,10 +304,12 @@ function AutomationProvider({ children }) {
   }, [allowance])
 
   const deleteCurrentAutomationWallet = useCallback(async () => {
+    setIsLoading(true)
     removeAutomationMessage(address)
     setAutoWallet(undefined)
     setBalance(undefined)
     setAllowance(undefined)
+    setIsLoading(false)
   }, [address, removeAutomationMessage])
 
   return (
