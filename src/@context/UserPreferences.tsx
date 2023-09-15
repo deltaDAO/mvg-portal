@@ -31,6 +31,8 @@ interface UserPreferencesValue {
   automationMessages: AutomationMessage[]
   addAutomationMessage: (message: AutomationMessage) => void
   removeAutomationMessage: (address: string) => void
+  automationWalletMode: string
+  setAutomationWalletMode: (mode: string) => void
 }
 
 const UserPreferencesContext = createContext(null)
@@ -85,6 +87,10 @@ function UserPreferencesProvider({
     AutomationMessage[]
   >(localStorage?.automationMessages || [])
 
+  const [automationWalletMode, setAutomationWalletMode] = useState<string>(
+    localStorage?.automationWalletMode || 'advanced'
+  )
+
   // Write values to localStorage on change
   useEffect(() => {
     setLocalStorage({
@@ -95,7 +101,8 @@ function UserPreferencesProvider({
       privacyPolicySlug,
       showPPC,
       allowExternalContent,
-      automationMessages
+      automationMessages,
+      automationWalletMode
     })
   }, [
     chainIds,
@@ -105,7 +112,8 @@ function UserPreferencesProvider({
     privacyPolicySlug,
     showPPC,
     allowExternalContent,
-    automationMessages
+    automationMessages,
+    automationWalletMode
   ])
 
   // Set ocean.js log levels, default: Error
@@ -185,7 +193,9 @@ function UserPreferencesProvider({
           setAllowExternalContent,
           automationMessages,
           addAutomationMessage,
-          removeAutomationMessage
+          removeAutomationMessage,
+          automationWalletMode,
+          setAutomationWalletMode
         } as UserPreferencesValue
       }
     >

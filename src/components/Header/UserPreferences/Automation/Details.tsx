@@ -9,6 +9,8 @@ import styles from './Details.module.css'
 import FundWallet from './FundWallet'
 import WithdrawTokens from './WithdrawTokens'
 import { useMarketMetadata } from '../../../../@context/MarketMetadata'
+import { useUserPreferences } from '../../../../@context/UserPreferences'
+import { AUTOMATION_WALLET_MODES } from '../AutomationWalletMode'
 
 export default function Details({
   isFunded
@@ -24,6 +26,8 @@ export default function Details({
   } = useAutomation()
 
   const { automationConfig } = useMarketMetadata().appConfig
+
+  const { automationWalletMode } = useUserPreferences()
 
   const [roughTxCountEstimate, setRoughTxCountEstimate] = useState<number>()
 
@@ -63,7 +67,7 @@ export default function Details({
         <Copy text={autoWallet?.wallet?.address} />
       </span>
 
-      {automationConfig?.walletMode === 'simple' ? (
+      {automationWalletMode === AUTOMATION_WALLET_MODES.SIMPLE ? (
         <div className={styles.simple}>
           {isFunded ? (
             <>

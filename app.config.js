@@ -85,8 +85,8 @@ module.exports = {
 
   automationConfig: {
     networkTokenFundDefaultValue: '2',
+    useAutomationForErc20: 'true',
     erc20ApprovalDefaultValue: '50',
-    walletMode: 'simple',
     roughTxGasEstimate: 0.02
   }
 }
