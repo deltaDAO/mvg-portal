@@ -30,6 +30,8 @@ import { Form, Formik, useFormikContext } from 'formik'
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
 import WhitelistIndicator from '../Compute/WhitelistIndicator'
+import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import { Signer } from 'ethers'
 
 export default function Download({
   asset,
@@ -66,6 +68,8 @@ export default function Download({
   const [orderPriceAndFees, setOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
+
+  const { isAutomationEnabled, autoWallet } = useAutomation()
 
   const isUnsupportedPricing =
     !asset?.accessDetails ||
@@ -181,12 +185,19 @@ export default function Download({
             asset.accessDetails.datatoken?.symbol
           )[asset.accessDetails.type === 'fixed' ? 2 : 1]
         )
+
+        const signerToUse: Signer = isAutomationEnabled
+          ? autoWallet.wallet
+          : signer
+
         const orderTx = await order(
-          signer,
+          signerToUse,
           asset,
           orderPriceAndFees,
           accountId,
-          hasDatatoken
+          hasDatatoken,
+          undefined,
+          isAutomationEnabled ? accountId : undefined
         )
         const tx = await orderTx.wait()
         if (!tx) {

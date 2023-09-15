@@ -62,6 +62,8 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
+import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import { Signer } from 'ethers'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -125,6 +127,8 @@ export default function Compute({
   const [retry, setRetry] = useState<boolean>(false)
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
+
+  const { isAutomationEnabled, autoWallet } = useAutomation()
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
@@ -404,8 +408,12 @@ export default function Compute({
         )[selectedAlgorithmAsset.accessDetails?.type === 'fixed' ? 2 : 3]
       )
 
+      const signerToUse: Signer = isAutomationEnabled
+        ? autoWallet.wallet
+        : signer
+
       const algorithmOrderTx = await handleComputeOrder(
-        signer,
+        signerToUse,
         selectedAlgorithmAsset,
         algoOrderPriceAndFees,
         accountId,
@@ -424,7 +432,7 @@ export default function Compute({
       )
 
       const datasetOrderTx = await handleComputeOrder(
-        signer,
+        signerToUse,
         asset,
         datasetOrderPriceAndFees,
         accountId,
