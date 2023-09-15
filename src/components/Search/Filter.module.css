@@ -1,5 +1,6 @@
 .filterList,
 div.filterList {
+  display: flex;
   white-space: normal;
   margin-top: 0;
   margin-bottom: 0;

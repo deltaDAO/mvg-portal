@@ -4,8 +4,7 @@ import { addExistingParamsToUrl } from './utils'
 import Button from '@shared/atoms/Button'
 import {
   FilterByAccessOptions,
-  FilterByTypeOptions,
-  FilterOptions
+  FilterByTypeOptions
 } from '../../@types/aquarius/SearchQuery'
 import { useRouter } from 'next/router'
 import queryString from 'query-string'
