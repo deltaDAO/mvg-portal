@@ -12,6 +12,7 @@ import MarketMetadataProvider from '@context/MarketMetadata'
 import { WagmiConfig } from 'wagmi'
 import { ConnectKitProvider } from 'connectkit'
 import { connectKitTheme, wagmiClient } from '@utils/wallet'
+import { FilterProvider } from '@context/Filter'
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
@@ -28,9 +29,11 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
               <UserPreferencesProvider>
                 <ConsentProvider>
                   <SearchBarStatusProvider>
-                    <App>
-                      <Component {...pageProps} />
-                    </App>
+                    <FilterProvider>
+                      <App>
+                        <Component {...pageProps} />
+                      </App>
+                    </FilterProvider>
                   </SearchBarStatusProvider>
                 </ConsentProvider>
               </UserPreferencesProvider>

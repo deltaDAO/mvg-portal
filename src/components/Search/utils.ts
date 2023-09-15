@@ -3,14 +3,18 @@ import {
   escapeEsReservedCharacters,
   generateBaseQuery,
   getFilterTerm,
+  parseFilters,
   queryMetadata
 } from '@utils/aquarius'
 import queryString from 'query-string'
 import { CancelToken } from 'axios'
 import {
+  FilterByAccessOptions,
+  FilterByTypeOptions,
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
+import { filterSets, getInitialFilters } from './Filter'
 
 export function updateQueryStringParameter(
   uri: string,
@@ -36,8 +40,9 @@ export function getSearchQuery(
   offset?: string,
   sort?: string,
   sortDirection?: string,
-  serviceType?: string,
-  accessType?: string
+  serviceType?: string | string[],
+  accessType?: string | string[],
+  filterSet?: string | string[]
 ): SearchQuery {
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
@@ -112,10 +117,12 @@ export function getSearchQuery(
       ]
     }
   }
-  accessType !== undefined &&
-    filters.push(getFilterTerm('services.type', accessType))
-  serviceType !== undefined &&
-    filters.push(getFilterTerm('metadata.type', serviceType))
+
+  const filtersList = getInitialFilters(
+    { accessType, serviceType, filterSet },
+    ['accessType', 'serviceType', 'filterSet']
+  )
+  parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
 
   const baseQueryParams = {
     chainIds,
@@ -142,8 +149,9 @@ export async function getResults(
     offset?: string
     sort?: string
     sortOrder?: string
-    serviceType?: string
-    accessType?: string
+    serviceType?: string[]
+    accessType?: string[]
+    filterSet?: string[]
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -157,7 +165,8 @@ export async function getResults(
     sort,
     sortOrder,
     serviceType,
-    accessType
+    accessType,
+    filterSet
   } = params
 
   const searchQuery = getSearchQuery(
@@ -170,7 +179,8 @@ export async function getResults(
     sort,
     sortOrder,
     serviceType,
-    accessType
+    accessType,
+    filterSet
   )
   const queryResult = await queryMetadata(searchQuery, cancelToken)
 

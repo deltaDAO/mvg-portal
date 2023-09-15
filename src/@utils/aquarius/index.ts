@@ -10,6 +10,8 @@ import {
 import { transformAssetToAssetSelection } from '../assetConvertor'
 import addressConfig from '../../../address.config'
 import { isValidDid } from '@utils/ddo'
+import { Filters } from '@context/Filter'
+import { filterSets } from '@components/Search/Filter'
 
 export interface UserSales {
   id: string
@@ -44,6 +46,36 @@ export function getFilterTerm(
       [filterField]: value
     }
   }
+}
+
+export function parseFilters(
+  filtersList: Filters,
+  filterSets: { [key: string]: string[] }
+): FilterTerm[] {
+  const filterQueryPath = {
+    accessType: 'services.type',
+    serviceType: 'metadata.type',
+    filterSet: 'metadata.tags.keyword'
+  }
+
+  const filterTerms = Object.keys(filtersList)?.map((key) => {
+    if (key === 'filterSet') {
+      const tags = filtersList[key].reduce(
+        (acc, set) => [...acc, ...filterSets[set]],
+        []
+      )
+      const uniqueTags = [...new Set(tags)]
+      return uniqueTags.length > 0
+        ? getFilterTerm(filterQueryPath[key], uniqueTags)
+        : undefined
+    }
+    if (filtersList[key].length > 0)
+      return getFilterTerm(filterQueryPath[key], filtersList[key])
+
+    return undefined
+  })
+
+  return filterTerms.filter((term) => term !== undefined)
 }
 
 export function getWhitelistShould(): // eslint-disable-next-line camelcase
@@ -289,9 +321,8 @@ export async function getPublishedAssets(
   cancelToken: CancelToken,
   ignorePurgatory = false,
   ignoreState = false,
-  page?: number,
-  type?: string,
-  accesType?: string
+  filtersList?: Filters,
+  page?: number
 ): Promise<PagedAssets> {
   if (!accountId) return
 
@@ -299,9 +330,7 @@ export async function getPublishedAssets(
 
   filters.push(getFilterTerm('nft.state', [0, 4, 5]))
   filters.push(getFilterTerm('nft.owner', accountId.toLowerCase()))
-  accesType !== undefined &&
-    filters.push(getFilterTerm('services.type', accesType))
-  type !== undefined && filters.push(getFilterTerm('metadata.type', type))
+  parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
 
   const baseQueryParams = {
     chainIds,

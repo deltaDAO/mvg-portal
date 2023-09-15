@@ -16,6 +16,11 @@ export enum SortTermOptions {
 // Only export/import works for that, so this file is NOT .d.ts file ending
 // and gets imported in components.
 
+export enum FilterOptions {
+  AccessType = 'accessType',
+  ServiceType = 'serviceType'
+}
+
 export enum FilterByTypeOptions {
   Data = 'dataset',
   Algorithm = 'algorithm'
