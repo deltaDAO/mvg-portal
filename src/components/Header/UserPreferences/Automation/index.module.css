@@ -25,11 +25,11 @@
   background-color: var(--brand-alert-green);
 }
 
-.indicator.warning {
+.indicator.enabled.warning {
   background-color: var(--brand-alert-yellow);
 }
 
-.indicator.error {
+.indicator.enabled.error {
   background-color: var(--brand-alert-red);
 }
 

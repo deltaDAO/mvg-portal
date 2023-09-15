@@ -272,16 +272,23 @@ function AutomationProvider({ children }) {
   const hasRetrievableBalance = useCallback(async () => {
     if (!autoWallet || !autoWallet.wallet || !autoWallet.address) return
 
-    const ethBalance = ethers.utils.parseEther(balance.eth)
+    try {
+      const ethBalance = ethers.utils.parseEther(balance.eth)
 
-    const estimatedGas = await autoWallet.wallet.estimateGas({
-      to: autoWallet.address,
-      value: ethBalance
-    })
+      const estimatedGas = await autoWallet.wallet.estimateGas({
+        to: autoWallet.address,
+        value: ethBalance
+      })
 
-    const gasPrice = await autoWallet.wallet.getGasPrice()
+      const gasPrice = await autoWallet.wallet.getGasPrice()
 
-    return estimatedGas.mul(gasPrice).lte(ethBalance)
+      return estimatedGas.mul(gasPrice).lte(ethBalance)
+    } catch (e) {
+      console.error(
+        `[AutomationProvider] could not calculate remaining balance: ${e.message}`
+      )
+      return false
+    }
   }, [balance, autoWallet])
 
   const hasAnyAllowance = useCallback(() => {

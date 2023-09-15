@@ -16,8 +16,8 @@
   display: block;
   font-size: var(--font-size-base);
   width: 100%;
-  border-bottom: 1px solid var(--border-color);
   padding-bottom: calc(var(--spacer) / 4);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .walletAddress > strong {
@@ -28,9 +28,30 @@
   margin-left: calc(var(--spacer) / 4);
 }
 
+.simple,
 .fundingBtn,
 .withdrawBtn,
 .deleteBtn {
   margin: calc(var(--spacer) / 4) 0;
   width: 100%;
+  text-align: center;
+}
+
+.simple > * {
+  width: 100%;
+}
+
+.simple .error,
+.simple .success {
+  display: block;
+  font-size: var(--font-size-base);
+  padding: calc(var(--spacer) / 4) 0;
+}
+
+.simple .error {
+  color: var(--brand-alert-red);
+}
+
+.simple .success {
+  color: var(--brand-alert-green);
 }

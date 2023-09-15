@@ -33,6 +33,8 @@ export interface AppConfig {
   automationConfig: {
     networkTokenFundDefaultValue: string
     erc20ApprovalDefaultValue: string
+    roughTxGasEstimate: number
+    walletMode?: string
   }
 }
 export interface SiteContent {

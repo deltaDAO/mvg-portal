@@ -1,14 +1,18 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
-import Button from '../../../@shared/atoms/Button'
+import Button, { ButtonProps } from '../../../@shared/atoms/Button'
 import { ethers } from 'ethers'
 import Loader from '../../../@shared/atoms/Loader'
 import useTokenApproval from '../../../../@hooks/useTokenApproval'
 
 export default function WithdrawToken({
+  style = 'text',
+  children,
   className
 }: {
+  style?: ButtonProps['style']
+  children?: ReactNode
   className?: string
 }): ReactElement {
   const {
@@ -101,7 +105,7 @@ export default function WithdrawToken({
 
   return (
     <Button
-      style="text"
+      style={style}
       disabled={disabled}
       onClick={(e) => {
         e.preventDefault()
@@ -112,7 +116,7 @@ export default function WithdrawToken({
       {isApprovalLoading || isTxLoading ? (
         <Loader message="Awaiting transactions" />
       ) : (
-        `Withdraw all tokens`
+        children || `Withdraw all tokens`
       )}
     </Button>
   )

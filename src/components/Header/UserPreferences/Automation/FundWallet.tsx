@@ -1,21 +1,25 @@
 import { ethers } from 'ethers'
-import React, { ReactElement, useEffect } from 'react'
+import React, { ReactElement, ReactNode, useEffect } from 'react'
 import {
   usePrepareSendTransaction,
   useSendTransaction,
   useWaitForTransaction
 } from 'wagmi'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
-import Button from '../../../@shared/atoms/Button'
+import Button, { ButtonProps } from '../../../@shared/atoms/Button'
 import { useMarketMetadata } from '../../../../@context/MarketMetadata'
 import { toast } from 'react-toastify'
 import Loader from '../../../@shared/atoms/Loader'
 import useTokenApproval from '../../../../@hooks/useTokenApproval'
 
 export default function FundWallet({
+  style = 'text',
+  children,
   className
 }: {
-  className: string
+  style?: ButtonProps['style']
+  children?: ReactNode
+  className?: string
 }): ReactElement {
   const { autoWallet, updateBalance } = useAutomation()
   const { automationConfig } = useMarketMetadata().appConfig
@@ -65,7 +69,7 @@ export default function FundWallet({
 
   return (
     <Button
-      style="text"
+      style={style}
       disabled={isLoading || isTransactionLoading || isApprovalLoading}
       onClick={() => fundWallet()}
       className={className}
@@ -73,7 +77,7 @@ export default function FundWallet({
       {isLoading || isTransactionLoading || isApprovalLoading ? (
         <Loader message="Awaiting transactions" />
       ) : (
-        `Fund automation wallet`
+        children || `Fund automation wallet`
       )}
     </Button>
   )
