@@ -1,6 +1,8 @@
-import { ethers } from 'ethers'
-import React, { ReactElement, ReactNode, useEffect } from 'react'
+import { BigNumber, ethers } from 'ethers'
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react'
 import {
+  useAccount,
+  useBalance,
   usePrepareSendTransaction,
   useSendTransaction,
   useWaitForTransaction
@@ -21,9 +23,28 @@ export default function FundWallet({
   children?: ReactNode
   className?: string
 }): ReactElement {
+  const { address } = useAccount()
+  const { data: balance } = useBalance({ address })
   const { autoWallet, updateBalance } = useAutomation()
   const { automationConfig } = useMarketMetadata().appConfig
   const { approve, setValue, isLoading: isApprovalLoading } = useTokenApproval()
+
+  const [balanceToFund, setBalanceToFund] = useState<BigNumber>()
+
+  useEffect(() => {
+    if (!balance || !automationConfig.networkTokenFundDefaultValue) return
+
+    const defaultValue = automationConfig.networkTokenFundDefaultValue
+
+    const newFundingBalance =
+      Number(defaultValue) > Number(balance.formatted)
+        ? (Number(balance.formatted) * 0.5).toString()
+        : defaultValue
+
+    console.log('BALANCE', { balance, defaultValue, newFundingBalance })
+
+    setBalanceToFund(ethers.utils.parseEther(newFundingBalance))
+  }, [balance, automationConfig?.networkTokenFundDefaultValue])
 
   /**
    * SEND NETWORK TOKEN
@@ -31,9 +52,7 @@ export default function FundWallet({
   const { config } = usePrepareSendTransaction({
     request: {
       to: autoWallet?.wallet?.address,
-      value: ethers.utils.parseEther(
-        automationConfig.networkTokenFundDefaultValue
-      )
+      value: balanceToFund
     }
   })
   const { isLoading, sendTransaction, isError } = useSendTransaction(config)
