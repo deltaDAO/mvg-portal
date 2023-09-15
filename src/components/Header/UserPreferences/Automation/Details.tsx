@@ -32,7 +32,7 @@ export default function Details({
   const [roughTxCountEstimate, setRoughTxCountEstimate] = useState<number>()
 
   useEffect(() => {
-    if (!automationConfig.roughTxGasEstimate) return
+    if (!automationConfig.roughTxGasEstimate || !balance) return
     setRoughTxCountEstimate(
       Number(balance.eth) / automationConfig.roughTxGasEstimate
     )
