@@ -83,7 +83,8 @@ export default function FundWallet({
 
   const fundWallet = () => {
     sendTransaction?.()
-    approve()
+
+    if (automationConfig.useAutomationForErc20 === 'true') approve()
   }
 
   return (

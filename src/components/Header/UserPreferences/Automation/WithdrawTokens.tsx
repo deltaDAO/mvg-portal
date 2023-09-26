@@ -5,6 +5,7 @@ import Button, { ButtonProps } from '../../../@shared/atoms/Button'
 import { ethers } from 'ethers'
 import Loader from '../../../@shared/atoms/Loader'
 import useTokenApproval from '../../../../@hooks/useTokenApproval'
+import { automationConfig } from '../../../../../app.config'
 
 export default function WithdrawToken({
   style = 'text',

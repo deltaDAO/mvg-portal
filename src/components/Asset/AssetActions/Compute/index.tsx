@@ -457,7 +457,7 @@ export default function Compute({
       setComputeStatusText(getComputeFeedback()[4])
       const response = await ProviderInstance.computeStart(
         asset.services[0].serviceEndpoint,
-        signer,
+        signerToUse,
         selectedComputeEnv?.id,
         computeAsset,
         computeAlgorithm,

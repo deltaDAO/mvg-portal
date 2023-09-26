@@ -66,7 +66,6 @@ export default function Automation(): ReactElement {
     <Tooltip
       content={<Details isFunded={!hasError} />}
       trigger="focus mouseenter"
-      disabled={!autoWallet?.wallet}
       placement="bottom"
       className={`${stylesIndex.preferences} ${wrapperClasses}`}
     >

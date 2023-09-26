@@ -13,6 +13,10 @@ import { tokenAddressesEUROe } from '../../@utils/subgraph'
 import { accountTruncate, getTokenAllowance } from '../../@utils/wallet'
 import { useUserPreferences } from '../UserPreferences'
 import { toast } from 'react-toastify'
+import Modal from '../../components/@shared/atoms/Modal'
+import Button from '../../components/@shared/atoms/Button'
+import styles from './AutomationProvider.module.css'
+import Loader from '../../components/@shared/atoms/Loader'
 
 export type AutomationMessage = { address: string; message: string }
 
@@ -47,8 +51,12 @@ export interface AutomationProviderValue {
   hasAnyAllowance: () => boolean
   updateBalance: () => Promise<void>
   setIsAutomationEnabled: (isEnabled: boolean) => void
-  exportAutomationWallet: (password: string) => void
+  exportAutomationWallet: (password: string) => Promise<void>
   deleteCurrentAutomationWallet: () => void
+  importAutomationWallet: (
+    encryptedJson: string,
+    password: string
+  ) => Promise<void>
 }
 
 // Refresh interval for balance retrieve - 20 sec
@@ -77,6 +85,9 @@ function AutomationProvider({ children }) {
     ocean: '0',
     euroe: '0'
   })
+
+  const [isModalOpen, setIsModalOpen] = useState(true)
+  const [confirmedDeletion, setConfirmedDeletion] = useState(false)
 
   const wagmiProvider = useProvider()
 
@@ -139,7 +150,7 @@ function AutomationProvider({ children }) {
   )
 
   useEffect(() => {
-    if (!isAutomationEnabled) {
+    if (autoWallet?.wallet && !isAutomationEnabled) {
       toast.info(`Automation disabled`)
       return
     }
@@ -150,7 +161,7 @@ function AutomationProvider({ children }) {
           autoWallet?.wallet?.address
         )}`
       )
-  }, [isAutomationEnabled, autoWallet?.wallet?.address])
+  }, [isAutomationEnabled, autoWallet?.wallet])
 
   useEffect(() => {
     const setAutomationWallet = async () => {
@@ -170,6 +181,7 @@ function AutomationProvider({ children }) {
       if (!newWallet) {
         toast.error('Could not create an automation wallet. Please try again.')
         setIsAutomationEnabled(false)
+        setIsLoading(false)
         return
       }
 
@@ -189,15 +201,12 @@ function AutomationProvider({ children }) {
 
   const exportAutomationWallet = useCallback(
     async (password: string) => {
-      const message = getAutomationMessage(address)
-      if (!message) {
-        console.error(
-          `Could not export key, no message for address ${address} in storage.`
-        )
+      if (!autoWallet || !autoWallet.wallet) {
+        toast.error(`Automation wallet does not exist.`)
         return
       }
-
-      const wallet = await createWalletFromMessage(message.message)
+      setIsLoading(true)
+      const { wallet } = autoWallet
 
       const encrypted = await wallet.encrypt(password)
 
@@ -209,8 +218,9 @@ function AutomationProvider({ children }) {
       element.download = `account_export_${wallet.address}.json`
       document.body.appendChild(element)
       element.click()
+      setIsLoading(false)
     },
-    [createWalletFromMessage, getAutomationMessage, address]
+    [autoWallet]
   )
 
   const getBalance = useCallback(async (): Promise<AutomationBalance> => {
@@ -303,14 +313,60 @@ function AutomationProvider({ children }) {
     )
   }, [allowance])
 
-  const deleteCurrentAutomationWallet = useCallback(async () => {
-    setIsLoading(true)
-    removeAutomationMessage(address)
-    setAutoWallet(undefined)
-    setBalance(undefined)
-    setAllowance(undefined)
-    setIsLoading(false)
-  }, [address, removeAutomationMessage])
+  const deleteCurrentAutomationWallet = () => {
+    setIsModalOpen(true)
+  }
+
+  useEffect(() => {
+    const manageDeletion = async () => {
+      if (isModalOpen && !confirmedDeletion) return
+
+      if (confirmedDeletion) {
+        setIsLoading(true)
+        setIsAutomationEnabled(false)
+        removeAutomationMessage(address)
+        setAutoWallet(undefined)
+        setBalance(undefined)
+        setAllowance(undefined)
+        setConfirmedDeletion(false)
+        toast.info('The automation wallet was removed from your machine.')
+        setIsModalOpen(false)
+        setIsLoading(false)
+      }
+    }
+
+    manageDeletion()
+  }, [
+    address,
+    isModalOpen,
+    confirmedDeletion,
+    hasAnyAllowance,
+    hasRetrievableBalance,
+    removeAutomationMessage
+  ])
+
+  const importAutomationWallet = useCallback(
+    async (encryptedJson: string, password: string) => {
+      try {
+        setIsLoading(true)
+        console.log('IMPORTING', { encryptedJson, password })
+        const wallet = await ethers.Wallet.fromEncryptedJson(
+          encryptedJson,
+          password
+        )
+        setAutoWallet({ wallet: wallet.connect(wagmiProvider), address })
+        setIsLoading(false)
+        toast.success(
+          `Succesfully imported wallet ${wallet.address} for automation.`
+        )
+      } catch (e) {
+        console.error(e)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [address, wagmiProvider]
+  )
 
   return (
     <AutomationContext.Provider
@@ -325,10 +381,64 @@ function AutomationProvider({ children }) {
         setIsAutomationEnabled,
         updateBalance,
         exportAutomationWallet,
-        deleteCurrentAutomationWallet
+        deleteCurrentAutomationWallet,
+        importAutomationWallet
       }}
     >
       {children}
+      <Modal
+        title="Automation Wallet"
+        onToggleModal={() => setIsModalOpen(!isModalOpen)}
+        isOpen={isModalOpen}
+        className={styles.modal}
+      >
+        {autoWallet?.wallet?.address && Number(balance?.eth) > 0 ? (
+          <>
+            <strong>
+              {' '}
+              The automation wallet{' '}
+              {accountTruncate(autoWallet?.wallet?.address)} still contains{' '}
+              {balance?.eth} network tokens.
+            </strong>
+            <br />
+            If you delete the wallet you will not be able to access related
+            funds from the portal without reimporting. Do you want to continue?
+          </>
+        ) : (
+          <>
+            <strong>
+              {' '}
+              The automation wallet{' '}
+              {accountTruncate(autoWallet?.wallet?.address)} does not contain
+              any funds.
+            </strong>
+            <br />
+            If you delete the wallet you will not be able to access it from the
+            portal without reimporting. Do you want to continue?
+          </>
+        )}
+        <br />
+        <div className={styles.modalActions}>
+          <Button
+            size="small"
+            className={styles.modalCancelBtn}
+            onClick={() => setIsModalOpen(false)}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            size="small"
+            className={styles.modalConfirmBtn}
+            onClick={() => {
+              setConfirmedDeletion(true)
+            }}
+            disabled={isLoading}
+          >
+            {isLoading ? <Loader message={`Loading...`} /> : `Confirm`}
+          </Button>
+        </div>
+      </Modal>
     </AutomationContext.Provider>
   )
 }

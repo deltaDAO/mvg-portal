@@ -37,6 +37,10 @@
   text-align: center;
 }
 
+.deleteBtn * {
+  color: var(--brand-white) !important;
+}
+
 .simple > * {
   width: 100%;
 }
