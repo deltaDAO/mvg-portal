@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useCallback, useEffect, useState } from 'react'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import Balance from './Balance'
 import { toast } from 'react-toastify'
@@ -26,7 +26,8 @@ export default function Details({
     setIsAutomationEnabled,
     deleteCurrentAutomationWallet,
     exportAutomationWallet,
-    importAutomationWallet
+    importAutomationWallet,
+    activateAutomation
   } = useAutomation()
 
   const { automationConfig } = useMarketMetadata().appConfig
@@ -46,12 +47,21 @@ export default function Details({
     deleteCurrentAutomationWallet()
   }
 
+  const toggleAutomation = useCallback(async () => {
+    if (isAutomationEnabled) {
+      setIsAutomationEnabled(false)
+      return
+    }
+
+    await activateAutomation()
+  }, [isAutomationEnabled, activateAutomation, setIsAutomationEnabled])
+
   return (
     <div className={styles.details}>
       <Button
         style="primary"
         onClick={() => {
-          setIsAutomationEnabled(!isAutomationEnabled)
+          toggleAutomation()
         }}
         className={styles.toggleBtn}
       >

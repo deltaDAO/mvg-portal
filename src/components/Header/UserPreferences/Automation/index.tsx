@@ -22,7 +22,8 @@ export default function Automation(): ReactElement {
     setIsAutomationEnabled,
     isAutomationEnabled,
     hasRetrievableBalance,
-    hasAnyAllowance
+    hasAnyAllowance,
+    activateAutomation
   } = useAutomation()
 
   const [state, setState] = useState<AUTOMATION_STATES>()
@@ -71,7 +72,14 @@ export default function Automation(): ReactElement {
     >
       <div title={`${getActionText()} automation`}>
         <Transaction
-          onClick={() => setIsAutomationEnabled(!isAutomationEnabled)}
+          onClick={() => {
+            if (isAutomationEnabled) {
+              setIsAutomationEnabled(false)
+              return
+            }
+
+            activateAutomation()
+          }}
           className={stylesIndex.icon}
         />
         {autoWallet?.wallet && (

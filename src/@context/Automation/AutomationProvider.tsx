@@ -57,6 +57,7 @@ export interface AutomationProviderValue {
     encryptedJson: string,
     password: string
   ) => Promise<void>
+  activateAutomation: () => Promise<void>
 }
 
 // Refresh interval for balance retrieve - 20 sec
@@ -86,7 +87,7 @@ function AutomationProvider({ children }) {
     euroe: '0'
   })
 
-  const [isModalOpen, setIsModalOpen] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const [confirmedDeletion, setConfirmedDeletion] = useState(false)
 
   const wagmiProvider = useProvider()
@@ -164,36 +165,40 @@ function AutomationProvider({ children }) {
   }, [isAutomationEnabled, autoWallet?.wallet])
 
   useEffect(() => {
-    const setAutomationWallet = async () => {
-      if (!address || !isAutomationEnabled || isLoading) return
+    const addressesMatch = address === autoWallet?.address
+    setIsAutomationEnabled(addressesMatch)
+    if (!addressesMatch) setAutoWallet(undefined)
+  }, [address, autoWallet?.address])
 
-      // if we already have an associated autoWallet, we don't need to setup a new one
-      if (address === autoWallet?.address) return
+  const activateAutomation = useCallback(async () => {
+    if (!address || isLoading) return
 
-      setIsLoading(true)
-      // first cleanup potential previous initialized autoWallet
-      setAutoWallet(undefined)
-
-      const automationMessage = createAutomationMessage()
-
-      const newWallet = await createWalletFromMessage(automationMessage.message)
-
-      if (!newWallet) {
-        toast.error('Could not create an automation wallet. Please try again.')
-        setIsAutomationEnabled(false)
-        setIsLoading(false)
-        return
-      }
-
-      setAutoWallet({ wallet: newWallet, address })
-      setIsLoading(false)
+    // if we already have an associated autoWallet, we don't need to setup a new one
+    if (address === autoWallet?.address) {
+      setIsAutomationEnabled(true)
+      return
     }
 
-    setAutomationWallet()
+    setIsLoading(true)
+    // first cleanup potential previous initialized autoWallet
+    setAutoWallet(undefined)
+
+    const automationMessage = createAutomationMessage()
+
+    const newWallet = await createWalletFromMessage(automationMessage.message)
+
+    if (!newWallet) {
+      toast.error('Could not create an automation wallet. Please try again.')
+      setIsAutomationEnabled(false)
+      setIsLoading(false)
+      return
+    }
+
+    setAutoWallet({ wallet: newWallet, address })
+    setIsLoading(false)
   }, [
     address,
     autoWallet,
-    isAutomationEnabled,
     isLoading,
     createWalletFromMessage,
     createAutomationMessage
@@ -382,7 +387,8 @@ function AutomationProvider({ children }) {
         updateBalance,
         exportAutomationWallet,
         deleteCurrentAutomationWallet,
-        importAutomationWallet
+        importAutomationWallet,
+        activateAutomation
       }}
     >
       {children}
