@@ -1,0 +1,48 @@
+.title {
+  margin-bottom: 0;
+  color: var(--font-color-title);
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.badge {
+  margin-left: calc(var(--spacer) / 4);
+  background-color: var(--menu-border-color);
+  color: var(--menu-network-badge-font-color);
+  font-size: var(--font-size-base);
+  vertical-align: middle;
+}
+
+.toggle {
+  transform: none !important;
+}
+
+.toggle svg {
+  display: inline-block;
+  width: var(--font-size-base);
+  height: var(--font-size-base);
+  fill: var(--font-color-title);
+  vertical-align: middle;
+  transition: 0.2s ease-out;
+}
+
+.open .toggle svg {
+  transform: rotate(180deg);
+}
+
+.actions .content {
+  max-height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.open .content {
+  max-height: 25rem;
+  visibility: visible;
+  overflow-y: scroll;
+  transition: 0.3s max-height;
+}
