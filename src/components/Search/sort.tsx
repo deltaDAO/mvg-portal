@@ -1,21 +1,24 @@
 import React, { ReactElement } from 'react'
 import { addExistingParamsToUrl } from './utils'
-import Button from '@shared/atoms/Button'
 import styles from './sort.module.css'
-import classNames from 'classnames/bind'
 import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
 import { useRouter } from 'next/router'
-
-const cx = classNames.bind(styles)
+import Accordion from '@components/@shared/Accordion'
+import Input from '@components/@shared/FormInput'
 
 const sortItems = [
   { display: 'Relevance', value: SortTermOptions.Relevance },
   { display: 'Published', value: SortTermOptions.Created },
   { display: 'Sales', value: SortTermOptions.Orders },
   { display: 'Price', value: SortTermOptions.Price }
+]
+
+const sortDirections = [
+  { display: 'Asc', value: SortDirectionOptions.Ascending },
+  { display: 'Desc', value: SortDirectionOptions.Descending }
 ]
 
 export default function Sort({
@@ -30,9 +33,7 @@ export default function Sort({
   setSortDirection: React.Dispatch<React.SetStateAction<string>>
 }): ReactElement {
   const router = useRouter()
-  const directionArrow = String.fromCharCode(
-    sortDirection === SortDirectionOptions.Ascending ? 9650 : 9660
-  )
+
   async function sortResults(sortBy?: string, direction?: string) {
     let urlLocation: string
     if (sortBy) {
@@ -46,41 +47,39 @@ export default function Sort({
     }
     router.push(urlLocation)
   }
-  function handleSortButtonClick(value: string) {
-    if (value === sortType) {
-      if (sortDirection === SortDirectionOptions.Descending) {
-        sortResults(null, SortDirectionOptions.Ascending)
-      } else {
-        sortResults(null, SortDirectionOptions.Descending)
-      }
-    } else {
-      sortResults(value, null)
-    }
-  }
+
   return (
-    <div className={styles.sortList}>
-      <label className={styles.sortLabel}>Sort</label>
-      {sortItems.map((e, index) => {
-        const sorted = cx({
-          [styles.selected]: e.value === sortType,
-          [styles.sorted]: true
-        })
-        return (
-          <Button
-            key={index}
-            className={sorted}
-            size="small"
-            onClick={() => {
-              handleSortButtonClick(e.value)
-            }}
-          >
-            {e.display}
-            {e.value === sortType ? (
-              <span className={styles.direction}>{directionArrow}</span>
-            ) : null}
-          </Button>
-        )
-      })}
-    </div>
+    <Accordion title="Sort">
+      <div className={styles.sortList}>
+        <div className={styles.sortType}>
+          <h4 className={styles.sortTypeLabel}>Type</h4>
+          {sortItems.map((item) => (
+            <Input
+              key={item.value}
+              name="sortType"
+              type="radio"
+              options={[item.display]}
+              value={item.value}
+              checked={sortType === item.value}
+              onChange={() => sortResults(item.value, null)}
+            />
+          ))}
+        </div>
+        <div className={styles.sortDirection}>
+          <h4 className={styles.sortDirectionLabel}>Direction</h4>
+          {sortDirections.map((item) => (
+            <Input
+              key={item.value}
+              name="sortDirection"
+              type="radio"
+              options={[item.display]}
+              value={item.value}
+              checked={sortDirection === item.value}
+              onChange={() => sortResults(null, item.value)}
+            />
+          ))}
+        </div>
+      </div>
+    </Accordion>
   )
 }

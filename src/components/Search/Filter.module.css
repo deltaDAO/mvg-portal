@@ -9,10 +9,6 @@
   justify-content: space-between;
 }
 
-.filtersHeader > h4 {
-  margin-bottom: 0;
-}
-
 .filterType * {
   margin: 0;
 }
@@ -26,5 +22,5 @@
 }
 
 .hideClear {
-  visibility: hidden;
+  display: none;
 }

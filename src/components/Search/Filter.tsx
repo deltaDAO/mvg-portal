@@ -114,10 +114,12 @@ export function getInitialFilters(
 export default function Filter({
   addFiltersToUrl,
   showPurgatoryOption,
+  expanded,
   className
 }: {
   addFiltersToUrl?: boolean
   showPurgatoryOption?: boolean
+  expanded?: boolean
   className?: string
 }): ReactElement {
   const { filters, setFilters, ignorePurgatory, setIgnorePurgatory } =
@@ -188,8 +190,8 @@ export default function Filter({
 
   return (
     <Accordion
-      defaultState={true}
       title="Filters"
+      defaultState={expanded}
       badgeNumber={selectedFiltersCount}
     >
       <div className={styleClasses}>

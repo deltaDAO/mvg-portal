@@ -18,7 +18,7 @@ export default function Accordion({
   badgeNumber?: number
   children: ReactNode
 }): ReactElement {
-  const [open, setOpen] = useState(defaultState)
+  const [open, setOpen] = useState(!!defaultState)
 
   async function handleClick() {
     setOpen(!open)
