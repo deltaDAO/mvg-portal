@@ -10,10 +10,12 @@ import { useRouter } from 'next/router'
 import queryString from 'query-string'
 import styles from './Filter.module.css'
 import { useFilter, Filters } from '@context/Filter'
+import Input from '@components/@shared/FormInput'
+import Accordion from '@components/@shared/Accordion'
 
 const cx = classNames.bind(styles)
 
-const clearFilters = [{ display: 'Clear', value: '' }]
+const clearFilters = [{ display: 'Clear filters', value: '' }]
 
 interface FilterStructure {
   id: keyof Filters
@@ -69,12 +71,6 @@ const filterList: FilterStructure[] = [
   }
 ]
 
-const purgatoryFilter = {
-  value: 'purgatory',
-  label: 'Purgatory',
-  type: 'checkbox'
-}
-
 export const filterSets = {
   automotive: [
     'charging',
@@ -95,7 +91,7 @@ export const filterSets = {
   finance: ['graphql']
 }
 
-const purgatoryFilterItem = { display: 'purgatory ', value: 'purgatory' }
+const purgatoryFilterItem = { display: 'show purgatory ', value: 'purgatory' }
 
 export function getInitialFilters(
   parsedUrlParams: queryString.ParsedQuery<string>,
@@ -185,65 +181,73 @@ export default function Filter({
     [className]: className
   })
 
+  const selectedFiltersCount = Object.values(filters).reduce(
+    (acc, filter) => acc + filter.length,
+    0
+  )
+
   return (
-    <div className={styleClasses}>
-      {filterList.map((filter) => (
-        <div key={filter.id} className={styles.filterType}>
-          {filter.options.map((option) => {
-            const isSelected = filters[filter.id].includes(option.value)
-            const selectFilter = cx({
-              [styles.selected]: isSelected,
-              [styles.filter]: true
-            })
+    <Accordion
+      defaultState={true}
+      title="Filters"
+      badgeNumber={selectedFiltersCount}
+    >
+      <div className={styleClasses}>
+        <div className={styles.filtersHeader}>
+          {clearFilters.map((e, index) => {
+            const showClear = Object.values(filters)?.some(
+              (filter) => filter?.length > 0
+            )
             return (
               <Button
                 size="small"
                 style="text"
-                key={option.value}
-                className={selectFilter}
+                key={index}
+                className={showClear ? styles.showClear : styles.hideClear}
                 onClick={async () => {
-                  handleSelectedFilter(option.value, filter.id)
+                  applyClearFilter(addFiltersToUrl)
                 }}
               >
-                {option.label}
+                {e.display}
               </Button>
             )
           })}
         </div>
-      ))}
-      <div>
-        {showPurgatoryOption && (
-          <Button
-            size="small"
-            style="text"
-            className={cx({
-              [styles.selected]: ignorePurgatory,
-              [styles.filter]: true
+        {filterList.map((filter) => (
+          <div key={filter.id} className={styles.filterType}>
+            <h4 className={styles.filterTypeLabel}>{filter.label}</h4>
+            {filter.options.map((option) => {
+              const isSelected = filters[filter.id].includes(option.value)
+              return (
+                <Input
+                  key={option.value}
+                  name={option.label}
+                  type="checkbox"
+                  options={[option.label]}
+                  checked={isSelected}
+                  onChange={async () => {
+                    handleSelectedFilter(option.value, filter.id)
+                  }}
+                />
+              )
             })}
-            onClick={() => setIgnorePurgatory(!ignorePurgatory)}
-          >
-            {purgatoryFilterItem.display}
-          </Button>
-        )}
-        {clearFilters.map((e, index) => {
-          const showClear = Object.values(filters)?.some(
-            (filter) => filter?.length > 0
-          )
-          return (
-            <Button
-              size="small"
-              style="text"
-              key={index}
-              className={showClear ? styles.showClear : styles.hideClear}
-              onClick={async () => {
-                applyClearFilter(addFiltersToUrl)
+          </div>
+        ))}
+        {showPurgatoryOption && (
+          <div className={styles.filterType}>
+            <h4 className={styles.filterTypeLabel}>Purgatory</h4>
+            <Input
+              name={purgatoryFilterItem.value}
+              type="checkbox"
+              options={[purgatoryFilterItem.display]}
+              checked={ignorePurgatory}
+              onChange={async () => {
+                setIgnorePurgatory(!ignorePurgatory)
               }}
-            >
-              {e.display}
-            </Button>
-          )
-        })}
+            />
+          </div>
+        )}
       </div>
-    </div>
+    </Accordion>
   )
 }

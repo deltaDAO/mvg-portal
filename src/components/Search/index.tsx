@@ -78,17 +78,15 @@ export default function SearchPage({
   }, [parsed, chainIds, newCancelToken, fetchAssets])
 
   return (
-    <>
-      <div className={styles.search}>
-        <div className={styles.row}>
-          <Filter addFiltersToUrl />
-          <Sort
-            sortType={sortType}
-            sortDirection={sortDirection}
-            setSortType={setSortType}
-            setSortDirection={setSortDirection}
-          />
-        </div>
+    <div className={styles.container}>
+      <div className={styles.column}>
+        <Filter addFiltersToUrl />
+        <Sort
+          sortType={sortType}
+          sortDirection={sortDirection}
+          setSortType={setSortType}
+          setSortDirection={setSortDirection}
+        />
       </div>
       <div className={styles.results}>
         <AssetList
@@ -101,6 +99,6 @@ export default function SearchPage({
           showAssetViewSelector
         />
       </div>
-    </>
+    </div>
   )
 }
