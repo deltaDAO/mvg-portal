@@ -82,22 +82,25 @@ export default function PublishedList({
   ])
 
   return accountId ? (
-    <>
-      <Filter showPurgatoryOption={ownAccount} className={styles.filters} />
-      <AssetList
-        assets={queryResult?.results}
-        isLoading={isLoading}
-        showPagination
-        page={queryResult?.page}
-        totalPages={queryResult?.totalPages}
-        onPageChange={(newPage) => {
-          setPage(newPage)
-        }}
-        className={styles.assets}
-        noPublisher
-        showAssetViewSelector
-      />
-    </>
+    <div className={styles.container}>
+      <div className={styles.column}>
+        <Filter showPurgatoryOption={ownAccount} expanded />
+      </div>
+      <div className={styles.results}>
+        <AssetList
+          assets={queryResult?.results}
+          isLoading={isLoading}
+          showPagination
+          page={queryResult?.page}
+          totalPages={queryResult?.totalPages}
+          onPageChange={(newPage) => {
+            setPage(newPage)
+          }}
+          noPublisher
+          showAssetViewSelector
+        />
+      </div>
+    </div>
   ) : (
     <div>Please connect your wallet.</div>
   )

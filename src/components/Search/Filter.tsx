@@ -185,7 +185,7 @@ export default function Filter({
 
   const selectedFiltersCount = Object.values(filters).reduce(
     (acc, filter) => acc + filter.length,
-    0
+    showPurgatoryOption && ignorePurgatory ? 1 : 0
   )
 
   return (
