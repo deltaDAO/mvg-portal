@@ -91,6 +91,7 @@ export default function SearchPage({
           sortDirection={sortDirection}
           setSortType={setSortType}
           setSortDirection={setSortDirection}
+          expanded
         />
       </div>
       <div className={styles.results}>
