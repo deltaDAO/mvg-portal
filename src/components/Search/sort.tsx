@@ -17,8 +17,8 @@ const sortItems = [
 ]
 
 const sortDirections = [
-  { display: 'Asc', value: SortDirectionOptions.Ascending },
-  { display: 'Desc', value: SortDirectionOptions.Descending }
+  { display: '\u2191 Asc', value: SortDirectionOptions.Ascending },
+  { display: '\u2193 Desc', value: SortDirectionOptions.Descending }
 ]
 
 export default function Sort({
