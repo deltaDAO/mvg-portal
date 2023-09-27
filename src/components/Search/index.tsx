@@ -84,7 +84,7 @@ export default function SearchPage({
 
   return (
     <div className={styles.container}>
-      <div className={styles.column}>
+      <div className={styles.filterContainer}>
         <Filter addFiltersToUrl expanded />
         <Sort
           sortType={sortType}

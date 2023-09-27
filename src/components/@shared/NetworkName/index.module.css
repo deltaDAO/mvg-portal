@@ -27,7 +27,7 @@
   opacity: 1;
 }
 
-@media screen and (min-width: 40rem) {
+@media screen and (min-width: 42rem) {
   .minimal .name,
   .minimal:hover .name {
     width: auto;

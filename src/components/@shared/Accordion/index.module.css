@@ -1,4 +1,5 @@
-.title {
+.title,
+.compactTitle {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -7,8 +8,17 @@
   color: var(--font-color-title);
 }
 
+.title > span:first-child,
+.compactTitle > span:first-child {
+  margin-right: calc(var(--spacer) / 4);
+}
+
+.compactTitle {
+  font-size: var(--font-size-h5);
+}
+
 .badge {
-  margin-left: calc(var(--spacer) / 4);
+  margin: 0;
   background-color: var(--menu-border-color);
   color: var(--menu-network-badge-font-color);
   font-size: var(--font-size-base);
@@ -16,6 +26,7 @@
 }
 
 .toggle {
+  margin-left: calc(var(--spacer) / 4);
   transform: none !important;
 }
 
@@ -44,4 +55,8 @@
   visibility: visible;
   overflow-y: scroll;
   transition: 0.3s max-height;
+}
+
+.open .compactContent {
+  max-height: 7rem;
 }

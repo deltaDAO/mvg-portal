@@ -11,12 +11,14 @@ export default function Accordion({
   title,
   defaultExpanded = false,
   badgeNumber,
+  compact,
   action,
   children
 }: {
   title: string
   defaultExpanded?: boolean
   badgeNumber?: number
+  compact?: boolean
   action?: ReactNode
   children: ReactNode
 }): ReactElement {
@@ -28,13 +30,14 @@ export default function Accordion({
 
   return (
     <div className={cx({ actions: true, open })}>
-      <h3 className={styles.title} onClick={handleClick}>
-        <span>
-          {title}
-          {badgeNumber > 0 && (
-            <Badge label={badgeNumber} className={styles.badge} />
-          )}
-        </span>
+      <h3
+        className={compact ? styles.compactTitle : styles.title}
+        onClick={handleClick}
+      >
+        <span>{title}</span>
+        {badgeNumber > 0 && (
+          <Badge label={badgeNumber} className={styles.badge} />
+        )}
         <Button
           style="text"
           size="small"
@@ -45,7 +48,9 @@ export default function Accordion({
         </Button>
       </h3>
       {action}
-      <div className={styles.content}>{children}</div>
+      <div className={cx({ content: true, compactContent: compact })}>
+        {children}
+      </div>
     </div>
   )
 }
