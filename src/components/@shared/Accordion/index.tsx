@@ -9,16 +9,18 @@ const cx = classNames.bind(styles)
 
 export default function Accordion({
   title,
-  defaultState = false,
+  defaultExpanded = false,
   badgeNumber,
+  action,
   children
 }: {
   title: string
-  defaultState?: boolean
+  defaultExpanded?: boolean
   badgeNumber?: number
+  action?: ReactNode
   children: ReactNode
 }): ReactElement {
-  const [open, setOpen] = useState(!!defaultState)
+  const [open, setOpen] = useState(!!defaultExpanded)
 
   async function handleClick() {
     setOpen(!open)
@@ -42,6 +44,7 @@ export default function Accordion({
           <Caret />
         </Button>
       </h3>
+      {action}
       <div className={styles.content}>{children}</div>
     </div>
   )

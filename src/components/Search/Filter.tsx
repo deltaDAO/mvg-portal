@@ -191,30 +191,23 @@ export default function Filter({
   return (
     <Accordion
       title="Filters"
-      defaultState={expanded}
+      defaultExpanded={expanded}
       badgeNumber={selectedFiltersCount}
+      action={
+        selectedFiltersCount > 0 && (
+          <Button
+            size="small"
+            style="text"
+            onClick={async () => {
+              applyClearFilter(addFiltersToUrl)
+            }}
+          >
+            Clear filters
+          </Button>
+        )
+      }
     >
       <div className={styleClasses}>
-        <div className={styles.filtersHeader}>
-          {clearFilters.map((e, index) => {
-            const showClear = Object.values(filters)?.some(
-              (filter) => filter?.length > 0
-            )
-            return (
-              <Button
-                size="small"
-                style="text"
-                key={index}
-                className={showClear ? styles.showClear : styles.hideClear}
-                onClick={async () => {
-                  applyClearFilter(addFiltersToUrl)
-                }}
-              >
-                {e.display}
-              </Button>
-            )
-          })}
-        </div>
         {filterList.map((filter) => (
           <div key={filter.id} className={styles.filterType}>
             <h5 className={styles.filterTypeLabel}>{filter.label}</h5>

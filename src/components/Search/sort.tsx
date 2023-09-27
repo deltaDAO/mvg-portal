@@ -51,7 +51,7 @@ export default function Sort({
   }
 
   return (
-    <Accordion title="Sort" defaultState={expanded}>
+    <Accordion title="Sort" defaultExpanded={expanded}>
       <div className={styles.sortList}>
         <div className={styles.sortType}>
           <h5 className={styles.sortTypeLabel}>Type</h5>

@@ -14,13 +14,9 @@
 }
 
 .filterTypeLabel {
-  margin-bottom: calc(var(--spacer) / 4);
+  margin: calc(var(--spacer) / 4) 0;
 }
 
 .filterType > div:not(:last-child) {
   margin-bottom: calc(var(--spacer) / 8);
-}
-
-.hideClear {
-  display: none;
 }
