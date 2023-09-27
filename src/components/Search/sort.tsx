@@ -25,12 +25,14 @@ export default function Sort({
   sortType,
   setSortType,
   sortDirection,
-  setSortDirection
+  setSortDirection,
+  expanded
 }: {
   sortType: string
   setSortType: React.Dispatch<React.SetStateAction<string>>
   sortDirection: string
   setSortDirection: React.Dispatch<React.SetStateAction<string>>
+  expanded?: boolean
 }): ReactElement {
   const router = useRouter()
 
@@ -49,10 +51,10 @@ export default function Sort({
   }
 
   return (
-    <Accordion title="Sort">
+    <Accordion title="Sort" defaultState={expanded}>
       <div className={styles.sortList}>
         <div className={styles.sortType}>
-          <h4 className={styles.sortTypeLabel}>Type</h4>
+          <h5 className={styles.sortTypeLabel}>Type</h5>
           {sortItems.map((item) => (
             <Input
               key={item.value}
@@ -66,7 +68,7 @@ export default function Sort({
           ))}
         </div>
         <div className={styles.sortDirection}>
-          <h4 className={styles.sortDirectionLabel}>Direction</h4>
+          <h5 className={styles.sortDirectionLabel}>Direction</h5>
           {sortDirections.map((item) => (
             <Input
               key={item.value}

@@ -217,7 +217,7 @@ export default function Filter({
         </div>
         {filterList.map((filter) => (
           <div key={filter.id} className={styles.filterType}>
-            <h4 className={styles.filterTypeLabel}>{filter.label}</h4>
+            <h5 className={styles.filterTypeLabel}>{filter.label}</h5>
             {filter.options.map((option) => {
               const isSelected = filters[filter.id].includes(option.value)
               return (
@@ -237,7 +237,7 @@ export default function Filter({
         ))}
         {showPurgatoryOption && (
           <div className={styles.filterType}>
-            <h4 className={styles.filterTypeLabel}>Purgatory</h4>
+            <h5 className={styles.filterTypeLabel}>Purgatory</h5>
             <Input
               name={purgatoryFilterItem.value}
               type="checkbox"
