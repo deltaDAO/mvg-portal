@@ -8,6 +8,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
+import useDebounce from '@hooks/useDebounce'
 
 export default function SearchPage({
   setTotalResults,
@@ -72,10 +73,14 @@ export default function SearchPage({
     if (queryResult.totalPages < Number(page)) updatePage(1)
   }, [parsed, queryResult, updatePage])
 
-  useEffect(() => {
-    if (!parsed || !chainIds) return
-    fetchAssets(parsed, chainIds)
-  }, [parsed, chainIds, newCancelToken, fetchAssets])
+  useDebounce(
+    () => {
+      if (!parsed || !chainIds) return
+      fetchAssets(parsed, chainIds)
+    },
+    [parsed, chainIds, newCancelToken, fetchAssets],
+    500
+  )
 
   return (
     <div className={styles.container}>

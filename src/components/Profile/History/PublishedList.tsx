@@ -10,6 +10,7 @@ import { useMarketMetadata } from '@context/MarketMetadata'
 import { CancelToken } from 'axios'
 import { useProfile } from '@context/Profile'
 import { useFilter, Filters } from '@context/Filter'
+import useDebounce from '@hooks/useDebounce'
 
 export default function PublishedList({
   accountId
@@ -59,27 +60,31 @@ export default function PublishedList({
     if (queryResult && queryResult.totalPages < page) setPage(1)
   }, [page, queryResult])
 
-  useEffect(() => {
-    if (!accountId) return
+  useDebounce(
+    () => {
+      if (!accountId) return
 
-    getPublished(
+      getPublished(
+        accountId,
+        chainIds,
+        page,
+        filters,
+        ignorePurgatory,
+        newCancelToken()
+      )
+    },
+    [
       accountId,
-      chainIds,
       page,
+      appConfig?.metadataCacheUri,
+      chainIds,
+      newCancelToken,
+      getPublished,
       filters,
-      ignorePurgatory,
-      newCancelToken()
-    )
-  }, [
-    accountId,
-    page,
-    appConfig?.metadataCacheUri,
-    chainIds,
-    newCancelToken,
-    getPublished,
-    filters,
-    ignorePurgatory
-  ])
+      ignorePurgatory
+    ],
+    500
+  )
 
   return accountId ? (
     <div className={styles.container}>
