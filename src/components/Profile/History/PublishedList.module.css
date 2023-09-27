@@ -2,8 +2,8 @@
   composes: container from '../../../components/Search/index.module.css';
 }
 
-.column {
-  composes: column from '../../../components/Search/index.module.css';
+.filterContainer {
+  composes: filterContainer from '../../../components/Search/index.module.css';
 }
 
 .results {

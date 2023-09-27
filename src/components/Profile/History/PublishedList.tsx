@@ -88,7 +88,7 @@ export default function PublishedList({
 
   return accountId ? (
     <div className={styles.container}>
-      <div className={styles.column}>
+      <div className={styles.filterContainer}>
         <Filter showPurgatoryOption={ownAccount} expanded />
       </div>
       <div className={styles.results}>
