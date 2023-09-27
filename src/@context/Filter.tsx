@@ -5,6 +5,10 @@ import React, {
   ReactNode,
   useState
 } from 'react'
+import {
+  SortDirectionOptions,
+  SortTermOptions
+} from 'src/@types/aquarius/SearchQuery'
 
 export interface Filters {
   accessType: string[]
@@ -12,11 +16,18 @@ export interface Filters {
   filterSet: string[]
 }
 
+export interface Sort {
+  sort: SortTermOptions
+  sortOrder: SortDirectionOptions
+}
+
 interface FilterValue {
   filters: Filters
   setFilters: (filters: Filters) => void
   ignorePurgatory: boolean
   setIgnorePurgatory: (value: boolean) => void
+  sort: Sort
+  setSort: (sort: Sort) => void
 }
 
 const FilterContext = createContext(null)
@@ -28,6 +39,10 @@ function FilterProvider({ children }: { children: ReactNode }): ReactElement {
     filterSet: []
   })
   const [ignorePurgatory, setIgnorePurgatory] = useState<boolean>(true)
+  const [sort, setSort] = useState<Sort>({
+    sort: SortTermOptions.Created,
+    sortOrder: SortDirectionOptions.Descending
+  })
 
   return (
     <FilterContext.Provider
@@ -36,7 +51,9 @@ function FilterProvider({ children }: { children: ReactNode }): ReactElement {
           filters,
           setFilters,
           ignorePurgatory,
-          setIgnorePurgatory
+          setIgnorePurgatory,
+          sort,
+          setSort
         } as FilterValue
       }
     >

@@ -9,7 +9,7 @@ import {
 import { useRouter } from 'next/router'
 import queryString from 'query-string'
 import styles from './Filter.module.css'
-import { useFilter, Filters } from '@context/Filter'
+import { useFilter, Filters, Sort } from '@context/Filter'
 import Input from '@components/@shared/FormInput'
 import Accordion from '@components/@shared/Accordion'
 

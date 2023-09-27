@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import { addExistingParamsToUrl } from './utils'
 import styles from './sort.module.css'
 import {
@@ -8,6 +8,8 @@ import {
 import { useRouter } from 'next/router'
 import Accordion from '@components/@shared/Accordion'
 import Input from '@components/@shared/FormInput'
+import { Sort as SortInterface, useFilter } from '@context/Filter'
+import queryString from 'query-string'
 
 const sortItems = [
   { display: 'Relevance', value: SortTermOptions.Relevance },
@@ -21,31 +23,52 @@ const sortDirections = [
   { display: '\u2193 Desc', value: SortDirectionOptions.Descending }
 ]
 
+function getInitialFilters(
+  parsedUrlParams: queryString.ParsedQuery<string>,
+  filterIds: (keyof SortInterface)[]
+): SortInterface {
+  if (!parsedUrlParams || !filterIds) return
+
+  const initialFilters = {}
+  filterIds.forEach((id) => (initialFilters[id] = parsedUrlParams?.[id]))
+
+  return initialFilters as SortInterface
+}
+
 export default function Sort({
-  sortType,
-  setSortType,
-  sortDirection,
-  setSortDirection,
   expanded
 }: {
-  sortType: string
-  setSortType: React.Dispatch<React.SetStateAction<string>>
-  sortDirection: string
-  setSortDirection: React.Dispatch<React.SetStateAction<string>>
   expanded?: boolean
 }): ReactElement {
+  const { sort, setSort } = useFilter()
+
   const router = useRouter()
 
-  async function sortResults(sortBy?: string, direction?: string) {
+  const parsedUrl = queryString.parse(location.search, {
+    arrayFormat: 'separator'
+  })
+
+  useEffect(() => {
+    const initialFilters = getInitialFilters(
+      parsedUrl,
+      Object.keys(sort) as (keyof SortInterface)[]
+    )
+    setSort(initialFilters)
+  }, [])
+
+  async function sortResults(
+    sortBy?: SortTermOptions,
+    direction?: SortDirectionOptions
+  ) {
     let urlLocation: string
     if (sortBy) {
       urlLocation = await addExistingParamsToUrl(location, ['sort'])
       urlLocation = `${urlLocation}&sort=${sortBy}`
-      setSortType(sortBy)
+      setSort({ ...sort, sort: sortBy })
     } else if (direction) {
       urlLocation = await addExistingParamsToUrl(location, ['sortOrder'])
       urlLocation = `${urlLocation}&sortOrder=${direction}`
-      setSortDirection(direction)
+      setSort({ ...sort, sortOrder: direction })
     }
     router.push(urlLocation)
   }
@@ -64,7 +87,7 @@ export default function Sort({
                   type="radio"
                   options={[item.display]}
                   value={item.value}
-                  checked={sortType === item.value}
+                  checked={sort.sort === item.value}
                   onChange={() => sortResults(item.value, null)}
                 />
               ))}
@@ -78,7 +101,7 @@ export default function Sort({
                   type="radio"
                   options={[item.display]}
                   value={item.value}
-                  checked={sortDirection === item.value}
+                  checked={sort.sortOrder === item.value}
                   onChange={() => sortResults(null, item.value)}
                 />
               ))}
@@ -93,11 +116,11 @@ export default function Sort({
               {sortItems.map((item) => (
                 <Input
                   key={item.value}
-                  name="sortType"
+                  name="sortTypeCompact"
                   type="radio"
                   options={[item.display]}
                   value={item.value}
-                  checked={sortType === item.value}
+                  checked={sort.sort === item.value}
                   onChange={() => sortResults(item.value, null)}
                 />
               ))}
@@ -110,11 +133,11 @@ export default function Sort({
               {sortDirections.map((item) => (
                 <Input
                   key={item.value}
-                  name="sortDirection"
+                  name="sortDirectionCompact"
                   type="radio"
                   options={[item.display]}
                   value={item.value}
-                  checked={sortDirection === item.value}
+                  checked={sort.sortOrder === item.value}
                   onChange={() => sortResults(null, item.value)}
                 />
               ))}

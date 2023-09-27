@@ -22,18 +22,13 @@ export default function SearchPage({
   const { chainIds } = useUserPreferences()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [loading, setLoading] = useState<boolean>()
-  const [sortType, setSortType] = useState<string>()
-  const [sortDirection, setSortDirection] = useState<string>()
   const newCancelToken = useCancelToken()
 
   useEffect(() => {
     const parsed = queryString.parse(location.search, {
       arrayFormat: 'separator'
     })
-    const { sort, sortOrder } = parsed
     setParsed(parsed)
-    setSortDirection(sortOrder as string)
-    setSortType(sort as string)
   }, [router])
 
   const updatePage = useCallback(
@@ -86,13 +81,7 @@ export default function SearchPage({
     <div className={styles.container}>
       <div className={styles.filterContainer}>
         <Filter addFiltersToUrl expanded />
-        <Sort
-          sortType={sortType}
-          sortDirection={sortDirection}
-          setSortType={setSortType}
-          setSortDirection={setSortDirection}
-          expanded
-        />
+        <Sort expanded />
       </div>
       <div className={styles.results}>
         <AssetList
