@@ -8,7 +8,7 @@ import React, {
 import {
   SortDirectionOptions,
   SortTermOptions
-} from 'src/@types/aquarius/SearchQuery'
+} from '../../src/@types/aquarius/SearchQuery'
 
 export interface Filters {
   accessType: string[]
