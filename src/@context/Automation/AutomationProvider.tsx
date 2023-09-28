@@ -7,7 +7,7 @@ import React, {
   useEffect,
   useState
 } from 'react'
-import { useAccount, useChainId, useProvider, useSignMessage } from 'wagmi'
+import { useAccount, useChainId, useProvider } from 'wagmi'
 import { getOceanConfig } from '../../@utils/ocean'
 import { tokenAddressesEUROe } from '../../@utils/subgraph'
 import { accountTruncate, getTokenAllowance } from '../../@utils/wallet'
@@ -17,20 +17,6 @@ import Modal from '../../components/@shared/atoms/Modal'
 import Button from '../../components/@shared/atoms/Button'
 import styles from './AutomationProvider.module.css'
 import Loader from '../../components/@shared/atoms/Loader'
-
-export type AutomationMessage = { address: string; message: string }
-
-export type AutomationWallet = {
-  /**
-   * The wallet used for automations
-   */
-  wallet: Wallet
-  /**
-   * The address that the automation wallet is used for (user address)
-   * For address of the automation wallet see: wallet.address
-   */
-  address: string
-}
 
 export interface AutomationBalance {
   eth: string
@@ -42,22 +28,22 @@ export interface AutomationAllowance extends UserBalance {
 }
 
 export interface AutomationProviderValue {
-  autoWallet: AutomationWallet
+  autoWallet: Wallet
+  autoWalletAddress: string
   isAutomationEnabled: boolean
   balance: AutomationBalance
   allowance: AutomationAllowance
   isLoading: boolean
+  decryptPercentage: number
   hasRetrievableBalance: () => Promise<boolean>
   hasAnyAllowance: () => boolean
   updateBalance: () => Promise<void>
   setIsAutomationEnabled: (isEnabled: boolean) => void
   exportAutomationWallet: (password: string) => Promise<void>
   deleteCurrentAutomationWallet: () => void
-  importAutomationWallet: (
-    encryptedJson: string,
-    password: string
-  ) => Promise<void>
-  activateAutomation: () => Promise<void>
+  importAutomationWallet: (encryptedJson: string) => Promise<boolean>
+  hasValidEncryptedWallet: () => boolean
+  decryptAutomationWallet: (password: string) => Promise<boolean>
 }
 
 // Refresh interval for balance retrieve - 20 sec
@@ -70,14 +56,13 @@ const AutomationContext = createContext({} as AutomationProviderValue)
 function AutomationProvider({ children }) {
   const { address } = useAccount()
   const chainId = useChainId()
-  const { automationMessages, addAutomationMessage, removeAutomationMessage } =
-    useUserPreferences()
+  const { automationWalletJSON, setAutomationWalletJSON } = useUserPreferences()
 
-  const [autoWallet, setAutoWallet] = useState<AutomationWallet>()
+  const [autoWallet, setAutoWallet] = useState<Wallet>()
   const [isAutomationEnabled, setIsAutomationEnabled] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
-
-  const { signMessageAsync } = useSignMessage()
+  const [autoWalletAddress, setAutoWalletAddress] = useState<string>()
+  const [decryptPercentage, setDecryptPercentage] = useState<number>()
 
   const [balance, setBalance] = useState<AutomationBalance>({
     eth: '0'
@@ -92,135 +77,44 @@ function AutomationProvider({ children }) {
 
   const wagmiProvider = useProvider()
 
-  const getAutomationMessage = useCallback(
-    (address: string) => {
-      return automationMessages.find((message) => message.address === address)
-    },
-    [automationMessages]
-  )
-
-  const createAutomationMessage = useCallback(() => {
-    console.log(`[AutomationProvider] creating automation message`)
-
-    const messageExists = getAutomationMessage(address)
-    if (messageExists) {
-      console.log(`[AutomationProvider] found existing message`, {
-        messageExists
-      })
-      return messageExists
-    }
-
-    const message = JSON.stringify(
-      {
-        domain: window.location.host,
-        address,
-        statement: 'Sign to create a new automation wallet',
-        uri: window.location.origin,
-        version: '1',
-        timestamp: Date.now(),
-        nonce: ethers.BigNumber.from(ethers.utils.randomBytes(16))._hex
-      },
-      null,
-      2
-    )
-    const newMessage = { address, message }
-
-    addAutomationMessage(newMessage)
-
-    return newMessage
-  }, [address, addAutomationMessage, getAutomationMessage])
-
-  const createWalletFromMessage = useCallback(
-    async (message: string) => {
-      try {
-        const signedMessage = await signMessageAsync({ message })
-        const hash = ethers.utils.id(signedMessage)
-
-        if (!hash) {
-          throw new Error('Failed to create hash for key seed.')
-        }
-
-        const newWallet = new Wallet(hash, wagmiProvider)
-
-        return newWallet
-      } catch (error: any) {
-        console.log('Failed to create automation key: ', error)
-      }
-    },
-    [signMessageAsync, wagmiProvider]
-  )
+  useEffect(() => {
+    if (!automationWalletJSON) setAutoWalletAddress(undefined)
+    else
+      setAutoWalletAddress(
+        ethers.utils.getJsonWalletAddress(automationWalletJSON)
+      )
+  }, [automationWalletJSON])
 
   useEffect(() => {
-    if (autoWallet?.wallet && !isAutomationEnabled) {
+    if (autoWallet && !isAutomationEnabled) {
       toast.info(`Automation disabled`)
       return
     }
 
-    if (autoWallet?.wallet?.address)
+    if (autoWallet?.address)
       toast.success(
         `Successfully enabled automation wallet with address ${accountTruncate(
-          autoWallet?.wallet?.address
+          autoWallet?.address
         )}`
       )
-  }, [isAutomationEnabled, autoWallet?.wallet])
-
-  useEffect(() => {
-    const addressesMatch = address === autoWallet?.address
-    setIsAutomationEnabled(addressesMatch)
-    if (!addressesMatch) setAutoWallet(undefined)
-  }, [address, autoWallet?.address])
-
-  const activateAutomation = useCallback(async () => {
-    if (!address || isLoading) return
-
-    // if we already have an associated autoWallet, we don't need to setup a new one
-    if (address === autoWallet?.address) {
-      setIsAutomationEnabled(true)
-      return
-    }
-
-    setIsLoading(true)
-    // first cleanup potential previous initialized autoWallet
-    setAutoWallet(undefined)
-
-    const automationMessage = createAutomationMessage()
-
-    const newWallet = await createWalletFromMessage(automationMessage.message)
-
-    if (!newWallet) {
-      toast.error('Could not create an automation wallet. Please try again.')
-      setIsAutomationEnabled(false)
-      setIsLoading(false)
-      return
-    }
-
-    setAutoWallet({ wallet: newWallet, address })
-    setIsLoading(false)
-  }, [
-    address,
-    autoWallet,
-    isLoading,
-    createWalletFromMessage,
-    createAutomationMessage
-  ])
+  }, [isAutomationEnabled, autoWallet])
 
   const exportAutomationWallet = useCallback(
     async (password: string) => {
-      if (!autoWallet || !autoWallet.wallet) {
+      if (!autoWallet || !autoWallet) {
         toast.error(`Automation wallet does not exist.`)
         return
       }
       setIsLoading(true)
-      const { wallet } = autoWallet
 
-      const encrypted = await wallet.encrypt(password)
+      const encrypted = await autoWallet.encrypt(password)
 
       const element = document.createElement('a')
       const jsonFile = new Blob([encrypted], {
         type: 'application/json'
       })
       element.href = URL.createObjectURL(jsonFile)
-      element.download = `account_export_${wallet.address}.json`
+      element.download = `account_export_${autoWallet.address}.json`
       document.body.appendChild(element)
       element.click()
       setIsLoading(false)
@@ -231,31 +125,31 @@ function AutomationProvider({ children }) {
   const getBalance = useCallback(async (): Promise<AutomationBalance> => {
     return {
       eth: ethers.utils.formatEther(
-        await wagmiProvider.getBalance(autoWallet.wallet.address, 'latest')
+        await wagmiProvider.getBalance(autoWallet.address, 'latest')
       )
     }
-  }, [autoWallet?.wallet, wagmiProvider])
+  }, [autoWallet, wagmiProvider])
 
   const getAllowance = useCallback(async (): Promise<AutomationAllowance> => {
     const oceanConfig = getOceanConfig(chainId)
 
     return {
       ocean: await getTokenAllowance(
+        address,
         autoWallet.address,
-        autoWallet.wallet.address,
         18,
         oceanConfig.oceanTokenAddress,
         wagmiProvider
       ),
       euroe: await getTokenAllowance(
+        address,
         autoWallet.address,
-        autoWallet.wallet.address,
         6,
         tokenAddressesEUROe[chainId],
         wagmiProvider
       )
     }
-  }, [autoWallet?.wallet, autoWallet?.address, wagmiProvider, chainId])
+  }, [address, autoWallet?.address, wagmiProvider, chainId])
 
   const updateBalance = useCallback(async () => {
     if (!autoWallet) return
@@ -272,7 +166,7 @@ function AutomationProvider({ children }) {
 
       setBalance(balance)
       setAllowance(allowance)
-    } catch (error: any) {
+    } catch (error) {
       LoggerInstance.error('[AutomationProvider] Error: ', error.message)
     }
   }, [autoWallet, getBalance, getAllowance])
@@ -289,17 +183,17 @@ function AutomationProvider({ children }) {
   }, [updateBalance])
 
   const hasRetrievableBalance = useCallback(async () => {
-    if (!autoWallet || !autoWallet.wallet || !autoWallet.address) return
+    if (!autoWallet || !address) return
 
     try {
       const ethBalance = ethers.utils.parseEther(balance.eth)
 
-      const estimatedGas = await autoWallet.wallet.estimateGas({
+      const estimatedGas = await autoWallet.estimateGas({
         to: autoWallet.address,
         value: ethBalance
       })
 
-      const gasPrice = await autoWallet.wallet.getGasPrice()
+      const gasPrice = await autoWallet.getGasPrice()
 
       return estimatedGas.mul(gasPrice).lte(ethBalance)
     } catch (e) {
@@ -308,7 +202,7 @@ function AutomationProvider({ children }) {
       )
       return false
     }
-  }, [balance, autoWallet])
+  }, [address, balance, autoWallet])
 
   const hasAnyAllowance = useCallback(() => {
     if (!allowance) return
@@ -329,8 +223,8 @@ function AutomationProvider({ children }) {
       if (confirmedDeletion) {
         setIsLoading(true)
         setIsAutomationEnabled(false)
-        removeAutomationMessage(address)
         setAutoWallet(undefined)
+        setAutomationWalletJSON(undefined)
         setBalance(undefined)
         setAllowance(undefined)
         setConfirmedDeletion(false)
@@ -347,40 +241,73 @@ function AutomationProvider({ children }) {
     confirmedDeletion,
     hasAnyAllowance,
     hasRetrievableBalance,
-    removeAutomationMessage
+    setAutomationWalletJSON
   ])
 
-  const importAutomationWallet = useCallback(
-    async (encryptedJson: string, password: string) => {
+  const hasValidEncryptedWallet = useCallback(() => {
+    return ethers.utils.isAddress(autoWalletAddress)
+  }, [autoWalletAddress])
+
+  const importAutomationWallet = async (encryptedJson: string) => {
+    if (
+      ethers.utils.isAddress(ethers.utils.getJsonWalletAddress(encryptedJson))
+    ) {
+      setAutomationWalletJSON(encryptedJson)
+      return true
+    } else {
+      toast.error('Could not import Wallet. JSON format invalid.')
+      LoggerInstance.error('Could not import Wallet. JSON format invalid.')
+      return false
+    }
+  }
+
+  const decryptAutomationWallet = useCallback(
+    async (password: string) => {
       try {
         setIsLoading(true)
-        console.log('IMPORTING', { encryptedJson, password })
+        if (!automationWalletJSON)
+          throw new Error('No JSON to decrypt in local storage.')
+
+        LoggerInstance.log(
+          '[AutomationProvider] Start decrypting wallet from local storage'
+        )
         const wallet = await ethers.Wallet.fromEncryptedJson(
-          encryptedJson,
-          password
+          automationWalletJSON,
+          password,
+          (percent) => setDecryptPercentage(percent)
         )
-        setAutoWallet({ wallet: wallet.connect(wagmiProvider), address })
-        setIsLoading(false)
+        const connectedWallet = wallet.connect(wagmiProvider)
+        LoggerInstance.log('[AutomationProvider] Finished decrypting:', {
+          connectedWallet
+        })
+        setAutoWallet(connectedWallet)
         toast.success(
-          `Succesfully imported wallet ${wallet.address} for automation.`
+          `Succesfully imported wallet ${connectedWallet.address} for automation.`
         )
+        return true
       } catch (e) {
-        console.error(e)
+        toast.error(
+          `Could not decrypt the automation wallet. See console for more information.`
+        )
+        LoggerInstance.error(e)
+        return false
       } finally {
         setIsLoading(false)
       }
     },
-    [address, wagmiProvider]
+    [wagmiProvider, automationWalletJSON]
   )
 
   return (
     <AutomationContext.Provider
       value={{
         autoWallet,
+        autoWalletAddress,
         balance,
         allowance,
         isAutomationEnabled,
         isLoading,
+        decryptPercentage,
         hasRetrievableBalance,
         hasAnyAllowance,
         setIsAutomationEnabled,
@@ -388,7 +315,8 @@ function AutomationProvider({ children }) {
         exportAutomationWallet,
         deleteCurrentAutomationWallet,
         importAutomationWallet,
-        activateAutomation
+        hasValidEncryptedWallet,
+        decryptAutomationWallet
       }}
     >
       {children}
@@ -398,13 +326,12 @@ function AutomationProvider({ children }) {
         isOpen={isModalOpen}
         className={styles.modal}
       >
-        {autoWallet?.wallet?.address && Number(balance?.eth) > 0 ? (
+        {autoWallet?.address && Number(balance?.eth) > 0 ? (
           <>
             <strong>
               {' '}
-              The automation wallet{' '}
-              {accountTruncate(autoWallet?.wallet?.address)} still contains{' '}
-              {balance?.eth} network tokens.
+              The automation wallet {accountTruncate(autoWallet?.address)} still
+              contains {balance?.eth} network tokens.
             </strong>
             <br />
             If you delete the wallet you will not be able to access related
@@ -414,9 +341,8 @@ function AutomationProvider({ children }) {
           <>
             <strong>
               {' '}
-              The automation wallet{' '}
-              {accountTruncate(autoWallet?.wallet?.address)} does not contain
-              any funds.
+              The automation wallet {accountTruncate(autoWallet?.address)} does
+              not contain any funds.
             </strong>
             <br />
             If you delete the wallet you will not be able to access it from the

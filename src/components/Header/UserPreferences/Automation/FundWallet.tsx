@@ -51,7 +51,7 @@ export default function FundWallet({
    */
   const { config } = usePrepareSendTransaction({
     request: {
-      to: autoWallet?.wallet?.address,
+      to: autoWallet?.address,
       value: balanceToFund
     }
   })

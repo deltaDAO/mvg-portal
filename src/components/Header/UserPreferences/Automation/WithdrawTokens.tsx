@@ -5,7 +5,6 @@ import Button, { ButtonProps } from '../../../@shared/atoms/Button'
 import { ethers } from 'ethers'
 import Loader from '../../../@shared/atoms/Loader'
 import useTokenApproval from '../../../../@hooks/useTokenApproval'
-import { automationConfig } from '../../../../../app.config'
 
 export default function WithdrawToken({
   style = 'text',
@@ -58,14 +57,14 @@ export default function WithdrawToken({
 
       setIsTxLoading(true)
       const ethBalance = ethers.utils.parseEther(balance.eth)
-      const estimatedGas = await autoWallet.wallet.estimateGas({
+      const estimatedGas = await autoWallet.estimateGas({
         to: autoWallet.address,
         value: ethBalance
       })
-      const gasPrice = await autoWallet.wallet.getGasPrice()
+      const gasPrice = await autoWallet.getGasPrice()
 
       const retrievableEthValue = ethBalance.sub(estimatedGas.mul(gasPrice))
-      const tx = await autoWallet.wallet.sendTransaction({
+      const tx = await autoWallet.sendTransaction({
         to: autoWallet.address,
         value: retrievableEthValue
       })

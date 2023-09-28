@@ -9,7 +9,6 @@ import React, {
 import { LoggerInstance, LogLevel } from '@oceanprotocol/lib'
 import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from './MarketMetadata'
-import { AutomationMessage } from './Automation/AutomationProvider'
 
 interface UserPreferencesValue {
   debug: boolean
@@ -28,9 +27,8 @@ interface UserPreferencesValue {
   allowExternalContent: boolean
   setAllowExternalContent: (value: boolean) => void
   locale: string
-  automationMessages: AutomationMessage[]
-  addAutomationMessage: (message: AutomationMessage) => void
-  removeAutomationMessage: (address: string) => void
+  automationWalletJSON: string
+  setAutomationWalletJSON: (encryptedWallet: string) => void
   automationWalletMode: string
   setAutomationWalletMode: (mode: string) => void
 }
@@ -83,9 +81,9 @@ function UserPreferencesProvider({
     localStorage?.allowExternalContent || false
   )
 
-  const [automationMessages, setAutomationMessages] = useState<
-    AutomationMessage[]
-  >(localStorage?.automationMessages || [])
+  const [automationWallet, setAutomationWallet] = useState<string>(
+    localStorage?.automationWalletJSON || ''
+  )
 
   const [automationWalletMode, setAutomationWalletMode] = useState<string>(
     localStorage?.automationWalletMode || 'advanced'
@@ -101,7 +99,7 @@ function UserPreferencesProvider({
       privacyPolicySlug,
       showPPC,
       allowExternalContent,
-      automationMessages,
+      automationWalletJSON: automationWallet,
       automationWalletMode
     })
   }, [
@@ -112,7 +110,7 @@ function UserPreferencesProvider({
     privacyPolicySlug,
     showPPC,
     allowExternalContent,
-    automationMessages,
+    automationWallet,
     automationWalletMode
   ])
 
@@ -151,18 +149,6 @@ function UserPreferencesProvider({
     setBookmarks(newPinned)
   }, [bookmarks])
 
-  function addAutomationMessage(message: AutomationMessage) {
-    const newMessages = [...automationMessages, message]
-    setAutomationMessages(newMessages)
-  }
-
-  function removeAutomationMessage(address: string) {
-    const newMessages = automationMessages.filter(
-      (message) => message.address.toLowerCase() !== address.toLowerCase()
-    )
-    setAutomationMessages(newMessages)
-  }
-
   // chainIds old data migration
   // remove deprecated networks from user-saved chainIds
   useEffect(() => {
@@ -191,9 +177,8 @@ function UserPreferencesProvider({
           setShowPPC,
           allowExternalContent,
           setAllowExternalContent,
-          automationMessages,
-          addAutomationMessage,
-          removeAutomationMessage,
+          automationWalletJSON: automationWallet,
+          setAutomationWalletJSON: setAutomationWallet,
           automationWalletMode,
           setAutomationWalletMode
         } as UserPreferencesValue

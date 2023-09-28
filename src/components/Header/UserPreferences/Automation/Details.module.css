@@ -3,6 +3,17 @@
   padding: calc(var(--spacer) / 2);
 }
 
+.title {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-base);
+  margin-bottom: var(--spacer);
+}
+
+.help {
+  font-size: var(--font-size-small);
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
 .tokenActions {
   display: flex;
 }
@@ -10,22 +21,6 @@
 .toggleBtn {
   width: 100%;
   margin-bottom: calc(var(--spacer) / 2);
-}
-
-.walletAddress {
-  display: block;
-  font-size: var(--font-size-base);
-  width: 100%;
-  padding-bottom: calc(var(--spacer) / 4);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.walletAddress > strong {
-  color: var(--brand-blue);
-}
-
-.walletAddress > button {
-  margin-left: calc(var(--spacer) / 4);
 }
 
 .simple,

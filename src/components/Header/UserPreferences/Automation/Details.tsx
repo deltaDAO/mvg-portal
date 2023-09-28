@@ -1,17 +1,17 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
-import Balance from './Balance'
-import { toast } from 'react-toastify'
-import { accountTruncate } from '../../../../@utils/wallet'
+import { useMarketMetadata } from '../../../../@context/MarketMetadata'
+import { useUserPreferences } from '../../../../@context/UserPreferences'
 import Button from '../../../@shared/atoms/Button'
-import Copy from '../../../@shared/atoms/Copy'
+import Loader from '../../../@shared/atoms/Loader'
+import { AUTOMATION_WALLET_MODES } from '../AutomationWalletMode'
+import Balance from './Balance'
 import styles from './Details.module.css'
 import FundWallet from './FundWallet'
 import WithdrawTokens from './WithdrawTokens'
-import { useMarketMetadata } from '../../../../@context/MarketMetadata'
-import { useUserPreferences } from '../../../../@context/UserPreferences'
-import { AUTOMATION_WALLET_MODES } from '../AutomationWalletMode'
-import Loader from '../../../@shared/atoms/Loader'
+import Import from './Import'
+import Address from './Address'
+import Decrypt from './Decrypt'
 
 export default function Details({
   isFunded
@@ -20,21 +20,27 @@ export default function Details({
 }): ReactElement {
   const {
     autoWallet,
+    autoWalletAddress,
     isAutomationEnabled,
     balance,
     isLoading,
     setIsAutomationEnabled,
     deleteCurrentAutomationWallet,
     exportAutomationWallet,
-    importAutomationWallet,
-    activateAutomation
+    hasValidEncryptedWallet
   } = useAutomation()
 
   const { automationConfig } = useMarketMetadata().appConfig
-
   const { automationWalletMode } = useUserPreferences()
 
   const [roughTxCountEstimate, setRoughTxCountEstimate] = useState<number>()
+  const [needsImport, setNeedsImport] = useState<boolean>(
+    !hasValidEncryptedWallet()
+  )
+
+  useEffect(() => {
+    setNeedsImport(!hasValidEncryptedWallet())
+  }, [hasValidEncryptedWallet])
 
   useEffect(() => {
     if (!automationConfig.roughTxGasEstimate || !balance) return
@@ -47,36 +53,29 @@ export default function Details({
     deleteCurrentAutomationWallet()
   }
 
-  const toggleAutomation = useCallback(async () => {
-    if (isAutomationEnabled) {
-      setIsAutomationEnabled(false)
-      return
-    }
-
-    await activateAutomation()
-  }, [isAutomationEnabled, activateAutomation, setIsAutomationEnabled])
-
   return (
     <div className={styles.details}>
-      <Button
-        style="primary"
-        onClick={() => {
-          toggleAutomation()
-        }}
-        className={styles.toggleBtn}
-      >
-        {isAutomationEnabled ? 'Disable automation' : 'Enable automation'}
-      </Button>
-
-      {autoWallet?.wallet?.address && (
-        <span className={styles.walletAddress}>
-          Address:{' '}
-          <strong>{accountTruncate(autoWallet?.wallet?.address)}</strong>
-          <Copy text={autoWallet?.wallet?.address} />
-        </span>
+      <strong className={styles.title}>Automation</strong>
+      <div className={styles.help}>
+        Automate transactions using an imported wallet of your choice.
+      </div>
+      {autoWallet?.address && (
+        <Button
+          style="primary"
+          onClick={() => {
+            setIsAutomationEnabled(!isAutomationEnabled)
+          }}
+          className={styles.toggleBtn}
+        >
+          {isAutomationEnabled ? 'Disable automation' : 'Enable automation'}
+        </Button>
       )}
 
-      {autoWallet?.wallet && (
+      {autoWalletAddress && (
+        <Address showDelete={autoWallet === undefined && !isLoading} />
+      )}
+
+      {autoWallet && (
         <>
           {automationWalletMode === AUTOMATION_WALLET_MODES.SIMPLE ? (
             <div className={styles.simple}>
@@ -126,29 +125,10 @@ export default function Details({
         >
           {isLoading ? <Loader /> : `Export Wallet`}
         </Button>
+      ) : needsImport ? (
+        <Import />
       ) : (
-        <>
-          <input type="file" id="walletImport" />
-          <Button
-            onClick={async () => {
-              const password = prompt('Password:')
-              const filename = (document.getElementById('walletImport') as any)
-                .files[0]
-              const reader = new FileReader()
-              reader.readAsText(filename)
-              reader.onload = async (event) => {
-                await importAutomationWallet(
-                  event.target.result.toString(),
-                  password
-                )
-              }
-            }}
-            className={styles.deleteBtn}
-            disabled={isLoading}
-          >
-            {isLoading ? <Loader /> : `Import Wallet`}
-          </Button>
-        </>
+        <Decrypt />
       )}
     </div>
   )
