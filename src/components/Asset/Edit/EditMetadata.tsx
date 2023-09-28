@@ -162,17 +162,19 @@ export default function Edit({
         )
       }
 
+      const updatedCredentials = updateCredentials(
+        asset?.credentials,
+        values?.allow,
+        values?.deny
+      )
+      console.log(updateCredentials)
       // TODO: remove version update at a later time
       const updatedAsset: Asset = {
         ...(asset as Asset),
         version: '4.1.0',
         metadata: updatedMetadata,
         services: [updatedService],
-        credentials: updateCredentials(
-          asset?.credentials,
-          values?.allow,
-          values?.deny
-        )
+        credentials: updatedCredentials
       }
 
       if (

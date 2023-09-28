@@ -20,7 +20,9 @@ export function updateCredentials(
       ...updatedCredentials[credentialType.type].filter(
         (credential) => credential?.type !== 'address'
       ),
-      { type: 'address', values: credentialType.values }
+      ...(credentialType.values.length > 0
+        ? [{ type: 'address', values: credentialType.values }]
+        : [])
     ]
   })
 
