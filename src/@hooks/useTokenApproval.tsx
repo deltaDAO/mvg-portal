@@ -48,7 +48,7 @@ export default function useTokenApproval(): TokenApprovalProviderValue {
     abi: erc20ABI,
     functionName: 'approve',
     args: [
-      autoWallet?.wallet?.address as `0x${string}`,
+      autoWallet?.address as `0x${string}`,
       ethers.utils.parseUnits(value, 18)
     ]
   })
@@ -76,7 +76,7 @@ export default function useTokenApproval(): TokenApprovalProviderValue {
     abi: erc20ABI,
     functionName: 'approve',
     args: [
-      autoWallet?.wallet?.address as `0x${string}`,
+      autoWallet?.address as `0x${string}`,
       ethers.utils.parseUnits(value, 6)
     ]
   })
