@@ -85,7 +85,9 @@ export default function HistoryPage({
         type === 'init' && setIsLoadingJobs(true)
         const computeJobs = await getComputeJobs(
           chainIds,
-          accountId,
+          accountIdentifier === autoWallet?.address
+            ? autoWallet?.address
+            : accountId,
           null,
           newCancelToken()
         )
@@ -97,7 +99,13 @@ export default function HistoryPage({
         setIsLoadingJobs(false)
       }
     },
-    [accountId, chainIds, isLoadingJobs, newCancelToken]
+    [
+      autoWallet?.address,
+      accountIdentifier,
+      accountId,
+      chainIds,
+      newCancelToken
+    ]
   )
 
   useEffect(() => {
@@ -112,7 +120,7 @@ export default function HistoryPage({
     return () => {
       clearInterval(balanceInterval)
     }
-  }, [accountId, refetchJobs])
+  }, [accountId, refetchJobs, fetchJobs])
 
   const getDefaultIndex = useCallback((): number => {
     const url = new URL(location.href)

@@ -69,7 +69,10 @@ export default function Results({
   async function downloadResults(resultIndex: number) {
     if (!accountId || !job) return
 
-    const signerToUse = job.owner === autoWallet?.address ? autoWallet : signer
+    const signerToUse =
+      job.owner.toLowerCase() === autoWallet?.address.toLowerCase()
+        ? autoWallet
+        : signer
 
     try {
       const jobResult = await providerInstance.getComputeResultUrl(
@@ -100,7 +103,10 @@ export default function Results({
                     style="text"
                     size="small"
                     className={styles.downloadButton}
-                    onClick={() => downloadResults(i)}
+                    onClick={() => {
+                      console.log({ job, auto: autoWallet?.address, accountId })
+                      downloadResults(i)
+                    }}
                     download
                   >
                     {`${getDownloadButtonValue(
