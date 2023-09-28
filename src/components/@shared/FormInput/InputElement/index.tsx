@@ -214,7 +214,7 @@ const InputElement = forwardRef(
       case 'tags':
         return <TagsAutoComplete {...field} {...props} />
       case 'credentials':
-        return <Credentials name={name} {...field} {...props} />
+        return <Credentials {...field} {...props} />
       default:
         return prefix || postfix ? (
           <div
