@@ -7,8 +7,12 @@ import Loader from '../../../@shared/atoms/Loader'
 import InputElement from '../../../@shared/FormInput/InputElement'
 
 export default function Decrypt(): ReactElement {
-  const { isLoading, decryptPercentage, decryptAutomationWallet } =
-    useAutomation()
+  const {
+    isLoading,
+    decryptPercentage,
+    decryptAutomationWallet,
+    setIsAutomationEnabled
+  } = useAutomation()
 
   const decrpytToastRef = useRef(null)
   const passwordInputRef = useRef(null)
@@ -29,6 +33,7 @@ export default function Decrypt(): ReactElement {
               e.preventDefault()
               decrpytToastRef.current = toast.info(`Decrypting Wallet...`)
               await decryptAutomationWallet(passwordInputRef.current.value)
+              setIsAutomationEnabled(true)
               toast.done(decrpytToastRef.current)
             }}
             className={styles.form}
