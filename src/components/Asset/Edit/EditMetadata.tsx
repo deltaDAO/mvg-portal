@@ -169,7 +169,7 @@ export default function Edit({
         values?.allow,
         values?.deny
       )
-      console.log(generateCredentials)
+
       // TODO: remove version update at a later time
       const updatedAsset: Asset = {
         ...(asset as Asset),
