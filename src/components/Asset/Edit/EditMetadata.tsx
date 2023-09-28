@@ -33,8 +33,10 @@ import { getEncryptedFiles } from '@utils/provider'
 import { assetStateToNumber } from '@utils/assetState'
 import { setMinterToPublisher, setMinterToDispenser } from '@utils/dispenser'
 import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
-import { transformConsumerParameters } from '@components/Publish/_utils'
-import { updateCredentials } from './_utils'
+import {
+  transformConsumerParameters,
+  generateCredentials
+} from '@components/Publish/_utils'
 
 export default function Edit({
   asset
@@ -162,12 +164,12 @@ export default function Edit({
         )
       }
 
-      const updatedCredentials = updateCredentials(
+      const updatedCredentials = generateCredentials(
         asset?.credentials,
         values?.allow,
         values?.deny
       )
-      console.log(updateCredentials)
+      console.log(generateCredentials)
       // TODO: remove version update at a later time
       const updatedAsset: Asset = {
         ...(asset as Asset),
