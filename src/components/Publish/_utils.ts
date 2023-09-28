@@ -148,18 +148,24 @@ export async function transformPublishFormToDdo(
     accessTermsFileInfo[0].valid && [sanitizeUrl(accessTermsFileInfo[0].url)]
 
   const credentials = {
-    allow: [
-      {
-        type: 'address',
-        values: allow
-      }
-    ],
-    deny: [
-      {
-        type: 'address',
-        values: deny
-      }
-    ]
+    allow:
+      allow.length > 0
+        ? [
+            {
+              type: 'address',
+              values: allow
+            }
+          ]
+        : [],
+    deny:
+      deny.length > 0
+        ? [
+            {
+              type: 'address',
+              values: deny
+            }
+          ]
+        : []
   }
 
   const newMetadata: Metadata = {
