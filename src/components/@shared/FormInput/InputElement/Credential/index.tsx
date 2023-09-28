@@ -2,7 +2,7 @@ import { useField } from 'formik'
 import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 import Button from '../../../atoms/Button'
 import styles from './index.module.css'
-import { isAddress } from 'web3-utils'
+import { isAddress } from 'ethers/lib/utils.js'
 import { toast } from 'react-toastify'
 import InputGroup from '../../InputGroup'
 import InputElement from '..'
@@ -10,16 +10,16 @@ import { InputProps } from '../..'
 
 export default function Credentials(props: InputProps) {
   const [field, meta, helpers] = useField(props.name)
-  const [arrayInput, setArrayInput] = useState<string[]>(field.value || [])
+  const [addressList, setAddressList] = useState<string[]>(field.value || [])
   const [value, setValue] = useState('')
 
   useEffect(() => {
-    helpers.setValue(arrayInput)
-  }, [arrayInput])
+    helpers.setValue(addressList)
+  }, [addressList])
 
-  function handleDeleteChip(value: string) {
-    const newInput = arrayInput.filter((input) => input !== value)
-    setArrayInput(newInput)
+  function handleDeleteAddress(value: string) {
+    const newInput = addressList.filter((input) => input !== value)
+    setAddressList(newInput)
     helpers.setValue(newInput)
   }
 
@@ -29,16 +29,16 @@ export default function Credentials(props: InputProps) {
       toast.error('Wallet address is invalid')
       return
     }
-    if (arrayInput.includes(value.toLowerCase())) {
-      toast.error('Wallet address already added into list')
+    if (addressList.includes(value.toLowerCase())) {
+      toast.error('Wallet address already added into hte list')
       return
     }
-    setArrayInput((arrayInput) => [...arrayInput, value.toLowerCase()])
+    setAddressList((addressList) => [...addressList, value.toLowerCase()])
     setValue('')
   }
 
   return (
-    <div className={styles.credential}>
+    <div>
       <InputGroup>
         <InputElement
           name="address"
@@ -51,16 +51,19 @@ export default function Credentials(props: InputProps) {
         <Button
           style="primary"
           size="small"
-          onClick={(e: FormEvent<HTMLButtonElement>) => handleAddValue(e)}
+          onClick={(e: FormEvent<HTMLButtonElement>) => {
+            e.preventDefault()
+            handleAddValue(e)
+          }}
         >
           Add
         </Button>
       </InputGroup>
-      <div className={styles.scroll}>
-        {arrayInput &&
-          arrayInput.map((value, i) => {
+      <div>
+        {addressList.length > 0 &&
+          addressList.map((value, i) => {
             return (
-              <div className={styles.addedAddressesContainer} key={value}>
+              <div className={styles.addressListContainer} key={value}>
                 <InputGroup>
                   <InputElement name={`address[${i}]`} value={value} disabled />
                   <Button
@@ -68,11 +71,10 @@ export default function Credentials(props: InputProps) {
                     size="small"
                     onClick={(e: React.SyntheticEvent) => {
                       e.preventDefault()
-                      handleDeleteChip(value)
+                      handleDeleteAddress(value)
                     }}
-                    disabled={false}
                   >
-                    remove
+                    Remove
                   </Button>
                 </InputGroup>
               </div>
