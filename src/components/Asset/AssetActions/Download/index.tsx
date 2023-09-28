@@ -186,9 +186,7 @@ export default function Download({
           )[asset.accessDetails.type === 'fixed' ? 2 : 1]
         )
 
-        const signerToUse: Signer = isAutomationEnabled
-          ? autoWallet.wallet
-          : signer
+        const signerToUse: Signer = isAutomationEnabled ? autoWallet : signer
 
         const orderTx = await order(
           signerToUse,
