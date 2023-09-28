@@ -34,6 +34,7 @@ import { assetStateToNumber } from '@utils/assetState'
 import { setMinterToPublisher, setMinterToDispenser } from '@utils/dispenser'
 import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
 import { transformConsumerParameters } from '@components/Publish/_utils'
+import { updateCredentials } from './_utils'
 
 export default function Edit({
   asset
@@ -166,7 +167,12 @@ export default function Edit({
         ...(asset as Asset),
         version: '4.1.0',
         metadata: updatedMetadata,
-        services: [updatedService]
+        services: [updatedService],
+        credentials: updateCredentials(
+          asset?.credentials,
+          values?.allow,
+          values?.deny
+        )
       }
 
       if (
@@ -244,6 +250,7 @@ export default function Edit({
       initialValues={getInitialValues(
         asset?.metadata,
         asset?.services[0],
+        asset?.credentials,
         asset?.accessDetails?.price || '0',
         paymentCollector,
         assetState

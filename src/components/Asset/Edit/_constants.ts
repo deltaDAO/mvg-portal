@@ -1,10 +1,16 @@
-import { Metadata, Service, ServiceComputeOptions } from '@oceanprotocol/lib'
+import {
+  Credentials,
+  Metadata,
+  Service,
+  ServiceComputeOptions
+} from '@oceanprotocol/lib'
 import { parseConsumerParameters, secondsToString } from '@utils/ddo'
 import { ComputeEditForm, MetadataEditForm } from './_types'
 
 export function getInitialValues(
   metadata: Metadata,
   service: Service,
+  credentials: Credentials,
   price: string,
   paymentCollector: string,
   assetState: string
@@ -23,6 +29,12 @@ export function getInitialValues(
       metadata?.algorithm?.consumerParameters
     ),
     paymentCollector,
+    allow:
+      credentials?.allow?.find((credential) => credential.type === 'address')
+        ?.values || [],
+    deny:
+      credentials?.deny?.find((credential) => credential.type === 'address')
+        ?.values || [],
     assetState,
     service: {
       usesConsumerParameters: service?.consumerParameters?.length > 0,
