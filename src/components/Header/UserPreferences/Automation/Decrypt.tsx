@@ -11,7 +11,6 @@ export default function Decrypt(): ReactElement {
     useAutomation()
 
   const decrpytToastRef = useRef(null)
-  const [showPasswordInput, setShowPasswordInput] = useState<boolean>()
   const passwordInputRef = useRef(null)
 
   useEffect(() => {
@@ -22,15 +21,15 @@ export default function Decrypt(): ReactElement {
     <div className={styles.wrapper}>
       {isLoading ? (
         <Loader message="Decrypting..." />
-      ) : showPasswordInput ? (
+      ) : (
         <>
+          <strong className={styles.warning}>The wallet is locked!</strong>
           <form
             onSubmit={async (e) => {
               e.preventDefault()
               decrpytToastRef.current = toast.info(`Decrypting Wallet...`)
               await decryptAutomationWallet(passwordInputRef.current.value)
               toast.done(decrpytToastRef.current)
-              setShowPasswordInput(false)
             }}
             className={styles.form}
           >
@@ -47,14 +46,6 @@ export default function Decrypt(): ReactElement {
             Enter the password that was used to encrypt this wallet.
           </span>
         </>
-      ) : (
-        <Button
-          onClick={() => setShowPasswordInput(true)}
-          disabled={isLoading}
-          className={styles.button}
-        >
-          Decrypt Wallet
-        </Button>
       )}
     </div>
   )

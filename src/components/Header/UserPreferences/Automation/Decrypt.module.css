@@ -2,6 +2,11 @@
   width: 100%;
 }
 
+.warning {
+  font-size: var(--font-size-label);
+  color: var(--brand-alert-red);
+}
+
 .button {
   width: 100%;
 }
