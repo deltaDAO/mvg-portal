@@ -11,7 +11,7 @@
 }
 
 .address strong {
-  color: var(--brand-blue);
+  color: var(--color-highlight);
 }
 
 .address button {
