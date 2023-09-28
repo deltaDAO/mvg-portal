@@ -520,10 +520,13 @@ export function getPublisherFromServiceCredential(
       ? JSON.parse(serviceCredential)
       : serviceCredential
 
-  const legalName =
-    parsedServiceCredential?.verifiableCredential?.[0]?.credentialSubject?.[
-      'gx:legalName'
-    ]
+  const legalParticipant = parsedServiceCredential.verifiableCredential.find(
+    (credential) =>
+      credential?.credentialSubject?.type === 'gx:LegalParticipant'
+  )
+
+  const legalName = legalParticipant?.credentialSubject?.['gx:legalName']
+
   const publisher =
     typeof legalName === 'string' ? legalName : legalName?.['@value']
 
