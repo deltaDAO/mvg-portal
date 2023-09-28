@@ -337,6 +337,17 @@ export default function Compute({
           asset,
           newCancelToken()
         )
+        if (autoWallet) {
+          const autoComputeJobs = await getComputeJobs(
+            [asset?.chainId] || chainIds,
+            autoWallet?.address,
+            asset,
+            newCancelToken()
+          )
+          autoComputeJobs.computeJobs.forEach((job) => {
+            computeJobs.computeJobs.push(job)
+          })
+        }
         setJobs(computeJobs.computeJobs)
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
