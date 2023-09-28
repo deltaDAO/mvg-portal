@@ -29,6 +29,10 @@
           "link": "https://airbus.pontus-x.eu/"
         },
         {
+          "name": "Berlin State Library",
+          "link": "https://sbb.pontus-x.eu/"
+        },
+        {
           "name": "Clinical Insights Exchange",
           "link": "https://cix.triall.io/"
         },
@@ -51,6 +55,10 @@
         {
           "name": "GX4M moveID",
           "link": "https://portal.moveid.eu/"
+        },
+        {
+          "name": "Service-Meister",
+          "link": "https://servicemeister.pontus-x.eu/"
         },
         {
           "name": "UdL Research Data Space",
