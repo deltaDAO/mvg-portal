@@ -78,8 +78,7 @@ export function parseFilters(
   return filterTerms.filter((term) => term !== undefined)
 }
 
-export function getWhitelistShould(): // eslint-disable-next-line camelcase
-{ should: FilterTerm[]; minimum_should_match: 1 } | undefined {
+export function getWhitelistShould(): FilterTerm[] {
   const { whitelists } = addressConfig
 
   const whitelistFilterTerms = Object.entries(whitelists)
@@ -89,12 +88,7 @@ export function getWhitelistShould(): // eslint-disable-next-line camelcase
     )
     .reduce((prev, cur) => prev.concat(cur), [])
 
-  return whitelistFilterTerms.length > 0
-    ? {
-        should: whitelistFilterTerms,
-        minimum_should_match: 1
-      }
-    : undefined
+  return whitelistFilterTerms.length > 0 ? whitelistFilterTerms : []
 }
 
 export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcase
@@ -134,7 +128,7 @@ export function generateBaseQuery(
             }
           }
         ],
-        ...getWhitelistShould()
+        should: [...getWhitelistShould()]
       }
     }
   } as SearchQuery
@@ -149,6 +143,11 @@ export function generateBaseQuery(
         baseQueryParams.sortOptions.sortDirection ||
         SortDirectionOptions.Descending
     }
+
+  if (generatedQuery.query?.bool?.should?.length > 0) {
+    generatedQuery.query.bool.minimum_should_match = 1
+  }
+
   return generatedQuery
 }
 
