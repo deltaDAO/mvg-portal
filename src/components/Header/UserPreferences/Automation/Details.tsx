@@ -13,6 +13,49 @@ import Import from './Import'
 import Address from './Address'
 import Decrypt from './Decrypt'
 
+function AdvancedView(): ReactElement {
+  return (
+    <div className={styles.advanced}>
+      <Balance />
+
+      <FundWallet className={styles.fundingBtn} />
+
+      <WithdrawTokens className={styles.withdrawBtn} />
+    </div>
+  )
+}
+
+function SimpleView({
+  isFunded,
+  roughTxCountEstimate
+}: {
+  isFunded: boolean
+  roughTxCountEstimate?: number
+}): ReactElement {
+  return (
+    <div className={styles.simple}>
+      {isFunded ? (
+        <>
+          {roughTxCountEstimate && (
+            <span className={styles.success}>
+              Automation available for roughly {roughTxCountEstimate.toFixed(0)}{' '}
+              transactions.
+            </span>
+          )}
+          <WithdrawTokens>Empty Wallet</WithdrawTokens>
+        </>
+      ) : (
+        <>
+          <span className={styles.error}>
+            Automation not sufficiently funded!
+          </span>
+          <FundWallet style="primary">Recharge wallet</FundWallet>
+        </>
+      )}
+    </div>
+  )
+}
+
 export default function Details({
   isFunded
 }: {
@@ -55,10 +98,13 @@ export default function Details({
 
   return (
     <div className={styles.details}>
+      {/* DESCRIPTION */}
       <strong className={styles.title}>Automation</strong>
       <div className={styles.help}>
         Automate transactions using an imported wallet of your choice.
       </div>
+
+      {/* EN-/DISABLE */}
       {autoWallet?.address && (
         <Button
           style="primary"
@@ -71,41 +117,21 @@ export default function Details({
         </Button>
       )}
 
+      {/* AUTOMATION ADDRESS */}
       {autoWalletAddress && (
         <Address showDelete={autoWallet === undefined && !isLoading} />
       )}
 
+      {/* MAIN AUTOMATION SECTION */}
       {autoWallet && (
         <>
           {automationWalletMode === AUTOMATION_WALLET_MODES.SIMPLE ? (
-            <div className={styles.simple}>
-              {isFunded ? (
-                <>
-                  {roughTxCountEstimate && (
-                    <span className={styles.success}>
-                      Automation available for roughly{' '}
-                      {roughTxCountEstimate.toFixed(0)} transactions.
-                    </span>
-                  )}
-                  <WithdrawTokens>Empty Wallet</WithdrawTokens>
-                </>
-              ) : (
-                <>
-                  <span className={styles.error}>
-                    Automation not sufficiently funded!
-                  </span>
-                  <FundWallet style="primary">Recharge wallet</FundWallet>
-                </>
-              )}
-            </div>
+            <SimpleView
+              isFunded={isFunded}
+              roughTxCountEstimate={roughTxCountEstimate}
+            />
           ) : (
-            <>
-              <Balance />
-
-              <FundWallet className={styles.fundingBtn} />
-
-              <WithdrawTokens className={styles.withdrawBtn} />
-            </>
+            <AdvancedView />
           )}
 
           <Button onClick={() => deleteWallet()} className={styles.deleteBtn}>
@@ -114,6 +140,7 @@ export default function Details({
         </>
       )}
 
+      {/* IMPORT / EXPORT */}
       {autoWallet ? (
         <Button
           onClick={async () => {

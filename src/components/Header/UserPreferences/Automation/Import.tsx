@@ -1,16 +1,9 @@
-import React, {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState
-} from 'react'
+import React, { ReactElement, useState } from 'react'
 import Button from '../../../@shared/atoms/Button'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import Loader from '../../../@shared/atoms/Loader'
 import styles from './Import.module.css'
 import Input from '../../../@shared/FormInput'
-import InputElement from '../../../@shared/FormInput/InputElement'
 import { LoggerInstance } from '@oceanprotocol/lib'
 
 export default function Import(): ReactElement {

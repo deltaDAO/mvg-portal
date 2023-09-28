@@ -5,8 +5,6 @@ import { toast } from 'react-toastify'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import Loader from '../../../@shared/atoms/Loader'
 import InputElement from '../../../@shared/FormInput/InputElement'
-import Input from '../../../@shared/FormInput'
-import { Field } from 'formik'
 
 export default function Decrypt(): ReactElement {
   const { isLoading, decryptPercentage, decryptAutomationWallet } =
