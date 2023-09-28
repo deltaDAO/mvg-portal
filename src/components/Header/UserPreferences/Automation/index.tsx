@@ -4,10 +4,11 @@ import Tooltip from '../../../@shared/atoms/Tooltip'
 import Details from './Details'
 import Transaction from '@images/transaction.svg'
 import Caret from '@images/caret.svg'
-import stylesIndex from '../index.module.css'
-import styles from './index.module.css'
+import Lock from '@images/lock.svg'
 import classNames from 'classnames/bind'
 import { automationConfig } from '../../../../../app.config'
+import stylesIndex from '../index.module.css'
+import styles from './index.module.css'
 
 const cx = classNames.bind(styles)
 
@@ -15,6 +16,7 @@ export default function Automation(): ReactElement {
   const {
     autoWallet,
     isAutomationEnabled,
+    hasValidEncryptedWallet,
     hasRetrievableBalance,
     hasAnyAllowance
   } = useAutomation()
@@ -49,7 +51,10 @@ export default function Automation(): ReactElement {
       placement="bottom"
       className={`${stylesIndex.preferences} ${wrapperClasses}`}
     >
-      <div>
+      <div className={styles.wrapper}>
+        {!autoWallet && hasValidEncryptedWallet() && (
+          <Lock className={styles.lock} />
+        )}
         <Transaction className={stylesIndex.icon} />
         {autoWallet && (
           <div className={indicatorClasses}>
