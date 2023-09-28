@@ -9,6 +9,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useAccount } from 'wagmi'
+import { useAutomation } from '../../../@context/Automation/AutomationProvider'
 
 interface HistoryTab {
   title: string
@@ -20,6 +21,7 @@ const refreshInterval = 10000 // 10 sec.
 function getTabs(
   accountId: string,
   userAccountId: string,
+  autoWalletAccountId: string,
   jobs: ComputeJobMetaData[],
   isLoadingJobs: boolean,
   refetchJobs: boolean,
@@ -45,9 +47,10 @@ function getTabs(
       />
     )
   }
-  if (accountId === userAccountId) {
+  if (accountId === userAccountId || accountId === autoWalletAccountId) {
     defaultTabs.push(computeTab)
   }
+  console.log({ accountId, userAccountId, autoWalletAccountId })
   return defaultTabs
 }
 
@@ -63,6 +66,7 @@ export default function HistoryPage({
   accountIdentifier: string
 }): ReactElement {
   const { address: accountId } = useAccount()
+  const { autoWallet } = useAutomation()
   const { chainIds } = useUserPreferences()
   const newCancelToken = useCancelToken()
 
@@ -85,6 +89,7 @@ export default function HistoryPage({
           null,
           newCancelToken()
         )
+
         setJobs(computeJobs.computeJobs)
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
@@ -131,6 +136,7 @@ export default function HistoryPage({
   const tabs = getTabs(
     accountIdentifier,
     accountId,
+    autoWallet?.address,
     jobs,
     isLoadingJobs,
     refetchJobs,

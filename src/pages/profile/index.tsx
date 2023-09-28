@@ -6,10 +6,12 @@ import ProfileProvider from '@context/Profile'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
 import { isAddress } from 'ethers/lib/utils'
+import { useAutomation } from '../../@context/Automation/AutomationProvider'
 
 export default function PageProfile(): ReactElement {
   const router = useRouter()
   const { address: accountId } = useAccount()
+  const { autoWallet } = useAutomation()
   const [finalAccountId, setFinalAccountId] = useState<string>()
   const [ownAccount, setOwnAccount] = useState(false)
 
@@ -29,13 +31,15 @@ export default function PageProfile(): ReactElement {
 
       // Path has ETH address
       if (isAddress(pathAccount)) {
-        setOwnAccount(pathAccount === accountId)
+        setOwnAccount(
+          pathAccount === accountId || pathAccount === autoWallet?.address
+        )
         const finalAccountId = pathAccount || accountId
         setFinalAccountId(finalAccountId)
       }
     }
     init()
-  }, [router, accountId])
+  }, [router, accountId, autoWallet?.address])
 
   return (
     <Page
