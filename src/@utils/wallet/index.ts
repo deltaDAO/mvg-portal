@@ -1,10 +1,9 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { createClient, erc20ABI } from 'wagmi'
-import { ethers, Contract, Signer, providers } from 'ethers'
+import { ethers, Contract, Signer } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import { getDefaultClient } from 'connectkit'
 import { polygonMumbai } from 'wagmi/chains'
-import { type WalletClient, getWalletClient } from '@wagmi/core'
 import { genx } from './chains'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
@@ -204,26 +203,4 @@ export function getTokenBalanceFromSymbol(
 
   const baseTokenBalance = balance?.[symbol.toLocaleLowerCase()]
   return baseTokenBalance || '0'
-}
-
-export function walletClientToSigner(walletClient: WalletClient) {
-  const { account, chain, transport } = walletClient
-  const network = {
-    chainId: chain.id,
-    name: chain.name,
-    ensAddress: chain.contracts?.ensRegistry?.address
-  }
-  const provider = new providers.Web3Provider(
-    transport as ethers.providers.ExternalProvider,
-    network
-  )
-  const signer = provider.getSigner(account.address)
-  return signer
-}
-
-/** Action to convert a viem Wallet Client to an ethers.js Signer. */
-export async function getEthersSigner({ chainId }: { chainId?: number } = {}) {
-  const walletClient = await getWalletClient({ chainId })
-  if (!walletClient) return undefined
-  return walletClientToSigner(walletClient)
 }
