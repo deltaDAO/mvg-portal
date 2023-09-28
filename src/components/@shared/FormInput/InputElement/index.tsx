@@ -17,6 +17,7 @@ import { extensions, oceanTheme } from '@utils/codemirror'
 import { ConsumerParameters } from './ConsumerParameters'
 import ServiceCredential from './ServiceCredential'
 import ComputeEnvSelection from './ComputeEnvSelection'
+import Credentials from './Credential'
 
 const cx = classNames.bind(styles)
 
@@ -212,6 +213,8 @@ const InputElement = forwardRef(
         )
       case 'tags':
         return <TagsAutoComplete {...field} {...props} />
+      case 'credentials':
+        return <Credentials name={name} {...field} {...props} />
       default:
         return prefix || postfix ? (
           <div

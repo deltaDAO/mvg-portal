@@ -15,6 +15,8 @@ export interface FormPublishService {
   computeOptions?: ServiceComputeOptions
   usesConsumerParameters?: boolean
   consumerParameters?: FormConsumerParameter[]
+  allow?: string[]
+  deny?: string[]
 }
 
 export interface FormPublishData {

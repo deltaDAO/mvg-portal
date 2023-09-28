@@ -121,7 +121,8 @@ export async function transformPublishFormToDdo(
     consumerParameters,
     gaiaXInformation
   } = metadata
-  const { access, files, links, providerUrl, timeout } = services[0]
+  const { access, files, links, providerUrl, timeout, allow, deny } =
+    services[0]
 
   const did = nftAddress ? generateDid(nftAddress, chainId) : '0x...'
   const currentTime = dateToStringNoMS(new Date())
@@ -145,6 +146,21 @@ export async function transformPublishFormToDdo(
   const accessTermsFileInfo = gaiaXInformation.termsAndConditions
   const accessTermsUrlTransformed = accessTermsFileInfo?.length &&
     accessTermsFileInfo[0].valid && [sanitizeUrl(accessTermsFileInfo[0].url)]
+
+  const credentials = {
+    allow: [
+      {
+        type: 'address',
+        values: allow
+      }
+    ],
+    deny: [
+      {
+        type: 'address',
+        values: deny
+      }
+    ]
+  }
 
   const newMetadata: Metadata = {
     created: currentTime,
@@ -235,6 +251,7 @@ export async function transformPublishFormToDdo(
     chainId,
     metadata: newMetadata,
     services: [newService],
+    credentials,
     // Only added for DDO preview, reflecting Asset response,
     // again, we can assume if `datatokenAddress` is not passed,
     // we are on preview.
