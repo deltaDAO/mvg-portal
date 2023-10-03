@@ -13,7 +13,8 @@ import {
   getEventFromTx,
   ConsumerParameter,
   Metadata,
-  Service
+  Service,
+  Credentials
 } from '@oceanprotocol/lib'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import { generateNftCreateData } from '@utils/nft'
@@ -96,6 +97,35 @@ export function transformConsumerParameters(
   return transformedValues as ConsumerParameter[]
 }
 
+export function generateCredentials(
+  oldCredentials: Credentials,
+  updatedAllow: string[],
+  updatedDeny: string[]
+): Credentials {
+  const updatedCredentials = {
+    allow: oldCredentials?.allow || [],
+    deny: oldCredentials?.deny || []
+  }
+
+  const credentialTypes = [
+    { type: 'allow', values: updatedAllow },
+    { type: 'deny', values: updatedDeny }
+  ]
+
+  credentialTypes.forEach((credentialType) => {
+    updatedCredentials[credentialType.type] = [
+      ...updatedCredentials[credentialType.type].filter(
+        (credential) => credential?.type !== 'address'
+      ),
+      ...(credentialType.values.length > 0
+        ? [{ type: 'address', values: credentialType.values }]
+        : [])
+    ]
+  })
+
+  return updatedCredentials
+}
+
 export async function transformPublishFormToDdo(
   values: FormPublishData,
   // Those 2 are only passed during actual publishing process
@@ -121,7 +151,8 @@ export async function transformPublishFormToDdo(
     consumerParameters,
     gaiaXInformation
   } = metadata
-  const { access, files, links, providerUrl, timeout } = services[0]
+  const { access, files, links, providerUrl, timeout, allow, deny } =
+    services[0]
 
   const did = nftAddress ? generateDid(nftAddress, chainId) : '0x...'
   const currentTime = dateToStringNoMS(new Date())
@@ -227,6 +258,8 @@ export async function transformPublishFormToDdo(
       : undefined
   }
 
+  const newCredentials = generateCredentials(undefined, allow, deny)
+
   const newDdo: DDO = {
     '@context': ['https://w3id.org/did/v1'],
     id: did,
@@ -235,6 +268,7 @@ export async function transformPublishFormToDdo(
     chainId,
     metadata: newMetadata,
     services: [newService],
+    credentials: newCredentials,
     // Only added for DDO preview, reflecting Asset response,
     // again, we can assume if `datatokenAddress` is not passed,
     // we are on preview.

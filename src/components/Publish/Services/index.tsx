@@ -102,6 +102,16 @@ export default function ServicesFields(): ReactElement {
         component={Input}
         name="services[0].usesConsumerParameters"
       />
+      <Field
+        {...getFieldContent('allow', content.services.fields)}
+        component={Input}
+        name="services[0].allow"
+      />
+      <Field
+        {...getFieldContent('deny', content.services.fields)}
+        component={Input}
+        name="services[0].deny"
+      />
       {values.services[0].usesConsumerParameters && (
         <Field
           {...getFieldContent(

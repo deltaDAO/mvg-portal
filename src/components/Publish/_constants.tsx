@@ -97,7 +97,9 @@ export const initialValues: FormPublishData = {
       },
       computeOptions,
       usesConsumerParameters: false,
-      consumerParameters: []
+      consumerParameters: [],
+      allow: [],
+      deny: []
     }
   ],
   pricing: {

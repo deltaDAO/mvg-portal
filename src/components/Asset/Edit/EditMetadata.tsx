@@ -33,7 +33,10 @@ import { getEncryptedFiles } from '@utils/provider'
 import { assetStateToNumber } from '@utils/assetState'
 import { setMinterToPublisher, setMinterToDispenser } from '@utils/dispenser'
 import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
-import { transformConsumerParameters } from '@components/Publish/_utils'
+import {
+  transformConsumerParameters,
+  generateCredentials
+} from '@components/Publish/_utils'
 
 export default function Edit({
   asset
@@ -161,12 +164,19 @@ export default function Edit({
         )
       }
 
+      const updatedCredentials = generateCredentials(
+        asset?.credentials,
+        values?.allow,
+        values?.deny
+      )
+
       // TODO: remove version update at a later time
       const updatedAsset: Asset = {
         ...(asset as Asset),
         version: '4.1.0',
         metadata: updatedMetadata,
-        services: [updatedService]
+        services: [updatedService],
+        credentials: updatedCredentials
       }
 
       if (
@@ -244,6 +254,7 @@ export default function Edit({
       initialValues={getInitialValues(
         asset?.metadata,
         asset?.services[0],
+        asset?.credentials,
         asset?.accessDetails?.price || '0',
         paymentCollector,
         assetState
