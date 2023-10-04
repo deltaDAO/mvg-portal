@@ -19,8 +19,8 @@ const sortItems = [
 ]
 
 const sortDirections = [
-  { display: '\u2191 Asc', value: SortDirectionOptions.Ascending },
-  { display: '\u2193 Desc', value: SortDirectionOptions.Descending }
+  { display: '\u2191 Ascending', value: SortDirectionOptions.Ascending },
+  { display: '\u2193 Descending', value: SortDirectionOptions.Descending }
 ]
 
 function getInitialFilters(
