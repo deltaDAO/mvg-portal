@@ -22,7 +22,7 @@ export default function PublishedList({
   const { ownAccount } = useProfile()
   const { filters, ignorePurgatory } = useFilter()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState<number>(1)
   const newCancelToken = useCancelToken()
 

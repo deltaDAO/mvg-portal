@@ -21,7 +21,7 @@ export default function SearchPage({
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const { chainIds } = useUserPreferences()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
-  const [loading, setLoading] = useState<boolean>()
+  const [loading, setLoading] = useState<boolean>(true)
   const newCancelToken = useCancelToken()
 
   useEffect(() => {
