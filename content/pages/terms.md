@@ -46,7 +46,7 @@ Capitalised terms shall have the meaning given to them in this Agreement; and:
 
 **"Lifecycle State"** means the following properties of metadata: "active", "end-of-life", "deprecated", "revoked", “disabled”, and “unlisted”, describing the state of Service Offerings throughout their lifecycles and being subject to the Service Lifecycle Management pursuant to respective Policies, made available on the Data Portal.
 
-**"Personal data"** means any information relating to an identified or identifiable natural person.
+**"Personal Data"** means any information relating to an identified or identifiable natural person.
 
 **"Policies"** means any policy, agreement, or guideline and all restrictions described on the Data Portal and on the Website that may i.a. determine sanctions such as the withdrawal of authorizations or access rights to be imposed as a result of a violation.
 
@@ -95,7 +95,7 @@ Capitalised terms shall have the meaning given to them in this Agreement; and:
 
 **3.1** The Customer is responsible for all activities undertaken from its Customer Account, regardless of whether the activities are authorized by the Customer or undertaken by the Customer, the Customer’s employees or a third party (including the Customer’s contractors and agents). deltaDAO and its affiliates are not responsible for unauthorized access to the Customer Account. The Customer will be deemed to have taken any action relating to its Customer Account.
 
-**3.2** The Customer will ensure that published Service Offerings and the Customer’s use of Service Offerings or the Data Portal will not violate any of the Policies or any applicable law. The Customer is solely responsible for the development, content, operation, maintenance, availability, and use of published Service Offerings. The Publisher is also solely responsible for ensuring that the content of the metadata provided via the description form complies with applicable law. **The Customer will not provide personal data in the metadata and Service Offering.**
+**3.2** The Customer will ensure that published Service Offerings and the Customer’s use of Service Offerings or the Data Portal will not violate any of the Policies or any applicable law. The Customer is solely responsible for the development, content, operation, maintenance, availability, and use of published Service Offerings. The Publisher is also solely responsible for ensuring that the content of the metadata provided via the description form complies with applicable law. **The Customer will not provide Personal Data in the metadata and Service Offering.**
 
 **3.3** The Customer will ensure that all third parties comply with its obligations according to this Agreement, mirroring those of the Customer under the Agreement and that the terms of any Customer’s agreements with third parties are consistent with this Agreement. If the Customer becomes aware of any violation of Customer’s obligations under this Agreement caused by a third party, the Customer will immediately suspend access to published Service Offerings and the Data Portal by such third party. deltaDAO does not provide any support or services to third parties, unless deltaDAO has a separate agreement with the Customer or a third party obligating deltaDAO to provide such support or services.
 
@@ -139,7 +139,7 @@ Service Offerings are subject to Service Lifecycle Management. Service Offerings
 
 **7.1** Without limiting the Customer’s obligations under Section 3.2, deltaDAO will implement reasonable and appropriate measures regarding the Access Controller to help the Customer secure published Data against accidental or unlawful loss, access or disclosure.
 
-**7.2** Data is always stored off-chain. deltaDAO has no control over this Data. Ensuring the confidentiality, integrity and availability of the Data is in the sole responsibility of the Customer. Only metadata relating to Data is stored on-chain. To provide for the functionality of the Data Portal deltaDAO saves on-chain Data in a custom database. **Metadata and Service Offerings must not contain personal data**.
+**7.2** Data is always stored off-chain. deltaDAO has no control over this Data. Ensuring the confidentiality, integrity and availability of the Data is in the sole responsibility of the Customer. Only metadata relating to Data is stored on-chain. To provide for the functionality of the Data Portal deltaDAO saves on-chain Data in a custom database. **Metadata and Service Offerings must not contain Personal Data**.
 
 **7.3** Transactions that take place via the Data Portal are managed and confirmed via the respective EVM Compatible Blockchain. The **Customer’s public key on such EVM Compatible Blockchain is publicly visible** whenever the Customer engages in a transaction on the Data Portal.
 
