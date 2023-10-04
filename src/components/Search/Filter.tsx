@@ -101,16 +101,16 @@ export default function Filter({
   }, [])
 
   async function applyFilter(filter: string[], filterId: string) {
-    if (addFiltersToUrl) {
-      let urlLocation = await addExistingParamsToUrl(location, [filterId])
+    if (!addFiltersToUrl) return
 
-      if (filter.length > 0 && urlLocation.indexOf(filterId) === -1) {
-        const parsedFilter = filter.join(',')
-        urlLocation = `${urlLocation}&${filterId}=${parsedFilter}`
-      }
+    let urlLocation = await addExistingParamsToUrl(location, [filterId])
 
-      router.push(urlLocation)
+    if (filter.length > 0 && urlLocation.indexOf(filterId) === -1) {
+      const parsedFilter = filter.join(',')
+      urlLocation = `${urlLocation}&${filterId}=${parsedFilter}`
     }
+
+    router.push(urlLocation)
   }
 
   async function handleSelectedFilter(value: string, filterId: string) {
@@ -130,13 +130,12 @@ export default function Filter({
     if (ignorePurgatory !== undefined && setIgnorePurgatory !== undefined)
       setIgnorePurgatory(true)
 
-    if (addFiltersToUrl) {
-      const urlLocation = await addExistingParamsToUrl(
-        location,
-        Object.keys(clearedFilters)
-      )
-      router.push(urlLocation)
-    }
+    if (!addFiltersToUrl) return
+    const urlLocation = await addExistingParamsToUrl(
+      location,
+      Object.keys(clearedFilters)
+    )
+    router.push(urlLocation)
   }
 
   const styleClasses = cx({
