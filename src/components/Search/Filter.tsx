@@ -122,7 +122,7 @@ export default function Filter({
     await applyFilter(updatedFilters[filterId], filterId)
   }
 
-  async function applyClearFilter(addFiltersToUrl: boolean) {
+  async function clearFilters(addFiltersToUrl: boolean) {
     const clearedFilters = { ...filters }
     Object.keys(clearedFilters).forEach((key) => (clearedFilters[key] = []))
     setFilters(clearedFilters)
@@ -162,7 +162,7 @@ export default function Filter({
                 size="small"
                 style="text"
                 onClick={async () => {
-                  applyClearFilter(addFiltersToUrl)
+                  clearFilters(addFiltersToUrl)
                 }}
               >
                 Clear filters
