@@ -9,20 +9,6 @@ deltaDAO (as defined below) provides a technical infrastructure for a digital po
 
 ### Table of contents
 
-1. DEFINITIONS AND INTERPRETATION
-2. REGISTRATION, ACCESS TO AND USE OF THE DATA PORTAL
-3. CUSTOMER’S RESPONSIBILITIES
-4. FEES AND PAYMENT
-5. SUSPENSION
-6. SERVICE LIFECYCLE MANAGEMENT
-7. SECURITY AND DATA PROTECTION
-8. TERM AND TERMINATION
-9. INTELLECTUAL PROPERTY RIGHTS
-10. PERFORMANCE QUALITY AND WARRANTIES
-11. LIABILITY
-12. MODIFICATIONS
-13. MISCELLANEOUS
-
 ## 1. Definitions and Interpretation
 
 **1.1 Definitions**  
@@ -99,9 +85,9 @@ Capitalised terms shall have the meaning given to them in this Agreement; and:
 
 **2.3** The Data Portal provides a portal enabling Customers to access and utilise Service Offerings. Publishers can publish Service Offerings on the portal by using the form provided by deltaDAO and then clicking the “SUBMIT” button. The Publisher is responsible for the information provided in the form which describes the Service Offering and for the content of the Service Offering. When publishing the Service offering, a Service Offering Token will be created via the respective EVM Compatible Blockchain. The Service Offering Token manages access rights to the respective Service Offering and enables Data Buyers to interact directly with Publishers.
 
-**2.4** The Data Portal displays published Service Offerings including their description and enables Customers to discover Service Offerings by means of a query mechanism. 
+**2.4** The Data Portal displays published Service Offerings including their description and enables Customers to discover Service Offerings by means of a query mechanism.
 
-**2.5** The Data Portal further enables the Consumption of Service Offerings by acquiring the respective Service Offering Token via the respective EVM Compatible Blockchain and hence access to the Service Offering. 
+**2.5** The Data Portal further enables the Consumption of Service Offerings by acquiring the respective Service Offering Token via the respective EVM Compatible Blockchain and hence access to the Service Offering.
 
 **2.6** The Customer is responsible for its own activity on the Data Portal. The Customer must adhere to the laws in its own legal jurisdiction as well as their conscience. deltaDAO is not responsible for any malicious use of the Data Portal or any losses associated with the use of the Data Portal of any source. Some layers in Data ecosystems also accessible via the Data Portal may require the Customer to create and keep up to date verified credentials.
 
@@ -113,11 +99,11 @@ Capitalised terms shall have the meaning given to them in this Agreement; and:
 
 **3.3** The Customer will ensure that all third parties comply with its obligations according to this Agreement, mirroring those of the Customer under the Agreement and that the terms of any Customer’s agreements with third parties are consistent with this Agreement. If the Customer becomes aware of any violation of Customer’s obligations under this Agreement caused by a third party, the Customer will immediately suspend access to published Service Offerings and the Data Portal by such third party. deltaDAO does not provide any support or services to third parties, unless deltaDAO has a separate agreement with the Customer or a third party obligating deltaDAO to provide such support or services.
 
-**3.4** deltaDAO does not store or has access to any sensitive account information including keys. The Customer is responsible for the availability and maintenance of any information related to the Customer Account. 
+**3.4** deltaDAO does not store or has access to any sensitive account information including keys. The Customer is responsible for the availability and maintenance of any information related to the Customer Account.
 
 ## 4. Fees and Payment
 
-**4.1** If a Customer elects to publish or consume Service Offerings on the Data Portal, which includes the generation and purchase of the respective Service Offering Token, it will be conducted solely through EVM Compatible Blockchains via compatible Web3 wallets. deltaDAO will have no insight into or control over these activities, nor does deltaDAO have the ability to reverse any of these or any transaction resulting therefrom. 
+**4.1** If a Customer elects to publish or consume Service Offerings on the Data Portal, which includes the generation and purchase of the respective Service Offering Token, it will be conducted solely through EVM Compatible Blockchains via compatible Web3 wallets. deltaDAO will have no insight into or control over these activities, nor does deltaDAO have the ability to reverse any of these or any transaction resulting therefrom.
 
 **4.2** EVM Compatible Blockchains may require the payment of a Gas Fee for every transaction occurring. The Gas Fee typically funds the network of computers that run the EVM Compatible Blockchains. This means that the Customer will need to pay a Gas Fee for each transaction that occurs via the Data Portal and transacting via the Data Portal will require an accordingly funded wallet.
 
@@ -153,7 +139,7 @@ Service Offerings are subject to Service Lifecycle Management. Service Offerings
 
 **7.1** Without limiting the Customer’s obligations under Section 3.2, deltaDAO will implement reasonable and appropriate measures regarding the Access Controller to help the Customer secure published Data against accidental or unlawful loss, access or disclosure.
 
-**7.2**	Data is always stored off-chain. deltaDAO has no control over this Data. Ensuring the confidentiality, integrity and availability of the Data is in the sole responsibility of the Customer. Only metadata relating to Data is stored on-chain. To provide for the functionality of the Data Portal deltaDAO saves on-chain Data in a custom database. **Metadata and Service Offerings must not contain personal data**.
+**7.2** Data is always stored off-chain. deltaDAO has no control over this Data. Ensuring the confidentiality, integrity and availability of the Data is in the sole responsibility of the Customer. Only metadata relating to Data is stored on-chain. To provide for the functionality of the Data Portal deltaDAO saves on-chain Data in a custom database. **Metadata and Service Offerings must not contain personal data**.
 
 **7.3** Transactions that take place via the Data Portal are managed and confirmed via the respective EVM Compatible Blockchain. The **Customer’s public key on such EVM Compatible Blockchain is publicly visible** whenever the Customer engages in a transaction on the Data Portal.
 
@@ -171,21 +157,21 @@ Service Offerings are subject to Service Lifecycle Management. Service Offerings
 
 **8.4** All notices of termination must be given in writing. Termination notice by e-mail is deemed to comport with the written form requirement.
 
-**8.5** In case of termination, the access to the Data Portal, including the ability to publish, consume, or access consumed Service Offerings on the Data Portal, will be suspended. deltaDAO will not be liable to you or to any third party for any such suspension. The Customer will not receive any refunds. 
+**8.5** In case of termination, the access to the Data Portal, including the ability to publish, consume, or access consumed Service Offerings on the Data Portal, will be suspended. deltaDAO will not be liable to you or to any third party for any such suspension. The Customer will not receive any refunds.
 
 ## 9. Intellectual Property Rights
 
 **9.1** Except as provided in this Section 9, deltaDAO obtains no rights whatsoever under this Agreement from the Customer (or Customer’s licensors) regarding published Data.
 
-**9.2**	Data will be utilized at the sole discretion of the Customer. Therefore, the Customer represents and warrants to deltaDAO that 
+**9.2** Data will be utilized at the sole discretion of the Customer. Therefore, the Customer represents and warrants to deltaDAO that
 
-**_9.2.1_** the Customer or Customer’s licensors own all rights, in particular copyrights, trademark rights, patent rights, utility model rights, design rights, title, and interest in and of the published Data and 
+**_9.2.1_** the Customer or Customer’s licensors own all rights, in particular copyrights, trademark rights, patent rights, utility model rights, design rights, title, and interest in and of the published Data and
 
-**_9.2.2_** the Customer will not provide any content that is illegal or infringes third party rights, in particular any copyrights or trademark rights, patent rights, utility model rights and design rights of third parties.  
+**_9.2.2_** the Customer will not provide any content that is illegal or infringes third party rights, in particular any copyrights or trademark rights, patent rights, utility model rights and design rights of third parties.
 
-**9.3** deltaDAO grants the Customer a limited, revocable, non-exclusive, non-sublicensable, non-transferable license to use the Data Portal solely in accordance with this Agreement.  
+**9.3** deltaDAO grants the Customer a limited, revocable, non-exclusive, non-sublicensable, non-transferable license to use the Data Portal solely in accordance with this Agreement.
 
-**9.4** Except as provided in Section 9.3, the Customer obtains no rights under this Agreement from deltaDAO, deltaDAO’s affiliates or deltaDAO’s licensors to the Data Portal, including any related intellectual property rights.  
+**9.4** Except as provided in Section 9.3, the Customer obtains no rights under this Agreement from deltaDAO, deltaDAO’s affiliates or deltaDAO’s licensors to the Data Portal, including any related intellectual property rights.
 
 **9.5** deltaDAO or Third-Party Content may be provided to the Customer under a separate agreement and/or a separate license. In the event of a conflict between this Agreement and any separate agreement and/or separate license, the separate agreement and/or separate license will prevail with respect to the deltaDAO Content or Third-Party Content that is the subject of such separate agreement and/or separate license.
 

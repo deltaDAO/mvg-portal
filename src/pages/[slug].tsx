@@ -4,7 +4,7 @@ import Page from '@shared/Page'
 import styles from '@shared/Page/PageMarkdown.module.css'
 import Container from '@shared/atoms/Container'
 import { useRouter } from 'next/router'
-import { markdownToHtml } from '@utils/markdown'
+import { markdownToHtmlWithToc } from '@utils/markdown'
 
 export default function PageMarkdown(page: PageData): ReactElement {
   const router = useRouter()
@@ -36,7 +36,7 @@ export async function getStaticProps({
   params: { slug: string }
 }): Promise<{ props: PageData }> {
   const page = getPageBySlug(params.slug)
-  const content = markdownToHtml(page?.content || '')
+  const content = markdownToHtmlWithToc(page?.content || '')
 
   return {
     props: { ...page, content }
