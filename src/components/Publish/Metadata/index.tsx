@@ -12,6 +12,7 @@ import { algorithmContainerPresets } from '../_constants'
 import Alert from '@shared/atoms/Alert'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { getFieldContent } from '@utils/form'
+import Link from 'next/link'
 
 const assetTypeOptionsTitles = getFieldContent(
   'type',
@@ -214,15 +215,12 @@ export default function MetadataFields(): ReactElement {
         {...getFieldContent('termsAndConditions', content.metadata.fields)}
         component={Input}
         name="metadata.termsAndConditions"
+        postfix={
+          <Link href="/terms" rel="noopener noreferrer" target="_blank">
+            {' Terms and Conditions'}
+          </Link>
+        }
       />
-      <a
-        className={styles.termsLink}
-        href="/terms"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        View Terms and Conditions
-      </a>
     </>
   )
 }

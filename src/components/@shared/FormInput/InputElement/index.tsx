@@ -159,6 +159,7 @@ const InputElement = forwardRef(
           <InputRadio
             options={options as string[]}
             inputSize={size}
+            postfix={postfix}
             {...props}
           />
         )

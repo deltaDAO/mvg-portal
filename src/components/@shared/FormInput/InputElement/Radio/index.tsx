@@ -8,11 +8,13 @@ const cx = classNames.bind(styles)
 interface InputRadioProps extends InputHTMLAttributes<HTMLInputElement> {
   options: string[]
   inputSize?: string
+  postfix?: string | ReactElement
 }
 
 export default function InputRadio({
   options,
   inputSize,
+  postfix,
   ...props
 }: InputRadioProps): ReactElement {
   return (
@@ -32,7 +34,7 @@ export default function InputRadio({
               })}
               htmlFor={slugify(option)}
             >
-              {option}
+              {option} {postfix}
             </label>
           </div>
         ))}
