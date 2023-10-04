@@ -9,14 +9,15 @@ import {
 import { useRouter } from 'next/router'
 import queryString from 'query-string'
 import styles from './Filter.module.css'
-import { useFilter, Filters, Sort } from '@context/Filter'
+import { useFilter, Filters } from '@context/Filter'
 import Input from '@components/@shared/FormInput'
 import Accordion from '@components/@shared/Accordion'
+import customFilters from '../../../filters.config'
 
 const cx = classNames.bind(styles)
 
 interface FilterStructure {
-  id: keyof Filters
+  id: string
   label: string
   type: string
   options: {
@@ -44,56 +45,21 @@ const filterList: FilterStructure[] = [
       { label: 'compute', value: FilterByAccessOptions.Compute }
     ]
   },
-  {
-    id: 'filterSet',
-    label: 'Categories',
-    type: 'filterList',
-    options: [
-      {
-        label: 'automotive',
-        value: 'automotive'
-      },
-      {
-        label: 'manufacturing',
-        value: 'manufacturing'
-      },
-      {
-        label: 'text analysis',
-        value: 'textAnalysis'
-      },
-      {
-        label: 'finance',
-        value: 'finance'
-      }
-    ]
-  }
+  ...(Array.isArray(customFilters?.filters) &&
+  customFilters?.filters?.length > 0 &&
+  customFilters?.filters.some((filter) => filter !== undefined)
+    ? // eslint-disable-next-line no-unsafe-optional-chaining
+      customFilters?.filters
+    : [])
 ]
 
-export const filterSets = {
-  automotive: [
-    'charging',
-    'ev',
-    'gx4m',
-    'mobility',
-    'moveid',
-    'parking',
-    'traffic'
-  ],
-  manufacturing: [
-    'euprogigant',
-    'industry40',
-    'manufacturing',
-    'predictive-maintenance'
-  ],
-  textAnalysis: ['library', 'ocr', 'text-analysis'],
-  finance: ['graphql']
-}
+export const filterSets = customFilters?.filterSets || {}
 
 const purgatoryFilterItem = { display: 'show purgatory ', value: 'purgatory' }
 
 export function getInitialFilters(
   parsedUrlParams: queryString.ParsedQuery<string>,
-  filterIds: (keyof Filters)[]
+  filterIds: string[]
 ): Filters {
   if (!parsedUrlParams || !filterIds) return
 
@@ -130,14 +96,11 @@ export default function Filter({
   })
 
   useEffect(() => {
-    const initialFilters = getInitialFilters(
-      parsedUrl,
-      Object.keys(filters) as (keyof Filters)[]
-    )
+    const initialFilters = getInitialFilters(parsedUrl, Object.keys(filters))
     setFilters(initialFilters)
   }, [])
 
-  async function applyFilter(filter: string[], filterId: keyof Filters) {
+  async function applyFilter(filter: string[], filterId: string) {
     if (addFiltersToUrl) {
       let urlLocation = await addExistingParamsToUrl(location, [filterId])
 
@@ -150,7 +113,7 @@ export default function Filter({
     }
   }
 
-  async function handleSelectedFilter(value: string, filterId: keyof Filters) {
+  async function handleSelectedFilter(value: string, filterId: string) {
     const updatedFilters = filters[filterId].includes(value)
       ? { ...filters, [filterId]: filters[filterId].filter((e) => e !== value) }
       : { ...filters, [filterId]: [...filters[filterId], value] }

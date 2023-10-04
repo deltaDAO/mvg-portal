@@ -11,9 +11,7 @@ import {
 } from '../../src/@types/aquarius/SearchQuery'
 
 export interface Filters {
-  accessType: string[]
-  serviceType: string[]
-  filterSet: string[]
+  [key: string]: string[]
 }
 
 export interface Sort {
