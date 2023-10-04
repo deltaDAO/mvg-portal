@@ -30,7 +30,7 @@ interface FilterValue {
   setSort: (sort: Sort) => void
 }
 
-const FilterContext = createContext(null)
+const FilterContext = createContext({} as FilterValue)
 
 function FilterProvider({ children }: { children: ReactNode }): ReactElement {
   const [filters, setFilters] = useState<Filters>({
