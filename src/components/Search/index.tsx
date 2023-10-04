@@ -1,13 +1,14 @@
 import React, { ReactElement, useState, useEffect, useCallback } from 'react'
 import AssetList from '@shared/AssetList'
 import queryString from 'query-string'
-import Filters from './Filters'
+import Filter from './Filter'
 import Sort from './sort'
 import { getResults, updateQueryStringParameter } from './utils'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
+import useDebounce from '@hooks/useDebounce'
 
 export default function SearchPage({
   setTotalResults,
@@ -20,21 +21,14 @@ export default function SearchPage({
   const [parsed, setParsed] = useState<queryString.ParsedQuery<string>>()
   const { chainIds } = useUserPreferences()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
-  const [loading, setLoading] = useState<boolean>()
-  const [serviceType, setServiceType] = useState<string>()
-  const [accessType, setAccessType] = useState<string>()
-  const [sortType, setSortType] = useState<string>()
-  const [sortDirection, setSortDirection] = useState<string>()
+  const [loading, setLoading] = useState<boolean>(true)
   const newCancelToken = useCancelToken()
 
   useEffect(() => {
-    const parsed = queryString.parse(location.search)
-    const { sort, sortOrder, serviceType, accessType } = parsed
+    const parsed = queryString.parse(location.search, {
+      arrayFormat: 'separator'
+    })
     setParsed(parsed)
-    setServiceType(serviceType as string)
-    setAccessType(accessType as string)
-    setSortDirection(sortOrder as string)
-    setSortType(sort as string)
   }, [router])
 
   const updatePage = useCallback(
@@ -74,29 +68,20 @@ export default function SearchPage({
     if (queryResult.totalPages < Number(page)) updatePage(1)
   }, [parsed, queryResult, updatePage])
 
-  useEffect(() => {
-    if (!parsed || !chainIds) return
-    fetchAssets(parsed, chainIds)
-  }, [parsed, chainIds, newCancelToken, fetchAssets])
+  useDebounce(
+    () => {
+      if (!parsed || !chainIds) return
+      fetchAssets(parsed, chainIds)
+    },
+    [parsed, chainIds, newCancelToken, fetchAssets],
+    500
+  )
 
   return (
-    <>
-      <div className={styles.search}>
-        <div className={styles.row}>
-          <Filters
-            serviceType={serviceType}
-            accessType={accessType}
-            setServiceType={setServiceType}
-            setAccessType={setAccessType}
-            addFiltersToUrl
-          />
-          <Sort
-            sortType={sortType}
-            sortDirection={sortDirection}
-            setSortType={setSortType}
-            setSortDirection={setSortDirection}
-          />
-        </div>
+    <div className={styles.container}>
+      <div className={styles.filterContainer}>
+        <Filter addFiltersToUrl expanded />
+        <Sort expanded />
       </div>
       <div className={styles.results}>
         <AssetList
@@ -109,6 +94,6 @@ export default function SearchPage({
           showAssetViewSelector
         />
       </div>
-    </>
+    </div>
   )
 }

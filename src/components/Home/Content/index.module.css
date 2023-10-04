@@ -1,5 +1,5 @@
 .container {
-  margin: var(--spacer);
+  margin-bottom: var(--spacer);
   margin-top: calc(var(--spacer) * 5);
 }
 
@@ -8,6 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: var(--spacer);
     text-align: right;
   }
 
@@ -30,10 +31,6 @@
 .interactivity {
   max-width: 35rem;
   margin: auto;
-}
-
-.content {
-  padding: var(--spacer);
 }
 
 .content button,

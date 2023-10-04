@@ -5,10 +5,12 @@ import { getPublishedAssets } from '@utils/aquarius'
 import { useUserPreferences } from '@context/UserPreferences'
 import styles from './PublishedList.module.css'
 import { useCancelToken } from '@hooks/useCancelToken'
-import Filters from '../../Search/Filters'
+import Filter from '@components/Search/Filter'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { CancelToken } from 'axios'
 import { useProfile } from '@context/Profile'
+import { useFilter, Filters } from '@context/Filter'
+import useDebounce from '@hooks/useDebounce'
 
 export default function PublishedList({
   accountId
@@ -18,12 +20,10 @@ export default function PublishedList({
   const { appConfig } = useMarketMetadata()
   const { chainIds } = useUserPreferences()
   const { ownAccount } = useProfile()
+  const { filters, ignorePurgatory } = useFilter()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [page, setPage] = useState<number>(1)
-  const [service, setServiceType] = useState<string>()
-  const [access, setAccessType] = useState<string>()
-  const [ignorePurgatory, setIgnorePurgatory] = useState<boolean>(true)
   const newCancelToken = useCancelToken()
 
   const getPublished = useCallback(
@@ -31,8 +31,7 @@ export default function PublishedList({
       accountId: string,
       chainIds: number[],
       page: number,
-      service: string,
-      access: string,
+      filters: Filters,
       ignorePurgatory: boolean,
       cancelToken: CancelToken
     ) => {
@@ -44,9 +43,8 @@ export default function PublishedList({
           cancelToken,
           ownAccount && ignorePurgatory,
           ownAccount,
-          page,
-          service,
-          access
+          filters,
+          page
         )
         setQueryResult(result)
       } catch (error) {
@@ -62,55 +60,52 @@ export default function PublishedList({
     if (queryResult && queryResult.totalPages < page) setPage(1)
   }, [page, queryResult])
 
-  useEffect(() => {
-    if (!accountId) return
+  useDebounce(
+    () => {
+      if (!accountId) return
 
-    getPublished(
+      getPublished(
+        accountId,
+        chainIds,
+        page,
+        filters,
+        ignorePurgatory,
+        newCancelToken()
+      )
+    },
+    [
       accountId,
-      chainIds,
       page,
-      service,
-      access,
-      ignorePurgatory,
-      newCancelToken()
-    )
-  }, [
-    accountId,
-    page,
-    appConfig?.metadataCacheUri,
-    chainIds,
-    newCancelToken,
-    getPublished,
-    service,
-    access,
-    ignorePurgatory
-  ])
+      appConfig?.metadataCacheUri,
+      chainIds,
+      newCancelToken,
+      getPublished,
+      filters,
+      ignorePurgatory
+    ],
+    500
+  )
 
   return accountId ? (
-    <>
-      <Filters
-        serviceType={service}
-        setServiceType={setServiceType}
-        accessType={access}
-        setAccessType={setAccessType}
-        ignorePurgatory={ownAccount ? ignorePurgatory : undefined}
-        setIgnorePurgatory={ownAccount ? setIgnorePurgatory : undefined}
-        className={styles.filters}
-      />
-      <AssetList
-        assets={queryResult?.results}
-        isLoading={isLoading}
-        showPagination
-        page={queryResult?.page}
-        totalPages={queryResult?.totalPages}
-        onPageChange={(newPage) => {
-          setPage(newPage)
-        }}
-        className={styles.assets}
-        noPublisher
-        showAssetViewSelector
-      />
-    </>
+    <div className={styles.container}>
+      <div className={styles.filterContainer}>
+        <Filter showPurgatoryOption={ownAccount} expanded />
+      </div>
+      <div className={styles.results}>
+        <AssetList
+          assets={queryResult?.results}
+          isLoading={isLoading}
+          showPagination
+          page={queryResult?.page}
+          totalPages={queryResult?.totalPages}
+          onPageChange={(newPage) => {
+            setPage(newPage)
+          }}
+          noPublisher
+          showAssetViewSelector
+        />
+      </div>
+    </div>
   ) : (
     <div>Please connect your wallet.</div>
   )
