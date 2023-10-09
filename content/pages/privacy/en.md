@@ -44,7 +44,7 @@ There is no adequacy decision for the USA from the European Commission. Our coop
 - Here you can find Vercel&#39;s [**privacy policy** &#8599;](https://vercel.com/legal/privacy-policy).
 
 **Contact via e-mail**  
-When you contact us via e-mail, our (mail) service provider Microsoft (located at One Microsoft Way Redmond, WA 98052-6399, USA) supports us in processing your personal data so we can communicate with you.
+When you contact us via e-mail, our (mail) service provider Microsoft Corporation (located at 1 Microsoft Way, Redmond, Washington 98052-8300, USA) supports us in processing your personal data so we can communicate with you.
 
 There is no adequacy decision for the USA from the European Commission. However, Microsoft is EU-US DPF (EU‐US Data Privacy Framework) certified. The EU‐US DPF is an adequacy decision of the European Commission, limited to certified entities. Moreover, we have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
 
