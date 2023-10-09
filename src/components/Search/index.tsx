@@ -8,7 +8,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
-import useDebounce from '@hooks/useDebounce'
+import { useDebouncedCallback } from 'use-debounce'
 
 export default function SearchPage({
   setTotalResults,
@@ -49,7 +49,7 @@ export default function SearchPage({
     [router]
   )
 
-  const fetchAssets = useCallback(
+  const fetchAssets = useDebouncedCallback(
     async (parsed: queryString.ParsedQuery<string>, chainIds: number[]) => {
       setLoading(true)
       setTotalResults(undefined)
@@ -60,7 +60,7 @@ export default function SearchPage({
       setTotalPagesNumber(queryResult?.totalPages || 0)
       setLoading(false)
     },
-    [newCancelToken, setTotalPagesNumber, setTotalResults]
+    500
   )
   useEffect(() => {
     if (!parsed || !queryResult) return
@@ -68,14 +68,11 @@ export default function SearchPage({
     if (queryResult.totalPages < Number(page)) updatePage(1)
   }, [parsed, queryResult, updatePage])
 
-  useDebounce(
-    () => {
-      if (!parsed || !chainIds) return
-      fetchAssets(parsed, chainIds)
-    },
-    [parsed, chainIds, newCancelToken, fetchAssets],
-    500
-  )
+  useEffect(() => {
+    if (!parsed || !chainIds) return
+
+    fetchAssets(parsed, chainIds)
+  }, [parsed, chainIds, fetchAssets])
 
   return (
     <div className={styles.container}>

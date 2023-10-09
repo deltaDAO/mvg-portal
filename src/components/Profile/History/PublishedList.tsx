@@ -10,7 +10,7 @@ import { useMarketMetadata } from '@context/MarketMetadata'
 import { CancelToken } from 'axios'
 import { useProfile } from '@context/Profile'
 import { useFilter, Filters } from '@context/Filter'
-import useDebounce from '@hooks/useDebounce'
+import { useDebouncedCallback } from 'use-debounce'
 
 export default function PublishedList({
   accountId
@@ -26,7 +26,7 @@ export default function PublishedList({
   const [page, setPage] = useState<number>(1)
   const newCancelToken = useCancelToken()
 
-  const getPublished = useCallback(
+  const getPublished = useDebouncedCallback(
     async (
       accountId: string,
       chainIds: number[],
@@ -53,38 +53,35 @@ export default function PublishedList({
         setIsLoading(false)
       }
     },
-    [ownAccount]
+    500
   )
 
   useEffect(() => {
     if (queryResult && queryResult.totalPages < page) setPage(1)
   }, [page, queryResult])
 
-  useDebounce(
-    () => {
-      if (!accountId) return
+  useEffect(() => {
+    if (!accountId) return
 
-      getPublished(
-        accountId,
-        chainIds,
-        page,
-        filters,
-        ignorePurgatory,
-        newCancelToken()
-      )
-    },
-    [
+    getPublished(
       accountId,
-      page,
-      appConfig?.metadataCacheUri,
       chainIds,
-      newCancelToken,
-      getPublished,
+      page,
       filters,
-      ignorePurgatory
-    ],
-    500
-  )
+      ignorePurgatory,
+      newCancelToken()
+    )
+  }, [
+    accountId,
+    ownAccount,
+    page,
+    appConfig?.metadataCacheUri,
+    chainIds,
+    newCancelToken,
+    getPublished,
+    filters,
+    ignorePurgatory
+  ])
 
   return accountId ? (
     <div className={styles.container}>
