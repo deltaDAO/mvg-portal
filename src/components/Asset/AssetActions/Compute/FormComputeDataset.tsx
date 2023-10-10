@@ -344,11 +344,6 @@ export default function FormStartCompute({
         onChange={() =>
           setTermsAndConditions((termsAndConditions) => !termsAndConditions)
         }
-        postfix={
-          <Link href="/terms" rel="noopener noreferrer" target="_blank">
-            {content.form.termsAndConditions.postfixText}
-          </Link>
-        }
       />
     </Form>
   )

@@ -66,8 +66,8 @@ export interface InputProps {
   readOnly?: boolean
   field?: FieldInputProps<any>
   form?: any
-  prefix?: string | ReactElement
-  postfix?: string | ReactElement
+  prefixes?: string[]
+  postfixes?: string[]
   step?: string
   defaultChecked?: boolean
   size?: 'mini' | 'small' | 'large' | 'default'
@@ -76,6 +76,7 @@ export interface InputProps {
   disclaimer?: string
   disclaimerValues?: string[]
   accountId?: string
+  actions?: string[]
 }
 
 function checkError(

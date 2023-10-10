@@ -18,6 +18,7 @@ import { ConsumerParameters } from './ConsumerParameters'
 import ServiceCredential from './ServiceCredential'
 import ComputeEnvSelection from './ComputeEnvSelection'
 import Credentials from './Credential'
+import Option from './Radio/Option'
 
 const cx = classNames.bind(styles)
 
@@ -29,8 +30,8 @@ const DefaultInput = forwardRef(
       // We filter out all props which are not allowed
       // to be passed to HTML input so these stay unused.
       /* eslint-disable @typescript-eslint/no-unused-vars */
-      prefix,
-      postfix,
+      prefixes,
+      postfixes,
       additionalComponent,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
@@ -52,8 +53,6 @@ const InputElement = forwardRef(
     {
       options,
       sortOptions,
-      prefix,
-      postfix,
       size,
       field,
       multiple,
@@ -68,6 +67,9 @@ const InputElement = forwardRef(
       disclaimer,
       disclaimerValues,
       accountId,
+      prefixes,
+      postfixes,
+      actions,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -95,7 +97,11 @@ const InputElement = forwardRef(
               (sortedOptions as string[]).map(
                 (option: string, index: number) => (
                   <option key={index} value={option}>
-                    {option} {postfix}
+                    <Option
+                      option={option}
+                      prefix={prefixes?.[index]}
+                      postfix={postfixes?.[index]}
+                    />
                   </option>
                 )
               )}
@@ -159,7 +165,9 @@ const InputElement = forwardRef(
           <InputRadio
             options={options as string[]}
             inputSize={size}
-            postfix={postfix}
+            prefixes={prefixes}
+            postfixes={postfixes}
+            actions={actions}
             {...props}
           />
         )
@@ -217,12 +225,16 @@ const InputElement = forwardRef(
       case 'credentials':
         return <Credentials {...field} {...props} />
       default:
-        return prefix || postfix ? (
+        return prefixes?.[0] || postfixes?.[0] ? (
           <div
-            className={`${prefix ? styles.prefixGroup : styles.postfixGroup}`}
+            className={`${
+              prefixes?.[0] ? styles.prefixGroup : styles.postfixGroup
+            }`}
           >
-            {prefix && (
-              <div className={cx({ prefix: true, [size]: size })}>{prefix}</div>
+            {prefixes?.[0] && (
+              <div className={cx({ prefix: true, [size]: size })}>
+                {prefixes?.[0]}
+              </div>
             )}
             <DefaultInput
               ref={ref}
@@ -231,9 +243,9 @@ const InputElement = forwardRef(
               {...field}
               {...props}
             />
-            {postfix && (
+            {postfixes?.[0] && (
               <div className={cx({ postfix: true, [size]: size })}>
-                {postfix}
+                {postfixes?.[0]}
               </div>
             )}
           </div>

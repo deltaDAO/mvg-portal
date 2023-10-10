@@ -23,8 +23,8 @@
       "name": "termsAndConditions",
       "type": "checkbox",
       "options": ["Terms and Conditions"],
-      "prefix": ["I agree to the"],
-      "action": ["/terms"]
+      "prefixes": ["I agree to the"],
+      "actions": ["/terms"]
     }
   }
 }

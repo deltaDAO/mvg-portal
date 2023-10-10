@@ -215,11 +215,6 @@ export default function MetadataFields(): ReactElement {
         {...getFieldContent('termsAndConditions', content.metadata.fields)}
         component={Input}
         name="metadata.termsAndConditions"
-        postfix={
-          <Link href="/terms" rel="noopener noreferrer" target="_blank">
-            {' Terms and Conditions'}
-          </Link>
-        }
       />
     </>
   )
