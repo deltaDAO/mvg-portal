@@ -50,6 +50,7 @@ export interface SiteContent {
     }[]
   }[]
   announcement: string
+  devPreviewAnnouncement: string
   warning: {
     ctd: string
   }

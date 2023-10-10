@@ -25,6 +25,10 @@ export default function App({
       {siteContent?.announcement !== '' && (
         <AnnouncementBanner text={siteContent?.announcement} />
       )}
+      {!window?.location?.origin?.includes('preview.') &&
+        siteContent?.devPreviewAnnouncement !== '' && (
+          <AnnouncementBanner text={siteContent?.devPreviewAnnouncement} />
+        )}
       <Header />
 
       {isInPurgatory && (
