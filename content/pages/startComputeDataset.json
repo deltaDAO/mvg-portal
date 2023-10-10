@@ -22,8 +22,9 @@
     "termsAndConditions": {
       "name": "termsAndConditions",
       "type": "checkbox",
-      "options": ["I agree to the"],
-      "postfixText": " Terms and Conditions"
+      "options": ["Terms and Conditions"],
+      "prefix": ["I agree to the"],
+      "action": ["/terms"]
     }
   }
 }
