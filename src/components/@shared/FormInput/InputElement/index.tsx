@@ -30,8 +30,8 @@ const DefaultInput = forwardRef(
       // We filter out all props which are not allowed
       // to be passed to HTML input so these stay unused.
       /* eslint-disable @typescript-eslint/no-unused-vars */
-      prefixes,
-      postfixes,
+      prefix,
+      postfix,
       additionalComponent,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
@@ -63,6 +63,8 @@ const InputElement = forwardRef(
       help,
       prominentHelp,
       form,
+      prefix,
+      postfix,
       additionalComponent,
       disclaimer,
       disclaimerValues,
@@ -225,16 +227,12 @@ const InputElement = forwardRef(
       case 'credentials':
         return <Credentials {...field} {...props} />
       default:
-        return prefixes?.[0] || postfixes?.[0] ? (
+        return prefix || postfix ? (
           <div
-            className={`${
-              prefixes?.[0] ? styles.prefixGroup : styles.postfixGroup
-            }`}
+            className={`${prefix ? styles.prefixGroup : styles.postfixGroup}`}
           >
-            {prefixes?.[0] && (
-              <div className={cx({ prefix: true, [size]: size })}>
-                {prefixes?.[0]}
-              </div>
+            {prefix && (
+              <div className={cx({ prefix: true, [size]: size })}>{prefix}</div>
             )}
             <DefaultInput
               ref={ref}
@@ -243,9 +241,9 @@ const InputElement = forwardRef(
               {...field}
               {...props}
             />
-            {postfixes?.[0] && (
+            {postfix && (
               <div className={cx({ postfix: true, [size]: size })}>
-                {postfixes?.[0]}
+                {postfix}
               </div>
             )}
           </div>

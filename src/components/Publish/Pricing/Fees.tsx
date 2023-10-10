@@ -28,7 +28,7 @@ const Default = ({
     }
     value={value}
     name={name}
-    postfix="%"
+    postfixes={['%']}
     readOnly
     size="small"
   />

@@ -66,6 +66,8 @@ export interface InputProps {
   readOnly?: boolean
   field?: FieldInputProps<any>
   form?: any
+  prefix?: string | ReactElement
+  postfix?: string | ReactElement
   prefixes?: string[]
   postfixes?: string[]
   step?: string
