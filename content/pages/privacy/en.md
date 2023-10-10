@@ -36,16 +36,21 @@ For detailed information about the processing operations, lawfulness, purposes, 
 ## 3. Recipients and cross-border data transfer
 
 **Visiting our portal demonstrator**  
-When visiting our portal demonstrator, your IP address is processed by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA. Vercel is a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Vercel using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely be processed on a Vercel server within the EEA. We signed a Data Processing Agreement (DPA) including Standard Contractual Clauses (SCC) with Vercel to ensure a data protection compliant processing of your personal data. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+When visiting our portal demonstrator, your IP address is processed by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA. Vercel is a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Vercel using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely (but not guaranteed) be processed on a Vercel server within the EEA.
+
+There is no adequacy decision for the USA from the European Commission. Our cooperation with Vercel is based on a Data Processing Agreement (DPA) including Standard Contractual Clauses (SCC). You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
 
 - Here you can find Vercel&#39;s current [**DPA including SCC** &#8599;](https://vercel.com/legal/dpa).
 - Here you can find Vercel&#39;s [**privacy policy** &#8599;](https://vercel.com/legal/privacy-policy).
 
 **Contact via e-mail**  
-When you contact us via e-mail, our (mail) service provider Microsoft (located at One Microsoft Way Redmond, WA 98052-6399, USA) supports us in processing your personal data so we can communicate with you. We have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+When you contact us via e-mail, our (mail) service provider Microsoft Corporation (located at 1 Microsoft Way, Redmond, Washington 98052-8300, USA) supports us in processing your personal data so we can communicate with you.
+
+There is no adequacy decision for the USA from the European Commission. However, Microsoft is EU-US DPF (EU‐US Data Privacy Framework) certified. The EU‐US DPF is an adequacy decision of the European Commission, limited to certified entities. Moreover, we have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
 
 - Here you can find Microsoft&#39;s current [**DPA including SCC** &#8599;](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
 - Here you can find Microsoft&#39;s [**privacy policy** &#8599;](https://privacy.microsoft.com/de-de/privacystatement).
+- Here you can find Microsoft&#39;s [**Data Privacy Framework List entry** &#8599;](https://www.dataprivacyframework.gov/s/participant-search/participant-detail?id=a2zt0000000KzNaAAK&status=Active).
 
 **Self-Description verification functionality**  
 When you are verifying a Self-Description, your IP address is processed by Gaia-X AISBL (Gaia-X European Association for Data and Cloud AISBL, Avenue des Arts 6-9, 1210 Brussels, Belgium) to resolve your request (see also chapter 4.3).
