@@ -7,36 +7,28 @@ import React, {
   useEffect,
   useState
 } from 'react'
-import { useAccount, useChainId, useProvider } from 'wagmi'
-import { getOceanConfig } from '../../@utils/ocean'
-import { tokenAddressesEUROe } from '../../@utils/subgraph'
-import { accountTruncate, getTokenAllowance } from '../../@utils/wallet'
+import { useAccount, useBalance, useChainId, useProvider } from 'wagmi'
+import { accountTruncate, getTokenBalance } from '../../@utils/wallet'
 import { useUserPreferences } from '../UserPreferences'
 import { toast } from 'react-toastify'
 import Modal from '../../components/@shared/atoms/Modal'
 import Button from '../../components/@shared/atoms/Button'
 import styles from './AutomationProvider.module.css'
 import Loader from '../../components/@shared/atoms/Loader'
+import { useMarketMetadata } from '../MarketMetadata'
 
-export interface AutomationBalance {
-  eth: string
+export interface NativeTokenBalance {
+  symbol: string
+  balance: string
 }
-
-export interface AutomationAllowance extends UserBalance {
-  ocean: string
-  euroe: string
-}
-
 export interface AutomationProviderValue {
   autoWallet: Wallet
   autoWalletAddress: string
   isAutomationEnabled: boolean
-  balance: AutomationBalance
-  allowance: AutomationAllowance
+  balance: UserBalance
+  nativeBalance: NativeTokenBalance
   isLoading: boolean
   decryptPercentage: number
-  hasRetrievableBalance: () => Promise<boolean>
-  hasAnyAllowance: () => boolean
   updateBalance: () => Promise<void>
   setIsAutomationEnabled: (isEnabled: boolean) => void
   exportAutomationWallet: (password: string) => Promise<void>
@@ -55,6 +47,7 @@ const AutomationContext = createContext({} as AutomationProviderValue)
 // Provider
 function AutomationProvider({ children }) {
   const { address } = useAccount()
+  const { approvedBaseTokens } = useMarketMetadata()
   const chainId = useChainId()
   const { automationWalletJSON, setAutomationWalletJSON } = useUserPreferences()
 
@@ -64,13 +57,12 @@ function AutomationProvider({ children }) {
   const [autoWalletAddress, setAutoWalletAddress] = useState<string>()
   const [decryptPercentage, setDecryptPercentage] = useState<number>()
 
-  const [balance, setBalance] = useState<AutomationBalance>({
-    eth: '0'
+  const { data: balanceNativeToken } = useBalance({
+    address: autoWallet?.address as `0x${string}`
   })
-  const [allowance, setAllowance] = useState<AutomationAllowance>({
-    ocean: '0',
-    euroe: '0'
-  })
+
+  const [nativeBalance, setNativeBalance] = useState<NativeTokenBalance>()
+  const [balance, setBalance] = useState<UserBalance>({})
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [confirmedDeletion, setConfirmedDeletion] = useState(false)
@@ -122,54 +114,36 @@ function AutomationProvider({ children }) {
     [autoWallet]
   )
 
-  const getBalance = useCallback(async (): Promise<AutomationBalance> => {
-    return {
-      eth: ethers.utils.formatEther(
-        await wagmiProvider.getBalance(autoWallet.address, 'latest')
-      )
-    }
-  }, [autoWallet, wagmiProvider])
-
-  const getAllowance = useCallback(async (): Promise<AutomationAllowance> => {
-    const oceanConfig = getOceanConfig(chainId)
-
-    return {
-      ocean: await getTokenAllowance(
-        address,
-        autoWallet.address,
-        18,
-        oceanConfig.oceanTokenAddress,
-        wagmiProvider
-      ),
-      euroe: await getTokenAllowance(
-        address,
-        autoWallet.address,
-        6,
-        tokenAddressesEUROe[chainId],
-        wagmiProvider
-      )
-    }
-  }, [address, autoWallet?.address, wagmiProvider, chainId])
-
   const updateBalance = useCallback(async () => {
     if (!autoWallet) return
 
     try {
-      const balance = await getBalance()
+      if (balanceNativeToken)
+        setNativeBalance({
+          symbol: balanceNativeToken?.symbol.toLowerCase() || 'ETH',
+          balance: balanceNativeToken?.formatted
+        })
 
-      const allowance = await getAllowance()
-
-      console.log(`[AutomationProvider] autoWallet balance:`, {
-        balance,
-        allowance
-      })
-
-      setBalance(balance)
-      setAllowance(allowance)
+      if (approvedBaseTokens?.length > 0) {
+        const newBalance: UserBalance = {}
+        await Promise.all(
+          approvedBaseTokens.map(async (token) => {
+            const { address: tokenAddress, decimals, symbol } = token
+            const tokenBalance = await getTokenBalance(
+              autoWallet?.address,
+              decimals,
+              tokenAddress,
+              wagmiProvider
+            )
+            newBalance[symbol.toLocaleLowerCase()] = tokenBalance
+          })
+        )
+        setBalance(newBalance)
+      } else setBalance(undefined)
     } catch (error) {
       LoggerInstance.error('[AutomationProvider] Error: ', error.message)
     }
-  }, [autoWallet, getBalance, getAllowance])
+  }, [autoWallet, balanceNativeToken, approvedBaseTokens, wagmiProvider])
 
   // periodic refresh of automation wallet balance
   useEffect(() => {
@@ -181,36 +155,6 @@ function AutomationProvider({ children }) {
       clearInterval(balanceInterval)
     }
   }, [updateBalance])
-
-  const hasRetrievableBalance = useCallback(async () => {
-    if (!autoWallet || !address) return
-
-    try {
-      const ethBalance = ethers.utils.parseEther(balance.eth)
-
-      const estimatedGas = await autoWallet.estimateGas({
-        to: autoWallet.address,
-        value: ethBalance
-      })
-
-      const gasPrice = await autoWallet.getGasPrice()
-
-      return estimatedGas.mul(gasPrice).lte(ethBalance)
-    } catch (e) {
-      console.error(
-        `[AutomationProvider] could not calculate remaining balance: ${e.message}`
-      )
-      return false
-    }
-  }, [address, balance, autoWallet])
-
-  const hasAnyAllowance = useCallback(() => {
-    if (!allowance) return
-    return (
-      Object.keys(allowance).filter((token) => Number(allowance[token]) > 0)
-        .length > 0
-    )
-  }, [allowance])
 
   const deleteCurrentAutomationWallet = () => {
     setIsModalOpen(true)
@@ -226,7 +170,6 @@ function AutomationProvider({ children }) {
         setAutoWallet(undefined)
         setAutomationWalletJSON(undefined)
         setBalance(undefined)
-        setAllowance(undefined)
         setConfirmedDeletion(false)
         toast.info('The automation wallet was removed from your machine.')
         setIsModalOpen(false)
@@ -235,14 +178,7 @@ function AutomationProvider({ children }) {
     }
 
     manageDeletion()
-  }, [
-    address,
-    isModalOpen,
-    confirmedDeletion,
-    hasAnyAllowance,
-    hasRetrievableBalance,
-    setAutomationWalletJSON
-  ])
+  }, [address, isModalOpen, confirmedDeletion, setAutomationWalletJSON])
 
   const hasValidEncryptedWallet = useCallback(() => {
     return ethers.utils.isAddress(autoWalletAddress)
@@ -304,12 +240,10 @@ function AutomationProvider({ children }) {
         autoWallet,
         autoWalletAddress,
         balance,
-        allowance,
+        nativeBalance,
         isAutomationEnabled,
         isLoading,
         decryptPercentage,
-        hasRetrievableBalance,
-        hasAnyAllowance,
         setIsAutomationEnabled,
         updateBalance,
         exportAutomationWallet,

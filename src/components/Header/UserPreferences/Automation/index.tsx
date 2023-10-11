@@ -17,19 +17,21 @@ export default function Automation(): ReactElement {
     autoWallet,
     isAutomationEnabled,
     hasValidEncryptedWallet,
-    hasRetrievableBalance,
-    hasAnyAllowance
+    balance,
+    nativeBalance
   } = useAutomation()
 
   const [hasError, setHasError] = useState<boolean>()
+  const [hasWarning, setHasWarning] = useState<boolean>(false)
 
   useEffect(() => {
-    const setError = async () => {
-      const balanceAvailable = await hasRetrievableBalance()
-      setHasError(!balanceAvailable)
-    }
-    setError()
-  }, [hasRetrievableBalance])
+    if (automationConfig.useAutomationForErc20 === 'true')
+      setHasWarning(
+        Object.keys(balance)?.filter((token) => Number(balance[token]) <= 0)
+          .length > 0
+      )
+    setHasError(Number(nativeBalance?.balance) <= 0)
+  }, [balance, nativeBalance])
 
   const wrapperClasses = cx({
     automation: true,
@@ -39,8 +41,7 @@ export default function Automation(): ReactElement {
   const indicatorClasses = cx({
     indicator: true,
     enabled: isAutomationEnabled,
-    warning:
-      automationConfig.useAutomationForErc20 === 'true' && !hasAnyAllowance(),
+    warning: hasWarning,
     error: hasError
   })
 

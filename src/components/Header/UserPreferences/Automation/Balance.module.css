@@ -6,19 +6,16 @@
   border-bottom: 1px solid var(--border-color);
 }
 
-.balance,
-.allowance {
+.balance {
   margin: calc(var(--spacer) / 3) 0;
 }
 
-.balance strong,
-.allowance strong {
+.balance strong {
   display: block;
   font-weight: var(--font-weight-base);
 }
 
-.balance ul li span,
-.allowance ul li span {
+.balance ul li span {
   text-transform: uppercase;
   font-weight: var(--font-weight-bold);
 }

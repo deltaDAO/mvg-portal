@@ -3,33 +3,33 @@ import { useAutomation } from '../../../../@context/Automation/AutomationProvide
 import styles from './Balance.module.css'
 
 export default function Balance(): ReactElement {
-  const { balance, allowance } = useAutomation()
+  const { nativeBalance, balance } = useAutomation()
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.balance}>
-        <strong>Balance</strong>
-        <ul>
-          {balance &&
-            Object.keys(balance).map((currency) => (
-              <li key={`balance-${currency}`}>
-                <span>{currency}</span>: {Number(balance[currency]).toFixed(4)}
+    <>
+      <div className={styles.wrapper}>
+        <div className={styles.balance}>
+          <ul>
+            {nativeBalance && (
+              <li key={`automation-balance-${nativeBalance.symbol}`}>
+                <span>{nativeBalance.symbol}</span>:{' '}
+                {Number(nativeBalance.balance).toFixed(4)}
               </li>
-            ))}
-        </ul>
+            )}
+          </ul>
+        </div>
+        <div className={styles.balance}>
+          <ul>
+            {balance &&
+              Object.keys(balance).map((currency) => (
+                <li key={`automation-balance-${currency}`}>
+                  <span>{currency}</span>:{' '}
+                  {Number(balance[currency]).toFixed(4)}
+                </li>
+              ))}
+          </ul>
+        </div>
       </div>
-      <div className={styles.allowance}>
-        <strong>Allowance</strong>
-        <ul>
-          {allowance &&
-            Object.keys(allowance).map((currency) => (
-              <li key={`allowance-${currency}`}>
-                <span>{currency}</span>:{' '}
-                {Number(allowance[currency]).toFixed(4)}
-              </li>
-            ))}
-        </ul>
-      </div>
-    </div>
+    </>
   )
 }
