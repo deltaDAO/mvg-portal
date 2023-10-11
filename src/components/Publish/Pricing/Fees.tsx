@@ -44,7 +44,7 @@ export default function Fees({
   const { appConfig } = useMarketMetadata()
 
   useEffect(() => {
-    getOpcFees(chain?.id || 1).then((response: OpcFeesData) => {
+    getOpcFees(chain?.id || 100).then((response: OpcFeesData) => {
       setOceanCommunitySwapFee(
         response?.swapOceanFee
           ? new Decimal(response.swapOceanFee).mul(100).toString()

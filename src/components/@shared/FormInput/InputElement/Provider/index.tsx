@@ -52,7 +52,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
       const providerResponse = await axios.get(field.value.url, {
         cancelToken: newCancelToken()
       })
-      const userChainId = chain?.id || 1
+      const userChainId = chain?.id || 100
       const providerChain =
         providerResponse?.data?.chainId || providerResponse?.data?.chainIds
 

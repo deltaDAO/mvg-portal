@@ -149,8 +149,8 @@ export async function getResults(
     offset?: string
     sort?: string
     sortOrder?: string
-    serviceType?: string[]
-    accessType?: string[]
+    serviceType?: string | string[]
+    accessType?: string | string[]
     filterSet?: string[]
   },
   chainIds: number[],
