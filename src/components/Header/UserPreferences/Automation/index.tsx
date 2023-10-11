@@ -6,7 +6,6 @@ import Transaction from '@images/transaction.svg'
 import Caret from '@images/caret.svg'
 import Lock from '@images/lock.svg'
 import classNames from 'classnames/bind'
-import { automationConfig } from '../../../../../app.config'
 import stylesIndex from '../index.module.css'
 import styles from './index.module.css'
 
@@ -25,11 +24,10 @@ export default function Automation(): ReactElement {
   const [hasWarning, setHasWarning] = useState<boolean>(false)
 
   useEffect(() => {
-    if (automationConfig.useAutomationForErc20 === 'true')
-      setHasWarning(
-        Object.keys(balance)?.filter((token) => Number(balance[token]) <= 0)
-          .length > 0
-      )
+    setHasWarning(
+      Object.keys(balance)?.filter((token) => Number(balance[token]) <= 0)
+        .length > 0
+    )
     setHasError(Number(nativeBalance?.balance) <= 0)
   }, [balance, nativeBalance])
 

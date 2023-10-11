@@ -32,7 +32,6 @@ export interface AppConfig {
   dockerHubProxyUrl: string
   automationConfig: {
     networkTokenFundDefaultValue: string
-    useAutomationForErc20: string
     erc20ApprovalDefaultValue: string
     roughTxGasEstimate: number
   }

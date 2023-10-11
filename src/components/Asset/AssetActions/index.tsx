@@ -24,8 +24,12 @@ export default function AssetActions({
   asset: AssetExtended
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const { autoWallet } = useAutomation()
   const { balance } = useBalance()
+  const {
+    isAutomationEnabled,
+    autoWallet,
+    balance: automationBalance
+  } = useAutomation()
   const { chain } = useNetwork()
   const web3Provider = useProvider()
   const { isAssetNetwork } = useAsset()
@@ -138,10 +142,13 @@ export default function AssetActions({
     )
       return
 
+    const balanceToUse = isAutomationEnabled ? automationBalance : balance
+
     const baseTokenBalance = getTokenBalanceFromSymbol(
-      balance,
+      balanceToUse,
       asset?.accessDetails?.baseToken?.symbol
     )
+
     setIsBalanceSufficient(
       compareAsBN(baseTokenBalance, `${asset?.accessDetails.price}`) ||
         Number(dtBalance) >= 1
@@ -150,7 +157,14 @@ export default function AssetActions({
     return () => {
       setIsBalanceSufficient(false)
     }
-  }, [balance, accountId, asset?.accessDetails, dtBalance])
+  }, [
+    balance,
+    accountId,
+    asset?.accessDetails,
+    dtBalance,
+    isAutomationEnabled,
+    automationBalance
+  ])
 
   // check for if user is whitelisted or blacklisted
   useEffect(() => {
