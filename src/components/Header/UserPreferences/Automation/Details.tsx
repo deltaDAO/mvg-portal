@@ -7,20 +7,35 @@ import Loader from '../../../@shared/atoms/Loader'
 import { AUTOMATION_WALLET_MODES } from '../AutomationWalletMode'
 import Balance from './Balance'
 import styles from './Details.module.css'
-import FundWallet from './FundWallet'
-import WithdrawTokens from './WithdrawTokens'
 import Import from './Import'
 import Address from './Address'
 import Decrypt from './Decrypt'
 
 function AdvancedView(): ReactElement {
+  const { exportAutomationWallet, isLoading, deleteCurrentAutomationWallet } =
+    useAutomation()
+  const deleteWallet = () => {
+    deleteCurrentAutomationWallet()
+  }
+
   return (
     <div className={styles.advanced}>
       <Balance />
 
-      <FundWallet className={styles.fundingBtn} />
+      <Button
+        onClick={async () => {
+          const password = prompt('Enter your password:')
+          await exportAutomationWallet(password)
+        }}
+        className={styles.exportBtn}
+        disabled={isLoading}
+      >
+        {isLoading ? <Loader /> : `Export Wallet`}
+      </Button>
 
-      <WithdrawTokens className={styles.withdrawBtn} />
+      <Button onClick={() => deleteWallet()} className={styles.deleteBtn}>
+        Delete Wallet
+      </Button>
     </div>
   )
 }
@@ -42,14 +57,12 @@ function SimpleView({
               transactions.
             </span>
           )}
-          <WithdrawTokens>Empty Wallet</WithdrawTokens>
         </>
       ) : (
         <>
           <span className={styles.error}>
             Automation not sufficiently funded!
           </span>
-          <FundWallet style="primary">Recharge wallet</FundWallet>
         </>
       )}
     </div>
@@ -68,8 +81,6 @@ export default function Details({
     balance,
     isLoading,
     setIsAutomationEnabled,
-    deleteCurrentAutomationWallet,
-    exportAutomationWallet,
     hasValidEncryptedWallet
   } = useAutomation()
 
@@ -91,10 +102,6 @@ export default function Details({
       Number(balance.eth) / automationConfig.roughTxGasEstimate
     )
   }, [balance, automationConfig?.roughTxGasEstimate])
-
-  const deleteWallet = () => {
-    deleteCurrentAutomationWallet()
-  }
 
   return (
     <div className={styles.details}>
@@ -133,30 +140,11 @@ export default function Details({
           ) : (
             <AdvancedView />
           )}
-
-          <Button onClick={() => deleteWallet()} className={styles.deleteBtn}>
-            Delete Wallet
-          </Button>
         </>
       )}
 
       {/* IMPORT / EXPORT */}
-      {autoWallet ? (
-        <Button
-          onClick={async () => {
-            const password = prompt('Enter your password:')
-            await exportAutomationWallet(password)
-          }}
-          className={styles.deleteBtn}
-          disabled={isLoading}
-        >
-          {isLoading ? <Loader /> : `Export Wallet`}
-        </Button>
-      ) : needsImport ? (
-        <Import />
-      ) : (
-        <Decrypt />
-      )}
+      {!autoWallet && (needsImport ? <Import /> : <Decrypt />)}
     </div>
   )
 }

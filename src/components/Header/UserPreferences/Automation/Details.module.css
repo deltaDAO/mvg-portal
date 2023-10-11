@@ -14,25 +14,30 @@
   margin-bottom: calc(var(--spacer) / 2);
 }
 
-.tokenActions {
-  display: flex;
-}
-
 .toggleBtn {
   width: 100%;
   margin-bottom: calc(var(--spacer) / 2);
 }
 
 .simple,
-.fundingBtn,
-.withdrawBtn,
-.deleteBtn {
+.deleteBtn,
+.exportBtn {
   margin: calc(var(--spacer) / 4) 0;
   width: 100%;
   text-align: center;
 }
 
-.deleteBtn * {
+.deleteBtn {
+  background-color: var(--brand-alert-red);
+}
+
+.deleteBtn:hover,
+.deleteBtn:focus {
+  background-color: var(--brand-alert-red);
+}
+
+.deleteBtn *,
+.exportBtn * {
   color: var(--brand-white) !important;
 }
 

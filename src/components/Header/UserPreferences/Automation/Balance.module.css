@@ -2,8 +2,7 @@
   display: flex;
   justify-content: space-between;
   font-size: var(--font-size-base);
-  padding-bottom: calc(var(--spacer) / 2);
-  margin-bottom: calc(var(--spacer) / 2);
+  margin-bottom: calc(var(--spacer) / 4);
   border-bottom: 1px solid var(--border-color);
 }
 
