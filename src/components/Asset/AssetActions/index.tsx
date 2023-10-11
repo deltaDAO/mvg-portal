@@ -16,6 +16,7 @@ import AssetStats from './AssetStats'
 import { isAddressWhitelisted } from '@utils/ddo'
 import { useAccount, useProvider, useNetwork } from 'wagmi'
 import useBalance from '@hooks/useBalance'
+import { useAutomation } from '../../../@context/Automation/AutomationProvider'
 
 export default function AssetActions({
   asset
@@ -23,6 +24,7 @@ export default function AssetActions({
   asset: AssetExtended
 }): ReactElement {
   const { address: accountId } = useAccount()
+  const { autoWallet } = useAutomation()
   const { balance } = useBalance()
   const { chain } = useNetwork()
   const web3Provider = useProvider()
@@ -114,7 +116,7 @@ export default function AssetActions({
         const datatokenInstance = new Datatoken(web3Provider as any)
         const dtBalance = await datatokenInstance.balance(
           asset.services[0].datatokenAddress,
-          accountId
+          autoWallet?.address || accountId
         )
         setDtBalance(dtBalance)
       } catch (e) {
