@@ -169,6 +169,8 @@ export default function Download({
     setIsLoading(true)
 
     try {
+      const signerToUse: Signer = isAutomationEnabled ? autoWallet : signer
+
       if (isOwned) {
         setStatusText(
           getOrderFeedback(
@@ -177,7 +179,13 @@ export default function Download({
           )[3]
         )
 
-        await downloadFile(signer, asset, accountId, validOrderTx, dataParams)
+        await downloadFile(
+          signerToUse,
+          asset,
+          accountId,
+          validOrderTx,
+          dataParams
+        )
       } else {
         setStatusText(
           getOrderFeedback(
@@ -186,16 +194,12 @@ export default function Download({
           )[asset.accessDetails.type === 'fixed' ? 2 : 1]
         )
 
-        const signerToUse: Signer = isAutomationEnabled ? autoWallet : signer
-
         const orderTx = await order(
           signerToUse,
           asset,
           orderPriceAndFees,
           accountId,
-          hasDatatoken,
-          undefined,
-          isAutomationEnabled ? accountId : undefined
+          hasDatatoken
         )
         const tx = await orderTx.wait()
         if (!tx) {
