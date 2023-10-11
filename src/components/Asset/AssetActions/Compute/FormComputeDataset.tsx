@@ -17,8 +17,8 @@ import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
-import { FormConsumerParameter } from '@components/Publish/_types'
 import { ComputeDatasetForm } from './_constants'
+import Link from 'next/link'
 
 export default function FormStartCompute({
   algorithms,
@@ -44,6 +44,7 @@ export default function FormStartCompute({
   selectedComputeAssetTimeout,
   computeEnvs,
   setSelectedComputeEnv,
+  setTermsAndConditions,
   stepText,
   isConsumable,
   consumableFeedback,
@@ -78,6 +79,7 @@ export default function FormStartCompute({
   setSelectedComputeEnv: React.Dispatch<
     React.SetStateAction<ComputeEnvironment>
   >
+  setTermsAndConditions: React.Dispatch<React.SetStateAction<boolean>>
   stepText: string
   isConsumable: boolean
   consumableFeedback: string
@@ -335,6 +337,13 @@ export default function FormStartCompute({
         hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
         retry={retry}
         isAccountConnected={isConnected}
+      />
+      <Field
+        {...content.form.termsAndConditions}
+        component={Input}
+        onChange={() =>
+          setTermsAndConditions((termsAndConditions) => !termsAndConditions)
+        }
       />
     </Form>
   )

@@ -23,6 +23,10 @@
   border-bottom: 1px solid var(--border-color);
 }
 
+.form > div:last-of-type {
+  margin-bottom: 0;
+}
+
 .form [class*='AssetSelection-module--selection'] {
   margin-left: -2rem;
   margin-right: -2rem;

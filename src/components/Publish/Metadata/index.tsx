@@ -9,7 +9,6 @@ import IconDataset from '@images/dataset.svg'
 import IconAlgorithm from '@images/algorithm.svg'
 import styles from './index.module.css'
 import { algorithmContainerPresets } from '../_constants'
-import Alert from '@shared/atoms/Alert'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { getFieldContent } from '@utils/form'
 
@@ -215,14 +214,6 @@ export default function MetadataFields(): ReactElement {
         component={Input}
         name="metadata.termsAndConditions"
       />
-      <a
-        className={styles.termsLink}
-        href="/terms"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        View Terms and Conditions
-      </a>
     </>
   )
 }

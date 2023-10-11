@@ -2,17 +2,24 @@ import React, { InputHTMLAttributes, ReactElement } from 'react'
 import slugify from 'slugify'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'
+import Option from './Option'
 
 const cx = classNames.bind(styles)
 
 interface InputRadioProps extends InputHTMLAttributes<HTMLInputElement> {
   options: string[]
   inputSize?: string
+  prefixes?: string[]
+  postfixes?: string[]
+  actions?: string[]
 }
 
 export default function InputRadio({
   options,
   inputSize,
+  prefixes,
+  postfixes,
+  actions,
   ...props
 }: InputRadioProps): ReactElement {
   return (
@@ -32,7 +39,12 @@ export default function InputRadio({
               })}
               htmlFor={slugify(option)}
             >
-              {option}
+              <Option
+                option={option}
+                prefix={prefixes?.[index]}
+                postfix={postfixes?.[index]}
+                action={actions?.[index]}
+              />
             </label>
           </div>
         ))}
