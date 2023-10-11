@@ -15,7 +15,7 @@ export default function Option({
 }) {
   return (
     <>
-      {prefix}{' '}
+      {prefix && `${prefix} `}
       {action ? (
         <Button
           to={action.startsWith('/') && action}
@@ -29,8 +29,8 @@ export default function Option({
         </Button>
       ) : (
         <>{option}</>
-      )}{' '}
-      {postfix}
+      )}
+      {postfix && ` ${postfix}`}
     </>
   )
 }
