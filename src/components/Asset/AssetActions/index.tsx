@@ -120,7 +120,7 @@ export default function AssetActions({
         const datatokenInstance = new Datatoken(web3Provider as any)
         const dtBalance = await datatokenInstance.balance(
           asset.services[0].datatokenAddress,
-          autoWallet?.address || accountId
+          isAutomationEnabled ? autoWallet?.address : accountId
         )
         setDtBalance(dtBalance)
       } catch (e) {

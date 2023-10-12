@@ -144,8 +144,9 @@ export default function Compute({
     const datatokenInstance = new Datatoken(dummySigner)
     const dtBalance = await datatokenInstance.balance(
       asset?.services[0].datatokenAddress,
-      accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
+      isAutomationEnabled ? autoWallet?.address : accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
     )
+
     setAlgorithmDTBalance(new Decimal(dtBalance).toString())
     const hasAlgoDt = Number(dtBalance) >= 1
     setHasAlgoAssetDatatoken(hasAlgoDt)
@@ -231,7 +232,7 @@ export default function Compute({
       const initializedProvider = await initializeProviderForCompute(
         asset,
         selectedAlgorithmAsset,
-        accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
+        isAutomationEnabled ? autoWallet?.address : accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
         selectedComputeEnv
       )
 
@@ -352,7 +353,7 @@ export default function Compute({
         setIsLoadingJobs(false)
       }
     },
-    [accountId, asset, chainIds, isLoadingJobs, newCancelToken]
+    [accountId, asset, chainIds, autoWallet, newCancelToken]
   )
 
   useEffect(() => {
