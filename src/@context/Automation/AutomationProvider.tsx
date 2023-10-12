@@ -7,16 +7,19 @@ import React, {
   useEffect,
   useState
 } from 'react'
-import { useAccount, useBalance, useChainId, useProvider } from 'wagmi'
-import { accountTruncate, getTokenBalance } from '../../@utils/wallet'
+import {
+  useAccount,
+  useChainId,
+  useProvider,
+  useBalance as useWagmiBalance
+} from 'wagmi'
+import { accountTruncate } from '../../@utils/wallet'
 import { useUserPreferences } from '../UserPreferences'
 import { toast } from 'react-toastify'
-import Modal from '../../components/@shared/atoms/Modal'
-import Button from '../../components/@shared/atoms/Button'
-import styles from './AutomationProvider.module.css'
-import Loader from '../../components/@shared/atoms/Loader'
+
 import { useMarketMetadata } from '../MarketMetadata'
 import DeleteAutomationModal from './DeleteAutomationModal'
+import useBalance from '../../@hooks/useBalance'
 
 export interface NativeTokenBalance {
   symbol: string
@@ -47,6 +50,7 @@ const AutomationContext = createContext({} as AutomationProviderValue)
 // Provider
 function AutomationProvider({ children }) {
   const { address } = useAccount()
+  const { getApprovedTokenBalances } = useBalance()
   const { approvedBaseTokens } = useMarketMetadata()
   const chainId = useChainId()
   const { automationWalletJSON, setAutomationWalletJSON } = useUserPreferences()
@@ -57,7 +61,7 @@ function AutomationProvider({ children }) {
   const [autoWalletAddress, setAutoWalletAddress] = useState<string>()
   const [decryptPercentage, setDecryptPercentage] = useState<number>()
 
-  const { data: balanceNativeToken } = useBalance({
+  const { data: balanceNativeToken } = useWagmiBalance({
     address: autoWallet?.address as `0x${string}`
   })
 
@@ -101,25 +105,18 @@ function AutomationProvider({ children }) {
         })
 
       if (approvedBaseTokens?.length > 0) {
-        const newBalance: UserBalance = {}
-        await Promise.all(
-          approvedBaseTokens.map(async (token) => {
-            const { address: tokenAddress, decimals, symbol } = token
-            const tokenBalance = await getTokenBalance(
-              autoWallet?.address,
-              decimals,
-              tokenAddress,
-              wagmiProvider
-            )
-            newBalance[symbol.toLocaleLowerCase()] = tokenBalance
-          })
-        )
+        const newBalance = await getApprovedTokenBalances(autoWallet?.address)
         setBalance(newBalance)
       } else setBalance(undefined)
     } catch (error) {
       LoggerInstance.error('[AutomationProvider] Error: ', error.message)
     }
-  }, [autoWallet, balanceNativeToken, approvedBaseTokens, wagmiProvider])
+  }, [
+    autoWallet,
+    balanceNativeToken,
+    approvedBaseTokens,
+    getApprovedTokenBalances
+  ])
 
   // periodic refresh of automation wallet balance
   useEffect(() => {
