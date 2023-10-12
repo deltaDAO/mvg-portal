@@ -20,16 +20,18 @@ export default function Automation(): ReactElement {
     nativeBalance
   } = useAutomation()
 
-  const [hasError, setHasError] = useState<boolean>()
-  const [hasWarning, setHasWarning] = useState<boolean>(false)
+  const [hasZeroNetworkTokenBalance, setHasZeroNetworkTokenBalance] =
+    useState<boolean>(false)
+  const [hasZeroERC20TokenBalances, setHasZeroERC20TokenBalances] =
+    useState<boolean>(false)
 
   useEffect(() => {
     balance &&
-      setHasWarning(
+      setHasZeroERC20TokenBalances(
         Object.keys(balance)?.filter((token) => Number(balance[token]) <= 0)
           .length > 0
       )
-    setHasError(Number(nativeBalance?.balance) <= 0)
+    setHasZeroNetworkTokenBalance(Number(nativeBalance?.balance) <= 0)
   }, [balance, nativeBalance])
 
   const wrapperClasses = cx({
@@ -40,13 +42,13 @@ export default function Automation(): ReactElement {
   const indicatorClasses = cx({
     indicator: true,
     enabled: isAutomationEnabled,
-    warning: hasWarning,
-    error: hasError
+    warning: hasZeroERC20TokenBalances,
+    error: hasZeroNetworkTokenBalance
   })
 
   return (
     <Tooltip
-      content={<Details isFunded={!hasError} />}
+      content={<Details isFunded={!hasZeroNetworkTokenBalance} />}
       trigger="focus mouseenter click"
       placement="bottom"
       className={`${stylesIndex.preferences} ${wrapperClasses}`}
