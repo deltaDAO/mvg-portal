@@ -24,10 +24,11 @@ export default function Automation(): ReactElement {
   const [hasWarning, setHasWarning] = useState<boolean>(false)
 
   useEffect(() => {
-    setHasWarning(
-      Object.keys(balance)?.filter((token) => Number(balance[token]) <= 0)
-        .length > 0
-    )
+    balance &&
+      setHasWarning(
+        Object.keys(balance)?.filter((token) => Number(balance[token]) <= 0)
+          .length > 0
+      )
     setHasError(Number(nativeBalance?.balance) <= 0)
   }, [balance, nativeBalance])
 
