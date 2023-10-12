@@ -157,7 +157,7 @@ function AssetProvider({
   const fetchAccessDetails = useCallback(async (): Promise<void> => {
     if (!asset?.chainId || !asset?.services?.length) return
 
-    const accountIdtoCheck =
+    const accountIdToCheck =
       isAutomationEnabled && autoWallet?.address
         ? autoWallet.address
         : accountId
@@ -166,7 +166,7 @@ function AssetProvider({
       asset.chainId,
       asset.services[0].datatokenAddress,
       asset.services[0].timeout,
-      accountIdtoCheck
+      accountIdToCheck
     )
     setAsset((prevState) => ({
       ...prevState,
