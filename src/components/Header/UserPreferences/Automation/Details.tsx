@@ -49,14 +49,12 @@ function SimpleView({
 }): ReactElement {
   return (
     <div className={styles.simple}>
-      {isFunded ? (
+      {isFunded && roughTxCountEstimate && roughTxCountEstimate > 0 ? (
         <>
-          {roughTxCountEstimate && (
-            <span className={styles.success}>
-              Automation available for roughly {roughTxCountEstimate.toFixed(0)}{' '}
-              transactions.
-            </span>
-          )}
+          <span className={styles.success}>
+            Automation available for roughly {roughTxCountEstimate.toFixed(0)}{' '}
+            transactions.
+          </span>
         </>
       ) : (
         <>
@@ -78,7 +76,7 @@ export default function Details({
     autoWallet,
     autoWalletAddress,
     isAutomationEnabled,
-    balance,
+    nativeBalance,
     isLoading,
     setIsAutomationEnabled,
     hasValidEncryptedWallet
@@ -97,11 +95,11 @@ export default function Details({
   }, [hasValidEncryptedWallet])
 
   useEffect(() => {
-    if (!automationConfig.roughTxGasEstimate || !balance) return
+    if (!automationConfig.roughTxGasEstimate || !nativeBalance?.balance) return
     setRoughTxCountEstimate(
-      Number(balance.eth) / automationConfig.roughTxGasEstimate
+      Number(nativeBalance.balance) / automationConfig.roughTxGasEstimate
     )
-  }, [balance, automationConfig?.roughTxGasEstimate])
+  }, [nativeBalance?.balance, automationConfig?.roughTxGasEstimate])
 
   return (
     <div className={styles.details}>
