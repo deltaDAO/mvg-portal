@@ -17,6 +17,8 @@ import { extensions, oceanTheme } from '@utils/codemirror'
 import { ConsumerParameters } from './ConsumerParameters'
 import ServiceCredential from './ServiceCredential'
 import ComputeEnvSelection from './ComputeEnvSelection'
+import Credentials from './Credential'
+import Option from './Radio/Option'
 
 const cx = classNames.bind(styles)
 
@@ -51,8 +53,6 @@ const InputElement = forwardRef(
     {
       options,
       sortOptions,
-      prefix,
-      postfix,
       size,
       field,
       multiple,
@@ -63,10 +63,15 @@ const InputElement = forwardRef(
       help,
       prominentHelp,
       form,
+      prefix,
+      postfix,
       additionalComponent,
       disclaimer,
       disclaimerValues,
       accountId,
+      prefixes,
+      postfixes,
+      actions,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -94,7 +99,11 @@ const InputElement = forwardRef(
               (sortedOptions as string[]).map(
                 (option: string, index: number) => (
                   <option key={index} value={option}>
-                    {option} {postfix}
+                    <Option
+                      option={option}
+                      prefix={prefixes?.[index]}
+                      postfix={postfixes?.[index]}
+                    />
                   </option>
                 )
               )}
@@ -158,6 +167,9 @@ const InputElement = forwardRef(
           <InputRadio
             options={options as string[]}
             inputSize={size}
+            prefixes={prefixes}
+            postfixes={postfixes}
+            actions={actions}
             {...props}
           />
         )
@@ -212,6 +224,8 @@ const InputElement = forwardRef(
         )
       case 'tags':
         return <TagsAutoComplete {...field} {...props} />
+      case 'credentials':
+        return <Credentials {...field} {...props} />
       default:
         return prefix || postfix ? (
           <div

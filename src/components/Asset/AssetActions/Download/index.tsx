@@ -167,7 +167,7 @@ export default function Download({
 
   async function handleOrderOrDownload(dataParams?: UserCustomParameters) {
     setIsLoading(true)
-
+    setRetry(false)
     try {
       const signerToUse: Signer = isAutomationEnabled ? autoWallet : signer
 

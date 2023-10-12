@@ -80,7 +80,9 @@ const validationService = {
     otherwise: Yup.array()
       .nullable()
       .transform((value) => value || null)
-  })
+  }),
+  allow: Yup.array().of(Yup.string()).nullable(),
+  deny: Yup.array().of(Yup.string()).nullable()
 }
 
 const validationPricing = {

@@ -105,6 +105,7 @@
   left: -25rem;
   opacity: 0;
   box-shadow: none;
+  pointer-events: none;
 }
 
 /* Adjust for larger screen sizes */

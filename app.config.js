@@ -87,5 +87,8 @@ module.exports = {
     networkTokenFundDefaultValue: '2',
     erc20ApprovalDefaultValue: '50',
     roughTxGasEstimate: 0.02
-  }
+  },
+
+  // Display alert banner for the developer preview deployment
+  showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false'
 }

@@ -91,7 +91,7 @@ function MarketMetadataProvider({
 
   useEffect(() => {
     if (isLoading) return
-    getApprovedBaseTokens(chain?.id || 1)
+    getApprovedBaseTokens(chain?.id || 100)
   }, [chain?.id, getApprovedBaseTokens, isLoading])
 
   return (

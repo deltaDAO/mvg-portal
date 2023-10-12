@@ -1,10 +1,3 @@
-.termsLink {
-  position: relative;
-  font-size: var(--font-size-small);
-  margin-left: 1.75rem;
-  top: -3.2rem;
-}
-
 .fieldWarning {
   composes: fieldWarning from '../index.module.css';
 }

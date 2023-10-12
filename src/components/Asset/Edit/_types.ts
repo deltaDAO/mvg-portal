@@ -14,6 +14,8 @@ export interface MetadataEditForm {
   tags?: string[]
   usesConsumerParameters?: boolean
   consumerParameters?: FormConsumerParameter[]
+  allow?: string[]
+  deny?: string[]
   assetState?: string
   service?: {
     usesConsumerParameters?: boolean

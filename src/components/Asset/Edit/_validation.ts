@@ -47,6 +47,8 @@ export const validationSchema = Yup.object().shape({
       .nullable()
       .transform((value) => value || null)
   }),
+  allow: Yup.array().of(Yup.string()).nullable(),
+  deny: Yup.array().of(Yup.string()).nullable(),
   paymentCollector: Yup.string().test(
     'ValidAddress',
     'Must be a valid Ethereum Address.',

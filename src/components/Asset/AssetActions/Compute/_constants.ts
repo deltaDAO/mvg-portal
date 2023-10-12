@@ -13,6 +13,7 @@ export interface ComputeDatasetForm {
   dataServiceParams: UserCustomParameters
   algoServiceParams: UserCustomParameters
   algoParams: UserCustomParameters
+  termsAndConditions: boolean
 }
 
 export function getComputeValidationSchema(
@@ -25,6 +26,7 @@ export function getComputeValidationSchema(
   dataServiceParams: any
   algoServiceParams: any
   algoParams: any
+  termsAndConditions: boolean
 }> {
   return Yup.object().shape({
     algorithm: Yup.string().required('Required'),
@@ -33,14 +35,18 @@ export function getComputeValidationSchema(
       getUserCustomParameterValidationSchema(dataServiceParams),
     algoServiceParams:
       getUserCustomParameterValidationSchema(algoServiceParams),
-    algoParams: getUserCustomParameterValidationSchema(algoParams)
+    algoParams: getUserCustomParameterValidationSchema(algoParams),
+    termsAndConditions: Yup.boolean()
+      .required('Required')
+      .isTrue('Please agree to the Terms and Conditions.')
   })
 }
 
 export function getInitialValues(
   asset?: AssetExtended,
   selectedAlgorithmAsset?: AssetExtended,
-  selectedComputeEnv?: ComputeEnvironment
+  selectedComputeEnv?: ComputeEnvironment,
+  termsAndConditions?: boolean
 ): ComputeDatasetForm {
   return {
     algorithm: selectedAlgorithmAsset?.id,
@@ -51,6 +57,7 @@ export function getInitialValues(
     ),
     algoParams: getDefaultValues(
       selectedAlgorithmAsset?.metadata?.algorithm.consumerParameters
-    )
+    ),
+    termsAndConditions: !!termsAndConditions
   }
 }

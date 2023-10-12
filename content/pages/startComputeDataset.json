@@ -18,6 +18,13 @@
         "options": [],
         "sortOptions": false
       }
-    ]
+    ],
+    "termsAndConditions": {
+      "name": "termsAndConditions",
+      "type": "checkbox",
+      "options": ["Terms and Conditions"],
+      "prefixes": ["I agree to the"],
+      "actions": ["/terms"]
+    }
   }
 }

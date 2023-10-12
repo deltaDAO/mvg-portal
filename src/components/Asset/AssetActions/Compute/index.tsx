@@ -30,11 +30,7 @@ import {
 import FormStartComputeDataset from './FormComputeDataset'
 import styles from './index.module.css'
 import SuccessConfetti from '@shared/SuccessConfetti'
-import {
-  getServiceByName,
-  isAddressWhitelisted,
-  secondsToString
-} from '@utils/ddo'
+import { getServiceByName, secondsToString } from '@utils/ddo'
 import {
   isOrderable,
   getAlgorithmAssetSelectionList,
@@ -110,6 +106,7 @@ export default function Compute({
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
   const [selectedComputeEnv, setSelectedComputeEnv] =
     useState<ComputeEnvironment>()
+  const [termsAndConditions, setTermsAndConditions] = useState<boolean>(false)
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
   const [providerFeeAmount, setProviderFeeAmount] = useState<string>('0')
@@ -491,7 +488,8 @@ export default function Compute({
   }
 
   const onSubmit = async (values: ComputeDatasetForm) => {
-    if (!values.algorithm || !values.computeEnv) return
+    if (!values.algorithm || !values.computeEnv || !values.termsAndConditions)
+      return
 
     const userCustomParameters = {
       dataServiceParams: parseConsumerParameterValues(
@@ -553,7 +551,8 @@ export default function Compute({
           initialValues={getInitialValues(
             asset,
             selectedAlgorithmAsset,
-            selectedComputeEnv
+            selectedComputeEnv,
+            termsAndConditions
           )}
           validateOnMount
           validationSchema={getComputeValidationSchema(
@@ -598,6 +597,7 @@ export default function Compute({
             )}
             computeEnvs={computeEnvs}
             setSelectedComputeEnv={setSelectedComputeEnv}
+            setTermsAndConditions={setTermsAndConditions}
             // lazy comment when removing pricingStepText
             stepText={computeStatusText}
             isConsumable={isConsumablePrice}

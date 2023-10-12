@@ -13,6 +13,7 @@ import { WagmiConfig } from 'wagmi'
 import { ConnectKitProvider } from 'connectkit'
 import { connectKitTheme, wagmiClient } from '@utils/wallet'
 import AutomationProvider from '../@context/Automation/AutomationProvider'
+import { FilterProvider } from '@context/Filter'
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
@@ -30,9 +31,11 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
                 <AutomationProvider>
                   <ConsentProvider>
                     <SearchBarStatusProvider>
-                      <App>
-                        <Component {...pageProps} />
-                      </App>
+                      <FilterProvider>
+                        <App>
+                          <Component {...pageProps} />
+                        </App>
+                      </FilterProvider>
                     </SearchBarStatusProvider>
                   </ConsentProvider>
                 </AutomationProvider>
