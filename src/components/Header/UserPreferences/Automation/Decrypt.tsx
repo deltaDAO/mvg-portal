@@ -14,12 +14,12 @@ export default function Decrypt(): ReactElement {
     setIsAutomationEnabled
   } = useAutomation()
 
-  const decrpytToastRef = useRef(null)
+  const decryptToastRef = useRef(null)
   const passwordInputRef = useRef(null)
 
   useEffect(() => {
-    toast.update(decrpytToastRef.current, { progress: decryptPercentage })
-  }, [decrpytToastRef, decryptPercentage])
+    toast.update(decryptToastRef.current, { progress: decryptPercentage })
+  }, [decryptToastRef, decryptPercentage])
 
   return (
     <div className={styles.wrapper}>
@@ -31,10 +31,10 @@ export default function Decrypt(): ReactElement {
           <form
             onSubmit={async (e) => {
               e.preventDefault()
-              decrpytToastRef.current = toast.info(`Decrypting Wallet...`)
+              decryptToastRef.current = toast.info(`Decrypting Wallet...`)
               await decryptAutomationWallet(passwordInputRef.current.value)
               setIsAutomationEnabled(true)
-              toast.done(decrpytToastRef.current)
+              toast.done(decryptToastRef.current)
             }}
             className={styles.form}
           >
