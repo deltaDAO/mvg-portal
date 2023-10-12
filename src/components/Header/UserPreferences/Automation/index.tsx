@@ -54,7 +54,7 @@ export default function Automation(): ReactElement {
       className={`${stylesIndex.preferences} ${wrapperClasses}`}
     >
       <div className={styles.wrapper}>
-        {!autoWallet && hasValidEncryptedWallet() && (
+        {!autoWallet && hasValidEncryptedWallet && (
           <Lock className={styles.lock} />
         )}
         <Transaction className={stylesIndex.icon} />

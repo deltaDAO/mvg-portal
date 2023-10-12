@@ -65,8 +65,8 @@ export default function Details({
     isAutomationEnabled,
     nativeBalance,
     isLoading,
-    setIsAutomationEnabled,
-    hasValidEncryptedWallet
+    hasValidEncryptedWallet,
+    setIsAutomationEnabled
   } = useAutomation()
 
   const { automationConfig } = useMarketMetadata().appConfig
@@ -74,11 +74,11 @@ export default function Details({
 
   const [roughTxCountEstimate, setRoughTxCountEstimate] = useState<number>()
   const [needsImport, setNeedsImport] = useState<boolean>(
-    !hasValidEncryptedWallet()
+    !hasValidEncryptedWallet
   )
 
   useEffect(() => {
-    setNeedsImport(!hasValidEncryptedWallet())
+    setNeedsImport(!hasValidEncryptedWallet)
   }, [hasValidEncryptedWallet])
 
   useEffect(() => {

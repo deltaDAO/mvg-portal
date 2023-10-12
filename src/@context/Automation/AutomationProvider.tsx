@@ -33,11 +33,11 @@ export interface AutomationProviderValue {
   nativeBalance: NativeTokenBalance
   isLoading: boolean
   decryptPercentage: number
+  hasValidEncryptedWallet: boolean
   updateBalance: () => Promise<void>
   setIsAutomationEnabled: (isEnabled: boolean) => void
   deleteCurrentAutomationWallet: () => void
   importAutomationWallet: (encryptedJson: string) => Promise<boolean>
-  hasValidEncryptedWallet: () => boolean
   decryptAutomationWallet: (password: string) => Promise<boolean>
 }
 
@@ -60,6 +60,9 @@ function AutomationProvider({ children }) {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [autoWalletAddress, setAutoWalletAddress] = useState<string>()
   const [decryptPercentage, setDecryptPercentage] = useState<number>()
+
+  const [hasValidEncryptedWallet, setHasValidEncryptedWallet] =
+    useState<boolean>()
 
   const { data: balanceNativeToken } = useWagmiBalance({
     address: autoWallet?.address as `0x${string}`
@@ -145,8 +148,8 @@ function AutomationProvider({ children }) {
     setIsLoading(false)
   }
 
-  const hasValidEncryptedWallet = useCallback(() => {
-    return ethers.utils.isAddress(autoWalletAddress)
+  useEffect(() => {
+    setHasValidEncryptedWallet(ethers.utils.isAddress(autoWalletAddress))
   }, [autoWalletAddress])
 
   const importAutomationWallet = async (encryptedJson: string) => {
@@ -211,11 +214,11 @@ function AutomationProvider({ children }) {
         isAutomationEnabled,
         isLoading,
         decryptPercentage,
+        hasValidEncryptedWallet,
         setIsAutomationEnabled,
         updateBalance,
         deleteCurrentAutomationWallet,
         importAutomationWallet,
-        hasValidEncryptedWallet,
         decryptAutomationWallet
       }}
     >
