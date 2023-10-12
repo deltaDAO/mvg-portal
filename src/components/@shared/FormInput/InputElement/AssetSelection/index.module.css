@@ -46,7 +46,8 @@
 }
 
 .label {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
 }
 
@@ -93,7 +94,6 @@
 .price {
   white-space: pre;
   font-size: calc(var(--font-size-small) / 1.1) !important;
-  padding-left: calc(var(--spacer) / 4);
 }
 
 .price [class*='symbol'] {

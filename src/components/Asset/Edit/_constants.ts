@@ -1,10 +1,16 @@
-import { Metadata, ServiceComputeOptions } from '@oceanprotocol/lib'
-import { secondsToString } from '@utils/ddo'
+import {
+  Credentials,
+  Metadata,
+  Service,
+  ServiceComputeOptions
+} from '@oceanprotocol/lib'
+import { parseConsumerParameters, secondsToString } from '@utils/ddo'
 import { ComputeEditForm, MetadataEditForm } from './_types'
 
 export function getInitialValues(
   metadata: Metadata,
-  timeout: number,
+  service: Service,
+  credentials: Credentials,
   price: string,
   paymentCollector: string,
   assetState: string
@@ -15,11 +21,25 @@ export function getInitialValues(
     price,
     links: [{ url: '', type: 'url' }],
     files: [{ url: '', type: 'ipfs' }],
-    timeout: secondsToString(timeout),
+    timeout: secondsToString(service?.timeout),
     author: metadata?.author,
     tags: metadata?.tags,
+    usesConsumerParameters: metadata?.algorithm?.consumerParameters?.length > 0,
+    consumerParameters: parseConsumerParameters(
+      metadata?.algorithm?.consumerParameters
+    ),
     paymentCollector,
+    allow:
+      credentials?.allow?.find((credential) => credential.type === 'address')
+        ?.values || [],
+    deny:
+      credentials?.deny?.find((credential) => credential.type === 'address')
+        ?.values || [],
     assetState,
+    service: {
+      usesConsumerParameters: service?.consumerParameters?.length > 0,
+      consumerParameters: parseConsumerParameters(service?.consumerParameters)
+    },
     gaiaXInformation: {
       ...metadata?.additionalInformation?.gaiaXInformation,
       containsPII:

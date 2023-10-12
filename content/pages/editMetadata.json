@@ -158,6 +158,28 @@
         "required": false
       },
       {
+        "name": "usesConsumerParameters",
+        "label": "Algorithm custom parameters",
+        "help": "Algorithm custom parameters are used to define required consumer input before running the algorithm in a Compute-to-Data environment.",
+        "type": "checkbox",
+        "options": ["This asset uses algorithm custom parameters"],
+        "required": false
+      },
+      {
+        "name": "allow",
+        "label": "Allow ETH Address",
+        "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
+        "help": "Enter an ETH address and click the ADD button to append to the list. Only ETH addresses in the allow list can consume this asset. If the list is empty anyone can download or compute this asset.",
+        "type": "credentials"
+      },
+      {
+        "name": "deny",
+        "label": "Deny ETH Address",
+        "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
+        "help": "Enter an ETH address and click the ADD button to append to the list. If an ETH address is in the deny list, download or compute of this asset will be denied for that ETH address.",
+        "type": "credentials"
+      },
+      {
         "name": "paymentCollector",
         "label": "Payment Collector Address",
         "placeholder": "e.g. 0X123ABC...",
@@ -176,6 +198,14 @@
           "Asset unlisted"
         ],
         "sortOptions": false,
+        "required": false
+      },
+      {
+        "name": "usesServiceConsumerParameters",
+        "label": "User defined parameters",
+        "help": "User defined parameters are used to filter or query the published asset.",
+        "type": "checkbox",
+        "options": ["This asset uses user defined parameters"],
         "required": false
       },
       {

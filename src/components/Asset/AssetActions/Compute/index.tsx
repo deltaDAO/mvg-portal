@@ -13,16 +13,20 @@ import {
   ComputeOutput,
   ProviderComputeInitializeResults,
   unitsToAmount,
-  minAbi,
-  ProviderFees
+  ProviderFees,
+  UserCustomParameters,
+  getErrorMessage
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
 import Price from '@shared/Price'
 import FileIcon from '@shared/FileIcon'
 import Alert from '@shared/atoms/Alert'
-import { useWeb3 } from '@context/Web3'
 import { Formik } from 'formik'
-import { getInitialValues, validationSchema } from './_constants'
+import {
+  ComputeDatasetForm,
+  getComputeValidationSchema,
+  getInitialValues
+} from './_constants'
 import FormStartComputeDataset from './FormComputeDataset'
 import styles from './index.module.css'
 import SuccessConfetti from '@shared/SuccessConfetti'
@@ -31,7 +35,6 @@ import {
   isOrderable,
   getAlgorithmAssetSelectionList,
   getAlgorithmsForAsset,
-  getComputeEnviroment,
   getComputeJobs
 } from '@utils/compute'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -44,13 +47,20 @@ import { useAbortController } from '@hooks/useAbortController'
 import { getOrderPriceAndFees } from '@utils/accessDetailsAndPricing'
 import { handleComputeOrder } from '@utils/order'
 import { getComputeFeedback } from '@utils/feedback'
-import { getDummyWeb3 } from '@utils/web3'
-import { initializeProviderForCompute } from '@utils/provider'
+import {
+  getComputeEnvironments,
+  initializeProviderForCompute
+} from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
+import { useAccount, useSigner } from 'wagmi'
+import { getDummySigner } from '@utils/wallet'
+import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import WhitelistIndicator from './WhitelistIndicator'
+import { parseConsumerParameterValues } from '../ConsumerParameters'
 
 const refreshInterval = 10000 // 10 sec.
+
 export default function Compute({
   asset,
   dtBalance,
@@ -66,9 +76,9 @@ export default function Compute({
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
-  const { accountId, web3, isSupportedOceanNetwork } = useWeb3()
+  const { address: accountId } = useAccount()
   const { chainIds } = useUserPreferences()
-  const { isAssetNetwork } = useAsset()
+  const { data: signer } = useSigner()
 
   const newAbortController = useAbortController()
   const newCancelToken = useCancelToken()
@@ -91,7 +101,10 @@ export default function Compute({
   const [isConsumableaAlgorithmPrice, setIsConsumableAlgorithmPrice] =
     useState(true)
   const [computeStatusText, setComputeStatusText] = useState('')
-  const [computeEnv, setComputeEnv] = useState<ComputeEnvironment>()
+  const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
+  const [selectedComputeEnv, setSelectedComputeEnv] =
+    useState<ComputeEnvironment>()
+  const [termsAndConditions, setTermsAndConditions] = useState<boolean>(false)
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
   const [providerFeeAmount, setProviderFeeAmount] = useState<string>('0')
@@ -107,6 +120,8 @@ export default function Compute({
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [retry, setRetry] = useState<boolean>(false)
+  const { isSupportedOceanNetwork } = useNetworkMetadata()
+  const { isAssetNetwork } = useAsset()
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
@@ -119,10 +134,10 @@ export default function Compute({
 
   const isUnsupportedPricing = asset?.accessDetails?.type === 'NOT_SUPPORTED'
 
-  async function checkAssetDTBalance(asset: DDO): Promise<boolean> {
+  async function checkAssetDTBalance(asset: DDO) {
     if (!asset?.services[0].datatokenAddress) return
-    const web3 = await getDummyWeb3(asset?.chainId)
-    const datatokenInstance = new Datatoken(web3)
+    const dummySigner = await getDummySigner(asset?.chainId)
+    const datatokenInstance = new Datatoken(dummySigner)
     const dtBalance = await datatokenInstance.balance(
       asset?.services[0].datatokenAddress,
       accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
@@ -130,7 +145,6 @@ export default function Compute({
     setAlgorithmDTBalance(new Decimal(dtBalance).toString())
     const hasAlgoDt = Number(dtBalance) >= 1
     setHasAlgoAssetDatatoken(hasAlgoDt)
-    return hasAlgoDt
   }
 
   async function setComputeFees(
@@ -149,20 +163,14 @@ export default function Compute({
 
     const feeAmount = await unitsToAmount(
       !isSupportedOceanNetwork || !isAssetNetwork
-        ? await getDummyWeb3(asset?.chainId)
-        : web3,
+        ? await getDummySigner(asset?.chainId)
+        : signer,
       providerFeeToken,
       providerFeeAmount
     )
     setProviderFeeAmount(feeAmount)
 
-    const datatoken = new Datatoken(
-      await getDummyWeb3(asset?.chainId),
-      null,
-      null,
-      minAbi
-    )
-
+    const datatoken = new Datatoken(await getDummySigner(asset?.chainId))
     setProviderFeesSymbol(await datatoken.getSymbol(providerFeeToken))
 
     const computeDuration = asset.accessDetails.validProviderFees
@@ -182,6 +190,7 @@ export default function Compute({
       const algorithmOrderPriceAndFees = await getOrderPriceAndFees(
         selectedAlgorithmAsset,
         ZERO_ADDRESS,
+        signer,
         algoProviderFees
       )
       if (!algorithmOrderPriceAndFees)
@@ -200,6 +209,7 @@ export default function Compute({
       const datasetPriceAndFees = await getOrderPriceAndFees(
         asset,
         ZERO_ADDRESS,
+        signer,
         datasetProviderFees
       )
       if (!datasetPriceAndFees)
@@ -211,16 +221,14 @@ export default function Compute({
 
   async function initPriceAndFees() {
     try {
-      const computeEnv = await getComputeEnviroment(asset)
-      if (!computeEnv || !computeEnv.id)
-        throw new Error(`Error getting compute environments!`)
+      if (!selectedComputeEnv || !selectedComputeEnv.id)
+        throw new Error(`Error getting compute environment!`)
 
-      setComputeEnv(computeEnv)
       const initializedProvider = await initializeProviderForCompute(
         asset,
         selectedAlgorithmAsset,
         accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
-        computeEnv
+        selectedComputeEnv
       )
 
       if (
@@ -263,7 +271,7 @@ export default function Compute({
   }, [asset?.accessDetails, accountId, isUnsupportedPricing])
 
   useEffect(() => {
-    if (!selectedAlgorithmAsset?.accessDetails) return
+    if (!selectedAlgorithmAsset?.accessDetails || !selectedComputeEnv) return
 
     setIsRequestingAlgoOrderPrice(true)
     setIsConsumableAlgorithmPrice(
@@ -281,7 +289,7 @@ export default function Compute({
     }
 
     initSelectedAlgo()
-  }, [selectedAlgorithmAsset, accountId])
+  }, [selectedAlgorithmAsset, accountId, selectedComputeEnv])
 
   useEffect(() => {
     if (!asset?.accessDetails || isUnsupportedPricing) return
@@ -295,6 +303,18 @@ export default function Compute({
       )
     })
   }, [accountId, asset, isUnsupportedPricing])
+
+  const initializeComputeEnvironment = useCallback(async () => {
+    const computeEnvs = await getComputeEnvironments(
+      asset.services[0].serviceEndpoint,
+      asset.chainId
+    )
+    setComputeEnvs(computeEnvs || [])
+  }, [asset])
+
+  useEffect(() => {
+    initializeComputeEnvironment()
+  }, [initializeComputeEnvironment])
 
   const fetchJobs = useCallback(
     async (type: string) => {
@@ -342,7 +362,11 @@ export default function Compute({
     toast.error(errorMsg)
   }, [error])
 
-  async function startJob(): Promise<void> {
+  async function startJob(userCustomParameters: {
+    dataServiceParams?: UserCustomParameters
+    algoServiceParams?: UserCustomParameters
+    algoParams?: UserCustomParameters
+  }): Promise<void> {
     try {
       setIsOrdering(true)
       setIsOrdered(false)
@@ -350,7 +374,9 @@ export default function Compute({
       const computeService = getServiceByName(asset, 'compute')
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: selectedAlgorithmAsset.id,
-        serviceId: selectedAlgorithmAsset.services[0].id
+        serviceId: selectedAlgorithmAsset.services[0].id,
+        algocustomdata: userCustomParameters?.algoParams,
+        userdata: userCustomParameters?.algoServiceParams
       }
 
       const allowed = await isOrderable(
@@ -376,12 +402,13 @@ export default function Compute({
       )
 
       const algorithmOrderTx = await handleComputeOrder(
-        web3,
+        signer,
         selectedAlgorithmAsset,
         algoOrderPriceAndFees,
         accountId,
         initializedProviderResponse.algorithm,
-        computeEnv.consumerAddress
+        hasAlgoAssetDatatoken,
+        selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
 
@@ -394,12 +421,13 @@ export default function Compute({
       )
 
       const datasetOrderTx = await handleComputeOrder(
-        web3,
+        signer,
         asset,
         datasetOrderPriceAndFees,
         accountId,
         initializedProviderResponse.datasets[0],
-        computeEnv.consumerAddress
+        hasDatatoken,
+        selectedComputeEnv.consumerAddress
       )
       if (!datasetOrderTx) throw new Error('Failed to order dataset.')
 
@@ -407,7 +435,8 @@ export default function Compute({
       const computeAsset: ComputeAsset = {
         documentId: asset.id,
         serviceId: asset.services[0].id,
-        transferTxId: datasetOrderTx
+        transferTxId: datasetOrderTx,
+        userdata: userCustomParameters?.dataServiceParams
       }
       computeAlgorithm.transferTxId = algorithmOrderTx
       const output: ComputeOutput = {
@@ -417,9 +446,8 @@ export default function Compute({
       setComputeStatusText(getComputeFeedback()[4])
       const response = await ProviderInstance.computeStart(
         asset.services[0].serviceEndpoint,
-        web3,
-        accountId,
-        computeEnv?.id,
+        signer,
+        selectedComputeEnv?.id,
         computeAsset,
         computeAlgorithm,
         newAbortController(),
@@ -433,12 +461,35 @@ export default function Compute({
       setRefetchJobs(!refetchJobs)
       initPriceAndFees()
     } catch (error) {
-      setError(error.message)
+      const message = getErrorMessage(JSON.parse(error.message))
+      LoggerInstance.error('[Compute] Error:', message)
+      setError(message)
       setRetry(true)
-      LoggerInstance.error(`[compute] ${error.message} `)
     } finally {
       setIsOrdering(false)
     }
+  }
+
+  const onSubmit = async (values: ComputeDatasetForm) => {
+    if (!values.algorithm || !values.computeEnv || !values.termsAndConditions)
+      return
+
+    const userCustomParameters = {
+      dataServiceParams: parseConsumerParameterValues(
+        values?.dataServiceParams,
+        asset.services[0].consumerParameters
+      ),
+      algoServiceParams: parseConsumerParameterValues(
+        values?.algoServiceParams,
+        selectedAlgorithmAsset?.services[0].consumerParameters
+      ),
+      algoParams: parseConsumerParameterValues(
+        values?.algoParams,
+        selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters
+      )
+    }
+
+    await startJob(userCustomParameters)
   }
 
   return (
@@ -480,13 +531,20 @@ export default function Compute({
         </>
       ) : (
         <Formik
-          initialValues={getInitialValues()}
+          initialValues={getInitialValues(
+            asset,
+            selectedAlgorithmAsset,
+            selectedComputeEnv,
+            termsAndConditions
+          )}
           validateOnMount
-          validationSchema={validationSchema}
-          onSubmit={async (values) => {
-            if (!values.algorithm) return
-            await startJob()
-          }}
+          validationSchema={getComputeValidationSchema(
+            asset.services[0].consumerParameters,
+            selectedAlgorithmAsset?.services[0].consumerParameters,
+            selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters
+          )}
+          enableReinitialize
+          onSubmit={onSubmit}
         >
           <FormStartComputeDataset
             algorithms={algorithmList}
@@ -520,6 +578,9 @@ export default function Compute({
             selectedComputeAssetTimeout={secondsToString(
               selectedAlgorithmAsset?.services[0]?.timeout
             )}
+            computeEnvs={computeEnvs}
+            setSelectedComputeEnv={setSelectedComputeEnv}
+            setTermsAndConditions={setTermsAndConditions}
             // lazy comment when removing pricingStepText
             stepText={computeStatusText}
             isConsumable={isConsumablePrice}

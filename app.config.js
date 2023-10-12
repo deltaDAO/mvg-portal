@@ -1,5 +1,3 @@
-const { getDefaultChainIds, getSupportedChainIds } = require('./chains.config')
-
 module.exports = {
   // URI of single metadata cache instance for all networks.
   // While ocean.js includes this value for each network as part of its ConfigHelper,
@@ -20,10 +18,12 @@ module.exports = {
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
-  chainIds: getDefaultChainIds(),
+  chainIds: [100, 80001],
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: getSupportedChainIds(),
+  chainIdsSupported: [100, 80001],
+
+  customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
 
   infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
 
@@ -76,5 +76,13 @@ module.exports = {
     'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md',
 
   // Purgatory URI, leave as an empty string to disable the API call
-  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || ''
+  purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || '',
+
+  // The url used to fetch docker hub image info
+  dockerHubProxyUrl:
+    process.env.NEXT_PUBLIC_DOCKER_HUB_PROXY_URL ||
+    'https://dockerhub-proxy.delta-dao.com',
+
+  // Display alert banner for the developer preview deployment
+  showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false'
 }

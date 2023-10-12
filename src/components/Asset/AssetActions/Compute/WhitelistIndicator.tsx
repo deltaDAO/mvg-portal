@@ -1,6 +1,6 @@
 import React from 'react'
+import { accountTruncate } from '@utils/wallet'
 import { Badge } from '@components/@shared/VerifiedBadge'
-import { accountTruncate } from '@utils/web3'
 import classNames from 'classnames/bind'
 import styles from './WhitelistIndicator.module.css'
 

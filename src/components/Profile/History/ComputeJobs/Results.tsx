@@ -1,6 +1,7 @@
 import {
   ComputeResultType,
   downloadFileBrowser,
+  getErrorMessage,
   LoggerInstance,
   Provider
 } from '@oceanprotocol/lib'
@@ -10,9 +11,10 @@ import Button from '@shared/atoms/Button'
 import styles from './Results.module.css'
 import FormHelp from '@shared/FormInput/Help'
 import content from '../../../../../content/pages/history.json'
-import { useWeb3 } from '@context/Web3'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { getAsset } from '@utils/aquarius'
+import { useAccount, useSigner } from 'wagmi'
+import { toast } from 'react-toastify'
 import { prettySize } from '@components/@shared/FormInput/InputElement/FilesInput/utils'
 
 export default function Results({
@@ -21,11 +23,13 @@ export default function Results({
   job: ComputeJobMetaData
 }): ReactElement {
   const providerInstance = new Provider()
-  const { accountId, web3 } = useWeb3()
-  const isFinished = job.dateFinished !== null
+  const { address: accountId } = useAccount()
+  const { data: signer } = useSigner()
 
   const [datasetProvider, setDatasetProvider] = useState<string>()
   const newCancelToken = useCancelToken()
+
+  const isFinished = job.dateFinished !== null
 
   useEffect(() => {
     async function getAssetMetadata() {
@@ -66,14 +70,15 @@ export default function Results({
     try {
       const jobResult = await providerInstance.getComputeResultUrl(
         datasetProvider,
-        web3,
-        accountId,
+        signer,
         job.jobId,
         resultIndex
       )
       await downloadFileBrowser(jobResult)
     } catch (error) {
-      LoggerInstance.error(error.message)
+      const message = getErrorMessage(JSON.parse(error.message))
+      LoggerInstance.error('[Provider Get c2d results url] Error:', message)
+      toast.error(message)
     }
   }
 

@@ -60,6 +60,7 @@ describe('@shared/FormInput', () => {
         did: 'did:op:xxx',
         name: 'Asset',
         price: 10,
+        tokenSymbol: 'OCEAN',
         checked: false,
         symbol: 'OCEAN',
         isAccountIdWhitelisted: true
@@ -68,6 +69,7 @@ describe('@shared/FormInput', () => {
         did: 'did:op:yyy',
         name: 'Asset',
         price: 10,
+        tokenSymbol: 'OCEAN',
         checked: true,
         symbol: 'OCEAN',
         isAccountIdWhitelisted: true

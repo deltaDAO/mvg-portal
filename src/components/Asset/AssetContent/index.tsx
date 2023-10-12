@@ -13,7 +13,6 @@ import EditHistory from './EditHistory'
 import styles from './index.module.css'
 import NetworkName from '@shared/NetworkName'
 import content from '../../../../content/purgatory.json'
-import Web3 from 'web3'
 import Button from '@shared/atoms/Button'
 import RelatedAssets from '../RelatedAssets'
 import {
@@ -21,9 +20,8 @@ import {
   getServiceCredential
 } from '@components/Publish/_utils'
 import ServiceCredentialVisualizer from '@components/@shared/ServiceCredentialVisualizer'
-import DmButton from '@shared/DirectMessages/DmButton'
 import Web3Feedback from '@components/@shared/Web3Feedback'
-import { useWeb3 } from '@context/Web3'
+import { useAccount } from 'wagmi'
 
 export default function AssetContent({
   asset
@@ -37,18 +35,18 @@ export default function AssetContent({
     isAssetNetwork,
     isServiceCredentialVerified
   } = useAsset()
-  const { accountId } = useWeb3()
+  const { address: accountId } = useAccount()
   const { allowExternalContent, debug } = useUserPreferences()
   const [receipts, setReceipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
   const [serviceCredential, setServiceCredential] = useState<string>()
 
   useEffect(() => {
-    setNftPublisher(
-      Web3.utils.toChecksumAddress(
-        receipts?.find((e) => e.type === 'METADATA_CREATED')?.nft?.owner
-      )
-    )
+    if (!receipts.length) return
+
+    const publisher = receipts?.find((e) => e.type === 'METADATA_CREATED')?.nft
+      ?.owner
+    setNftPublisher(publisher)
   }, [receipts])
 
   useEffect(() => {
@@ -123,9 +121,6 @@ export default function AssetContent({
               </Button>
             </div>
           )}
-          {/* <div className={styles.ownerActions}>
-            <DmButton accountId={asset?.nft?.owner} />
-          </div> */}
           <Web3Feedback
             networkId={asset?.chainId}
             accountId={accountId}

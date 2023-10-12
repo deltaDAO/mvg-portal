@@ -4,11 +4,11 @@ import PublishedList from './PublishedList'
 import Downloads from './Downloads'
 import ComputeJobs from './ComputeJobs'
 import styles from './index.module.css'
-import { useWeb3 } from '@context/Web3'
 import { getComputeJobs } from '@utils/compute'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { LoggerInstance } from '@oceanprotocol/lib'
+import { useAccount } from 'wagmi'
 
 interface HistoryTab {
   title: string
@@ -51,21 +51,25 @@ function getTabs(
   return defaultTabs
 }
 
+const tabsIndexList = {
+  published: 0,
+  downloads: 1,
+  computeJobs: 2
+}
+
 export default function HistoryPage({
   accountIdentifier
 }: {
   accountIdentifier: string
 }): ReactElement {
-  const { accountId } = useWeb3()
+  const { address: accountId } = useAccount()
   const { chainIds } = useUserPreferences()
   const newCancelToken = useCancelToken()
-
-  const url = new URL(location.href)
-  const defaultTab = url.searchParams.get('defaultTab')
 
   const [refetchJobs, setRefetchJobs] = useState(false)
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
+  const [tabIndex, setTabIndex] = useState<number>()
 
   const fetchJobs = useCallback(
     async (type: string) => {
@@ -105,6 +109,25 @@ export default function HistoryPage({
     }
   }, [accountId, refetchJobs])
 
+  const getDefaultIndex = useCallback((): number => {
+    const url = new URL(location.href)
+    const defaultTabString = url.searchParams.get('defaultTab')
+    const defaultTabIndex = tabsIndexList?.[defaultTabString]
+
+    if (!defaultTabIndex) return 0
+    if (
+      defaultTabIndex === tabsIndexList.computeJobs &&
+      accountId !== accountIdentifier
+    )
+      return 0
+
+    return defaultTabIndex
+  }, [accountId, accountIdentifier])
+
+  useEffect(() => {
+    setTabIndex(getDefaultIndex())
+  }, [getDefaultIndex])
+
   const tabs = getTabs(
     accountIdentifier,
     accountId,
@@ -114,10 +137,12 @@ export default function HistoryPage({
     setRefetchJobs
   )
 
-  let defaultTabIndex = 0
-  defaultTab === 'ComputeJobs' ? (defaultTabIndex = 4) : (defaultTabIndex = 0)
-
   return (
-    <Tabs items={tabs} className={styles.tabs} defaultIndex={defaultTabIndex} />
+    <Tabs
+      items={tabs}
+      className={styles.tabs}
+      selectedIndex={tabIndex || 0}
+      onIndexSelected={setTabIndex}
+    />
   )
 }

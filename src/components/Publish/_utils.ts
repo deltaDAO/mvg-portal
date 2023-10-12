@@ -7,24 +7,31 @@ import {
   DispenserCreationParams,
   getHash,
   LoggerInstance,
-  Metadata,
   NftCreateData,
   NftFactory,
+  ZERO_ADDRESS,
+  getEventFromTx,
+  ConsumerParameter,
+  Metadata,
   Service,
-  ZERO_ADDRESS
+  Credentials
 } from '@oceanprotocol/lib'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import { generateNftCreateData } from '@utils/nft'
 import { getEncryptedFiles } from '@utils/provider'
 import slugify from 'slugify'
-import Web3 from 'web3'
 import { algorithmContainerPresets } from './_constants'
-import { FormPublishData, MetadataAlgorithmContainer } from './_types'
+import {
+  FormConsumerParameter,
+  FormPublishData,
+  MetadataAlgorithmContainer
+} from './_types'
 import {
   marketFeeAddress,
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
+  customProviderUrl,
   defaultAccessTerms,
   complianceApiVersion,
   complianceUri
@@ -33,6 +40,7 @@ import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
 import axios from 'axios'
 import { ServiceCredential } from 'src/@types/gaia-x/2210/ServiceCredential'
+import { parseEther } from 'ethers/lib/utils'
 
 function getUrlFileExtension(fileUrl: string): string {
   const splittedFileUrl = fileUrl.split('.')
@@ -62,6 +70,62 @@ function transformTags(originalTags: string[]): string[] {
   return transformedTags
 }
 
+export function transformConsumerParameters(
+  parameters: FormConsumerParameter[]
+): ConsumerParameter[] {
+  if (!parameters?.length) return
+
+  const transformedValues = parameters.map((param) => {
+    const options =
+      param.type === 'select'
+        ? // Transform from { key: string, value: string } into { key: value }
+          JSON.stringify(
+            param.options?.map((opt) => ({ [opt.key]: opt.value }))
+          )
+        : undefined
+
+    const required = param.required === 'required'
+
+    return {
+      ...param,
+      options,
+      required,
+      default: param.default.toString()
+    }
+  })
+
+  return transformedValues as ConsumerParameter[]
+}
+
+export function generateCredentials(
+  oldCredentials: Credentials,
+  updatedAllow: string[],
+  updatedDeny: string[]
+): Credentials {
+  const updatedCredentials = {
+    allow: oldCredentials?.allow || [],
+    deny: oldCredentials?.deny || []
+  }
+
+  const credentialTypes = [
+    { type: 'allow', values: updatedAllow },
+    { type: 'deny', values: updatedDeny }
+  ]
+
+  credentialTypes.forEach((credentialType) => {
+    updatedCredentials[credentialType.type] = [
+      ...updatedCredentials[credentialType.type].filter(
+        (credential) => credential?.type !== 'address'
+      ),
+      ...(credentialType.values.length > 0
+        ? [{ type: 'address', values: credentialType.values }]
+        : [])
+    ]
+  })
+
+  return updatedCredentials
+}
+
 export async function transformPublishFormToDdo(
   values: FormPublishData,
   // Those 2 are only passed during actual publishing process
@@ -83,9 +147,12 @@ export async function transformPublishFormToDdo(
     dockerImageCustomTag,
     dockerImageCustomEntrypoint,
     dockerImageCustomChecksum,
+    usesConsumerParameters,
+    consumerParameters,
     gaiaXInformation
   } = metadata
-  const { access, files, links, providerUrl, timeout } = services[0]
+  const { access, files, links, providerUrl, timeout, allow, deny } =
+    services[0]
 
   const did = nftAddress ? generateDid(nftAddress, chainId) : '0x...'
   const currentTime = dateToStringNoMS(new Date())
@@ -101,6 +168,10 @@ export async function transformPublishFormToDdo(
     files[0].valid && [sanitizeUrl(files[0].url)]
   const linksTransformed = links?.length &&
     links[0].valid && [sanitizeUrl(links[0].url)]
+
+  const consumerParametersTransformed = usesConsumerParameters
+    ? transformConsumerParameters(consumerParameters)
+    : undefined
 
   const accessTermsFileInfo = gaiaXInformation.termsAndConditions
   const accessTermsUrlTransformed = accessTermsFileInfo?.length &&
@@ -154,7 +225,8 @@ export async function transformPublishFormToDdo(
               dockerImage === 'custom'
                 ? dockerImageCustomChecksum
                 : algorithmContainerPresets.checksum
-          }
+          },
+          consumerParameters: consumerParametersTransformed
         }
       })
   }
@@ -180,8 +252,13 @@ export async function transformPublishFormToDdo(
     timeout: mapTimeoutStringToSeconds(timeout),
     ...(access === 'compute' && {
       compute: values.services[0].computeOptions
-    })
+    }),
+    consumerParameters: values.services[0].usesConsumerParameters
+      ? transformConsumerParameters(values.services[0].consumerParameters)
+      : undefined
   }
+
+  const newCredentials = generateCredentials(undefined, allow, deny)
 
   const newDdo: DDO = {
     '@context': ['https://w3id.org/did/v1'],
@@ -191,6 +268,7 @@ export async function transformPublishFormToDdo(
     chainId,
     metadata: newMetadata,
     services: [newService],
+    credentials: newCredentials,
     // Only added for DDO preview, reflecting Asset response,
     // again, we can assume if `datatokenAddress` is not passed,
     // we are on preview.
@@ -214,8 +292,7 @@ export async function createTokensAndPricing(
   values: FormPublishData,
   accountId: string,
   config: Config,
-  nftFactory: NftFactory,
-  web3: Web3
+  nftFactory: NftFactory
 ) {
   const nftCreateData: NftCreateData = generateNftCreateData(
     values.metadata.nft,
@@ -223,14 +300,15 @@ export async function createTokensAndPricing(
     values.metadata.transferable
   )
   LoggerInstance.log('[publish] Creating NFT with metadata', nftCreateData)
-
   // TODO: cap is hardcoded for now to 1000, this needs to be discussed at some point
   const ercParams: DatatokenCreateParams = {
     templateIndex: defaultDatatokenTemplateIndex,
     minter: accountId,
     paymentCollector: accountId,
     mpFeeAddress: marketFeeAddress,
-    feeToken: values.pricing.baseToken.address,
+    feeToken:
+      process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS ||
+      values.pricing.baseToken.address,
     feeAmount: publisherMarketOrderFee,
     // max number
     cap: '115792089237316195423570985008687907853269984665640564039457',
@@ -246,10 +324,14 @@ export async function createTokensAndPricing(
     case 'fixed': {
       const freParams: FreCreationParams = {
         fixedRateAddress: config.fixedRateExchangeAddress,
-        baseTokenAddress: values.pricing.baseToken.address,
+        baseTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
+          ? process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
+          : values.pricing.baseToken.address,
         owner: accountId,
         marketFeeCollector: marketFeeAddress,
-        baseTokenDecimals: values.pricing.baseToken.decimals,
+        baseTokenDecimals: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
+          ? 18
+          : values.pricing.baseToken.decimals,
         datatokenDecimals: 18,
         fixedRate: values.pricing.price.toString(),
         marketFee: publisherMarketFixedSwapFee,
@@ -262,15 +344,18 @@ export async function createTokensAndPricing(
       )
 
       const result = await nftFactory.createNftWithDatatokenWithFixedRate(
-        accountId,
         nftCreateData,
         ercParams,
         freParams
       )
 
-      erc721Address = result.events.NFTCreated.returnValues[0]
-      datatokenAddress = result.events.TokenCreated.returnValues[0]
-      txHash = result.transactionHash
+      const trxReceipt = await result.wait()
+      const nftCreatedEvent = getEventFromTx(trxReceipt, 'NFTCreated')
+      const tokenCreatedEvent = getEventFromTx(trxReceipt, 'TokenCreated')
+
+      erc721Address = nftCreatedEvent.args.newTokenAddress
+      datatokenAddress = tokenCreatedEvent.args.newTokenAddress
+      txHash = trxReceipt.transactionHash
 
       LoggerInstance.log('[publish] createNftErcWithFixedRate tx', txHash)
 
@@ -282,8 +367,8 @@ export async function createTokensAndPricing(
       // both will be just 1 for the market
       const dispenserParams: DispenserCreationParams = {
         dispenserAddress: config.dispenserAddress,
-        maxTokens: web3.utils.toWei('1'),
-        maxBalance: web3.utils.toWei('1'),
+        maxTokens: parseEther('1').toString(),
+        maxBalance: parseEther('1').toString(),
         withMint: true,
         allowedSwapper: ZERO_ADDRESS
       }
@@ -294,14 +379,17 @@ export async function createTokensAndPricing(
       )
 
       const result = await nftFactory.createNftWithDatatokenWithDispenser(
-        accountId,
         nftCreateData,
         ercParams,
         dispenserParams
       )
-      erc721Address = result.events.NFTCreated.returnValues[0]
-      datatokenAddress = result.events.TokenCreated.returnValues[0]
-      txHash = result.transactionHash
+      const trxReceipt = await result.wait()
+      const nftCreatedEvent = getEventFromTx(trxReceipt, 'NFTCreated')
+      const tokenCreatedEvent = getEventFromTx(trxReceipt, 'TokenCreated')
+
+      erc721Address = nftCreatedEvent.args.newTokenAddress
+      datatokenAddress = tokenCreatedEvent.args.newTokenAddress
+      txHash = trxReceipt.transactionHash
 
       LoggerInstance.log('[publish] createNftErcWithDispenser tx', txHash)
 

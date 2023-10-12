@@ -4,11 +4,9 @@ import React, { ReactElement, useEffect } from 'react'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import content from '../../../../content/publish/form.json'
+import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
 import { getFieldContent } from '@utils/form'
 import { FormPublishData } from '../_types'
-import Alert from '@shared/atoms/Alert'
-import { useMarketMetadata } from '@context/MarketMetadata'
-import styles from '../index.module.css'
 
 const accessTypeOptionsTitles = getFieldContent(
   'access',
@@ -16,8 +14,6 @@ const accessTypeOptionsTitles = getFieldContent(
 ).options
 
 export default function ServicesFields(): ReactElement {
-  const { siteContent } = useMarketMetadata()
-
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
 
@@ -101,6 +97,31 @@ export default function ServicesFields(): ReactElement {
         component={Input}
         name="services[0].timeout"
       />
+      <Field
+        {...getFieldContent('usesConsumerParameters', content.services.fields)}
+        component={Input}
+        name="services[0].usesConsumerParameters"
+      />
+      <Field
+        {...getFieldContent('allow', content.services.fields)}
+        component={Input}
+        name="services[0].allow"
+      />
+      <Field
+        {...getFieldContent('deny', content.services.fields)}
+        component={Input}
+        name="services[0].deny"
+      />
+      {values.services[0].usesConsumerParameters && (
+        <Field
+          {...getFieldContent(
+            'consumerParameters',
+            consumerParametersContent.consumerParameters.fields
+          )}
+          component={Input}
+          name="services[0].consumerParameters"
+        />
+      )}
 
       {/*
        Licensing and Terms

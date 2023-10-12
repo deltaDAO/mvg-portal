@@ -28,6 +28,7 @@ export async function transformAssetToAssetSelection(
         did: asset.id,
         name: asset.metadata.name,
         price: asset.stats.price.value,
+        tokenSymbol: asset.stats.price.tokenSymbol,
         checked: selected,
         symbol: asset.datatokens[0].symbol,
         isAccountIdWhitelisted: isAddressWhitelisted(asset, accountId)

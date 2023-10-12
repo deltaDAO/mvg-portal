@@ -3,12 +3,12 @@ import Input from '@shared/FormInput'
 import { Field, useField, useFormikContext } from 'formik'
 import React, { ReactElement, useEffect } from 'react'
 import content from '../../../../content/publish/form.json'
+import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
 import { FormPublishData } from '../_types'
 import IconDataset from '@images/dataset.svg'
 import IconAlgorithm from '@images/algorithm.svg'
 import styles from './index.module.css'
 import { algorithmContainerPresets } from '../_constants'
-import Alert from '@shared/atoms/Alert'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { getFieldContent } from '@utils/form'
 
@@ -138,6 +138,24 @@ export default function MetadataFields(): ReactElement {
               />
             </>
           )}
+          <Field
+            {...getFieldContent(
+              'usesConsumerParameters',
+              content.metadata.fields
+            )}
+            component={Input}
+            name="metadata.usesConsumerParameters"
+          />
+          {values.metadata.usesConsumerParameters && (
+            <Field
+              {...getFieldContent(
+                'consumerParameters',
+                consumerParametersContent.consumerParameters.fields
+              )}
+              component={Input}
+              name="metadata.consumerParameters"
+            />
+          )}
         </>
       )}
 
@@ -196,14 +214,6 @@ export default function MetadataFields(): ReactElement {
         component={Input}
         name="metadata.termsAndConditions"
       />
-      <a
-        className={styles.termsLink}
-        href="/terms"
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        View Terms and Conditions
-      </a>
     </>
   )
 }

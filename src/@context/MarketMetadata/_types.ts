@@ -9,7 +9,6 @@ export interface AppConfig {
   metadataCacheUri: string
   complianceUri: string
   complianceApiVersion: string
-  infuraProjectId: string
   chainIds: number[]
   chainIdsSupported: number[]
   defaultDatatokenTemplateIndex: number
@@ -30,6 +29,8 @@ export interface AppConfig {
   }
   defaultAccessTerms: string
   purgatoryUrl: string
+  dockerHubProxyUrl: string
+  showPreviewAlert: string
 }
 export interface SiteContent {
   siteTitle: string
@@ -50,6 +51,7 @@ export interface SiteContent {
     }[]
   }[]
   announcement: string
+  devPreviewAnnouncement: string
   warning: {
     ctd: string
   }
@@ -72,4 +74,5 @@ export interface MarketMetadataProviderValue {
   siteContent: SiteContent
   appConfig: AppConfig
   getOpcFeeForToken: (tokenAddress: string, chainId: number) => string
+  approvedBaseTokens: TokenInfo[]
 }

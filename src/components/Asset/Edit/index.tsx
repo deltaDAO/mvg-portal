@@ -14,6 +14,7 @@ export default function Edit({ uri }: { uri: string }): ReactElement {
   const { asset, error, isInPurgatory, title, isOwner } = useAsset()
   const [isCompute, setIsCompute] = useState(false)
   const [pageTitle, setPageTitle] = useState<string>('')
+  const [tabIndex, setTabIndex] = useState(0)
 
   useEffect(() => {
     if (!asset) return
@@ -55,7 +56,12 @@ export default function Edit({ uri }: { uri: string }): ReactElement {
         />
       ) : (
         <Container className={styles.container}>
-          <Tabs items={tabs} defaultIndex={0} className={styles.edit} />
+          <Tabs
+            items={tabs}
+            selectedIndex={tabIndex}
+            onIndexSelected={setTabIndex}
+            className={styles.edit}
+          />
         </Container>
       )}
     </Page>

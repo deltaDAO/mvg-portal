@@ -2,17 +2,16 @@ import React, { ReactElement, useState, useEffect } from 'react'
 import { Formik } from 'formik'
 import {
   LoggerInstance,
-  Metadata,
   FixedRateExchange,
   Asset,
-  Service,
   Datatoken,
-  Nft
+  Nft,
+  Metadata,
+  Service
 } from '@oceanprotocol/lib'
 import { validationSchema } from './_validation'
 import { getInitialValues } from './_constants'
 import { MetadataEditForm } from './_types'
-import { useWeb3 } from '@context/Web3'
 import { useUserPreferences } from '@context/UserPreferences'
 import Web3Feedback from '@shared/Web3Feedback'
 import FormEditMetadata from './FormEditMetadata'
@@ -21,7 +20,7 @@ import styles from './index.module.css'
 import content from '../../../../content/pages/editMetadata.json'
 import { useAbortController } from '@hooks/useAbortController'
 import DebugEditMetadata from './DebugEditMetadata'
-import { getOceanConfig } from '@utils/ocean'
+import { getOceanConfig, getPaymentCollector } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import {
@@ -33,6 +32,11 @@ import { sanitizeUrl } from '@utils/url'
 import { getEncryptedFiles } from '@utils/provider'
 import { assetStateToNumber } from '@utils/assetState'
 import { setMinterToPublisher, setMinterToDispenser } from '@utils/dispenser'
+import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
+import {
+  transformConsumerParameters,
+  generateCredentials
+} from '@components/Publish/_utils'
 
 export default function Edit({
   asset
@@ -41,8 +45,12 @@ export default function Edit({
 }): ReactElement {
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork, assetState } = useAsset()
-  const { accountId, web3, chainId } = useWeb3()
+  const { address: accountId } = useAccount()
+  const { chain } = useNetwork()
+  const provider = useProvider()
+  const { data: signer } = useSigner()
   const newAbortController = useAbortController()
+
   const [success, setSuccess] = useState<string>()
   const [paymentCollector, setPaymentCollector] = useState<string>()
   const [error, setError] = useState<string>()
@@ -50,12 +58,15 @@ export default function Edit({
   const hasFeedback = error || success
 
   useEffect(() => {
+    if (!asset || !provider) return
+
     async function getInitialPaymentCollector() {
       try {
-        const datatoken = new Datatoken(web3)
-        setPaymentCollector(
-          await datatoken.getPaymentCollector(asset?.datatokens[0].address)
+        const paymentCollector = await getPaymentCollector(
+          asset.datatokens[0].address,
+          provider
         )
+        setPaymentCollector(paymentCollector)
       } catch (error) {
         LoggerInstance.error(
           '[EditMetadata: getInitialPaymentCollector]',
@@ -64,18 +75,17 @@ export default function Edit({
       }
     }
     getInitialPaymentCollector()
-  }, [asset, web3])
+  }, [asset, provider])
 
   async function updateFixedPrice(newPrice: string) {
     const config = getOceanConfig(asset.chainId)
 
     const fixedRateInstance = new FixedRateExchange(
       config.fixedRateExchangeAddress,
-      web3
+      signer
     )
 
     const setPriceResp = await fixedRateInstance.setRate(
-      accountId,
       asset.accessDetails.addressOrId,
       newPrice.toString()
     )
@@ -107,12 +117,19 @@ export default function Edit({
         }
       }
 
+      if (asset.metadata.type === 'algorithm') {
+        updatedMetadata.algorithm.consumerParameters =
+          !values.usesConsumerParameters
+            ? undefined
+            : transformConsumerParameters(values.consumerParameters)
+      }
+
       asset?.accessDetails?.type === 'fixed' &&
         values.price !== asset.accessDetails.price &&
         (await updateFixedPrice(values.price))
 
       if (values.paymentCollector !== paymentCollector) {
-        const datatoken = new Datatoken(web3)
+        const datatoken = new Datatoken(signer)
         await datatoken.setPaymentCollector(
           asset?.datatokens[0].address,
           accountId,
@@ -124,7 +141,9 @@ export default function Edit({
         const file = {
           nftAddress: asset.nftAddress,
           datatokenAddress: asset.services[0].datatokenAddress,
-          files: [normalizeFile(values.files[0].type, values.files[0], chainId)]
+          files: [
+            normalizeFile(values.files[0].type, values.files[0], chain?.id)
+          ]
         }
 
         const filesEncrypted = await getEncryptedFiles(
@@ -139,13 +158,25 @@ export default function Edit({
         timeout: mapTimeoutStringToSeconds(values.timeout),
         files: updatedFiles
       }
+      if (values?.service?.consumerParameters) {
+        updatedService.consumerParameters = transformConsumerParameters(
+          values.service.consumerParameters
+        )
+      }
+
+      const updatedCredentials = generateCredentials(
+        asset?.credentials,
+        values?.allow,
+        values?.deny
+      )
 
       // TODO: remove version update at a later time
       const updatedAsset: Asset = {
         ...(asset as Asset),
         version: '4.1.0',
         metadata: updatedMetadata,
-        services: [updatedService]
+        services: [updatedService],
+        credentials: updatedCredentials
       }
 
       if (
@@ -153,7 +184,7 @@ export default function Edit({
         asset?.accessDetails?.isPurchasable
       ) {
         const tx = await setMinterToPublisher(
-          web3,
+          signer,
           asset?.accessDetails?.datatoken?.address,
           accountId,
           setError
@@ -169,7 +200,7 @@ export default function Edit({
       const setMetadataTx = await setNFTMetadataAndTokenURI(
         updatedAsset,
         accountId,
-        web3,
+        signer,
         decodeTokenURI(asset.nft.tokenURI),
         newAbortController()
       )
@@ -182,8 +213,7 @@ export default function Edit({
 
       console.log({ state: values.assetState, assetState })
       if (values.assetState !== assetState) {
-        console.log('update state')
-        const nft = new Nft(web3)
+        const nft = new Nft(signer)
 
         await nft.setMetadataState(
           asset?.nftAddress,
@@ -201,7 +231,7 @@ export default function Edit({
       } else {
         if (asset.accessDetails.type === 'free') {
           const tx = await setMinterToDispenser(
-            web3,
+            signer,
             asset?.accessDetails?.datatoken?.address,
             accountId,
             setError
@@ -223,7 +253,8 @@ export default function Edit({
       enableReinitialize
       initialValues={getInitialValues(
         asset?.metadata,
-        asset?.services[0]?.timeout,
+        asset?.services[0],
+        asset?.credentials,
         asset?.accessDetails?.price || '0',
         paymentCollector,
         assetState

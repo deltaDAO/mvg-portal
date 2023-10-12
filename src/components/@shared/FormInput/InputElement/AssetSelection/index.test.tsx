@@ -8,6 +8,7 @@ describe('@shared/FormInput/InputElement/AssetSelection', () => {
       did: 'did:op:xxx',
       name: 'Asset',
       price: 10,
+      tokenSymbol: 'OCEAN',
       checked: false,
       symbol: 'OCEAN',
       isAccountIdWhitelisted: true
@@ -16,6 +17,7 @@ describe('@shared/FormInput/InputElement/AssetSelection', () => {
       did: 'did:op:yyy',
       name: 'Asset',
       price: 10,
+      tokenSymbol: 'OCEAN',
       checked: true,
       symbol: 'OCEAN',
       isAccountIdWhitelisted: true
@@ -24,6 +26,7 @@ describe('@shared/FormInput/InputElement/AssetSelection', () => {
       did: 'did:op:zzz',
       name: 'Asset',
       price: 0,
+      tokenSymbol: 'OCEAN',
       checked: false,
       symbol: 'OCEAN',
       isAccountIdWhitelisted: true

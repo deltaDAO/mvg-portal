@@ -10,6 +10,8 @@ import {
 import { transformAssetToAssetSelection } from '../assetConvertor'
 import addressConfig from '../../../address.config'
 import { isValidDid } from '@utils/ddo'
+import { Filters } from '@context/Filter'
+import { filterSets } from '@components/Search/Filter'
 
 export interface UserSales {
   id: string
@@ -46,8 +48,37 @@ export function getFilterTerm(
   }
 }
 
-export function getWhitelistShould(): // eslint-disable-next-line camelcase
-{ should: FilterTerm[]; minimum_should_match: 1 } | undefined {
+export function parseFilters(
+  filtersList: Filters,
+  filterSets: { [key: string]: string[] }
+): FilterTerm[] {
+  const filterQueryPath = {
+    accessType: 'services.type',
+    serviceType: 'metadata.type',
+    filterSet: 'metadata.tags.keyword'
+  }
+
+  const filterTerms = Object.keys(filtersList)?.map((key) => {
+    if (key === 'filterSet') {
+      const tags = filtersList[key].reduce(
+        (acc, set) => [...acc, ...filterSets[set]],
+        []
+      )
+      const uniqueTags = [...new Set(tags)]
+      return uniqueTags.length > 0
+        ? getFilterTerm(filterQueryPath[key], uniqueTags)
+        : undefined
+    }
+    if (filtersList[key].length > 0)
+      return getFilterTerm(filterQueryPath[key], filtersList[key])
+
+    return undefined
+  })
+
+  return filterTerms.filter((term) => term !== undefined)
+}
+
+export function getWhitelistShould(): FilterTerm[] {
   const { whitelists } = addressConfig
 
   const whitelistFilterTerms = Object.entries(whitelists)
@@ -57,12 +88,7 @@ export function getWhitelistShould(): // eslint-disable-next-line camelcase
     )
     .reduce((prev, cur) => prev.concat(cur), [])
 
-  return whitelistFilterTerms.length > 0
-    ? {
-        should: whitelistFilterTerms,
-        minimum_should_match: 1
-      }
-    : undefined
+  return whitelistFilterTerms.length > 0 ? whitelistFilterTerms : []
 }
 
 export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcase
@@ -102,7 +128,7 @@ export function generateBaseQuery(
             }
           }
         ],
-        ...getWhitelistShould()
+        should: [...getWhitelistShould()]
       }
     }
   } as SearchQuery
@@ -117,6 +143,11 @@ export function generateBaseQuery(
         baseQueryParams.sortOptions.sortDirection ||
         SortDirectionOptions.Descending
     }
+
+  if (generatedQuery.query?.bool?.should?.length > 0) {
+    generatedQuery.query.bool.minimum_should_match = 1
+  }
+
   return generatedQuery
 }
 
@@ -289,9 +320,8 @@ export async function getPublishedAssets(
   cancelToken: CancelToken,
   ignorePurgatory = false,
   ignoreState = false,
-  page?: number,
-  type?: string,
-  accesType?: string
+  filtersList?: Filters,
+  page?: number
 ): Promise<PagedAssets> {
   if (!accountId) return
 
@@ -299,9 +329,7 @@ export async function getPublishedAssets(
 
   filters.push(getFilterTerm('nft.state', [0, 4, 5]))
   filters.push(getFilterTerm('nft.owner', accountId.toLowerCase()))
-  accesType !== undefined &&
-    filters.push(getFilterTerm('services.type', accesType))
-  type !== undefined && filters.push(getFilterTerm('metadata.type', type))
+  parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
 
   const baseQueryParams = {
     chainIds,

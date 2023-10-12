@@ -1,0 +1,28 @@
+.selection {
+  composes: selection from '../AssetSelection/index.module.css';
+
+  min-height: 150px;
+}
+
+.selection [class*='loaderWrap'] {
+  margin: calc(var(--spacer) / 3);
+}
+
+.scroll {
+  composes: scroll from '../AssetSelection/index.module.css';
+
+  margin-top: 0;
+  border-top: none;
+}
+
+.row {
+  composes: row from '../AssetSelection/index.module.css';
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.details {
+  composes: did from '../AssetSelection/index.module.css';
+}

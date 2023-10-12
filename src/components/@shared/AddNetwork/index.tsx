@@ -1,9 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react'
-import { useWeb3 } from '@context/Web3'
+import { useSwitchNetwork } from 'wagmi'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
-import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import { switchWalletNetwork } from '../WalletNetworkSwitcher'
 import EthIcon from '@images/eth.svg'
 import AddTokenStyles from '../AddToken/index.module.css'
 
@@ -18,21 +16,14 @@ export default function AddNetwork({
   networkName,
   logo
 }: AddNetworkProps): ReactElement {
-  const { web3Provider } = useWeb3()
-  const { networksList } = useNetworkMetadata()
-
-  async function handleAddToken() {
-    if (!web3Provider || !networksList || !chainId) return
-
-    await switchWalletNetwork(web3Provider, networksList, chainId)
-  }
+  const { switchNetwork } = useSwitchNetwork({ chainId })
 
   return (
     <Button
       className={AddTokenStyles.button}
       style="text"
       size="small"
-      onClick={handleAddToken}
+      onClick={() => switchNetwork()}
     >
       <span className={AddTokenStyles.logoWrap}>
         <div className={styles.logo}>{logo || <EthIcon />}</div>

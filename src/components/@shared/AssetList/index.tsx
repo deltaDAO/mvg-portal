@@ -9,6 +9,7 @@ import AssetType from '../AssetType'
 import { getServiceByName } from '@utils/ddo'
 import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
 import Time from '../atoms/Time'
+import Loader from '../atoms/Loader'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
@@ -84,6 +85,7 @@ export default function AssetList({
   showPagination,
   page,
   totalPages,
+  isLoading,
   onPageChange,
   className,
   noPublisher,
@@ -103,7 +105,9 @@ export default function AssetList({
 
   const styleClasses = `${styles.assetList} ${className || ''}`
 
-  return (
+  return isLoading ? (
+    <Loader />
+  ) : (
     <>
       {showAssetViewSelector && (
         <AssetViewSelector
@@ -139,7 +143,6 @@ export default function AssetList({
           <div className={styles.empty}>No results found</div>
         )}
       </div>
-
       {showPagination && (
         <Pagination
           totalPages={totalPages}

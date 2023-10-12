@@ -1,7 +1,7 @@
 import { useField } from 'formik'
 import React, { ReactElement, useEffect } from 'react'
 import { InputProps } from '@shared/FormInput'
-import Logo from '@images/logo.svg'
+import Key from '@images/key.svg'
 import RefreshName from './RefreshName'
 import styles from './index.module.css'
 import { generateDtName } from '@oceanprotocol/lib'
@@ -29,7 +29,7 @@ export default function Datatoken({
   return (
     <div className={styles.datatoken}>
       <figure className={styles.image}>
-        <Logo />
+        <Key />
       </figure>
       <div className={styles.token}>
         <strong>{field?.value?.name}</strong> —{' '}

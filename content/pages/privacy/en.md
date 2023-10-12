@@ -3,7 +3,7 @@ title: Privacy Policy
 description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO) processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
 ---
 
-## Table of contents
+### Table of contents
 
 ## 1. Contact details of the controller and Data Protection Officer
 

@@ -1,8 +1,7 @@
 import React, { ReactElement, ReactNode } from 'react'
 import { Tab, Tabs as ReactTabs, TabList, TabPanel } from 'react-tabs'
-import styles from './index.module.css'
 import InputRadio from '@shared/FormInput/InputElement/Radio'
-
+import styles from './index.module.css'
 export interface TabsItem {
   title: string
   content: ReactNode
@@ -13,19 +12,25 @@ export interface TabsProps {
   items: TabsItem[]
   className?: string
   handleTabChange?: (tabName: string) => void
-  defaultIndex?: number
   showRadio?: boolean
+  selectedIndex?: number
+  onIndexSelected?: (index: number) => void
 }
 
 export default function Tabs({
   items,
   className,
   handleTabChange,
-  defaultIndex,
-  showRadio
+  showRadio,
+  selectedIndex,
+  onIndexSelected
 }: TabsProps): ReactElement {
   return (
-    <ReactTabs className={`${className || ''}`} defaultIndex={defaultIndex}>
+    <ReactTabs
+      className={`${className || ''}`}
+      selectedIndex={selectedIndex}
+      onSelect={onIndexSelected}
+    >
       <div className={styles.tabListContainer}>
         <TabList className={styles.tabList}>
           {items.map((item, index) => (
@@ -42,7 +47,7 @@ export default function Tabs({
                   className={styles.radioInput}
                   name={item.title}
                   type="radio"
-                  checked={index === defaultIndex}
+                  checked={index === selectedIndex}
                   options={[item.title]}
                   readOnly
                 />

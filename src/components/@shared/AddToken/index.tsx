@@ -1,7 +1,6 @@
 import React, { ReactElement, ReactNode } from 'react'
 import classNames from 'classnames/bind'
-import { addTokenToWallet } from '@utils/web3'
-import { useWeb3 } from '@context/Web3'
+import { addTokenToWallet } from '@utils/wallet'
 import Button from '@shared/atoms/Button'
 import OceanLogo from '@images/logo.svg'
 import styles from './index.module.css'
@@ -30,8 +29,6 @@ export default function AddToken({
   className,
   minimal
 }: AddTokenProps): ReactElement {
-  const { web3Provider } = useWeb3()
-
   const styleClasses = cx({
     button: true,
     minimal,
@@ -39,9 +36,9 @@ export default function AddToken({
   })
 
   async function handleAddToken() {
-    if (!web3Provider) return
+    if (!window?.ethereum) return
 
-    await addTokenToWallet(web3Provider, address, symbol, decimals, logo?.url)
+    await addTokenToWallet(address, symbol, decimals, logo?.url)
   }
 
   return (

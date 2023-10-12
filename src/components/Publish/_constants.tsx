@@ -69,6 +69,8 @@ export const initialValues: FormPublishData = {
     dockerImageCustom: '',
     dockerImageCustomTag: '',
     dockerImageCustomEntrypoint: '',
+    usesConsumerParameters: false,
+    consumerParameters: [],
     gaiaXInformation: {
       termsAndConditions: [
         {
@@ -93,7 +95,11 @@ export const initialValues: FormPublishData = {
         valid: true,
         custom: false
       },
-      computeOptions
+      computeOptions,
+      usesConsumerParameters: false,
+      consumerParameters: [],
+      allow: [],
+      deny: []
     }
   ],
   pricing: {

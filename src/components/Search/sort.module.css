@@ -1,52 +1,34 @@
+.sidePositioning {
+  composes: sidePositioning from './Filter.module.css';
+}
+
+.topPositioning {
+  composes: topPositioning from './Filter.module.css';
+}
+
 .sortList {
-  padding: 0 calc(var(--spacer) / 10);
   display: flex;
-  align-items: center;
-  border-radius: var(--filter-border-radius);
-  border: var(--filter-border-size) solid var(--filter-border-color);
-  background: var(--filter-background);
-  overflow-y: auto;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
 }
 
-.sortLabel {
-  composes: label from '@shared/FormInput/Label.module.css';
-  padding: 0;
-  margin-bottom: 0;
-  margin-left: calc(var(--spacer) / 2);
-  margin-right: calc(var(--spacer) / 1.5);
-  text-transform: uppercase;
-  color: var(--filter-font-color);
-  font-size: var(--font-size-small);
+.sortList div *,
+.compactOptionsContainer > * {
+  margin: 0;
 }
 
-.sorted {
-  display: inline-block;
-  padding: calc(var(--spacer) / 6) calc(var(--spacer) / 2);
-  margin-right: calc(var(--spacer) / 4);
-  color: var(--filter-font-color);
-  text-transform: capitalize;
-  border-radius: 0;
-  font-weight: var(--font-weight-base);
-  background: var(--filter-background);
-  box-shadow: none;
-  white-space: nowrap;
+.sortList div h5 {
+  margin: calc(var(--spacer) / 4) 0;
 }
 
-.sorted:hover,
-.sorted:focus,
-.sorted.selected {
-  color: var(--filter-hover-font-color);
-  background: inherit;
-  transform: none;
-  box-shadow: none;
+.sortList > div > div:not(:last-child) {
+  margin-bottom: calc(var(--spacer) / 8);
 }
 
-.direction {
-  background: transparent;
-  border: none;
-  color: inherit;
-  font-size: 0.75em;
-  outline: none;
-  margin-left: calc(var(--spacer) / 8);
-  margin-top: calc(var(--spacer) / 14);
+.compactFilterContainer {
+  composes: compactFilterContainer from './Filter.module.css';
+}
+
+.compactOptionsContainer > div {
+  margin-top: calc(var(--spacer) / 4) 0;
 }

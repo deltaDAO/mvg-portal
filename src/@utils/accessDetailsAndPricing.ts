@@ -5,16 +5,20 @@ import {
   TokenPriceQuery_token as TokenPrice
 } from '../@types/subgraph/TokenPriceQuery'
 import {
+  getErrorMessage,
   LoggerInstance,
   ProviderFees,
   ProviderInstance
 } from '@oceanprotocol/lib'
-import { getFixedBuyPrice } from './fixedRateExchange'
+import { getFixedBuyPrice } from './ocean/fixedRateExchange'
 import Decimal from 'decimal.js'
 import {
   consumeMarketOrderFee,
-  publisherMarketOrderFee
+  publisherMarketOrderFee,
+  customProviderUrl
 } from '../../app.config'
+import { Signer } from 'ethers'
+import { toast } from 'react-toastify'
 
 const tokenPriceQuery = gql`
   query TokenPriceQuery($datatokenId: ID!, $account: String) {
@@ -81,7 +85,6 @@ function getAccessDetailsFromTokenPrice(
   timeout?: number
 ): AccessDetails {
   const accessDetails = {} as AccessDetails
-
   // Return early when no supported pricing schema found.
   if (
     tokenPrice?.dispensers?.length === 0 &&
@@ -108,7 +111,10 @@ function getAccessDetailsFromTokenPrice(
     // the last valid order should be the last reuse order tx id if there is one
     accessDetails.validOrderTx = reusedOrder?.tx || order?.tx
   }
-  accessDetails.templateId = tokenPrice.templateId
+  accessDetails.templateId =
+    typeof tokenPrice.templateId === 'string'
+      ? parseInt(tokenPrice.templateId)
+      : tokenPrice.templateId
   // TODO: fetch order fee from sub query
   accessDetails.publisherMarketOrderFee = tokenPrice?.publishMarketFeeAmount
 
@@ -158,7 +164,8 @@ function getAccessDetailsFromTokenPrice(
  */
 export async function getOrderPriceAndFees(
   asset: AssetExtended,
-  accountId?: string,
+  accountId: string,
+  signer?: Signer,
   providerFees?: ProviderFees
 ): Promise<OrderPriceAndFees> {
   const orderPriceAndFee = {
@@ -174,20 +181,57 @@ export async function getOrderPriceAndFees(
   } as OrderPriceAndFees
 
   // fetch provider fee
-  const initializeData =
-    !providerFees &&
-    (await ProviderInstance.initialize(
-      asset?.id,
-      asset?.services[0].id,
-      0,
-      accountId,
-      asset?.services[0].serviceEndpoint
-    ))
+  let initializeData
+  try {
+    initializeData =
+      !providerFees &&
+      (await ProviderInstance.initialize(
+        asset?.id,
+        asset?.services[0].id,
+        0,
+        accountId,
+        customProviderUrl || asset?.services[0].serviceEndpoint
+      ))
+  } catch (error) {
+    const message = getErrorMessage(JSON.parse(error.message))
+    LoggerInstance.error('[Initialize Provider] Error:', message)
+
+    // Customize error message for accountId non included in allow list
+    if (
+      // TODO: verify if the error code is correctly resolved by the provider
+      message.includes(
+        'ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST' || 'denied with code: 3'
+      )
+    ) {
+      toast.error(
+        `Consumer address not found in allow list for service ${asset?.id}. Access has been denied.`
+      )
+      return
+    }
+    // Customize error message for accountId included in deny list
+    if (
+      message.includes(
+        // TODO: verify if the error code is correctly resolved by the provider
+        'ConsumableCodes.CREDENTIAL_IN_DENY_LIST' || 'denied with code: 4'
+      )
+    ) {
+      toast.error(
+        `Consumer address found in deny list for service ${asset?.id}. Access has been denied.`
+      )
+      return
+    }
+
+    toast.error(message)
+  }
   orderPriceAndFee.providerFee = providerFees || initializeData.providerFee
 
   // fetch price and swap fees
   if (asset?.accessDetails?.type === 'fixed') {
-    const fixed = await getFixedBuyPrice(asset?.accessDetails, asset?.chainId)
+    const fixed = await getFixedBuyPrice(
+      asset?.accessDetails,
+      asset?.chainId,
+      signer
+    )
     orderPriceAndFee.price = fixed.baseTokenAmount
     orderPriceAndFee.opcFee = fixed.oceanFeeAmount
     orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount

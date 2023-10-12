@@ -2,7 +2,12 @@ import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
-import { escapeEsReservedCharacters, getFilterTerm, generateBaseQuery } from '.'
+import {
+  escapeEsReservedCharacters,
+  getFilterTerm,
+  generateBaseQuery,
+  getWhitelistShould
+} from '.'
 
 const defaultBaseQueryReturn = {
   from: 0,
@@ -20,7 +25,9 @@ const defaultBaseQueryReturn = {
             ]
           }
         }
-      ]
+      ],
+      should: [...getWhitelistShould()],
+      ...(getWhitelistShould().length > 0 ? { minimum_should_match: 1 } : [])
     }
   },
   size: 1000

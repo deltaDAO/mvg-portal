@@ -47,7 +47,7 @@ export default function AssetTeaser({
           <span className={styles.typeLabel}>
             {datatokens[0]?.symbol.substring(0, 9)}
           </span>
-          <NetworkName networkId={asset.chainId} className={styles.typeLabel} />
+          {/* <NetworkName networkId={asset.chainId} className={styles.typeLabel} /> */}
         </aside>
         <header className={styles.header}>
           <Dotdotdot tagName="h1" clamp={3} className={styles.title}>
@@ -70,41 +70,47 @@ export default function AssetTeaser({
           )}
         </div>
         <footer className={styles.footer}>
-          {allocated && allocated > 0 ? (
-            <span className={styles.typeLabel}>
-              {allocated < 0 ? (
-                ''
-              ) : (
-                <>
-                  <strong>{formatNumber(allocated, locale, '0')}</strong>{' '}
-                  veOCEAN
-                </>
-              )}
-            </span>
-          ) : null}
-          {orders && orders > 0 ? (
-            <span className={styles.typeLabel}>
-              {orders < 0 ? (
-                'N/A'
-              ) : (
-                <>
-                  <strong>{orders}</strong> {orders === 1 ? 'sale' : 'sales'}
-                </>
-              )}
-            </span>
-          ) : null}
-          {asset.views && asset.views > 0 ? (
-            <span className={styles.typeLabel}>
-              {asset.views < 0 ? (
-                'N/A'
-              ) : (
-                <>
-                  <strong>{asset.views}</strong>{' '}
-                  {asset.views === 1 ? 'view' : 'views'}
-                </>
-              )}
-            </span>
-          ) : null}
+          <div className={styles.stats}>
+            {allocated && allocated > 0 ? (
+              <span className={styles.typeLabel}>
+                {allocated < 0 ? (
+                  ''
+                ) : (
+                  <>
+                    <strong>{formatNumber(allocated, locale, '0')}</strong>{' '}
+                    veOCEAN
+                  </>
+                )}
+              </span>
+            ) : null}
+            {orders && orders > 0 ? (
+              <span className={styles.typeLabel}>
+                {orders < 0 ? (
+                  'N/A'
+                ) : (
+                  <>
+                    <strong>{orders}</strong> {orders === 1 ? 'sale' : 'sales'}
+                  </>
+                )}
+              </span>
+            ) : null}
+            {asset.views && asset.views > 0 ? (
+              <span className={styles.typeLabel}>
+                {asset.views < 0 ? (
+                  'N/A'
+                ) : (
+                  <>
+                    <strong>{asset.views}</strong>{' '}
+                    {asset.views === 1 ? 'view' : 'views'}
+                  </>
+                )}
+              </span>
+            ) : null}
+          </div>
+          <NetworkName
+            networkId={asset.chainId}
+            className={styles.networkName}
+          />
         </footer>
       </Link>
     </article>

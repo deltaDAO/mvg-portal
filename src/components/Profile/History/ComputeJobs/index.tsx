@@ -2,13 +2,13 @@ import React, { ReactElement, useState } from 'react'
 import Time from '@shared/atoms/Time'
 import Table, { TableOceanColumn } from '@shared/atoms/Table'
 import Button from '@shared/atoms/Button'
-import { useWeb3 } from '@context/Web3'
 import Details from './Details'
 import Refresh from '@images/refresh.svg'
 import { useUserPreferences } from '@context/UserPreferences'
 import NetworkName from '@shared/NetworkName'
 import styles from './index.module.css'
 import AssetListTitle from '@shared/AssetListTitle'
+import { useAccount } from 'wagmi'
 
 export function Status({ children }: { children: string }): ReactElement {
   return <div className={styles.status}>{children}</div>
@@ -59,7 +59,7 @@ export default function ComputeJobs({
   isLoading?: boolean
   refetchJobs?: any
 }): ReactElement {
-  const { accountId } = useWeb3()
+  const { address: accountId } = useAccount()
   const { chainIds } = useUserPreferences()
   const [columnsMinimal] = useState([columns[5], columns[6], columns[4]])
 
@@ -89,6 +89,6 @@ export default function ComputeJobs({
       />
     </>
   ) : (
-    <div>Please connect your Web3 wallet.</div>
+    <div>Please connect your wallet.</div>
   )
 }

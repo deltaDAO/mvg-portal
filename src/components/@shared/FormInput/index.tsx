@@ -10,7 +10,7 @@ import React, {
 import InputElement from './InputElement'
 import Label from './Label'
 import styles from './index.module.css'
-import { ErrorMessage, FieldInputProps } from 'formik'
+import { ErrorMessage, FieldInputProps, useField } from 'formik'
 import classNames from 'classnames/bind'
 import Disclaimer from './Disclaimer'
 import Tooltip from '@shared/atoms/Tooltip'
@@ -18,6 +18,8 @@ import Markdown from '@shared/Markdown'
 import FormHelp from './Help'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { BoxSelectionOption } from '@shared/FormInput/InputElement/BoxSelection'
+import { getObjectPropertyByPath } from '@utils/index'
+import { ComputeEnvironment } from '@oceanprotocol/lib'
 
 const cx = classNames.bind(styles)
 
@@ -30,7 +32,11 @@ export interface InputProps {
   prominentHelp?: boolean
   tag?: string
   type?: string
-  options?: string[] | AssetSelectionAsset[] | BoxSelectionOption[]
+  options?:
+    | string[]
+    | AssetSelectionAsset[]
+    | BoxSelectionOption[]
+    | ComputeEnvironment[]
   sortOptions?: boolean
   fields?: FieldInputProps<any>[]
   methods?: boolean
@@ -62,6 +68,8 @@ export interface InputProps {
   form?: any
   prefix?: string | ReactElement
   postfix?: string | ReactElement
+  prefixes?: string[]
+  postfixes?: string[]
   step?: string
   defaultChecked?: boolean
   size?: 'mini' | 'small' | 'large' | 'default'
@@ -69,6 +77,8 @@ export interface InputProps {
   checked?: boolean
   disclaimer?: string
   disclaimerValues?: string[]
+  accountId?: string
+  actions?: string[]
 }
 
 function checkError(

@@ -14,7 +14,11 @@ import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
 import TagsAutoComplete from './TagsAutoComplete'
 import TabsFile from '@shared/atoms/TabsFile'
 import { extensions, oceanTheme } from '@utils/codemirror'
+import { ConsumerParameters } from './ConsumerParameters'
 import ServiceCredential from './ServiceCredential'
+import ComputeEnvSelection from './ComputeEnvSelection'
+import Credentials from './Credential'
+import Option from './Radio/Option'
 
 const cx = classNames.bind(styles)
 
@@ -49,8 +53,6 @@ const InputElement = forwardRef(
     {
       options,
       sortOptions,
-      prefix,
-      postfix,
       size,
       field,
       multiple,
@@ -61,9 +63,15 @@ const InputElement = forwardRef(
       help,
       prominentHelp,
       form,
+      prefix,
+      postfix,
       additionalComponent,
       disclaimer,
       disclaimerValues,
+      accountId,
+      prefixes,
+      postfixes,
+      actions,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -91,7 +99,11 @@ const InputElement = forwardRef(
               (sortedOptions as string[]).map(
                 (option: string, index: number) => (
                   <option key={index} value={option}>
-                    {option} {postfix}
+                    <Option
+                      option={option}
+                      prefix={prefixes?.[index]}
+                      postfix={postfixes?.[index]}
+                    />
                   </option>
                 )
               )}
@@ -141,6 +153,9 @@ const InputElement = forwardRef(
           />
         )
 
+      case 'consumerParameters':
+        return <ConsumerParameters {...field} form={form} {...props} />
+
       case 'textarea':
         return (
           <textarea id={props.name} className={styles.textarea} {...props} />
@@ -152,6 +167,9 @@ const InputElement = forwardRef(
           <InputRadio
             options={options as string[]}
             inputSize={size}
+            prefixes={prefixes}
+            postfixes={postfixes}
+            actions={actions}
             {...props}
           />
         )
@@ -160,6 +178,16 @@ const InputElement = forwardRef(
         return (
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
+            accountId={accountId}
+            {...field}
+            {...props}
+          />
+        )
+
+      case 'computeEnvSelection':
+        return (
+          <ComputeEnvSelection
+            computeEnvs={options as ComputeEnvironmentExtended[]}
             {...field}
             {...props}
           />
@@ -196,6 +224,8 @@ const InputElement = forwardRef(
         )
       case 'tags':
         return <TagsAutoComplete {...field} {...props} />
+      case 'credentials':
+        return <Credentials {...field} {...props} />
       default:
         return prefix || postfix ? (
           <div

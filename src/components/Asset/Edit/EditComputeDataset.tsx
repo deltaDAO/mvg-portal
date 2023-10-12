@@ -1,4 +1,3 @@
-import { useWeb3 } from '@context/Web3'
 import { Formik } from 'formik'
 import React, { ReactElement, useState } from 'react'
 import FormEditComputeDataset from './FormEditComputeDataset'
@@ -28,6 +27,7 @@ import {
   setNftMetadata
 } from '@utils/nft'
 import { ComputeEditForm } from './_types'
+import { useAccount, useSigner } from 'wagmi'
 
 export default function EditComputeDataset({
   asset
@@ -35,8 +35,10 @@ export default function EditComputeDataset({
   asset: AssetExtended
 }): ReactElement {
   const { debug } = useUserPreferences()
-  const { accountId, web3 } = useWeb3()
+  const { address: accountId } = useAccount()
+  const { data: signer } = useSigner()
   const { fetchAsset, isAssetNetwork } = useAsset()
+
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
   const newAbortController = useAbortController()
@@ -50,7 +52,7 @@ export default function EditComputeDataset({
         asset?.accessDetails?.isPurchasable
       ) {
         const tx = await setMinterToPublisher(
-          web3,
+          signer,
           asset?.accessDetails?.datatoken?.address,
           accountId,
           setError
@@ -89,7 +91,7 @@ export default function EditComputeDataset({
       const setMetadataTx = await setNFTMetadataAndTokenURI(
         updatedAsset,
         accountId,
-        web3,
+        signer,
         decodeTokenURI(asset.nft.tokenURI),
         newAbortController()
       )
@@ -109,7 +111,7 @@ export default function EditComputeDataset({
       } else {
         if (asset.accessDetails.type === 'free') {
           const tx = await setMinterToDispenser(
-            web3,
+            signer,
             asset?.accessDetails?.datatoken?.address,
             accountId,
             setError

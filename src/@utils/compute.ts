@@ -9,7 +9,8 @@ import {
   Service,
   ProviderInstance,
   ComputeEnvironment,
-  ComputeJob
+  ComputeJob,
+  getErrorMessage
 } from '@oceanprotocol/lib'
 import { CancelToken } from 'axios'
 import { gql } from 'urql'
@@ -26,6 +27,7 @@ import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelecti
 import { transformAssetToAssetSelection } from './assetConvertor'
 import { ComputeEditForm } from '../components/Asset/Edit/_types'
 import { getFileDidInfo } from './provider'
+import { toast } from 'react-toastify'
 
 const getComputeOrders = gql`
   query ComputeOrders($user: String!) {
@@ -135,7 +137,7 @@ export function getValidUntilTime(
   return Math.floor(mytime.getTime() / 1000)
 }
 
-export async function getComputeEnviroment(
+export async function getComputeEnvironment(
   asset: Asset
 ): Promise<ComputeEnvironment> {
   if (asset?.services[0]?.type !== 'compute') return null
@@ -150,7 +152,12 @@ export async function getComputeEnviroment(
     if (!computeEnv) return null
     return computeEnv
   } catch (e) {
-    LoggerInstance.error('[compute] Fetch compute enviroment: ', e.message)
+    const message = getErrorMessage(JSON.parse(e.message))
+    LoggerInstance.error(
+      '[Compute to Data] Fetch compute environment:',
+      message
+    )
+    toast.error(message)
   }
 }
 
@@ -279,7 +286,9 @@ async function getJobs(
       })
     }
   } catch (err) {
-    LoggerInstance.error(err.message)
+    const message = getErrorMessage(JSON.parse(err.message))
+    LoggerInstance.error('[Compute to Data] Error:', message)
+    toast.error(message)
   }
   return computeJobs
 }

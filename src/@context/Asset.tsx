@@ -10,9 +10,8 @@ import React, {
 import { Config, LoggerInstance, Purgatory } from '@oceanprotocol/lib'
 import { CancelToken } from 'axios'
 import { getAsset } from '@utils/aquarius'
-import { useWeb3 } from './Web3'
 import { useCancelToken } from '@hooks/useCancelToken'
-import { getOceanConfig, getDevelopmentConfig } from '@utils/ocean'
+import { getOceanConfig, sanitizeDevelopmentConfig } from '@utils/ocean'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { useIsMounted } from '@hooks/useIsMounted'
 import { useMarketMetadata } from './MarketMetadata'
@@ -24,6 +23,7 @@ import {
   getServiceCredential,
   verifyRawServiceCredential
 } from '@components/Publish/_utils'
+import { useAccount, useNetwork } from 'wagmi'
 
 export interface AssetProviderValue {
   isInPurgatory: boolean
@@ -55,8 +55,9 @@ function AssetProvider({
   children: ReactNode
 }): ReactElement {
   const { appConfig } = useMarketMetadata()
+  const { address: accountId } = useAccount()
+  const { chain } = useNetwork()
 
-  const { chainId, accountId } = useWeb3()
   const { isDDOWhitelisted } = useAddressConfig()
   const [isInPurgatory, setIsInPurgatory] = useState(false)
   const [purgatoryData, setPurgatoryData] = useState<Purgatory>()
@@ -239,11 +240,11 @@ function AssetProvider({
   // Check user network against asset network
   // -----------------------------------
   useEffect(() => {
-    if (!chainId || !asset?.chainId) return
+    if (!chain?.id || !asset?.chainId) return
 
-    const isAssetNetwork = chainId === asset?.chainId
+    const isAssetNetwork = chain?.id === asset?.chainId
     setIsAssetNetwork(isAssetNetwork)
-  }, [chainId, asset?.chainId])
+  }, [chain?.id, asset?.chainId])
 
   // -----------------------------------
   // Asset owner check against wallet user
@@ -260,13 +261,13 @@ function AssetProvider({
   // -----------------------------------
   useEffect(() => {
     if (!asset?.chainId) return
-
+    const config = getOceanConfig(asset?.chainId)
     const oceanConfig = {
-      ...getOceanConfig(asset?.chainId),
+      ...config,
 
       // add local dev values
       ...(asset?.chainId === 8996 && {
-        ...getDevelopmentConfig()
+        ...sanitizeDevelopmentConfig(config)
       })
     }
     setOceanConfig(oceanConfig)

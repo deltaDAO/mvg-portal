@@ -10,7 +10,7 @@ const chains = [
     isDefault: true,
     metadataCacheUri: 'https://aquarius510.v4.delta-dao.com',
     nodeUri: 'https://rpc.genx.minimal-gaia-x.eu',
-    providerUri: 'https://provider.v4.genx.delta-dao.com',
+    providerUri: 'https://provider.v4.delta-dao.com',
     subgraphUri: 'https://subgraph.v4.genx.minimal-gaia-x.eu',
     explorerUri: 'https://explorer.pontus-x.eu',
     oceanTokenAddress: '0x0995527d3473b3a98c471f1ed8787acd77fbf009',
@@ -33,6 +33,11 @@ const chains = [
     DFStrategyV1: '0x1be9C72500B41c286C797D4FE727747Ae9C4E195',
     veFeeEstimate: '0xCFeF55c6ae4d250586e293f29832967a04A9087d',
     providerAddress: '0x68C24FA5b2319C81b34f248d1f928601D2E5246B'
+  },
+  {
+    chainId: 80001,
+    metadataCacheUri: 'https://aquarius510.v4.delta-dao.com',
+    providerUri: 'https://provider.dev-v4.mumbai.delta-dao.com'
   }
 ]
 
