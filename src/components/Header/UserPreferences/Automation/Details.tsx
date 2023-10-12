@@ -3,7 +3,6 @@ import { useAutomation } from '../../../../@context/Automation/AutomationProvide
 import { useMarketMetadata } from '../../../../@context/MarketMetadata'
 import { useUserPreferences } from '../../../../@context/UserPreferences'
 import Button from '../../../@shared/atoms/Button'
-import Loader from '../../../@shared/atoms/Loader'
 import { AUTOMATION_WALLET_MODES } from '../AutomationWalletMode'
 import Balance from './Balance'
 import styles from './Details.module.css'
@@ -13,15 +12,15 @@ import Decrypt from './Decrypt'
 
 function AdvancedView(): ReactElement {
   const { deleteCurrentAutomationWallet } = useAutomation()
-  const deleteWallet = () => {
-    deleteCurrentAutomationWallet()
-  }
 
   return (
     <div className={styles.advanced}>
       <Balance />
 
-      <Button onClick={() => deleteWallet()} className={styles.deleteBtn}>
+      <Button
+        onClick={() => deleteCurrentAutomationWallet()}
+        className={styles.deleteBtn}
+      >
         Delete Wallet
       </Button>
     </div>
