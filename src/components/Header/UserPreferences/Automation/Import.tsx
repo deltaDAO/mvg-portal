@@ -24,7 +24,7 @@ export default function Import(): ReactElement {
     return true
   }
 
-  const importToLocalStorage = async (target: EventTarget) => {
+  const importWalletFromFile = async (target: EventTarget) => {
     try {
       const file = (target as any).files[0]
       const reader = new FileReader()
@@ -58,7 +58,7 @@ export default function Import(): ReactElement {
             type="file"
             label="Select file to import"
             onChange={(e) => {
-              importToLocalStorage(e.target)
+              importWalletFromFile(e.target)
             }}
             className={styles.input}
           />
