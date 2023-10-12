@@ -31,7 +31,6 @@ export interface AutomationProviderValue {
   decryptPercentage: number
   updateBalance: () => Promise<void>
   setIsAutomationEnabled: (isEnabled: boolean) => void
-  exportAutomationWallet: (password: string) => Promise<void>
   deleteCurrentAutomationWallet: () => void
   importAutomationWallet: (encryptedJson: string) => Promise<boolean>
   hasValidEncryptedWallet: () => boolean
@@ -90,29 +89,6 @@ function AutomationProvider({ children }) {
         )}`
       )
   }, [isAutomationEnabled, autoWallet])
-
-  const exportAutomationWallet = useCallback(
-    async (password: string) => {
-      if (!autoWallet || !autoWallet) {
-        toast.error(`Automation wallet does not exist.`)
-        return
-      }
-      setIsLoading(true)
-
-      const encrypted = await autoWallet.encrypt(password)
-
-      const element = document.createElement('a')
-      const jsonFile = new Blob([encrypted], {
-        type: 'application/json'
-      })
-      element.href = URL.createObjectURL(jsonFile)
-      element.download = `account_export_${autoWallet.address}.json`
-      document.body.appendChild(element)
-      element.click()
-      setIsLoading(false)
-    },
-    [autoWallet]
-  )
 
   const updateBalance = useCallback(async () => {
     if (!autoWallet) return
@@ -246,7 +222,6 @@ function AutomationProvider({ children }) {
         decryptPercentage,
         setIsAutomationEnabled,
         updateBalance,
-        exportAutomationWallet,
         deleteCurrentAutomationWallet,
         importAutomationWallet,
         hasValidEncryptedWallet,

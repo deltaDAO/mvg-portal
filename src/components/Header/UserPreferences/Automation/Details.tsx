@@ -12,8 +12,7 @@ import Address from './Address'
 import Decrypt from './Decrypt'
 
 function AdvancedView(): ReactElement {
-  const { exportAutomationWallet, isLoading, deleteCurrentAutomationWallet } =
-    useAutomation()
+  const { deleteCurrentAutomationWallet } = useAutomation()
   const deleteWallet = () => {
     deleteCurrentAutomationWallet()
   }
@@ -21,17 +20,6 @@ function AdvancedView(): ReactElement {
   return (
     <div className={styles.advanced}>
       <Balance />
-
-      <Button
-        onClick={async () => {
-          const password = prompt('Enter your password:')
-          await exportAutomationWallet(password)
-        }}
-        className={styles.exportBtn}
-        disabled={isLoading}
-      >
-        {isLoading ? <Loader /> : `Export Wallet`}
-      </Button>
 
       <Button onClick={() => deleteWallet()} className={styles.deleteBtn}>
         Delete Wallet
