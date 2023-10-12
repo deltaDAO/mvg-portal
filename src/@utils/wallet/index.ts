@@ -176,25 +176,6 @@ export async function getTokenBalance(
   }
 }
 
-export async function getTokenAllowance(
-  owner: string,
-  spender: string,
-  decimals: number,
-  tokenAddress: string,
-  web3Provider: ethers.providers.Provider
-): Promise<string> {
-  if (!web3Provider || !owner || !spender || !tokenAddress) return
-
-  try {
-    const token = new Contract(tokenAddress, erc20ABI, web3Provider)
-    const allowance = await token.allowance(owner, spender)
-
-    return getAdjustDecimalsValue(allowance, decimals)
-  } catch (e) {
-    LoggerInstance.error(`ERROR: Failed to get the allowance: ${e.message}`)
-  }
-}
-
 export function getTokenBalanceFromSymbol(
   balance: UserBalance,
   symbol: string
