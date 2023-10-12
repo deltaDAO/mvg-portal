@@ -156,8 +156,10 @@ function AutomationProvider({ children }) {
       setAutomationWalletJSON(encryptedJson)
       return true
     } else {
-      toast.error('Could not import Wallet. JSON format invalid.')
-      LoggerInstance.error('Could not import Wallet. JSON format invalid.')
+      toast.error('Could not import Wallet. Invalid address.')
+      LoggerInstance.error(
+        '[AutomationProvider] Could not import Wallet. Invalid address.'
+      )
       return false
     }
   }
