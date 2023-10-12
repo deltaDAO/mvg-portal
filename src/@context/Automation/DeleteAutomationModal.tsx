@@ -15,17 +15,11 @@ export default function DeleteAutomationModal({
   setHasDeleteRequest: (hasDeleteRequest: boolean) => void
   onDeleteConfirm: () => void
 }): ReactElement {
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
-
-  useEffect(() => {
-    setIsModalOpen(hasDeleteRequest)
-  }, [hasDeleteRequest])
-
   return (
     <Modal
       title="Automation Wallet"
-      onToggleModal={() => setIsModalOpen(!isModalOpen)}
-      isOpen={isModalOpen}
+      onToggleModal={() => setHasDeleteRequest(!hasDeleteRequest)}
+      isOpen={hasDeleteRequest}
       className={styles.modal}
     >
       <div className={styles.modalContent}>
