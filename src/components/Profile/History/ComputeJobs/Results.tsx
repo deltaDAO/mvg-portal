@@ -104,7 +104,6 @@ export default function Results({
                     size="small"
                     className={styles.downloadButton}
                     onClick={() => {
-                      console.log({ job, auto: autoWallet?.address, accountId })
                       downloadResults(i)
                     }}
                     download

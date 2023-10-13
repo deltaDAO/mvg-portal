@@ -50,7 +50,7 @@ function getTabs(
   if (accountId === userAccountId || accountId === autoWalletAccountId) {
     defaultTabs.push(computeTab)
   }
-  console.log({ accountId, userAccountId, autoWalletAccountId })
+
   return defaultTabs
 }
 
