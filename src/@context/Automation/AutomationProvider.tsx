@@ -188,7 +188,7 @@ function AutomationProvider({ children }) {
         })
         setAutoWallet(connectedWallet)
         toast.success(
-          `Succesfully imported wallet ${connectedWallet.address} for automation.`
+          `Successfully imported wallet ${connectedWallet.address} for automation.`
         )
         return true
       } catch (e) {
