@@ -21,6 +21,11 @@ import { useMarketMetadata } from '../MarketMetadata'
 import DeleteAutomationModal from './DeleteAutomationModal'
 import useBalance from '../../@hooks/useBalance'
 
+export enum AUTOMATION_MODES {
+  SIMPLE = 'simple',
+  ADVANCED = 'advanced'
+}
+
 export interface NativeTokenBalance {
   symbol: string
   balance: string

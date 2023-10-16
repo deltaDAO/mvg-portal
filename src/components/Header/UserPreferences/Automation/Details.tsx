@@ -1,9 +1,11 @@
 import React, { ReactElement, useEffect, useState } from 'react'
-import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import {
+  AUTOMATION_MODES,
+  useAutomation
+} from '../../../../@context/Automation/AutomationProvider'
 import { useMarketMetadata } from '../../../../@context/MarketMetadata'
 import { useUserPreferences } from '../../../../@context/UserPreferences'
 import Button from '../../../@shared/atoms/Button'
-import { AUTOMATION_WALLET_MODES } from '../AutomationWalletMode'
 import Balance from './Balance'
 import styles from './Details.module.css'
 import Import from './Import'
@@ -117,7 +119,7 @@ export default function Details({
       {/* MAIN AUTOMATION SECTION */}
       {autoWallet && (
         <>
-          {automationWalletMode === AUTOMATION_WALLET_MODES.SIMPLE ? (
+          {automationWalletMode === AUTOMATION_MODES.SIMPLE ? (
             <SimpleView
               isFunded={isFunded}
               roughTxCountEstimate={roughTxCountEstimate}
