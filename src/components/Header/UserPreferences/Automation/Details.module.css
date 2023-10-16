@@ -1,0 +1,61 @@
+.details {
+  max-width: calc(var(--spacer) * 10);
+  padding: calc(var(--spacer) / 2);
+}
+
+.title {
+  font-size: var(--font-size-label);
+  font-weight: var(--font-weight-base);
+  margin-bottom: var(--spacer);
+}
+
+.help {
+  font-size: var(--font-size-small);
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.toggleBtn {
+  width: 100%;
+  margin-bottom: calc(var(--spacer) / 2);
+}
+
+.simple,
+.deleteBtn,
+.exportBtn {
+  margin: calc(var(--spacer) / 4) 0;
+  width: 100%;
+  text-align: center;
+}
+
+.deleteBtn {
+  background-color: var(--brand-alert-red);
+}
+
+.deleteBtn:hover,
+.deleteBtn:focus {
+  background-color: var(--brand-alert-red);
+}
+
+.deleteBtn *,
+.exportBtn * {
+  color: var(--brand-white) !important;
+}
+
+.simple > * {
+  width: 100%;
+}
+
+.simple .error,
+.simple .success {
+  display: block;
+  font-size: var(--font-size-base);
+  padding: calc(var(--spacer) / 4) 0;
+}
+
+.simple .error {
+  color: var(--brand-alert-red);
+}
+
+.simple .success {
+  color: var(--brand-alert-green);
+}

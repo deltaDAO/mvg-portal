@@ -58,6 +58,8 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
+import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import { Signer } from 'ethers'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -123,6 +125,16 @@ export default function Compute({
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
 
+  const { isAutomationEnabled, autoWallet } = useAutomation()
+
+  const [signerToUse, setSignerToUse] = useState<Signer>(signer)
+  const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
+
+  useEffect(() => {
+    setSignerToUse(isAutomationEnabled ? autoWallet : signer)
+    setAccountIdToUse(isAutomationEnabled ? autoWallet?.address : accountId)
+  }, [isAutomationEnabled, accountId, autoWallet, signer])
+
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
     isOrdering === true ||
@@ -140,8 +152,9 @@ export default function Compute({
     const datatokenInstance = new Datatoken(dummySigner)
     const dtBalance = await datatokenInstance.balance(
       asset?.services[0].datatokenAddress,
-      accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
+      accountIdToUse || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
     )
+
     setAlgorithmDTBalance(new Decimal(dtBalance).toString())
     const hasAlgoDt = Number(dtBalance) >= 1
     setHasAlgoAssetDatatoken(hasAlgoDt)
@@ -227,7 +240,7 @@ export default function Compute({
       const initializedProvider = await initializeProviderForCompute(
         asset,
         selectedAlgorithmAsset,
-        accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
+        accountIdToUse || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
         selectedComputeEnv
       )
 
@@ -330,6 +343,17 @@ export default function Compute({
           asset,
           newCancelToken()
         )
+        if (autoWallet) {
+          const autoComputeJobs = await getComputeJobs(
+            [asset?.chainId] || chainIds,
+            autoWallet?.address,
+            asset,
+            newCancelToken()
+          )
+          autoComputeJobs.computeJobs.forEach((job) => {
+            computeJobs.computeJobs.push(job)
+          })
+        }
         setJobs(computeJobs.computeJobs)
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
@@ -337,7 +361,7 @@ export default function Compute({
         setIsLoadingJobs(false)
       }
     },
-    [accountId, asset, chainIds, isLoadingJobs, newCancelToken]
+    [accountId, asset, chainIds, autoWallet, newCancelToken]
   )
 
   useEffect(() => {
@@ -402,10 +426,10 @@ export default function Compute({
       )
 
       const algorithmOrderTx = await handleComputeOrder(
-        signer,
+        signerToUse,
         selectedAlgorithmAsset,
         algoOrderPriceAndFees,
-        accountId,
+        accountIdToUse,
         initializedProviderResponse.algorithm,
         hasAlgoAssetDatatoken,
         selectedComputeEnv.consumerAddress
@@ -421,10 +445,10 @@ export default function Compute({
       )
 
       const datasetOrderTx = await handleComputeOrder(
-        signer,
+        signerToUse,
         asset,
         datasetOrderPriceAndFees,
-        accountId,
+        accountIdToUse,
         initializedProviderResponse.datasets[0],
         hasDatatoken,
         selectedComputeEnv.consumerAddress
@@ -446,7 +470,7 @@ export default function Compute({
       setComputeStatusText(getComputeFeedback()[4])
       const response = await ProviderInstance.computeStart(
         asset.services[0].serviceEndpoint,
-        signer,
+        signerToUse,
         selectedComputeEnv?.id,
         computeAsset,
         computeAlgorithm,

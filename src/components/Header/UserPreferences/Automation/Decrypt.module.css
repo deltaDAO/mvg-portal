@@ -1,0 +1,29 @@
+.wrapper {
+  width: 100%;
+}
+
+.warning {
+  font-size: var(--font-size-label);
+  color: var(--brand-alert-red);
+}
+
+.button {
+  width: 100%;
+}
+
+.form {
+  display: flex;
+}
+
+.form > * {
+  margin: 0;
+}
+
+.form > button {
+  margin-left: calc(var(--spacer) / 4);
+  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+}
+
+.help {
+  font-size: var(--font-size-small);
+}

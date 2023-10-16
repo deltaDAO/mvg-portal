@@ -55,6 +55,12 @@ const OpcsApprovedTokensQuery = gql`
   }
 `
 
+export const tokenAddressesEUROe = {
+  100: '0xe974c4894996e012399dedbda0be7314a73bbff1',
+  137: '0x820802Fa8a99901F52e39acD21177b0BE6EE2974',
+  80001: '0xA089a21902914C3f3325dBE2334E9B466071E5f1'
+}
+
 export function getSubgraphUri(chainId: number): string {
   const config = getOceanConfig(chainId)
   return config.subgraphUri
@@ -163,12 +169,6 @@ export async function getOpcsApprovedTokens(
   chainId: number
 ): Promise<TokenInfo[]> {
   const context = getQueryContext(chainId)
-
-  const tokenAddressesEUROe = {
-    100: '0xe974c4894996e012399dedbda0be7314a73bbff1',
-    137: '0x820802Fa8a99901F52e39acD21177b0BE6EE2974',
-    80001: '0xA089a21902914C3f3325dBE2334E9B466071E5f1'
-  }
 
   try {
     const response = await fetchData(OpcsApprovedTokensQuery, null, context)
