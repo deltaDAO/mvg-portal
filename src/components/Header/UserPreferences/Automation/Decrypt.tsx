@@ -32,8 +32,8 @@ export default function Decrypt(): ReactElement {
             onSubmit={async (e) => {
               e.preventDefault()
               decryptToastRef.current = toast.info(`Decrypting Wallet...`)
-              await decryptAutomationWallet(passwordInputRef.current.value)
-              setIsAutomationEnabled(true)
+              if (await decryptAutomationWallet(passwordInputRef.current.value))
+                setIsAutomationEnabled(true)
               toast.done(decryptToastRef.current)
             }}
             className={styles.form}
