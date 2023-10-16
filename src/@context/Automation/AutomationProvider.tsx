@@ -7,12 +7,7 @@ import React, {
   useEffect,
   useState
 } from 'react'
-import {
-  useAccount,
-  useChainId,
-  useProvider,
-  useBalance as useWagmiBalance
-} from 'wagmi'
+import { useProvider, useBalance as useWagmiBalance } from 'wagmi'
 import { accountTruncate } from '../../@utils/wallet'
 import { useUserPreferences } from '../UserPreferences'
 import { toast } from 'react-toastify'
@@ -54,10 +49,8 @@ const AutomationContext = createContext({} as AutomationProviderValue)
 
 // Provider
 function AutomationProvider({ children }) {
-  const { address } = useAccount()
   const { getApprovedTokenBalances } = useBalance()
   const { approvedBaseTokens } = useMarketMetadata()
-  const chainId = useChainId()
   const { automationWalletJSON, setAutomationWalletJSON } = useUserPreferences()
 
   const [autoWallet, setAutoWallet] = useState<Wallet>()
@@ -65,7 +58,6 @@ function AutomationProvider({ children }) {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [autoWalletAddress, setAutoWalletAddress] = useState<string>()
   const [decryptPercentage, setDecryptPercentage] = useState<number>()
-
   const [hasValidEncryptedWallet, setHasValidEncryptedWallet] =
     useState<boolean>()
 
