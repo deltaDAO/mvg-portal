@@ -127,6 +127,14 @@ export default function Compute({
 
   const { isAutomationEnabled, autoWallet } = useAutomation()
 
+  const [signerToUse, setSignerToUse] = useState<Signer>(signer)
+  const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
+
+  useEffect(() => {
+    setSignerToUse(isAutomationEnabled ? autoWallet : signer)
+    setAccountIdToUse(isAutomationEnabled ? autoWallet?.address : accountId)
+  }, [isAutomationEnabled, accountId, autoWallet, signer])
+
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
     isOrdering === true ||
@@ -144,7 +152,7 @@ export default function Compute({
     const datatokenInstance = new Datatoken(dummySigner)
     const dtBalance = await datatokenInstance.balance(
       asset?.services[0].datatokenAddress,
-      isAutomationEnabled ? autoWallet?.address : accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
+      accountIdToUse || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
     )
 
     setAlgorithmDTBalance(new Decimal(dtBalance).toString())
@@ -232,7 +240,7 @@ export default function Compute({
       const initializedProvider = await initializeProviderForCompute(
         asset,
         selectedAlgorithmAsset,
-        isAutomationEnabled ? autoWallet?.address : accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
+        accountIdToUse || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
         selectedComputeEnv
       )
 
@@ -417,13 +425,11 @@ export default function Compute({
         )[selectedAlgorithmAsset.accessDetails?.type === 'fixed' ? 2 : 3]
       )
 
-      const signerToUse: Signer = isAutomationEnabled ? autoWallet : signer
-
       const algorithmOrderTx = await handleComputeOrder(
         signerToUse,
         selectedAlgorithmAsset,
         algoOrderPriceAndFees,
-        isAutomationEnabled ? autoWallet?.address : accountId,
+        accountIdToUse,
         initializedProviderResponse.algorithm,
         hasAlgoAssetDatatoken,
         selectedComputeEnv.consumerAddress
@@ -442,7 +448,7 @@ export default function Compute({
         signerToUse,
         asset,
         datasetOrderPriceAndFees,
-        isAutomationEnabled ? autoWallet?.address : accountId,
+        accountIdToUse,
         initializedProviderResponse.datasets[0],
         hasDatatoken,
         selectedComputeEnv.consumerAddress
