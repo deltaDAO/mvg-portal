@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement } from 'react'
 import Modal from '../../components/@shared/atoms/Modal'
 import styles from './DeleteAutomationModal.module.css'
 import Button from '../../components/@shared/atoms/Button'
