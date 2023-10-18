@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+.automation svg {
+  display: inline;
+}
+
 .sendMessage {
   display: flex;
   position: justify-end;

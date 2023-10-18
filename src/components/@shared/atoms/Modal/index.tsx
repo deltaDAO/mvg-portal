@@ -14,12 +14,13 @@ export default function Modal({
   title,
   onToggleModal,
   children,
+  className,
   ...props
 }: ModalProps): ReactElement {
   return (
     <ReactModal
       contentLabel={title}
-      className={styles.modal}
+      className={`${styles.modal} ${className}`}
       overlayClassName={styles.modalOverlay}
       {...props}
     >

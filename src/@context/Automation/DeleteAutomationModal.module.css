@@ -1,0 +1,21 @@
+.modal {
+  padding: calc(var(--spacer) / 2) var(--spacer);
+}
+
+.modalActions {
+  display: flex;
+  justify-content: space-between;
+  margin: calc(var(--spacer) / 2) 0;
+}
+
+.modalCancelBtn {
+  background-color: var(--brand-alert-red);
+}
+
+.modalConfirmBtn {
+  background-color: var(--brand-alert-green);
+}
+
+.modalHighlight {
+  color: var(--brand-alert-red);
+}
