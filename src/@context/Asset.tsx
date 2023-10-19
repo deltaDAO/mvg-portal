@@ -24,6 +24,7 @@ import {
   verifyRawServiceCredential
 } from '@components/Publish/_utils'
 import { useAccount, useNetwork } from 'wagmi'
+import { useAutomation } from './Automation/AutomationProvider'
 
 export interface AssetProviderValue {
   isInPurgatory: boolean
@@ -56,6 +57,7 @@ function AssetProvider({
 }): ReactElement {
   const { appConfig } = useMarketMetadata()
   const { address: accountId } = useAccount()
+  const { autoWallet, isAutomationEnabled } = useAutomation()
   const { chain } = useNetwork()
 
   const { isDDOWhitelisted } = useAddressConfig()
@@ -155,18 +157,30 @@ function AssetProvider({
   const fetchAccessDetails = useCallback(async (): Promise<void> => {
     if (!asset?.chainId || !asset?.services?.length) return
 
+    const accountIdToCheck =
+      isAutomationEnabled && autoWallet?.address
+        ? autoWallet.address
+        : accountId
+
     const accessDetails = await getAccessDetails(
       asset.chainId,
       asset.services[0].datatokenAddress,
       asset.services[0].timeout,
-      accountId
+      accountIdToCheck
     )
     setAsset((prevState) => ({
       ...prevState,
       accessDetails
     }))
     LoggerInstance.log(`[asset] Got access details for ${did}`, accessDetails)
-  }, [asset?.chainId, asset?.services, accountId, did])
+  }, [
+    asset?.chainId,
+    asset?.services,
+    accountId,
+    did,
+    autoWallet?.address,
+    isAutomationEnabled
+  ])
 
   // -----------------------------------
   // Helper: Get and set asset Service Credential state
