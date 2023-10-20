@@ -10,7 +10,7 @@ const chains = [
     isDefault: true,
     metadataCacheUri: 'https://aquarius510.v4.delta-dao.com',
     nodeUri: 'https://rpc.genx.minimal-gaia-x.eu',
-    providerUri: 'https://provider.v4.delta-dao.com',
+    providerUri: 'https://provider.v4.genx.delta-dao.com',
     subgraphUri: 'https://subgraph.v4.genx.minimal-gaia-x.eu',
     explorerUri: 'https://explorer.pontus-x.eu',
     oceanTokenAddress: '0x0995527d3473b3a98c471f1ed8787acd77fbf009',
