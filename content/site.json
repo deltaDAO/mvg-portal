@@ -1,7 +1,7 @@
 {
   "siteTitle": "Pontus-X - Gaia-X Web3 Ecosystem",
   "siteTagline": "A platform to find, publish and consume Service Offerings in the Gaia-X Test Network.",
-  "siteUrl": "https://portal.minimal-gaia-x.eu",
+  "siteUrl": "https://portal.pontus-x.eu",
   "siteImage": "/share.png",
   "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
   "menu": [
@@ -68,7 +68,7 @@
     }
   ],
   "announcement": "",
-  "devPreviewAnnouncement": "You are visiting the Pontus-X Developer Preview. Please note that some functionalities are in beta and may not work as expected. Visit the [Pontus-X portal](https://pontus-x.eu) instead.",
+  "devPreviewAnnouncement": "You are visiting the SITE-TITLE-PLACEHOLDER Developer Preview. Please note that some functionalities are in beta and may not work as expected. Visit the [SITE-TITLE-PLACEHOLDER portal](SITE-LINK-PLACEHOLDER) instead.",
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
   },
