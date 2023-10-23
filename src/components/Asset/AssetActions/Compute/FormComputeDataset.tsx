@@ -359,6 +359,7 @@ export default function FormStartCompute({
       <Field
         {...content.form.termsAndConditions}
         component={Input}
+        disabled={isLoading}
         onChange={() =>
           setTermsAndConditions((termsAndConditions) => !termsAndConditions)
         }
