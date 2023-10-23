@@ -25,7 +25,7 @@ import { useIsMounted } from '@hooks/useIsMounted'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import Alert from '@shared/atoms/Alert'
 import Loader from '@shared/atoms/Loader'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters, {
   parseConsumerParameterValues
@@ -38,6 +38,8 @@ import { useAutomation } from '../../../../@context/Automation/AutomationProvide
 import { Signer } from 'ethers'
 
 export default function Download({
+  accountId,
+  signer,
   asset,
   file,
   isBalanceSufficient,
@@ -46,6 +48,8 @@ export default function Download({
   fileIsLoading,
   consumableFeedback
 }: {
+  accountId: string
+  signer: Signer
   asset: AssetExtended
   file: FileInfo
   isBalanceSufficient: boolean
@@ -54,8 +58,7 @@ export default function Download({
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
-  const { address: accountId, isConnected } = useAccount()
-  const { data: signer } = useSigner()
+  const { isConnected } = useAccount()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { getOpcFeeForToken } = useMarketMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
@@ -106,7 +109,7 @@ export default function Download({
 
         const _orderPriceAndFees = await getOrderPriceAndFees(
           asset,
-          ZERO_ADDRESS
+          accountId || ZERO_ADDRESS
         )
         setOrderPriceAndFees(_orderPriceAndFees)
         !orderPriceAndFees && setIsPriceLoading(false)
@@ -173,8 +176,6 @@ export default function Download({
     setIsLoading(true)
     setRetry(false)
     try {
-      const signerToUse: Signer = isAutomationEnabled ? autoWallet : signer
-
       if (isOwned) {
         setStatusText(
           getOrderFeedback(
@@ -183,13 +184,7 @@ export default function Download({
           )[3]
         )
 
-        await downloadFile(
-          signerToUse,
-          asset,
-          accountId,
-          validOrderTx,
-          dataParams
-        )
+        await downloadFile(signer, asset, accountId, validOrderTx, dataParams)
       } else {
         setStatusText(
           getOrderFeedback(
@@ -199,7 +194,7 @@ export default function Download({
         )
 
         const orderTx = await order(
-          signerToUse,
+          signer,
           asset,
           orderPriceAndFees,
           accountId,
