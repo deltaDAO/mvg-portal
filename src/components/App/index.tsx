@@ -20,14 +20,19 @@ export default function App({
   const { address } = useAccount()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(address)
 
+  const devPreviewAnnouncementText =
+    siteContent?.devPreviewAnnouncement
+      ?.replaceAll('SITE-TITLE-PLACEHOLDER', siteContent.siteTitle)
+      ?.replaceAll('SITE-LINK-PLACEHOLDER', siteContent.siteUrl) || ''
+
   return (
     <div className={styles.app}>
       {siteContent?.announcement !== '' && (
         <AnnouncementBanner text={siteContent?.announcement} />
       )}
       {appConfig.showPreviewAlert === 'true' &&
-        siteContent?.devPreviewAnnouncement !== '' && (
-          <AnnouncementBanner text={siteContent?.devPreviewAnnouncement} />
+        devPreviewAnnouncementText !== '' && (
+          <AnnouncementBanner text={devPreviewAnnouncementText} />
         )}
       <Header />
 

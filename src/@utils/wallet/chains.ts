@@ -17,7 +17,7 @@ export const genx = {
   blockExplorers: {
     default: {
       name: 'GEN-X Testnet Explorer',
-      url: 'https://explorer.genx.minimal-gaia-x.eu'
+      url: 'https://explorer.pontus-x.eu'
     }
   }
 } as Chain
