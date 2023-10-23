@@ -105,6 +105,7 @@ export default function AssetActions({
 
         setFileIsLoading(false)
       } catch (error) {
+        setFileIsLoading(false)
         LoggerInstance.error(error.message)
       }
     }

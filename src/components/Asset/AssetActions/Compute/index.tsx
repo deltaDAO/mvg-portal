@@ -14,6 +14,7 @@ import {
   ProviderComputeInitializeResults,
   unitsToAmount,
   ProviderFees,
+  AssetPrice,
   UserCustomParameters,
   getErrorMessage
 } from '@oceanprotocol/lib'
@@ -44,7 +45,10 @@ import ComputeJobs from '../../../Profile/History/ComputeJobs'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { Decimal } from 'decimal.js'
 import { useAbortController } from '@hooks/useAbortController'
-import { getOrderPriceAndFees } from '@utils/accessDetailsAndPricing'
+import {
+  getAvailablePrice,
+  getOrderPriceAndFees
+} from '@utils/accessDetailsAndPricing'
 import { handleComputeOrder } from '@utils/order'
 import { getComputeFeedback } from '@utils/feedback'
 import {
@@ -134,6 +138,8 @@ export default function Compute({
     setSignerToUse(isAutomationEnabled ? autoWallet : signer)
     setAccountIdToUse(isAutomationEnabled ? autoWallet?.address : accountId)
   }, [isAutomationEnabled, accountId, autoWallet, signer])
+
+  const price: AssetPrice = getAvailablePrice(asset)
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
@@ -485,7 +491,7 @@ export default function Compute({
       setRefetchJobs(!refetchJobs)
       initPriceAndFees()
     } catch (error) {
-      const message = getErrorMessage(JSON.parse(error.message))
+      const message = getErrorMessage(error.message)
       LoggerInstance.error('[Compute] Error:', message)
       setError(message)
       setRetry(true)
@@ -531,7 +537,7 @@ export default function Compute({
           />
         ) : (
           <Price
-            price={asset.stats?.price}
+            price={price}
             orderPriceAndFees={datasetOrderPriceAndFees}
             size="large"
           />

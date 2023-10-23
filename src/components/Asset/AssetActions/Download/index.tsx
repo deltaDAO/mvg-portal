@@ -4,9 +4,10 @@ import Price from '@shared/Price'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '../ButtonBuy'
 import { secondsToString } from '@utils/ddo'
-import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import styles from './index.module.css'
+import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import {
+  AssetPrice,
   FileInfo,
   LoggerInstance,
   UserCustomParameters,
@@ -15,7 +16,10 @@ import {
 import { order } from '@utils/order'
 import { downloadFile } from '@utils/provider'
 import { getOrderFeedback } from '@utils/feedback'
-import { getOrderPriceAndFees } from '@utils/accessDetailsAndPricing'
+import {
+  getAvailablePrice,
+  getOrderPriceAndFees
+} from '@utils/accessDetailsAndPricing'
 import { toast } from 'react-toastify'
 import { useIsMounted } from '@hooks/useIsMounted'
 import { useMarketMetadata } from '@context/MarketMetadata'
@@ -71,10 +75,10 @@ export default function Download({
 
   const { isAutomationEnabled, autoWallet } = useAutomation()
 
+  const price: AssetPrice = getAvailablePrice(asset)
   const isUnsupportedPricing =
     !asset?.accessDetails ||
     !asset.services.length ||
-    asset?.stats?.price?.value === undefined ||
     asset?.accessDetails?.type === 'NOT_SUPPORTED' ||
     (asset?.accessDetails?.type === 'fixed' &&
       !asset?.accessDetails?.baseToken?.symbol)
@@ -268,7 +272,7 @@ export default function Download({
                   <Loader message="Calculating full price (including fees)" />
                 ) : (
                   <Price
-                    price={asset.stats?.price}
+                    price={price}
                     orderPriceAndFees={orderPriceAndFees}
                     size="large"
                   />
