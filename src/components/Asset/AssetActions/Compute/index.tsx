@@ -523,7 +523,12 @@ export default function Compute({
           isUnsupportedPricing ? styles.warning : null
         }`}
       >
-        <FileIcon file={file} isLoading={fileIsLoading} small />
+        <FileIcon
+          file={file}
+          isAccountWhitelisted={isAccountIdWhitelisted}
+          isLoading={fileIsLoading}
+          small
+        />
         {isUnsupportedPricing ? (
           <Alert
             text={`No pricing schema available for this asset.`}

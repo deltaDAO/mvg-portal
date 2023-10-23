@@ -307,7 +307,12 @@ export default function Download({
         <aside className={styles.consume}>
           <div className={styles.info}>
             <div className={styles.filewrapper}>
-              <FileIcon file={file} isLoading={fileIsLoading} small />
+              <FileIcon
+                file={file}
+                isAccountWhitelisted={isAccountIdWhitelisted}
+                isLoading={fileIsLoading}
+                small
+              />
             </div>
             <AssetAction asset={asset} />
           </div>
