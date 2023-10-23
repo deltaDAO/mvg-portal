@@ -36,3 +36,7 @@
   margin-left: auto;
   margin-right: auto;
 }
+
+.confettiContainer {
+  margin-top: calc(var(--spacer) / 2);
+}

@@ -34,8 +34,8 @@ import { Form, Formik, useFormikContext } from 'formik'
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
 import WhitelistIndicator from '../Compute/WhitelistIndicator'
-import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import { Signer } from 'ethers'
+import SuccessConfetti from '@components/@shared/SuccessConfetti'
 
 export default function Download({
   accountId,
@@ -75,8 +75,6 @@ export default function Download({
   const [orderPriceAndFees, setOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
-
-  const { isAutomationEnabled, autoWallet } = useAutomation()
 
   const price: AssetPrice = getAvailablePrice(asset)
   const isUnsupportedPricing =
@@ -316,6 +314,13 @@ export default function Download({
             </div>
             <AssetAction asset={asset} />
           </div>
+          {isOwned && (
+            <div className={styles.confettiContainer}>
+              <SuccessConfetti
+                success={`You successfully bought this ${asset.metadata.type} and are now able to download it.`}
+              />
+            </div>
+          )}
           {asset?.metadata?.type === 'algorithm' && (
             <AlgorithmDatasetsListForCompute
               algorithmDid={asset.id}
