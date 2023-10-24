@@ -1,4 +1,3 @@
-import React from 'react'
 import Button from '@components/@shared/atoms/Button'
 import styles from './Option.module.css'
 

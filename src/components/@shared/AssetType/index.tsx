@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './index.module.css'
 import Compute from '@images/compute.svg'
 import Download from '@images/download.svg'

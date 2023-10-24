@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '../_types'
 import FormHelp from '@shared/FormInput/Help'

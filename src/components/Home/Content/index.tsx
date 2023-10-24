@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './index.module.css'
 import classNames from 'classnames/bind'
 import content from '../../../../content/pages/home/content.json'

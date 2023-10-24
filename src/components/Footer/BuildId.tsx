@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import repoMetadata from '../../../content/repo-metadata.json'
 import styles from './BuildId.module.css'
 

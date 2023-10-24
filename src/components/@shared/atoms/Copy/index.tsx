@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import IconCopy from '@images/copy.svg'
 import Clipboard from 'react-clipboard.js'

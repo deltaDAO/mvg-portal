@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import ReactModal from 'react-modal'
 import styles from './index.module.css'
 

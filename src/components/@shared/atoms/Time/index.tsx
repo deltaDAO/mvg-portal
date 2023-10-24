@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { format, formatDistance } from 'date-fns'
 
 export interface TimeProps {

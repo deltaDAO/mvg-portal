@@ -5,7 +5,7 @@ import {
   LoggerInstance,
   Provider
 } from '@oceanprotocol/lib'
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { ListItem } from '@shared/atoms/Lists'
 import Button from '@shared/atoms/Button'
 import styles from './Results.module.css'

@@ -1,7 +1,6 @@
 import testRender from '../../../../.jest/testRender'
 import { FileInfo } from '@oceanprotocol/lib'
 import { render } from '@testing-library/react'
-import React from 'react'
 import FileIcon from './index'
 
 describe('@shared/FileIcon', () => {

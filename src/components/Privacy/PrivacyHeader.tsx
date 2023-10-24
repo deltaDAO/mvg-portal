@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Time from '@shared/atoms/Time'
 import { usePrivacyMetadata } from '@hooks/usePrivacyMetadata'
 import PrivacyLanguages from './PrivacyLanguages'

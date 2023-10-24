@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import NetworkItem from './NetworkItem'
 import styles from './NetworksList.module.css'
 

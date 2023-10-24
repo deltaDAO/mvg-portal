@@ -1,4 +1,3 @@
-import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import { TippyProps } from '@tippyjs/react'
 import Tooltip from '@shared/atoms/Tooltip'

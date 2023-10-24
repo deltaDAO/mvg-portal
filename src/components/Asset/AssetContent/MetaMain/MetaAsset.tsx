@@ -3,7 +3,7 @@ import { Asset } from '@oceanprotocol/lib'
 import AddToken from '@shared/AddToken'
 import ExplorerLink from '@shared/ExplorerLink'
 import Publisher from '@shared/Publisher'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { useAccount } from 'wagmi'
 import styles from './MetaAsset.module.css'
 

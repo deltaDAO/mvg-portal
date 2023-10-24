@@ -1,5 +1,5 @@
 import { Field, useField, useFormikContext } from 'formik'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Input from '@shared/FormInput'
 import Error from '@shared/FormInput/Error'
 import styles from './Price.module.css'

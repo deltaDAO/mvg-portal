@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { getAssetsNames } from '@utils/aquarius'
 import styles from './index.module.css'
 import axios from 'axios'

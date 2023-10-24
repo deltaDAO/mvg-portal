@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import Button from '../../../@shared/atoms/Button'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import Loader from '../../../@shared/atoms/Loader'

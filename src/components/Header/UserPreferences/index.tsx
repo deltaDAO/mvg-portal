@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Tooltip from '@shared/atoms/Tooltip'
 import Cog from '@images/cog.svg'
 import styles from './index.module.css'

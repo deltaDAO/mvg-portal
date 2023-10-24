@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import LogoAsset from '@images/brand-logo.svg'
 import styles from './index.module.css'
 

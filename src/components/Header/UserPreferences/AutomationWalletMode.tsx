@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ReactElement } from 'react'
+import { ChangeEvent, ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import Input from '@shared/FormInput'
 import { AUTOMATION_MODES } from '../../../@context/Automation/AutomationProvider'

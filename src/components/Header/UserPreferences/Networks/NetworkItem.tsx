@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ReactElement } from 'react'
+import { ChangeEvent, ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import { removeItemFromArray } from '@utils/index'
 import NetworkName from '@shared/NetworkName'

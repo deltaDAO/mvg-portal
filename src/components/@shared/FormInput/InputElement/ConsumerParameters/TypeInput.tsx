@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Input, { InputProps } from '../..'
 import { Field, useField, useFormikContext } from 'formik'
 import {

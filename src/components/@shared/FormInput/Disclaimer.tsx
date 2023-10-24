@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './Disclaimer.module.css'
 import classNames from 'classnames/bind'
 import Alert from '@shared/atoms/Alert'

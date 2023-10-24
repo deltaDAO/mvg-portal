@@ -1,4 +1,3 @@
-import React from 'react'
 import styles from './ComputeEnvDetails.module.css'
 import CPU from '@images/cpu.svg'
 import GPU from '@images/gpu.svg'

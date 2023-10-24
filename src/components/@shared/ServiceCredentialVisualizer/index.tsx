@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Copy from '../atoms/Copy'
 import Markdown from '../Markdown'
 import VerifiedBadge from '../VerifiedBadge'

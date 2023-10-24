@@ -1,6 +1,6 @@
-import React, { SVGProps } from 'react'
+import { forwardRef, SVGProps } from 'react'
 
-const SvgrMock = React.forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
+const SvgrMock = forwardRef<SVGSVGElement, SVGProps<SVGSVGElement>>(
   (props, ref) => <svg ref={ref} {...props} />
 )
 

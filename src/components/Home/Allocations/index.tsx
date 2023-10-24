@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { AssetWithOwnAllocation, getOwnAllocations } from '@utils/veAllocation'
 import styles from './index.module.css'
 import {

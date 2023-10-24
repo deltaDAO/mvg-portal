@@ -1,5 +1,5 @@
 import { useUserPreferences } from '@context/UserPreferences'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './Bookmark.module.css'
 import BookmarkIcon from '@images/bookmark.svg'
 

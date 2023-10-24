@@ -1,4 +1,4 @@
-import React, { ReactNode, FormEvent, ReactElement } from 'react'
+import { ReactNode, FormEvent, ReactElement } from 'react'
 import Link from 'next/link'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'

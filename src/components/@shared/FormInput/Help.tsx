@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './Help.module.css'
 import Markdown from '@shared/Markdown'
 

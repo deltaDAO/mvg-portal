@@ -1,5 +1,5 @@
 import { useUserPreferences } from '@context/UserPreferences'
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import Tags from '@shared/atoms/Tags'
 import { getTopTags } from './_utils'

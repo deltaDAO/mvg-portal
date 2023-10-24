@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import ExplorerLink from '@shared/ExplorerLink'
 import NetworkName from '@shared/NetworkName'

@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ReactElement, useEffect, useState } from 'react'
+import { ChangeEvent, ReactElement, useEffect, useState } from 'react'
 import { CookieConsentStatus, useConsent } from '@context/CookieConsent'
 import InputElement from '@shared/FormInput/InputElement'
 import Markdown from '@shared/Markdown'

@@ -1,5 +1,5 @@
 import { Asset, Metadata, Service } from '@oceanprotocol/lib'
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { MetadataEditForm } from './_types'
 import { mapTimeoutStringToSeconds, previewDebugPatch } from '@utils/ddo'

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Label from '@shared/FormInput/Label'
 import FormHelp from '@shared/FormInput/Help'
 import Tooltip from '@shared/atoms/Tooltip'

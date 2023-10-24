@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Page from '@shared/Page'
 import fishfail from '@images/fishfail.gif'
 import Head from 'next/head'

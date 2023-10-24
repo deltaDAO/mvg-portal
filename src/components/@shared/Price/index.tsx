@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { AssetPrice } from '@oceanprotocol/lib'
 import PriceUnit from './PriceUnit'
 

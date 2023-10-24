@@ -1,4 +1,4 @@
-import React, { ReactElement, ChangeEvent } from 'react'
+import { ReactElement, ChangeEvent } from 'react'
 import { DarkMode } from '@oceanprotocol/use-dark-mode'
 import FormHelp from '@shared/FormInput/Help'
 import Label from '@shared/FormInput/Label'

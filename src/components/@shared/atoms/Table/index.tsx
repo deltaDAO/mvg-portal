@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import DataTable, { TableProps, TableColumn } from 'react-data-table-component'
 import Loader from '../Loader'
 import Pagination from '@shared/Pagination'

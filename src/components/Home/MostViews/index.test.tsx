@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import React from 'react'
 import MostViews from '.'
 import axios from 'axios'
 import { queryMetadata } from '@utils/aquarius'

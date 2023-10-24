@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import FormHelp from '@shared/FormInput/Help'
 import Price from './Price'
 import Fees from './Fees'
