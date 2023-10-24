@@ -18,7 +18,7 @@ export default function ComputeEnvSelection({
   ...props
 }: {
   computeEnvs: ComputeEnvironmentExtended[]
-  selected: string
+  selected?: string
   disabled?: boolean
 }): JSX.Element {
   const { approvedBaseTokens } = useMarketMetadata()
@@ -40,7 +40,7 @@ export default function ComputeEnvSelection({
                 id={slugify(env.id)}
                 className={`${assetSelectionStyles.input} ${assetSelectionStyles.radio}`}
                 {...props}
-                checked={env.id === selected}
+                checked={selected && env.id === selected}
                 type="radio"
                 value={env.id}
               />

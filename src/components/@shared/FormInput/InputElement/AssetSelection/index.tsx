@@ -36,7 +36,7 @@ export default function AssetSelection({
   ...props
 }: {
   assets: AssetSelectionAsset[]
-  selected: string
+  selected?: string
   multiple?: boolean
   disabled?: boolean
   accountId?: string
@@ -88,7 +88,7 @@ export default function AssetSelection({
                   id={slugify(asset.did)}
                   className={styleClassesInput}
                   {...props}
-                  checked={asset.did === selected}
+                  checked={selected && asset.did === selected}
                   defaultChecked={asset.checked}
                   disabled={disabled || !asset.isAccountIdWhitelisted}
                   type={multiple ? 'checkbox' : 'radio'}

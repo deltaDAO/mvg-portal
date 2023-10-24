@@ -72,7 +72,6 @@ const InputElement = forwardRef(
       prefixes,
       postfixes,
       actions,
-      selected,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -180,7 +179,6 @@ const InputElement = forwardRef(
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
             accountId={accountId}
-            selected={selected}
             {...field}
             {...props}
           />
@@ -190,7 +188,6 @@ const InputElement = forwardRef(
         return (
           <ComputeEnvSelection
             computeEnvs={options as ComputeEnvironmentExtended[]}
-            selected={selected}
             {...field}
             {...props}
           />
@@ -200,7 +197,6 @@ const InputElement = forwardRef(
         return (
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
-            selected={selected}
             multiple
             {...field}
             {...props}
