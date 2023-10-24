@@ -79,6 +79,7 @@ export interface InputProps {
   disclaimerValues?: string[]
   accountId?: string
   actions?: string[]
+  selected?: string
 }
 
 function checkError(
