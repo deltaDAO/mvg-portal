@@ -111,6 +111,7 @@ export default function Edit({
         links: linksTransformed,
         author: values.author,
         tags: values.tags,
+        license: values.license,
         additionalInformation: {
           ...asset.metadata?.additionalInformation,
           gaiaXInformation: values.gaiaXInformation
@@ -207,7 +208,7 @@ export default function Edit({
       // const setMetadataTx = await setNftMetadata(
       //   updatedAsset,
       //   accountId,
-      //   web3,
+      //   signer,
       //   newAbortController()
       // )
 
