@@ -159,6 +159,7 @@ export default function VerifyPage({
               copyText={
                 serviceCredential && JSON.stringify(serviceCredential, null, 2)
               }
+              defaultExpanded
             />
           </div>
         )
