@@ -33,8 +33,7 @@ export default function ComputeEnvDetails({
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h4 className={styles.title}>{id}</h4>
-          {desc && <p className={styles.description}>{desc}</p>}
+          <h4 className={styles.title}>{desc || id}</h4>
         </div>
         {gpuNumber > 0 ? <GPU /> : <CPU />}
       </div>

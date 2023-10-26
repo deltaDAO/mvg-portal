@@ -39,10 +39,6 @@
   font-weight: var(--font-weight-bold);
 }
 
-.description {
-  margin-bottom: 0 !important;
-}
-
 .details {
   display: grid;
   grid-template-columns: 1fr 1fr;

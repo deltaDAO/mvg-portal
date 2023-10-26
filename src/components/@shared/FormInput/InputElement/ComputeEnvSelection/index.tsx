@@ -13,10 +13,12 @@ import ComputeEnvDetails from './ComputeEnvDetails'
 
 export default function ComputeEnvSelection({
   computeEnvs,
+  selected,
   disabled,
   ...props
 }: {
   computeEnvs: ComputeEnvironmentExtended[]
+  selected?: string
   disabled?: boolean
 }): JSX.Element {
   const { approvedBaseTokens } = useMarketMetadata()
@@ -38,17 +40,18 @@ export default function ComputeEnvSelection({
                 id={slugify(env.id)}
                 className={`${assetSelectionStyles.input} ${assetSelectionStyles.radio}`}
                 {...props}
+                checked={selected && env.id === selected}
                 type="radio"
                 value={env.id}
               />
               <label
                 className={assetSelectionStyles.label}
-                htmlFor={slugify(env.id)}
-                title={env.id}
+                htmlFor={slugify(env.desc || env.id)}
+                title={env.desc || env.id}
               >
                 <h3 className={assetSelectionStyles.title}>
                   <Dotdotdot clamp={1} tagName="span">
-                    {env.id}
+                    {env.desc || env.id}
                   </Dotdotdot>
                   <Tooltip content={<ComputeEnvDetails computeEnv={env} />} />
                 </h3>

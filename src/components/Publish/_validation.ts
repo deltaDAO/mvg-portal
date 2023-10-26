@@ -24,6 +24,18 @@ const validationMetadata = {
     )
     .required('Required'),
   tags: Yup.array<string[]>().nullable(),
+  dockerImage: Yup.string().when('type', {
+    is: 'algorithm',
+    then: Yup.string().required('Required')
+  }),
+  dockerImageCustomChecksum: Yup.string().when('type', {
+    is: 'algorithm',
+    then: Yup.string().required('Required')
+  }),
+  dockerImageCustomEntrypoint: Yup.string().when('type', {
+    is: 'algorithm',
+    then: Yup.string().required('Required')
+  }),
   termsAndConditions: Yup.boolean()
     .required('Required')
     .isTrue('Please agree to the Terms and Conditions.'),

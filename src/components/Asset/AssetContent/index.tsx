@@ -101,6 +101,7 @@ export default function AssetContent({
                       serviceCredential &&
                       JSON.stringify(serviceCredential, null, 2)
                     }
+                    collapsible
                   />
                 )}
                 <MetaSecondary ddo={asset} />
