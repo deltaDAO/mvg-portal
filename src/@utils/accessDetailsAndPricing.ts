@@ -5,10 +5,12 @@ import {
   TokenPriceQuery_token as TokenPrice
 } from '../@types/subgraph/TokenPriceQuery'
 import {
+  AssetPrice,
   getErrorMessage,
   LoggerInstance,
   ProviderFees,
-  ProviderInstance
+  ProviderInstance,
+  ZERO_ADDRESS
 } from '@oceanprotocol/lib'
 import { getFixedBuyPrice } from './ocean/fixedRateExchange'
 import Decimal from 'decimal.js'
@@ -179,7 +181,6 @@ export async function getOrderPriceAndFees(
     },
     opcFee: '0'
   } as OrderPriceAndFees
-
   // fetch provider fee
   let initializeData
   try {
@@ -193,7 +194,7 @@ export async function getOrderPriceAndFees(
         customProviderUrl || asset?.services[0].serviceEndpoint
       ))
   } catch (error) {
-    const message = getErrorMessage(JSON.parse(error.message))
+    const message = getErrorMessage(error.message)
     LoggerInstance.error('[Initialize Provider] Error:', message)
 
     // Customize error message for accountId non included in allow list
@@ -203,9 +204,10 @@ export async function getOrderPriceAndFees(
         'ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST' || 'denied with code: 3'
       )
     ) {
-      toast.error(
-        `Consumer address not found in allow list for service ${asset?.id}. Access has been denied.`
-      )
+      accountId !== ZERO_ADDRESS &&
+        toast.error(
+          `Consumer address not found in allow list for service ${asset?.id}. Access has been denied.`
+        )
       return
     }
     // Customize error message for accountId included in deny list
@@ -215,9 +217,10 @@ export async function getOrderPriceAndFees(
         'ConsumableCodes.CREDENTIAL_IN_DENY_LIST' || 'denied with code: 4'
       )
     ) {
-      toast.error(
-        `Consumer address found in deny list for service ${asset?.id}. Access has been denied.`
-      )
+      accountId !== ZERO_ADDRESS &&
+        toast.error(
+          `Consumer address found in deny list for service ${asset?.id}. Access has been denied.`
+        )
       return
     }
 
@@ -280,4 +283,15 @@ export async function getAccessDetails(
   } catch (error) {
     LoggerInstance.error('Error getting access details: ', error.message)
   }
+}
+
+export function getAvailablePrice(asset: AssetExtended): AssetPrice {
+  const price: AssetPrice = asset?.stats?.price?.value
+    ? asset?.stats?.price
+    : {
+        value: Number(asset?.accessDetails?.price),
+        tokenSymbol: asset?.accessDetails?.baseToken?.symbol,
+        tokenAddress: asset?.accessDetails?.baseToken?.address
+      }
+  return price
 }

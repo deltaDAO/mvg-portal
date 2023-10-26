@@ -29,12 +29,14 @@ export function Empty({ message }: { message: string }) {
 
 export default function AssetSelection({
   assets,
+  selected,
   multiple,
   disabled,
   accountId,
   ...props
 }: {
   assets: AssetSelectionAsset[]
+  selected?: string
   multiple?: boolean
   disabled?: boolean
   accountId?: string
@@ -86,9 +88,10 @@ export default function AssetSelection({
                   id={slugify(asset.did)}
                   className={styleClassesInput}
                   {...props}
+                  checked={selected && asset.did === selected}
                   defaultChecked={asset.checked}
-                  type={multiple ? 'checkbox' : 'radio'}
                   disabled={disabled || !asset.isAccountIdWhitelisted}
+                  type={multiple ? 'checkbox' : 'radio'}
                   value={asset.did}
                 />
                 <label

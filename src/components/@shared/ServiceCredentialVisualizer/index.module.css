@@ -9,8 +9,46 @@
   flex-direction: column;
 }
 
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.toggle {
+  composes: toggle from '../Accordion/index.module.css';
+}
+
+.toggle svg {
+  display: inline-block;
+  width: var(--font-size-base);
+  height: var(--font-size-base);
+  fill: var(--font-color-title);
+  vertical-align: middle;
+  transition: 0.2s ease-out;
+}
+
+.open .toggle svg {
+  transform: rotate(180deg);
+}
+
 .markdownContainer {
   position: relative;
+}
+
+.container .markdownContainer {
+  max-height: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition: 0.3s;
+}
+
+.open .markdownContainer {
+  max-height: 800px;
+  visibility: visible;
+  overflow-y: scroll;
+  transition: 0.3s max-height;
 }
 
 .markdownContainer pre {

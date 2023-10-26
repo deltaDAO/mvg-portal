@@ -10,19 +10,19 @@ describe('@shared/FileIcon', () => {
     contentLength: '123'
   }
 
-  testRender(<FileIcon file={file} />)
+  testRender(<FileIcon file={file} isAccountWhitelisted />)
 
   it('renders small', () => {
-    render(<FileIcon file={file} small />)
+    render(<FileIcon file={file} isAccountWhitelisted small />)
   })
 
   it('renders loading', () => {
-    render(<FileIcon file={file} isLoading />)
+    render(<FileIcon file={file} isAccountWhitelisted isLoading />)
   })
 
   it('renders empty', () => {
     const file: FileInfo = { type: 'url' }
-    render(<FileIcon file={file} />)
+    render(<FileIcon file={file} isAccountWhitelisted />)
   })
 
   it('renders with 0 contentLength', () => {
@@ -31,6 +31,6 @@ describe('@shared/FileIcon', () => {
       contentType: 'text/plain',
       contentLength: '0'
     }
-    render(<FileIcon file={file} />)
+    render(<FileIcon file={file} isAccountWhitelisted />)
   })
 })

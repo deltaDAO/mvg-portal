@@ -83,7 +83,7 @@ export default function Results({
       )
       await downloadFileBrowser(jobResult)
     } catch (error) {
-      const message = getErrorMessage(JSON.parse(error.message))
+      const message = getErrorMessage(error.message)
       LoggerInstance.error('[Provider Get c2d results url] Error:', message)
       toast.error(message)
     }
