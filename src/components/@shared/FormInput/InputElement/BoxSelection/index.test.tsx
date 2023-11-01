@@ -1,6 +1,5 @@
 import BoxSelection, { BoxSelectionOption } from './'
 import { fireEvent, render, screen } from '@testing-library/react'
-import React from 'react'
 
 describe('@shared/FormInput/InputElement/BoxSelection', () => {
   const handleChange = jest.fn()

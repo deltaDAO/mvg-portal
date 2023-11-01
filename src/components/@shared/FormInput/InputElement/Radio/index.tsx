@@ -1,4 +1,4 @@
-import React, { InputHTMLAttributes, ReactElement } from 'react'
+import { InputHTMLAttributes, ReactElement } from 'react'
 import slugify from 'slugify'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'

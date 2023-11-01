@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactElement } from 'react'
+import { FormEvent, ReactElement } from 'react'
 import SearchIcon from '@images/search.svg'
 import styles from './SearchButton.module.css'
 import { useSearchBarStatus } from '@context/SearchBarStatus'

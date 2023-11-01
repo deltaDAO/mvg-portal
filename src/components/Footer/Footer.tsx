@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './Footer.module.css'
 import Markdown from '@shared/Markdown'
 import Links from './Links'

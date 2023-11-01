@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { accountTruncate } from '../../../../@utils/wallet'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import { useUserPreferences } from '../../../../@context/UserPreferences'

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import Link from 'next/link'
 import styles from './index.module.css'

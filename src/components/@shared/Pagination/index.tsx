@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from 'react'
+import { useState, useEffect, ReactElement } from 'react'
 import ReactPaginate from 'react-paginate'
 import styles from './index.module.css'
 import { MAXIMUM_NUMBER_OF_PAGES_WITH_RESULTS } from '@utils/aquarius'

@@ -1,6 +1,5 @@
 import testRender from '../../../../.jest/testRender'
 import { render } from '@testing-library/react'
-import React from 'react'
 import Pagination from './index'
 import { MAXIMUM_NUMBER_OF_PAGES_WITH_RESULTS } from '@utils/aquarius'
 

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { useRouter } from 'next/router'
 import Verify from '../components/Verify'
 import AssetProvider from '@context/Asset'

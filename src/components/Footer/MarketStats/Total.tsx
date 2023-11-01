@@ -1,5 +1,5 @@
 import PriceUnit from '@shared/Price/PriceUnit'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { StatsTotal } from './_types'
 
 export default function MarketStatsTotal({

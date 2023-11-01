@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import EthIcon from '@images/eth.svg'
 import PolygonIcon from '@images/polygon.svg'
 import MoonbeamIcon from '@images/moonbeam.svg'

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Stats from './Stats'
 import Account from './Account'
 import styles from './index.module.css'

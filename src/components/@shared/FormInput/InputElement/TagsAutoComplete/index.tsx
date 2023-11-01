@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import CreatableSelect from 'react-select/creatable'
 import { OnChangeValue } from 'react-select'
 import { useField } from 'formik'

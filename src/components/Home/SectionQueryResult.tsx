@@ -7,7 +7,7 @@ import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 import { queryMetadata } from '@utils/aquarius'
 import { sortAssets } from '@utils/index'
-import React, { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import styles from './index.module.css'
 
 export default function SectionQueryResult({

@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Button from '@shared/atoms/Button'
 import { ErrorMessage, useField } from 'formik'
 import Loader from '@shared/atoms/Loader'

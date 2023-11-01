@@ -1,4 +1,4 @@
-import React, { ReactElement, FormEvent } from 'react'
+import { ReactElement, FormEvent } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'
 import Button from '../Button'

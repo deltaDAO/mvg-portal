@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'

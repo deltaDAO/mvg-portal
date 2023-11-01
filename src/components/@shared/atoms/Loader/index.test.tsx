@@ -1,4 +1,3 @@
-import React from 'react'
 import testRender from '../../../../../.jest/testRender'
 import Loader, { LoaderProps } from '@shared/atoms/Loader'
 import { Default, WithMessage } from './index.stories'

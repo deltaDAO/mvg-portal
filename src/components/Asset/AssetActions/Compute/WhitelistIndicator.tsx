@@ -1,4 +1,3 @@
-import React from 'react'
 import { accountTruncate } from '@utils/wallet'
 import { Badge } from '@components/@shared/VerifiedBadge'
 import classNames from 'classnames/bind'

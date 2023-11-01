@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { useSwitchNetwork } from 'wagmi'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'

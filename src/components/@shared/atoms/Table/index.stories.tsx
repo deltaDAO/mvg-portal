@@ -1,4 +1,3 @@
-import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import Table, { TableOceanProps } from '@shared/atoms/Table'
 import { columns, data } from '../../../../../.jest/__fixtures__/table'

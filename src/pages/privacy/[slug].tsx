@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { markdownToHtmlWithToc } from '@utils/markdown'
 import { getPageBySlug, getAllPages, PageData } from '@utils/markdownPages'
 import Page from '@shared/Page'

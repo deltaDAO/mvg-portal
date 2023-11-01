@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useConsent, CookieConsentStatus } from '@context/CookieConsent'
 import styles from './PrivacyPreferenceCenter.module.css'
 import { useGdprMetadata } from '@hooks/useGdprMetadata'

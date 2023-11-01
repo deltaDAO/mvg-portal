@@ -1,4 +1,3 @@
-import React from 'react'
 import testRender from '../../../../.jest/testRender'
 import AssetListTitle from '.'
 import { render } from '@testing-library/react'

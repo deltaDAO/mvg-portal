@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import classNames from 'classnames/bind'
 import Markdown from '@shared/Markdown'
 import Button from '@shared/atoms/Button'

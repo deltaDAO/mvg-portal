@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { OperationContext } from 'urql'
 import { fetchData, getSubgraphUri } from '@utils/subgraph'
 import useNetworkMetadata, {

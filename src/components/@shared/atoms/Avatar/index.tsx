@@ -1,5 +1,5 @@
 import { toDataUrl } from 'myetherwallet-blockies'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './index.module.css'
 
 export interface AvatarProps {

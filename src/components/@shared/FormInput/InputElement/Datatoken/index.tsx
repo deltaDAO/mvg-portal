@@ -1,5 +1,5 @@
 import { useField } from 'formik'
-import React, { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { InputProps } from '@shared/FormInput'
 import Key from '@images/key.svg'
 import RefreshName from './RefreshName'

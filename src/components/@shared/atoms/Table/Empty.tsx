@@ -1,5 +1,5 @@
 import { markdownToHtml } from '@utils/markdown'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './Empty.module.css'
 
 export default function Empty({ message }: { message?: string }): ReactElement {

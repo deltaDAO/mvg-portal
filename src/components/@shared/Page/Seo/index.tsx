@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Head from 'next/head'
 
 import { isBrowser } from '@utils/index'

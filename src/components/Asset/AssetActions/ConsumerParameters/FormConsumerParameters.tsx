@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Input from '@shared/FormInput'
 import Label from '@shared/FormInput/Label'
 import { Field, useField } from 'formik'

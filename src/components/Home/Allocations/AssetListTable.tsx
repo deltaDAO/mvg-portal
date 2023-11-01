@@ -1,4 +1,3 @@
-import React from 'react'
 import Table, { TableOceanColumn } from '@shared/atoms/Table'
 import AssetTitle from '@shared/AssetListTitle'
 import { AssetWithOwnAllocation } from '@utils/veAllocation'

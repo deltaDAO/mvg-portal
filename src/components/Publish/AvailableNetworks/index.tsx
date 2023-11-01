@@ -1,4 +1,4 @@
-import React, { Fragment, ReactElement } from 'react'
+import { Fragment, ReactElement } from 'react'
 import styles from './index.module.css'
 import Network from './Network'
 import useNetworkMetadata, {

@@ -1,4 +1,3 @@
-import React from 'react'
 import { allowFixedPricing, defaultAccessTerms } from '../../../app.config'
 import {
   FormPublishData,

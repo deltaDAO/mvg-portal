@@ -1,4 +1,3 @@
-import React from 'react'
 import { ComponentStory, ComponentMeta } from '@storybook/react'
 import Button from '@shared/atoms/Button'
 import Modal, { ModalProps } from '@shared/atoms/Modal'

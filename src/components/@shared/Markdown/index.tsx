@@ -1,5 +1,5 @@
 import { markdownToHtml } from '@utils/markdown'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './index.module.css'
 
 const Markdown = ({

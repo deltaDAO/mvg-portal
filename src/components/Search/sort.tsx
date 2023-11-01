@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { addExistingParamsToUrl } from './utils'
 import styles from './sort.module.css'
 import {

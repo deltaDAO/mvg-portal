@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { filesize } from 'filesize'
 import cleanupContentType from '@utils/cleanupContentType'
 import styles from './index.module.css'

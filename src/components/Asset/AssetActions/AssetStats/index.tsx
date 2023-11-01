@@ -1,4 +1,3 @@
-import React from 'react'
 import { useAsset } from '@context/Asset'
 import styles from './index.module.css'
 

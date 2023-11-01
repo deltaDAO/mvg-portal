@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './RefreshName.module.css'
 import Button from '@shared/atoms/Button'
 import Refresh from '@images/refresh.svg'

@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react'
-import React from 'react'
 import MetaFull from './MetaFull'
 import { datasetAquarius } from '../../../../.jest/__fixtures__/datasetAquarius'
 import { algorithmAquarius } from '../../../../.jest/__fixtures__/algorithmAquarius'

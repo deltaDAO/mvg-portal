@@ -1,6 +1,6 @@
 import InputElement from '@shared/FormInput/InputElement'
 import { useFormikContext } from 'formik'
-import React, { ChangeEvent, ReactElement } from 'react'
+import { ChangeEvent, ReactElement } from 'react'
 import { FormPublishData } from '../_types'
 import styles from './CoinSelect.module.css'
 
