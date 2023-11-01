@@ -92,7 +92,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
   function handleDefault(e: React.SyntheticEvent) {
     e.preventDefault()
 
-    const oceanConfig = getOceanConfig(chain?.id)
+    const oceanConfig = getOceanConfig(chain?.id || 100)
     const providerUrl =
       oceanConfig?.providerUri || initialValues.services[0].providerUrl.url
 
