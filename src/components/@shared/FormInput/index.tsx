@@ -90,6 +90,7 @@ function checkError(form: any, field: FieldInputProps<any>) {
     errors &&
     !field.name.endsWith('.files') &&
     !field.name.endsWith('.links') &&
+    !field.name.endsWith('.providerUrl') &&
     !field.name.endsWith('consumerParameters')
   )
 }
