@@ -19,9 +19,12 @@ export default function Seo({
   // Remove trailing slash from all URLs
   const canonical = `${siteContent?.siteUrl}${uri}`.replace(/\/$/, '')
 
-  const pageTitle = title
-    ? `${title} - ${siteContent?.siteTitle}`
-    : `${siteContent?.siteTitle} — ${siteContent?.siteTagline}`
+  const pageTitle =
+    uri === '/'
+      ? siteContent?.siteTitle
+      : title
+      ? `${title} - ${siteContent?.siteTitle}`
+      : `${siteContent?.siteTitle} — ${siteContent?.siteTagline}`
 
   const datasetSchema = DatasetSchema()
 
