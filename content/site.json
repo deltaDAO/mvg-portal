@@ -26,43 +26,63 @@
       "subItems": [
         {
           "name": "Airbus",
-          "link": "https://airbus.pontus-x.eu/"
+          "link": "https://airbus.pontus-x.eu/",
+          "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
+          "image": "airbus-logo.png"
         },
         {
           "name": "Berlin State Library",
-          "link": "https://sbb.pontus-x.eu/"
+          "link": "https://sbb.pontus-x.eu/",
+          "description": "Lorem ipsum...",
+          "image": "sbb-logo.png"
         },
         {
           "name": "Clinical Insights Exchange",
-          "link": "https://cix.triall.io/"
+          "link": "https://cix.triall.io/",
+          "description": "The Clinical Insights Exchange (CIX) is a federated data platform where biopharma professionals, clinicians, and data scientists can exchange clinical data assets and analytics services in a trusted, privacy-friendly environment.",
+          "image": "clinical-insights-exchange-logo.svg"
         },
         {
           "name": "Cooperants",
-          "link": "https://cooperants.pontus-x.eu/"
+          "link": "https://cooperants.pontus-x.eu/",
+          "description": "COOPERANTS is the world's only collaborative alliance of industry, SMEs and research institutes in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
+          "image": "cooperants-logo.png"
         },
         {
           "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/"
+          "link": "https://www.energyshr.nl/",
+          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition. Leveraging the European Gaia-X data sharing concepts to facilitate public-private, cross-sector, cross-border collaboration while maintaining digital sovereignty.",
+          "image": "energy-shr-logo.png"
         },
         {
           "name": "EuProGigant",
-          "link": "https://portal.euprogigant.io/"
+          "link": "https://portal.euprogigant.io/",
+          "description": "EuProGigant is the first funded binational industrial project with the practical implementation of the Gaia-X principles. It aims to illustrate the technological and economic benefits of the open, European multi-cloud infrastructure Gaia-X.",
+          "image": "euprogigant-logo.svg"
         },
         {
           "name": "Future Mobility Marketplace",
-          "link": "https://marketplace.future-mobility-alliance.org/"
+          "link": "https://marketplace.future-mobility-alliance.org/",
+          "description": "Find or publish datasets and AI algorithms for solving challenges in mobility. Experience and leverage decentralized technologies and the European Gaia-X data sharing concepts. Facilitating public-private, cross-sector, cross-border collaboration while maintaining digital sovereignty.",
+          "image": "fmdm-logo.svg"
         },
         {
           "name": "GX4M moveID",
-          "link": "https://portal.moveid.eu/"
+          "link": "https://portal.moveid.eu/",
+          "description": "moveID aims to develop a decentralized digital mobility identity infrastructure for Europe.",
+          "image": "moveid-logo.svg"
         },
         {
           "name": "Service-Meister",
-          "link": "https://servicemeister.pontus-x.eu/"
+          "link": "https://servicemeister.pontus-x.eu/",
+          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
+          "image": "service-meister-logo.svg"
         },
         {
           "name": "UdL Research Data Space",
-          "link": "https://dataspace.angliru.udl.cat/"
+          "link": "https://dataspace.angliru.udl.cat/",
+          "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
+          "image": "udl-logo.svg"
         }
       ]
     }
