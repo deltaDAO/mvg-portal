@@ -4,21 +4,11 @@ import styles from './SearchButton.module.css'
 import { useSearchBarStatus } from '@context/SearchBarStatus'
 
 export default function SearchButton(): ReactElement {
-  const isHome = window.location.pathname === '/'
-  const {
-    isSearchBarVisible,
-    setSearchBarVisible,
-    homeSearchBarFocus,
-    setHomeSearchBarFocus
-  } = useSearchBarStatus()
+  const { isSearchBarVisible, setSearchBarVisible } = useSearchBarStatus()
 
   async function handleButtonClick(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
-    if (isHome) {
-      setHomeSearchBarFocus(!homeSearchBarFocus)
-      setSearchBarVisible(false)
-      return
-    }
+
     setSearchBarVisible(!isSearchBarVisible)
   }
 

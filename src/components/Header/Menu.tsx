@@ -21,6 +21,8 @@ declare type MenuItem = {
   name: string
   link?: string
   subItems?: MenuItem[]
+  description?: string
+  image?: string
   className?: string
 }
 

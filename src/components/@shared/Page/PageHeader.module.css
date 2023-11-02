@@ -23,23 +23,31 @@
 }
 
 .homeTitleContainer h1 {
-  margin-bottom: calc(var(--spacer) / 2);
+  margin-bottom: 0;
 }
 
-.homeTitleContainer h1 span {
-  display: block;
+.logoContainer {
+  position: relative;
+  margin: calc(var(--spacer) / 2) 0;
 }
 
-.homeTitleContainer > h1 span:first-of-type {
-  font-size: var(--font-size-h2);
+.logoContainerTitle {
+  position: absolute;
+  width: max-content;
+  top: 1.8rem;
+  left: 2.7rem;
+  color: #283375;
+}
+
+.logoContainer svg {
+  width: 15rem;
+  height: 6rem;
+  padding-left: 5rem;
 }
 
 @media (min-width: 40rem) {
   .title {
     font-size: var(--font-size-h2);
-  }
-  .homeTitleContainer > h1 span:first-of-type {
-    font-size: var(--font-size-h1);
   }
 }
 
@@ -47,11 +55,6 @@
   font-size: var(--font-size-large);
   margin-top: calc(var(--spacer) / 4);
   margin-bottom: 0;
-}
-
-.homeTitleContainer svg {
-  width: 15rem;
-  height: 5rem;
 }
 
 .center,

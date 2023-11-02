@@ -36,7 +36,6 @@ export default function SearchBar({
   const router = useRouter()
   const [value, setValue] = useState(initialValue || '')
   const parsed = router.query
-  const isHome = window.location.pathname === '/'
   const searchBarRef = useRef<HTMLInputElement>(null)
   const {
     isSearchBarVisible,
@@ -96,7 +95,7 @@ export default function SearchBar({
 
   const springStile = useSpring({
     transform:
-      isHome || isSearchPage || isSearchBarVisible
+      isSearchPage || isSearchBarVisible
         ? 'translateY(0%)'
         : 'translateY(-150%)',
     config: { mass: 1, tension: 140, friction: 12 }

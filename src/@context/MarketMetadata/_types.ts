@@ -52,7 +52,11 @@ export interface SiteContent {
       subItems?: {
         name: string
         link: string
+        description?: string
+        image?: string
       }[]
+      description?: string
+      image?: string
     }[]
   }[]
   announcement: string

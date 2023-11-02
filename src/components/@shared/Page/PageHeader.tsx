@@ -3,7 +3,7 @@ import classNames from 'classnames/bind'
 import styles from './PageHeader.module.css'
 import Markdown from '@shared/Markdown'
 import SearchBar from '@components/Header/SearchBar'
-import DeltaDAOLogo from '@images/deltaDAO_Logo_small_RGB_positiv.svg'
+import GaiaXLogo from '@images/gaia-x-logo.svg'
 
 const cx = classNames.bind(styles)
 
@@ -29,25 +29,25 @@ export default function PageHeader({
     <header className={styleClasses}>
       {isHome ? (
         <div className={styles.homeTitleContainer}>
-          <h1>
-            {(title as string).split(' - ').map((text, i) => (
-              <span key={i} className={styles.title}>
-                {text}
-              </span>
-            ))}
-          </h1>
-          <a
-            href="https://delta-dao.com/"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            <DeltaDAOLogo />
-          </a>
+          <h1>{(title as string).split(' - ')[0]}</h1>
+          {description && (
+            <Markdown text={description} className={styles.description} />
+          )}
+          <div className={styles.logoContainer}>
+            <h4 className={styles.logoContainerTitle}>powered by</h4>
+            <a
+              href="https://gaia-x.eu/"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              <GaiaXLogo />
+            </a>
+          </div>
         </div>
       ) : (
         <h1 className={styles.title}>{title}</h1>
       )}
-      {description && (
+      {description && !isHome && (
         <Markdown text={description} className={styles.description} />
       )}
       {showSearch && (
