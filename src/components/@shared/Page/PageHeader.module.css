@@ -22,7 +22,13 @@
   align-items: center;
 }
 
+.homeTitleContainer > svg {
+  width: 20rem;
+  height: 3.5rem;
+}
+
 .homeTitleContainer h1 {
+  color: var(--color-primary);
   margin-bottom: 0;
 }
 

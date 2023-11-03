@@ -3,6 +3,7 @@ import classNames from 'classnames/bind'
 import styles from './PageHeader.module.css'
 import Markdown from '@shared/Markdown'
 import SearchBar from '@components/Header/SearchBar'
+import BrandLogo from '@images/brand-logo.svg'
 import GaiaXLogo from '@images/gaia-x-logo.svg'
 
 const cx = classNames.bind(styles)
@@ -29,7 +30,7 @@ export default function PageHeader({
     <header className={styleClasses}>
       {isHome ? (
         <div className={styles.homeTitleContainer}>
-          <h1>{(title as string).split(' - ')[0]}</h1>
+          <BrandLogo />
           {description && (
             <Markdown text={description} className={styles.description} />
           )}
