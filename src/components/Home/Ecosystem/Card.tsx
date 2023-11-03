@@ -15,6 +15,12 @@ export default function Card({
 }) {
   return (
     <div className={styles.container}>
+      <div className={styles.indicatorContainer}>
+        <div className={styles.indicator}>
+          <div className={styles.indicatorPulse} />
+        </div>
+        <span>Live</span>
+      </div>
       <div className={styles.logoContainer}>
         <img
           className={styles.logo}
