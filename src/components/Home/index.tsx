@@ -41,7 +41,7 @@ export default function HomePage(): ReactElement {
     const baseParams = {
       chainIds,
       esPaginationOptions: {
-        size: 6
+        size: 4
       },
       sortOptions: {
         sortBy: SortTermOptions.Created
@@ -51,7 +51,7 @@ export default function HomePage(): ReactElement {
     const baseParamsSales = {
       chainIds,
       esPaginationOptions: {
-        size: 6
+        size: 4
       },
       sortOptions: {
         sortBy: SortTermOptions.Orders
@@ -80,6 +80,8 @@ export default function HomePage(): ReactElement {
   return (
     <>
       <Ecosystem />
+      <TopSales title="Publishers With Most Sales" />
+      <TopTags title="Top Tags By Sales" />
       {hasFeaturedAssets() && (
         <>
           {queryFeatured.map((section, i) => (
@@ -104,8 +106,6 @@ export default function HomePage(): ReactElement {
       />
 
       {/* <MostViews /> */}
-      <TopSales title="Publishers With Most Sales" />
-      <TopTags title="Top Tags By Sales" />
       <HomeContent />
     </>
   )
