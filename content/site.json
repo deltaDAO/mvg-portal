@@ -25,46 +25,10 @@
       "name": "Ecosystem",
       "subItems": [
         {
-          "name": "Airbus",
-          "link": "https://airbus.pontus-x.eu/",
-          "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
-          "image": "airbus-logo.webp"
-        },
-        {
-          "name": "Berlin State Library",
-          "link": "https://sbb.pontus-x.eu/",
-          "description": "Lorem ipsum...",
-          "image": "sbb-logo.webp"
-        },
-        {
-          "name": "Clinical Insights Exchange",
-          "link": "https://cix.triall.io/",
-          "description": "A federated data platform to change clinical data assets and analytics services in a trusted, privacy-friendly environment.",
-          "image": "clinical-insights-exchange-logo.webp"
-        },
-        {
-          "name": "Cooperants",
-          "link": "https://cooperants.pontus-x.eu/",
-          "description": "The world's only collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
-          "image": "cooperants-logo.webp"
-        },
-        {
-          "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/",
-          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
-          "image": "energy-shr-logo.webp"
-        },
-        {
           "name": "EuProGigant",
           "link": "https://portal.euprogigant.io/",
           "description": "EuProGigant is the first funded binational industrial project with the practical implementation of the Gaia-X principles.",
           "image": "euprogigant-logo.webp"
-        },
-        {
-          "name": "Future Mobility Marketplace",
-          "link": "https://marketplace.future-mobility-alliance.org/",
-          "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
-          "image": "fmdm-logo.webp"
         },
         {
           "name": "GX4M moveID",
@@ -73,10 +37,46 @@
           "image": "moveid-logo.webp"
         },
         {
+          "name": "Cooperants",
+          "link": "https://cooperants.pontus-x.eu/",
+          "description": "The world's only collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
+          "image": "cooperants-logo.webp"
+        },
+        {
+          "name": "Airbus",
+          "link": "https://airbus.pontus-x.eu/",
+          "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
+          "image": "airbus-logo.webp"
+        },
+        {
           "name": "Service-Meister",
           "link": "https://servicemeister.pontus-x.eu/",
           "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
           "image": "service-meister-logo.webp"
+        },
+        {
+          "name": "Future Mobility Marketplace",
+          "link": "https://marketplace.future-mobility-alliance.org/",
+          "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
+          "image": "fmdm-logo.webp"
+        },
+        {
+          "name": "Berlin State Library",
+          "link": "https://sbb.pontus-x.eu/",
+          "description": "Lorem ipsum...",
+          "image": "sbb-logo.webp"
+        },
+        {
+          "name": "EnergySHR",
+          "link": "https://www.energyshr.nl/",
+          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
+          "image": "energy-shr-logo.webp"
+        },
+        {
+          "name": "Clinical Insights Exchange",
+          "link": "https://cix.triall.io/",
+          "description": "A federated data platform to change clinical data assets and analytics services in a trusted, privacy-friendly environment.",
+          "image": "clinical-insights-exchange-logo.webp"
         },
         {
           "name": "UdL Research Data Space",
