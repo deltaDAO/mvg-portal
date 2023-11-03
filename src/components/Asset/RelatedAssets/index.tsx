@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { Asset, LoggerInstance } from '@oceanprotocol/lib'
 import { generateBaseQuery, queryMetadata } from '@utils/aquarius'
 import { useUserPreferences } from '@context/UserPreferences'

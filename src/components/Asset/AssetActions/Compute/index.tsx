@@ -1,4 +1,4 @@
-import React, { useState, ReactElement, useEffect, useCallback } from 'react'
+import { useState, ReactElement, useEffect, useCallback } from 'react'
 import {
   Asset,
   DDO,
@@ -14,6 +14,7 @@ import {
   ProviderComputeInitializeResults,
   unitsToAmount,
   ProviderFees,
+  AssetPrice,
   UserCustomParameters,
   getErrorMessage
 } from '@oceanprotocol/lib'
@@ -44,7 +45,10 @@ import ComputeJobs from '../../../Profile/History/ComputeJobs'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { Decimal } from 'decimal.js'
 import { useAbortController } from '@hooks/useAbortController'
-import { getOrderPriceAndFees } from '@utils/accessDetailsAndPricing'
+import {
+  getAvailablePrice,
+  getOrderPriceAndFees
+} from '@utils/accessDetailsAndPricing'
 import { handleComputeOrder } from '@utils/order'
 import { getComputeFeedback } from '@utils/feedback'
 import {
@@ -52,7 +56,6 @@ import {
   initializeProviderForCompute
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
-import { useAccount, useSigner } from 'wagmi'
 import { getDummySigner } from '@utils/wallet'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
@@ -60,10 +63,13 @@ import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import { Signer } from 'ethers'
+import { useAccount } from 'wagmi'
 
 const refreshInterval = 10000 // 10 sec.
 
 export default function Compute({
+  accountId,
+  signer,
   asset,
   dtBalance,
   file,
@@ -71,6 +77,8 @@ export default function Compute({
   fileIsLoading,
   consumableFeedback
 }: {
+  accountId: string
+  signer: Signer
   asset: AssetExtended
   dtBalance: string
   file: FileInfo
@@ -78,9 +86,8 @@ export default function Compute({
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
-  const { address: accountId } = useAccount()
+  const { address } = useAccount()
   const { chainIds } = useUserPreferences()
-  const { data: signer } = useSigner()
 
   const newAbortController = useAbortController()
   const newCancelToken = useCancelToken()
@@ -124,16 +131,9 @@ export default function Compute({
   const [retry, setRetry] = useState<boolean>(false)
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
+  const { autoWallet } = useAutomation()
 
-  const { isAutomationEnabled, autoWallet } = useAutomation()
-
-  const [signerToUse, setSignerToUse] = useState<Signer>(signer)
-  const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
-
-  useEffect(() => {
-    setSignerToUse(isAutomationEnabled ? autoWallet : signer)
-    setAccountIdToUse(isAutomationEnabled ? autoWallet?.address : accountId)
-  }, [isAutomationEnabled, accountId, autoWallet, signer])
+  const price: AssetPrice = getAvailablePrice(asset)
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
@@ -152,7 +152,7 @@ export default function Compute({
     const datatokenInstance = new Datatoken(dummySigner)
     const dtBalance = await datatokenInstance.balance(
       asset?.services[0].datatokenAddress,
-      accountIdToUse || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
+      accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
     )
 
     setAlgorithmDTBalance(new Decimal(dtBalance).toString())
@@ -202,7 +202,7 @@ export default function Compute({
     ) {
       const algorithmOrderPriceAndFees = await getOrderPriceAndFees(
         selectedAlgorithmAsset,
-        ZERO_ADDRESS,
+        accountId || ZERO_ADDRESS,
         signer,
         algoProviderFees
       )
@@ -221,7 +221,7 @@ export default function Compute({
     ) {
       const datasetPriceAndFees = await getOrderPriceAndFees(
         asset,
-        ZERO_ADDRESS,
+        accountId || ZERO_ADDRESS,
         signer,
         datasetProviderFees
       )
@@ -240,7 +240,7 @@ export default function Compute({
       const initializedProvider = await initializeProviderForCompute(
         asset,
         selectedAlgorithmAsset,
-        accountIdToUse || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
+        accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
         selectedComputeEnv
       )
 
@@ -339,7 +339,7 @@ export default function Compute({
         type === 'init' && setIsLoadingJobs(true)
         const computeJobs = await getComputeJobs(
           [asset?.chainId] || chainIds,
-          accountId,
+          address,
           asset,
           newCancelToken()
         )
@@ -361,7 +361,7 @@ export default function Compute({
         setIsLoadingJobs(false)
       }
     },
-    [accountId, asset, chainIds, autoWallet, newCancelToken]
+    [address, accountId, asset, chainIds, autoWallet, newCancelToken]
   )
 
   useEffect(() => {
@@ -426,10 +426,10 @@ export default function Compute({
       )
 
       const algorithmOrderTx = await handleComputeOrder(
-        signerToUse,
+        signer,
         selectedAlgorithmAsset,
         algoOrderPriceAndFees,
-        accountIdToUse,
+        accountId,
         initializedProviderResponse.algorithm,
         hasAlgoAssetDatatoken,
         selectedComputeEnv.consumerAddress
@@ -445,10 +445,10 @@ export default function Compute({
       )
 
       const datasetOrderTx = await handleComputeOrder(
-        signerToUse,
+        signer,
         asset,
         datasetOrderPriceAndFees,
-        accountIdToUse,
+        accountId,
         initializedProviderResponse.datasets[0],
         hasDatatoken,
         selectedComputeEnv.consumerAddress
@@ -470,7 +470,7 @@ export default function Compute({
       setComputeStatusText(getComputeFeedback()[4])
       const response = await ProviderInstance.computeStart(
         asset.services[0].serviceEndpoint,
-        signerToUse,
+        signer,
         selectedComputeEnv?.id,
         computeAsset,
         computeAlgorithm,
@@ -485,7 +485,7 @@ export default function Compute({
       setRefetchJobs(!refetchJobs)
       initPriceAndFees()
     } catch (error) {
-      const message = getErrorMessage(JSON.parse(error.message))
+      const message = getErrorMessage(error.message)
       LoggerInstance.error('[Compute] Error:', message)
       setError(message)
       setRetry(true)
@@ -523,7 +523,12 @@ export default function Compute({
           isUnsupportedPricing ? styles.warning : null
         }`}
       >
-        <FileIcon file={file} isLoading={fileIsLoading} small />
+        <FileIcon
+          file={file}
+          isAccountWhitelisted={isAccountIdWhitelisted}
+          isLoading={fileIsLoading}
+          small
+        />
         {isUnsupportedPricing ? (
           <Alert
             text={`No pricing schema available for this asset.`}
@@ -531,7 +536,7 @@ export default function Compute({
           />
         ) : (
           <Price
-            price={asset.stats?.price}
+            price={price}
             orderPriceAndFees={datasetOrderPriceAndFees}
             size="large"
           />

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Home from '../components/Home'
 import Page from '@shared/Page'
 import { useRouter } from 'next/router'

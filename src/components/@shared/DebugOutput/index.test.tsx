@@ -1,4 +1,3 @@
-import React from 'react'
 import testRender from '../../../../.jest/testRender'
 import DebugOutput from './index'
 

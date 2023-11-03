@@ -6,7 +6,7 @@ import {
   fetchExchange
 } from 'urql'
 import { refocusExchange } from '@urql/exchange-refocus'
-import React, { useState, useEffect, ReactNode, ReactElement } from 'react'
+import { useState, useEffect, ReactNode, ReactElement } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 

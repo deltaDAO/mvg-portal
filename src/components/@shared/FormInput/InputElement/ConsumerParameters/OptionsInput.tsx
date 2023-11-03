@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { FormPublishData } from '@components/Publish/_types'
 import classNames from 'classnames/bind'
 import { ErrorMessage, Field, useFormikContext } from 'formik'

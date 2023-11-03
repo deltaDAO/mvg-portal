@@ -1,5 +1,4 @@
 import ExplorerLink from '@shared/ExplorerLink'
-import React from 'react'
 import styles from './TransactionCount.module.css'
 
 export default function TransactionCount({

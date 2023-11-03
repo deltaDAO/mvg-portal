@@ -2,7 +2,7 @@ import Button from '@shared/atoms/Button'
 import { InputProps } from '@shared/FormInput'
 import { generateNftMetadata } from '@utils/nft'
 import { useField } from 'formik'
-import React, { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import Refresh from '@images/refresh.svg'
 import styles from './index.module.css'
 

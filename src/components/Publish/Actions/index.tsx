@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactElement, RefObject } from 'react'
+import { FormEvent, ReactElement, RefObject } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'

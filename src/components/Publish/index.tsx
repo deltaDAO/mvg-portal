@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useRef } from 'react'
+import { ReactElement, useState, useRef } from 'react'
 import { Form, Formik } from 'formik'
 import { initialPublishFeedback, initialValues } from './_constants'
 import { useAccountPurgatory } from '@hooks/useAccountPurgatory'
@@ -149,7 +149,7 @@ export default function PublishPage({
           newAbortController()
         )
       } catch (error) {
-        const message = getErrorMessage(JSON.parse(error.message))
+        const message = getErrorMessage(error.message)
         LoggerInstance.error('[Provider Encrypt] Error:', message)
       }
 

@@ -1,12 +1,13 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import FileIcon from '@shared/FileIcon'
 import Price from '@shared/Price'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '../ButtonBuy'
 import { secondsToString } from '@utils/ddo'
-import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import styles from './index.module.css'
+import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import {
+  AssetPrice,
   FileInfo,
   LoggerInstance,
   UserCustomParameters,
@@ -15,13 +16,16 @@ import {
 import { order } from '@utils/order'
 import { downloadFile } from '@utils/provider'
 import { getOrderFeedback } from '@utils/feedback'
-import { getOrderPriceAndFees } from '@utils/accessDetailsAndPricing'
+import {
+  getAvailablePrice,
+  getOrderPriceAndFees
+} from '@utils/accessDetailsAndPricing'
 import { toast } from 'react-toastify'
 import { useIsMounted } from '@hooks/useIsMounted'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import Alert from '@shared/atoms/Alert'
 import Loader from '@shared/atoms/Loader'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters, {
   parseConsumerParameterValues
@@ -30,10 +34,12 @@ import { Form, Formik, useFormikContext } from 'formik'
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
 import WhitelistIndicator from '../Compute/WhitelistIndicator'
-import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import { Signer } from 'ethers'
+import SuccessConfetti from '@components/@shared/SuccessConfetti'
 
 export default function Download({
+  accountId,
+  signer,
   asset,
   file,
   isBalanceSufficient,
@@ -42,6 +48,8 @@ export default function Download({
   fileIsLoading,
   consumableFeedback
 }: {
+  accountId: string
+  signer: Signer
   asset: AssetExtended
   file: FileInfo
   isBalanceSufficient: boolean
@@ -50,8 +58,7 @@ export default function Download({
   fileIsLoading?: boolean
   consumableFeedback?: string
 }): ReactElement {
-  const { address: accountId, isConnected } = useAccount()
-  const { data: signer } = useSigner()
+  const { isConnected } = useAccount()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { getOpcFeeForToken } = useMarketMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
@@ -69,12 +76,10 @@ export default function Download({
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
 
-  const { isAutomationEnabled, autoWallet } = useAutomation()
-
+  const price: AssetPrice = getAvailablePrice(asset)
   const isUnsupportedPricing =
     !asset?.accessDetails ||
     !asset.services.length ||
-    asset?.stats?.price?.value === undefined ||
     asset?.accessDetails?.type === 'NOT_SUPPORTED' ||
     (asset?.accessDetails?.type === 'fixed' &&
       !asset?.accessDetails?.baseToken?.symbol)
@@ -102,7 +107,7 @@ export default function Download({
 
         const _orderPriceAndFees = await getOrderPriceAndFees(
           asset,
-          ZERO_ADDRESS
+          accountId || ZERO_ADDRESS
         )
         setOrderPriceAndFees(_orderPriceAndFees)
         !orderPriceAndFees && setIsPriceLoading(false)
@@ -169,8 +174,6 @@ export default function Download({
     setIsLoading(true)
     setRetry(false)
     try {
-      const signerToUse: Signer = isAutomationEnabled ? autoWallet : signer
-
       if (isOwned) {
         setStatusText(
           getOrderFeedback(
@@ -179,13 +182,7 @@ export default function Download({
           )[3]
         )
 
-        await downloadFile(
-          signerToUse,
-          asset,
-          accountId,
-          validOrderTx,
-          dataParams
-        )
+        await downloadFile(signer, asset, accountId, validOrderTx, dataParams)
       } else {
         setStatusText(
           getOrderFeedback(
@@ -195,7 +192,7 @@ export default function Download({
         )
 
         const orderTx = await order(
-          signerToUse,
+          signer,
           asset,
           orderPriceAndFees,
           accountId,
@@ -268,7 +265,7 @@ export default function Download({
                   <Loader message="Calculating full price (including fees)" />
                 ) : (
                   <Price
-                    price={asset.stats?.price}
+                    price={price}
                     orderPriceAndFees={orderPriceAndFees}
                     size="large"
                   />
@@ -308,10 +305,22 @@ export default function Download({
         <aside className={styles.consume}>
           <div className={styles.info}>
             <div className={styles.filewrapper}>
-              <FileIcon file={file} isLoading={fileIsLoading} small />
+              <FileIcon
+                file={file}
+                isAccountWhitelisted={isAccountIdWhitelisted}
+                isLoading={fileIsLoading}
+                small
+              />
             </div>
             <AssetAction asset={asset} />
           </div>
+          {isOwned && (
+            <div className={styles.confettiContainer}>
+              <SuccessConfetti
+                success={`You successfully bought this ${asset.metadata.type} and are now able to download it.`}
+              />
+            </div>
+          )}
           {asset?.metadata?.type === 'algorithm' && (
             <AlgorithmDatasetsListForCompute
               algorithmDid={asset.id}

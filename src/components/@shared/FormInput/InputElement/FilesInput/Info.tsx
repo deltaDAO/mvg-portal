@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { prettySize } from './utils'
 import cleanupContentType from '@utils/cleanupContentType'
 import styles from './Info.module.css'

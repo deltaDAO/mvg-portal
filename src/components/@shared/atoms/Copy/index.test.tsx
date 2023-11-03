@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, act, screen, fireEvent } from '@testing-library/react'
 import { Default } from './index.stories'
 import Copy from '.'

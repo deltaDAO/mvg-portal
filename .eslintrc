@@ -29,10 +29,11 @@
         "oceanprotocol/react",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
+        "plugin:jest-dom/recommended",
         "plugin:prettier/recommended",
         "plugin:react-hooks/recommended",
-        "plugin:testing-library/react",
-        "plugin:jest-dom/recommended"
+        "plugin:react/jsx-runtime",
+        "plugin:testing-library/react"
       ],
       "plugins": [
         "@typescript-eslint",
@@ -47,6 +48,10 @@
         "@typescript-eslint/explicit-function-return-type": "off",
         "no-use-before-define": "off",
         "@typescript-eslint/no-use-before-define": "error",
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": ["warn"],
+        "no-explicit-any": "off",
+        "@typescript-eslint/no-explicit-any": ["warn"],
         "prefer-destructuring": [
           "error",
           {

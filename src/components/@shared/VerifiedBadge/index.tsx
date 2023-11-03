@@ -1,5 +1,5 @@
 import classNames from 'classnames/bind'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import VerifiedPatch from '@images/patch_check.svg'
 import Cross from '@images/cross.svg'
 import styles from './index.module.css'

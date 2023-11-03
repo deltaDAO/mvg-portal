@@ -1,4 +1,3 @@
-import React from 'react'
 import testRender from '../../../../../.jest/testRender'
 import Alert from '@shared/atoms/Alert'
 import { render } from '@testing-library/react'

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Publish from '../../components/Publish'
 import Page from '@shared/Page'
 import content from '../../../content/publish/index.json'

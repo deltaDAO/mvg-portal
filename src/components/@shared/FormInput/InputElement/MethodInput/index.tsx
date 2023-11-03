@@ -1,12 +1,8 @@
-import React, { ReactElement, useEffect, useState } from 'react'
-import Button from '@shared/atoms/Button'
+import { ReactElement, useState } from 'react'
 import { ErrorMessage, useField } from 'formik'
-import Loader from '@shared/atoms/Loader'
 import styles from './index.module.css'
 import InputGroup from '@shared/FormInput/InputGroup'
 import InputElement from '@shared/FormInput/InputElement'
-import isUrl from 'is-url-superb'
-import { isCID } from '@utils/ipfs'
 
 export interface MethodInputProps {
   handleButtonClick(method: string): void

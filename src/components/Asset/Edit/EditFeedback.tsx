@@ -2,7 +2,7 @@ import Alert from '@shared/atoms/Alert'
 import Button from '@shared/atoms/Button'
 import Loader from '@shared/atoms/Loader'
 import SuccessConfetti from '@shared/SuccessConfetti'
-import React, { ReactElement, useState, FormEvent } from 'react'
+import { ReactElement, useState, FormEvent } from 'react'
 import styles from './EditFeedback.module.css'
 
 interface Action {

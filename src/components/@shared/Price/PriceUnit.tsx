@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import styles from './PriceUnit.module.css'
 import { useUserPreferences } from '@context/UserPreferences'
 import { formatNumber } from '@utils/numbers'

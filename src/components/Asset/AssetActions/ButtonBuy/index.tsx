@@ -1,4 +1,4 @@
-import React, { FormEvent, ReactElement } from 'react'
+import { FormEvent, ReactElement } from 'react'
 import Button from '../../../@shared/atoms/Button'
 import styles from './index.module.css'
 import Loader from '../../../@shared/atoms/Loader'

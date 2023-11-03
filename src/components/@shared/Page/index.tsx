@@ -1,4 +1,4 @@
-import React, { ReactNode, ReactElement } from 'react'
+import { ReactNode, ReactElement } from 'react'
 import PageHeader from './PageHeader'
 import Seo from './Seo'
 import Container from '@shared/atoms/Container'

@@ -5,7 +5,7 @@ import {
   LoggerInstance,
   Provider
 } from '@oceanprotocol/lib'
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { ListItem } from '@shared/atoms/Lists'
 import Button from '@shared/atoms/Button'
 import styles from './Results.module.css'
@@ -83,7 +83,7 @@ export default function Results({
       )
       await downloadFileBrowser(jobResult)
     } catch (error) {
-      const message = getErrorMessage(JSON.parse(error.message))
+      const message = getErrorMessage(error.message)
       LoggerInstance.error('[Provider Get c2d results url] Error:', message)
       toast.error(message)
     }

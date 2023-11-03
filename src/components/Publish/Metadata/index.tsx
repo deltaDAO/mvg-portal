@@ -1,7 +1,7 @@
 import { BoxSelectionOption } from '@shared/FormInput/InputElement/BoxSelection'
 import Input from '@shared/FormInput'
 import { Field, useField, useFormikContext } from 'formik'
-import React, { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import content from '../../../../content/publish/form.json'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
 import { FormPublishData } from '../_types'

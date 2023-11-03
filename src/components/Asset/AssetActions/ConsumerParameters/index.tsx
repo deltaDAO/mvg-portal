@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import FormConsumerParameters from './FormConsumerParameters'
 import styles from './index.module.css'
 import Tabs, { TabsItem } from '@shared/atoms/Tabs'

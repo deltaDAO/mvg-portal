@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useEffect, useState } from 'react'
+import { ReactElement, ReactNode, useEffect, useState } from 'react'
 import External from '@images/external.svg'
 import { Config } from '@oceanprotocol/lib'
 import styles from './index.module.css'

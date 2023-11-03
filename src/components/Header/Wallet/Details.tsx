@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Button from '@shared/atoms/Button'
 // import { useOrbis } from '@context/DirectMessages'
 import { useDisconnect, useAccount, useConnect } from 'wagmi'

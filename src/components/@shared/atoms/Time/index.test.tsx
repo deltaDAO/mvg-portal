@@ -1,4 +1,3 @@
-import React from 'react'
 import testRender from '../../../../../.jest/testRender'
 import Time from '@shared/atoms/Time'
 import { Default, Relative, IsUnix, Undefined } from './index.stories'

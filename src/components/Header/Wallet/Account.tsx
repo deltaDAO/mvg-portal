@@ -1,4 +1,4 @@
-import React, { FormEvent } from 'react'
+import { forwardRef, FormEvent } from 'react'
 import Caret from '@images/caret.svg'
 import { accountTruncate } from '@utils/wallet'
 // import Loader from '@shared/atoms/Loader'
@@ -9,7 +9,7 @@ import { useModal } from 'connectkit'
 
 // Forward ref for Tippy.js
 // eslint-disable-next-line
-const Account = React.forwardRef((props, ref: any) => {
+const Account = forwardRef((props, ref: any) => {
   const { address: accountId } = useAccount()
   const { setOpen } = useModal()
 

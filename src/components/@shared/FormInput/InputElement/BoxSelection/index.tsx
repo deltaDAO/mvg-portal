@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react'
+import { ChangeEvent } from 'react'
 import Loader from '@shared/atoms/Loader'
 import styles from './index.module.css'
 

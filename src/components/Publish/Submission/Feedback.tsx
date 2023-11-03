@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { FormPublishData } from '../_types'
 import styles from './Feedback.module.css'
 import TransactionCount from './TransactionCount'

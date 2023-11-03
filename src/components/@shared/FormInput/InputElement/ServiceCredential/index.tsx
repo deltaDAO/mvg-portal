@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useField } from 'formik'
 import { toast } from 'react-toastify'
 import Input, { InputProps } from '../..'

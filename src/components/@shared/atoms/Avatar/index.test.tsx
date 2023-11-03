@@ -1,4 +1,3 @@
-import React from 'react'
 import testRender from '../../../../../.jest/testRender'
 import Avatar from '@shared/atoms/Avatar'
 import { DefaultWithBlockies, CustomSource, Empty } from './index.stories'

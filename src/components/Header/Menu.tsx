@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Link from 'next/link'
 import loadable from '@loadable/component'
 import Logo from '@shared/atoms/Logo'

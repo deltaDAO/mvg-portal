@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useEffect } from 'react'
+import { ReactElement, ReactNode, useEffect } from 'react'
 import { confetti } from 'dom-confetti'
 import Alert from '@shared/atoms/Alert'
 import styles from './index.module.css'

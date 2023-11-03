@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { AssetPrice } from '@oceanprotocol/lib'
 import PriceUnit from './PriceUnit'
 
@@ -15,7 +15,6 @@ export default function Price({
   size?: 'small' | 'mini' | 'large'
 }): ReactElement {
   if (!price && !orderPriceAndFees) return
-
   return (
     <PriceUnit
       price={Number(orderPriceAndFees?.price) || price?.value}

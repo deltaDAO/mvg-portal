@@ -1,7 +1,6 @@
-import Label from '@shared/FormInput/Label'
 import Markdown from '@shared/Markdown'
 import { useFormikContext } from 'formik'
-import React, { ReactElement, ReactNode, useEffect, useState } from 'react'
+import { ReactElement, ReactNode, useState } from 'react'
 import { Tab, Tabs as ReactTabs, TabList, TabPanel } from 'react-tabs'
 import { FormPublishData } from 'src/components/Publish/_types'
 import Tooltip from '../Tooltip'

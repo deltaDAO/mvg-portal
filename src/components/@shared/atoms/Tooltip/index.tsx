@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { forwardRef, ReactElement } from 'react'
 import { useSpring, animated } from 'react-spring'
 import stylesTooltip from './index.module.css'
 import Info from '@images/info.svg'
@@ -12,7 +12,7 @@ const animation = {
 
 // Forward ref for Tippy.js
 // eslint-disable-next-line
-const DefaultTrigger = React.forwardRef((props, ref: any) => {
+const DefaultTrigger = forwardRef((props, ref: any) => {
   return <Info className={stylesTooltip.icon} ref={ref} />
 })
 

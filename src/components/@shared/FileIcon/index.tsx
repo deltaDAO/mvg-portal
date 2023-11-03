@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { filesize } from 'filesize'
 import cleanupContentType from '@utils/cleanupContentType'
 import styles from './index.module.css'
@@ -15,11 +15,13 @@ function LoaderArea() {
 
 export default function FileIcon({
   file,
+  isAccountWhitelisted,
   className,
   small,
   isLoading
 }: {
   file: FileInfo
+  isAccountWhitelisted: boolean
   className?: string
   small?: boolean
   isLoading?: boolean
@@ -32,7 +34,8 @@ export default function FileIcon({
     <ul className={styleClasses}>
       {!isLoading ? (
         <>
-          {file?.contentType || file?.contentLength ? (
+          {isAccountWhitelisted &&
+          (file?.contentType || file?.contentLength) ? (
             <>
               <li>{cleanupContentType(file.contentType)}</li>
               <li>

@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import Compute from './Compute'
 import Download from './Download'
 import { FileInfo, LoggerInstance, Datatoken } from '@oceanprotocol/lib'
@@ -14,9 +14,10 @@ import { FormPublishData } from '@components/Publish/_types'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import AssetStats from './AssetStats'
 import { isAddressWhitelisted } from '@utils/ddo'
-import { useAccount, useProvider, useNetwork } from 'wagmi'
+import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useAutomation } from '../../../@context/Automation/AutomationProvider'
+import { Signer } from 'ethers'
 
 export default function AssetActions({
   asset
@@ -24,6 +25,7 @@ export default function AssetActions({
   asset: AssetExtended
 }): ReactElement {
   const { address: accountId } = useAccount()
+  const { data: signer } = useSigner()
   const { balance } = useBalance()
   const {
     isAutomationEnabled,
@@ -48,10 +50,17 @@ export default function AssetActions({
   const [fileIsLoading, setFileIsLoading] = useState<boolean>(false)
   const [isAccountIdWhitelisted, setIsAccountIdWhitelisted] =
     useState<boolean>()
+  const [signerToUse, setSignerToUse] = useState<Signer>(signer)
+  const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
 
   const isCompute = Boolean(
     asset?.services.filter((service) => service.type === 'compute')[0]
   )
+
+  useEffect(() => {
+    setSignerToUse(isAutomationEnabled ? autoWallet : signer)
+    setAccountIdToUse(isAutomationEnabled ? autoWallet?.address : accountId)
+  }, [isAutomationEnabled, accountId, autoWallet, signer])
 
   // Get and set file info
   useEffect(() => {
@@ -105,6 +114,7 @@ export default function AssetActions({
 
         setFileIsLoading(false)
       } catch (error) {
+        setFileIsLoading(false)
         LoggerInstance.error(error.message)
       }
     }
@@ -113,14 +123,14 @@ export default function AssetActions({
 
   // Get and set user DT balance
   useEffect(() => {
-    if (!web3Provider || !accountId || !isAssetNetwork) return
+    if (!web3Provider || !accountIdToUse || !isAssetNetwork) return
 
     async function init() {
       try {
         const datatokenInstance = new Datatoken(web3Provider as any)
         const dtBalance = await datatokenInstance.balance(
           asset.services[0].datatokenAddress,
-          isAutomationEnabled ? autoWallet?.address : accountId
+          accountIdToUse
         )
         setDtBalance(dtBalance)
       } catch (e) {
@@ -128,7 +138,7 @@ export default function AssetActions({
       }
     }
     init()
-  }, [web3Provider, accountId, asset, isAssetNetwork])
+  }, [web3Provider, accountIdToUse, asset, isAssetNetwork])
 
   // Check user balance against price
   useEffect(() => {
@@ -136,7 +146,7 @@ export default function AssetActions({
     if (
       !asset?.accessDetails?.price ||
       !asset?.accessDetails?.baseToken?.symbol ||
-      !accountId ||
+      !accountIdToUse ||
       !balance ||
       !dtBalance
     )
@@ -159,7 +169,7 @@ export default function AssetActions({
     }
   }, [
     balance,
-    accountId,
+    accountIdToUse,
     asset?.accessDetails,
     dtBalance,
     isAutomationEnabled,
@@ -168,15 +178,17 @@ export default function AssetActions({
 
   // check for if user is whitelisted or blacklisted
   useEffect(() => {
-    if (!asset || !accountId) return
+    if (!asset || !accountIdToUse) return
 
-    setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountId))
-  }, [accountId, asset])
+    setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountIdToUse))
+  }, [accountIdToUse, asset])
 
   return (
     <div className={styles.actions}>
       {isCompute ? (
         <Compute
+          accountId={accountIdToUse}
+          signer={signerToUse}
           asset={asset}
           dtBalance={dtBalance}
           isAccountIdWhitelisted={isAccountIdWhitelisted}
@@ -185,6 +197,8 @@ export default function AssetActions({
         />
       ) : (
         <Download
+          accountId={accountIdToUse}
+          signer={signerToUse}
           asset={asset}
           dtBalance={dtBalance}
           isBalanceSufficient={isBalanceSufficient}

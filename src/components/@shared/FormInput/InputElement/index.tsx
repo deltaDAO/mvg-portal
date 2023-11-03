@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactElement, RefObject } from 'react'
+import { forwardRef, ReactElement, RefObject } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 import styles from './index.module.css'
 import { InputProps } from '..'

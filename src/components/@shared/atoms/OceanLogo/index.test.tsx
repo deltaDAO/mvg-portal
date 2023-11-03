@@ -1,4 +1,3 @@
-import React from 'react'
 import testRender from '../../../../../.jest/testRender'
 import OceanLogo from '@shared/atoms/OceanLogo'
 import { Default, WithoutWordmark } from './index.stories'

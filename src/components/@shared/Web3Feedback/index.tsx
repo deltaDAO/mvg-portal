@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Status from '@shared/atoms/Status'
 import styles from './index.module.css'
 import WalletNetworkSwitcher from '../WalletNetworkSwitcher'

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import styles from './Balance.module.css'
 

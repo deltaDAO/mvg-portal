@@ -1,4 +1,3 @@
-import React from 'react'
 import { render, screen } from '@testing-library/react'
 import testRender from '../../../../.jest/testRender'
 import AssetTeaser from './index'
@@ -8,7 +7,7 @@ describe('@shared/AssetTeaser', () => {
   testRender(<AssetTeaser asset={asset} />)
 
   it('renders no pricing schema available', () => {
-    asset.stats.price = null
+    asset.accessDetails.type = 'NOT_SUPPORTED'
     render(<AssetTeaser asset={asset} />)
     expect(screen.getByText('No pricing schema available')).toBeInTheDocument()
     expect(screen.getByText('This is a test.')).toBeInTheDocument()

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import MetaItem from './MetaItem'
 import styles from './MetaSecondary.module.css'
 import Tags from '@shared/atoms/Tags'

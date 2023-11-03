@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import Link from 'next/link'
 import { accountTruncate } from '@utils/wallet'

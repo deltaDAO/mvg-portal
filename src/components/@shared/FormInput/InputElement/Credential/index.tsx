@@ -1,5 +1,5 @@
 import { useField } from 'formik'
-import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react'
+import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 import Button from '../../../atoms/Button'
 import styles from './index.module.css'
 import { isAddress } from 'ethers/lib/utils.js'

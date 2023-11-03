@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
@@ -159,6 +159,7 @@ export default function VerifyPage({
               copyText={
                 serviceCredential && JSON.stringify(serviceCredential, null, 2)
               }
+              defaultExpanded
             />
           </div>
         )

@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect } from 'react'
 import classNames from 'classnames/bind'
 import { addExistingParamsToUrl } from './utils'
 import Button from '@shared/atoms/Button'

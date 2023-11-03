@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect, useCallback } from 'react'
+import { ReactElement, useState, useEffect, useCallback } from 'react'
 import AssetList from '@shared/AssetList'
 import queryString from 'query-string'
 import Filter from './Filter'

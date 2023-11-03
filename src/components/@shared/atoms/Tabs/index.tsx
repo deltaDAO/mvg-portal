@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode } from 'react'
+import { ReactElement, ReactNode } from 'react'
 import { Tab, Tabs as ReactTabs, TabList, TabPanel } from 'react-tabs'
 import InputRadio from '@shared/FormInput/InputElement/Radio'
 import styles from './index.module.css'

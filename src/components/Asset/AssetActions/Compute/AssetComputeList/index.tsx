@@ -1,4 +1,3 @@
-import React from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import Link from 'next/link'
 import PriceUnit from '@shared/Price/PriceUnit'

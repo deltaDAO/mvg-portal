@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import styles from './FormComputeDataset.module.css'
 import { Field, Form, FormikContextType, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
@@ -97,8 +97,11 @@ export default function FormStartCompute({
     balance: automationBalance
   } = useAutomation()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { isValid, values }: FormikContextType<ComputeDatasetForm> =
-    useFormikContext()
+  const {
+    isValid,
+    setFieldValue,
+    values
+  }: FormikContextType<ComputeDatasetForm> = useFormikContext()
   const { asset, isAssetNetwork } = useAsset()
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState(
@@ -117,6 +120,25 @@ export default function FormStartCompute({
     })
     return assetDdo
   }
+
+  // Pre-select computeEnv and/or algo if there is only one available option
+  useEffect(() => {
+    if (computeEnvs?.length === 1 && !values.computeEnv) {
+      const { id } = computeEnvs[0]
+      setFieldValue('computeEnv', id, true)
+    }
+    if (algorithms?.length === 1 && !values.algorithm) {
+      const { did } = algorithms[0]
+      setFieldValue('algorithm', did, true)
+    }
+  }, [
+    algorithms,
+    computeEnvs,
+    setFieldValue,
+    setSelectedComputeEnv,
+    values.algorithm,
+    values.computeEnv
+  ])
 
   useEffect(() => {
     if (!values.algorithm || !isConsumable) return
@@ -287,6 +309,13 @@ export default function FormStartCompute({
               : field?.options
           }
           accountId={isAutomationEnabled ? autoWallet?.address : accountId}
+          selected={
+            field.name === 'algorithm'
+              ? values.algorithm
+              : field.name === 'computeEnv'
+              ? values.computeEnv
+              : undefined
+          }
         />
       ))}
       {asset && selectedAlgorithmAsset && (
@@ -359,6 +388,7 @@ export default function FormStartCompute({
       <Field
         {...content.form.termsAndConditions}
         component={Input}
+        disabled={isLoading}
         onChange={() =>
           setTermsAndConditions((termsAndConditions) => !termsAndConditions)
         }

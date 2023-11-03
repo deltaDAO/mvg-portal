@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useAsset } from '@context/Asset'
 import ExplorerLink from '@shared/ExplorerLink'
 import Time from '@shared/atoms/Time'

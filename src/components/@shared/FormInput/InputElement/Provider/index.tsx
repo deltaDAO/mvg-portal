@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { useField, useFormikContext } from 'formik'
 import UrlInput from '../URLInput'
 import { InputProps } from '@shared/FormInput'
@@ -76,7 +76,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
       // if all good, add provider to formik state
       helpers.setValue({ url: field.value.url, valid: isValid, custom: true })
     } catch (error) {
-      const message = getErrorMessage(JSON.parse(error.message))
+      const message = getErrorMessage(error.message)
       setFieldError(`${field.name}.url`, message)
       LoggerInstance.error('[Custom Provider]:', message)
     } finally {
@@ -92,7 +92,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
   function handleDefault(e: React.SyntheticEvent) {
     e.preventDefault()
 
-    const oceanConfig = getOceanConfig(chain?.id)
+    const oceanConfig = getOceanConfig(chain?.id || 100)
     const providerUrl =
       oceanConfig?.providerUri || initialValues.services[0].providerUrl.url
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ReactElement } from 'react'
+import { useState, useEffect, ReactElement } from 'react'
 import { useRouter } from 'next/router'
 import Page from '@shared/Page'
 import Alert from '@shared/atoms/Alert'

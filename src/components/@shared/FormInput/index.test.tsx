@@ -1,7 +1,6 @@
 import { BoxSelectionOption } from '@shared/FormInput/InputElement/BoxSelection'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { render, screen } from '@testing-library/react'
-import React from 'react'
 import FormInput from './index'
 
 describe('@shared/FormInput', () => {

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './FormActions.module.css'
 import { useField, useFormikContext } from 'formik'

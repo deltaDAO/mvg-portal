@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import Tabs from '@shared/atoms/Tabs'
 import PublishedList from './PublishedList'
 import Downloads from './Downloads'

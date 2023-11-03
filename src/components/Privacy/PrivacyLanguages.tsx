@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { Fragment, ReactElement } from 'react'
 import styles from './PrivacyLanguages.module.css'
 import { usePrivacyMetadata } from '@hooks/usePrivacyMetadata'
 import { useUserPreferences } from '@context/UserPreferences'
@@ -19,7 +19,7 @@ export default function PrivacyLanguages({
         {policies.map((policy, i) => {
           const slug = `/privacy/${policy.policy}`
           return (
-            <React.Fragment key={policy.policy}>
+            <Fragment key={policy.policy}>
               {i > 0 && ' — '}
               <Link
                 href={slug}
@@ -29,7 +29,7 @@ export default function PrivacyLanguages({
               >
                 {policy.language}
               </Link>
-            </React.Fragment>
+            </Fragment>
           )
         })}
       </div>

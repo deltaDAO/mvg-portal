@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import Markdown from '@shared/Markdown'
 import MetaFull from './MetaFull'
 import MetaSecondary from './MetaSecondary'
@@ -101,6 +101,7 @@ export default function AssetContent({
                       serviceCredential &&
                       JSON.stringify(serviceCredential, null, 2)
                     }
+                    collapsible
                   />
                 )}
                 <MetaSecondary ddo={asset} />

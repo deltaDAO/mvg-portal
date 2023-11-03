@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Tooltip from '@shared/atoms/Tooltip'
 import styles from './Fees.module.css'
 import Input from '@shared/FormInput'

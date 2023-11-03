@@ -1,6 +1,6 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { Wallet, ethers } from 'ethers'
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
