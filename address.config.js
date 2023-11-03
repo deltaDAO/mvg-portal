@@ -21,8 +21,6 @@ module.exports = {
       title: 'Manufacturing, Industry 4.0',
       assets: [
         'did:op:6fe6ae5f546adf88606a0da158389f44a0801c3fe87ddb6e1f63e9120e07989c', // The Digital Project Management Office (DigitalPMO)
-        'did:op:739b2e3158ccd6db1b47ca5d84a63ba258732c70dcdcc7ae519ac57bb1c37e6d', // Import Semantic Collaboration Service
-        'did:op:540200ff34165c3d8e8abfb0e388575e44a9e9509a5912a353e7eb2a672e6f42', // Semantic Collaboration 1
         'did:op:ac74139fa102d32f326ccdab3727a95299f1c2b6add9158385439e5b06810833', // AutoTiM Machine Learning Application
         'did:op:271ebac61d2881e83116c285173abbdb99bfd8abe6cb0661f7bf070eea0c25c9', // AutoTiM - Basic Motion
         'did:op:dd456754dc659ef111cc5fa87662cda1a67ca390c3f86fee4d5592ecb3bbffd5', // Supplier No. 1 - Component Data for Part Matching
@@ -43,7 +41,6 @@ module.exports = {
         'did:op:21d53b2a3e227bf57c6ed9d1823ff6a2149f429346648e503146e2ff712aa39b', // CrossAsia Probability Calculation Data for Topics in Time
         'did:op:dc0765630d1ca3fbfb8f03d7ef63743ab5c4b585b599723476c8122106f34271', // CrossAsia Text Analysis - State Library of Berlin
         'did:op:bff53f8c36f2156cff80e5fa18f39d76cb3c52617694a7cde4635826209c259c', // CrossAsia Text Analysis Algorithm
-        'did:op:9308b56b84b2475ff8e9a8251adba96dbd9461bd528ef4b0c98638d11ab5375b', // BIMKIT Text Localization in Architectural Floor Plans
         'did:op:1c77a8c28444f5405d8a23ad88d5579c12be574712378ca5b5a6385730412e1c', // BIMKIT Algorithm for Text Localization in Architectural Floor Plans
         'did:op:f231ad11244f2c2e86d694a24765d49dccdaddf1b48b4b0b74ebd586a44bac39', // Die Handelswege und Verkehrsmittel der Gegenwart
         'did:op:b6e20571d7b403895aed65e0d5156e4a1dad809c969c38c6fc2154bb26c33d12', // Stanley's sämtliche Reisen in Afrika
@@ -56,9 +53,7 @@ module.exports = {
         'did:op:c72269ff3ce9fae795af4371d36aec556f76df882f12d79f54a6bab55fe58ea4', // GraphQL Demo - Download (EUROe)
         'did:op:b4ee67dfe05f0585506b648c280459f72700b6023daf823fa819487254e1d448', // GraphQL Demo - Compute (EUROe)
         'did:op:b41ec3fbb97bf0a59a5ada5c5bf3f4432f548cadd28ca07884168068cfe30cae', // GraphQL Demo - Download (FREE)
-        'did:op:020543f761a65f3f6831730fa865d606f23d33c547e2c2596407208b573f10a7', // GraphQL Demo - Product Quantity Computation Algorithm
-        'did:op:5ba2181701538eb73ed81bf91d386accd5bb9afb1e850945b38c945d04850bfe', // GraphQL Demo - Download (OCEAN)
-        'did:op:78e88197730d01625963e3461f18dc89bfc6f8fdf2d146df9a076bb1d2f8d4a8' // GraphQL Demo - Compute (OCEAN)
+        'did:op:020543f761a65f3f6831730fa865d606f23d33c547e2c2596407208b573f10a7' // GraphQL Demo - Product Quantity Computation Algorithm
       ]
     }
   ],
