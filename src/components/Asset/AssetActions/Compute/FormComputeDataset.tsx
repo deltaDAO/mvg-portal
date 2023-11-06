@@ -127,7 +127,11 @@ export default function FormStartCompute({
       const { id } = computeEnvs[0]
       setFieldValue('computeEnv', id, true)
     }
-    if (algorithms?.length === 1 && !values.algorithm) {
+    if (
+      algorithms?.length === 1 &&
+      !values.algorithm &&
+      algorithms?.[0]?.isAccountIdWhitelisted
+    ) {
       const { did } = algorithms[0]
       setFieldValue('algorithm', did, true)
     }
