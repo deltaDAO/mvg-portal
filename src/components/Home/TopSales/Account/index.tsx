@@ -24,7 +24,7 @@ export default function Account({
       <Avatar accountId={account.id} className={styles.avatar} />
       <div>
         <Dotdotdot tagName="h4" clamp={2} className={styles.name}>
-          {verifiedWallets[account.id] || accountTruncate(account.id)}
+          {verifiedWallets?.[account.id] || accountTruncate(account.id)}
         </Dotdotdot>
         <p className={styles.sales}>
           <span>{account.totalSales}</span>
