@@ -1,12 +1,12 @@
 {
   "teaser": {
-    "title": "Gaia-X: Data Sovereignty for Europe",
-    "text": "Gaia-X represents the next generation of data infrastructure: an **open, transparent and secure digital ecosystem**, where data and services can be made available, collated and shared in an environment of trust. The architecture of Gaia-X is based on the principle of decentralisation."
+    "title": "Pontus-X: Data Sovereignty for Europe",
+    "text": "Pontus-X represents the next generation of data infrastructure: an **open, transparent and secure digital ecosystem**, where data and services can be made available, collated and shared in an environment of trust. The architecture of Pontus-X is based on Gaia-X and on the principle of decentralization."
   },
   "paragraphs": [
     {
-      "title": "The Gaia-X Web3 Ecosystem on DLT",
-      "body": "The principle of decentralization is a perfect fit for **Distributed Ledger Technology**. [Ocean Protocol](https://oceanprotocol.com) is a fully open-source technology stack, leveraging DLT and decentralization, aiming to give control back to the owners of data services. Pontus-X is built on top of Ocean Protocol showcasing how the Gaia-X Web3 Ecosystem on DLT and Ocean Protocol can look like, already today.",
+      "title": "The Gaia-X Powered Ecosystem on DLT",
+      "body": "The principle of decentralization is a perfect fit for **Distributed Ledger Technology**. [Ocean Protocol](https://oceanprotocol.com) is a fully open-source technology stack, leveraging DLT and decentralization, aiming to give control back to the owners of data services. Pontus-X is built on top of Ocean Protocol showcasing how the Gaia-X Powered Ecosystem on DLT and Ocean Protocol can look like, already today.",
       "cta": "Learn More",
       "ctaTo": "https://docs.pontus-x.eu/docs/Community/Introduction",
       "image": "/images/genx_validators.webp"
