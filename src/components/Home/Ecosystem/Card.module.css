@@ -1,19 +1,20 @@
 .container {
   --expanded-logo-container-height: 13rem;
-  --collapsed-logo-container-height: 3rem;
+  --collapsed-logo-container-height: 4rem;
   --expanded-overlay-height: 15rem;
-  --collapsed-overlay-height: 5rem;
+  --collapsed-overlay-height: 6rem;
 
   composes: box from '@shared/atoms/Box.module.css';
 
-  height: 23rem;
   position: relative;
+  height: 24rem;
+  padding: calc(var(--spacer) / 1.5);
 }
 
 .logoContainer {
   width: 100%;
   height: var(--expanded-logo-container-height);
-  margin-bottom: calc(var(--spacer) / 2);
+  margin: 0 auto;
   transition: all 0.3s;
 }
 
@@ -28,6 +29,7 @@
 .overlayContainer {
   position: relative;
   height: var(--collapsed-overlay-height);
+  text-align: center;
   overflow-y: hidden;
   transition: transform 0.3s;
 }
@@ -41,13 +43,13 @@
   width: 100%;
   top: 0;
   transition: transform 0.3s;
-  transform: translate3d(0, 25%, 0);
+  transform: translate3d(0, 5rem, 0);
 }
 
 .title {
   display: block;
   font-size: var(--font-size-h4);
-  margin-bottom: calc(var(--spacer) / 2);
+  margin: calc(var(--spacer) / 4) 0;
   transform: translate3d(0, -100%, 0);
   transition: transform 0.3s;
 }
@@ -56,6 +58,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   flex-grow: 1;
   opacity: 0;
   transition: opacity 0.5s 0.1s;
@@ -86,22 +89,24 @@
 .container:hover .logoContainer {
   height: var(--collapsed-logo-container-height);
   width: 50%;
+  margin-left: auto;
+  margin-right: auto;
   transition: all 0.3s;
 }
 
-.container:hover .logo {
-  float: left;
+.header {
+  width: 100%;
+  height: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .indicatorContainer {
-  position: absolute;
   display: flex;
   align-items: center;
   gap: calc(var(--spacer) / 8);
-  top: calc(var(--spacer) / 2);
-  right: calc(var(--spacer) / 2);
   color: var(--brand-alert-green);
-  font-size: var(--font-size-large);
 }
 
 .indicator {
@@ -123,6 +128,31 @@
   box-shadow: 0 0 0 0 var(--brand-alert-green);
   transform: scale(1);
   animation: pulse 4s infinite;
+}
+
+/* on touch devices show expanded details by default */
+@media (pointer: none), (pointer: coarse) {
+  .overlay {
+    transform: translate3d(0, 0, 0);
+  }
+  .title {
+    transform: translate3d(0, 0, 0);
+    margin-top: calc(var(--spacer) / 2);
+  }
+  .overlayContainer {
+    height: var(--expanded-overlay-height);
+    transition: all 0.3s;
+  }
+  .details {
+    opacity: 1;
+  }
+  .logoContainer {
+    height: var(--collapsed-logo-container-height);
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.3s;
+  }
 }
 
 @keyframes pulse {
@@ -149,31 +179,5 @@
     transform: scale(0.95);
     opacity: 0;
     box-shadow: 0 0 0 0 var(--brand-alert-green);
-  }
-}
-
-/* on touch devices show expanded details by default */
-@media (pointer: none), (pointer: coarse) {
-  .overlay {
-    transform: translate3d(0, 0, 0);
-  }
-  .title {
-    transform: translate3d(0, 0, 0);
-    margin-top: calc(var(--spacer) / 2);
-  }
-  .overlayContainer {
-    height: var(--expanded-overlay-height);
-    transition: all 0.3s;
-  }
-  .details {
-    opacity: 1;
-  }
-  .logoContainer {
-    height: var(--collapsed-logo-container-height);
-    width: 50%;
-    transition: all 0.3s;
-  }
-  .logo {
-    float: left;
   }
 }
