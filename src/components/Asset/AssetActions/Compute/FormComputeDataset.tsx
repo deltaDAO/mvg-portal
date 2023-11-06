@@ -120,7 +120,7 @@ export default function FormStartCompute({
     })
     return assetDdo
   }
-  console.log(algorithms)
+
   // Pre-select computeEnv and/or algo if there is only one available option
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
