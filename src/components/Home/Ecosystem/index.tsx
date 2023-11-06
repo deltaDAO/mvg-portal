@@ -13,6 +13,7 @@ export default function Ecosystem() {
       {ecosystemList?.map((portal) => (
         <Card
           key={portal.name}
+          category={portal.category}
           description={portal.description}
           image={portal.image}
           link={portal.link}

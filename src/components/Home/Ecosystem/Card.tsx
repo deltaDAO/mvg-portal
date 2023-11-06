@@ -1,13 +1,16 @@
 import Markdown from '@components/@shared/Markdown'
 import styles from './Card.module.css'
 import Button from '@components/@shared/atoms/Button'
+import Badge from '@components/@shared/atoms/Badge'
 
 export default function Card({
+  category,
   description,
   image,
   link,
   title
 }: {
+  category: string
   description: string
   image: string
   link: string
@@ -15,11 +18,14 @@ export default function Card({
 }) {
   return (
     <div className={styles.container}>
-      <div className={styles.indicatorContainer}>
-        <div className={styles.indicator}>
-          <div className={styles.indicatorPulse} />
+      <div className={styles.header}>
+        <Badge label={category} />
+        <div className={styles.indicatorContainer}>
+          <div className={styles.indicator}>
+            <div className={styles.indicatorPulse} />
+          </div>
+          <span>Live</span>
         </div>
-        <span>Live</span>
       </div>
       <div className={styles.logoContainer}>
         <img

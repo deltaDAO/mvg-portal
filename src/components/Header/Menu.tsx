@@ -23,6 +23,7 @@ declare type MenuItem = {
   subItems?: MenuItem[]
   description?: string
   image?: string
+  category?: string
   className?: string
 }
 

@@ -28,61 +28,71 @@
           "name": "EuProGigant",
           "link": "https://portal.euprogigant.io/",
           "description": "EuProGigant is the first funded binational industrial project with the practical implementation of the Gaia-X principles.",
-          "image": "euprogigant-logo.webp"
+          "image": "euprogigant-logo.webp",
+          "category": "manufacturing"
         },
         {
           "name": "GX4M moveID",
           "link": "https://portal.moveid.eu/",
           "description": "moveID aims to develop a decentralized digital mobility identity infrastructure for Europe.",
-          "image": "moveid-logo.webp"
+          "image": "moveid-logo.webp",
+          "category": "mobility"
         },
         {
           "name": "Cooperants",
           "link": "https://cooperants.pontus-x.eu/",
           "description": "The world's only collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
-          "image": "cooperants-logo.webp"
+          "image": "cooperants-logo.webp",
+          "category": "space"
         },
         {
           "name": "Airbus",
           "link": "https://airbus.pontus-x.eu/",
           "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
-          "image": "airbus-logo.webp"
+          "image": "airbus-logo.webp",
+          "category": "space"
         },
         {
           "name": "Service-Meister",
           "link": "https://servicemeister.pontus-x.eu/",
           "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
-          "image": "service-meister-logo.webp"
+          "image": "service-meister-logo.webp",
+          "category": "manufacturing"
         },
         {
           "name": "Future Mobility Marketplace",
           "link": "https://marketplace.future-mobility-alliance.org/",
           "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
-          "image": "fmdm-logo.webp"
+          "image": "fmdm-logo.webp",
+          "category": "mobility"
         },
         {
           "name": "Berlin State Library",
           "link": "https://sbb.pontus-x.eu/",
           "description": "Lorem ipsum...",
-          "image": "sbb-logo.webp"
+          "image": "sbb-logo.webp",
+          "category": "science"
         },
         {
           "name": "EnergySHR",
           "link": "https://www.energyshr.nl/",
           "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
-          "image": "energy-shr-logo.webp"
+          "image": "energy-shr-logo.webp",
+          "category": "science"
         },
         {
           "name": "Clinical Insights Exchange",
           "link": "https://cix.triall.io/",
           "description": "A federated data platform to change clinical data assets and analytics services in a trusted, privacy-friendly environment.",
-          "image": "clinical-insights-exchange-logo.webp"
+          "image": "clinical-insights-exchange-logo.webp",
+          "category": "health"
         },
         {
           "name": "UdL Research Data Space",
           "link": "https://dataspace.angliru.udl.cat/",
           "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
-          "image": "udl-logo.webp"
+          "image": "udl-logo.webp",
+          "category": "science"
         }
       ]
     }

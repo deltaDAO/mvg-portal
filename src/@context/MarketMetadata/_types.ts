@@ -49,14 +49,16 @@ export interface SiteContent {
     subItems?: {
       name: string
       link?: string
+      description?: string
+      image?: string
+      category?: string
       subItems?: {
         name: string
         link: string
         description?: string
         image?: string
+        category?: string
       }[]
-      description?: string
-      image?: string
     }[]
   }[]
   announcement: string
