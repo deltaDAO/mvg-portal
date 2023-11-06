@@ -90,19 +90,11 @@ export default function HomePage(): ReactElement {
               query={section.query}
             />
           ))}
-          <AllAssetsButton />
         </>
       )}
-      <SectionQueryResult
-        title="Recently Published"
-        query={queryRecent}
-        action={<AllAssetsButton />}
-      />
-      <SectionQueryResult
-        title="Most Sales"
-        query={queryMostSales}
-        action={<AllAssetsButton />}
-      />
+      <SectionQueryResult title="Recently Published" query={queryRecent} />
+      <SectionQueryResult title="Most Sales" query={queryMostSales} />
+      <AllAssetsButton />
     </>
   )
 }
