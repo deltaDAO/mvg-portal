@@ -7,7 +7,6 @@ import SectionQueryResult from './SectionQueryResult'
 import styles from './index.module.css'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 import TopSales from './TopSales'
-import TopTags from './TopTags'
 import HomeContent from './Content'
 import Ecosystem from './Ecosystem'
 
@@ -81,7 +80,7 @@ export default function HomePage(): ReactElement {
     <>
       <Ecosystem />
       <TopSales title="Publishers With Most Sales" />
-      <TopTags title="Top Tags By Sales" />
+      <HomeContent />
       {hasFeaturedAssets() && (
         <>
           {queryFeatured.map((section, i) => (
@@ -104,9 +103,6 @@ export default function HomePage(): ReactElement {
         query={queryMostSales}
         action={<AllAssetsButton />}
       />
-
-      {/* <MostViews /> */}
-      <HomeContent />
     </>
   )
 }
