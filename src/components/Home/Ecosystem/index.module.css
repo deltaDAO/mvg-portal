@@ -1,0 +1,3 @@
+.container {
+  composes: assetList from '@shared/AssetList/index.module.css';
+}

@@ -1,6 +1,6 @@
 .container {
   margin-bottom: var(--spacer);
-  margin-top: calc(var(--spacer) * 5);
+  margin-top: calc(var(--spacer) * 3);
 }
 
 @media screen and (min-width: 54rem) {

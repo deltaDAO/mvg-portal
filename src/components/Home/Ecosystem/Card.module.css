@@ -1,0 +1,183 @@
+.container {
+  --container-height: 24rem;
+  --container-padding: calc(var(--spacer) / 1.5);
+  --container-header-height: 2rem;
+  --container-content-height: calc(
+    var(--container-height) - (var(--container-padding) * 2) -
+      var(--container-header-height)
+  );
+  /* start view: 90% image - 10% text of the available content height*/
+  --logo-container-height: calc(0.9 * var(--container-content-height));
+  --overlay-height: calc(0.1 * var(--container-content-height));
+  /* expanded view: 20% image - 80% text of the available content height*/
+  --expanded-logo-container-height: calc(0.2 * var(--container-content-height));
+  --expanded-overlay-height: calc(0.8 * var(--container-content-height));
+
+  composes: box from '@shared/atoms/Box.module.css';
+
+  position: relative;
+  height: var(--container-height);
+  padding: var(--container-padding);
+}
+
+.logoContainer {
+  width: 100%;
+  height: var(--logo-container-height);
+  margin: 0 auto;
+  transition: all 0.3s;
+}
+
+.logo {
+  object-fit: contain;
+  float: center;
+  height: 100%;
+  width: min-content;
+  transition: all 0.3s;
+}
+
+.overlayContainer {
+  position: relative;
+  height: var(--overlay-height);
+  text-align: center;
+  overflow-y: hidden;
+  transition: transform 0.3s;
+}
+
+.overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: var(--expanded-overlay-height);
+  position: absolute;
+  width: 100%;
+  top: 0;
+  transition: transform 0.3s;
+}
+
+.title {
+  display: block;
+  font-size: var(--font-size-h4);
+  margin: 0;
+  transition: transform 0.3s;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  flex-grow: 1;
+  opacity: 0;
+  transition: opacity 0.5s 0.1s;
+}
+
+.description {
+  margin: 0;
+}
+
+.container:hover .title {
+  margin-top: calc(var(--spacer) / 2);
+  margin-bottom: calc(var(--spacer) / 4);
+}
+
+.container:hover .overlayContainer {
+  height: var(--expanded-overlay-height);
+  transition: all 0.3s;
+}
+
+.container:hover .details {
+  opacity: 1;
+}
+
+.container:hover .logoContainer {
+  height: var(--expanded-logo-container-height);
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  transition: all 0.3s;
+}
+
+.header {
+  width: 100%;
+  height: var(--container-header-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.indicatorContainer {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 8);
+  color: var(--brand-alert-green);
+}
+
+.indicator {
+  width: 14px;
+  height: 14px;
+  background-color: var(--brand-grey-lighter);
+  border: 2px solid var(--brand-white);
+  border-radius: 50%;
+  background-color: var(--brand-alert-green);
+}
+
+.indicatorPulse {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+
+  /* Animation */
+  opacity: 0.4;
+  box-shadow: 0 0 0 0 var(--brand-alert-green);
+  transform: scale(1);
+  animation: pulse 4s infinite;
+}
+
+/* on touch devices show expanded details by default */
+@media (pointer: none), (pointer: coarse) {
+  .title {
+    margin-top: calc(var(--spacer) / 2);
+    margin-bottom: calc(var(--spacer) / 4);
+  }
+  .overlayContainer {
+    height: var(--expanded-overlay-height);
+    transition: all 0.3s;
+  }
+  .details {
+    opacity: 1;
+  }
+  .logoContainer {
+    height: var(--expanded-logo-container-height);
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    transition: all 0.3s;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.4;
+    box-shadow: 0 0 0 0 var(--brand-alert-green);
+  }
+
+  10% {
+    transform: scale(1);
+    opacity: 0.2;
+    box-shadow: 0 0 0 5px var(--brand-alert-green);
+  }
+
+  15% {
+    transform: scale(1.1);
+    opacity: 0.1;
+    box-shadow: 0 0 0 5px var(--brand-alert-green);
+  }
+
+  30%,
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
+    box-shadow: 0 0 0 0 var(--brand-alert-green);
+  }
+}

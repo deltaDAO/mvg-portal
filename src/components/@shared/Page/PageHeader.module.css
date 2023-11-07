@@ -22,36 +22,50 @@
   align-items: center;
 }
 
+.homeTitleContainer > svg {
+  width: var(--home-brand-logo-size-width);
+  height: var(--home-brand-logo-size-height);
+}
+
 .homeTitleContainer h1 {
-  margin-bottom: calc(var(--spacer) / 2);
+  color: var(--color-primary);
+  margin-bottom: 0;
 }
 
-.homeTitleContainer h1 span {
-  display: block;
+.homeTitleContainer .subtitle p {
+  margin: calc(var(--spacer) / 4) 0;
+  font-size: var(--font-size-h3);
 }
 
-.homeTitleContainer > h1 span:first-of-type {
-  font-size: var(--font-size-h2);
+.logoContainer {
+  position: relative;
+  margin: calc(var(--spacer) / 2) 0;
+}
+
+.logoContainerTitle {
+  position: absolute;
+  width: max-content;
+  top: 1.8rem;
+  left: -1.7rem;
+  color: var(--brand-gaia-x-blue);
+  font-size: var(--font-size-h5);
+}
+
+.logoContainer svg {
+  width: var(--home-gaia-x-logo-size-width);
+  height: var(--home-gaia-x-logo-size-height);
 }
 
 @media (min-width: 40rem) {
   .title {
     font-size: var(--font-size-h2);
   }
-  .homeTitleContainer > h1 span:first-of-type {
-    font-size: var(--font-size-h1);
-  }
 }
 
 .description {
-  font-size: var(--font-size-large);
+  font-size: var(--font-size-h3);
   margin-top: calc(var(--spacer) / 4);
   margin-bottom: 0;
-}
-
-.homeTitleContainer svg {
-  width: 15rem;
-  height: 5rem;
 }
 
 .center,
