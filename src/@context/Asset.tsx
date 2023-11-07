@@ -107,7 +107,7 @@ function AssetProvider({
 
       if (!asset) {
         setError(
-          `\`${did}\`` +
+          did +
             '\n\nWe could not find an asset for this DID in the cache. If you just published a new asset, wait some seconds and refresh this page.'
         )
         LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
@@ -115,9 +115,7 @@ function AssetProvider({
       }
 
       if (!isWhitelisted) {
-        setError(
-          `\`${did}\`` + '\n\nThis DID can not be retrieved on this portal.'
-        )
+        setError(did + '\n\nThis DID can not be retrieved on this portal.')
         LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
         return
       }
@@ -128,7 +126,7 @@ function AssetProvider({
             asset.nft.state
           )}" by the publisher`
         )
-        setError(`\`${did}\`` + `\n\nPublisher Address: ${asset.nft.owner}`)
+        setError(did + `\n\nPublisher Address: ${asset.nft.owner}`)
         LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
         return
       }
