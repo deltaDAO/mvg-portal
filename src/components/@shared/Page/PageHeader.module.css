@@ -23,8 +23,8 @@
 }
 
 .homeTitleContainer > svg {
-  width: 22rem;
-  height: 4rem;
+  width: var(--home-brand-logo-size-width);
+  height: var(--home-brand-logo-size-height);
 }
 
 .homeTitleContainer h1 {
@@ -52,8 +52,8 @@
 }
 
 .logoContainer svg {
-  width: 9rem;
-  height: 5rem;
+  width: var(--home-gaia-x-logo-size-width);
+  height: var(--home-gaia-x-logo-size-height);
 }
 
 @media (min-width: 40rem) {
