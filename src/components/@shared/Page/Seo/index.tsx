@@ -61,8 +61,11 @@ export default function Seo({
       />
       <meta
         property="og:image"
-        content={`${siteContent?.siteUrl}${siteContent?.siteImage}`}
+        content="https://mvg-portal-git-feat-update-brand-deltadao.vercel.app/share.png"
       />
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
 
       <meta property="og:site_name" content={siteContent?.siteTitle} />
       {isBrowser &&
