@@ -7,8 +7,8 @@ import SectionQueryResult from './SectionQueryResult'
 import styles from './index.module.css'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 import TopSales from './TopSales'
-import TopTags from './TopTags'
 import HomeContent from './Content'
+import Ecosystem from './Ecosystem'
 
 interface FeaturedSection {
   title: string
@@ -40,7 +40,7 @@ export default function HomePage(): ReactElement {
     const baseParams = {
       chainIds,
       esPaginationOptions: {
-        size: 6
+        size: 4
       },
       sortOptions: {
         sortBy: SortTermOptions.Created
@@ -50,7 +50,7 @@ export default function HomePage(): ReactElement {
     const baseParamsSales = {
       chainIds,
       esPaginationOptions: {
-        size: 6
+        size: 4
       },
       sortOptions: {
         sortBy: SortTermOptions.Orders
@@ -78,6 +78,9 @@ export default function HomePage(): ReactElement {
 
   return (
     <>
+      <Ecosystem />
+      <TopSales title="Publishers With Most Sales" />
+      <HomeContent />
       {hasFeaturedAssets() && (
         <>
           {queryFeatured.map((section, i) => (
@@ -87,24 +90,11 @@ export default function HomePage(): ReactElement {
               query={section.query}
             />
           ))}
-          <AllAssetsButton />
         </>
       )}
-      <SectionQueryResult
-        title="Recently Published"
-        query={queryRecent}
-        action={<AllAssetsButton />}
-      />
-      <SectionQueryResult
-        title="Most Sales"
-        query={queryMostSales}
-        action={<AllAssetsButton />}
-      />
-
-      {/* <MostViews /> */}
-      <TopSales title="Publishers With Most Sales" />
-      <TopTags title="Top Tags By Sales" />
-      <HomeContent />
+      <SectionQueryResult title="Recently Published" query={queryRecent} />
+      <SectionQueryResult title="Most Sales" query={queryMostSales} />
+      <AllAssetsButton />
     </>
   )
 }

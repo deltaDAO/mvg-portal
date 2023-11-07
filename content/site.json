@@ -1,6 +1,6 @@
 {
-  "siteTitle": "Pontus-X - Gaia-X Web3 Ecosystem",
-  "siteTagline": "A platform to find, publish and consume Service Offerings in the Gaia-X Test Network.",
+  "siteTitle": "Pontus-X Ecosystem - powered by Gaia-X",
+  "siteTagline": "The cross-ecosystem data economy of tomorrow.",
   "siteUrl": "https://portal.pontus-x.eu",
   "siteImage": "/share.png",
   "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
@@ -25,44 +25,74 @@
       "name": "Ecosystem",
       "subItems": [
         {
-          "name": "Airbus",
-          "link": "https://airbus.pontus-x.eu/"
-        },
-        {
-          "name": "Berlin State Library",
-          "link": "https://sbb.pontus-x.eu/"
-        },
-        {
-          "name": "Clinical Insights Exchange",
-          "link": "https://cix.triall.io/"
-        },
-        {
-          "name": "Cooperants",
-          "link": "https://cooperants.pontus-x.eu/"
-        },
-        {
-          "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/"
-        },
-        {
           "name": "EuProGigant",
-          "link": "https://portal.euprogigant.io/"
-        },
-        {
-          "name": "Future Mobility Marketplace",
-          "link": "https://marketplace.future-mobility-alliance.org/"
+          "link": "https://portal.euprogigant.io/",
+          "description": "EuProGigant is the first funded binational industrial project with the practical implementation of the Gaia-X principles.",
+          "image": "euprogigant-logo.webp",
+          "category": "manufacturing"
         },
         {
           "name": "GX4M moveID",
-          "link": "https://portal.moveid.eu/"
+          "link": "https://portal.moveid.eu/",
+          "description": "moveID aims to develop a decentralized digital mobility identity infrastructure for Europe.",
+          "image": "moveid-logo.webp",
+          "category": "mobility"
+        },
+        {
+          "name": "Cooperants",
+          "link": "https://cooperants.pontus-x.eu/",
+          "description": "The world's only collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
+          "image": "cooperants-logo.webp",
+          "category": "space"
+        },
+        {
+          "name": "Airbus",
+          "link": "https://airbus.pontus-x.eu/",
+          "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
+          "image": "airbus-logo.webp",
+          "category": "space"
         },
         {
           "name": "Service-Meister",
-          "link": "https://servicemeister.pontus-x.eu/"
+          "link": "https://servicemeister.pontus-x.eu/",
+          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
+          "image": "service-meister-logo.webp",
+          "category": "manufacturing"
+        },
+        {
+          "name": "Future Mobility Marketplace",
+          "link": "https://marketplace.future-mobility-alliance.org/",
+          "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
+          "image": "fmdm-logo.webp",
+          "category": "mobility"
+        },
+        {
+          "name": "Berlin State Library",
+          "link": "https://sbb.pontus-x.eu/",
+          "description": "Explore the Open Science Ecosystem, a collaboration of libraries, universities, and science pioneers under Gaia-X principles for limitless shared knowledge.",
+          "image": "sbb-logo.webp",
+          "category": "science"
+        },
+        {
+          "name": "EnergySHR",
+          "link": "https://www.energyshr.nl/",
+          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
+          "image": "energy-shr-logo.webp",
+          "category": "science"
+        },
+        {
+          "name": "Clinical Insights Exchange",
+          "link": "https://cix.triall.io/",
+          "description": "A federated data platform to change clinical data assets and analytics services in a trusted, privacy-friendly environment.",
+          "image": "clinical-insights-exchange-logo.webp",
+          "category": "health"
         },
         {
           "name": "UdL Research Data Space",
-          "link": "https://dataspace.angliru.udl.cat/"
+          "link": "https://dataspace.angliru.udl.cat/",
+          "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
+          "image": "udl-logo.webp",
+          "category": "science"
         }
       ]
     }
