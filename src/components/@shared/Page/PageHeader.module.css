@@ -23,13 +23,18 @@
 }
 
 .homeTitleContainer > svg {
-  width: 20rem;
-  height: 3.5rem;
+  width: 22rem;
+  height: 4rem;
 }
 
 .homeTitleContainer h1 {
   color: var(--color-primary);
   margin-bottom: 0;
+}
+
+.homeTitleContainer .subtitle p {
+  margin: calc(var(--spacer) / 4) 0;
+  font-size: var(--font-size-h3);
 }
 
 .logoContainer {
@@ -41,13 +46,14 @@
   position: absolute;
   width: max-content;
   top: 1.8rem;
+  left: -1.7rem;
   color: var(--brand-gaia-x-blue);
+  font-size: var(--font-size-h5);
 }
 
 .logoContainer svg {
-  width: 15rem;
-  height: 6rem;
-  padding-left: 0rem;
+  width: 9rem;
+  height: 5rem;
 }
 
 @media (min-width: 40rem) {

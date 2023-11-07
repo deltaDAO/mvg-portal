@@ -32,7 +32,7 @@ export default function PageHeader({
         <div className={styles.homeTitleContainer}>
           <BrandLogo />
           {description && (
-            <Markdown text={description} className={styles.description} />
+            <Markdown text={description} className={styles.subtitle} />
           )}
           <div className={styles.logoContainer}>
             <h4 className={styles.logoContainerTitle}>powered by</h4>
