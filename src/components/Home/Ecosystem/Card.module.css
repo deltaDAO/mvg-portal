@@ -1,8 +1,8 @@
 .container {
-  --expanded-logo-container-height: 13rem;
+  --expanded-logo-container-height: 17rem;
   --collapsed-logo-container-height: 4rem;
   --expanded-overlay-height: 15rem;
-  --collapsed-overlay-height: 6rem;
+  --collapsed-overlay-height: 2rem;
 
   composes: box from '@shared/atoms/Box.module.css';
 
@@ -43,7 +43,7 @@
   width: 100%;
   top: 0;
   transition: transform 0.3s;
-  transform: translate3d(0, 5rem, 0);
+  transform: translate3d(0, 1rem, 0);
 }
 
 .title {
