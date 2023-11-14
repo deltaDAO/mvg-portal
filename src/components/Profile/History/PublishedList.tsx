@@ -1,5 +1,5 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { ReactElement, useEffect, useState, useCallback } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import AssetList from '@shared/AssetList'
 import { getPublishedAssets } from '@utils/aquarius'
 import { useUserPreferences } from '@context/UserPreferences'
