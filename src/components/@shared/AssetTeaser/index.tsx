@@ -10,7 +10,6 @@ import styles from './index.module.css'
 import { getServiceByName } from '@utils/ddo'
 import { useUserPreferences } from '@context/UserPreferences'
 import { formatNumber } from '@utils/numbers'
-import { AssetPrice } from '@oceanprotocol/lib'
 
 export declare type AssetTeaserProps = {
   asset: AssetExtended
@@ -42,13 +41,14 @@ export default function AssetTeaser({
         <aside className={styles.detailLine}>
           <AssetType
             className={styles.typeLabel}
-            type={type}
-            accessType={accessType}
+            type={asset.metadata.additionalInformation?.saas ? 'saas' : type}
+            accessType={
+              asset.metadata.additionalInformation?.saas ? 'saas' : accessType
+            }
           />
           <span className={styles.typeLabel}>
             {datatokens[0]?.symbol.substring(0, 9)}
           </span>
-          {/* <NetworkName networkId={asset.chainId} className={styles.typeLabel} /> */}
         </aside>
         <header className={styles.header}>
           <Dotdotdot tagName="h1" clamp={3} className={styles.title}>

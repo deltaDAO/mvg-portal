@@ -2,10 +2,17 @@
 .compactTitle {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   cursor: pointer;
   margin-bottom: 0;
   color: var(--font-color-title);
+}
+
+.compactTitle {
+  justify-content: space-between;
+}
+
+.title .toggle {
+  margin-left: auto;
 }
 
 .title > span:first-child,

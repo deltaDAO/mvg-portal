@@ -4,6 +4,7 @@ import axios, { CancelToken, AxiosResponse } from 'axios'
 import { OrdersData_orders as OrdersData } from '../../@types/subgraph/OrdersData'
 import { metadataCacheUri, allowDynamicPricing } from '../../../app.config'
 import {
+  FilterByTypeOptions,
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
@@ -19,6 +20,12 @@ export interface UserSales {
 }
 
 export const MAXIMUM_NUMBER_OF_PAGES_WITH_RESULTS = 476
+
+const saasFieldExists = {
+  exists: {
+    field: 'metadata.additionalInformation.saas.redirectUrl'
+  }
+}
 
 export function escapeEsReservedCharacters(value: string): string {
   // eslint-disable-next-line no-useless-escape
@@ -101,6 +108,21 @@ FilterTerm | undefined {
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams
 ): SearchQuery {
+  const isMetadataTypeSelected = !!baseQueryParams?.filters?.find((e) =>
+    e.term
+      ? Object.keys(e?.term)?.includes('metadata.type')
+      : e.terms
+      ? Object.keys(e?.terms)?.includes('metadata.type')
+      : false
+  )
+
+  const metadataTypeFilter =
+    (isMetadataTypeSelected &&
+      (baseQueryParams?.filters?.find((e) =>
+        Object.keys(e?.terms)?.includes('metadata.type')
+      )?.terms?.['metadata.type'] as string[])) ||
+    []
+
   const generatedQuery = {
     from: baseQueryParams.esPaginationOptions?.from || 0,
     size:
@@ -112,23 +134,40 @@ export function generateBaseQuery(
         ...baseQueryParams.nestedQuery,
         filter: [
           ...(baseQueryParams.filters || []),
-          baseQueryParams.chainIds
-            ? getFilterTerm('chainId', baseQueryParams.chainIds)
-            : [],
+          ...(baseQueryParams.chainIds
+            ? [getFilterTerm('chainId', baseQueryParams.chainIds)]
+            : []),
           getFilterTerm('_index', 'v510'),
           ...(baseQueryParams.ignorePurgatory
             ? []
             : [getFilterTerm('purgatory.state', false)]),
+          ...(!isMetadataTypeSelected && baseQueryParams.showSaas
+            ? [saasFieldExists]
+            : []),
           {
             bool: {
               must_not: [
-                !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
-                getDynamicPricingMustNot()
+                ...(!baseQueryParams.ignoreState
+                  ? [getFilterTerm('nft.state', 5)]
+                  : []),
+                getDynamicPricingMustNot(),
+                ...(baseQueryParams.showSaas === false ? [saasFieldExists] : [])
               ]
             }
           }
         ],
-        should: [...getWhitelistShould()]
+        must: [
+          ...(getWhitelistShould()?.length > 0
+            ? [
+                {
+                  bool: {
+                    should: [...getWhitelistShould()],
+                    minimum_should_match: 1
+                  }
+                }
+              ]
+            : [])
+        ]
       }
     }
   } as SearchQuery
@@ -144,8 +183,32 @@ export function generateBaseQuery(
         SortDirectionOptions.Descending
     }
 
-  if (generatedQuery.query?.bool?.should?.length > 0) {
-    generatedQuery.query.bool.minimum_should_match = 1
+  // if the selected type filter includes both algo and saas, we need to inject the
+  // dataset type to the filter, otherwise saas assets will not show up
+  if (
+    baseQueryParams.showSaas &&
+    metadataTypeFilter?.length === 1 &&
+    metadataTypeFilter.includes(FilterByTypeOptions.Algorithm)
+  ) {
+    const dataTypeIndex = generatedQuery.query.bool.filter.findIndex((filter) =>
+      Object.keys(filter?.terms)?.includes('metadata.type')
+    )
+
+    // push dataset type to 'metadata.type' filter
+    generatedQuery.query.bool.filter[dataTypeIndex].terms['metadata.type'].push(
+      FilterByTypeOptions.Data
+    )
+
+    // only allow for either 'metadata.type' === 'algorithm' or saasFieldExists
+    generatedQuery.query.bool.must.push({
+      bool: {
+        should: [
+          getFilterTerm('metadata.type', FilterByTypeOptions.Algorithm),
+          saasFieldExists
+        ],
+        minimum_should_match: 1
+      }
+    })
   }
 
   return generatedQuery
@@ -329,7 +392,21 @@ export async function getPublishedAssets(
 
   filters.push(getFilterTerm('nft.state', [0, 4, 5]))
   filters.push(getFilterTerm('nft.owner', accountId.toLowerCase()))
-  parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
+
+  const showSaas = filtersList?.serviceType?.includes(FilterByTypeOptions.Saas)
+
+  // we make sure to query only for service types that are expected
+  // by Aqua ("dataset" or "algorithm") by removing "saas"
+  const sanitizedFilters = {
+    ...filtersList,
+    serviceType: filtersList.serviceType.filter(
+      (type) => type !== FilterByTypeOptions.Saas
+    )
+  }
+
+  parseFilters(sanitizedFilters, filterSets).forEach((term) =>
+    filters.push(term)
+  )
 
   const baseQueryParams = {
     chainIds,
@@ -350,7 +427,8 @@ export async function getPublishedAssets(
     esPaginationOptions: {
       from: (Number(page) - 1 || 0) * 9,
       size: 9
-    }
+    },
+    showSaas
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
