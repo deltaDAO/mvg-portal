@@ -26,8 +26,18 @@ const defaultBaseQueryReturn = {
           }
         }
       ],
-      should: [...getWhitelistShould()],
-      ...(getWhitelistShould().length > 0 ? { minimum_should_match: 1 } : [])
+      must: [
+        ...(getWhitelistShould()?.length > 0
+          ? [
+              {
+                bool: {
+                  should: [...getWhitelistShould()],
+                  minimum_should_match: 1
+                }
+              }
+            ]
+          : [])
+      ]
     }
   },
   size: 1000
