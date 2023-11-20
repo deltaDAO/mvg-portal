@@ -330,7 +330,13 @@ export default function Download({
           {isOwned && (
             <div className={styles.confettiContainer}>
               <SuccessConfetti
-                success={`You successfully bought this ${asset.metadata.type} and are now able to download it.`}
+                success={`You successfully bought this ${
+                  asset.metadata.type
+                } and are now able to ${
+                  asset?.metadata?.additionalInformation?.saas
+                    ? 'access'
+                    : 'download'
+                } it.`}
               />
             </div>
           )}
