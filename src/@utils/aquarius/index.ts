@@ -109,19 +109,12 @@ export function generateBaseQuery(
   baseQueryParams: BaseQueryParams
 ): SearchQuery {
   const isMetadataTypeSelected = !!baseQueryParams?.filters?.find((e) =>
-    e.term
+    Object.hasOwn(e, 'term')
       ? Object.keys(e?.term)?.includes('metadata.type')
-      : e.terms
+      : Object.hasOwn(e, 'terms')
       ? Object.keys(e?.terms)?.includes('metadata.type')
       : false
   )
-
-  const metadataTypeFilter =
-    (isMetadataTypeSelected &&
-      (baseQueryParams?.filters?.find((e) =>
-        Object.keys(e?.terms)?.includes('metadata.type')
-      )?.terms?.['metadata.type'] as string[])) ||
-    []
 
   const generatedQuery = {
     from: baseQueryParams.esPaginationOptions?.from || 0,
@@ -155,18 +148,6 @@ export function generateBaseQuery(
               ]
             }
           }
-        ],
-        must: [
-          ...(getWhitelistShould()?.length > 0
-            ? [
-                {
-                  bool: {
-                    should: [...getWhitelistShould()],
-                    minimum_should_match: 1
-                  }
-                }
-              ]
-            : [])
         ]
       }
     }
@@ -183,32 +164,54 @@ export function generateBaseQuery(
         SortDirectionOptions.Descending
     }
 
-  // if the selected type filter includes both algo and saas, we need to inject the
-  // dataset type to the filter, otherwise saas assets will not show up
-  if (
-    baseQueryParams.showSaas &&
-    metadataTypeFilter?.length === 1 &&
-    metadataTypeFilter.includes(FilterByTypeOptions.Algorithm)
-  ) {
-    const dataTypeIndex = generatedQuery.query.bool.filter.findIndex((filter) =>
-      Object.keys(filter?.terms)?.includes('metadata.type')
-    )
-
-    // push dataset type to 'metadata.type' filter
-    generatedQuery.query.bool.filter[dataTypeIndex].terms['metadata.type'].push(
-      FilterByTypeOptions.Data
-    )
-
-    // only allow for either 'metadata.type' === 'algorithm' or saasFieldExists
+  // add whitelist filtering
+  if (getWhitelistShould()?.length > 0) {
     generatedQuery.query.bool.must.push({
       bool: {
-        should: [
-          getFilterTerm('metadata.type', FilterByTypeOptions.Algorithm),
-          saasFieldExists
-        ],
+        should: [...getWhitelistShould()],
         minimum_should_match: 1
       }
     })
+  }
+
+  // if the selected type filter includes both algo and saas, we need to inject the
+  // dataset type to the filter, otherwise saas assets will not show up
+  if (baseQueryParams.showSaas && isMetadataTypeSelected) {
+    const metadataTypeFilter = baseQueryParams?.filters?.find(
+      (e) =>
+        (Object.hasOwn(e, 'term') &&
+          Object.keys(e.term)?.includes('metadata.type')) ||
+        (Object.hasOwn(e, 'terms') &&
+          Object.keys(e.terms)?.includes('metadata.type'))
+    )
+    const metadataSelected = Object.hasOwn(metadataTypeFilter, 'term')
+      ? ([metadataTypeFilter?.term?.['metadata.type']] as string[])
+      : (metadataTypeFilter?.terms?.['metadata.type'] as string[])
+
+    if (
+      metadataSelected?.length === 1 &&
+      metadataSelected.includes(FilterByTypeOptions.Algorithm)
+    ) {
+      const dataTypeIndex = generatedQuery.query.bool.filter.findIndex(
+        (filter) => Object.keys(filter?.terms)?.includes('metadata.type')
+      )
+
+      // push dataset type to 'metadata.type' filter
+      generatedQuery.query.bool.filter[dataTypeIndex].terms[
+        'metadata.type'
+      ].push(FilterByTypeOptions.Data)
+
+      // only allow for either 'metadata.type' === 'algorithm' or saasFieldExists
+      generatedQuery.query.bool.must.push({
+        bool: {
+          should: [
+            getFilterTerm('metadata.type', FilterByTypeOptions.Algorithm),
+            saasFieldExists
+          ],
+          minimum_should_match: 1
+        }
+      })
+    }
   }
 
   return generatedQuery
