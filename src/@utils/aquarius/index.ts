@@ -166,12 +166,15 @@ export function generateBaseQuery(
 
   // add whitelist filtering
   if (getWhitelistShould()?.length > 0) {
-    generatedQuery.query.bool.must.push({
+    const whitelistQuery = {
       bool: {
         should: [...getWhitelistShould()],
         minimum_should_match: 1
       }
-    })
+    }
+    Object.hasOwn(generatedQuery.query.bool, 'must')
+      ? generatedQuery.query.bool.must.push(whitelistQuery)
+      : (generatedQuery.query.bool.must = [whitelistQuery])
   }
 
   // if the selected type filter includes both algo and saas, we need to inject the
