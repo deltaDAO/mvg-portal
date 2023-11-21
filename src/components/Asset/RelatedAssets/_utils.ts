@@ -18,10 +18,14 @@ export function generateQuery(
       }
     },
     filters: [
-      tags && {
-        terms: { 'metadata.tags.keyword': tags }
-      },
-      owner && { term: { 'nft.owner.keyword': owner } }
+      ...(tags
+        ? [
+            {
+              terms: { 'metadata.tags.keyword': tags }
+            }
+          ]
+        : []),
+      ...(owner ? [{ term: { 'nft.owner.keyword': owner } }] : [])
     ],
     sort: {
       'stats.orders': 'desc'
