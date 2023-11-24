@@ -21,6 +21,11 @@
   flex-shrink: 0;
 }
 
+.consumerParameters > div {
+  margin-top: var(--spacer);
+  border-bottom: none;
+}
+
 .price {
   align-self: center;
 }

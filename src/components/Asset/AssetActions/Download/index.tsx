@@ -284,9 +284,6 @@ export default function Download({
                     size="large"
                   />
                 )}
-                {asset && (
-                  <ConsumerParameters asset={asset} isLoading={isLoading} />
-                )}
                 {!isInPurgatory && <PurchaseButton isValid={isValid} />}
                 <Field
                   component={Input}
@@ -338,6 +335,11 @@ export default function Download({
               />
             </div>
             <AssetAction asset={asset} />
+          </div>
+          <div className={styles.consumerParameters}>
+            {asset && (
+              <ConsumerParameters asset={asset} isLoading={isLoading} />
+            )}
           </div>
           {isOwned && (
             <div className={styles.confettiContainer}>
