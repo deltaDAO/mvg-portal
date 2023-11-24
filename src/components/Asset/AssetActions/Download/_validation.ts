@@ -6,8 +6,12 @@ export function getDownloadValidationSchema(
   parameters: ConsumerParameter[]
 ): Yup.SchemaOf<{
   dataServiceParams: any
+  termsAndConditions: boolean
 }> {
   return Yup.object().shape({
-    dataServiceParams: getUserCustomParameterValidationSchema(parameters)
+    dataServiceParams: getUserCustomParameterValidationSchema(parameters),
+    termsAndConditions: Yup.boolean()
+      .required('Required')
+      .isTrue('Please agree to the Terms and Conditions.')
   })
 }

@@ -13,6 +13,10 @@
   justify-content: flex-start;
 }
 
+.priceWrapper > div:last-of-type {
+  margin-bottom: 0;
+}
+
 .filewrapper {
   flex-shrink: 0;
 }
