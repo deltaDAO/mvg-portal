@@ -30,12 +30,13 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters, {
   parseConsumerParameterValues
 } from '../ConsumerParameters'
-import { Form, Formik, useFormikContext } from 'formik'
+import { Field, Form, Formik, useFormikContext } from 'formik'
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
 import WhitelistIndicator from '../Compute/WhitelistIndicator'
 import { Signer } from 'ethers'
 import SuccessConfetti from '@components/@shared/SuccessConfetti'
+import Input from '@components/@shared/FormInput'
 
 export default function Download({
   accountId,
@@ -283,10 +284,16 @@ export default function Download({
                     size="large"
                   />
                 )}
-                {asset && (
-                  <ConsumerParameters asset={asset} isLoading={isLoading} />
-                )}
                 {!isInPurgatory && <PurchaseButton isValid={isValid} />}
+                <Field
+                  component={Input}
+                  name="termsAndConditions"
+                  type="checkbox"
+                  options={['Terms and Conditions']}
+                  prefixes={['I agree to the']}
+                  actions={['/terms']}
+                  disabled={isLoading}
+                />
               </div>
             )}
           </>
@@ -300,8 +307,10 @@ export default function Download({
       initialValues={{
         dataServiceParams: getDefaultValues(
           asset?.services[0].consumerParameters
-        )
+        ),
+        termsAndConditions: false
       }}
+      validateOnMount
       validationSchema={getDownloadValidationSchema(
         asset?.services[0].consumerParameters
       )}
@@ -326,6 +335,11 @@ export default function Download({
               />
             </div>
             <AssetAction asset={asset} />
+          </div>
+          <div className={styles.consumerParameters}>
+            {asset && (
+              <ConsumerParameters asset={asset} isLoading={isLoading} />
+            )}
           </div>
           {isOwned && (
             <div className={styles.confettiContainer}>
