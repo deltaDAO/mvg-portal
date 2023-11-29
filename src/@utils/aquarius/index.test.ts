@@ -33,12 +33,15 @@ const defaultBaseQueryReturn: SearchQuery = {
 
 // add whitelist filtering
 if (getWhitelistShould()?.length > 0) {
-  defaultBaseQueryReturn.query.bool.must.push({
+  const whitelistQuery = {
     bool: {
       should: [...getWhitelistShould()],
       minimum_should_match: 1
     }
-  })
+  }
+  Object.hasOwn(defaultBaseQueryReturn.query.bool, 'must')
+    ? defaultBaseQueryReturn.query.bool.must.push(whitelistQuery)
+    : (defaultBaseQueryReturn.query.bool.must = [whitelistQuery])
 }
 
 describe('@utils/aquarius', () => {
