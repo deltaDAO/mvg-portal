@@ -13,8 +13,17 @@
   justify-content: flex-start;
 }
 
+.priceWrapper > div:last-of-type {
+  margin-bottom: 0;
+}
+
 .filewrapper {
   flex-shrink: 0;
+}
+
+.consumerParameters > div {
+  margin-top: var(--spacer);
+  border-bottom: none;
 }
 
 .price {
