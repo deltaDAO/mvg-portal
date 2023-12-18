@@ -44,7 +44,12 @@ export default function FormConsumerParameters({
       parameter.type === 'boolean'
         ? ['true', 'false']
         : parameter.type === 'select'
-        ? JSON.parse(parameter.options)?.map((option) => Object.keys(option)[0])
+        ? JSON.parse(parameter.options)?.map((option) => {
+            return {
+              value: Object.keys(option)[0],
+              label: Object.values(option)[0]
+            }
+          })
         : []
 
     // add empty option, if parameter is optional
