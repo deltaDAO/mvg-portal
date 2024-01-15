@@ -187,7 +187,6 @@ export default function Filter({
                       onChange={async () => {
                         handleSelectedFilter(option.value, filter.id)
                       }}
-                      className={styles.filterInput}
                     />
                   )
                 })}
