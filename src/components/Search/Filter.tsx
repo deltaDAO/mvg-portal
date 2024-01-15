@@ -164,6 +164,7 @@ export default function Filter({
                 onClick={async () => {
                   clearFilters(addFiltersToUrl)
                 }}
+                className={styles.clearBtn}
               >
                 Clear filters
               </Button>
@@ -186,6 +187,7 @@ export default function Filter({
                       onChange={async () => {
                         handleSelectedFilter(option.value, filter.id)
                       }}
+                      className={styles.filterInput}
                     />
                   )
                 })}
