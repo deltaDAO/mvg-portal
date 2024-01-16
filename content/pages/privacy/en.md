@@ -59,11 +59,13 @@ When you are verifying a Self-Description, your IP address is processed by Gaia-
 
 We process your personal data for the following purposes.
 
-**4.1 Providing our portal demonstrator and its functionalities and ensuring its security**  
+**4.1 Providing and improving our portal demonstrator and ensuring its security**  
 Your IP address is collected, used, and stored for providing our portal demonstrator and its functionalities and to maintain its security. Our portal demonstrator is hosted externally by our service provider Vercel (see also chapter 3).
 
+Moreover, we use Vercel Analytics, a privacy-friendly web analytics service that creates aggregated statistics without using cookies and personal identifiers. Vercel Analytics uses aggregated data that cannot be used to identify or re-identify you. The recording of data points (i.e. pageviews, custom events) is anonymous, so the collected data is not tied to or associated with you or your IP address. Vercel Web Analytics does not collect or store any information that enables us to reconstruct your browsing session across different applications or websites and/or personally identify you.
+
 **Purpose:**  
-Collecting and using your IP address is necessary for providing our portal demonstrator and its functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator. Your IP address is also processed for security, fraud-prevention, abuse-prevention, and troubleshooting purposes.
+Collecting and using your IP address is necessary for providing our portal demonstrator and its functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator. Your IP address is also processed for security, fraud-prevention, abuse-prevention, and troubleshooting purposes. We use Vercel Analytics to analyze and improve the use of our portal demonstrator.
 
 **Legal basis:**  
 The legal basis for this processing is our legitimate interest, pursuant to Art. 6(1)(f) GDPR.
