@@ -14,6 +14,29 @@
   gap: calc(var(--spacer) / 2);
 }
 
+.sidePositioning h3 {
+  color: var(--filter-title-color);
+  font-size: var(--filter-title-font-size);
+}
+
+.sidePositioning h5,
+.topPositioning h3 {
+  color: var(--filter-type-color);
+  font-size: var(--filter-type-font-size);
+}
+
+.filterList label {
+  color: var(--filter-label-color);
+  font-size: var(--filter-label-font-size);
+}
+
+.clearBtn {
+  color: var(--filter-clear-color);
+}
+.clearBtn:hover {
+  color: var(--filter-clear-hover-color);
+}
+
 .filtersHeader {
   display: flex;
   justify-content: space-between;
