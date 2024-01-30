@@ -7,7 +7,6 @@ import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
 import AddTokenList from './AddTokenList'
-import { GEN_X_NETWORK_ID } from 'chains.config'
 import AddNetwork from '@components/@shared/AddNetwork'
 
 export default function Details(): ReactElement {
@@ -41,8 +40,8 @@ export default function Details(): ReactElement {
               {activeConnector?.name}
             </span>
             <AddNetwork
-              chainId={GEN_X_NETWORK_ID}
-              networkName="GEN-X Testnet"
+              chainId={Number(activeConnector?.id)}
+              networkName={activeConnector?.name}
             />
             {activeConnector?.name === 'MetaMask' && <AddTokenList />}
           </div>

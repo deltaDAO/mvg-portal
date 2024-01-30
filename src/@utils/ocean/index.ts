@@ -1,5 +1,4 @@
 import { ConfigHelper, Config } from '@oceanprotocol/lib'
-import { chains } from '../../../chains.config'
 import { ethers } from 'ethers'
 import abiDatatoken from '@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json'
 
@@ -26,11 +25,6 @@ export function sanitizeDevelopmentConfig(config: Config): Config {
 }
 
 export function getOceanConfig(network: string | number): Config {
-  const filterBy = typeof network === 'string' ? 'network' : 'chainId'
-  const customConfig = chains.find((c) => c[filterBy] === network)
-
-  if (network === 100) return customConfig as Config
-
   let config = new ConfigHelper().getConfig(
     network,
     network === 'polygon' ||
@@ -48,9 +42,7 @@ export function getOceanConfig(network: string | number): Config {
     config = { ...config, ...sanitizeDevelopmentConfig(config) }
   }
 
-  return customConfig
-    ? ({ ...config, ...customConfig } as Config)
-    : (config as Config)
+  return config as Config
 }
 
 export function getDevelopmentConfig(): Config {
