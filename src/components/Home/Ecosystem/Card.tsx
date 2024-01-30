@@ -40,7 +40,7 @@ export default function Card({
           <div className={styles.details}>
             <Markdown className={styles.description} text={description} />
             <Button href={link} style="primary" size="small">
-              Go to Portal
+              Visit marketplace
             </Button>
           </div>
         </div>
