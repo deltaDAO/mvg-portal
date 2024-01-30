@@ -7,7 +7,7 @@ module.exports = {
   // return appConfig.metadataCacheUri
   metadataCacheUri:
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
-    'https://aquarius510.v4.delta-dao.com',
+    'https://v4.aquarius.oceanprotocol.com',
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
@@ -73,7 +73,7 @@ module.exports = {
 
   // Default terms to be used for service offerings made on this marketplace
   defaultAccessTerms:
-    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md',
+    'https://raw.githubusercontent.com/OceanProtocolEnterprise/market/main/content/pages/terms.md',
 
   // Purgatory URI, leave as an empty string to disable the API call
   purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || '',
@@ -81,7 +81,7 @@ module.exports = {
   // The url used to fetch docker hub image info
   dockerHubProxyUrl:
     process.env.NEXT_PUBLIC_DOCKER_HUB_PROXY_URL ||
-    'https://dockerhub-proxy.delta-dao.com',
+    'https://dockerhub-proxy.oceanprotocol.com',
 
   automationConfig: {
     networkTokenFundDefaultValue: '2',

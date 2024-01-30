@@ -1,5 +1,3 @@
-import { networkDataGaiaX } from './constants'
-
 export enum NetworkType {
   Mainnet = 'mainnet',
   Testnet = 'testnet'
@@ -40,9 +38,6 @@ export function getNetworkDisplayName(data: EthereumListsChain): string {
     case 5:
       displayName = 'Görli'
       break
-    case 2021000:
-      displayName = 'GAIA-X'
-      break
     case 100:
       displayName = 'GEN-X Testnet'
       break
@@ -67,7 +62,7 @@ export function getNetworkDataById(
     (chain: EthereumListsChain) => chain.chainId === networkId
   )
 
-  return networkId === 2021000 ? networkDataGaiaX : networkData[0]
+  return networkData[0]
 }
 
 export function filterNetworksByType(

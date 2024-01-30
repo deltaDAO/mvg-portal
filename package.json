@@ -1,9 +1,9 @@
 {
-  "name": "@deltaDAO/mvg-portal",
-  "description": "Pontus-X - Gaia-X Web3 Ecosystem",
+  "name": "@OceanProtocolEnterprise/market",
+  "description": "Ocean Protocol Enterprise Marketplace",
   "version": "1.0.0",
   "license": "Apache-2.0",
-  "homepage": "https://pontus-x.eu",
+  "homepage": "https://github.com/OceanProtocolEnterprise",
   "scripts": {
     "start": "npm run pregenerate && next dev -p 8000",
     "build": "npm run pregenerate && next build",
@@ -128,7 +128,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/deltaDAO/mvg-portal"
+    "url": "https://github.com/OceanProtocolEnterprise/market"
   },
   "engines": {
     "node": "18"

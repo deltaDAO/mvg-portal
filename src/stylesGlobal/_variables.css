@@ -25,8 +25,8 @@
   --nft-placeholder-background: var(--brand-gradient);
 
   /* Menubar */
-  --menu-logo-color: var(--brand-gaia-x-blue);
-  --menu-logo-color-hover: var(--brand-gaia-x-blue);
+  --menu-logo-color: var(--brand-black);
+  --menu-logo-color-hover: var(--brand-black);
   --menu-logo-size-width-sm: 7.5rem;
   --menu-logo-size-height-sm: 3.5rem;
   --menu-logo-size-width-lg: 7.5rem;

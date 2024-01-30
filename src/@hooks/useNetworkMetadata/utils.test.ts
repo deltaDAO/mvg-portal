@@ -35,9 +35,6 @@ describe('useNetworkMetadata/utils', () => {
 
     const type3 = getNetworkDisplayName({ chainId: 8996 } as any)
     expect(type3).toBe('Development')
-
-    const type4 = getNetworkDisplayName({ chainId: 2021000 } as any)
-    expect(type4).toBe('GAIA-X')
     /* eslint-enable @typescript-eslint/no-explicit-any */
   })
 })
