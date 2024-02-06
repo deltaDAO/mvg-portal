@@ -1,13 +1,11 @@
 // chain configs in ocean.js ConfigHelperConfig format
 // see: https://github.com/oceanprotocol/ocean.js/blob/e07a7cb6ecea12b39ed96f994b4abe37806799a1/src/utils/ConfigHelper.ts#L8
 
-const GEN_X_NETWORK_ID = 100
-
 const chains = [
   {
     chainId: 100,
-    network: 'genx',
     isDefault: true,
+    isCustom: true,
     metadataCacheUri: 'https://aquarius510.v4.delta-dao.com',
     nodeUri: 'https://rpc.genx.minimal-gaia-x.eu',
     providerUri: 'https://provider.v4.genx.delta-dao.com',
@@ -36,8 +34,8 @@ const chains = [
   },
   {
     chainId: 32456,
-    network: 'pontusx',
     isDefault: false,
+    isCustom: true,
     metadataCacheUri: 'https://aquarius.dev.pontus-x.eu',
     nodeUri: 'https://rpc.dev.pontus-x.eu',
     providerUri: 'https://provider.dev.pontus-x.eu',
@@ -66,6 +64,7 @@ const chains = [
   },
   {
     chainId: 80001,
+    isDefault: false,
     metadataCacheUri: 'https://aquarius510.v4.delta-dao.com',
     providerUri: 'https://provider.dev-v4.mumbai.delta-dao.com'
   }
@@ -79,9 +78,13 @@ const getSupportedChainIds = () => {
   return chains.map((c) => c.chainId)
 }
 
+const getCustomChainIds = () => {
+  return chains.filter((c) => c.isCustom).map((c) => c.chainId)
+}
+
 module.exports = {
   chains,
   getDefaultChainIds,
   getSupportedChainIds,
-  GEN_X_NETWORK_ID
+  getCustomChainIds
 }
