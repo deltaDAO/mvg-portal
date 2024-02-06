@@ -58,6 +58,7 @@ module.exports = {
     }
   ],
   verifiedWallets: {
+    '0x28080F654eED6CC00e8b16F4841E92CD0c2C0778': 'deltaDAO AG',
     '0x628677D9A9d93a913182fa04893Da0ce4E6570Ee': 'deltaDAO AG',
     '0xf8A493af0e72C2C62651Bf7b7d1a006806Fb646f': 'deltaDAO AG',
     '0xf5b1E6f9a566E20de35d0C240D47F9cc08f33c0F': 'deltaDAO AG',
