@@ -39,25 +39,25 @@
           "category": "mobility"
         },
         {
-          "name": "Cooperants",
+          "name": "COOPERANTS",
           "link": "https://cooperants.pontus-x.eu/",
           "description": "The world's only collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
           "image": "cooperants-logo.webp",
-          "category": "space"
+          "category": "manufacturing"
         },
         {
           "name": "Airbus",
           "link": "https://airbus.pontus-x.eu/",
           "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
           "image": "airbus-logo.webp",
-          "category": "space"
+          "category": "manufacturing"
         },
         {
           "name": "Service-Meister",
           "link": "https://servicemeister.pontus-x.eu/",
           "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
           "image": "service-meister-logo.webp",
-          "category": "manufacturing"
+          "category": "AI"
         },
         {
           "name": "Future Mobility Marketplace",
@@ -71,14 +71,14 @@
           "link": "https://sbb.pontus-x.eu/",
           "description": "Explore the Open Science Ecosystem, a collaboration of libraries, universities, and science pioneers under Gaia-X principles for limitless shared knowledge.",
           "image": "sbb-logo.webp",
-          "category": "science"
+          "category": "language models"
         },
         {
           "name": "EnergySHR",
           "link": "https://www.energyshr.nl/",
           "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
           "image": "energy-shr-logo.webp",
-          "category": "science"
+          "category": "energy"
         },
         {
           "name": "Clinical Insights Exchange",
@@ -92,7 +92,35 @@
           "link": "https://dataspace.angliru.udl.cat/",
           "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
           "image": "udl-logo.webp",
-          "category": "science"
+          "category": "agriculture"
+        },
+        {
+          "name": "Under Construction: Dione-X",
+          "link": "https://dione-x.de/en/",
+          "description": "Secure and efficient data spaces for the machining value network and industry 4.0.",
+          "image": "dione-x-logo.webp",
+          "category": "manufacturing"
+        },
+        {
+          "name": "Under Construction: ACCURATE",
+          "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101138269/program/43108390/details",
+          "description": "The ACCURATE project aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
+          "image": "accurate-logo.webp",
+          "category": "manufacturing"
+        },
+        {
+          "name": "Under Construction: Flex4Res",
+          "link": "https://www.flex4res.eu/",
+          "description": "Flex4Res stands for Data spaces for FLEXible production lines and supply chains FOR RESilient manufacturing. Flex4Res develops an open platform for secure and sovereign data exchange",
+          "image": "flex4res-logo.webp",
+          "category": "manufacturing"
+        },
+        {
+          "name": "deltaDAO AI marketplace",
+          "link": "https://market.delta-dao.com/",
+          "description": "With deltaDAO's AI Marketplace, you have the freedom to decide how your AI service is offered. By keeping your AI private, you retain full control and do not disclose your valuable IP.",
+          "image": "deltadao-logo.webp",
+          "category": "AI"
         }
       ]
     }
