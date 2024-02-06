@@ -1,19 +1,21 @@
 import { ReactElement } from 'react'
 import Button from '@shared/atoms/Button'
 // import { useOrbis } from '@context/DirectMessages'
-import { useDisconnect, useAccount, useConnect } from 'wagmi'
+import { useDisconnect, useAccount, useConnect, useNetwork } from 'wagmi'
 import styles from './Details.module.css'
 import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
 import AddTokenList from './AddTokenList'
-import { GEN_X_NETWORK_ID } from 'chains.config'
+import { getCustomChainIds } from 'chains.config'
 import AddNetwork from '@components/@shared/AddNetwork'
 
 export default function Details(): ReactElement {
   const { connector: activeConnector, address: accountId } = useAccount()
+
   const { connect } = useConnect()
   const { disconnect } = useDisconnect()
+  const { chains } = useNetwork()
 
   return (
     <div className={styles.details}>
@@ -40,10 +42,17 @@ export default function Details(): ReactElement {
               {/* <img className={styles.walletLogo} src={activeConnector?.logo} /> */}
               {activeConnector?.name}
             </span>
-            <AddNetwork
-              chainId={GEN_X_NETWORK_ID}
-              networkName="GEN-X Testnet"
-            />
+            {chains &&
+              chains.map((chain) => {
+                if (!getCustomChainIds().includes(chain.id)) return false
+                return (
+                  <AddNetwork
+                    key={`Add-Network-Button${chain.id}`}
+                    chainId={chain.id}
+                    networkName={chain.name}
+                  />
+                )
+              })}
             {activeConnector?.name === 'MetaMask' && <AddTokenList />}
           </div>
           <p>
