@@ -39,6 +39,8 @@ export function getOceanConfig(network: string | number): Config {
       network === 'bsc' ||
       network === 56 ||
       network === 'gaiaxtestnet' ||
+      network === 'pontusx' ||
+      network === 32456 ||
       network === 2021000 ||
       network === 8996
       ? undefined
