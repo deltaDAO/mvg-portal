@@ -1,33 +1,35 @@
 import { Chain } from 'wagmi'
 import * as wagmiChains from 'wagmi/chains'
+import { networksMetadata } from '../../../networksMetadata.config'
 
-export const genx = {
-  id: 100,
-  name: 'GEN-X Testnet',
-  network: 'genx',
-  nativeCurrency: {
-    decimals: 18,
-    name: 'GX',
-    symbol: 'GX'
-  },
+export const additionalChains: Chain[] = networksMetadata.map((metadata) => ({
+  id: metadata.chainId,
+  name: metadata.name,
+  network: metadata.chain,
+  nativeCurrency: metadata.nativeCurrency,
   rpcUrls: {
-    public: { http: ['https://rpc.genx.minimal-gaia-x.eu'] },
-    default: { http: ['https://rpc.genx.minimal-gaia-x.eu'] }
+    public: { http: metadata.rpc },
+    default: { http: metadata.rpc }
   },
   blockExplorers: {
     default: {
-      name: 'GEN-X Testnet Explorer',
-      url: 'https://explorer.pontus-x.eu'
+      name: metadata.explorers[0].name,
+      url: metadata.explorers[0].url
     }
   }
-} as Chain
+}))
 
 export const getSupportedChains = (chainIdsSupported: number[]): Chain[] => {
-  const chains = [wagmiChains, genx].map((chain) => {
-    return Object.values(chain).filter((chain) =>
-      chainIdsSupported.includes(chain.id)
-    )
-  })
+  const wagmiChainsFiltered = [wagmiChains]
+    .map((chain) => {
+      return Object.values(chain).filter(
+        (chain) =>
+          chainIdsSupported.includes(chain.id) &&
+          // ensure to overwrite custom "additional" chains
+          !additionalChains.map((addChain) => addChain.id).includes(chain.id)
+      )
+    })
+    .flat() as Chain[]
 
-  return chains.flat()
+  return [...wagmiChainsFiltered, ...additionalChains]
 }

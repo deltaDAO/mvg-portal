@@ -3,10 +3,10 @@ import { createClient, erc20ABI } from 'wagmi'
 import { ethers, Contract, Signer } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import { getDefaultClient } from 'connectkit'
-import { polygonMumbai } from 'wagmi/chains'
-import { genx } from './chains'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
+import { getSupportedChains } from './chains'
+import { chainIdsSupported } from '../../../app.config'
 
 export async function getDummySigner(chainId: number): Promise<Signer> {
   if (typeof chainId !== 'number') {
@@ -31,7 +31,7 @@ export const wagmiClient = createClient(
     appName: 'Pontus-X',
     infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
     // TODO: mapping between appConfig.chainIdsSupported and wagmi chainId
-    chains: [genx, polygonMumbai],
+    chains: getSupportedChains(chainIdsSupported),
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
   })
 )

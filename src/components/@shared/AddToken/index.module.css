@@ -58,7 +58,8 @@
   position: relative;
 }
 
-.symbol {
+.symbol,
+.network {
   text-transform: none;
 }
 
