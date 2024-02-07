@@ -1,4 +1,7 @@
-const { getDefaultChainIds, getSupportedChainIds } = require('chains.config')
+const {
+  getDefaultChainIds,
+  getSupportedChainIds
+} = require('./chains.config.js')
 
 module.exports = {
   // URI of single metadata cache instance for all networks.
