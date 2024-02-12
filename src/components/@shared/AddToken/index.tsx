@@ -4,6 +4,7 @@ import { addTokenToWallet } from '@utils/wallet'
 import Button from '@shared/atoms/Button'
 import OceanLogo from '@images/logo.svg'
 import styles from './index.module.css'
+import { useNetwork } from 'wagmi'
 
 const cx = classNames.bind(styles)
 
@@ -29,6 +30,8 @@ export default function AddToken({
   className,
   minimal
 }: AddTokenProps): ReactElement {
+  const { chain } = useNetwork()
+
   const styleClasses = cx({
     button: true,
     minimal,
@@ -57,6 +60,13 @@ export default function AddToken({
           <>
             {'Add '}
             <span className={styles.symbol}>{symbol}</span>
+            {chain && (
+              <>
+                {' ('}
+                <span className={styles.network}>{chain.name}</span>
+                {')'}
+              </>
+            )}
           </>
         )}
       </span>

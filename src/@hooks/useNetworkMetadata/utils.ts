@@ -46,6 +46,9 @@ export function getNetworkDisplayName(data: EthereumListsChain): string {
     case 100:
       displayName = 'GEN-X Testnet'
       break
+    case 32456:
+      displayName = 'Pontus-X Testnet'
+      break
     default:
       displayName = data
         ? `${data.chain}${

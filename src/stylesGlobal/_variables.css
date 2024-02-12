@@ -119,17 +119,14 @@
   --pagination-hover-font-color: var(--color-highlight);
 
   /* Filter and sort */
-  --filter-font-color: var(--color-secondary);
-  --filter-hover-font-color: var(--font-color-text);
-  --filter-selected-font-color: var(--background-body);
-  --filter-background: var(--background-content);
-  --filter-selected-background: var(--font-color-text);
-  --filter-border-radius: var(--border-radius);
-  --filter-border-size: var(--border-size-sm);
-  --filter-border-color: var(--border-color);
-  --filter-selected-border-color: var(--background-body);
-  --filter-clear-font-color: var(--color-secondary);
-  --filter-clear-hover-font-color: var(--color-highlight);
+  --filter-title-color: var(--font-color-heading);
+  --filter-title-font-size: var(--font-size-title);
+  --filter-type-color: var(--font-color-text);
+  --filter-type-font-size: var(--font-size-large);
+  --filter-label-color: var(--font-color-text);
+  --filter-label-font-size: var(--font-size-base);
+  --filter-clear-color: var(--color-primary);
+  --filter-clear-hover-color: var(--color-highlight);
 
   /* Confetti */
   --confetti-color-one: var(--brand-blue-light);

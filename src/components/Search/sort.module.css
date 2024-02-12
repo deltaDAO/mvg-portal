@@ -7,9 +7,7 @@
 }
 
 .sortList {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--spacer) / 2);
+  composes: filterList from './Filter.module.css';
 }
 
 .sortList div *,
