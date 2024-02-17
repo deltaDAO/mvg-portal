@@ -58,6 +58,7 @@ const OpcsApprovedTokensQuery = gql`
 export const tokenAddressesEUROe = {
   100: '0xe974c4894996e012399dedbda0be7314a73bbff1',
   137: '0x820802Fa8a99901F52e39acD21177b0BE6EE2974',
+  32456: '0x8A4826071983655805bF4f29828577Cd6b1aC0cB',
   80001: '0xA089a21902914C3f3325dBE2334E9B466071E5f1'
 }
 
@@ -187,7 +188,8 @@ export async function getOpcsApprovedTokens(
           ...approvedTokens,
           {
             address: tokenAddressesEUROe[chainId],
-            decimals: 6,
+            // TODO: revert once decimals changed to 6 on pontus-x
+            decimals: chainId === 32456 ? 18 : 6,
             name: 'EUROe',
             symbol: 'EUROe'
           }
