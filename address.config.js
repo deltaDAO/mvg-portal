@@ -1,4 +1,4 @@
-const PONTUSX_WALLETS = require('./pontusxWallets.json')
+const PONTUSX_ADDRESSES = require('./pontusxAddresses.json')
 
 module.exports = {
   whitelists: {
@@ -59,5 +59,5 @@ module.exports = {
       ]
     }
   ],
-  verifiedWallets: PONTUSX_WALLETS
+  verifiedAddresses: PONTUSX_ADDRESSES
 }

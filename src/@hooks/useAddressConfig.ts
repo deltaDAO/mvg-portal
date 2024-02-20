@@ -2,11 +2,11 @@ import addressConfig from '../../address.config'
 const {
   whitelists,
   featured,
-  verifiedWallets
+  verifiedAddresses
 }: {
   whitelists: UseAddressConfig['whitelists']
   featured: UseAddressConfig['featured']
-  verifiedWallets: UseAddressConfig['verifiedWallets']
+  verifiedAddresses: UseAddressConfig['verifiedAddresses']
 } = addressConfig
 
 export interface UseAddressConfig {
@@ -15,7 +15,7 @@ export interface UseAddressConfig {
     'datatokens.address': string[]
   }
   featured: { assets: string[]; title: string }[]
-  verifiedWallets: {
+  verifiedAddresses: {
     [key: string]: string
   }
   isAddressWhitelisted: (address: string) => boolean
@@ -70,7 +70,7 @@ export function useAddressConfig(): UseAddressConfig {
   return {
     whitelists,
     featured,
-    verifiedWallets,
+    verifiedAddresses,
     isAddressWhitelisted,
     isDDOWhitelisted,
     hasFeaturedAssets,
