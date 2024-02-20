@@ -16,7 +16,7 @@ export default function Account({
   account,
   place
 }: AccountProps): ReactElement {
-  const { verifiedWallets } = useAddressConfig()
+  const { verifiedAddresses } = useAddressConfig()
 
   return (
     <Link href={`/profile/${account.id}`} className={styles.teaser}>
@@ -24,7 +24,7 @@ export default function Account({
       <Avatar accountId={account.id} className={styles.avatar} />
       <div>
         <Dotdotdot tagName="h4" clamp={2} className={styles.name}>
-          {verifiedWallets?.[account.id] || accountTruncate(account.id)}
+          {verifiedAddresses?.[account.id] || accountTruncate(account.id)}
         </Dotdotdot>
         <p className={styles.sales}>
           <span>{account.totalSales}</span>
