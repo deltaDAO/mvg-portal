@@ -18,7 +18,7 @@ export default function Account({
 }): ReactElement {
   const { chainIds } = useUserPreferences()
   const { autoWalletAddress } = useAutomation()
-  const { verifiedWallets } = useAddressConfig()
+  const { verifiedAddresses } = useAddressConfig()
 
   return (
     <div className={styles.account}>
@@ -31,7 +31,7 @@ export default function Account({
       </figure>
       <div>
         <h3 className={styles.name}>
-          {verifiedWallets?.[accountId] || accountTruncate(accountId)}{' '}
+          {verifiedAddresses?.[accountId] || accountTruncate(accountId)}{' '}
           {autoWalletAddress === accountId && (
             <span className={styles.automation} title="Automation">
               <Transaction />
