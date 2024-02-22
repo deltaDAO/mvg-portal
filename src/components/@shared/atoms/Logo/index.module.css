@@ -1,20 +1,20 @@
 .logo {
+  display: none;
+}
+.logoSmall {
+  display: block;
   width: var(--menu-logo-size-width-sm);
   height: var(--menu-logo-size-height-sm);
   margin: 0;
 }
 
-.logo path {
-  fill: var(--menu-logo-color);
-}
-
-a > .logo:hover path {
-  fill: var(--menu-logo-color-hover);
-}
-
 @media screen and (min-width: 55rem) {
   .logo {
+    display: block;
     width: var(--menu-logo-size-width-lg);
     height: var(--menu-logo-size-height-lg);
+  }
+  .logoSmall {
+    display: none;
   }
 }
