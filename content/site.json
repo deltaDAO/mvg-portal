@@ -1,9 +1,9 @@
 {
   "siteTitle": "Pontus-X Ecosystem - powered by Gaia-X",
-  "siteTagline": "Streamlined interoperability across data ecosystems.",
+  "siteTagline": "Streamlined interoperability across digital service ecosystems.",
   "siteUrl": "https://portal.pontus-x.eu",
   "siteImage": "/share.png",
-  "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
+  "copyright": "All Rights Reserved. Powered by [Gaia-X](https://gaia-x.eu/) and [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
   "menu": [
     {
       "name": "Catalogue",
@@ -27,21 +27,21 @@
         {
           "name": "EuProGigant",
           "link": "https://portal.euprogigant.io/",
-          "description": "EuProGigant is the first funded binational industrial project with the practical implementation of the Gaia-X principles.",
+          "description": "Gaia-X Lighthouse EuProGigant is the first funded binational industrial project with the practical implementation of the Gaia-X principles.",
           "image": "euprogigant-logo.webp",
           "category": "manufacturing"
         },
         {
-          "name": "GX4M moveID",
+          "name": "GX4FM moveID",
           "link": "https://portal.moveid.eu/",
-          "description": "moveID aims to develop a decentralized digital mobility identity infrastructure for Europe.",
-          "image": "moveid-logo.webp",
+          "description": "Gaia-X Lighthouse Gaia-X 4 Future Mobility aims to develop a decentralized digital mobility identity infrastructure for Europe.",
+          "image": "gx4fm_moveid.webp",
           "category": "mobility"
         },
         {
           "name": "COOPERANTS",
           "link": "https://cooperants.pontus-x.eu/",
-          "description": "The world's only collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
+          "description": "Gaia-X Lighthouse COOPERANTS is the collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
           "image": "cooperants-logo.webp",
           "category": "manufacturing"
         },
@@ -111,7 +111,7 @@
         {
           "name": "Under Construction: ACCURATE",
           "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101138269/program/43108390/details",
-          "description": "The ACCURATE project aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
+          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
           "image": "accurate-logo.webp",
           "category": "manufacturing"
         },
