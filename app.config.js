@@ -99,6 +99,6 @@ module.exports = {
 
   // Show network alerts based on chainId
   networkAlertApi: {
-    100: 'http://194.182.169.95:8000/check-blocks'
+    100: 'https://status.dev.pontus-x.eu/api/check-blocks'
   }
 }
