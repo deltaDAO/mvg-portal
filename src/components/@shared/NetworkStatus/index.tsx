@@ -3,6 +3,7 @@ import { useNetwork } from 'wagmi'
 import { useMarketMetadata } from '../../../@context/MarketMetadata'
 import Alert from '../atoms/Alert'
 import axios from 'axios'
+import { LoggerInstance } from '@oceanprotocol/lib'
 
 export default function NetworkStatus({
   className
@@ -25,6 +26,9 @@ export default function NetworkStatus({
       setNetwork(chain?.name)
       const apiEndpoint = appConfig.networkAlertApi[chainId]
       if (!apiEndpoint) return
+      LoggerInstance.log(`[NetworkStatus] retrieving network status`, {
+        apiEndpoint
+      })
       try {
         const result = await axios.get(apiEndpoint, {
           proxy: {
@@ -40,9 +44,15 @@ export default function NetworkStatus({
           if (!minBlock || block < minBlock) minBlock = block
           if (!maxBlock || block > maxBlock) maxBlock = block
         })
-        if (maxBlock - minBlock > errorMargin) setShowNetworkAlert(true)
+        const hasError = maxBlock - minBlock > errorMargin
+        setShowNetworkAlert(hasError)
+        LoggerInstance.log(`[NetworkStatus] network status updated:`, {
+          minBlock,
+          maxBlock,
+          hasError
+        })
       } catch (error) {
-        console.error(
+        LoggerInstance.error(
           `[NetworkStatus] could not retrieve network status:`,
           error.message
         )
