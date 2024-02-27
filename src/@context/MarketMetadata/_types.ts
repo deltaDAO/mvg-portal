@@ -36,6 +36,9 @@ export interface AppConfig {
     roughTxGasEstimate: number
   }
   showPreviewAlert: string
+  networkAlertApi: {
+    [chainId: number]: string
+  }
 }
 export interface SiteContent {
   siteTitle: string

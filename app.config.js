@@ -95,5 +95,10 @@ module.exports = {
   },
 
   // Display alert banner for the developer preview deployment
-  showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false'
+  showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false',
+
+  // Show network alerts based on chainId
+  networkAlertApi: {
+    100: 'http://194.182.169.95:8000/check-blocks'
+  }
 }
