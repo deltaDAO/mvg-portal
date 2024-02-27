@@ -81,7 +81,7 @@ export default function NetworkStatus({
     showNetworkAlert && (
       <Alert
         state="warning"
-        text="Test"
+        text="The network is currently undergoing maintenance, which may cause instabilities transaction delays. Please try again later if you run into issues."
         title="Network Status"
         badge={network || chain?.id.toString()}
         onDismiss={() => setShowNetworkAlert(false)}
