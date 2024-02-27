@@ -37,7 +37,7 @@ export default function NetworkStatus({
           }
         })
         const { Nodes } = result.data
-        const nodes: { [node: string]: number } = { Nodes }
+        const { nodes }: { nodes: { [node: string]: number } } = Nodes
         let minBlock: number
         let maxBlock: number
         Object.values(nodes).forEach((block) => {
