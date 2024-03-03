@@ -41,7 +41,7 @@ const networksMetadata = [
     explorers: [
       {
         name: 'Pontus-X Testnet Explorer',
-        url: 'https://explorer.dev.pontus-x.eu',
+        url: 'https://explorer.dev.pontus-x.eu/testnet/pontusx',
         standard: ''
       }
     ]

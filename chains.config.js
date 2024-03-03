@@ -42,7 +42,7 @@ const chains = [
     nodeUri: 'https://rpc.dev.pontus-x.eu',
     providerUri: 'https://provider.dev.pontus-x.eu',
     subgraphUri: 'https://subgraph.dev.pontus-x.eu',
-    explorerUri: 'https://explorer.dev.pontus-x.eu',
+    explorerUri: 'https://explorer.dev.pontus-x.eu/testnet/pontusx',
     oceanTokenAddress: '0xdF171F74a8d3f4e2A789A566Dce9Fa4945196112',
     oceanTokenSymbol: 'OCEAN',
     fixedRateExchangeAddress: '0x8372715D834d286c9aECE1AcD51Da5755B32D505',
