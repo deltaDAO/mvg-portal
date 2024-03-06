@@ -295,6 +295,24 @@ async function getJobs(
   return computeJobs
 }
 
+/**
+ * in case multiple providers return the same computeJob, filter these duplicates
+ * e.g. same instance listens on multiple domains
+ */
+export function filterForUniqueJobs(
+  jobs: ComputeJobMetaData[],
+  assets: Asset[]
+): ComputeJobMetaData[] {
+  return jobs.filter((job) => {
+    const { inputDID, providerUrl } = job
+
+    // compare providerUrl where the job status was accessed from
+    // with the serviceEndpoint found in asset with first inputDID
+    const inputAsset = assets.find((asset) => asset.id === inputDID[0])
+    return providerUrl === inputAsset?.services[0]?.serviceEndpoint
+  })
+}
+
 export async function getComputeJobs(
   chainIds: number[],
   accountId: string,
@@ -353,7 +371,9 @@ export async function getComputeJobs(
     providerUrls.push(asset.services[0].serviceEndpoint)
   )
 
-  computeResult.computeJobs = await getJobs(providerUrls, accountId, assets)
+  const allProviderJobs = await getJobs(providerUrls, accountId, assets)
+  computeResult.computeJobs = filterForUniqueJobs(allProviderJobs, assets)
+
   computeResult.isLoaded = true
 
   return computeResult
