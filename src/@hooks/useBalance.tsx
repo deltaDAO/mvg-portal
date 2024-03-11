@@ -23,7 +23,8 @@ function useBalance(): BalanceProviderValue {
 
   const [balance, setBalance] = useState<UserBalance>({
     native: {
-      eth: '0'
+      symbol: 'eth',
+      balance: '0'
     }
   })
 
@@ -66,10 +67,12 @@ function useBalance(): BalanceProviderValue {
     try {
       const userBalance = balanceNativeToken?.formatted
       const key = balanceNativeToken?.symbol.toLowerCase()
-      const newNativeBalance: TokenBalances = { [key]: userBalance }
 
       const newBalance: UserBalance = {
-        native: newNativeBalance,
+        native: {
+          symbol: key,
+          balance: userBalance
+        },
         approved: await getApprovedTokenBalances(address)
       }
 

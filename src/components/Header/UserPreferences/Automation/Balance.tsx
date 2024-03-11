@@ -10,12 +10,12 @@ export default function Balance(): ReactElement {
       <div className={styles.wrapper}>
         <div className={styles.balance}>
           <ul>
-            {Object.keys(balance.native).map((symbol) => (
-              <li key={`automation-balance-${symbol}`}>
-                <span>{symbol}</span>:{' '}
-                {Number(balance.native[symbol]).toFixed(4)}
+            {balance.native && (
+              <li key={`automation-balance-${balance.native.symbol}`}>
+                <span>{balance.native.symbol}</span>:{' '}
+                {Number(balance.native.balance).toFixed(4)}
               </li>
-            ))}
+            )}
           </ul>
         </div>
         <div className={styles.balance}>

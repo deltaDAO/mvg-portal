@@ -64,8 +64,8 @@ export default function Details({
   const {
     autoWallet,
     autoWalletAddress,
+    balance,
     isAutomationEnabled,
-    nativeBalance,
     isLoading,
     hasValidEncryptedWallet,
     setIsAutomationEnabled
@@ -84,11 +84,11 @@ export default function Details({
   }, [hasValidEncryptedWallet])
 
   useEffect(() => {
-    if (!automationConfig.roughTxGasEstimate || !nativeBalance?.balance) return
+    if (!automationConfig.roughTxGasEstimate) return
     setRoughTxCountEstimate(
-      Number(nativeBalance.balance) / automationConfig.roughTxGasEstimate
+      Number(balance.native.balance) / automationConfig.roughTxGasEstimate
     )
-  }, [nativeBalance?.balance, automationConfig?.roughTxGasEstimate])
+  }, [balance.native, automationConfig?.roughTxGasEstimate])
 
   return (
     <div className={styles.details}>

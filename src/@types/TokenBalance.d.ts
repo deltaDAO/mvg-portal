@@ -1,5 +1,8 @@
 interface UserBalance {
-  native: TokenBalances
+  native: {
+    symbol: string
+    balance: string
+  }
   approved?: TokenBalances
 }
 

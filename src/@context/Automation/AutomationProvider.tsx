@@ -61,7 +61,10 @@ function AutomationProvider({ children }) {
   })
 
   const [balance, setBalance] = useState<UserBalance>({
-    native: {}
+    native: {
+      symbol: 'eth',
+      balance: '0'
+    }
   })
 
   const [hasDeleteRequest, setHasDeleteRequest] = useState(false)
@@ -94,10 +97,16 @@ function AutomationProvider({ children }) {
     if (!autoWallet) return
 
     try {
-      const newBalance: UserBalance = { native: {} }
+      const newBalance: UserBalance = {
+        native: {
+          symbol: 'eth',
+          balance: '0'
+        }
+      }
       if (balanceNativeToken)
-        newBalance.native[balanceNativeToken?.symbol.toLowerCase() || 'ETH'] =
-          balanceNativeToken?.formatted
+        newBalance.native.symbol =
+          balanceNativeToken?.symbol.toLowerCase() || 'eth'
+      newBalance.native.balance = balanceNativeToken?.formatted
 
       if (approvedBaseTokens?.length > 0) {
         const approved = await getApprovedTokenBalances(autoWallet?.address)
