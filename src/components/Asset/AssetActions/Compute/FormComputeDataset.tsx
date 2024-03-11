@@ -10,7 +10,7 @@ import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
 import { Asset, ComputeEnvironment, ZERO_ADDRESS } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
-import { getTokenBalanceFromSymbol } from '@utils/wallet'
+import { getApprovedTokenBalanceFromSymbol } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
 import { useAccount } from 'wagmi'
@@ -273,7 +273,7 @@ export default function FormStartCompute({
     totalPrices.forEach((price) => {
       const balanceToUse = isAutomationEnabled ? automationBalance : balance
 
-      const baseTokenBalance = getTokenBalanceFromSymbol(
+      const baseTokenBalance = getApprovedTokenBalanceFromSymbol(
         balanceToUse,
         price.symbol
       )
