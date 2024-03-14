@@ -11,7 +11,6 @@ import MenuDropdown from '@components/@shared/MenuDropdown'
 import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
-import { useAutomation } from '../../@context/Automation/AutomationProvider'
 import Automation from './UserPreferences/Automation'
 const Wallet = loadable(() => import('./Wallet'))
 
@@ -51,8 +50,6 @@ export function MenuLink({ name, link, className }: MenuItem) {
 
 export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
-
-  const { setIsAutomationEnabled } = useAutomation()
 
   return (
     <nav className={styles.menu}>
