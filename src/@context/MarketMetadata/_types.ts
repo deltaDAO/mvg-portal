@@ -52,12 +52,14 @@ export interface SiteContent {
       description?: string
       image?: string
       category?: string
+      isLive?: boolean
       subItems?: {
         name: string
         link: string
         description?: string
         image?: string
         category?: string
+        isLive?: boolean
       }[]
     }[]
   }[]
