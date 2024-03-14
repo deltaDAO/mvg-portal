@@ -1,5 +1,5 @@
 import AssetTeaser from '@shared/AssetTeaser'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Pagination from '@shared/Pagination'
 import styles from './index.module.css'
 import AssetTitle from '@shared/AssetListTitle'
@@ -10,8 +10,20 @@ import { getServiceByName } from '@utils/ddo'
 import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
 import Time from '../atoms/Time'
 import Loader from '../atoms/Loader'
+import NetworkName from '../NetworkName'
+import { useUserPreferences } from '../../../@context/UserPreferences'
+import { ChainDoesNotSupportMulticallError } from 'wagmi'
 
-const columns: TableOceanColumn<AssetExtended>[] = [
+const networkColumn: TableOceanColumn<AssetExtended> = {
+  name: 'Network',
+  selector: (row) => {
+    const { chainId } = row
+    return <NetworkName networkId={chainId} />
+  },
+  maxWidth: '10rem'
+}
+
+const tableColumns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Dataset',
     selector: (row) => {
@@ -96,6 +108,17 @@ export default function AssetList({
   showAssetViewSelector,
   defaultAssetView
 }: AssetListProps): ReactElement {
+  const { chainIds } = useUserPreferences()
+
+  const [columns, setColumns] = useState(tableColumns)
+
+  useEffect(() => {
+    if (chainIds.length > 1) {
+      const [datasetColumn, ...otherColumns] = tableColumns
+      setColumns([datasetColumn, networkColumn, ...otherColumns])
+    } else setColumns(tableColumns)
+  }, [chainIds])
+
   const [activeAssetView, setActiveAssetView] = useState<AssetViewOptions>(
     defaultAssetView || AssetViewOptions.Grid
   )
