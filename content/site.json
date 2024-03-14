@@ -29,98 +29,104 @@
           "link": "https://portal.euprogigant.io/",
           "description": "Gaia-X Lighthouse EuProGigant is the first funded binational industrial project with the practical implementation of the Gaia-X principles.",
           "image": "euprogigant-logo.webp",
-          "category": "manufacturing"
+          "category": "manufacturing",
+          "isLive": true
         },
         {
           "name": "GX4FM moveID",
           "link": "https://portal.moveid.eu/",
           "description": "Gaia-X Lighthouse Gaia-X 4 Future Mobility aims to develop a decentralized digital mobility identity infrastructure for Europe.",
           "image": "gx4fm_moveid.webp",
-          "category": "mobility"
+          "category": "mobility",
+          "isLive": true
         },
         {
           "name": "COOPERANTS",
           "link": "https://cooperants.pontus-x.eu/",
           "description": "Gaia-X Lighthouse COOPERANTS is the collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
           "image": "cooperants-logo.webp",
-          "category": "manufacturing"
+          "category": "manufacturing",
+          "isLive": true
         },
         {
           "name": "Airbus",
           "link": "https://airbus.pontus-x.eu/",
           "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
           "image": "airbus-logo.webp",
-          "category": "manufacturing"
+          "category": "manufacturing",
+          "isLive": true
         },
         {
           "name": "Service-Meister",
           "link": "https://servicemeister.pontus-x.eu/",
           "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
           "image": "service-meister-logo.webp",
-          "category": "AI"
+          "category": "AI",
+          "isLive": true
         },
         {
           "name": "Berlin State Library",
           "link": "https://sbb.pontus-x.eu/",
           "description": "Explore the Open Science Ecosystem, a collaboration of libraries, universities, and science pioneers under Gaia-X principles for limitless shared knowledge.",
           "image": "sbb-logo.webp",
-          "category": "language models"
+          "category": "language models",
+          "isLive": true
         },
         {
           "name": "Flex4Res",
           "link": "https://flex4res.pontus-x.eu/",
           "description": "Flex4Res stands for Data spaces for FLEXible production lines and supply chains FOR RESilient manufacturing. Flex4Res develops an open platform for secure and sovereign data exchange",
           "image": "flex4res-logo.webp",
-          "category": "manufacturing"
+          "category": "manufacturing",
+          "isLive": true
         },
         {
           "name": "Future Mobility Marketplace",
           "link": "https://marketplace.future-mobility-alliance.org/",
           "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
           "image": "fmdm-logo.webp",
-          "category": "mobility"
+          "category": "mobility",
+          "isLive": true
         },
         {
           "name": "EnergySHR",
           "link": "https://www.energyshr.nl/",
           "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
           "image": "energy-shr-logo.webp",
-          "category": "energy"
+          "category": "energy",
+          "isLive": true
         },
         {
           "name": "Clinical Insights Exchange",
           "link": "https://cix.triall.io/",
           "description": "A federated data platform to change clinical data assets and analytics services in a trusted, privacy-friendly environment.",
           "image": "clinical-insights-exchange-logo.webp",
-          "category": "health"
+          "category": "health",
+          "isLive": true
         },
         {
           "name": "UdL Research Data Space",
           "link": "https://dataspace.angliru.udl.cat/",
           "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
           "image": "udl-logo.webp",
-          "category": "agriculture"
-        },
-        {
-          "name": "Under Construction: Dione-X",
-          "link": "https://dione-x.de/en/",
-          "description": "Secure and efficient data spaces for the machining value network and industry 4.0.",
-          "image": "dione-x-logo.webp",
-          "category": "manufacturing"
+          "category": "agriculture",
+          "isLive": true
         },
         {
           "name": "Under Construction: ACCURATE",
           "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101138269/program/43108390/details",
           "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
           "image": "accurate-logo.webp",
-          "category": "manufacturing"
+          "category": "manufacturing",
+          "isLive": false
         },
         {
           "name": "deltaDAO AI marketplace",
           "link": "https://market.delta-dao.com/",
           "description": "With deltaDAO's AI Marketplace, you have the freedom to decide how your AI service is offered. By keeping your AI private, you retain full control and do not disclose your valuable IP.",
           "image": "deltadao-logo.webp",
-          "category": "AI"
+          "category": "AI",
+          "isLive": false
         }
       ]
     }

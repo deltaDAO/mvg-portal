@@ -11,7 +11,6 @@ import MenuDropdown from '@components/@shared/MenuDropdown'
 import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
-import { useAutomation } from '../../@context/Automation/AutomationProvider'
 import Automation from './UserPreferences/Automation'
 const Wallet = loadable(() => import('./Wallet'))
 
@@ -25,9 +24,10 @@ declare type MenuItem = {
   image?: string
   category?: string
   className?: string
+  isLive?: boolean
 }
 
-export function MenuLink({ name, link, className }: MenuItem) {
+export function MenuLink({ name, link, className, isLive }: MenuItem) {
   const router = useRouter()
 
   const basePath = router?.pathname.split(/[/?]/)[1]
@@ -39,7 +39,9 @@ export function MenuLink({ name, link, className }: MenuItem) {
     [className]: className
   })
 
-  return (
+  return isLive === false ? (
+    <></>
+  ) : (
     <Button
       className={classes}
       {...(link.startsWith('/') ? { to: link } : { href: link })}
@@ -51,8 +53,6 @@ export function MenuLink({ name, link, className }: MenuItem) {
 
 export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
-
-  const { setIsAutomationEnabled } = useAutomation()
 
   return (
     <nav className={styles.menu}>

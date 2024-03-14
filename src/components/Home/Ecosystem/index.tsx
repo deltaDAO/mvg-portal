@@ -18,6 +18,7 @@ export default function Ecosystem() {
           image={portal.image}
           link={portal.link}
           title={portal.name}
+          live={portal.isLive}
         />
       ))}
     </div>

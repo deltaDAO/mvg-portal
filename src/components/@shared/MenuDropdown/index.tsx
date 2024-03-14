@@ -40,17 +40,13 @@ export default function MenuDropdown({
       content={
         <ul>
           {items.map((item, i) => {
-            const { name, link, subItems } = item
+            const { name, subItems } = item
             return (
               <li key={`${name}-${i}`}>
                 {subItems && subItems.length > 0 ? (
                   <MenuDropdown label={name} items={subItems} />
                 ) : (
-                  <MenuLink
-                    name={name}
-                    link={link}
-                    className={styles.subItem}
-                  />
+                  <MenuLink {...item} className={styles.subItem} />
                 )}
               </li>
             )

@@ -8,24 +8,28 @@ export default function Card({
   description,
   image,
   link,
-  title
+  title,
+  live
 }: {
   category: string
   description: string
   image: string
   link: string
   title: string
+  live: boolean
 }) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <Badge label={category} />
-        <div className={styles.indicatorContainer}>
-          <div className={styles.indicator}>
-            <div className={styles.indicatorPulse} />
+        {live && (
+          <div className={styles.indicatorContainer}>
+            <div className={styles.indicator}>
+              <div className={styles.indicatorPulse} />
+            </div>
+            <span>Live</span>
           </div>
-          <span>Live</span>
-        </div>
+        )}
       </div>
       <div className={styles.logoContainer}>
         <img
@@ -39,9 +43,15 @@ export default function Card({
           <h1 className={styles.title}>{title}</h1>
           <div className={styles.details}>
             <Markdown className={styles.description} text={description} />
-            <Button href={link} style="primary" size="small">
-              Go to Portal
-            </Button>
+            {live ? (
+              <Button href={link} style="primary" size="small">
+                Go to Portal
+              </Button>
+            ) : (
+              <Button disabled style="text" size="small">
+                Coming soon
+              </Button>
+            )}
           </div>
         </div>
       </div>
