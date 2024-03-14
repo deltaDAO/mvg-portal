@@ -24,9 +24,10 @@ declare type MenuItem = {
   image?: string
   category?: string
   className?: string
+  isLive?: boolean
 }
 
-export function MenuLink({ name, link, className }: MenuItem) {
+export function MenuLink({ name, link, className, isLive }: MenuItem) {
   const router = useRouter()
 
   const basePath = router?.pathname.split(/[/?]/)[1]
@@ -38,7 +39,9 @@ export function MenuLink({ name, link, className }: MenuItem) {
     [className]: className
   })
 
-  return (
+  return isLive === false ? (
+    <></>
+  ) : (
     <Button
       className={classes}
       {...(link.startsWith('/') ? { to: link } : { href: link })}
