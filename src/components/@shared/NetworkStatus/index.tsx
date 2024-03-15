@@ -30,12 +30,7 @@ export default function NetworkStatus({
         apiEndpoint
       })
       try {
-        const result = await axios.get(apiEndpoint, {
-          proxy: {
-            host: appConfig.networkAlertApi[chainId].split(':8000')[0],
-            port: 8000
-          }
-        })
+        const result = await axios.get(apiEndpoint)
         const { Nodes } = result.data
         const { nodes }: { nodes: { [node: string]: number } } = Nodes
         let minBlock: number
@@ -58,7 +53,7 @@ export default function NetworkStatus({
         )
       }
     },
-    [appConfig.networkAlertApi]
+    [appConfig.networkAlertApi, chain]
   )
 
   useEffect(() => {
