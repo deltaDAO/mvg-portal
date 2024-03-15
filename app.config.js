@@ -97,8 +97,14 @@ module.exports = {
   // Display alert banner for the developer preview deployment
   showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false',
 
-  // Show network alerts based on chainId
-  networkAlertApi: {
-    100: 'https://status.genx.delta-dao.com/api/check-blocks'
+  networkAlertConfig: {
+    // Refresh interval for network status - 30 sec
+    refreshInterval: 30000,
+    // Margin of error for block count (how much difference between min / max block numbers before showing an alert)
+    errorMargin: 10,
+    // Map chainIds to their respective status endpoints
+    statusEndpoints: {
+      100: 'https://status.genx.delta-dao.com/api/check-blocks'
+    }
   }
 }

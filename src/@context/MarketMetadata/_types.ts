@@ -36,8 +36,15 @@ export interface AppConfig {
     roughTxGasEstimate: number
   }
   showPreviewAlert: string
-  networkAlertApi: {
-    [chainId: number]: string
+  networkAlertConfig: {
+    // Refresh interval for network status - 30 sec
+    refreshInterval: number
+    // Margin of error for block count (how much difference between min / max block numbers before showing an alert)
+    errorMargin: number
+    // Map chainIds to their respective status endpoints
+    statusEndpoints: {
+      [chainId: number]: string
+    }
   }
 }
 export interface SiteContent {

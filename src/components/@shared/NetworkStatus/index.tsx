@@ -10,21 +10,18 @@ export default function NetworkStatus({
 }: {
   className?: string
 }): ReactElement {
-  const [showNetworkAlert, setShowNetworkAlert] = useState(false)
+  const [showNetworkAlert, setShowNetworkAlert] = useState(true)
   const [network, setNetwork] = useState<string>()
   const { appConfig } = useMarketMetadata()
   const { chain } = useNetwork()
 
-  // Refresh interval for network status - 30 sec
-  const refreshInterval = 30000
-  // Margin of error for block count (how much difference between min / max block numbers before showing an alert)
-  const errorMargin = 5
+  const { networkAlertConfig } = appConfig
 
   const fetchNetworkStatus = useCallback(
     async (chainId: number) => {
       if (!chainId) return
       setNetwork(chain?.name)
-      const apiEndpoint = appConfig.networkAlertApi[chainId]
+      const apiEndpoint = networkAlertConfig.statusEndpoints[chainId]
       if (!apiEndpoint) return
       LoggerInstance.log(`[NetworkStatus] retrieving network status`, {
         apiEndpoint
@@ -39,7 +36,7 @@ export default function NetworkStatus({
           if (!minBlock || block < minBlock) minBlock = block
           if (!maxBlock || block > maxBlock) maxBlock = block
         })
-        const hasError = maxBlock - minBlock > errorMargin
+        const hasError = maxBlock - minBlock > networkAlertConfig.errorMargin
         setShowNetworkAlert(hasError)
         LoggerInstance.log(`[NetworkStatus] network status updated:`, {
           minBlock,
@@ -53,7 +50,7 @@ export default function NetworkStatus({
         )
       }
     },
-    [appConfig.networkAlertApi, chain]
+    [networkAlertConfig, chain]
   )
 
   useEffect(() => {
@@ -64,7 +61,7 @@ export default function NetworkStatus({
     // init periodic refresh for network status
     const networkStatusInterval = setInterval(
       () => fetchNetworkStatus(chain?.id),
-      refreshInterval
+      networkAlertConfig.refreshInterval
     )
 
     return () => {
