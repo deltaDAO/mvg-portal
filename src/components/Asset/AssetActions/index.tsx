@@ -11,7 +11,7 @@ import { useIsMounted } from '@hooks/useIsMounted'
 import styles from './index.module.css'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '@components/Publish/_types'
-import { getTokenBalanceFromSymbol } from '@utils/wallet'
+import { getApprovedTokenBalanceFromSymbol } from '@utils/wallet'
 import AssetStats from './AssetStats'
 import { isAddressWhitelisted } from '@utils/ddo'
 import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
@@ -154,7 +154,7 @@ export default function AssetActions({
 
     const balanceToUse = isAutomationEnabled ? automationBalance : balance
 
-    const baseTokenBalance = getTokenBalanceFromSymbol(
+    const baseTokenBalance = getApprovedTokenBalanceFromSymbol(
       balanceToUse,
       asset?.accessDetails?.baseToken?.symbol
     )

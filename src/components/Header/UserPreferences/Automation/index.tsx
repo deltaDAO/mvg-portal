@@ -12,13 +12,8 @@ import styles from './index.module.css'
 const cx = classNames.bind(styles)
 
 export default function Automation(): ReactElement {
-  const {
-    autoWallet,
-    isAutomationEnabled,
-    hasValidEncryptedWallet,
-    balance,
-    nativeBalance
-  } = useAutomation()
+  const { autoWallet, isAutomationEnabled, hasValidEncryptedWallet, balance } =
+    useAutomation()
 
   const [hasZeroNetworkTokenBalance, setHasZeroNetworkTokenBalance] =
     useState<boolean>(false)
@@ -26,13 +21,14 @@ export default function Automation(): ReactElement {
     useState<boolean>(false)
 
   useEffect(() => {
-    balance &&
+    balance.approved &&
       setHasZeroERC20TokenBalances(
-        Object.keys(balance)?.filter((token) => Number(balance[token]) <= 0)
-          .length > 0
+        Object.keys(balance.approved)?.filter(
+          (token) => Number(balance.approved[token]) <= 0
+        ).length > 0
       )
-    setHasZeroNetworkTokenBalance(Number(nativeBalance?.balance) <= 0)
-  }, [balance, nativeBalance])
+    setHasZeroNetworkTokenBalance(Number(balance.native.balance) <= 0)
+  }, [balance])
 
   const wrapperClasses = cx({
     automation: true,

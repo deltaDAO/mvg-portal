@@ -11,7 +11,7 @@ import { getTokenBalance } from '@utils/wallet'
 
 interface BalanceProviderValue {
   balance: UserBalance
-  getApprovedTokenBalances: (address: string) => Promise<UserBalance>
+  getApprovedTokenBalances: (address: string) => Promise<TokenBalances>
 }
 
 function useBalance(): BalanceProviderValue {
@@ -22,12 +22,15 @@ function useBalance(): BalanceProviderValue {
   const { chain } = useNetwork()
 
   const [balance, setBalance] = useState<UserBalance>({
-    eth: '0'
+    native: {
+      symbol: 'eth',
+      balance: '0'
+    }
   })
 
   const getApprovedTokenBalances = useCallback(
-    async (address: string): Promise<UserBalance> => {
-      const newBalance: UserBalance = {}
+    async (address: string): Promise<TokenBalances> => {
+      const newBalance: TokenBalances = {}
 
       if (approvedBaseTokens?.length > 0) {
         await Promise.allSettled(
@@ -64,11 +67,13 @@ function useBalance(): BalanceProviderValue {
     try {
       const userBalance = balanceNativeToken?.formatted
       const key = balanceNativeToken?.symbol.toLowerCase()
-      const newNativeBalance: UserBalance = { [key]: userBalance }
 
-      const newBalance = {
-        ...newNativeBalance,
-        ...(await getApprovedTokenBalances(address))
+      const newBalance: UserBalance = {
+        native: {
+          symbol: key,
+          balance: userBalance
+        },
+        approved: await getApprovedTokenBalances(address)
       }
 
       setBalance(newBalance)
