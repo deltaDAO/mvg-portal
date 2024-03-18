@@ -21,16 +21,11 @@ export enum AUTOMATION_MODES {
   ADVANCED = 'advanced'
 }
 
-export interface NativeTokenBalance {
-  symbol: string
-  balance: string
-}
 export interface AutomationProviderValue {
   autoWallet: Wallet
   autoWalletAddress: string
   isAutomationEnabled: boolean
   balance: UserBalance
-  nativeBalance: NativeTokenBalance
   isLoading: boolean
   decryptPercentage: number
   hasValidEncryptedWallet: boolean
@@ -65,8 +60,12 @@ function AutomationProvider({ children }) {
     address: autoWallet?.address as `0x${string}`
   })
 
-  const [nativeBalance, setNativeBalance] = useState<NativeTokenBalance>()
-  const [balance, setBalance] = useState<UserBalance>({})
+  const [balance, setBalance] = useState<UserBalance>({
+    native: {
+      symbol: 'eth',
+      balance: '0'
+    }
+  })
 
   const [hasDeleteRequest, setHasDeleteRequest] = useState(false)
 
@@ -98,16 +97,22 @@ function AutomationProvider({ children }) {
     if (!autoWallet) return
 
     try {
+      const newBalance: UserBalance = {
+        native: {
+          symbol: 'eth',
+          balance: '0'
+        }
+      }
       if (balanceNativeToken)
-        setNativeBalance({
-          symbol: balanceNativeToken?.symbol.toLowerCase() || 'ETH',
-          balance: balanceNativeToken?.formatted
-        })
+        newBalance.native.symbol =
+          balanceNativeToken?.symbol.toLowerCase() || 'eth'
+      newBalance.native.balance = balanceNativeToken?.formatted
 
       if (approvedBaseTokens?.length > 0) {
-        const newBalance = await getApprovedTokenBalances(autoWallet?.address)
-        setBalance(newBalance)
-      } else setBalance(undefined)
+        const approved = await getApprovedTokenBalances(autoWallet?.address)
+        newBalance.approved = approved
+      }
+      setBalance(newBalance)
     } catch (error) {
       LoggerInstance.error('[AutomationProvider] Error: ', error.message)
     }
@@ -207,7 +212,6 @@ function AutomationProvider({ children }) {
         autoWallet,
         autoWalletAddress,
         balance,
-        nativeBalance,
         isAutomationEnabled,
         isLoading,
         decryptPercentage,

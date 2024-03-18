@@ -176,12 +176,12 @@ export async function getTokenBalance(
   }
 }
 
-export function getTokenBalanceFromSymbol(
+export function getApprovedTokenBalanceFromSymbol(
   balance: UserBalance,
   symbol: string
 ): string {
   if (!symbol) return
-
-  const baseTokenBalance = balance?.[symbol.toLocaleLowerCase()]
+  const { approved } = balance
+  const baseTokenBalance = approved?.[symbol.toLocaleLowerCase()]
   return baseTokenBalance || '0'
 }
