@@ -10,7 +10,7 @@ export default function NetworkStatus({
 }: {
   className?: string
 }): ReactElement {
-  const [showNetworkAlert, setShowNetworkAlert] = useState(true)
+  const [showNetworkAlert, setShowNetworkAlert] = useState(false)
   const [network, setNetwork] = useState<string>()
   const { appConfig } = useMarketMetadata()
   const { chain } = useNetwork()
