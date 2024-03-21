@@ -213,6 +213,7 @@ export async function setNFTMetadataAndTokenURI(
     accountId,
     metadataAndTokenURI
   )
+  await setMetadataAndTokenURITx.wait()
 
   return setMetadataAndTokenURITx
 }

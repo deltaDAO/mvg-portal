@@ -9,17 +9,18 @@ export async function setMinterToPublisher(
 ): Promise<ethers.providers.TransactionResponse> {
   const datatokenInstance = new Datatoken(signer)
 
-  const response = await datatokenInstance.removeMinter(
+  const removeMinterTx = await datatokenInstance.removeMinter(
     datatokenAddress,
     accountId,
     accountId
   )
+  await removeMinterTx.wait()
 
-  if (!response) {
+  if (!removeMinterTx) {
     setError('Updating DDO failed.')
     LoggerInstance.error('Failed at cancelMinter')
   }
-  return response
+  return removeMinterTx
 }
 
 export async function setMinterToDispenser(
@@ -30,14 +31,14 @@ export async function setMinterToDispenser(
 ): Promise<ethers.providers.TransactionResponse> {
   const datatokenInstance = new Datatoken(signer)
 
-  const response = await datatokenInstance.addMinter(
+  const addMinterTx = await datatokenInstance.addMinter(
     datatokenAddress,
     accountId,
     accountId
   )
-  if (!response) {
+  if (!addMinterTx) {
     setError('Updating DDO failed.')
     LoggerInstance.error('Failed at makeMinter')
   }
-  return response
+  return addMinterTx
 }
