@@ -14,12 +14,14 @@ export async function setMinterToPublisher(
     accountId,
     accountId
   )
-  await removeMinterTx.wait()
 
   if (!removeMinterTx) {
     setError('Updating DDO failed.')
     LoggerInstance.error('Failed at cancelMinter')
   }
+
+  await removeMinterTx.wait()
+
   return removeMinterTx
 }
 
@@ -40,5 +42,7 @@ export async function setMinterToDispenser(
     setError('Updating DDO failed.')
     LoggerInstance.error('Failed at makeMinter')
   }
+  await addMinterTx.wait()
+
   return addMinterTx
 }
