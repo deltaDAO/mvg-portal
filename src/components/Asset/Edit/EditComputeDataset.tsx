@@ -109,6 +109,7 @@ export default function EditComputeDataset({
         LoggerInstance.error(content.form.error)
         return
       } else {
+        await setMetadataTx.wait()
         if (asset.accessDetails.type === 'free') {
           const tx = await setMinterToDispenser(
             signer,
