@@ -2,6 +2,7 @@
   "form": {
     "success": "🎉 Successfully updated. 🎉\n\nUpdates might not show up right away on your asset. In this case, wait some seconds and reload your asset details page in your browser.",
     "error": "Updating DDO failed.",
+    "stateError": "Updating asset state failed.",
     "data": [
       {
         "name": "name",
