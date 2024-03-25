@@ -212,35 +212,45 @@ export default function Edit({
       //   newAbortController()
       // )
 
-      console.log({ state: values.assetState, assetState })
-      if (values.assetState !== assetState) {
-        const nft = new Nft(signer)
-
-        await nft.setMetadataState(
-          asset?.nftAddress,
-          accountId,
-          assetStateToNumber(values.assetState)
-        )
-      }
-
-      LoggerInstance.log('[edit] setMetadata result', setMetadataTx)
-
       if (!setMetadataTx) {
         setError(content.form.error)
         LoggerInstance.error(content.form.error)
         return
-      } else {
-        await setMetadataTx.wait()
-        if (asset.accessDetails.type === 'free') {
-          const tx = await setMinterToDispenser(
-            signer,
-            asset?.accessDetails?.datatoken?.address,
-            accountId,
-            setError
-          )
-          if (!tx) return
-        }
       }
+      await setMetadataTx.wait()
+
+      LoggerInstance.log('[edit] asset states', {
+        state: values.assetState,
+        assetState
+      })
+      if (values.assetState !== assetState) {
+        const nft = new Nft(signer)
+
+        const setMetadataStateTx = await nft.setMetadataState(
+          asset?.nftAddress,
+          accountId,
+          assetStateToNumber(values.assetState)
+        )
+        if (!setMetadataStateTx) {
+          setError(content.form.stateError)
+          LoggerInstance.error(content.form.stateError)
+          return
+        }
+        await setMetadataStateTx.wait()
+      }
+
+      LoggerInstance.log('[edit] setMetadata result', setMetadataTx)
+
+      if (asset.accessDetails.type === 'free') {
+        const tx = await setMinterToDispenser(
+          signer,
+          asset?.accessDetails?.datatoken?.address,
+          accountId,
+          setError
+        )
+        if (!tx) return
+      }
+
       // Edit succeeded
       setSuccess(content.form.success)
       resetForm()
