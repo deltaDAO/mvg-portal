@@ -13,5 +13,4 @@ interface BaseQueryParams {
   filters?: FilterTerm[]
   ignorePurgatory?: boolean
   ignoreState?: boolean
-  showSaas?: boolean
 }

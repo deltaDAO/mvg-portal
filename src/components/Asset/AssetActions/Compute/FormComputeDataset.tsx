@@ -18,7 +18,6 @@ import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
-import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 
 export default function FormStartCompute({
   algorithms,
@@ -91,11 +90,6 @@ export default function FormStartCompute({
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
-  const {
-    isAutomationEnabled,
-    autoWallet,
-    balance: automationBalance
-  } = useAutomation()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const {
     isValid,
@@ -271,12 +265,7 @@ export default function FormStartCompute({
 
   useEffect(() => {
     totalPrices.forEach((price) => {
-      const balanceToUse = isAutomationEnabled ? automationBalance : balance
-
-      const baseTokenBalance = getTokenBalanceFromSymbol(
-        balanceToUse,
-        price.symbol
-      )
+      const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
       if (!baseTokenBalance) {
         setIsBalanceSufficient(false)
         return
@@ -287,15 +276,7 @@ export default function FormStartCompute({
         baseTokenBalance && compareAsBN(baseTokenBalance, `${price.value}`)
       )
     })
-  }, [
-    balance,
-    dtBalance,
-    datasetSymbol,
-    algorithmSymbol,
-    totalPrices,
-    isAutomationEnabled,
-    automationBalance
-  ])
+  }, [balance, dtBalance, datasetSymbol, algorithmSymbol, totalPrices])
 
   return (
     <Form className={styles.form}>
@@ -312,7 +293,7 @@ export default function FormStartCompute({
               ? computeEnvs
               : field?.options
           }
-          accountId={isAutomationEnabled ? autoWallet?.address : accountId}
+          accountId={accountId}
           selected={
             field.name === 'algorithm'
               ? values.algorithm

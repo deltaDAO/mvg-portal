@@ -16,7 +16,6 @@ import { getAsset } from '@utils/aquarius'
 import { useAccount, useSigner } from 'wagmi'
 import { toast } from 'react-toastify'
 import { prettySize } from '@components/@shared/FormInput/InputElement/FilesInput/utils'
-import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 
 export default function Results({
   job
@@ -25,7 +24,6 @@ export default function Results({
 }): ReactElement {
   const providerInstance = new Provider()
   const { address: accountId } = useAccount()
-  const { autoWallet } = useAutomation()
   const { data: signer } = useSigner()
 
   const [datasetProvider, setDatasetProvider] = useState<string>()
@@ -69,15 +67,10 @@ export default function Results({
   async function downloadResults(resultIndex: number) {
     if (!accountId || !job) return
 
-    const signerToUse =
-      job.owner.toLowerCase() === autoWallet?.address.toLowerCase()
-        ? autoWallet
-        : signer
-
     try {
       const jobResult = await providerInstance.getComputeResultUrl(
         datasetProvider,
-        signerToUse,
+        signer,
         job.jobId,
         resultIndex
       )
@@ -103,9 +96,7 @@ export default function Results({
                     style="text"
                     size="small"
                     className={styles.downloadButton}
-                    onClick={() => {
-                      downloadResults(i)
-                    }}
+                    onClick={() => downloadResults(i)}
                     download
                   >
                     {`${getDownloadButtonValue(

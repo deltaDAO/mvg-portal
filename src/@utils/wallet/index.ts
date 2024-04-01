@@ -1,10 +1,9 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { createClient, erc20ABI } from 'wagmi'
+import { createClient, erc20ABI, goerli } from 'wagmi'
 import { ethers, Contract, Signer } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import { getDefaultClient } from 'connectkit'
 import { polygonMumbai } from 'wagmi/chains'
-import { genx } from './chains'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 
@@ -28,10 +27,10 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
 // Wagmi client
 export const wagmiClient = createClient(
   getDefaultClient({
-    appName: 'Pontus-X',
+    appName: 'Ocean Protocol Enterprise Market',
     infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
     // TODO: mapping between appConfig.chainIdsSupported and wagmi chainId
-    chains: [genx, polygonMumbai],
+    chains: [polygonMumbai, goerli],
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
   })
 )
@@ -150,14 +149,6 @@ export async function addCustomNetwork(
   )
 }
 
-export function getAdjustDecimalsValue(
-  value: number,
-  decimals: number
-): string {
-  const adjustedDecimalsValue = `${value}${'0'.repeat(18 - decimals)}`
-  return formatEther(adjustedDecimalsValue)
-}
-
 export async function getTokenBalance(
   accountId: string,
   decimals: number,
@@ -169,8 +160,8 @@ export async function getTokenBalance(
   try {
     const token = new Contract(tokenAddress, erc20ABI, web3Provider)
     const balance = await token.balanceOf(accountId)
-
-    return getAdjustDecimalsValue(balance, decimals)
+    const adjustedDecimalsBalance = `${balance}${'0'.repeat(18 - decimals)}`
+    return formatEther(adjustedDecimalsBalance)
   } catch (e) {
     LoggerInstance.error(`ERROR: Failed to get the balance: ${e.message}`)
   }

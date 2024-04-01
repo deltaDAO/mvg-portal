@@ -25,11 +25,6 @@
   text-align: center;
 }
 
-.automation {
-  padding-top: var(--spacer);
-  text-align: center;
-}
-
 @media (min-width: 50rem) {
   .grid {
     display: grid;
@@ -46,12 +41,6 @@
   .directMessage {
     margin-top: 0;
     text-align: end;
-  }
-
-  .automation {
-    display: flex;
-    justify-content: flex-end;
-    padding-top: 0px;
   }
 }
 

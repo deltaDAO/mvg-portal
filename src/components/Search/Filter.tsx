@@ -33,8 +33,7 @@ const filterList: FilterStructure[] = [
     type: 'filterList',
     options: [
       { label: 'datasets', value: FilterByTypeOptions.Data },
-      { label: 'algorithms', value: FilterByTypeOptions.Algorithm },
-      { label: 'saas', value: FilterByTypeOptions.Saas }
+      { label: 'algorithms', value: FilterByTypeOptions.Algorithm }
     ]
   },
   {

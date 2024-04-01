@@ -1,24 +1,22 @@
 :root {
   /* Portal brand color variables */
   --brand-white: #ffffff;
-  --brand-black: #002c3f;
-  --brand-blue: #004967;
-  --brand-blue-light: #008baa;
-  --brand-cyan: #46daff;
-  --brand-purple: #7300f3;
-  --brand-violet: #b900ff;
-  --brand-gaia-x-blue: #283375;
+  --brand-black: #012037;
+  --brand-blue: #014f86;
+  --brand-blue-light: #2a6f97;
+  --brand-blue-lighter: #61a5c2;
+  --brand-red: #b32a61;
 
   --brand-gradient: linear-gradient(
     to right bottom,
-    var(--brand-blue-light),
-    var(--brand-blue)
+    var(--brand-blue),
+    var(--brand-blue-lighter)
   );
 
-  --brand-grey: #2b2e3b;
-  --brand-grey-light: #4c5167;
-  --brand-grey-lighter: #d0d2dd;
-  --brand-grey-dimmed: #f5f6fb;
+  --brand-grey: #3d3d3d;
+  --brand-grey-light: #858585;
+  --brand-grey-lighter: #e0e0e0;
+  --brand-grey-dimmed: #f5f5f5;
 
   --brand-alert-green: #5fb359;
   --brand-alert-red: #d80606;

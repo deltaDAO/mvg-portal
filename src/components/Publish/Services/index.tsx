@@ -131,14 +131,6 @@ export default function ServicesFields(): ReactElement {
         component={Input}
         name="metadata.license"
       />
-      <Field
-        {...getFieldContent(
-          'accessTermsAndConditions',
-          content.metadata.fields
-        )}
-        component={Input}
-        name="metadata.gaiaXInformation.termsAndConditions"
-      />
     </>
   )
 }

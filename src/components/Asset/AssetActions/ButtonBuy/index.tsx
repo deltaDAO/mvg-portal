@@ -190,14 +190,10 @@ export default function ButtonBuy({
   const buttonText = retry
     ? 'Retry'
     : action === 'download'
-    ? hasPreviousOrder && assetType === 'saas'
-      ? 'Go to service'
-      : hasPreviousOrder
+    ? hasPreviousOrder
       ? 'Download'
       : priceType === 'free'
       ? 'Get'
-      : assetType === 'saas'
-      ? `Subscribe ${assetTimeout === 'Forever' ? '' : ` for ${assetTimeout}`}`
       : `Buy ${assetTimeout === 'Forever' ? '' : ` for ${assetTimeout}`}`
     : hasPreviousOrder &&
       hasPreviousOrderSelectedComputeAsset &&

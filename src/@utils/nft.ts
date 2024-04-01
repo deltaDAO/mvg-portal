@@ -47,10 +47,10 @@ function encodeSvg(svgString: string): string {
 }
 
 const nftMetadataTemplate = {
-  name: 'GX Data NFT',
-  symbol: 'GX-NFT',
+  name: 'Data NFT',
+  symbol: 'OEC-NFT',
   description: `This NFT represents an asset in Ocean Protocol v4 ecosystems.`,
-  external_url: 'https://minimal-gaia-x.eu'
+  external_url: 'https://enterprise.oceanprotocol.com'
 }
 
 export function generateNftMetadata(): NftMetadata {
@@ -186,7 +186,7 @@ export async function setNFTMetadataAndTokenURI(
         : {
             name: (asset as AssetExtended).nft.name,
             symbol: (asset as AssetExtended).nft.symbol,
-            description: `${nftMetadataTemplate.description}\n\nView on Pontus-X: ${externalUrl}`,
+            description: `${nftMetadataTemplate.description}\n\nView on Ocean Enterprise: ${externalUrl}`,
             external_url: externalUrl
           }
     )

@@ -9,7 +9,6 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useAccount } from 'wagmi'
-import { useAutomation } from '../../../@context/Automation/AutomationProvider'
 
 interface HistoryTab {
   title: string
@@ -21,7 +20,6 @@ const refreshInterval = 10000 // 10 sec.
 function getTabs(
   accountId: string,
   userAccountId: string,
-  autoWalletAccountId: string,
   jobs: ComputeJobMetaData[],
   isLoadingJobs: boolean,
   refetchJobs: boolean,
@@ -47,10 +45,9 @@ function getTabs(
       />
     )
   }
-  if (accountId === userAccountId || accountId === autoWalletAccountId) {
+  if (accountId === userAccountId) {
     defaultTabs.push(computeTab)
   }
-
   return defaultTabs
 }
 
@@ -66,7 +63,6 @@ export default function HistoryPage({
   accountIdentifier: string
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const { autoWallet } = useAutomation()
   const { chainIds } = useUserPreferences()
   const newCancelToken = useCancelToken()
 
@@ -85,13 +81,10 @@ export default function HistoryPage({
         type === 'init' && setIsLoadingJobs(true)
         const computeJobs = await getComputeJobs(
           chainIds,
-          accountIdentifier === autoWallet?.address
-            ? autoWallet?.address
-            : accountId,
+          accountId,
           null,
           newCancelToken()
         )
-
         setJobs(computeJobs.computeJobs)
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
@@ -99,13 +92,7 @@ export default function HistoryPage({
         setIsLoadingJobs(false)
       }
     },
-    [
-      autoWallet?.address,
-      accountIdentifier,
-      accountId,
-      chainIds,
-      newCancelToken
-    ]
+    [accountId, chainIds, isLoadingJobs, newCancelToken]
   )
 
   useEffect(() => {
@@ -120,7 +107,7 @@ export default function HistoryPage({
     return () => {
       clearInterval(balanceInterval)
     }
-  }, [accountId, refetchJobs, fetchJobs])
+  }, [accountId, refetchJobs])
 
   const getDefaultIndex = useCallback((): number => {
     const url = new URL(location.href)
@@ -144,7 +131,6 @@ export default function HistoryPage({
   const tabs = getTabs(
     accountIdentifier,
     accountId,
-    autoWallet?.address,
     jobs,
     isLoadingJobs,
     refetchJobs,

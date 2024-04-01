@@ -7,21 +7,14 @@ module.exports = {
   // return appConfig.metadataCacheUri
   metadataCacheUri:
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
-    'https://aquarius510.v4.delta-dao.com',
-
-  complianceUri:
-    process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
-    'https://compliance.lab.gaia-x.eu',
-
-  complianceApiVersion:
-    process.env.NEXT_PUBLIC_COMPLIANCE_API_VERSION || '2210',
+    'https://v4.aquarius.oceanprotocol.com',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
-  chainIds: [100, 80001],
+  chainIds: [80001],
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: [100, 80001],
+  chainIdsSupported: [80001, 5],
 
   customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
 
@@ -73,7 +66,7 @@ module.exports = {
 
   // Default terms to be used for service offerings made on this marketplace
   defaultAccessTerms:
-    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md',
+    'https://raw.githubusercontent.com/OceanProtocolEnterprise/market/main/content/pages/terms.md',
 
   // Purgatory URI, leave as an empty string to disable the API call
   purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || '',
@@ -81,13 +74,7 @@ module.exports = {
   // The url used to fetch docker hub image info
   dockerHubProxyUrl:
     process.env.NEXT_PUBLIC_DOCKER_HUB_PROXY_URL ||
-    'https://dockerhub-proxy.delta-dao.com',
-
-  automationConfig: {
-    networkTokenFundDefaultValue: '2',
-    erc20ApprovalDefaultValue: '50',
-    roughTxGasEstimate: 0.02
-  },
+    'https://dockerhub-proxy.oceanprotocol.com',
 
   // Display alert banner for the developer preview deployment
   showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false'

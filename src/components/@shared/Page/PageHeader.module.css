@@ -47,13 +47,7 @@
   width: max-content;
   top: 1.8rem;
   left: -1.7rem;
-  color: var(--brand-gaia-x-blue);
   font-size: var(--font-size-h5);
-}
-
-.logoContainer svg {
-  width: var(--home-gaia-x-logo-size-width);
-  height: var(--home-gaia-x-logo-size-height);
 }
 
 @media (min-width: 40rem) {

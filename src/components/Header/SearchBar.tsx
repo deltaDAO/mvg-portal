@@ -61,9 +61,7 @@ export default function SearchBar({
     }
   }, [isSearchBarVisible, homeSearchBarFocus])
 
-  async function startSearch(
-    e: FormEvent<HTMLButtonElement | HTMLInputElement>
-  ) {
+  async function startSearch(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
 
     if (value === '') setValue(' ')

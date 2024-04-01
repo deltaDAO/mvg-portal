@@ -15,11 +15,6 @@ import NetworkName from '@shared/NetworkName'
 import content from '../../../../content/purgatory.json'
 import Button from '@shared/atoms/Button'
 import RelatedAssets from '../RelatedAssets'
-import {
-  getFormattedCodeString,
-  getServiceCredential
-} from '@components/Publish/_utils'
-import ServiceCredentialVisualizer from '@components/@shared/ServiceCredentialVisualizer'
 import Web3Feedback from '@components/@shared/Web3Feedback'
 import { useAccount } from 'wagmi'
 
@@ -28,18 +23,11 @@ export default function AssetContent({
 }: {
   asset: AssetExtended
 }): ReactElement {
-  const {
-    isInPurgatory,
-    purgatoryData,
-    isOwner,
-    isAssetNetwork,
-    isServiceCredentialVerified
-  } = useAsset()
+  const { isInPurgatory, purgatoryData, isOwner, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
   const { allowExternalContent, debug } = useUserPreferences()
   const [receipts, setReceipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
-  const [serviceCredential, setServiceCredential] = useState<string>()
 
   useEffect(() => {
     if (!receipts.length) return
@@ -48,23 +36,6 @@ export default function AssetContent({
       ?.owner
     setNftPublisher(publisher)
   }, [receipts])
-
-  useEffect(() => {
-    if (!isServiceCredentialVerified) return
-    const serviceCredential =
-      asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
-    if (serviceCredential?.raw) {
-      setServiceCredential(JSON.parse(serviceCredential?.raw))
-    }
-    if (serviceCredential?.url) {
-      getServiceCredential(serviceCredential?.url).then((credential) =>
-        setServiceCredential(JSON.parse(credential))
-      )
-    }
-  }, [
-    isServiceCredentialVerified,
-    asset.metadata?.additionalInformation?.gaiaXInformation?.serviceSD
-  ])
 
   return (
     <>
@@ -93,17 +64,6 @@ export default function AssetContent({
                   text={asset?.metadata?.description || ''}
                   blockImages={!allowExternalContent}
                 />
-                {isServiceCredentialVerified && (
-                  <ServiceCredentialVisualizer
-                    text={getFormattedCodeString(serviceCredential) || ''}
-                    title="Service Credential"
-                    copyText={
-                      serviceCredential &&
-                      JSON.stringify(serviceCredential, null, 2)
-                    }
-                    collapsible
-                  />
-                )}
                 <MetaSecondary ddo={asset} />
               </>
             )}

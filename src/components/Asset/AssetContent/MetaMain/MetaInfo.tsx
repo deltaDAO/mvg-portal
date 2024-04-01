@@ -21,14 +21,8 @@ export default function MetaInfo({
   return (
     <div className={styles.wrapper}>
       <AssetType
-        type={
-          asset?.metadata?.additionalInformation?.saas
-            ? 'saas'
-            : asset?.metadata.type
-        }
-        accessType={
-          asset?.metadata?.additionalInformation?.saas ? 'saas' : accessType
-        }
+        type={asset?.metadata.type}
+        accessType={accessType}
         className={styles.assetType}
       />
       <div className={styles.byline}>

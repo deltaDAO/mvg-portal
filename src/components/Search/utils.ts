@@ -42,8 +42,7 @@ export function getSearchQuery(
   sortDirection?: string,
   serviceType?: string | string[],
   accessType?: string | string[],
-  filterSet?: string | string[],
-  showSaas?: boolean
+  filterSet?: string | string[]
 ): SearchQuery {
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
@@ -133,8 +132,7 @@ export function getSearchQuery(
       size: Number(offset) || 21
     },
     sortOptions: { sortBy: sort, sortDirection },
-    filters,
-    showSaas
+    filters
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
@@ -171,22 +169,6 @@ export async function getResults(
     filterSet
   } = params
 
-  const showSaas =
-    serviceType === undefined
-      ? undefined
-      : serviceType === FilterByTypeOptions.Saas ||
-        (typeof serviceType !== 'string' &&
-          serviceType.includes(FilterByTypeOptions.Saas))
-
-  // we make sure to query only for service types that are expected
-  // by Aqua ("dataset" or "algorithm") by removing "saas"
-  const sanitizedServiceType =
-    serviceType !== undefined && typeof serviceType !== 'string'
-      ? serviceType.filter((type) => type !== FilterByTypeOptions.Saas)
-      : serviceType === FilterByTypeOptions.Saas
-      ? undefined
-      : serviceType
-
   const searchQuery = getSearchQuery(
     chainIds,
     text,
@@ -196,12 +178,10 @@ export async function getResults(
     offset,
     sort,
     sortOrder,
-    sanitizedServiceType,
+    serviceType,
     accessType,
-    filterSet,
-    showSaas
+    filterSet
   )
-
   const queryResult = await queryMetadata(searchQuery, cancelToken)
 
   // update queryResult to workaround the wrong return datatype of totalPages and totalResults

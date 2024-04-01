@@ -23,8 +23,7 @@ export enum FilterOptions {
 
 export enum FilterByTypeOptions {
   Data = 'dataset',
-  Algorithm = 'algorithm',
-  Saas = 'saas'
+  Algorithm = 'algorithm'
 }
 
 export enum FilterByAccessOptions {

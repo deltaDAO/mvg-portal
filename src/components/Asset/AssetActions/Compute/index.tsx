@@ -61,7 +61,6 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
-import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import { Signer } from 'ethers'
 import { useAccount } from 'wagmi'
 
@@ -131,7 +130,6 @@ export default function Compute({
   const [retry, setRetry] = useState<boolean>(false)
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
-  const { autoWallet } = useAutomation()
 
   const price: AssetPrice = getAvailablePrice(asset)
 
@@ -154,7 +152,6 @@ export default function Compute({
       asset?.services[0].datatokenAddress,
       accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
     )
-
     setAlgorithmDTBalance(new Decimal(dtBalance).toString())
     const hasAlgoDt = Number(dtBalance) >= 1
     setHasAlgoAssetDatatoken(hasAlgoDt)
@@ -344,17 +341,6 @@ export default function Compute({
           asset,
           newCancelToken()
         )
-        if (autoWallet) {
-          const autoComputeJobs = await getComputeJobs(
-            [asset?.chainId] || chainIds,
-            autoWallet?.address,
-            asset,
-            newCancelToken()
-          )
-          autoComputeJobs.computeJobs.forEach((job) => {
-            computeJobs.computeJobs.push(job)
-          })
-        }
         setJobs(computeJobs.computeJobs)
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
@@ -362,7 +348,7 @@ export default function Compute({
         setIsLoadingJobs(false)
       }
     },
-    [address, accountId, asset, chainIds, autoWallet, newCancelToken]
+    [address, accountId, asset, chainIds, newCancelToken]
   )
 
   useEffect(() => {

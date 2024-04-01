@@ -89,11 +89,6 @@ export default function MetadataFields(): ReactElement {
         rows={7}
       />
       <Field
-        {...getFieldContent('serviceCredential', content.metadata.fields)}
-        component={Input}
-        name="metadata.gaiaXInformation.serviceSD"
-      />
-      <Field
         {...getFieldContent('tags', content.metadata.fields)}
         component={Input}
         name="metadata.tags"
@@ -155,56 +150,6 @@ export default function MetadataFields(): ReactElement {
               component={Input}
               name="metadata.consumerParameters"
             />
-          )}
-        </>
-      )}
-
-      {values.metadata.type === 'dataset' && (
-        <>
-          <Field
-            {...getFieldContent('containsPII', content.metadata.fields)}
-            component={Input}
-            name="metadata.gaiaXInformation.containsPII"
-          />
-
-          {values.metadata.gaiaXInformation.containsPII === true && (
-            <div className={styles.gdpr}>
-              <Field
-                {...getFieldContent('dataController', content.metadata.fields)}
-                component={Input}
-                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.dataController"
-              />
-
-              <Field
-                {...getFieldContent('legalBasis', content.metadata.fields)}
-                component={Input}
-                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.legalBasis"
-              />
-
-              <Field
-                {...getFieldContent('purpose', content.metadata.fields)}
-                component={Input}
-                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.purpose"
-              />
-
-              <Field
-                {...getFieldContent(
-                  'dataProtectionContactPoint',
-                  content.metadata.fields
-                )}
-                component={Input}
-                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.dataProtectionContactPoint"
-              />
-
-              <Field
-                {...getFieldContent(
-                  'consentWithdrawalContactPoint',
-                  content.metadata.fields
-                )}
-                component={Input}
-                name="metadata.gaiaXInformation.PIIInformation.legitimateProcessing.consentWithdrawalContactPoint"
-              />
-            </div>
           )}
         </>
       )}

@@ -7,8 +7,6 @@ import Copy from '@shared/atoms/Copy'
 import Avatar from '@shared/atoms/Avatar'
 import styles from './Account.module.css'
 import { accountTruncate } from '@utils/wallet'
-import { useAutomation } from '../../../@context/Automation/AutomationProvider'
-import Transaction from '../../../@images/transaction.svg'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 
 export default function Account({
@@ -17,7 +15,6 @@ export default function Account({
   accountId: string
 }): ReactElement {
   const { chainIds } = useUserPreferences()
-  const { autoWalletAddress } = useAutomation()
   const { verifiedWallets } = useAddressConfig()
 
   return (
@@ -32,11 +29,6 @@ export default function Account({
       <div>
         <h3 className={styles.name}>
           {verifiedWallets?.[accountId] || accountTruncate(accountId)}{' '}
-          {autoWalletAddress === accountId && (
-            <span className={styles.automation} title="Automation">
-              <Transaction />
-            </span>
-          )}
         </h3>
 
         {accountId && (

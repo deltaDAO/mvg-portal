@@ -9,7 +9,6 @@ import {
 import { LoggerInstance, LogLevel } from '@oceanprotocol/lib'
 import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from './MarketMetadata'
-import { AUTOMATION_MODES } from './Automation/AutomationProvider'
 
 interface UserPreferencesValue {
   debug: boolean
@@ -28,10 +27,6 @@ interface UserPreferencesValue {
   allowExternalContent: boolean
   setAllowExternalContent: (value: boolean) => void
   locale: string
-  automationWalletJSON: string
-  setAutomationWalletJSON: (encryptedWallet: string) => void
-  automationWalletMode: AUTOMATION_MODES
-  setAutomationWalletMode: (mode: AUTOMATION_MODES) => void
 }
 
 const UserPreferencesContext = createContext(null)
@@ -82,15 +77,6 @@ function UserPreferencesProvider({
     localStorage?.allowExternalContent || false
   )
 
-  const [automationWallet, setAutomationWallet] = useState<string>(
-    localStorage?.automationWalletJSON || ''
-  )
-
-  const [automationWalletMode, setAutomationWalletMode] =
-    useState<AUTOMATION_MODES>(
-      localStorage?.automationWalletMode || AUTOMATION_MODES.SIMPLE
-    )
-
   // Write values to localStorage on change
   useEffect(() => {
     setLocalStorage({
@@ -100,9 +86,7 @@ function UserPreferencesProvider({
       bookmarks,
       privacyPolicySlug,
       showPPC,
-      allowExternalContent,
-      automationWalletJSON: automationWallet,
-      automationWalletMode
+      allowExternalContent
     })
   }, [
     chainIds,
@@ -111,9 +95,7 @@ function UserPreferencesProvider({
     bookmarks,
     privacyPolicySlug,
     showPPC,
-    allowExternalContent,
-    automationWallet,
-    automationWalletMode
+    allowExternalContent
   ])
 
   // Set ocean.js log levels, default: Error
@@ -178,11 +160,7 @@ function UserPreferencesProvider({
           setPrivacyPolicySlug,
           setShowPPC,
           allowExternalContent,
-          setAllowExternalContent,
-          automationWalletJSON: automationWallet,
-          setAutomationWalletJSON: setAutomationWallet,
-          automationWalletMode,
-          setAutomationWalletMode
+          setAllowExternalContent
         } as UserPreferencesValue
       }
     >

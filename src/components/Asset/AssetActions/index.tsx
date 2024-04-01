@@ -16,8 +16,6 @@ import AssetStats from './AssetStats'
 import { isAddressWhitelisted } from '@utils/ddo'
 import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
-import { useAutomation } from '../../../@context/Automation/AutomationProvider'
-import { Signer } from 'ethers'
 
 export default function AssetActions({
   asset
@@ -27,11 +25,6 @@ export default function AssetActions({
   const { address: accountId } = useAccount()
   const { data: signer } = useSigner()
   const { balance } = useBalance()
-  const {
-    isAutomationEnabled,
-    autoWallet,
-    balance: automationBalance
-  } = useAutomation()
   const { chain } = useNetwork()
   const web3Provider = useProvider()
   const { isAssetNetwork } = useAsset()
@@ -50,17 +43,10 @@ export default function AssetActions({
   const [fileIsLoading, setFileIsLoading] = useState<boolean>(false)
   const [isAccountIdWhitelisted, setIsAccountIdWhitelisted] =
     useState<boolean>()
-  const [signerToUse, setSignerToUse] = useState<Signer>(signer)
-  const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
 
   const isCompute = Boolean(
     asset?.services.filter((service) => service.type === 'compute')[0]
   )
-
-  useEffect(() => {
-    setSignerToUse(isAutomationEnabled ? autoWallet : signer)
-    setAccountIdToUse(isAutomationEnabled ? autoWallet?.address : accountId)
-  }, [isAutomationEnabled, accountId, autoWallet, signer])
 
   // Get and set file info
   useEffect(() => {
@@ -123,14 +109,14 @@ export default function AssetActions({
 
   // Get and set user DT balance
   useEffect(() => {
-    if (!web3Provider || !accountIdToUse || !isAssetNetwork) return
+    if (!web3Provider || !accountId || !isAssetNetwork) return
 
     async function init() {
       try {
         const datatokenInstance = new Datatoken(web3Provider as any)
         const dtBalance = await datatokenInstance.balance(
           asset.services[0].datatokenAddress,
-          accountIdToUse
+          accountId
         )
         setDtBalance(dtBalance)
       } catch (e) {
@@ -138,7 +124,7 @@ export default function AssetActions({
       }
     }
     init()
-  }, [web3Provider, accountIdToUse, asset, isAssetNetwork])
+  }, [web3Provider, accountId, asset, isAssetNetwork])
 
   // Check user balance against price
   useEffect(() => {
@@ -146,16 +132,14 @@ export default function AssetActions({
     if (
       !asset?.accessDetails?.price ||
       !asset?.accessDetails?.baseToken?.symbol ||
-      !accountIdToUse ||
+      !accountId ||
       !balance ||
       !dtBalance
     )
       return
 
-    const balanceToUse = isAutomationEnabled ? automationBalance : balance
-
     const baseTokenBalance = getTokenBalanceFromSymbol(
-      balanceToUse,
+      balance,
       asset?.accessDetails?.baseToken?.symbol
     )
 
@@ -167,28 +151,21 @@ export default function AssetActions({
     return () => {
       setIsBalanceSufficient(false)
     }
-  }, [
-    balance,
-    accountIdToUse,
-    asset?.accessDetails,
-    dtBalance,
-    isAutomationEnabled,
-    automationBalance
-  ])
+  }, [balance, accountId, asset?.accessDetails, dtBalance])
 
   // check for if user is whitelisted or blacklisted
   useEffect(() => {
-    if (!asset || !accountIdToUse) return
+    if (!asset || !accountId) return
 
-    setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountIdToUse))
-  }, [accountIdToUse, asset])
+    setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountId))
+  }, [accountId, asset])
 
   return (
     <div className={styles.actions}>
       {isCompute ? (
         <Compute
-          accountId={accountIdToUse}
-          signer={signerToUse}
+          accountId={accountId}
+          signer={signer}
           asset={asset}
           dtBalance={dtBalance}
           isAccountIdWhitelisted={isAccountIdWhitelisted}
@@ -197,8 +174,8 @@ export default function AssetActions({
         />
       ) : (
         <Download
-          accountId={accountIdToUse}
-          signer={signerToUse}
+          accountId={accountId}
+          signer={signer}
           asset={asset}
           dtBalance={dtBalance}
           isBalanceSufficient={isBalanceSufficient}

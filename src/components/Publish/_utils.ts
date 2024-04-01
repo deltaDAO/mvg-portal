@@ -32,14 +32,10 @@ import {
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
   customProviderUrl,
-  defaultAccessTerms,
-  complianceApiVersion,
-  complianceUri
+  defaultAccessTerms
 } from '../../../app.config'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
-import axios from 'axios'
-import { ServiceCredential } from 'src/@types/gaia-x/2210/ServiceCredential'
 import { parseEther } from 'ethers/lib/utils'
 
 function getUrlFileExtension(fileUrl: string): string {
@@ -148,8 +144,7 @@ export async function transformPublishFormToDdo(
     dockerImageCustomEntrypoint,
     dockerImageCustomChecksum,
     usesConsumerParameters,
-    consumerParameters,
-    gaiaXInformation
+    consumerParameters
   } = metadata
   const { access, files, links, providerUrl, timeout, allow, deny } =
     services[0]
@@ -173,10 +168,6 @@ export async function transformPublishFormToDdo(
     ? transformConsumerParameters(consumerParameters)
     : undefined
 
-  const accessTermsFileInfo = gaiaXInformation.termsAndConditions
-  const accessTermsUrlTransformed = accessTermsFileInfo?.length &&
-    accessTermsFileInfo[0].valid && [sanitizeUrl(accessTermsFileInfo[0].url)]
-
   const newMetadata: Metadata = {
     created: currentTime,
     updated: currentTime,
@@ -189,17 +180,7 @@ export async function transformPublishFormToDdo(
       values.metadata.license || 'https://market.oceanprotocol.com/terms',
     links: linksTransformed,
     additionalInformation: {
-      termsAndConditions,
-      gaiaXInformation: {
-        termsAndConditions: [
-          { url: accessTermsUrlTransformed || defaultAccessTerms }
-        ],
-        ...(type === 'dataset' && {
-          containsPII: gaiaXInformation.containsPII,
-          PIIInformation: gaiaXInformation.PIIInformation
-        }),
-        serviceSD: gaiaXInformation?.serviceSD
-      }
+      termsAndConditions
     },
     ...(type === 'algorithm' &&
       dockerImage !== '' && {
@@ -400,169 +381,7 @@ export async function createTokensAndPricing(
   return { erc721Address, datatokenAddress, txHash }
 }
 
-export function getComplianceApiVersion(context?: string[]): string {
-  const latest = complianceApiVersion
-
-  const allowedRegistryDomains = [
-    'https://registry.gaia-x.eu/v2206',
-    'https://registry.lab.gaia-x.eu/v2206'
-  ]
-  if (
-    !context ||
-    !context.length ||
-    context.some(
-      (e) => allowedRegistryDomains.findIndex((x) => e.startsWith(x)) !== -1
-    )
-  )
-    return latest
-
-  return '2204'
-}
-
-export async function signServiceCredential(
-  rawServiceCredential: any
-): Promise<any> {
-  if (!rawServiceCredential) return
-  try {
-    const response = await axios.post(
-      `${complianceUri}/api/sign`,
-      rawServiceCredential
-    )
-    const signedServiceCredential = {
-      selfDescriptionCredential: { ...rawServiceCredential },
-      ...response.data
-    }
-
-    return signedServiceCredential
-  } catch (error) {
-    LoggerInstance.error(error.message)
-  }
-}
-
-export async function storeRawServiceSD(signedSD: {
-  complianceCredentials: any
-  selfDescriptionCredential: any
-}): Promise<{
-  verified: boolean
-  storedSdUrl: string | undefined
-}> {
-  if (!signedSD) return { verified: false, storedSdUrl: undefined }
-
-  const baseUrl = `${complianceUri}/api/service-offering/verify/raw?store=true`
-  try {
-    const response = await axios.post(baseUrl, signedSD)
-    if (response?.status === 409) {
-      return {
-        verified: false,
-        storedSdUrl: undefined
-      }
-    }
-    if (response?.status === 200) {
-      return { verified: true, storedSdUrl: response.data.storedSdUrl }
-    }
-
-    return { verified: false, storedSdUrl: undefined }
-  } catch (error) {
-    LoggerInstance.error(error.message)
-    return { verified: false, storedSdUrl: undefined }
-  }
-}
-
-export async function verifyRawServiceCredential(
-  rawServiceCredential: string,
-  did?: string
-): Promise<{
-  verified: boolean
-  complianceApiVersion?: string
-  idMatch?: boolean
-  responseBody?: any
-}> {
-  if (!rawServiceCredential) return { verified: false }
-
-  const parsedServiceCredential = JSON.parse(rawServiceCredential)
-  // TODO: put back the compliance API version check
-  // const complianceApiVersion = getComplianceApiVersion(
-  //   parsedServiceSD?.selfDescriptionCredential?.['@context']
-  // )
-
-  const baseUrl = `${complianceUri}/v1/api/credential-offers`
-
-  try {
-    const response = await axios.post(baseUrl, parsedServiceCredential)
-    if (response?.status === 409) {
-      return {
-        verified: false,
-        responseBody: response.data.body
-      }
-    }
-    if (response?.status === 201) {
-      const serviceOffering = parsedServiceCredential.verifiableCredential.find(
-        (credential) =>
-          credential?.credentialSubject?.type === 'gx:ServiceOffering'
-      )
-      const credentialId = serviceOffering?.credentialSubject?.id
-
-      return {
-        verified: true,
-        complianceApiVersion,
-        idMatch: did && did?.toLowerCase() === credentialId?.toLowerCase()
-      }
-    }
-
-    return { verified: false }
-  } catch (error) {
-    LoggerInstance.error(error.message)
-    return { verified: false }
-  }
-}
-
-export async function getServiceCredential(url: string): Promise<string> {
-  if (!url) return
-
-  try {
-    const serviceCredential = await axios.get(url)
-    return JSON.stringify(serviceCredential.data, null, 2)
-  } catch (error) {
-    LoggerInstance.error(error.message)
-  }
-}
-
 export function getFormattedCodeString(parsedCodeBlock: any): string {
   const formattedString = JSON.stringify(parsedCodeBlock, null, 2)
   return `\`\`\`\n${formattedString}\n\`\`\``
-}
-
-export function updateServiceCredential(
-  ddo: DDO,
-  serviceCredential: ServiceCredential
-): DDO {
-  const { raw, url } = serviceCredential
-  ddo.metadata.additionalInformation.gaiaXInformation.serviceSelfDescription = {
-    raw,
-    url
-  }
-
-  return ddo
-}
-
-export function getPublisherFromServiceCredential(
-  serviceCredential: any
-): string {
-  if (!serviceCredential) return
-  const parsedServiceCredential =
-    typeof serviceCredential === 'string'
-      ? JSON.parse(serviceCredential)
-      : serviceCredential
-
-  const legalParticipant = parsedServiceCredential.verifiableCredential.find(
-    (credential) =>
-      credential?.credentialSubject?.type === 'gx:LegalParticipant'
-  )
-
-  const legalName = legalParticipant?.credentialSubject?.['gx:legalName']
-
-  const publisher =
-    typeof legalName === 'string' ? legalName : legalName?.['@value']
-
-  return publisher
 }

@@ -113,8 +113,7 @@ export default function Edit({
         tags: values.tags,
         license: values.license,
         additionalInformation: {
-          ...asset.metadata?.additionalInformation,
-          gaiaXInformation: values.gaiaXInformation
+          ...asset.metadata?.additionalInformation
         }
       }
 

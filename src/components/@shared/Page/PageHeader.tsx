@@ -4,7 +4,7 @@ import styles from './PageHeader.module.css'
 import Markdown from '@shared/Markdown'
 import SearchBar from '@components/Header/SearchBar'
 import BrandLogo from '@images/brand-logo.svg'
-import GaiaXLogo from '@images/gaia-x-logo.svg'
+import Logo from '@images/logo.svg'
 
 const cx = classNames.bind(styles)
 
@@ -30,20 +30,10 @@ export default function PageHeader({
     <header className={styleClasses}>
       {isHome ? (
         <div className={styles.homeTitleContainer}>
-          <BrandLogo />
+          <h1 className={styles.title}>{title}</h1>
           {description && (
             <Markdown text={description} className={styles.subtitle} />
           )}
-          <div className={styles.logoContainer}>
-            <h4 className={styles.logoContainerTitle}>powered by</h4>
-            <a
-              href="https://gaia-x.eu/"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <GaiaXLogo />
-            </a>
-          </div>
         </div>
       ) : (
         <h1 className={styles.title}>{title}</h1>

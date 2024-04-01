@@ -1,9 +1,9 @@
 {
-  "siteTitle": "Pontus-X Ecosystem - powered by Gaia-X",
-  "siteTagline": "Streamlined interoperability accross data ecosystems.",
-  "siteUrl": "https://portal.pontus-x.eu",
+  "siteTitle": "Ocean Protocol Enterprise",
+  "siteTagline": "The enterprise data ecosystem",
+  "siteUrl": "https://enterprise.oceanprotocol.com",
   "siteImage": "/share.png",
-  "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
+  "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com).",
   "menu": [
     {
       "name": "Catalogue",
@@ -14,108 +14,35 @@
       "link": "/publish/1"
     },
     {
-      "name": "Verify",
-      "link": "/verify"
-    },
-    {
-      "name": "Log",
-      "link": "https://explorer.pontus-x.eu/"
-    },
-    {
       "name": "Ecosystem",
       "subItems": [
         {
-          "name": "EuProGigant",
-          "link": "https://portal.euprogigant.io/",
-          "description": "EuProGigant is the first funded binational industrial project with the practical implementation of the Gaia-X principles.",
-          "image": "euprogigant-logo.webp",
+          "name": "Example",
+          "link": "https://marketplace.example.com/",
+          "description": "An enterprise marketplace built with Ocean Protocol Enterprise",
+          "image": "example_logo.png",
           "category": "manufacturing"
         },
         {
-          "name": "GX4M moveID",
-          "link": "https://portal.moveid.eu/",
-          "description": "moveID aims to develop a decentralized digital mobility identity infrastructure for Europe.",
-          "image": "moveid-logo.webp",
+          "name": "Another Example",
+          "link": "https://marketplace.example.com/",
+          "description": "An enterprise marketplace built with Ocean Protocol Enterprise",
+          "image": "example_logo.png",
           "category": "mobility"
-        },
-        {
-          "name": "Cooperants",
-          "link": "https://cooperants.pontus-x.eu/",
-          "description": "The world's only collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
-          "image": "cooperants-logo.webp",
-          "category": "space"
-        },
-        {
-          "name": "Airbus",
-          "link": "https://airbus.pontus-x.eu/",
-          "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
-          "image": "airbus-logo.webp",
-          "category": "space"
-        },
-        {
-          "name": "Service-Meister",
-          "link": "https://servicemeister.pontus-x.eu/",
-          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
-          "image": "service-meister-logo.webp",
-          "category": "manufacturing"
-        },
-        {
-          "name": "Future Mobility Marketplace",
-          "link": "https://marketplace.future-mobility-alliance.org/",
-          "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
-          "image": "fmdm-logo.webp",
-          "category": "mobility"
-        },
-        {
-          "name": "Berlin State Library",
-          "link": "https://sbb.pontus-x.eu/",
-          "description": "Explore the Open Science Ecosystem, a collaboration of libraries, universities, and science pioneers under Gaia-X principles for limitless shared knowledge.",
-          "image": "sbb-logo.webp",
-          "category": "science"
-        },
-        {
-          "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/",
-          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
-          "image": "energy-shr-logo.webp",
-          "category": "science"
-        },
-        {
-          "name": "Clinical Insights Exchange",
-          "link": "https://cix.triall.io/",
-          "description": "A federated data platform to change clinical data assets and analytics services in a trusted, privacy-friendly environment.",
-          "image": "clinical-insights-exchange-logo.webp",
-          "category": "health"
-        },
-        {
-          "name": "UdL Research Data Space",
-          "link": "https://dataspace.angliru.udl.cat/",
-          "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
-          "image": "udl-logo.webp",
-          "category": "science"
         }
       ]
     }
   ],
   "announcement": "",
-  "devPreviewAnnouncement": "You are visiting the SITE-TITLE-PLACEHOLDER Developer Preview. Please note that some functionalities are in beta and may not work as expected. Visit the [SITE-TITLE-PLACEHOLDER portal](SITE-LINK-PLACEHOLDER) instead.",
+  "devPreviewAnnouncement": "You are visiting the SITE-TITLE-PLACEHOLDER Developer Preview. Please note that some functionalities are in beta and may not work as expected. Visit the [SITE-TITLE-PLACEHOLDER marketplace](SITE-LINK-PLACEHOLDER) instead.",
   "warning": {
-    "ctd": "Please note that Compute-to-Data is still in alpha phase."
+    "ctd": "Please note that Compute-to-Data is still in beta phase."
   },
   "footer": {
-    "subtitle": "data economy solutions - GDPR compliant",
-    "copyright": "Built by [deltaDAO](https://delta-dao.com)",
+    "subtitle": "The enterprise data market",
+    "copyright": "Built by [Ocean Protocol Enterprise](https://github.com/OceanProtocolEnterprise)",
     "privacyTitle": "Privacy",
     "content": [
-      {
-        "title": "External",
-        "links": [
-          {
-            "name": "Log",
-            "link": "https://explorer.pontus-x.eu/"
-          }
-        ]
-      },
       {
         "title": "Navigation",
         "links": [
@@ -134,10 +61,6 @@
           {
             "name": "Publish",
             "link": "/publish/1"
-          },
-          {
-            "name": "Verify",
-            "link": "/verify"
           }
         ]
       }

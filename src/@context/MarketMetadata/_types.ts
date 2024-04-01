@@ -7,8 +7,6 @@ export interface OpcFee {
 
 export interface AppConfig {
   metadataCacheUri: string
-  complianceUri: string
-  complianceApiVersion: string
   chainIds: number[]
   chainIdsSupported: number[]
   defaultDatatokenTemplateIndex: number
@@ -30,11 +28,6 @@ export interface AppConfig {
   defaultAccessTerms: string
   purgatoryUrl: string
   dockerHubProxyUrl: string
-  automationConfig: {
-    networkTokenFundDefaultValue: string
-    erc20ApprovalDefaultValue: string
-    roughTxGasEstimate: number
-  }
   showPreviewAlert: string
 }
 export interface SiteContent {

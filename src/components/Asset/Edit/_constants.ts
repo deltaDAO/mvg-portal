@@ -40,13 +40,6 @@ export function getInitialValues(
       usesConsumerParameters: service?.consumerParameters?.length > 0,
       consumerParameters: parseConsumerParameters(service?.consumerParameters)
     },
-    gaiaXInformation: {
-      ...metadata?.additionalInformation?.gaiaXInformation,
-      containsPII:
-        metadata?.additionalInformation?.gaiaXInformation?.containsPII || false,
-      termsAndConditions: metadata?.additionalInformation?.gaiaXInformation
-        ?.termsAndConditions || [{ url: '' }]
-    },
     license: metadata?.license
   }
 }

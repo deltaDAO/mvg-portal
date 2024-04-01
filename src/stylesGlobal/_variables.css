@@ -3,13 +3,13 @@
 
 :root {
   --color-primary: var(--brand-blue);
-  --color-secondary: var(--brand-grey-light);
-  --color-highlight: var(--brand-blue);
+  --color-secondary: var(--brand-blue-light);
+  --color-highlight: var(--brand-red);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
   --font-color-heading: var(--brand-black);
-  --font-color-light: var(--color-secondary);
+  --font-color-light: var(--brand-grey-light);
   --background-body: var(--brand-white);
   --background-body-transparent: rgba(255, 255, 255, 0.8);
   --background-content: var(--brand-white);
@@ -25,16 +25,16 @@
   --nft-placeholder-background: var(--brand-gradient);
 
   /* Menubar */
-  --menu-logo-color: var(--brand-gaia-x-blue);
-  --menu-logo-color-hover: var(--brand-gaia-x-blue);
+  --menu-logo-color: var(--brand-blue);
+  --menu-logo-color-hover: var(--brand-blue);
   --menu-logo-size-width-sm: 7.5rem;
   --menu-logo-size-height-sm: 3.5rem;
   --menu-logo-size-width-lg: 7.5rem;
   --menu-logo-size-height-lg: 3.5rem;
   --menu-font-color: var(--color-primary);
-  --menu-font-color-active: var(--font-color-heading);
-  --menu-font-color-hover: var(--color-primary);
-  --menu-active-indicator-color: var(--brand-blue);
+  --menu-font-color-active: var(--color-secondary);
+  --menu-font-color-hover: var(--color-secondary);
+  --menu-active-indicator-color: var(--color-secondary);
   --menu-mobile-navigation-border-size: var(--border-size-sm);
   --menu-mobile-navigation-border-color: var(--brand-grey-lighter);
   --menu-border-color: var(--color-primary);
@@ -51,16 +51,14 @@
   --menu-network-badge-font-color: var(--brand-white);
 
   /* Footer */
-  --footer-background-color: var(--brand-grey);
-  --footer-font-color: var(--brand-white);
-  --footer-font-color-highlight: var(--brand-cyan);
-  --footer-link-category-font-color: var(--brand-white);
+  --footer-background-color: var(--brand-grey-lighter);
+  --footer-font-color: var(--font-color-text);
+  --footer-font-color-highlight: var(--brand-red);
+  --footer-link-category-font-color: var(--font-color-heading);
 
   /* Homepage */
   --home-brand-logo-size-width: 22rem;
   --home-brand-logo-size-height: 4rem;
-  --home-gaia-x-logo-size-width: 9rem;
-  --home-gaia-x-logo-size-height: 5rem;
 
   /* Input elements */
   --input-font-color: var(--font-color-heading);
@@ -104,7 +102,7 @@
   --box-template-hover-box-shadow: 0 10px 25px 0 var(--box-shadow-color);
 
   /* Asset teaser */
-  --teaser-font-color: var(--color-secondary);
+  --teaser-font-color: var(--font-color-text);
   --teaser-title-font-color: var(--font-color-heading);
   --teaser-background: var(--background-content);
   --teaser-border-radius: var(--border-radius);
@@ -133,15 +131,15 @@
 
   /* Confetti */
   --confetti-color-one: var(--brand-blue-light);
-  --confetti-color-two: var(--brand-cyan);
-  --confetti-color-three: var(--brand-violet);
+  --confetti-color-two: var(--brand-red);
+  --confetti-color-three: var(--ocean-pink);
   --confetti-color-four: var(--brand-grey-light);
   --confetti-color-five: var(--brand-grey-lighter);
 
-  --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Helvetica, Arial, sans-serif;
-  --font-family-heading: 'Titillium Web', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-family-base: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Helvetica, Arial, sans-serif;
+  --font-family-heading: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Helvetica, Arial, sans-serif;
   --font-family-monospace: 'Fira Code', 'Fira Mono', Menlo, Monaco, Consolas,
     'Courier New', monospace;
 
