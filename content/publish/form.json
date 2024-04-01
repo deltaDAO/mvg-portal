@@ -138,6 +138,15 @@
         "prefixes": ["I agree to the"],
         "actions": ["/terms"],
         "required": true
+      },
+      {
+        "name": "dataSubjectConsent",
+        "label": "Consent of data subjects",
+        "type": "checkbox",
+        "options": [
+          "I confirm that I have the consent of data subjects/holders to publish this asset"
+        ],
+        "required": true
       }
     ]
   },

@@ -77,6 +77,13 @@ export default function MetadataFields(): ReactElement {
         name="metadata.type"
         options={assetTypeOptions}
       />
+      {values.metadata.type === 'dataset' && (
+        <Field
+          {...getFieldContent('dataSubjectConsent', content.metadata.fields)}
+          component={Input}
+          name="metadata.dataSubjectConsent"
+        />
+      )}
       <Field
         {...getFieldContent('name', content.metadata.fields)}
         component={Input}
