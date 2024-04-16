@@ -45,6 +45,12 @@ const validationMetadata = {
   termsAndConditions: Yup.boolean()
     .required('Required')
     .isTrue('Please agree to the Terms and Conditions.'),
+  dataSubjectConsent: Yup.boolean().when('type', {
+    is: 'dataset',
+    then: Yup.boolean()
+      .required('Required')
+      .isTrue("Please confirm the data subject's consent.")
+  }),
   usesConsumerParameters: Yup.boolean(),
   consumerParameters: Yup.array().when('type', {
     is: 'algorithm',
