@@ -1,10 +1,13 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { createClient, erc20ABI, sepolia } from 'wagmi'
+import { createClient, erc20ABI } from 'wagmi'
+import { localhost } from '@wagmi/core/chains'
 import { ethers, Contract, Signer } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
 import { getDefaultClient } from 'connectkit'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
+import { getSupportedChains } from './chains'
+import { chainIdsSupported } from '../../../app.config'
 
 export async function getDummySigner(chainId: number): Promise<Signer> {
   if (typeof chainId !== 'number') {
@@ -24,12 +27,15 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
 }
 
 // Wagmi client
+const chains = [...getSupportedChains(chainIdsSupported)]
+if (process.env.NEXT_PUBLIC_MARKET_DEVELOPMENT === 'true') {
+  chains.push({ ...localhost, id: 8996 })
+}
 export const wagmiClient = createClient(
   getDefaultClient({
     appName: 'Ocean Protocol Enterprise Market',
     infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
-    // TODO: mapping between appConfig.chainIdsSupported and wagmi chainId
-    chains: [sepolia],
+    chains,
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
   })
 )
