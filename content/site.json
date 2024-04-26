@@ -97,14 +97,6 @@
           "isLive": true
         },
         {
-          "name": "Clinical Insights Exchange",
-          "link": "https://cix.triall.io/",
-          "description": "A federated data platform to change clinical data assets and analytics services in a trusted, privacy-friendly environment.",
-          "image": "clinical-insights-exchange-logo.webp",
-          "category": "health",
-          "isLive": true
-        },
-        {
           "name": "UdL Research Data Space",
           "link": "https://dataspace.angliru.udl.cat/",
           "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
