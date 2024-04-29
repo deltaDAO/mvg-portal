@@ -1,42 +1,39 @@
-import { ReactElement, useState, useEffect } from 'react'
-import { Formik } from 'formik'
 import {
-  LoggerInstance,
-  FixedRateExchange,
+  generateCredentials,
+  transformConsumerParameters
+} from '@components/Publish/_utils'
+import { useAsset } from '@context/Asset'
+import { useUserPreferences } from '@context/UserPreferences'
+import { useAbortController } from '@hooks/useAbortController'
+import {
   Asset,
   Datatoken,
-  Nft,
+  FixedRateExchange,
+  LoggerInstance,
   Metadata,
+  Nft,
   Service
 } from '@oceanprotocol/lib'
-import { validationSchema } from './_validation'
+import Web3Feedback from '@shared/Web3Feedback'
+import { assetStateToNumber } from '@utils/assetState'
+import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
+import { setMinterToDispenser, setMinterToPublisher } from '@utils/dispenser'
+import { decodeTokenURI, setNFTMetadataAndTokenURI } from '@utils/nft'
+import { getOceanConfig, getPaymentCollector } from '@utils/ocean'
+import { getEncryptedFiles } from '@utils/provider'
+import { sanitizeUrl } from '@utils/url'
+import { Formik } from 'formik'
+import { ReactElement, useEffect, useState } from 'react'
+import { useAccount, useNetwork, useProvider, useSigner } from 'wagmi'
+import content from '../../../../content/pages/editMetadata.json'
+import { useAutomation } from '../../../@context/Automation/AutomationProvider'
+import DebugEditMetadata from './DebugEditMetadata'
+import EditFeedback from './EditFeedback'
+import FormEditMetadata from './FormEditMetadata'
 import { getInitialValues } from './_constants'
 import { MetadataEditForm } from './_types'
-import { useUserPreferences } from '@context/UserPreferences'
-import Web3Feedback from '@shared/Web3Feedback'
-import FormEditMetadata from './FormEditMetadata'
-import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
+import { validationSchema } from './_validation'
 import styles from './index.module.css'
-import content from '../../../../content/pages/editMetadata.json'
-import { useAbortController } from '@hooks/useAbortController'
-import DebugEditMetadata from './DebugEditMetadata'
-import { getOceanConfig, getPaymentCollector } from '@utils/ocean'
-import EditFeedback from './EditFeedback'
-import { useAsset } from '@context/Asset'
-import {
-  decodeTokenURI,
-  setNftMetadata,
-  setNFTMetadataAndTokenURI
-} from '@utils/nft'
-import { sanitizeUrl } from '@utils/url'
-import { getEncryptedFiles } from '@utils/provider'
-import { assetStateToNumber } from '@utils/assetState'
-import { setMinterToPublisher, setMinterToDispenser } from '@utils/dispenser'
-import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
-import {
-  transformConsumerParameters,
-  generateCredentials
-} from '@components/Publish/_utils'
 
 export default function Edit({
   asset
@@ -56,6 +53,20 @@ export default function Edit({
   const [error, setError] = useState<string>()
   const isComputeType = asset?.services[0]?.type === 'compute'
   const hasFeedback = error || success
+
+  const { autoWallet, isAutomationEnabled } = useAutomation()
+  const [signerToUse, setSignerToUse] = useState(signer)
+  const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
+
+  useEffect(() => {
+    if (isAutomationEnabled && autoWallet?.address) {
+      setAccountIdToUse(autoWallet.address)
+      setSignerToUse(autoWallet)
+    } else {
+      setAccountIdToUse(accountId)
+      setSignerToUse(signer)
+    }
+  }, [isAutomationEnabled, autoWallet, signer, accountId])
 
   useEffect(() => {
     if (!asset || !provider) return
@@ -82,7 +93,7 @@ export default function Edit({
 
     const fixedRateInstance = new FixedRateExchange(
       config.fixedRateExchangeAddress,
-      signer
+      signerToUse
     )
 
     const setPriceResp = await fixedRateInstance.setRate(
@@ -130,10 +141,10 @@ export default function Edit({
         (await updateFixedPrice(values.price))
 
       if (values.paymentCollector !== paymentCollector) {
-        const datatoken = new Datatoken(signer)
+        const datatoken = new Datatoken(signerToUse)
         await datatoken.setPaymentCollector(
           asset?.datatokens[0].address,
-          accountId,
+          accountIdToUse,
           values.paymentCollector
         )
       }
@@ -185,9 +196,9 @@ export default function Edit({
         asset?.accessDetails?.isPurchasable
       ) {
         const tx = await setMinterToPublisher(
-          signer,
+          signerToUse,
           asset?.accessDetails?.datatoken?.address,
-          accountId,
+          accountIdToUse,
           setError
         )
         if (!tx) return
@@ -200,15 +211,15 @@ export default function Edit({
       // TODO: revert to setMetadata function
       const setMetadataTx = await setNFTMetadataAndTokenURI(
         updatedAsset,
-        accountId,
-        signer,
+        accountIdToUse,
+        signerToUse,
         decodeTokenURI(asset.nft.tokenURI),
         newAbortController()
       )
       // const setMetadataTx = await setNftMetadata(
       //   updatedAsset,
-      //   accountId,
-      //   signer,
+      //   accountIdToUse,
+      //   signerToUse,
       //   newAbortController()
       // )
 
@@ -224,11 +235,11 @@ export default function Edit({
         assetState
       })
       if (values.assetState !== assetState) {
-        const nft = new Nft(signer)
+        const nft = new Nft(signerToUse)
 
         const setMetadataStateTx = await nft.setMetadataState(
           asset?.nftAddress,
-          accountId,
+          accountIdToUse,
           assetStateToNumber(values.assetState)
         )
         if (!setMetadataStateTx) {
@@ -243,9 +254,9 @@ export default function Edit({
 
       if (asset.accessDetails.type === 'free') {
         const tx = await setMinterToDispenser(
-          signer,
+          signerToUse,
           asset?.accessDetails?.datatoken?.address,
-          accountId,
+          accountIdToUse,
           setError
         )
         if (!tx) return
@@ -304,7 +315,7 @@ export default function Edit({
 
             <Web3Feedback
               networkId={asset?.chainId}
-              accountId={accountId}
+              accountId={accountIdToUse}
               isAssetNetwork={isAssetNetwork}
             />
 
