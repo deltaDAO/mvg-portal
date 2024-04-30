@@ -45,7 +45,7 @@ export default function Edit({
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
   const provider = useProvider()
-  const { data: signer } = useSigner()
+  const { data: signer, refetch: refetchSigner } = useSigner()
   const newAbortController = useAbortController()
 
   const [success, setSuccess] = useState<string>()
@@ -62,11 +62,19 @@ export default function Edit({
     if (isAutomationEnabled && autoWallet?.address) {
       setAccountIdToUse(autoWallet.address)
       setSignerToUse(autoWallet)
-    } else {
+      LoggerInstance.log('[edit] using autoWallet', { autoWallet })
+    } else if (accountId && signer) {
       setAccountIdToUse(accountId)
       setSignerToUse(signer)
+      LoggerInstance.log('[edit] using web3 account', {
+        accountId,
+        signer
+      })
+    } else {
+      refetchSigner()
+      LoggerInstance.log('[edit] refetching signer')
     }
-  }, [isAutomationEnabled, autoWallet, signer, accountId])
+  }, [isAutomationEnabled, signer, autoWallet, accountId])
 
   useEffect(() => {
     if (!asset || !provider) return
