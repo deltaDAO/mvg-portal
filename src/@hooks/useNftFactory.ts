@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react'
 import { LoggerInstance, NftFactory } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
+import { useEffect, useState } from 'react'
 import { useNetwork, useSigner } from 'wagmi'
 import { useAutomation } from '../@context/Automation/AutomationProvider'
-import { sign } from 'crypto'
 
 function useNftFactory(): NftFactory {
   const { chain } = useNetwork()
