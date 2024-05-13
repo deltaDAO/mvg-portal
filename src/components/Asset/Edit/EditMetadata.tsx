@@ -62,14 +62,11 @@ export default function Edit({
     if (isAutomationEnabled && autoWallet?.address) {
       setAccountIdToUse(autoWallet.address)
       setSignerToUse(autoWallet)
-      LoggerInstance.log('[edit] using autoWallet', { autoWallet })
+      LoggerInstance.log('[edit] using autoWallet to sign')
     } else if (accountId && signer) {
       setAccountIdToUse(accountId)
       setSignerToUse(signer)
-      LoggerInstance.log('[edit] using web3 account', {
-        accountId,
-        signer
-      })
+      LoggerInstance.log('[edit] using web3 account to sign')
     } else {
       refetchSigner()
       LoggerInstance.log('[edit] refetching signer')
