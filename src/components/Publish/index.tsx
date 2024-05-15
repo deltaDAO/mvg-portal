@@ -1,4 +1,4 @@
-import { ReactElement, useState, useRef } from 'react'
+import { ReactElement, useState, useRef, useEffect } from 'react'
 import { Form, Formik } from 'formik'
 import { initialPublishFeedback, initialValues } from './_constants'
 import { useAccountPurgatory } from '@hooks/useAccountPurgatory'
@@ -25,6 +25,7 @@ import { useAbortController } from '@hooks/useAbortController'
 import { setNFTMetadataAndTokenURI } from '@utils/nft'
 import { customProviderUrl } from '../../../app.config'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAutomation } from '../../@context/Automation/AutomationProvider'
 
 export default function PublishPage({
   content
@@ -51,6 +52,20 @@ export default function PublishPage({
   const [ddoEncrypted, setDdoEncrypted] = useState<string>()
   const [did, setDid] = useState<string>()
 
+  const { autoWallet, isAutomationEnabled } = useAutomation()
+  const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
+  const [signerToUse, setSignerToUse] = useState(signer)
+
+  useEffect(() => {
+    if (isAutomationEnabled && autoWallet?.address) {
+      setAccountIdToUse(autoWallet.address)
+      setSignerToUse(autoWallet)
+    } else {
+      setAccountIdToUse(accountId)
+      setSignerToUse(signer)
+    }
+  }, [isAutomationEnabled, autoWallet, accountId, signer])
+
   // --------------------------------------------------
   // 1. Create NFT & datatokens & create pricing schema
   // --------------------------------------------------
@@ -72,7 +87,7 @@ export default function PublishPage({
       LoggerInstance.log('[publish] using config: ', config)
 
       const { erc721Address, datatokenAddress, txHash } =
-        await createTokensAndPricing(values, accountId, config, nftFactory)
+        await createTokensAndPricing(values, accountIdToUse, config, nftFactory)
 
       const isSuccess = Boolean(erc721Address && datatokenAddress && txHash)
       if (!isSuccess) throw new Error('No Token created. Please try again.')
@@ -203,8 +218,8 @@ export default function PublishPage({
 
       const res = await setNFTMetadataAndTokenURI(
         ddo,
-        accountId,
-        signer,
+        accountIdToUse,
+        signerToUse,
         values.metadata.nft,
         newAbortController()
       )
