@@ -1,5 +1,5 @@
 import { Formik } from 'formik'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import FormEditComputeDataset from './FormEditComputeDataset'
 import {
   LoggerInstance,
@@ -28,6 +28,7 @@ import {
 } from '@utils/nft'
 import { ComputeEditForm } from './_types'
 import { useAccount, useSigner } from 'wagmi'
+import { useAutomation } from '../../../@context/Automation/AutomationProvider'
 
 export default function EditComputeDataset({
   asset
@@ -38,6 +39,14 @@ export default function EditComputeDataset({
   const { address: accountId } = useAccount()
   const { data: signer } = useSigner()
   const { fetchAsset, isAssetNetwork } = useAsset()
+  const { autoWallet, isAutomationEnabled } = useAutomation()
+  const [signerToUse, setSignerToUse] = useState(signer)
+  const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
+
+  useEffect(() => {
+    setSignerToUse(isAutomationEnabled ? autoWallet : signer)
+    setAccountIdToUse(isAutomationEnabled ? autoWallet?.address : accountId)
+  }, [isAutomationEnabled, accountId, autoWallet, signer])
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -52,9 +61,9 @@ export default function EditComputeDataset({
         asset?.accessDetails?.isPurchasable
       ) {
         const tx = await setMinterToPublisher(
-          signer,
+          signerToUse,
           asset?.accessDetails?.datatoken?.address,
-          accountId,
+          accountIdToUse,
           setError
         )
         if (!tx) return
@@ -90,8 +99,8 @@ export default function EditComputeDataset({
       // TODO: revert to setMetadata function
       const setMetadataTx = await setNFTMetadataAndTokenURI(
         updatedAsset,
-        accountId,
-        signer,
+        accountIdToUse,
+        signerToUse,
         decodeTokenURI(asset.nft.tokenURI),
         newAbortController()
       )
@@ -112,9 +121,9 @@ export default function EditComputeDataset({
         await setMetadataTx.wait()
         if (asset.accessDetails.type === 'free') {
           const tx = await setMinterToDispenser(
-            signer,
+            signerToUse,
             asset?.accessDetails?.datatoken?.address,
-            accountId,
+            accountIdToUse,
             setError
           )
           if (!tx) return
@@ -163,7 +172,7 @@ export default function EditComputeDataset({
             <FormEditComputeDataset />
             <Web3Feedback
               networkId={asset?.chainId}
-              accountId={accountId}
+              accountId={accountIdToUse}
               isAssetNetwork={isAssetNetwork}
             />
             {debug === true && (

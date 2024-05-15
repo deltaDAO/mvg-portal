@@ -86,6 +86,15 @@ function AssetProvider({
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
 
+  const [accountIdToCheck, setAccountIdToCheck] = useState<string>(accountId)
+  useEffect(() => {
+    if (isAutomationEnabled && autoWallet?.address) {
+      setAccountIdToCheck(autoWallet.address)
+    } else {
+      setAccountIdToCheck(accountId)
+    }
+  }, [accountId, autoWallet, isAutomationEnabled])
+
   // -----------------------------------
   // Helper: Get and set asset based on passed DID
   // -----------------------------------
@@ -155,11 +164,6 @@ function AssetProvider({
   const fetchAccessDetails = useCallback(async (): Promise<void> => {
     if (!asset?.chainId || !asset?.services?.length) return
 
-    const accountIdToCheck =
-      isAutomationEnabled && autoWallet?.address
-        ? autoWallet.address
-        : accountId
-
     const accessDetails = await getAccessDetails(
       asset.chainId,
       asset.services[0].datatokenAddress,
@@ -171,14 +175,7 @@ function AssetProvider({
       accessDetails
     }))
     LoggerInstance.log(`[asset] Got access details for ${did}`, accessDetails)
-  }, [
-    asset?.chainId,
-    asset?.services,
-    accountId,
-    did,
-    autoWallet?.address,
-    isAutomationEnabled
-  ])
+  }, [asset?.chainId, asset?.services, accountIdToCheck, did])
 
   // -----------------------------------
   // Helper: Get and set asset Service Credential state
@@ -246,7 +243,7 @@ function AssetProvider({
     if (!isMounted) return
 
     fetchAccessDetails()
-  }, [accountId, fetchAccessDetails, isMounted])
+  }, [accountIdToCheck, fetchAccessDetails, isMounted])
 
   // -----------------------------------
   // Check user network against asset network
@@ -262,11 +259,11 @@ function AssetProvider({
   // Asset owner check against wallet user
   // -----------------------------------
   useEffect(() => {
-    if (!accountId || !owner) return
+    if (!accountIdToCheck || !owner) return
 
-    const isOwner = accountId?.toLowerCase() === owner.toLowerCase()
+    const isOwner = accountIdToCheck?.toLowerCase() === owner.toLowerCase()
     setIsOwner(isOwner)
-  }, [accountId, owner])
+  }, [accountIdToCheck, owner])
 
   // -----------------------------------
   // Load ocean config based on asset network
