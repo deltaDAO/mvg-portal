@@ -1,0 +1,6 @@
+{
+  "title": "Automation wallet state",
+  "subtitle": "Quickly verify if your automation wallet is active and funded",
+  "body": "From the contextual menu under the automation icon on the menubar, you'll be able to enable/disable the automation.\n\nYou can quickly asses the automation wallet state by looking at the icon:\n\n- the automation is enabled if the icon has a colored background\n\n- the wallet is completely funded if the top right indicator is green, partially funded if the indicator is yellow, and insufficient funded if the indicator is red.",
+  "image": "/images/onboarding/automation_wallet_state.png"
+}

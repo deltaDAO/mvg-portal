@@ -9,6 +9,8 @@ import { useAddressConfig } from '@hooks/useAddressConfig'
 import TopSales from './TopSales'
 import HomeContent from './Content'
 import Ecosystem from './Ecosystem'
+import OnboardingSection from '../@shared/Onboarding'
+import Container from '../@shared/atoms/Container'
 
 interface FeaturedSection {
   title: string
@@ -35,6 +37,8 @@ export default function HomePage(): ReactElement {
   const [queryFeatured, setQueryFeatured] = useState<FeaturedSection[]>([])
   const [queryRecent, setQueryRecent] = useState<SearchQuery>()
   const [queryMostSales, setQueryMostSales] = useState<SearchQuery>()
+
+  const { showOnboardingModule } = useUserPreferences()
 
   useEffect(() => {
     const baseParams = {
@@ -78,6 +82,11 @@ export default function HomePage(): ReactElement {
 
   return (
     <>
+      {showOnboardingModule && (
+        <Container>
+          <OnboardingSection />
+        </Container>
+      )}
       <Ecosystem />
       <TopSales title="Publishers With Most Sales" />
       <HomeContent />
