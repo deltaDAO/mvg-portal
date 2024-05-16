@@ -1,0 +1,7 @@
+{
+  "title": "Setup MetaMask",
+  "subtitle": "To interact with the portal, you need to install and create an account with MetaMask",
+  "body": "Click on the button to download MetaMask from the official website.\n\n Once you've set up an account, you are ready to move to the next step.",
+  "image": "/images/onboarding/metamask_download.png",
+  "buttonLabel": "Download MetaMask"
+}
