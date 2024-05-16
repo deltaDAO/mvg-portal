@@ -1,0 +1,8 @@
+{
+  "title": "Connect your account to the portal",
+  "subtitle": "Now that you created an account with MetaMask, you are ready to connect to the portal",
+  "body": "You will be asked to authorize the portal to read your public wallet address, account balance, activity and to suggest transactions to approve.\n\n To connect to the portal confirm the request inside the popup.",
+  "image": "/images/onboarding/connect_account.png",
+  "buttonLabel": "Connect account",
+  "buttonSuccess": "Your account is connected to the portal"
+}

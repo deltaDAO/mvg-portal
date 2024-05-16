@@ -1,0 +1,91 @@
+.step,
+.active {
+  --circle-size: clamp(1rem, 5vw, 2.5rem);
+  --spacing: clamp(0.35rem, 2vw, 0.5rem);
+  --background-gradient: linear-gradient(
+    to right,
+    var(--color-primary) 50%,
+    var(--brand-grey-lighter) 50%
+  );
+}
+
+.stepper {
+  display: flex;
+  margin-bottom: var(--spacer);
+  padding: 0;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  text-align: center;
+  margin: 0;
+}
+
+.title {
+  display: none;
+  width: 100%;
+  text-transform: capitalize;
+  font-size: var(--font-size-h4);
+}
+
+.step .title {
+  color: var(--brand-grey-lighter);
+  transition: all 0.3s ease-out;
+}
+
+.active .title {
+  color: var(--color-primary);
+  transition-delay: 0.5s;
+}
+
+.step:before {
+  --size: 3rem;
+  content: '';
+  display: block;
+  width: var(--circle-size);
+  height: var(--circle-size);
+  border-radius: var(--border-radius);
+  background: var(--background-gradient);
+  /* 202% used to fix a Firefox specific behavior not moving the background as expected */
+  background-size: 202% 100%;
+  background-position: bottom right;
+  transition: all 0.3s ease-out;
+  margin: 0 auto 1rem;
+}
+
+.active:before {
+  background-position: bottom left;
+  transition-delay: 0.5s;
+}
+
+.step:after {
+  content: '';
+  position: relative;
+  top: calc(var(--circle-size) / 2);
+  width: calc(100% - var(--circle-size) - calc(var(--spacing) * 2));
+  right: calc(50% - calc(var(--circle-size) / 2 + var(--spacing)));
+  height: 2px;
+  background: var(--background-gradient);
+  /* 202% used to fix a Firefox specific behavior not moving the background as expected */
+  background-size: 202% 100%;
+  background-position: bottom right;
+  transition: all 0.5s ease-out 0.3s;
+  order: -1;
+}
+
+.step:first-child:after {
+  visibility: hidden;
+}
+
+.active:after {
+  background-position: bottom left;
+  transition-delay: 0s;
+}
+
+@media screen and (min-width: 40rem) {
+  .title {
+    display: block;
+  }
+}
