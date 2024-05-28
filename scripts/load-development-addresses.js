@@ -12,59 +12,51 @@ function getLocalAddresses() {
   return data.development
 }
 
-function updateEnvVariable(key, value) {
-  let data
+function updateEnvFile(keyValuePairs) {
   try {
-    data = fs.readFileSync('.env', 'utf8')
-  } catch (err) {
-    console.error(err)
-    return
-  }
-  const lines = data.split('\n')
+    let envContent = ''
 
-  let keyExists = false
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-    if (line.startsWith(key + '=')) {
-      lines[i] = `${key}=${value}`
-      keyExists = true
-      break
+    if (fs.existsSync('.env')) {
+      // Read the contents of the .env file
+      envContent = fs.readFileSync('.env', 'utf8')
+    } else {
+      console.log('.env file not found, creating a new one.')
     }
-  }
 
-  if (!keyExists) {
-    lines.push(`${key}=${value}`)
-  } else {
-    console.log(`Found ${key} environment variable. Skipping.`)
-    return
-  }
+    const lines = envContent.split('\n')
 
-  const updatedContent = lines.join('\n')
-  try {
-    fs.writeFileSync('.env', updatedContent, 'utf8')
-    console.log(
-      `Successfully ${
-        keyExists ? 'updated' : 'added'
-      } the ${key} environment variable.`
-    )
+    keyValuePairs.forEach(({ key, value }) => {
+      const index = lines.findIndex((line) => line.startsWith(key + '='))
+      if (index !== -1) {
+        // Update existing key
+        lines[index] = `${key}=${value}`
+      } else {
+        // Add new key-value pair
+        lines.push(`${key}=${value}`)
+      }
+    })
+
+    // Write the updated content back to the .env file
+    fs.writeFileSync('.env', lines.join('\n'))
+    console.log('.env file successfully updated.')
   } catch (err) {
-    console.error(err)
+    console.error('Error updating .env file:', err)
   }
 }
 
 const addresses = getLocalAddresses()
-updateEnvVariable('NEXT_PUBLIC_NFT_FACTORY_ADDRESS', addresses.ERC721Factory)
-updateEnvVariable(
-  'NEXT_PUBLIC_OPF_COMMUNITY_FEE_COLECTOR',
-  addresses.OPFCommunityFeeCollector
-)
-updateEnvVariable(
-  'NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS',
-  addresses.FixedPrice
-)
-updateEnvVariable('NEXT_PUBLIC_DISPENSER_ADDRESS', addresses.Dispenser)
-updateEnvVariable('NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS', addresses.Ocean)
-updateEnvVariable('NEXT_PUBLIC_MARKET_DEVELOPMENT', true)
-updateEnvVariable('NEXT_PUBLIC_PROVIDER_URL', 'http://127.0.0.1:8000')
-updateEnvVariable('#NEXT_PUBLIC_SUBGRAPH_URI', 'http://127.0.0.1:9000')
-updateEnvVariable('NEXT_PUBLIC_METADATACACHE_URI', 'http://127.0.0.1:8000')
+
+updateEnvFile([
+  { key: 'NEXT_PUBLIC_NFT_FACTORY_ADDRESS', value: addresses.ERC721Factory },
+  {
+    key: 'NEXT_PUBLIC_OPF_COMMUNITY_FEE_COLECTOR',
+    value: addresses.OPFCommunityFeeCollector
+  },
+  {
+    key: 'NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS',
+    value: addresses.FixedPrice
+  },
+  { key: 'NEXT_PUBLIC_DISPENSER_ADDRESS', value: addresses.Dispenser },
+  { key: 'NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS', value: addresses.Ocean },
+  { key: 'NEXT_PUBLIC_MARKET_DEVELOPMENT', value: true }
+])
