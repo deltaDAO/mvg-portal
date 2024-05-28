@@ -37,6 +37,7 @@ import WhitelistIndicator from '../Compute/WhitelistIndicator'
 import { Signer } from 'ethers'
 import SuccessConfetti from '@components/@shared/SuccessConfetti'
 import Input from '@components/@shared/FormInput'
+import CalculateButtonBuy from '../CalculateButtonBuy'
 
 export default function Download({
   accountId,
@@ -216,6 +217,31 @@ export default function Download({
     setIsLoading(false)
   }
 
+  const CalculateButton = () => (
+    <CalculateButtonBuy
+      hasPreviousOrder={isOwned}
+      hasDatatoken={hasDatatoken}
+      btSymbol={asset?.accessDetails?.baseToken?.symbol}
+      dtSymbol={asset?.datatokens[0]?.symbol}
+      dtBalance={dtBalance}
+      type="submit"
+      onClick={() => {
+        console.log('clicked totla price')
+      }}
+      assetTimeout={secondsToString(asset?.services?.[0]?.timeout)}
+      assetType={asset?.metadata?.type}
+      stepText={statusText}
+      isLoading={isLoading}
+      priceType={asset.accessDetails?.type}
+      isConsumable={asset.accessDetails?.isPurchasable}
+      isBalanceSufficient={isBalanceSufficient}
+      consumableFeedback={consumableFeedback}
+      retry={retry}
+      isSupportedOceanNetwork={isSupportedOceanNetwork}
+      isAccountConnected={isConnected}
+    />
+  )
+
   const PurchaseButton = ({ isValid }: { isValid?: boolean }) => (
     <ButtonBuy
       action="download"
@@ -262,7 +288,7 @@ export default function Download({
             ) : (
               <div className={styles.priceWrapper}>
                 {isPriceLoading ? (
-                  <Loader message="Calculating full price (including fees)" />
+                  <Loader message="Calculating asset price" />
                 ) : (
                   <Price
                     price={price}
@@ -270,7 +296,8 @@ export default function Download({
                     size="large"
                   />
                 )}
-                {!isInPurgatory && <PurchaseButton isValid={isValid} />}
+                {/* {!isInPurgatory && <PurchaseButton isValid={isValid} />} */}
+                {!isInPurgatory && <CalculateButton />}
                 <Field
                   component={Input}
                   name="termsAndConditions"
