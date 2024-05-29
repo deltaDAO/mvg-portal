@@ -38,6 +38,10 @@ import { Signer } from 'ethers'
 import SuccessConfetti from '@components/@shared/SuccessConfetti'
 import Input from '@components/@shared/FormInput'
 import CalculateButtonBuy from '../CalculateButtonBuy'
+import Decimal from 'decimal.js'
+import { MAX_DECIMALS } from '@utils/constants'
+import { consumeMarketFixedSwapFee } from 'app.config'
+import { Row } from '../Row'
 
 export default function Download({
   accountId,
@@ -71,6 +75,7 @@ export default function Download({
   const [statusText, setStatusText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isPriceLoading, setIsPriceLoading] = useState(false)
+  const [isFullPriceLoading, setIsFullPriceLoading] = useState(true)
   const [isOwned, setIsOwned] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')
   const [isOrderDisabled, setIsOrderDisabled] = useState(false)
@@ -217,28 +222,17 @@ export default function Download({
     setIsLoading(false)
   }
 
-  const CalculateButton = () => (
+  const handleFullPrice = () => {
+    console.log('handle')
+    setIsFullPriceLoading(false)
+  }
+
+  const CalculateButton = ({ isValid }: { isValid?: boolean }) => (
     <CalculateButtonBuy
-      hasPreviousOrder={isOwned}
-      hasDatatoken={hasDatatoken}
-      btSymbol={asset?.accessDetails?.baseToken?.symbol}
-      dtSymbol={asset?.datatokens[0]?.symbol}
-      dtBalance={dtBalance}
       type="submit"
-      onClick={() => {
-        console.log('clicked totla price')
-      }}
-      assetTimeout={secondsToString(asset?.services?.[0]?.timeout)}
-      assetType={asset?.metadata?.type}
+      onClick={handleFullPrice}
       stepText={statusText}
       isLoading={isLoading}
-      priceType={asset.accessDetails?.type}
-      isConsumable={asset.accessDetails?.isPurchasable}
-      isBalanceSufficient={isBalanceSufficient}
-      consumableFeedback={consumableFeedback}
-      retry={retry}
-      isSupportedOceanNetwork={isSupportedOceanNetwork}
-      isAccountConnected={isConnected}
     />
   )
 
@@ -296,20 +290,50 @@ export default function Download({
                     size="large"
                   />
                 )}
-                {/* {!isInPurgatory && <PurchaseButton isValid={isValid} />} */}
-                {!isInPurgatory && <CalculateButton />}
-                <Field
-                  component={Input}
-                  name="termsAndConditions"
-                  type="checkbox"
-                  options={['Terms and Conditions']}
-                  prefixes={['I agree to the']}
-                  actions={['/terms']}
-                  disabled={isLoading}
-                />
+                {!isInPurgatory && isFullPriceLoading && (
+                  <CalculateButton isValid={isValid} />
+                )}
               </div>
             )}
           </>
+        )}
+      </div>
+    )
+  }
+
+  const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
+    const { isValid } = useFormikContext()
+
+    return (
+      <div style={{ textAlign: 'left', marginTop: '2%' }}>
+        {!isPriceLoading && (
+          <div className={styles.calculation}>
+            <Row
+              hasDatatoken={hasDatatoken}
+              price={new Decimal(price.value || 0)
+                .toDecimalPlaces(MAX_DECIMALS)
+                .toString()}
+              symbol={price.tokenSymbol}
+              type="DATASET"
+            />
+            <Row
+              price={consumeMarketFixedSwapFee} // consume market fixed swap fee amount
+              symbol={price.tokenSymbol}
+              type="CONSUME MARKET ORDER FEE"
+            />
+            <Row
+              price={
+                consumeMarketFixedSwapFee +
+                new Decimal(price.value || 0)
+                  .toDecimalPlaces(MAX_DECIMALS)
+                  .toString()
+              }
+              symbol={price.tokenSymbol}
+            />
+            <div style={{ textAlign: 'center' }}>
+              {!isInPurgatory && <PurchaseButton isValid={isValid} />}
+            </div>
+          </div>
         )}
       </div>
     )
@@ -349,6 +373,20 @@ export default function Download({
             </div>
             <AssetAction asset={asset} />
           </div>
+          {!isFullPriceLoading && (
+            <>
+              <AssetActionBuy asset={asset} />
+              <Field
+                component={Input}
+                name="termsAndConditions"
+                type="checkbox"
+                options={['Terms and Conditions']}
+                prefixes={['I agree to the']}
+                actions={['/terms']}
+                disabled={isLoading}
+              />
+            </>
+          )}
           <div className={styles.consumerParameters}>
             {asset && (
               <ConsumerParameters asset={asset} isLoading={isLoading} />

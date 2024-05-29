@@ -18,6 +18,10 @@ import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
+import CalculateButtonBuy from '../CalculateButtonBuy'
+import PriceUnit from '@components/@shared/Price/PriceUnit'
+import { consumeMarketOrderFee } from 'app.config'
+import { Row } from '../Row'
 
 export default function FormStartCompute({
   algorithms,
@@ -106,6 +110,7 @@ export default function FormStartCompute({
   )
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
+  const [isFullPriceLoading, setIsFullPriceLoading] = useState(true)
 
   function getAlgorithmAsset(algorithmId: string): Asset {
     let assetDdo = null
@@ -169,6 +174,11 @@ export default function FormStartCompute({
   // Set price for calculation output
   //
   useEffect(() => {
+    console.log(
+      'asset',
+      asset?.accessDetails,
+      selectedAlgorithmAsset?.accessDetails
+    )
     if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails) return
 
     setDatasetOrderPrice(
@@ -278,6 +288,155 @@ export default function FormStartCompute({
     })
   }, [balance, dtBalance, datasetSymbol, algorithmSymbol, totalPrices])
 
+  const PurchaseButton = () => (
+    <ButtonBuy
+      action="compute"
+      disabled={
+        isComputeButtonDisabled ||
+        !isValid ||
+        !isBalanceSufficient ||
+        !isAssetNetwork ||
+        !selectedAlgorithmAsset?.accessDetails?.isPurchasable ||
+        !isAccountIdWhitelisted
+      }
+      hasPreviousOrder={hasPreviousOrder}
+      hasDatatoken={hasDatatoken}
+      btSymbol={asset?.accessDetails?.baseToken?.symbol}
+      dtSymbol={asset?.datatokens[0]?.symbol}
+      dtBalance={dtBalance}
+      assetTimeout={assetTimeout}
+      assetType={assetType}
+      hasPreviousOrderSelectedComputeAsset={
+        hasPreviousOrderSelectedComputeAsset
+      }
+      hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
+      dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+      dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+      selectedComputeAssetType={selectedComputeAssetType}
+      stepText={stepText}
+      isLoading={isLoading}
+      type="submit"
+      priceType={asset?.accessDetails?.type}
+      algorithmPriceType={selectedAlgorithmAsset?.accessDetails?.type}
+      isBalanceSufficient={isBalanceSufficient}
+      isConsumable={isConsumable}
+      consumableFeedback={consumableFeedback}
+      isAlgorithmConsumable={
+        selectedAlgorithmAsset?.accessDetails?.isPurchasable
+      }
+      isSupportedOceanNetwork={isSupportedOceanNetwork}
+      hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
+      retry={retry}
+      isAccountConnected={isConnected}
+    />
+  )
+
+  const handleFullPrice = () => {
+    console.log('handle')
+    setIsFullPriceLoading(false)
+  }
+
+  const CalculateButton = () => (
+    <div style={{ textAlign: 'center' }}>
+      <CalculateButtonBuy
+        type="submit"
+        onClick={handleFullPrice}
+        isLoading={isLoading}
+      />
+    </div>
+  )
+
+  const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
+    console.log('totalPrice:', totalPrices)
+    return (
+      <div style={{ textAlign: 'left' }}>
+        <>
+          <div>
+            {/* <strong>
+              Total Price: {totalPrices.length > 0 && totalPrices[0].value}{' '}
+              {totalPrices.length > 0 && totalPrices[0].symbol}
+            </strong> */}
+            <PriceOutput
+              hasPreviousOrder={hasPreviousOrder}
+              assetTimeout={assetTimeout}
+              hasPreviousOrderSelectedComputeAsset={
+                hasPreviousOrderSelectedComputeAsset
+              }
+              hasDatatoken={hasDatatoken}
+              selectedComputeAssetTimeout={selectedComputeAssetTimeout}
+              hasDatatokenSelectedComputeAsset={
+                hasDatatokenSelectedComputeAsset
+              }
+              algorithmConsumeDetails={selectedAlgorithmAsset?.accessDetails}
+              symbol={datasetSymbol}
+              algorithmSymbol={algorithmSymbol}
+              datasetOrderPrice={datasetOrderPrice}
+              algoOrderPrice={algoOrderPrice}
+              providerFeeAmount={providerFeeAmount}
+              providerFeesSymbol={providerFeesSymbol}
+              validUntil={validUntil}
+              totalPrices={totalPrices}
+              showInformation={false}
+            />
+          </div>
+          {totalPrices.length === 0 ? (
+            <>Select an algorithm to calculate the Compute Job price</>
+          ) : (
+            <div className={styles.calculation}>
+              <Row
+                hasPreviousOrder={hasPreviousOrder}
+                hasDatatoken={hasDatatoken}
+                price={new Decimal(
+                  datasetOrderPrice || asset?.accessDetails?.price || 0
+                )
+                  .toDecimalPlaces(MAX_DECIMALS)
+                  .toString()}
+                timeout={assetTimeout}
+                symbol={datasetSymbol}
+                type="DATASET"
+              />
+              <Row
+                hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
+                hasDatatoken={hasDatatokenSelectedComputeAsset}
+                price={new Decimal(
+                  algoOrderPrice ||
+                    selectedAlgorithmAsset?.accessDetails?.price ||
+                    0
+                )
+                  .toDecimalPlaces(MAX_DECIMALS)
+                  .toString()}
+                timeout={selectedComputeAssetTimeout}
+                symbol={algorithmSymbol}
+                type="ALGORITHM"
+              />
+              <Row
+                price={providerFeeAmount} // initializeCompute.provider fee amount
+                timeout={`${validUntil} seconds`} // valid until value
+                symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
+                type="C2D RESOURCES"
+              />
+              <Row
+                price={consumeMarketOrderFee} // consume market order fee fee amount
+                symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
+                type="CONSUME MARKET ORDER FEE"
+              />
+              {totalPrices.map((item) => (
+                <Row
+                  price={item.value}
+                  symbol={item.symbol}
+                  key={item.symbol}
+                />
+              ))}
+            </div>
+          )}
+          <div style={{ textAlign: 'center' }}>
+            <PurchaseButton />
+          </div>
+        </>
+      </div>
+    )
+  }
+
   return (
     <Form className={styles.form}>
       {content.form.data.map((field: FormFieldContent) => (
@@ -310,74 +469,23 @@ export default function FormStartCompute({
           isLoading={isLoading}
         />
       )}
-      <PriceOutput
-        hasPreviousOrder={hasPreviousOrder}
-        assetTimeout={assetTimeout}
-        hasPreviousOrderSelectedComputeAsset={
-          hasPreviousOrderSelectedComputeAsset
-        }
-        hasDatatoken={hasDatatoken}
-        selectedComputeAssetTimeout={selectedComputeAssetTimeout}
-        hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-        algorithmConsumeDetails={selectedAlgorithmAsset?.accessDetails}
-        symbol={datasetSymbol}
-        algorithmSymbol={algorithmSymbol}
-        datasetOrderPrice={datasetOrderPrice}
-        algoOrderPrice={algoOrderPrice}
-        providerFeeAmount={providerFeeAmount}
-        providerFeesSymbol={providerFeesSymbol}
-        validUntil={validUntil}
-        totalPrices={totalPrices}
-      />
 
-      <ButtonBuy
-        action="compute"
-        disabled={
-          isComputeButtonDisabled ||
-          !isValid ||
-          !isBalanceSufficient ||
-          !isAssetNetwork ||
-          !selectedAlgorithmAsset?.accessDetails?.isPurchasable ||
-          !isAccountIdWhitelisted
-        }
-        hasPreviousOrder={hasPreviousOrder}
-        hasDatatoken={hasDatatoken}
-        btSymbol={asset?.accessDetails?.baseToken?.symbol}
-        dtSymbol={asset?.datatokens[0]?.symbol}
-        dtBalance={dtBalance}
-        assetTimeout={assetTimeout}
-        assetType={assetType}
-        hasPreviousOrderSelectedComputeAsset={
-          hasPreviousOrderSelectedComputeAsset
-        }
-        hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-        dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
-        dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
-        selectedComputeAssetType={selectedComputeAssetType}
-        stepText={stepText}
-        isLoading={isLoading}
-        type="submit"
-        priceType={asset?.accessDetails?.type}
-        algorithmPriceType={selectedAlgorithmAsset?.accessDetails?.type}
-        isBalanceSufficient={isBalanceSufficient}
-        isConsumable={isConsumable}
-        consumableFeedback={consumableFeedback}
-        isAlgorithmConsumable={
-          selectedAlgorithmAsset?.accessDetails?.isPurchasable
-        }
-        isSupportedOceanNetwork={isSupportedOceanNetwork}
-        hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
-        retry={retry}
-        isAccountConnected={isConnected}
-      />
-      <Field
-        {...content.form.termsAndConditions}
-        component={Input}
-        disabled={isLoading}
-        onChange={() =>
-          setTermsAndConditions((termsAndConditions) => !termsAndConditions)
-        }
-      />
+      {isFullPriceLoading ? (
+        <CalculateButton />
+      ) : (
+        <>
+          <AssetActionBuy asset={asset} />
+          <Field
+            component={Input}
+            name="termsAndConditions"
+            type="checkbox"
+            options={['Terms and Conditions']}
+            prefixes={['I agree to the']}
+            actions={['/terms']}
+            disabled={isLoading}
+          />
+        </>
+      )}
     </Form>
   )
 }
