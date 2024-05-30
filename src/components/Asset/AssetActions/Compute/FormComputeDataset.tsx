@@ -19,7 +19,6 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
 import CalculateButtonBuy from '../CalculateButtonBuy'
-import PriceUnit from '@components/@shared/Price/PriceUnit'
 import { consumeMarketOrderFee } from 'app.config'
 import { Row } from '../Row'
 
@@ -204,9 +203,8 @@ export default function FormStartCompute({
       : new Decimal(0)
 
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = providerFees
-        .add(priceAlgo)
-        .add(new Decimal(consumeMarketOrderFee))
+      let sum = providerFees.add(priceAlgo)
+      // .add(new Decimal(consumeMarketOrderFee))
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
@@ -226,9 +224,9 @@ export default function FormStartCompute({
         totalPrices.push({
           value: sum
             .toDecimalPlaces(MAX_DECIMALS)
-            .add(
-              new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
-            )
+            // .add(
+            //   new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
+            // )
             .toString(),
           symbol: datasetSymbol
         })
@@ -245,9 +243,9 @@ export default function FormStartCompute({
         totalPrices.push({
           value: providerFees
             .toDecimalPlaces(MAX_DECIMALS)
-            .add(
-              new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
-            )
+            // .add(
+            //   new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
+            // )
             .toString(),
           symbol: providerFeesSymbol
         })
@@ -434,9 +432,43 @@ export default function FormStartCompute({
                 type="C2D RESOURCES"
               />
               <Row
-                price={consumeMarketOrderFee} // consume market order fee fee amount
+                price={new Decimal(consumeMarketOrderFee)
+                  .mul(
+                    new Decimal(
+                      datasetOrderPrice || asset?.accessDetails?.price || 0
+                    )
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
+                  )
+                  .toString()} // consume market order fee fee amount
+                symbol={datasetSymbol} // we assume that provider fees will always be in OCEAN token
+                type="CONSUME MARKET ORDER FEE DATASET"
+              />
+              <Row
+                price={new Decimal(consumeMarketOrderFee)
+                  .mul(
+                    new Decimal(
+                      algoOrderPrice ||
+                        selectedAlgorithmAsset?.accessDetails?.price ||
+                        0
+                    )
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
+                  )
+                  .toString()} // consume market order fee fee amount
+                symbol={algorithmSymbol} // we assume that provider fees will always be in OCEAN token
+                type="CONSUME MARKET ORDER FEE ALGORITHM"
+              />
+              <Row
+                price={new Decimal(consumeMarketOrderFee)
+                  .mul(
+                    new Decimal(providerFeeAmount)
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
+                  )
+                  .toString()} // consume market order fee fee amount
                 symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
-                type="CONSUME MARKET ORDER FEE"
+                type="CONSUME MARKET ORDER FEE CDD"
               />
               {totalPrices.map((item) => (
                 <Row

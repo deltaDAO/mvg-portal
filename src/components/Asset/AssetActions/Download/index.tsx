@@ -318,14 +318,26 @@ export default function Download({
               type="DATASET"
             />
             <Row
-              price={consumeMarketFixedSwapFee} // consume market fixed swap fee amount
+              price={new Decimal(consumeMarketFixedSwapFee)
+                .mul(
+                  new Decimal(price.value || 0)
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .div(100)
+                )
+                .toString()} // consume market fixed swap fee amount
               symbol={price.tokenSymbol}
               type="CONSUME MARKET ORDER FEE"
             />
             <Row
-              price={new Decimal(consumeMarketFixedSwapFee)
+              price={new Decimal(
+                new Decimal(price.value || 0).toDecimalPlaces(MAX_DECIMALS)
+              )
                 .add(
-                  new Decimal(price.value || 0).toDecimalPlaces(MAX_DECIMALS)
+                  new Decimal(consumeMarketFixedSwapFee).mul(
+                    new Decimal(price.value || 0)
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
+                  )
                 )
                 .toString()}
               symbol={price.tokenSymbol}
