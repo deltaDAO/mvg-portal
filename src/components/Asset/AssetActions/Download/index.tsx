@@ -42,7 +42,6 @@ import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
 import { consumeMarketFixedSwapFee } from 'app.config'
 import { Row } from '../Row'
-import { add } from 'date-fns'
 
 export default function Download({
   accountId,
@@ -307,7 +306,7 @@ export default function Download({
 
     return (
       <div style={{ textAlign: 'left', marginTop: '2%' }}>
-        {!isPriceLoading && (
+        {!isPriceLoading && new Decimal(price.value || 0).greaterThan(0) && (
           <div className={styles.calculation}>
             <Row
               hasDatatoken={hasDatatoken}
@@ -342,11 +341,11 @@ export default function Download({
                 .toString()}
               symbol={price.tokenSymbol}
             />
-            <div style={{ textAlign: 'center' }}>
-              {!isInPurgatory && <PurchaseButton isValid={isValid} />}
-            </div>
           </div>
         )}
+        <div style={{ textAlign: 'center' }}>
+          {!isInPurgatory && <PurchaseButton isValid={isValid} />}
+        </div>
       </div>
     )
   }

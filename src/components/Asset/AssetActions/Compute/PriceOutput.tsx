@@ -62,17 +62,22 @@ export default function PriceOutput({
             ) : (
               <>
                 You will pay{' '}
-                {totalPrices.map((item, index) => (
-                  <div key={item.symbol}>
-                    <PriceUnit
-                      price={Number(item.value)}
-                      symbol={item.symbol}
-                      size="small"
-                      explicitZero
-                    />
-                    {index < totalPrices.length - 1 && <>&nbsp;{'&'}&nbsp;</>}
-                  </div>
-                ))}
+                {totalPrices
+                  .filter((item) => item.value !== '0')
+                  .map((item, index) => (
+                    <div key={item.symbol}>
+                      <PriceUnit
+                        price={Number(item.value)}
+                        symbol={item.symbol}
+                        size="small"
+                        explicitZero
+                      />
+                      {index <
+                        totalPrices.filter((item) => item.value !== '0')
+                          .length -
+                          1 && <>&nbsp;{'&'}&nbsp;</>}
+                    </div>
+                  ))}
               </>
             )}
             {showInformation && (

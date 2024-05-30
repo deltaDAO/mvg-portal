@@ -173,11 +173,6 @@ export default function FormStartCompute({
   // Set price for calculation output
   //
   useEffect(() => {
-    console.log(
-      'asset',
-      asset?.accessDetails,
-      selectedAlgorithmAsset?.accessDetails
-    )
     if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails) return
 
     setDatasetOrderPrice(
@@ -202,69 +197,82 @@ export default function FormStartCompute({
       ? new Decimal(providerFeeAmount).toDecimalPlaces(MAX_DECIMALS)
       : new Decimal(0)
 
+    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
+    const feeProvider = new Decimal(consumeMarketOrderFee)
+      .mul(providerFees)
+      .div(100)
+    const feeDataset = new Decimal(consumeMarketOrderFee)
+      .mul(priceDataset)
+      .div(100)
+
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = providerFees.add(priceAlgo)
-      // .add(new Decimal(consumeMarketOrderFee))
+      let sum = providerFees.add(priceAlgo).add(feeProvider).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
       })
       if (algorithmSymbol === datasetSymbol) {
-        sum = sum.add(priceDataset)
+        sum = sum.add(priceDataset).add(feeDataset)
         totalPrices[0].value = sum.toDecimalPlaces(MAX_DECIMALS).toString()
       } else {
         totalPrices.push({
-          value: priceDataset.toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceDataset
+            .add(feeDataset)
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString(),
           symbol: datasetSymbol
         })
       }
     } else {
       if (datasetSymbol === providerFeesSymbol) {
-        const sum = providerFees.add(priceDataset)
+        const sum = providerFees
+          .add(priceDataset)
+          .add(feeProvider)
+          .add(feeDataset)
         totalPrices.push({
-          value: sum
-            .toDecimalPlaces(MAX_DECIMALS)
-            // .add(
-            //   new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
-            // )
-            .toString(),
+          value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: datasetSymbol
         })
         totalPrices.push({
-          value: priceAlgo.toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceAlgo
+            .add(feeAlgo)
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString(),
           symbol: algorithmSymbol
         })
       } else if (datasetSymbol === algorithmSymbol) {
-        const sum = priceAlgo.add(priceDataset)
+        const sum = priceAlgo.add(priceDataset).add(feeAlgo).add(feeDataset)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: algorithmSymbol
         })
         totalPrices.push({
           value: providerFees
+            .add(feeProvider)
             .toDecimalPlaces(MAX_DECIMALS)
-            // .add(
-            //   new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
-            // )
             .toString(),
           symbol: providerFeesSymbol
         })
       } else {
         totalPrices.push({
-          value: priceDataset.toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceDataset
+            .add(feeDataset)
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString(),
           symbol: datasetSymbol
         })
         totalPrices.push({
           value: providerFees
+            .add(feeProvider)
             .toDecimalPlaces(MAX_DECIMALS)
-            .add(
-              new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
-            )
             .toString(),
           symbol: providerFeesSymbol
         })
         totalPrices.push({
-          value: priceAlgo.toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceAlgo
+            .add(feeAlgo)
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString(),
           symbol: algorithmSymbol
         })
       }
@@ -368,10 +376,6 @@ export default function FormStartCompute({
       <div style={{ textAlign: 'left' }}>
         <>
           <div>
-            {/* <strong>
-              Total Price: {totalPrices.length > 0 && totalPrices[0].value}{' '}
-              {totalPrices.length > 0 && totalPrices[0].symbol}
-            </strong> */}
             <PriceOutput
               hasPreviousOrder={hasPreviousOrder}
               assetTimeout={assetTimeout}
@@ -399,84 +403,121 @@ export default function FormStartCompute({
             <>Select an algorithm to calculate the Compute Job price</>
           ) : (
             <div className={styles.calculation}>
-              <Row
-                hasPreviousOrder={hasPreviousOrder}
-                hasDatatoken={hasDatatoken}
-                price={new Decimal(
-                  datasetOrderPrice || asset?.accessDetails?.price || 0
-                )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .toString()}
-                timeout={assetTimeout}
-                symbol={datasetSymbol}
-                type="DATASET"
-              />
-              <Row
-                hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
-                hasDatatoken={hasDatatokenSelectedComputeAsset}
-                price={new Decimal(
-                  algoOrderPrice ||
-                    selectedAlgorithmAsset?.accessDetails?.price ||
-                    0
-                )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .toString()}
-                timeout={selectedComputeAssetTimeout}
-                symbol={algorithmSymbol}
-                type="ALGORITHM"
-              />
-              <Row
-                price={providerFeeAmount} // initializeCompute.provider fee amount
-                timeout={`${validUntil} seconds`} // valid until value
-                symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
-                type="C2D RESOURCES"
-              />
-              <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(
-                    new Decimal(
-                      datasetOrderPrice || asset?.accessDetails?.price || 0
-                    )
-                      .toDecimalPlaces(MAX_DECIMALS)
-                      .div(100)
-                  )
-                  .toString()} // consume market order fee fee amount
-                symbol={datasetSymbol} // we assume that provider fees will always be in OCEAN token
-                type="CONSUME MARKET ORDER FEE DATASET"
-              />
-              <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(
-                    new Decimal(
-                      algoOrderPrice ||
-                        selectedAlgorithmAsset?.accessDetails?.price ||
-                        0
-                    )
-                      .toDecimalPlaces(MAX_DECIMALS)
-                      .div(100)
-                  )
-                  .toString()} // consume market order fee fee amount
-                symbol={algorithmSymbol} // we assume that provider fees will always be in OCEAN token
-                type="CONSUME MARKET ORDER FEE ALGORITHM"
-              />
-              <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(
-                    new Decimal(providerFeeAmount)
-                      .toDecimalPlaces(MAX_DECIMALS)
-                      .div(100)
-                  )
-                  .toString()} // consume market order fee fee amount
-                symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
-                type="CONSUME MARKET ORDER FEE CDD"
-              />
-              {totalPrices.map((item) => (
+              {new Decimal(
+                datasetOrderPrice || asset?.accessDetails?.price || 0
+              ).greaterThan(0) && (
                 <Row
-                  price={item.value}
-                  symbol={item.symbol}
-                  key={item.symbol}
+                  hasPreviousOrder={hasPreviousOrder}
+                  hasDatatoken={hasDatatoken}
+                  price={new Decimal(
+                    datasetOrderPrice || asset?.accessDetails?.price || 0
+                  )
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .toString()}
+                  timeout={assetTimeout}
+                  symbol={datasetSymbol}
+                  type="DATASET"
                 />
-              ))}
+              )}
+              {new Decimal(
+                algoOrderPrice ||
+                  selectedAlgorithmAsset?.accessDetails?.price ||
+                  0
+              ).greaterThan(0) && (
+                <Row
+                  hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
+                  hasDatatoken={hasDatatokenSelectedComputeAsset}
+                  price={new Decimal(
+                    algoOrderPrice ||
+                      selectedAlgorithmAsset?.accessDetails?.price ||
+                      0
+                  )
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .toString()}
+                  timeout={selectedComputeAssetTimeout}
+                  symbol={algorithmSymbol}
+                  type="ALGORITHM"
+                />
+              )}
+              {new Decimal(providerFeeAmount).greaterThan(0) && (
+                <Row
+                  price={providerFeeAmount} // initializeCompute.provider fee amount
+                  timeout={`${validUntil} seconds`} // valid until value
+                  symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
+                  type="C2D RESOURCES"
+                />
+              )}
+              {new Decimal(consumeMarketOrderFee)
+                .mul(
+                  new Decimal(
+                    datasetOrderPrice || asset?.accessDetails?.price || 0
+                  )
+                )
+                .div(100)
+                .greaterThan(0) && (
+                <Row
+                  price={new Decimal(consumeMarketOrderFee)
+                    .mul(
+                      new Decimal(
+                        datasetOrderPrice || asset?.accessDetails?.price || 0
+                      )
+                    )
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .div(100)
+                    .toString()} // consume market order fee fee amount
+                  symbol={datasetSymbol} // we assume that provider fees will always be in OCEAN token
+                  type="CONSUME MARKET ORDER FEE DATASET"
+                />
+              )}
+              {new Decimal(consumeMarketOrderFee)
+                .mul(
+                  new Decimal(
+                    algoOrderPrice ||
+                      selectedAlgorithmAsset?.accessDetails?.price ||
+                      0
+                  )
+                )
+                .div(100)
+                .greaterThan(0) && (
+                <Row
+                  price={new Decimal(consumeMarketOrderFee)
+                    .mul(
+                      new Decimal(
+                        algoOrderPrice ||
+                          selectedAlgorithmAsset?.accessDetails?.price ||
+                          0
+                      )
+                    )
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .div(100)
+                    .toString()} // consume market order fee fee amount
+                  symbol={algorithmSymbol} // we assume that provider fees will always be in OCEAN token
+                  type="CONSUME MARKET ORDER FEE ALGORITHM"
+                />
+              )}
+              {new Decimal(consumeMarketOrderFee)
+                .mul(new Decimal(providerFeeAmount))
+                .div(100)
+                .greaterThan(0) && (
+                <Row
+                  price={new Decimal(consumeMarketOrderFee)
+                    .mul(new Decimal(providerFeeAmount))
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .div(100)
+                    .toString()} // consume market order fee fee amount
+                  symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
+                  type="CONSUME MARKET ORDER FEE CDD"
+                />
+              )}
+              {totalPrices.map((item) =>
+                new Decimal(item.value).greaterThan(0) ? (
+                  <Row
+                    price={item.value}
+                    symbol={item.symbol}
+                    key={item.symbol}
+                  />
+                ) : null
+              )}
             </div>
           )}
           <div style={{ textAlign: 'center' }}>
