@@ -42,6 +42,7 @@ import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
 import { consumeMarketFixedSwapFee } from 'app.config'
 import { Row } from '../Row'
+import { add } from 'date-fns'
 
 export default function Download({
   accountId,
@@ -322,12 +323,11 @@ export default function Download({
               type="CONSUME MARKET ORDER FEE"
             />
             <Row
-              price={
-                consumeMarketFixedSwapFee +
-                new Decimal(price.value || 0)
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .toString()
-              }
+              price={new Decimal(consumeMarketFixedSwapFee)
+                .add(
+                  new Decimal(price.value || 0).toDecimalPlaces(MAX_DECIMALS)
+                )
+                .toString()}
               symbol={price.tokenSymbol}
             />
             <div style={{ textAlign: 'center' }}>

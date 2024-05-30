@@ -204,7 +204,9 @@ export default function FormStartCompute({
       : new Decimal(0)
 
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = providerFees.add(priceAlgo)
+      let sum = providerFees
+        .add(priceAlgo)
+        .add(new Decimal(consumeMarketOrderFee))
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
@@ -222,7 +224,12 @@ export default function FormStartCompute({
       if (datasetSymbol === providerFeesSymbol) {
         const sum = providerFees.add(priceDataset)
         totalPrices.push({
-          value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: sum
+            .toDecimalPlaces(MAX_DECIMALS)
+            .add(
+              new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
+            )
+            .toString(),
           symbol: datasetSymbol
         })
         totalPrices.push({
@@ -236,7 +243,12 @@ export default function FormStartCompute({
           symbol: algorithmSymbol
         })
         totalPrices.push({
-          value: providerFees.toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: providerFees
+            .toDecimalPlaces(MAX_DECIMALS)
+            .add(
+              new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
+            )
+            .toString(),
           symbol: providerFeesSymbol
         })
       } else {
@@ -245,7 +257,12 @@ export default function FormStartCompute({
           symbol: datasetSymbol
         })
         totalPrices.push({
-          value: providerFees.toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: providerFees
+            .toDecimalPlaces(MAX_DECIMALS)
+            .add(
+              new Decimal(consumeMarketOrderFee).toDecimalPlaces(MAX_DECIMALS)
+            )
+            .toString(),
           symbol: providerFeesSymbol
         })
         totalPrices.push({
@@ -254,6 +271,7 @@ export default function FormStartCompute({
         })
       }
     }
+
     setTotalPrices(totalPrices)
   }, [
     asset,
