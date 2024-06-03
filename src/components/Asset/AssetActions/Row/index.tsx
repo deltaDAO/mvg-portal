@@ -22,11 +22,11 @@ export function Row({
     <div className={styles.priceRow}>
       <div className={styles.sign}>{sign}</div>
       <div className={styles.type}>{type}</div>
-      <div>
+      <div className={styles.priceColumn}>
         <PriceUnit
           price={hasPreviousOrder || hasDatatoken ? 0 : Number(price)}
           symbol={symbol}
-          size="small"
+          size="mini"
           className={styles.price}
           explicitZero
         />
