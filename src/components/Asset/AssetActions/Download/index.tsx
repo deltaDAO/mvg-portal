@@ -325,7 +325,7 @@ export default function Download({
                 )
                 .toString()} // consume market fixed swap fee amount
               symbol={price.tokenSymbol}
-              type="CONSUME MARKET ORDER FEE"
+              type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
             />
             <Row
               price={new Decimal(
