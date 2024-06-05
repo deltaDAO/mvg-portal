@@ -52,7 +52,7 @@ const computeOptions: ServiceComputeOptions = {
 export const initialValues: FormPublishData = {
   user: {
     stepCurrent: 1,
-    chainId: 100,
+    chainId: 32457,
     accountId: ''
   },
   metadata: {
