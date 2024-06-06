@@ -21,6 +21,13 @@ export interface UserSales {
 
 export const MAXIMUM_NUMBER_OF_PAGES_WITH_RESULTS = 476
 
+// Define a mapping from chainId to Elasticsearch indices
+const chainIdToIndexMap = {
+  '100': 'v510',
+  '32457': 'oasis-testnet'
+  // Add more mappings as necessary
+};
+
 const saasFieldExists = {
   exists: {
     field: 'metadata.additionalInformation.saas.redirectUrl'
@@ -105,6 +112,13 @@ FilterTerm | undefined {
     : getFilterTerm('price.type', 'pool')
 }
 
+// Function to get index name based on chainId, defaulting if no valid chainId is provided
+function getIndexFromChainId(chainIds) {
+  // Check if chainIds array has entries and use the first one; otherwise, return default index
+  const chainId = chainIds.length > 0 ? chainIds[0] : null;
+  return chainIdToIndexMap[chainId] || 'v510'; // Fallback to a default index if chainId is not found or null
+}
+
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams
 ): SearchQuery {
@@ -115,6 +129,8 @@ export function generateBaseQuery(
       ? Object.keys(e?.terms)?.includes('metadata.type')
       : false
   )
+  const chainIds = baseQueryParams.chainIds || []; // Ensure chainIds is an array, even if empty
+  const indexName = getIndexFromChainId(chainIds); // Get the index name based on chainId(s)
 
   const generatedQuery = {
     from: baseQueryParams.esPaginationOptions?.from || 0,
@@ -130,7 +146,7 @@ export function generateBaseQuery(
           ...(baseQueryParams.chainIds
             ? [getFilterTerm('chainId', baseQueryParams.chainIds)]
             : []),
-          getFilterTerm('_index', 'v510'),
+          getFilterTerm('_index', indexName),
           ...(baseQueryParams.ignorePurgatory
             ? []
             : [getFilterTerm('purgatory.state', false)]),
