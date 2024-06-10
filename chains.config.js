@@ -51,7 +51,7 @@ const chains = [
     gasFeeMultiplier: 1.1,
     providerUri: 'https://provider.dev.pontus-x.eu',
     providerAddress: '0x68C24FA5b2319C81b34f248d1f928601D2E5246B',
-    metadataCacheUri: 'https://aquarius.dev.pontus-x.eu',
+    metadataCacheUri: 'https://aquarius.pontus-x.eu',
     nodeUri: 'https://rpc.dev.pontus-x.eu',
     subgraphUri: 'https://subgraph.dev.pontus-x.eu',
     explorerUri: 'https://explorer.pontus-x.eu/devnet/pontusx'
@@ -74,7 +74,7 @@ const chains = [
     gasFeeMultiplier: 1.1,
     providerUri: 'https://provider.test.pontus-x.eu',
     providerAddress: '0x9546d39CE3E48BC942f0be4AA9652cBe0Aff3592',
-    metadataCacheUri: 'https://aquarius.test.pontus-x.eu',
+    metadataCacheUri: 'https://aquarius.pontus-x.eu',
     nodeUri: 'https://rpc.test.pontus-x.eu',
     subgraphUri: 'https://subgraph.test.pontus-x.eu',
     explorerUri: 'https://explorer.pontus-x.eu/testnet/pontusx'
