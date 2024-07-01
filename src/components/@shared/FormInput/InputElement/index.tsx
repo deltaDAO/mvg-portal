@@ -84,8 +84,8 @@ const InputElement = forwardRef(
         const sortedOptions =
           !sortOptions && sortOptions === false
             ? options
-            : (options as string[]).sort((a: string, b: string) =>
-                a.localeCompare(b)
+            : (options as string[]).sort((a: any, b: any) =>
+                a.label.localeCompare(b.label)
               )
         return (
           <select
@@ -96,17 +96,11 @@ const InputElement = forwardRef(
           >
             {field !== undefined && field.value === '' && <option value="" />}
             {sortedOptions &&
-              (sortedOptions as string[]).map(
-                (option: string, index: number) => (
-                  <option key={index} value={option}>
-                    <Option
-                      option={option}
-                      prefix={prefixes?.[index]}
-                      postfix={postfixes?.[index]}
-                    />
-                  </option>
-                )
-              )}
+              (sortedOptions as any[]).map((option, index: number) => (
+                <option key={index} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
           </select>
         )
       }
