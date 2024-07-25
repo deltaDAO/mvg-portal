@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { faucet } from '../../../app.config'
 
-export async function getNonce(address: string): Promise<number> {
+async function getNonce(address: string): Promise<number> {
   try {
     const response = await axios.post<{
       status: string
@@ -13,6 +13,17 @@ export async function getNonce(address: string): Promise<number> {
   } catch (error) {
     throw new Error(
       `Failed to get nonce for address ${address}: ${error.message}`
+    )
+  }
+}
+
+export async function getMessage(address: string): Promise<string> {
+  try {
+    const nonce = await getNonce(address)
+    return `I am requesting tokens for ${address} with nonce: ${nonce}`
+  } catch (error) {
+    throw new Error(
+      `Failed to create message for address ${address}: ${error.message}`
     )
   }
 }

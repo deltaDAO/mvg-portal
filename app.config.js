@@ -108,6 +108,6 @@ module.exports = {
   },
 
   faucet: {
-    baseUri: 'https://faucet.pontus-x.eu'
+    baseUri: 'http://localhost:3000'
   }
 }

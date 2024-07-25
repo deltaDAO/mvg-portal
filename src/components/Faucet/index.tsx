@@ -8,6 +8,9 @@ import Loader from '@components/@shared/atoms/Loader'
 import Alert from '@components/@shared/atoms/Alert'
 import content from '../../../content/pages/faucet.json'
 import { ethers } from 'ethers'
+import { getMessage, requestTokens } from '../../@utils/faucet'
+import { useAccount, useSignMessage } from 'wagmi'
+import { toast } from 'react-toastify'
 
 interface Content {
   title: string
@@ -19,40 +22,7 @@ interface Content {
   }
 }
 
-async function fetchNonce(address: string): Promise<number> {
-  const response = await fetch('http://localhost:3000/get_nonce', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ address })
-  })
-
-  const data = await response.json()
-  if (data.status === 'success') {
-    return data.nonce
-  } else {
-    throw new Error(data.message)
-  }
-}
-
-async function requestTokens(
-  address: string,
-  signature: string
-): Promise<{ status: string; message?: string }> {
-  const response = await fetch('http://localhost:3000/request_tokens', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ address, signature })
-  })
-
-  const data = await response.json()
-  return data
-}
-
-export default function VerifyPage({
+export default function FaucetPage({
   didQueryString
 }: {
   didQueryString?: string
@@ -65,29 +35,25 @@ export default function VerifyPage({
   const [message, setMessage] = useState<string>()
   const [error, setError] = useState<string>()
 
+  const { address } = useAccount()
+
+  const {
+    data: signMessageData,
+    error: signMessageError,
+    isLoading: signMessageLoading,
+    isSuccess: signMessageSuccess,
+    signMessage
+  } = useSignMessage()
+
   const handleVerify = useCallback(async () => {
     setIsLoading(true)
     setError(undefined)
     setMessage(undefined)
 
     try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum)
-      const signer = provider.getSigner()
-      const address = await signer.getAddress()
+      const message = await getMessage(address)
 
-      const nonce = await fetchNonce(address)
-      const message = `I am requesting tokens for ${address} with nonce: ${nonce}`
-      const signature = await signer.signMessage(message)
-
-      const response = await requestTokens(address, signature)
-
-      if (response.status === 'success') {
-        setMessage(
-          'Tokens successfully requested. It can take up to 30 seconds until tokens show up in your wallet.'
-        )
-      } else {
-        setError(response.message)
-      }
+      signMessage({ message })
     } catch (error) {
       LoggerInstance.error(error)
       setError(error.message)
@@ -99,6 +65,42 @@ export default function VerifyPage({
   const handleSearchStart = () => {
     handleVerify()
   }
+
+  const faucetTokenRequest = async () => {
+    try {
+      const hashes = await requestTokens(address, signMessageData)
+
+      toast.success(`Successfully requested test tokens: ${hashes.join(', ')}`)
+      setMessage(
+        'Tokens successfully requested. It can take up to 30 seconds until tokens show up in your wallet.'
+      )
+    } catch (error) {
+      toast.error('Unable to request tokens. Please try again.')
+      LoggerInstance.error('[Onboarding] Error requesting tokens', error)
+    }
+  }
+
+  useEffect(() => {
+    if (signMessageLoading) return
+
+    if (signMessageError) {
+      toast.error('Unable to sign message. Please try again.')
+      LoggerInstance.error(
+        '[Onboarding] Error signing message',
+        signMessageError
+      )
+      return
+    }
+
+    if (signMessageSuccess && signMessageData) {
+      faucetTokenRequest()
+    }
+  }, [
+    signMessageSuccess,
+    signMessageData,
+    signMessageError,
+    signMessageLoading
+  ])
 
   useEffect(() => {
     const fetchAddress = async () => {

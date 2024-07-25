@@ -6,7 +6,7 @@ import { useAccount, useNetwork, useProvider, useSignMessage } from 'wagmi'
 import { OnboardingStep } from '..'
 import { getSupportedChainIds } from '../../../../../chains.config'
 import content from '../../../../../content/onboarding/steps/importCustomTokens.json'
-import { getNonce, requestTokens } from '../../../../@utils/faucet'
+import { getMessage, requestTokens } from '../../../../@utils/faucet'
 import StepBody from '../StepBody'
 import StepHeader from '../StepHeader'
 
@@ -41,7 +41,7 @@ export default function Faucet(): ReactElement {
     }
   }
 
-  const getAndSignNonce = async () => {
+  const prepareMessage = async () => {
     setLoading(true)
     try {
       if (!getSupportedChainIds().includes(chain?.id))
@@ -51,9 +51,9 @@ export default function Faucet(): ReactElement {
       LoggerInstance.log('[Onboarding] Requesting nonce from faucet', {
         accountId
       })
-      const nonce = await getNonce(accountId)
+      const message = await getMessage(accountId)
 
-      signMessage({ message: nonce.toString() })
+      signMessage({ message })
     } catch (error) {
       toast.error(
         getErrorMessage({
@@ -94,7 +94,7 @@ export default function Faucet(): ReactElement {
     {
       buttonLabel: `Request Test EUROe Tokens`,
       buttonAction: async () => {
-        await getAndSignNonce()
+        await prepareMessage()
       },
       successMessage: `Successfully requested test tokens.`,
       loading,
