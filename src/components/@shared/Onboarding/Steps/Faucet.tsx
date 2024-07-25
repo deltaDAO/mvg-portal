@@ -21,6 +21,7 @@ export default function Faucet(): ReactElement {
     data: signMessageData,
     error: signMessageError,
     isLoading: signMessageLoading,
+    isSuccess: signMessageSuccess,
     signMessage
   } = useSignMessage()
 
@@ -29,7 +30,8 @@ export default function Faucet(): ReactElement {
 
   const faucetTokenRequest = async () => {
     try {
-      await requestTokens(accountId, signMessageData)
+      const hashes = await requestTokens(accountId, signMessageData)
+      toast.success(`Successfully requested test tokens: ${hashes.join(', ')}`)
       setCompleted(true)
     } catch (error) {
       toast.error('Unable to request tokens. Please try again.')
@@ -78,12 +80,15 @@ export default function Faucet(): ReactElement {
       return
     }
 
-    if (signMessageData) {
+    if (signMessageSuccess && signMessageData) {
       faucetTokenRequest()
     }
-
-    setCompleted(true)
-  }, [signMessageData, signMessageError, signMessageLoading])
+  }, [
+    signMessageSuccess,
+    signMessageData,
+    signMessageError,
+    signMessageLoading
+  ])
 
   const actions = [
     {
