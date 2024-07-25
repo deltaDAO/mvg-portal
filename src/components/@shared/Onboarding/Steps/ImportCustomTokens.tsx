@@ -1,57 +1,47 @@
-import { LoggerInstance } from '@oceanprotocol/lib'
-import { getErrorMessage } from '@utils/onboarding'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useState } from 'react'
 import { toast } from 'react-toastify'
-import { useAccount, useNetwork, useProvider, useSignMessage } from 'wagmi'
 import { OnboardingStep } from '..'
-import { getSupportedChainIds } from '../../../../../chains.config'
-import content from '../../../../../content/onboarding/steps/importCustomTokens.json'
-import { getNonce, requestTokens } from '../../../../@utils/faucet'
 import StepBody from '../StepBody'
 import StepHeader from '../StepHeader'
+import content from '../../../../../content/onboarding/steps/importCustomTokens.json'
+import { useAccount, useNetwork, useProvider } from 'wagmi'
+import { addTokenToWallet } from '@utils/wallet'
+import { getErrorMessage } from '@utils/onboarding'
+import { tokenLogos } from '@components/Header/Wallet/AddTokenList'
+import { useMarketMetadata } from '@context/MarketMetadata'
+import { getSupportedChainIds } from '../../../../../chains.config'
 
-export default function Faucet(): ReactElement {
+export default function ImportCustomTokens(): ReactElement {
   const { title, subtitle, body, image }: OnboardingStep = content
 
   const { address: accountId } = useAccount()
   const web3Provider = useProvider()
   const { chain } = useNetwork()
-
-  const {
-    data: signMessageData,
-    error: signMessageError,
-    isLoading: signMessageLoading,
-    signMessage
-  } = useSignMessage()
+  const { approvedBaseTokens } = useMarketMetadata()
 
   const [loading, setLoading] = useState(false)
   const [completed, setCompleted] = useState(false)
 
-  const faucetTokenRequest = async () => {
-    try {
-      await requestTokens(accountId, signMessageData)
-      setCompleted(true)
-    } catch (error) {
-      toast.error('Unable to request tokens. Please try again.')
-      LoggerInstance.error('[Onboarding] Error requesting tokens', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getAndSignNonce = async () => {
+  const importCustomToken = async (
+    web3Provider: any,
+    tokenAddress: string,
+    tokenSymbol: string,
+    tokenDecimals: number,
+    tokenLogo?: string
+  ) => {
     setLoading(true)
     try {
       if (!getSupportedChainIds().includes(chain?.id))
         throw new Error(
           'The chain you are connected to with your wallet is not supported'
         )
-      LoggerInstance.log('[Onboarding] Requesting nonce from faucet', {
-        accountId
-      })
-      const nonce = await getNonce(accountId)
-
-      signMessage({ message: nonce.toString() })
+      await addTokenToWallet(
+        tokenAddress,
+        tokenSymbol,
+        tokenDecimals,
+        tokenLogo
+      )
+      setCompleted(true)
     } catch (error) {
       toast.error(
         getErrorMessage({
@@ -61,41 +51,28 @@ export default function Faucet(): ReactElement {
         })
       )
       if (error.message) console.error(error.message)
-
+    } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => {
-    if (signMessageLoading) return
-
-    if (signMessageError) {
-      toast.error('Unable to sign message. Please try again.')
-      LoggerInstance.error(
-        '[Onboarding] Error signing message',
-        signMessageError
-      )
-      return
-    }
-
-    if (signMessageData) {
-      faucetTokenRequest()
-    }
-
-    setCompleted(true)
-  }, [signMessageData, signMessageError, signMessageLoading])
-
-  const actions = [
-    {
-      buttonLabel: `Request Test EUROe Tokens`,
+  const actions = approvedBaseTokens
+    ?.filter((token) => token.symbol.toLowerCase().includes('euro'))
+    .map((token) => ({
+      buttonLabel: `Import ${token.symbol} Token`,
       buttonAction: async () => {
-        await getAndSignNonce()
+        await importCustomToken(
+          web3Provider,
+          token.address,
+          token.symbol,
+          token.decimals,
+          tokenLogos?.[token.symbol]?.url
+        )
       },
-      successMessage: `Successfully requested test tokens.`,
+      successMessage: `Successfully imported ${token.symbol} test token`,
       loading,
       completed
-    }
-  ]
+    }))
 
   return (
     <div>
