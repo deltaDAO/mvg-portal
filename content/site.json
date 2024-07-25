@@ -18,6 +18,11 @@
       "link": "/verify"
     },
     {
+      "name": "Faucet",
+      "link": "/faucet"
+    },
+
+    {
       "name": "Log",
       "link": "https://explorer.pontus-x.eu/"
     },
@@ -42,7 +47,7 @@
         },
         {
           "name": "COOPERANTS",
-          "link": "https://federator.cooperants.info/marketplace",
+          "link": "https://cooperants.pontus-x.eu/",
           "description": "Gaia-X Lighthouse COOPERANTS is the collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
           "image": "cooperants-logo.webp",
           "category": "manufacturing",
