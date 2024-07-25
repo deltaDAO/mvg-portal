@@ -1,45 +1,57 @@
-import { ReactElement, useState } from 'react'
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { getErrorMessage } from '@utils/onboarding'
+import { ReactElement, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { useAccount, useNetwork, useProvider, useSignMessage } from 'wagmi'
 import { OnboardingStep } from '..'
+import { getSupportedChainIds } from '../../../../../chains.config'
+import content from '../../../../../content/onboarding/steps/importCustomTokens.json'
+import { getNonce, requestTokens } from '../../../../@utils/faucet'
 import StepBody from '../StepBody'
 import StepHeader from '../StepHeader'
-import content from '../../../../../content/onboarding/steps/importCustomTokens.json'
-import { useAccount, useNetwork, useProvider } from 'wagmi'
-import { addTokenToWallet } from '@utils/wallet'
-import { getErrorMessage } from '@utils/onboarding'
-import { tokenLogos } from '@components/Header/Wallet/AddTokenList'
-import { useMarketMetadata } from '@context/MarketMetadata'
-import { getSupportedChainIds } from '../../../../../chains.config'
 
-export default function ImportCustomTokens(): ReactElement {
+export default function Faucet(): ReactElement {
   const { title, subtitle, body, image }: OnboardingStep = content
 
   const { address: accountId } = useAccount()
   const web3Provider = useProvider()
   const { chain } = useNetwork()
-  const { approvedBaseTokens } = useMarketMetadata()
+
+  const {
+    data: signMessageData,
+    error: signMessageError,
+    isLoading: signMessageLoading,
+    signMessage
+  } = useSignMessage()
 
   const [loading, setLoading] = useState(false)
   const [completed, setCompleted] = useState(false)
 
-  const importCustomToken = async (
-    web3Provider: any,
-    tokenAddress: string,
-    tokenSymbol: string,
-    tokenDecimals: number,
-    tokenLogo?: string
-  ) => {
+  const faucetTokenRequest = async () => {
+    try {
+      await requestTokens(accountId, signMessageData)
+      setCompleted(true)
+    } catch (error) {
+      toast.error('Unable to request tokens. Please try again.')
+      LoggerInstance.error('[Onboarding] Error requesting tokens', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getAndSignNonce = async () => {
     setLoading(true)
     try {
-      if (getSupportedChainIds().includes(chain?.id)) throw new Error()
+      if (!getSupportedChainIds().includes(chain?.id))
+        throw new Error(
+          'The chain you are connected to with your wallet is not supported'
+        )
+      LoggerInstance.log('[Onboarding] Requesting nonce from faucet', {
+        accountId
+      })
+      const nonce = await getNonce(accountId)
 
-      await addTokenToWallet(
-        tokenAddress,
-        tokenSymbol,
-        tokenDecimals,
-        tokenLogo
-      )
-      setCompleted(true)
+      signMessage({ message: nonce.toString() })
     } catch (error) {
       toast.error(
         getErrorMessage({
@@ -49,26 +61,41 @@ export default function ImportCustomTokens(): ReactElement {
         })
       )
       if (error.message) console.error(error.message)
-    } finally {
+
       setLoading(false)
     }
   }
 
-  const actions = approvedBaseTokens?.map((token) => ({
-    buttonLabel: `Import ${token.symbol} Token`,
-    buttonAction: async () => {
-      await importCustomToken(
-        web3Provider,
-        token.address,
-        token.symbol,
-        token.decimals,
-        tokenLogos?.[token.symbol]?.url
+  useEffect(() => {
+    if (signMessageLoading) return
+
+    if (signMessageError) {
+      toast.error('Unable to sign message. Please try again.')
+      LoggerInstance.error(
+        '[Onboarding] Error signing message',
+        signMessageError
       )
-    },
-    successMessage: `Successfully imported ${token.symbol} test token`,
-    loading,
-    completed
-  }))
+      return
+    }
+
+    if (signMessageData) {
+      faucetTokenRequest()
+    }
+
+    setCompleted(true)
+  }, [signMessageData, signMessageError, signMessageLoading])
+
+  const actions = [
+    {
+      buttonLabel: `Request Test EUROe Tokens`,
+      buttonAction: async () => {
+        await getAndSignNonce()
+      },
+      successMessage: `Successfully requested test tokens.`,
+      loading,
+      completed
+    }
+  ]
 
   return (
     <div>
