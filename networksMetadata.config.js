@@ -19,7 +19,7 @@ const networksMetadata = [
     explorers: [
       {
         name: 'GEN-X Testnet Explorer',
-        url: 'https://explorer.pontus-x.eu',
+        url: 'https://explorer.genx.pontus-x.eu',
         standard: ''
       }
     ]
