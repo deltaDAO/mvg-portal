@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { faucet } from '../../../app.config'
+import { ethers } from 'ethers'
 
 async function getNonce(address: string): Promise<number> {
   try {
@@ -28,16 +29,30 @@ export async function getMessage(address: string): Promise<string> {
   }
 }
 
+export async function getChainId(): Promise<number> {
+  const network = await new ethers.providers.Web3Provider(
+    window?.ethereum
+  ).getNetwork()
+  return network.chainId
+}
+
 export async function requestTokens(
   address: string,
   signature: string
 ): Promise<string[]> {
   try {
+    const availableNetworks = {
+      32456: 'devnet',
+      32457: 'testnet'
+    }
+    const chainId = await getChainId()
+    const network = availableNetworks[chainId]
+
     const response = await axios.post<{
       status: string
       txHashes?: string[]
       message?: string
-    }>(`${faucet.baseUri}/request_tokens`, { address, signature })
+    }>(`${faucet.baseUri}/request_tokens/${network}`, { address, signature })
 
     return response.data.txHashes
   } catch (error) {
