@@ -1,6 +1,6 @@
 {
   "title": "Pontus-X Faucet",
-  "description": "Get 1000 EUROe fee and payment tokens for the Pontus-X network every 12 hours.",
+  "description": "Request tokens for the Pontus-X Networks",
   "input": {
     "label": "Your Pontus-X address",
     "placeholder": "0x28080F654eED6CC00e8b16F4841E92CD0c2C0778",

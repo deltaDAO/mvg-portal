@@ -1,19 +1,86 @@
-.didInput {
-  composes: input from '@shared/FormInput/InputElement/index.module.css';
+.card {
+  max-width: 1000px;
+  margin-top: 50px;
+  padding: 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
 }
 
-.error {
-  color: var(--brand-alert-red);
-  margin-top: var(--spacer);
+.title {
+  font-size: 28px;
+  margin-bottom: 20px;
+  color: #2c3e50;
 }
 
-.success {
-  color: var(--brand-success-green);
-  margin-top: var(--spacer);
+.description {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #34495e;
+  line-height: 1.6;
 }
 
-.sdContainer,
+.instructions {
+  margin-bottom: 20px;
+}
+
+.instructions h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.instructions ol {
+  padding-left: 20px;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+.instructions ol li {
+  margin-bottom: 10px;
+}
+
+.address,
+.network {
+  font-size: 14px;
+  word-break: break-all;
+  margin-bottom: 20px;
+  color: #34495e;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.disabledButton {
+  background-color: grey !important;
+  cursor: not-allowed !important;
+}
+
 .errorContainer,
 .successContainer {
-  margin-top: calc(var(--spacer) * 2);
+  margin-top: 20px;
+  width: 100%;
 }
