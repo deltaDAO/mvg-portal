@@ -4,15 +4,17 @@ import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import AssetComputeList from './AssetComputeList'
 import { useCancelToken } from '@hooks/useCancelToken'
-import { getServiceByName } from '@utils/ddo'
 import { useAccount } from 'wagmi'
+import { Service } from '@oceanprotocol/lib'
 
 export default function AlgorithmDatasetsListForCompute({
   asset,
-  algorithmDid
+  service,
+  accessDetails
 }: {
   asset: AssetExtended
-  algorithmDid: string
+  service: Service
+  accessDetails: AccessDetails
 }): ReactElement {
   const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
@@ -20,25 +22,20 @@ export default function AlgorithmDatasetsListForCompute({
     useState<AssetSelectionAsset[]>()
 
   useEffect(() => {
-    if (!asset || !asset?.accessDetails?.type) return
+    if (!accessDetails.type) return
 
     async function getDatasetsAllowedForCompute() {
-      const isCompute = Boolean(getServiceByName(asset, 'compute'))
-      const datasetComputeService = getServiceByName(
-        asset,
-        isCompute ? 'compute' : 'access'
-      )
       const datasets = await getAlgorithmDatasetsForCompute(
-        algorithmDid,
-        datasetComputeService?.serviceEndpoint,
+        asset.id,
+        service.serviceEndpoint,
         accountId,
-        asset?.chainId,
+        asset.chainId,
         newCancelToken()
       )
       setDatasetsForCompute(datasets)
     }
     asset.metadata.type === 'algorithm' && getDatasetsAllowedForCompute()
-  }, [accountId, asset, algorithmDid, newCancelToken])
+  }, [accessDetails, accountId, asset, newCancelToken, service])
 
   return (
     <div className={styles.datasetsContainer}>

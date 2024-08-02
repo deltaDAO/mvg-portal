@@ -8,7 +8,7 @@ import ButtonBuy from '../ButtonBuy'
 import PriceOutput from './PriceOutput'
 import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
-import { Asset, ComputeEnvironment, ZERO_ADDRESS } from '@oceanprotocol/lib'
+import { Asset, ComputeEnvironment, Service } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
@@ -20,16 +20,18 @@ import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
 
 export default function FormStartCompute({
+  asset,
+  service,
+  accessDetails,
   algorithms,
   ddoListAlgorithms,
   selectedAlgorithmAsset,
-  setSelectedAlgorithm,
+  setSelectedAlgorithmAsset,
   isLoading,
   isComputeButtonDisabled,
   hasPreviousOrder,
   hasDatatoken,
   dtBalance,
-  assetType,
   assetTimeout,
   hasPreviousOrderSelectedComputeAsset,
   hasDatatokenSelectedComputeAsset,
@@ -53,16 +55,18 @@ export default function FormStartCompute({
   validUntil,
   retry
 }: {
+  asset: AssetExtended
+  service: Service
+  accessDetails: AccessDetails
   algorithms: AssetSelectionAsset[]
   ddoListAlgorithms: Asset[]
   selectedAlgorithmAsset: AssetExtended
-  setSelectedAlgorithm: React.Dispatch<React.SetStateAction<AssetExtended>>
+  setSelectedAlgorithmAsset: React.Dispatch<React.SetStateAction<AssetExtended>>
   isLoading: boolean
   isComputeButtonDisabled: boolean
   hasPreviousOrder: boolean
   hasDatatoken: boolean
   dtBalance: string
-  assetType: string
   assetTimeout: string
   hasPreviousOrderSelectedComputeAsset?: boolean
   hasDatatokenSelectedComputeAsset?: boolean
@@ -96,13 +100,13 @@ export default function FormStartCompute({
     setFieldValue,
     values
   }: FormikContextType<ComputeDatasetForm> = useFormikContext()
-  const { asset, isAssetNetwork } = useAsset()
+  const { isAssetNetwork } = useAsset() // TODO - is this needed?
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState(
-    asset?.accessDetails?.price
+    accessDetails.price
   )
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
-    selectedAlgorithmAsset?.accessDetails?.price
+    selectedAlgorithmAsset?.accessDetails?.[0]?.price
   )
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
@@ -142,21 +146,27 @@ export default function FormStartCompute({
     if (!values.algorithm || !isConsumable) return
 
     async function fetchAlgorithmAssetExtended() {
-      const algorithmAsset = getAlgorithmAsset(values.algorithm)
-      const accessDetails = await getAccessDetails(
-        algorithmAsset.chainId,
-        algorithmAsset.services[0].datatokenAddress,
-        algorithmAsset.services[0].timeout,
-        accountId || ZERO_ADDRESS // if user is not connected, use ZERO_ADDRESS as accountId
+      // TODO test this type override
+      const algorithmAsset: AssetExtended = getAlgorithmAsset(values.algorithm)
+
+      const algoAccessDetails = await Promise.all(
+        algorithmAsset.services.map((service) =>
+          getAccessDetails(
+            algorithmAsset.offchain?.stats.services.find(
+              (s) => s.serviceId === service.id
+            )
+          )
+        )
       )
+
       const extendedAlgoAsset: AssetExtended = {
         ...algorithmAsset,
-        accessDetails
+        accessDetails: algoAccessDetails
       }
-      setSelectedAlgorithm(extendedAlgoAsset)
+      setSelectedAlgorithmAsset(extendedAlgoAsset)
     }
     fetchAlgorithmAssetExtended()
-  }, [values.algorithm, accountId, isConsumable])
+  }, [values.algorithm, accountId, isConsumable, setSelectedAlgorithmAsset])
 
   useEffect(() => {
     if (!values.computeEnv) return
@@ -169,14 +179,13 @@ export default function FormStartCompute({
   // Set price for calculation output
   //
   useEffect(() => {
-    if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails) return
+    if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails?.length)
+      return
 
-    setDatasetOrderPrice(
-      datasetOrderPriceAndFees?.price || asset.accessDetails.price
-    )
+    setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
     setAlgoOrderPrice(
       algoOrderPriceAndFees?.price ||
-        selectedAlgorithmAsset?.accessDetails.price
+        selectedAlgorithmAsset?.accessDetails?.[0]?.price
     )
     const totalPrices: totalPriceMap[] = []
     const priceDataset =
@@ -255,7 +264,7 @@ export default function FormStartCompute({
     algoOrderPriceAndFees,
     providerFeeAmount,
     isAssetNetwork,
-    selectedAlgorithmAsset?.accessDetails,
+    selectedAlgorithmAsset,
     datasetOrderPrice,
     algoOrderPrice,
     algorithmSymbol,
@@ -305,7 +314,7 @@ export default function FormStartCompute({
       ))}
       {asset && selectedAlgorithmAsset && (
         <ConsumerParameters
-          asset={asset}
+          service={service}
           selectedAlgorithmAsset={selectedAlgorithmAsset}
           isLoading={isLoading}
         />
@@ -319,7 +328,7 @@ export default function FormStartCompute({
         hasDatatoken={hasDatatoken}
         selectedComputeAssetTimeout={selectedComputeAssetTimeout}
         hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-        algorithmConsumeDetails={selectedAlgorithmAsset?.accessDetails}
+        algorithmConsumeDetails={selectedAlgorithmAsset?.accessDetails?.[0]}
         symbol={datasetSymbol}
         algorithmSymbol={algorithmSymbol}
         datasetOrderPrice={datasetOrderPrice}
@@ -337,16 +346,16 @@ export default function FormStartCompute({
           !isValid ||
           !isBalanceSufficient ||
           !isAssetNetwork ||
-          !selectedAlgorithmAsset?.accessDetails?.isPurchasable ||
+          !selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable ||
           !isAccountIdWhitelisted
         }
         hasPreviousOrder={hasPreviousOrder}
         hasDatatoken={hasDatatoken}
-        btSymbol={asset?.accessDetails?.baseToken?.symbol}
-        dtSymbol={asset?.datatokens[0]?.symbol}
+        btSymbol={accessDetails.baseToken?.symbol}
+        dtSymbol={accessDetails.datatoken?.symbol}
         dtBalance={dtBalance}
         assetTimeout={assetTimeout}
-        assetType={assetType}
+        assetType={asset.metadata.type}
         hasPreviousOrderSelectedComputeAsset={
           hasPreviousOrderSelectedComputeAsset
         }
@@ -357,13 +366,13 @@ export default function FormStartCompute({
         stepText={stepText}
         isLoading={isLoading}
         type="submit"
-        priceType={asset?.accessDetails?.type}
-        algorithmPriceType={selectedAlgorithmAsset?.accessDetails?.type}
+        priceType={accessDetails.type}
+        algorithmPriceType={selectedAlgorithmAsset?.accessDetails?.[0]?.type}
         isBalanceSufficient={isBalanceSufficient}
         isConsumable={isConsumable}
         consumableFeedback={consumableFeedback}
         isAlgorithmConsumable={
-          selectedAlgorithmAsset?.accessDetails?.isPurchasable
+          selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable
         }
         isSupportedOceanNetwork={isSupportedOceanNetwork}
         hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}

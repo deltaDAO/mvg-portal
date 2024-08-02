@@ -10,7 +10,6 @@ import styles from './index.module.css'
 import { getServiceByName } from '@utils/ddo'
 import { useUserPreferences } from '@context/UserPreferences'
 import { formatNumber } from '@utils/numbers'
-import { AssetPrice } from '@oceanprotocol/lib'
 
 export declare type AssetTeaserProps = {
   asset: AssetExtended
@@ -28,12 +27,12 @@ export default function AssetTeaser({
   const { datatokens } = asset
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
-  const { owner } = asset.nft
-  const { orders, allocated, price } = asset.stats
+  const owner = asset.nft?.owner
+  const { orders, allocated, price } = asset.stats || {}
   const isUnsupportedPricing =
     !asset.services.length ||
-    price.value === undefined ||
-    asset?.accessDetails?.type === 'NOT_SUPPORTED'
+    price?.value === undefined ||
+    asset?.accessDetails[0].type === 'NOT_SUPPORTED'
   const { locale } = useUserPreferences()
 
   return (

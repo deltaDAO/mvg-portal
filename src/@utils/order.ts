@@ -12,7 +12,8 @@ import {
   ProviderFees,
   ProviderInstance,
   ProviderInitialize,
-  getErrorMessage
+  getErrorMessage,
+  Service
 } from '@oceanprotocol/lib'
 import { Signer, ethers } from 'ethers'
 import { getOceanConfig } from './ocean'
@@ -26,6 +27,7 @@ import { toast } from 'react-toastify'
 
 async function initializeProvider(
   asset: AssetExtended,
+  service: Service,
   accountId: string,
   providerFees?: ProviderFees
 ): Promise<ProviderInitialize> {
@@ -33,10 +35,10 @@ async function initializeProvider(
   try {
     const provider = await ProviderInstance.initialize(
       asset.id,
-      asset.services[0].id,
+      service.id,
       0,
       accountId,
-      customProviderUrl || asset.services[0].serviceEndpoint
+      customProviderUrl || service.serviceEndpoint
     )
     return provider
   } catch (error) {
@@ -58,6 +60,8 @@ async function initializeProvider(
 export async function order(
   signer: Signer,
   asset: AssetExtended,
+  service: Service,
+  accessDetails: AccessDetails,
   orderPriceAndFees: OrderPriceAndFees,
   accountId: string,
   hasDatatoken: boolean,
@@ -69,6 +73,7 @@ export async function order(
 
   const initializeData = await initializeProvider(
     asset,
+    service,
     accountId,
     providerFees
   )
@@ -81,33 +86,33 @@ export async function order(
       consumeMarketFeeAddress: marketFeeAddress,
       consumeMarketFeeAmount: consumeMarketOrderFee,
       consumeMarketFeeToken:
-        asset?.accessDetails?.baseToken?.address ||
+        accessDetails.baseToken?.address ||
         '0x0000000000000000000000000000000000000000'
     }
   } as OrderParams
 
-  switch (asset.accessDetails?.type) {
+  switch (accessDetails.type) {
     case 'fixed': {
       // this assumes all fees are in ocean
 
       const freParams = {
         exchangeContract: config.fixedRateExchangeAddress,
-        exchangeId: asset.accessDetails.addressOrId,
+        exchangeId: accessDetails.addressOrId,
         maxBaseTokenAmount: orderPriceAndFees.price,
-        baseTokenAddress: asset?.accessDetails?.baseToken?.address,
-        baseTokenDecimals: asset?.accessDetails?.baseToken?.decimals || 18,
+        baseTokenAddress: accessDetails.baseToken?.address,
+        baseTokenDecimals: accessDetails.baseToken?.decimals || 18,
         swapMarketFee: consumeMarketFixedSwapFee,
         marketFeeAddress
       } as FreOrderParams
 
-      if (asset.accessDetails.templateId === 1) {
+      if (accessDetails.templateId === 1) {
         if (!hasDatatoken) {
           // buy datatoken
           const tx: any = await approve(
             signer,
             config,
             await signer.getAddress(),
-            asset.accessDetails.baseToken.address,
+            accessDetails.baseToken.address,
             config.fixedRateExchangeAddress,
             orderPriceAndFees.price,
             false
@@ -121,7 +126,7 @@ export async function order(
             signer
           )
           const freTx = await fre.buyDatatokens(
-            asset.accessDetails?.addressOrId,
+            accessDetails.addressOrId,
             '1',
             orderPriceAndFees.price,
             marketFeeAddress,
@@ -130,20 +135,20 @@ export async function order(
           const buyDtTx = await freTx.wait()
         }
         return await datatoken.startOrder(
-          asset.accessDetails.datatoken.address,
+          accessDetails.datatoken.address,
           orderParams.consumer,
           orderParams.serviceIndex,
           orderParams._providerFee,
           orderParams._consumeMarketFee
         )
       }
-      if (asset.accessDetails?.templateId === 2) {
+      if (accessDetails.templateId === 2) {
         const tx: any = await approve(
           signer,
           config,
           accountId,
-          asset.accessDetails.baseToken.address,
-          asset.accessDetails.datatoken.address,
+          accessDetails.baseToken.address,
+          accessDetails.datatoken.address,
           orderPriceAndFees.price,
           false
         )
@@ -153,7 +158,7 @@ export async function order(
           return
         }
         return await datatoken.buyFromFreAndOrder(
-          asset.accessDetails.datatoken.address,
+          accessDetails.datatoken.address,
           orderParams,
           freParams
         )
@@ -161,24 +166,24 @@ export async function order(
       break
     }
     case 'free': {
-      if (asset.accessDetails.templateId === 1) {
+      if (accessDetails.templateId === 1) {
         const dispenser = new Dispenser(config.dispenserAddress, signer)
         const dispenserTx = await dispenser.dispense(
-          asset.accessDetails?.datatoken.address,
+          accessDetails.datatoken.address,
           '1',
           accountId
         )
         return await datatoken.startOrder(
-          asset.accessDetails.datatoken.address,
+          accessDetails.datatoken.address,
           orderParams.consumer,
           orderParams.serviceIndex,
           orderParams._providerFee,
           orderParams._consumeMarketFee
         )
       }
-      if (asset.accessDetails?.templateId === 2) {
+      if (accessDetails.templateId === 2) {
         return await datatoken.buyFromDispenserAndOrder(
-          asset.services[0].datatokenAddress,
+          service.datatokenAddress,
           orderParams,
           config.dispenserAddress
         )
@@ -199,6 +204,8 @@ export async function order(
 export async function reuseOrder(
   signer: Signer,
   asset: AssetExtended,
+  service: Service,
+  accessDetails: AccessDetails,
   accountId: string,
   validOrderTx: string,
   providerFees?: ProviderFees
@@ -206,12 +213,13 @@ export async function reuseOrder(
   const datatoken = new Datatoken(signer)
   const initializeData = await initializeProvider(
     asset,
+    service,
     accountId,
     providerFees
   )
 
   const tx = await datatoken.reuseOrder(
-    asset.accessDetails.datatoken.address,
+    accessDetails.datatoken.address,
     validOrderTx,
     providerFees || initializeData.providerFee
   )
@@ -221,21 +229,22 @@ export async function reuseOrder(
 
 async function approveProviderFee(
   asset: AssetExtended,
+  accessDetails: AccessDetails,
   accountId: string,
   signer: Signer,
   providerFeeAmount: string
 ): Promise<ethers.providers.TransactionResponse> {
   const config = getOceanConfig(asset.chainId)
   const baseToken =
-    asset?.accessDetails?.type === 'free'
+    accessDetails.type === 'free'
       ? getOceanConfig(asset.chainId).oceanTokenAddress
-      : asset?.accessDetails?.baseToken?.address
+      : accessDetails.baseToken?.address
   const txApproveWei = await approveWei(
     signer,
     config,
     accountId,
     baseToken,
-    asset?.accessDetails?.datatoken?.address,
+    accessDetails.datatoken?.address,
     providerFeeAmount
   )
   return txApproveWei
@@ -258,6 +267,8 @@ async function approveProviderFee(
 export async function handleComputeOrder(
   signer: Signer,
   asset: AssetExtended,
+  service: Service,
+  accessDetails: AccessDetails,
   orderPriceAndFees: OrderPriceAndFees,
   accountId: string,
   initializeData: ProviderComputeInitialize,
@@ -278,13 +289,14 @@ export async function handleComputeOrder(
         '[compute] Has valid order: ',
         initializeData.validOrder
       )
-      return asset?.accessDetails?.validOrderTx
+      return accessDetails.validOrderTx
     }
 
     // Approve potential Provider fee amount first
     if (initializeData?.providerFee?.providerFeeAmount !== '0') {
       const txApproveProvider = await approveProviderFee(
         asset,
+        accessDetails,
         accountId,
         signer,
         initializeData.providerFee.providerFeeAmount
@@ -301,6 +313,8 @@ export async function handleComputeOrder(
       const txReuseOrder = await reuseOrder(
         signer,
         asset,
+        service,
+        accessDetails,
         accountId,
         initializeData.validOrder,
         initializeData.providerFee
@@ -316,6 +330,8 @@ export async function handleComputeOrder(
     const txStartOrder = await order(
       signer,
       asset,
+      service,
+      accessDetails,
       orderPriceAndFees,
       accountId,
       hasDatatoken,
