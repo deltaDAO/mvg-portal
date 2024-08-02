@@ -1,7 +1,12 @@
 import { ReactElement, useState, useEffect } from 'react'
 import Compute from './Compute'
 import Download from './Download'
-import { FileInfo, LoggerInstance, Datatoken } from '@oceanprotocol/lib'
+import {
+  FileInfo,
+  LoggerInstance,
+  Datatoken,
+  Service
+} from '@oceanprotocol/lib'
 import { compareAsBN } from '@utils/numbers'
 import { useAsset } from '@context/Asset'
 import { getFileDidInfo, getFileInfo } from '@utils/provider'
@@ -16,11 +21,20 @@ import AssetStats from './AssetStats'
 import { isAddressWhitelisted } from '@utils/ddo'
 import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
+import Button from '@components/@shared/atoms/Button'
 
 export default function AssetActions({
-  asset
+  asset,
+  service,
+  accessDetails,
+  serviceIndex,
+  handleBack
 }: {
   asset: AssetExtended
+  service: Service
+  accessDetails: AccessDetails
+  serviceIndex: number
+  handleBack: () => void
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { data: signer } = useSigner()
@@ -44,37 +58,35 @@ export default function AssetActions({
   const [isAccountIdWhitelisted, setIsAccountIdWhitelisted] =
     useState<boolean>()
 
-  const isCompute = Boolean(
-    asset?.services.filter((service) => service.type === 'compute')[0]
-  )
+  const isCompute = service.type === 'compute'
 
   // Get and set file info
   useEffect(() => {
-    const oceanConfig = getOceanConfig(asset?.chainId)
+    const oceanConfig = getOceanConfig(asset.chainId)
     if (!oceanConfig) return
 
     async function initFileInfo() {
       setFileIsLoading(true)
       const providerUrl =
-        formikState?.values?.services[0].providerUrl.url ||
-        asset?.services[0]?.serviceEndpoint
+        formikState?.values?.services[serviceIndex].providerUrl.url ||
+        service.serviceEndpoint
 
       const storageType = formikState?.values?.services
-        ? formikState?.values?.services[0].files[0].type
+        ? formikState?.values?.services[serviceIndex].files[0].type
         : null
 
       // TODO: replace 'any' with correct typing
-      const file = formikState?.values?.services[0].files[0] as any
+      const file = formikState?.values?.services[serviceIndex].files[0] as any
       const query = file?.query || undefined
       const abi = file?.abi || undefined
       const headers = file?.headers || undefined
       const method = file?.method || undefined
 
       try {
-        const fileInfoResponse = formikState?.values?.services?.[0].files?.[0]
-          .url
+        const fileInfoResponse = formikState?.values?.services?.[serviceIndex]
+          .files?.[0].url
           ? await getFileInfo(
-              formikState?.values?.services?.[0].files?.[0].url,
+              formikState?.values?.services?.[serviceIndex].files?.[0].url,
               providerUrl,
               storageType,
               query,
@@ -83,7 +95,7 @@ export default function AssetActions({
               chain?.id,
               method
             )
-          : await getFileDidInfo(asset?.id, asset?.services[0]?.id, providerUrl)
+          : await getFileDidInfo(asset.id, service.id, providerUrl)
 
         fileInfoResponse && setFileMetadata(fileInfoResponse[0])
 
@@ -105,7 +117,16 @@ export default function AssetActions({
       }
     }
     initFileInfo()
-  }, [asset, isMounted, newCancelToken, formikState?.values?.services])
+  }, [
+    asset,
+    isMounted,
+    newCancelToken,
+    formikState?.values?.services,
+    serviceIndex,
+    chain?.id,
+    service.serviceEndpoint,
+    service.id
+  ])
 
   // Get and set user DT balance
   useEffect(() => {
@@ -115,7 +136,7 @@ export default function AssetActions({
       try {
         const datatokenInstance = new Datatoken(web3Provider as any)
         const dtBalance = await datatokenInstance.balance(
-          asset.services[0].datatokenAddress,
+          service.datatokenAddress,
           accountId
         )
         setDtBalance(dtBalance)
@@ -124,14 +145,14 @@ export default function AssetActions({
       }
     }
     init()
-  }, [web3Provider, accountId, asset, isAssetNetwork])
+  }, [web3Provider, accountId, isAssetNetwork, service.datatokenAddress])
 
   // Check user balance against price
   useEffect(() => {
-    if (asset?.accessDetails?.type === 'free') setIsBalanceSufficient(true)
+    if (accessDetails.type === 'free') setIsBalanceSufficient(true)
     if (
-      !asset?.accessDetails?.price ||
-      !asset?.accessDetails?.baseToken?.symbol ||
+      !accessDetails.price ||
+      !accessDetails.baseToken?.symbol ||
       !accountId ||
       !balance ||
       !dtBalance
@@ -140,18 +161,18 @@ export default function AssetActions({
 
     const baseTokenBalance = getTokenBalanceFromSymbol(
       balance,
-      asset?.accessDetails?.baseToken?.symbol
+      accessDetails.baseToken?.symbol
     )
 
     setIsBalanceSufficient(
-      compareAsBN(baseTokenBalance, `${asset?.accessDetails.price}`) ||
+      compareAsBN(baseTokenBalance, `${accessDetails.price}`) ||
         Number(dtBalance) >= 1
     )
 
     return () => {
       setIsBalanceSufficient(false)
     }
-  }, [balance, accountId, asset?.accessDetails, dtBalance])
+  }, [balance, accountId, dtBalance, accessDetails])
 
   // check for if user is whitelisted or blacklisted
   useEffect(() => {
@@ -161,30 +182,40 @@ export default function AssetActions({
   }, [accountId, asset])
 
   return (
-    <div className={styles.actions}>
-      {isCompute ? (
-        <Compute
-          accountId={accountId}
-          signer={signer}
-          asset={asset}
-          dtBalance={dtBalance}
-          isAccountIdWhitelisted={isAccountIdWhitelisted}
-          file={fileMetadata}
-          fileIsLoading={fileIsLoading}
-        />
-      ) : (
-        <Download
-          accountId={accountId}
-          signer={signer}
-          asset={asset}
-          dtBalance={dtBalance}
-          isBalanceSufficient={isBalanceSufficient}
-          isAccountIdWhitelisted={isAccountIdWhitelisted}
-          file={fileMetadata}
-          fileIsLoading={fileIsLoading}
-        />
-      )}
-      <AssetStats />
-    </div>
+    <>
+      <Button style="text" size="small" onClick={handleBack}>
+        Back
+      </Button>
+      <div className={styles.actions}>
+        {isCompute ? (
+          <Compute
+            accountId={accountId}
+            signer={signer}
+            asset={asset}
+            service={service}
+            accessDetails={accessDetails}
+            dtBalance={dtBalance}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
+            file={fileMetadata}
+            fileIsLoading={fileIsLoading}
+          />
+        ) : (
+          <Download
+            accountId={accountId}
+            signer={signer}
+            asset={asset}
+            service={service}
+            accessDetails={accessDetails}
+            serviceIndex={serviceIndex}
+            dtBalance={dtBalance}
+            isBalanceSufficient={isBalanceSufficient}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
+            file={fileMetadata}
+            fileIsLoading={fileIsLoading}
+          />
+        )}
+        <AssetStats />
+      </div>
+    </>
   )
 }

@@ -2,7 +2,11 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import FormConsumerParameters from './FormConsumerParameters'
 import styles from './index.module.css'
 import Tabs, { TabsItem } from '@shared/atoms/Tabs'
-import { ConsumerParameter, UserCustomParameters } from '@oceanprotocol/lib'
+import {
+  ConsumerParameter,
+  Service,
+  UserCustomParameters
+} from '@oceanprotocol/lib'
 
 export function parseConsumerParameterValues(
   formValues?: UserCustomParameters,
@@ -33,11 +37,11 @@ export function parseConsumerParameterValues(
 }
 
 export default function ConsumerParameters({
-  asset,
+  service,
   selectedAlgorithmAsset,
   isLoading
 }: {
-  asset: AssetExtended
+  service: Service
   selectedAlgorithmAsset?: AssetExtended
   isLoading?: boolean
 }): ReactElement {
@@ -46,18 +50,19 @@ export default function ConsumerParameters({
 
   const updateTabs = useCallback(() => {
     const tabs = []
-    if (asset?.services[0]?.consumerParameters?.length > 0) {
+    if (service.consumerParameters?.length > 0) {
       tabs.push({
         title: 'Data Service',
         content: (
           <FormConsumerParameters
             name="dataServiceParams"
-            parameters={asset.services[0].consumerParameters}
+            parameters={service.consumerParameters}
             disabled={isLoading}
           />
         )
       })
     }
+    // TODO -
     if (selectedAlgorithmAsset?.services[0]?.consumerParameters?.length > 0) {
       tabs.push({
         title: 'Algo Service',
@@ -71,8 +76,7 @@ export default function ConsumerParameters({
       })
     }
     if (
-      selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters?.length >
-      0
+      selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters?.length
     ) {
       tabs.push({
         title: 'Algo Params',
@@ -89,7 +93,7 @@ export default function ConsumerParameters({
     }
 
     return tabs
-  }, [asset, selectedAlgorithmAsset, isLoading])
+  }, [selectedAlgorithmAsset, service, isLoading])
 
   useEffect(() => {
     setTabs(updateTabs())

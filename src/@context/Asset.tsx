@@ -7,7 +7,7 @@ import {
   useCallback,
   ReactNode
 } from 'react'
-import { Config, LoggerInstance, Purgatory } from '@oceanprotocol/lib'
+import { Config, LoggerInstance, Purgatory, Service } from '@oceanprotocol/lib'
 import { CancelToken } from 'axios'
 import { getAsset } from '@utils/aquarius'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -133,18 +133,20 @@ function AssetProvider({
   const fetchAccessDetails = useCallback(async (): Promise<void> => {
     if (!asset?.chainId || !asset?.services?.length) return
 
-    const accessDetails = await getAccessDetails(
-      asset.chainId,
-      asset.services[0].datatokenAddress,
-      asset.services[0].timeout,
-      accountId
+    const accessDetails = await Promise.all(
+      asset.services.map((service: Service) =>
+        getAccessDetails(
+          asset.offchain?.stats.services.find((s) => s.serviceId === service.id)
+        )
+      )
     )
+
     setAsset((prevState) => ({
       ...prevState,
       accessDetails
     }))
     LoggerInstance.log(`[asset] Got access details for ${did}`, accessDetails)
-  }, [asset?.chainId, asset?.services, accountId, did])
+  }, [asset?.chainId, asset?.offchain?.stats.services, asset?.services, did])
 
   // -----------------------------------
   // 1. Get and set asset based on passed DID

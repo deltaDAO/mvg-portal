@@ -17,6 +17,7 @@ import Button from '@shared/atoms/Button'
 import RelatedAssets from '../RelatedAssets'
 import Web3Feedback from '@components/@shared/Web3Feedback'
 import { useAccount } from 'wagmi'
+import ServiceCard from './ServiceCard'
 
 export default function AssetContent({
   asset
@@ -28,6 +29,7 @@ export default function AssetContent({
   const { allowExternalContent, debug } = useUserPreferences()
   const [receipts, setReceipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
+  const [selectedService, setSelectedService] = useState<number | undefined>()
 
   useEffect(() => {
     if (!receipts.length) return
@@ -40,16 +42,14 @@ export default function AssetContent({
   return (
     <>
       <div className={styles.networkWrap}>
-        <NetworkName networkId={asset?.chainId} className={styles.network} />
+        <NetworkName networkId={asset.chainId} className={styles.network} />
       </div>
 
       <article className={styles.grid}>
         <div>
           <div className={styles.content}>
             <MetaMain asset={asset} nftPublisher={nftPublisher} />
-            {asset?.accessDetails?.datatoken !== null && (
-              <Bookmark did={asset?.id} />
-            )}
+            <Bookmark did={asset.id} />
             {isInPurgatory === true ? (
               <Alert
                 title={content.asset.title}
@@ -61,7 +61,7 @@ export default function AssetContent({
               <>
                 <Markdown
                   className={styles.description}
-                  text={asset?.metadata?.description || ''}
+                  text={asset.metadata?.description || ''}
                   blockImages={!allowExternalContent}
                 />
                 <MetaSecondary ddo={asset} />
@@ -74,16 +74,42 @@ export default function AssetContent({
         </div>
 
         <div className={styles.actions}>
-          <AssetActions asset={asset} />
+          {!asset.accessDetails ? (
+            <p>Loading access details...</p>
+          ) : (
+            <>
+              {selectedService === undefined ? (
+                <>
+                  <h3>Available services:</h3>
+                  {asset.services.map((service, index) => (
+                    <ServiceCard
+                      key={service.id}
+                      service={service}
+                      accessDetails={asset.accessDetails[index]}
+                      onClick={() => setSelectedService(index)}
+                    />
+                  ))}
+                </>
+              ) : (
+                <AssetActions
+                  asset={asset}
+                  service={asset.services[selectedService]}
+                  accessDetails={asset.accessDetails[selectedService]}
+                  serviceIndex={selectedService}
+                  handleBack={() => setSelectedService(undefined)}
+                />
+              )}
+            </>
+          )}
           {isOwner && isAssetNetwork && (
             <div className={styles.ownerActions}>
-              <Button style="text" size="small" to={`/asset/${asset?.id}/edit`}>
+              <Button style="text" size="small" to={`/asset/${asset.id}/edit`}>
                 Edit Asset
               </Button>
             </div>
           )}
           <Web3Feedback
-            networkId={asset?.chainId}
+            networkId={asset.chainId}
             accountId={accountId}
             isAssetNetwork={isAssetNetwork}
           />

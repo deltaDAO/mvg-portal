@@ -21,7 +21,7 @@ import {
   getAssetsFromDids
 } from './aquarius'
 import { fetchDataForMultipleChains } from './subgraph'
-import { getServiceById, getServiceByName } from './ddo'
+import { getServiceById } from './ddo'
 import { SortTermOptions } from '../@types/aquarius/SearchQuery'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { transformAssetToAssetSelection } from './assetConvertor'
@@ -88,7 +88,7 @@ async function getAssetMetadata(
 }
 
 export async function isOrderable(
-  asset: Asset | DDO,
+  asset: AssetExtended,
   serviceId: string,
   algorithm: ComputeAlgorithm,
   algorithmDDO: Asset | DDO
@@ -192,22 +192,21 @@ export function getQueryString(
 
 export async function getAlgorithmsForAsset(
   asset: Asset,
+  service: Service,
   token: CancelToken
 ): Promise<Asset[]> {
-  const computeService: Service = getServiceByName(asset, 'compute')
-
   if (
-    !computeService.compute ||
-    (computeService.compute.publisherTrustedAlgorithms?.length === 0 &&
-      computeService.compute.publisherTrustedAlgorithmPublishers?.length === 0)
+    !service.compute ||
+    (service.compute.publisherTrustedAlgorithms?.length === 0 &&
+      service.compute.publisherTrustedAlgorithmPublishers?.length === 0)
   ) {
     return []
   }
 
   const gueryResults = await queryMetadata(
     getQueryString(
-      computeService.compute.publisherTrustedAlgorithms,
-      computeService.compute.publisherTrustedAlgorithmPublishers,
+      service.compute.publisherTrustedAlgorithms,
+      service.compute.publisherTrustedAlgorithmPublishers,
       asset.chainId
     ),
     token
@@ -217,19 +216,18 @@ export async function getAlgorithmsForAsset(
 }
 
 export async function getAlgorithmAssetSelectionList(
-  asset: Asset,
+  service: Service,
   algorithms: Asset[],
   accountId: string
 ): Promise<AssetSelectionAsset[]> {
   if (!algorithms || algorithms?.length === 0) return []
 
-  const computeService: Service = getServiceByName(asset, 'compute')
   let algorithmSelectionList: AssetSelectionAsset[]
-  if (!computeService.compute) {
+  if (!service.compute) {
     algorithmSelectionList = []
   } else {
     algorithmSelectionList = await transformAssetToAssetSelection(
-      computeService?.serviceEndpoint,
+      service?.serviceEndpoint,
       algorithms,
       accountId,
       []
@@ -298,28 +296,25 @@ async function getJobs(
 export async function getComputeJobs(
   chainIds: number[],
   accountId: string,
-  asset?: AssetExtended,
+  asset: AssetExtended,
+  service: Service,
   cancelToken?: CancelToken
 ): Promise<ComputeResults> {
   if (!accountId) return
-  const assetDTAddress = asset?.datatokens[0]?.address
+  const assetDTAddress = service.datatokenAddress
   const computeResult: ComputeResults = {
     computeJobs: [],
     isLoaded: false
   }
-  const variables = assetDTAddress
-    ? {
-        user: accountId.toLowerCase(),
-        datatokenAddress: assetDTAddress.toLowerCase()
-      }
-    : {
-        user: accountId.toLowerCase()
-      }
+  const variables = {
+    user: accountId.toLowerCase(),
+    datatokenAddress: assetDTAddress.toLowerCase()
+  }
 
   const results = await fetchDataForMultipleChains(
     assetDTAddress ? getComputeOrdersByDatatokenAddress : getComputeOrders,
     variables,
-    assetDTAddress ? [asset?.chainId] : chainIds
+    assetDTAddress ? [asset.chainId] : chainIds
   )
 
   let tokenOrders: TokenOrder[] = []

@@ -14,7 +14,8 @@ import {
   UrlFile,
   AbiItem,
   UserCustomParameters,
-  getErrorMessage
+  getErrorMessage,
+  Service
 } from '@oceanprotocol/lib'
 // if customProviderUrl is set, we need to call provider using this custom endpoint
 import { customProviderUrl } from '../../app.config'
@@ -25,24 +26,26 @@ import { toast } from 'react-toastify'
 
 export async function initializeProviderForCompute(
   dataset: AssetExtended,
+  datasetService: Service,
+  datasetAccessDetails: AccessDetails,
   algorithm: AssetExtended,
   accountId: string,
   computeEnv: ComputeEnvironment = null
 ): Promise<ProviderComputeInitializeResults> {
   const computeAsset: ComputeAsset = {
     documentId: dataset.id,
-    serviceId: dataset.services[0].id,
-    transferTxId: dataset.accessDetails.validOrderTx
+    serviceId: datasetService.id,
+    transferTxId: datasetAccessDetails.validOrderTx
   }
   const computeAlgo: ComputeAlgorithm = {
     documentId: algorithm.id,
     serviceId: algorithm.services[0].id,
-    transferTxId: algorithm.accessDetails.validOrderTx
+    transferTxId: algorithm.accessDetails?.[0]?.validOrderTx
   }
 
   const validUntil = getValidUntilTime(
     computeEnv?.maxJobDuration,
-    dataset.services[0].timeout,
+    datasetService.timeout,
     algorithm.services[0].timeout
   )
 
@@ -52,7 +55,7 @@ export async function initializeProviderForCompute(
       computeAlgo,
       computeEnv?.id,
       validUntil,
-      customProviderUrl || dataset.services[0].serviceEndpoint,
+      customProviderUrl || datasetService.serviceEndpoint,
       accountId
     )
   } catch (error) {
@@ -230,6 +233,8 @@ export async function getFileInfo(
 export async function downloadFile(
   signer: Signer,
   asset: AssetExtended,
+  service: Service,
+  accessDetails: AccessDetails,
   accountId: string,
   validOrderTx?: string,
   userCustomParameters?: UserCustomParameters
@@ -238,10 +243,10 @@ export async function downloadFile(
   try {
     downloadUrl = await ProviderInstance.getDownloadUrl(
       asset.id,
-      asset.services[0].id,
+      service.id,
       0,
-      validOrderTx || asset.accessDetails.validOrderTx,
-      customProviderUrl || asset.services[0].serviceEndpoint,
+      validOrderTx || accessDetails.validOrderTx,
+      customProviderUrl || service.serviceEndpoint,
       signer,
       userCustomParameters
     )

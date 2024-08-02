@@ -78,7 +78,16 @@ function MarketMetadataProvider({
   // -----------------------------------
   const getApprovedBaseTokens = useCallback(async (chainId: number) => {
     try {
-      const approvedTokensList = await getOpcsApprovedTokens(chainId)
+      // TODO Doesn't work with subgraph anymore
+      // const approvedTokensList = await getOpcsApprovedTokens(chainId)
+      const approvedTokensList = [
+        {
+          address: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
+          decimals: 18,
+          symbol: 'OCEAN',
+          name: 'Ocean Token'
+        }
+      ]
       setApprovedBaseTokens(approvedTokensList)
       LoggerInstance.log(
         '[MarketMetadata] Approved baseTokens',

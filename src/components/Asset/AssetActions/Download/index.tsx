@@ -10,6 +10,7 @@ import {
   AssetPrice,
   FileInfo,
   LoggerInstance,
+  Service,
   UserCustomParameters,
   ZERO_ADDRESS
 } from '@oceanprotocol/lib'
@@ -47,6 +48,9 @@ export default function Download({
   accountId,
   signer,
   asset,
+  service,
+  accessDetails,
+  serviceIndex,
   file,
   isBalanceSufficient,
   dtBalance,
@@ -57,6 +61,9 @@ export default function Download({
   accountId: string
   signer: Signer
   asset: AssetExtended
+  service: Service
+  accessDetails: AccessDetails
+  serviceIndex: number
   file: FileInfo
   isBalanceSufficient: boolean
   dtBalance: string
@@ -83,29 +90,26 @@ export default function Download({
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
 
-  const price: AssetPrice = getAvailablePrice(asset)
+  const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
-    !asset?.accessDetails ||
-    !asset.services.length ||
-    asset?.accessDetails?.type === 'NOT_SUPPORTED' ||
-    (asset?.accessDetails?.type === 'fixed' &&
-      !asset?.accessDetails?.baseToken?.symbol)
+    accessDetails.type === 'NOT_SUPPORTED' ||
+    (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
 
   useEffect(() => {
-    Number(asset?.nft.state) === 4 && setIsOrderDisabled(true)
-  }, [asset?.nft.state])
+    Number(asset.nft.state) === 4 && setIsOrderDisabled(true)
+  }, [asset.nft.state])
 
   useEffect(() => {
     if (isUnsupportedPricing) return
 
-    setIsOwned(asset?.accessDetails?.isOwned || false)
-    setValidOrderTx(asset?.accessDetails?.validOrderTx || '')
+    setIsOwned(accessDetails.isOwned || false)
+    setValidOrderTx(accessDetails.validOrderTx || '')
 
     // get full price and fees
     async function init() {
       if (
-        asset.accessDetails.addressOrId === ZERO_ADDRESS ||
-        asset.accessDetails.type === 'free'
+        accessDetails.addressOrId === ZERO_ADDRESS ||
+        accessDetails.type === 'free'
       )
         return
 
@@ -114,6 +118,8 @@ export default function Download({
 
         const _orderPriceAndFees = await getOrderPriceAndFees(
           asset,
+          service,
+          accessDetails,
           accountId || ZERO_ADDRESS
         )
         setOrderPriceAndFees(_orderPriceAndFees)
@@ -124,15 +130,21 @@ export default function Download({
       }
     }
 
-    init()
+    if (!orderPriceAndFees) init()
 
     /**
      * we listen to the assets' changes to get the most updated price
      * based on the asset and the poolData's information.
      * Not adding isLoading and getOpcFeeForToken because we set these here. It is a compromise
      */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [asset, getOpcFeeForToken, isUnsupportedPricing])
+  }, [
+    accessDetails,
+    accountId,
+    asset,
+    isUnsupportedPricing,
+    orderPriceAndFees,
+    service
+  ])
 
   useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
@@ -140,7 +152,7 @@ export default function Download({
 
   useEffect(() => {
     if (
-      (asset?.accessDetails?.type === 'fixed' && !orderPriceAndFees) ||
+      (accessDetails.type === 'fixed' && !orderPriceAndFees) ||
       !isMounted ||
       !accountId ||
       isUnsupportedPricing
@@ -156,17 +168,15 @@ export default function Download({
      * - if user is not whitelisted or blacklisted
      */
     const isDisabled =
-      !asset?.accessDetails.isPurchasable ||
+      !accessDetails.isPurchasable ||
       !isAssetNetwork ||
       ((!isBalanceSufficient || !isAssetNetwork) &&
         !isOwned &&
         !hasDatatoken) ||
       !isAccountIdWhitelisted
-
     setIsDisabled(isDisabled)
   }, [
     isMounted,
-    asset,
     isBalanceSufficient,
     isAssetNetwork,
     hasDatatoken,
@@ -174,7 +184,8 @@ export default function Download({
     isOwned,
     isUnsupportedPricing,
     orderPriceAndFees,
-    isAccountIdWhitelisted
+    isAccountIdWhitelisted,
+    accessDetails
   ])
 
   async function handleOrderOrDownload(dataParams?: UserCustomParameters) {
@@ -184,22 +195,32 @@ export default function Download({
       if (isOwned) {
         setStatusText(
           getOrderFeedback(
-            asset.accessDetails.baseToken?.symbol,
-            asset.accessDetails.datatoken?.symbol
+            accessDetails.baseToken?.symbol,
+            accessDetails.datatoken?.symbol
           )[3]
         )
 
-        await downloadFile(signer, asset, accountId, validOrderTx, dataParams)
+        await downloadFile(
+          signer,
+          asset,
+          service,
+          accessDetails,
+          accountId,
+          validOrderTx,
+          dataParams
+        )
       } else {
         setStatusText(
           getOrderFeedback(
-            asset.accessDetails.baseToken?.symbol,
-            asset.accessDetails.datatoken?.symbol
-          )[asset.accessDetails.type === 'fixed' ? 2 : 1]
+            accessDetails.baseToken?.symbol,
+            accessDetails.datatoken?.symbol
+          )[accessDetails.type === 'fixed' ? 2 : 1]
         )
         const orderTx = await order(
           signer,
           asset,
+          service,
+          accessDetails,
           orderPriceAndFees,
           accountId,
           hasDatatoken
@@ -242,16 +263,16 @@ export default function Download({
       disabled={isDisabled || !isValid}
       hasPreviousOrder={isOwned}
       hasDatatoken={hasDatatoken}
-      btSymbol={asset?.accessDetails?.baseToken?.symbol}
-      dtSymbol={asset?.datatokens[0]?.symbol}
+      btSymbol={accessDetails.baseToken?.symbol}
+      dtSymbol={asset.datatokens[serviceIndex]?.symbol} // TODO - check datatokens
       dtBalance={dtBalance}
       type="submit"
-      assetTimeout={secondsToString(asset?.services?.[0]?.timeout)}
-      assetType={asset?.metadata?.type}
+      assetTimeout={secondsToString(service.timeout)}
+      assetType={asset.metadata?.type}
       stepText={statusText}
       isLoading={isLoading}
-      priceType={asset.accessDetails?.type}
-      isConsumable={asset.accessDetails?.isPurchasable}
+      priceType={accessDetails.type}
+      isConsumable={accessDetails.isPurchasable}
       isBalanceSufficient={isBalanceSufficient}
       consumableFeedback={consumableFeedback}
       retry={retry}
@@ -353,19 +374,15 @@ export default function Download({
   return (
     <Formik
       initialValues={{
-        dataServiceParams: getDefaultValues(
-          asset?.services[0].consumerParameters
-        ),
+        dataServiceParams: getDefaultValues(service.consumerParameters),
         termsAndConditions: false
       }}
       validateOnMount
-      validationSchema={getDownloadValidationSchema(
-        asset?.services[0].consumerParameters
-      )}
+      validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={async (values) => {
         const dataServiceParams = parseConsumerParameterValues(
           values?.dataServiceParams,
-          asset.services[0].consumerParameters
+          service.consumerParameters
         )
 
         await handleOrderOrDownload(dataServiceParams)
@@ -399,9 +416,8 @@ export default function Download({
             </>
           )}
           <div className={styles.consumerParameters}>
-            {asset && (
-              <ConsumerParameters asset={asset} isLoading={isLoading} />
-            )}
+            {/* TODO - */}
+            <ConsumerParameters service={service} isLoading={isLoading} />
           </div>
           {isOwned && (
             <div className={styles.confettiContainer}>
@@ -410,10 +426,11 @@ export default function Download({
               />
             </div>
           )}
-          {asset?.metadata?.type === 'algorithm' && (
+          {asset.metadata?.type === 'algorithm' && (
             <AlgorithmDatasetsListForCompute
-              algorithmDid={asset.id}
               asset={asset}
+              service={service}
+              accessDetails={accessDetails}
             />
           )}
           {accountId && (

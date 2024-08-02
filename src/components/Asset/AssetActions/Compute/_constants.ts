@@ -1,6 +1,7 @@
 import {
   ComputeEnvironment,
   ConsumerParameter,
+  Service,
   UserCustomParameters
 } from '@oceanprotocol/lib'
 import * as Yup from 'yup'
@@ -43,7 +44,7 @@ export function getComputeValidationSchema(
 }
 
 export function getInitialValues(
-  asset?: AssetExtended,
+  service: Service,
   selectedAlgorithmAsset?: AssetExtended,
   selectedComputeEnv?: ComputeEnvironment,
   termsAndConditions?: boolean
@@ -51,7 +52,7 @@ export function getInitialValues(
   return {
     algorithm: selectedAlgorithmAsset?.id,
     computeEnv: selectedComputeEnv?.id,
-    dataServiceParams: getDefaultValues(asset?.services[0].consumerParameters),
+    dataServiceParams: getDefaultValues(service.consumerParameters),
     algoServiceParams: getDefaultValues(
       selectedAlgorithmAsset?.services[0].consumerParameters
     ),
