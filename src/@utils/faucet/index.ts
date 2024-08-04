@@ -54,10 +54,12 @@ export async function requestTokens(
       message?: string
     }>(`${faucet.baseUri}/request_tokens/${network}`, { address, signature })
 
+    if (response.data.status === 'error') {
+      throw response.data.message
+    }
+
     return response.data.txHashes
   } catch (error) {
-    throw new Error(
-      `Failed to request tokens for address ${address}: ${error.message}`
-    )
+    throw new Error(`Failed to request tokens for address ${address}: ${error}`)
   }
 }
