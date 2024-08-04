@@ -105,5 +105,9 @@ module.exports = {
     statusEndpoints: {
       100: 'https://status.genx.delta-dao.com/api/check-blocks'
     }
+  },
+
+  faucet: {
+    baseUri: 'http://localhost:3000'
   }
 }
