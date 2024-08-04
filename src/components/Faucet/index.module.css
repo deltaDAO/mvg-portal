@@ -1,19 +1,96 @@
-.didInput {
-  composes: input from '@shared/FormInput/InputElement/index.module.css';
+.card {
+  max-width: 800px;
+  margin: auto;
+  margin-top: 50px;
+  padding: 30px;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
 }
 
-.error {
-  color: var(--brand-alert-red);
-  margin-top: var(--spacer);
+.title {
+  font-size: 32px;
+  margin-bottom: 10px;
+  color: #2c3e50;
 }
 
-.success {
-  color: var(--brand-success-green);
-  margin-top: var(--spacer);
+.description {
+  font-size: 18px;
+  margin-bottom: 20px;
+  color: #34495e;
+  line-height: 1.6;
 }
 
-.sdContainer,
+.instructions {
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.instructions h3 {
+  font-size: 22px;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.instructions ol {
+  padding-left: 20px;
+  margin-bottom: 10px;
+  color: #34495e;
+}
+
+.instructions ol li {
+  margin-bottom: 10px;
+  font-size: 16px;
+}
+
+.address,
+.network {
+  font-size: 16px;
+  word-break: break-all;
+  margin-bottom: 20px;
+  color: #34495e;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 8px 2px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.button:hover {
+  background-color: #0056b3;
+  transform: scale(1.05);
+}
+
+.disabledButton {
+  background-color: grey !important;
+  cursor: not-allowed !important;
+}
+
 .errorContainer,
 .successContainer {
-  margin-top: calc(var(--spacer) * 2);
+  margin-top: 20px;
+  width: 100%;
+}
+
+.textStrong {
+  color: #2c3e50;
 }
