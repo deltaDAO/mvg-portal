@@ -148,7 +148,7 @@ const FaucetPage = (): ReactElement => {
       <h2 className={styles.title}>Welcome to the Pontus-X Faucet</h2>
       <p className={styles.description}>
         A faucet is a service that provides free tokens for testing purposes.
-        Known accounts can request 100 EUROe fee tokens and 1000 EUROe payment
+        Known accounts can request 10 EUROe fee tokens and 1000 EUROe payment
         tokens to use on the Pontus-X network. These tokens are available every
         12 hours.
       </p>
