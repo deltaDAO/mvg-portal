@@ -80,7 +80,8 @@ export default function AssetContent({
             <>
               {selectedService === undefined ? (
                 <>
-                  <h3>Available services:</h3>
+                  <h3>Available services</h3>
+                  <h4>Please select one of the following:</h4>
                   {asset.services.map((service, index) => (
                     <ServiceCard
                       key={service.id}
