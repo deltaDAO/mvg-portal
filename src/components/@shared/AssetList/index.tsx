@@ -116,7 +116,7 @@ export default function AssetList({
         />
       )}
       <div className={styleClasses}>
-        {assets?.length > 0 ? (
+        {assets?.length > 0 && assets[0] !== undefined ? (
           <>
             {activeAssetView === AssetViewOptions.List && (
               <Table
