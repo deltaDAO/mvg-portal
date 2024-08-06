@@ -12,6 +12,7 @@ import { toast } from 'react-toastify'
 interface Content {
   title: string
   description: string
+  buttonLabel: string
   card: {
     cardTitle: string
     cardDescription: string
@@ -21,7 +22,6 @@ interface Content {
     cardExplainerThirdStep: string
     cardExplainerFourthStep: string
     cardExplainerFithStep: string
-    cardExplainerNote: string
     cardNetworkAddress: string
     cardNetwork: string
   }
@@ -44,7 +44,6 @@ const FaucetPage = (): ReactElement => {
     cardExplainerThirdStep,
     cardExplainerFourthStep,
     cardExplainerFithStep,
-    cardExplainerNote,
     cardNetworkAddress,
     cardNetwork
   } = card
