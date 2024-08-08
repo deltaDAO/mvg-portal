@@ -21,7 +21,6 @@
       "name": "Faucet",
       "link": "/faucet"
     },
-
     {
       "name": "Log",
       "link": "https://explorer.pontus-x.eu/"
@@ -126,6 +125,10 @@
           "isLive": false
         }
       ]
+    },
+    {
+      "name": "Docs",
+      "link": "https://docs.pontus-x.eu/"
     }
   ],
   "announcement": "",
