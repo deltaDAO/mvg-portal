@@ -3,7 +3,7 @@
   "siteTagline": "Streamlined interoperability across digital service ecosystems.",
   "siteUrl": "https://portal.pontus-x.eu",
   "siteImage": "/share.png",
-  "copyright": "All Rights Reserved. Powered by [Gaia-X](https://gaia-x.eu/) and [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
+  "copyright": "All Rights Reserved. Powered by [Gaia-X](https://gaia-x.eu/) and [Ocean Enterprise](https://www.oceanenterprise.io/). Built by [deltaDAO](https://delta-dao.com).",
   "menu": [
     {
       "name": "Catalogue",
@@ -94,19 +94,35 @@
           "isLive": true
         },
         {
-          "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/",
-          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
-          "image": "energy-shr-logo.webp",
-          "category": "energy",
-          "isLive": true
-        },
-        {
           "name": "UdL Research Data Space",
           "link": "https://dataspace.angliru.udl.cat/",
           "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
           "image": "udl-logo.webp",
           "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "Agrifood TEF",
+          "link": "http://dataspace.agrifoodtef.eu/",
+          "description": "The European Testing and Experimentation Facilities for Agrifood Innovation.",
+          "image": "agrifoodTEF.webp",
+          "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "Polish Agriculture Data Space",
+          "link": "https://dataspaces.psnc.pl/",
+          "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
+          "image": "PSNC.webp",
+          "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "EnergySHR",
+          "link": "https://www.energyshr.nl/",
+          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
+          "image": "energy-shr-logo.webp",
+          "category": "energy",
           "isLive": true
         },
         {
@@ -134,7 +150,7 @@
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
   },
   "footer": {
-    "subtitle": "data economy solutions - GDPR compliant",
+    "subtitle": "Transforming Data Act Compliance into Scalable Monetization Opportunities",
     "copyright": "Built by [deltaDAO](https://delta-dao.com)",
     "privacyTitle": "Privacy",
     "content": [
