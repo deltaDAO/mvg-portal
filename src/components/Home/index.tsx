@@ -7,7 +7,7 @@ import SectionQueryResult from './SectionQueryResult'
 import styles from './index.module.css'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 import TopSales from './TopSales'
-import HomeContent from './Content'
+// import HomeContent from './Content'
 import Ecosystem from './Ecosystem'
 import OnboardingSection from '../@shared/Onboarding'
 import Container from '../@shared/atoms/Container'
@@ -89,7 +89,7 @@ export default function HomePage(): ReactElement {
       )}
       <Ecosystem />
       <TopSales title="Publishers With Most Sales" />
-      <HomeContent />
+      {/* <HomeContent /> */}
       {hasFeaturedAssets() && (
         <>
           {queryFeatured.map((section, i) => (

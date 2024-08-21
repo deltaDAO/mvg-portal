@@ -30,7 +30,7 @@
   --menu-logo-size-width-sm: 3.5rem;
   --menu-logo-size-height-sm: 3.5rem;
   --menu-logo-size-width-lg: 15rem;
-  --menu-logo-size-height-lg: 3.5rem;
+  --menu-logo-size-height-lg: 2.5rem;
   --menu-font-color: var(--color-primary);
   --menu-font-color-active: var(--font-color-heading);
   --menu-font-color-hover: var(--color-primary);
@@ -58,7 +58,7 @@
 
   /* Homepage */
   --home-brand-logo-size-width: 22rem;
-  --home-brand-logo-size-height: 4rem;
+  --home-brand-logo-size-height: 3.5rem;
   --home-gaia-x-logo-size-width: 9rem;
   --home-gaia-x-logo-size-height: 5rem;
 

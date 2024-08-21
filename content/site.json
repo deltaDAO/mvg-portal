@@ -1,6 +1,6 @@
 {
-  "siteTitle": "Pontus-X Ecosystem - powered by Gaia-X",
-  "siteTagline": "Streamlined interoperability across digital service ecosystems.",
+  "siteTitle": "FIWARE - Open APIs for Open Minds",
+  "siteTagline": "A curated framework of Open Source Platform components\n to accelerate the development of Smart Solutions.",
   "siteUrl": "https://portal.pontus-x.eu",
   "siteImage": "/share.png",
   "copyright": "All Rights Reserved. Powered by [Gaia-X](https://gaia-x.eu/) and [Ocean Enterprise](https://www.oceanenterprise.io/). Built by [deltaDAO](https://delta-dao.com).",
@@ -150,7 +150,7 @@
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
   },
   "footer": {
-    "subtitle": "Transforming Data Act Compliance into Scalable Monetization Opportunities",
+    "subtitle": "",
     "copyright": "Built by [deltaDAO](https://delta-dao.com)",
     "privacyTitle": "Privacy",
     "content": [
