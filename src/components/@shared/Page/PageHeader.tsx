@@ -1,6 +1,5 @@
 import SearchBar from '@components/Header/SearchBar'
 import BrandLogo from '@images/brand-logo.svg'
-import GaiaXLogo from '@images/gaia-x-logo.svg'
 import Markdown from '@shared/Markdown'
 import classNames from 'classnames/bind'
 import { ReactElement } from 'react'
@@ -35,16 +34,6 @@ export default function PageHeader({
           {description && (
             <Markdown text={description} className={styles.subtitle} />
           )}
-          <div className={styles.logoContainer}>
-            <h4 className={styles.logoContainerTitle}>powered by</h4>
-            <a
-              href="https://gaia-x.eu/"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              <GaiaXLogo />
-            </a>
-          </div>
         </div>
       ) : (
         <div>
