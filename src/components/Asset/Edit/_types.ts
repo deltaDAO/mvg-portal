@@ -23,6 +23,17 @@ export interface MetadataEditForm {
   license?: string
 }
 
+export interface ServiceEditForm {
+  name: string
+  description: string
+  price: string
+  paymentCollector: string
+  files: FileInfo[]
+  timeout: string
+  usesConsumerParameters: boolean
+  consumerParameters: FormConsumerParameter[]
+}
+
 export interface ComputeEditForm {
   allowAllPublishedAlgorithms: boolean
   publisherTrustedAlgorithms: string[]

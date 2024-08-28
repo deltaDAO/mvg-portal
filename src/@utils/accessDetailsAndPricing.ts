@@ -14,8 +14,9 @@ import {
   publisherMarketOrderFee,
   customProviderUrl
 } from '../../app.config'
-import { Signer } from 'ethers'
+import { ethers, Signer } from 'ethers'
 import { toast } from 'react-toastify'
+import { getPaymentCollector } from './ocean'
 
 /**
  * This will be used to get price including fees before ordering
@@ -114,8 +115,14 @@ export async function getOrderPriceAndFees(
  * @returns {Promise<AccessDetails>}
  */
 export async function getAccessDetails(
-  serviceStat: ServiceStat | undefined
+  serviceStat: ServiceStat | undefined,
+  provider: ethers.providers.Provider
 ): Promise<AccessDetails> {
+  const paymentCollector = await getPaymentCollector(
+    serviceStat.datatokenAddress,
+    provider
+  )
+
   const accessDetails: AccessDetails = {
     type: 'NOT_SUPPORTED',
     price: '0',
@@ -136,7 +143,8 @@ export async function getAccessDetails(
     isOwned: false,
     validOrderTx: '',
     isPurchasable: false,
-    publisherMarketOrderFee: '0'
+    publisherMarketOrderFee: '0',
+    paymentCollector
   }
 
   if (serviceStat === undefined || serviceStat.prices.length === 0) {

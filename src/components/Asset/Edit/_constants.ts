@@ -5,7 +5,7 @@ import {
   ServiceComputeOptions
 } from '@oceanprotocol/lib'
 import { parseConsumerParameters, secondsToString } from '@utils/ddo'
-import { ComputeEditForm, MetadataEditForm } from './_types'
+import { ComputeEditForm, MetadataEditForm, ServiceEditForm } from './_types'
 
 export function getInitialValues(
   metadata: Metadata,
@@ -41,6 +41,22 @@ export function getInitialValues(
       consumerParameters: parseConsumerParameters(service?.consumerParameters)
     },
     license: metadata?.license
+  }
+}
+
+export const getServiceInitialValues = (
+  service: Service,
+  accessDetails: AccessDetails
+): ServiceEditForm => {
+  return {
+    name: service.name,
+    description: service.description,
+    price: accessDetails.price,
+    paymentCollector: accessDetails.paymentCollector,
+    files: [{ url: '', type: 'hidden' }],
+    timeout: secondsToString(service.timeout),
+    usesConsumerParameters: service.consumerParameters?.length > 0,
+    consumerParameters: parseConsumerParameters(service.consumerParameters)
   }
 }
 

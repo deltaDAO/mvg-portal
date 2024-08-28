@@ -9,6 +9,7 @@ import Loader from '@shared/atoms/Loader'
 import Alert from '@shared/atoms/Alert'
 import contentPage from '../../../../content/pages/edit.json'
 import Container from '@shared/atoms/Container'
+import EditServices from './EditServices'
 
 export default function Edit({ uri }: { uri: string }): ReactElement {
   const { asset, error, isInPurgatory, title, isOwner } = useAsset()
@@ -33,6 +34,10 @@ export default function Edit({ uri }: { uri: string }): ReactElement {
     {
       title: 'Edit Metadata',
       content: <EditMetadata asset={asset} />
+    },
+    {
+      title: 'Edit Services',
+      content: <EditServices asset={asset} />
     },
     ...[
       isCompute && asset?.metadata.type !== 'algorithm'
