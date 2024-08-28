@@ -42,7 +42,7 @@ export default function EditService({
   const [error, setError] = useState<string>()
   const hasFeedback = error || success
 
-  async function updateFixedPrice(newPrice: string) {
+  async function updateFixedPrice(newPrice: number) {
     console.log('updateFixedPrice')
     const config = getOceanConfig(asset.chainId)
 
@@ -68,7 +68,7 @@ export default function EditService({
     try {
       // update fixed price if changed
       accessDetails.type === 'fixed' &&
-        values.price !== accessDetails.price &&
+        values.price !== parseFloat(accessDetails.price) &&
         (await updateFixedPrice(values.price))
 
       // update payment collector if changed

@@ -8,16 +8,6 @@ import Accordion from '@components/@shared/Accordion'
 import { Service } from '@oceanprotocol/lib'
 import { ServiceEditForm } from './_types'
 
-export function checkIfTimeoutInPredefinedValues(
-  timeout: string,
-  timeoutOptions: string[]
-): boolean {
-  if (timeoutOptions.indexOf(timeout) > -1) {
-    return true
-  }
-  return false
-}
-
 export default function FormEditService({
   data,
   service,
@@ -31,7 +21,7 @@ export default function FormEditService({
 
   return (
     <Form style={{ marginLeft: 20, marginRight: 20 }}>
-      <Accordion title={service.name || service.id} key={service.id}>
+      <Accordion title={service.name || service.id}>
         <div style={{ marginTop: 20 }}>
           <Field
             {...getFieldContent('name', data)}

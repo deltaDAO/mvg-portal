@@ -26,7 +26,7 @@ export interface MetadataEditForm {
 export interface ServiceEditForm {
   name: string
   description: string
-  price: string
+  price: number
   paymentCollector: string
   files: FileInfo[]
   timeout: string
