@@ -51,7 +51,7 @@
 }
 
 .open .content {
-  max-height: 35rem;
+  max-height: 1000rem;
   visibility: visible;
   overflow-y: scroll;
   transition: 0.3s max-height;
