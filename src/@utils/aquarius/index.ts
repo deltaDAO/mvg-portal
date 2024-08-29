@@ -206,12 +206,11 @@ export async function queryMetadata(
 ): Promise<PagedAssets> {
   try {
     const response: AxiosResponse<SearchResponse> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/query`,
+      `${metadataCacheUri}/api/aquarius/assets/metadata/query`,
       { ...query },
       { cancelToken }
     )
     if (!response || response.status !== 200 || !response.data) return
-
     return transformQueryResult(response.data, query.from, query.size)
   } catch (error) {
     if (axios.isCancel(error)) {
