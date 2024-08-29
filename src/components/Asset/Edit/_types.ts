@@ -34,6 +34,11 @@ export interface ServiceEditForm {
   consumerParameters: FormConsumerParameter[]
 }
 
+export interface AddServiceForm extends ServiceEditForm {
+  access: 'access' | 'compute'
+  providerUrl: { url: string; valid: boolean; custom: boolean }
+}
+
 export interface ComputeEditForm {
   allowAllPublishedAlgorithms: boolean
   publisherTrustedAlgorithms: string[]

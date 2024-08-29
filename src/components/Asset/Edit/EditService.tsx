@@ -8,7 +8,6 @@ import {
 } from '@oceanprotocol/lib'
 import { getServiceInitialValues } from './_constants'
 import { ServiceEditForm } from './_types'
-import { useUserPreferences } from '@context/UserPreferences'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
@@ -31,7 +30,6 @@ export default function EditService({
   service: Service
   accessDetails: AccessDetails
 }): ReactElement {
-  const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
@@ -186,12 +184,6 @@ export default function EditService({
               accountId={accountId}
               isAssetNetwork={isAssetNetwork}
             />
-
-            {/* {debug === true && (
-              <div className={styles.grid}>
-                <DebugEditMetadata values={values} asset={asset} />
-              </div>
-            )} */}
           </>
         )
       }

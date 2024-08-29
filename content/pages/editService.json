@@ -19,12 +19,30 @@
         "required": false
       },
       {
+        "name": "access",
+        "label": "Access Type",
+        "help": "Choose how you want your files to be accessible for the specified price.",
+        "type": "boxSelection",
+        "options": ["Access", "Compute"],
+        "required": true,
+        "disclaimer": "Please do not provide downloadable personal data without the consent of the data subjects.",
+        "disclaimerValues": ["Download"]
+      },
+      {
         "name": "price",
         "label": "New Price",
         "type": "number",
         "min": "1",
         "placeholder": "0",
         "help": "Enter a new price.",
+        "required": true
+      },
+      {
+        "name": "providerUrl",
+        "label": "Provider URL",
+        "type": "providerUrl",
+        "help": "Enter the URL for your custom [provider](https://github.com/oceanprotocol/provider/) or leave as is to use the default one. If you change your provider URL after adding your file, please add & validate your file again.",
+        "placeholder": "e.g. https://provider.oceanprotocol.com/",
         "required": true
       },
       {
