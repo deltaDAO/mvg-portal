@@ -1,6 +1,7 @@
-import { ConfigHelper, Config } from '@oceanprotocol/lib'
+import { ConfigHelper, Config, Datatoken } from '@oceanprotocol/lib'
 import { ethers } from 'ethers'
 import abiDatatoken from '@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json'
+import { getDummySigner } from '@utils/wallet'
 
 /**
   This function takes a Config object as an input and returns a new sanitized Config object
@@ -57,15 +58,18 @@ export function getDevelopmentConfig(): Config {
 
 /**
  * getPaymentCollector - returns the current paymentCollector
- * @param dtAddress datatoken address
- * @param provider the ethers.js web3 provider
+ * @param chainId chain ID
+ * @param datatokenAddress datatoken address
  * @return {Promise<string>}
  */
 export async function getPaymentCollector(
-  dtAddress: string,
-  provider: ethers.providers.Provider
+  chainId: number,
+  datatokenAddress: string
 ): Promise<string> {
-  const dtContract = new ethers.Contract(dtAddress, abiDatatoken.abi, provider)
-  const paymentCollector = await dtContract.getPaymentCollector()
+  const signer = await getDummySigner(chainId)
+
+  const datatoken = new Datatoken(signer, chainId)
+  const paymentCollector = await datatoken.getPaymentCollector(datatokenAddress)
+
   return paymentCollector
 }

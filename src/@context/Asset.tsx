@@ -18,7 +18,7 @@ import { useMarketMetadata } from './MarketMetadata'
 import { assetStateToString } from '@utils/assetState'
 import { isValidDid } from '@utils/ddo'
 import { useAddressConfig } from '@hooks/useAddressConfig'
-import { useAccount, useNetwork, useProvider } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 
 export interface AssetProviderValue {
   isInPurgatory: boolean
@@ -47,7 +47,6 @@ function AssetProvider({
   const { appConfig } = useMarketMetadata()
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
-  const provider = useProvider()
 
   const { isDDOWhitelisted } = useAddressConfig()
   const [isInPurgatory, setIsInPurgatory] = useState(false)
@@ -137,10 +136,8 @@ function AssetProvider({
     const accessDetails = await Promise.all(
       asset.services.map((service: Service) =>
         getAccessDetails(
-          asset.offchain?.stats.services.find(
-            (s) => s.serviceId === service.id
-          ),
-          provider
+          asset.chainId,
+          asset.offchain?.stats.services.find((s) => s.serviceId === service.id)
         )
       )
     )
@@ -150,13 +147,7 @@ function AssetProvider({
       accessDetails
     }))
     LoggerInstance.log(`[asset] Got access details for ${did}`, accessDetails)
-  }, [
-    asset?.chainId,
-    asset?.offchain?.stats.services,
-    asset?.services,
-    did,
-    provider
-  ])
+  }, [asset?.chainId, asset?.offchain?.stats.services, asset?.services, did])
 
   // -----------------------------------
   // 1. Get and set asset based on passed DID

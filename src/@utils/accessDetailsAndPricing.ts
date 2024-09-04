@@ -14,7 +14,7 @@ import {
   publisherMarketOrderFee,
   customProviderUrl
 } from '../../app.config'
-import { ethers, Signer } from 'ethers'
+import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
 import { getPaymentCollector } from './ocean'
 
@@ -115,12 +115,12 @@ export async function getOrderPriceAndFees(
  * @returns {Promise<AccessDetails>}
  */
 export async function getAccessDetails(
-  serviceStat: ServiceStat | undefined,
-  provider: ethers.providers.Provider
+  chainId: number,
+  serviceStat: ServiceStat | undefined
 ): Promise<AccessDetails> {
   const paymentCollector = await getPaymentCollector(
-    serviceStat.datatokenAddress,
-    provider
+    chainId,
+    serviceStat.datatokenAddress
   )
 
   const accessDetails: AccessDetails = {

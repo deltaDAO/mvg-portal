@@ -4,8 +4,6 @@ import styles from './MetaFull.module.css'
 import Publisher from '@shared/Publisher'
 import { useAsset } from '@context/Asset'
 import { Asset, LoggerInstance, Datatoken } from '@oceanprotocol/lib'
-import { getPaymentCollector } from '@utils/ocean'
-import { useProvider } from 'wagmi'
 import { getDummySigner } from '@utils/wallet'
 
 export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {

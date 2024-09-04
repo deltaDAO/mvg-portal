@@ -152,6 +152,7 @@ export default function FormStartCompute({
       const algoAccessDetails = await Promise.all(
         algorithmAsset.services.map((service) =>
           getAccessDetails(
+            algorithmAsset.chainId,
             algorithmAsset.offchain?.stats.services.find(
               (s) => s.serviceId === service.id
             )
