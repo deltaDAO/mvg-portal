@@ -65,12 +65,6 @@ export default function FormEditMetadata({
         name="links"
       />
 
-      <Field
-        {...getFieldContent('timeout', data)}
-        component={Input}
-        name="timeout"
-      />
-
       <Field {...getFieldContent('tags', data)} component={Input} name="tags" />
 
       {asset.metadata.type === 'algorithm' && (
