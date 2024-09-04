@@ -9,45 +9,14 @@ import { getFieldContent } from '@utils/form'
 import { isGoogleUrl } from '@utils/url'
 import { MetadataEditForm } from './_types'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
-import styles from './FormEditMetadata.module.css'
-
-export function checkIfTimeoutInPredefinedValues(
-  timeout: string,
-  timeoutOptions: string[]
-): boolean {
-  if (timeoutOptions.indexOf(timeout) > -1) {
-    return true
-  }
-  return false
-}
 
 export default function FormEditMetadata({
-  data,
-  showPrice,
-  isComputeDataset
+  data
 }: {
   data: FormFieldContent[]
-  showPrice: boolean
-  isComputeDataset: boolean
 }): ReactElement {
   const { asset } = useAsset()
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
-
-  // This component is handled by Formik so it's not rendered like a "normal" react component,
-  // so handleTimeoutCustomOption is called only once.
-  // https://github.com/oceanprotocol/market/pull/324#discussion_r561132310
-  // if (data && values) handleTimeoutCustomOption(data, values)
-
-  const timeoutOptionsArray = data.filter(
-    (field) => field.name === 'timeout'
-  )[0].options as string[]
-
-  if (isComputeDataset && timeoutOptionsArray.includes('Forever')) {
-    const foreverOptionIndex = timeoutOptionsArray.indexOf('Forever')
-    timeoutOptionsArray.splice(foreverOptionIndex, 1)
-  } else if (!isComputeDataset && !timeoutOptionsArray.includes('Forever')) {
-    timeoutOptionsArray.push('Forever')
-  }
 
   useEffect(() => {
     const providerUrl = values?.services
@@ -90,20 +59,6 @@ export default function FormEditMetadata({
         name="description"
       />
 
-      {showPrice && (
-        <Field
-          {...getFieldContent('price', data)}
-          component={Input}
-          name="price"
-        />
-      )}
-
-      <Field
-        {...getFieldContent('files', data)}
-        component={Input}
-        name="files"
-      />
-
       <Field
         {...getFieldContent('links', data)}
         component={Input}
@@ -143,41 +98,19 @@ export default function FormEditMetadata({
         name="allow"
       />
       <Field {...getFieldContent('deny', data)} component={Input} name="deny" />
-      <Field
-        {...getFieldContent('paymentCollector', data)}
-        component={Input}
-        name="paymentCollector"
-      />
+
       <Field
         {...getFieldContent('assetState', data)}
         component={Input}
         name="assetState"
       />
-      <div className={styles.serviceContainer}>
-        <h4>Service</h4>
 
-        <Field
-          {...getFieldContent('usesServiceConsumerParameters', data)}
-          component={Input}
-          name="service.usesConsumerParameters"
-        />
-        {(values as unknown as MetadataEditForm).service
-          .usesConsumerParameters && (
-          <Field
-            {...getFieldContent(
-              'consumerParameters',
-              consumerParametersContent.consumerParameters.fields
-            )}
-            component={Input}
-            name="service.consumerParameters"
-          />
-        )}
-      </div>
       <Field
         {...getFieldContent('license', data)}
         component={Input}
         name="license"
       />
+
       <FormActions />
     </Form>
   )

@@ -1,8 +1,8 @@
-import { Asset, Credentials, Metadata, Service } from '@oceanprotocol/lib'
+import { Asset, Credentials, Metadata } from '@oceanprotocol/lib'
 import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { MetadataEditForm } from './_types'
-import { mapTimeoutStringToSeconds, previewDebugPatch } from '@utils/ddo'
+import { previewDebugPatch } from '@utils/ddo'
 import { sanitizeUrl } from '@utils/url'
 import {
   generateCredentials,
@@ -38,16 +38,6 @@ export default function DebugEditMetadata({
       : transformConsumerParameters(values.consumerParameters)
   }
 
-  const updatedService: Service = {
-    ...asset?.services[0],
-    timeout: mapTimeoutStringToSeconds(values.timeout)
-  }
-  if (values?.service?.consumerParameters) {
-    updatedService.consumerParameters = transformConsumerParameters(
-      values.service.consumerParameters
-    )
-  }
-
   const updatedCredentials: Credentials = generateCredentials(
     asset?.credentials,
     values?.allow,
@@ -57,7 +47,6 @@ export default function DebugEditMetadata({
   const updatedAsset: Asset = {
     ...asset,
     metadata: newMetadata,
-    services: [updatedService],
     credentials: updatedCredentials
   }
 
@@ -65,6 +54,7 @@ export default function DebugEditMetadata({
   delete (updatedAsset as AssetExtended).accessDetails
   delete (updatedAsset as AssetExtended).datatokens
   delete (updatedAsset as AssetExtended).stats
+  delete (updatedAsset as AssetExtended).offchain
 
   useEffect(() => {
     setValuePreview(previewDebugPatch(values, asset.chainId))

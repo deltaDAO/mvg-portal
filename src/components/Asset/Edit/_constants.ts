@@ -14,26 +14,19 @@ import {
 
 export function getInitialValues(
   metadata: Metadata,
-  service: Service,
   credentials: Credentials,
-  price: string,
-  paymentCollector: string,
   assetState: string
 ): Partial<MetadataEditForm> {
   return {
     name: metadata?.name,
     description: metadata?.description,
-    price,
     links: [{ url: '', type: 'url' }],
-    files: [{ url: '', type: 'hidden' }],
-    timeout: secondsToString(service?.timeout),
     author: metadata?.author,
     tags: metadata?.tags,
     usesConsumerParameters: metadata?.algorithm?.consumerParameters?.length > 0,
     consumerParameters: parseConsumerParameters(
       metadata?.algorithm?.consumerParameters
     ),
-    paymentCollector,
     allow:
       credentials?.allow?.find((credential) => credential.type === 'address')
         ?.values || [],
@@ -41,10 +34,6 @@ export function getInitialValues(
       credentials?.deny?.find((credential) => credential.type === 'address')
         ?.values || [],
     assetState,
-    service: {
-      usesConsumerParameters: service?.consumerParameters?.length > 0,
-      consumerParameters: parseConsumerParameters(service?.consumerParameters)
-    },
     license: metadata?.license
   }
 }
