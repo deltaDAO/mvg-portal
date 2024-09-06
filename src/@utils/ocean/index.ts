@@ -1,7 +1,4 @@
-import { ConfigHelper, Config, Datatoken } from '@oceanprotocol/lib'
-import { ethers } from 'ethers'
-import abiDatatoken from '@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json'
-import { getDummySigner } from '@utils/wallet'
+import { ConfigHelper, Config } from '@oceanprotocol/lib'
 
 /**
   This function takes a Config object as an input and returns a new sanitized Config object
@@ -54,22 +51,4 @@ export function getDevelopmentConfig(): Config {
     // There is no subgraph in barge so we hardcode the Sepolia one for now
     subgraphUri: 'https://v4.subgraph.sepolia.oceanprotocol.com'
   } as Config
-}
-
-/**
- * getPaymentCollector - returns the current paymentCollector
- * @param chainId chain ID
- * @param datatokenAddress datatoken address
- * @return {Promise<string>}
- */
-export async function getPaymentCollector(
-  chainId: number,
-  datatokenAddress: string
-): Promise<string> {
-  const signer = await getDummySigner(chainId)
-
-  const datatoken = new Datatoken(signer, chainId)
-  const paymentCollector = await datatoken.getPaymentCollector(datatokenAddress)
-
-  return paymentCollector
 }

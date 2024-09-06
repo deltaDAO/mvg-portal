@@ -135,10 +135,7 @@ function AssetProvider({
 
     const accessDetails = await Promise.all(
       asset.services.map((service: Service) =>
-        getAccessDetails(
-          asset.chainId,
-          asset.offchain?.stats.services.find((s) => s.serviceId === service.id)
-        )
+        getAccessDetails(asset.chainId, service)
       )
     )
 
@@ -147,7 +144,7 @@ function AssetProvider({
       accessDetails
     }))
     LoggerInstance.log(`[asset] Got access details for ${did}`, accessDetails)
-  }, [asset?.chainId, asset?.offchain?.stats.services, asset?.services, did])
+  }, [asset?.chainId, asset?.services, did])
 
   // -----------------------------------
   // 1. Get and set asset based on passed DID
