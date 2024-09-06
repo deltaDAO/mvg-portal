@@ -12,6 +12,14 @@ import Ecosystem from './Ecosystem'
 import OnboardingSection from '../@shared/Onboarding'
 import Container from '../@shared/atoms/Container'
 
+import SearchBar from '@components/Header/SearchBar'
+import HomeContent from './Content'
+import AssetList from '@components/@shared/AssetList'
+import { useRouter } from 'next/router'
+import queryString from 'query-string'
+
+import { getResults } from '@components/Search/utils'
+
 interface FeaturedSection {
   title: string
   query: SearchQuery
@@ -40,57 +48,89 @@ export default function HomePage(): ReactElement {
 
   const { showOnboardingModule } = useUserPreferences()
 
+  const [queryFiware, setQueryFiware] = useState<SearchQuery>()
+
+  // maria
+
+  //   useEffect(() => {
+  //     const baseParams = {
+  //       chainIds,
+  //       esPaginationOptions: {
+  //         size: 4
+  //       },
+  //       sortOptions: {
+  //         sortBy: SortTermOptions.Created
+  //       } as SortOptions
+  //     } as BaseQueryParams
+
+  //     const baseParamsSales = {
+  //       chainIds,
+  //       esPaginationOptions: {
+  //         size: 4
+  //       },
+  //       sortOptions: {
+  //         sortBy: SortTermOptions.Orders
+  //       } as SortOptions
+  //     } as BaseQueryParams
+
+  //     setQueryRecent(generateBaseQuery(baseParams))
+  //     setQueryMostSales(generateBaseQuery(baseParamsSales))
+
+  //     if (hasFeaturedAssets()) {
+  //       const featuredSections = featured.map((section) => ({
+  //         title: section.title,
+  //         query: generateBaseQuery({
+  //           ...baseParams,
+  //           esPaginationOptions: {
+  //             size: section.assets.length
+  //           },
+  //           filters: [getFilterTerm('_id', section.assets)]
+  //         })
+  //       }))
+
+  //       setQueryFeatured(featuredSections)
+  //     }
+  //   }, [chainIds, featured, hasFeaturedAssets])
+
   useEffect(() => {
-    const baseParams = {
+    const baseParamsFiware = {
       chainIds,
-      esPaginationOptions: {
-        size: 4
-      },
       sortOptions: {
         sortBy: SortTermOptions.Created
       } as SortOptions
     } as BaseQueryParams
+    const baseQuery = generateBaseQuery(baseParamsFiware)
+    console.log('base query: ', baseQuery)
+    setQueryFiware(generateBaseQuery(baseParamsFiware))
+  }, [chainIds])
 
-    const baseParamsSales = {
-      chainIds,
-      esPaginationOptions: {
-        size: 4
-      },
-      sortOptions: {
-        sortBy: SortTermOptions.Orders
-      } as SortOptions
-    } as BaseQueryParams
-
-    setQueryRecent(generateBaseQuery(baseParams))
-    setQueryMostSales(generateBaseQuery(baseParamsSales))
-
-    if (hasFeaturedAssets()) {
-      const featuredSections = featured.map((section) => ({
-        title: section.title,
-        query: generateBaseQuery({
-          ...baseParams,
-          esPaginationOptions: {
-            size: section.assets.length
-          },
-          filters: [getFilterTerm('_id', section.assets)]
-        })
-      }))
-
-      setQueryFeatured(featuredSections)
+  useEffect(() => {
+    const fetchFiware = async () => {
+      const result = await getResults({ text: 'fiware' }, chainIds)
+      console.log('fetched ', result)
+      return result
     }
-  }, [chainIds, featured, hasFeaturedAssets])
+    fetchFiware()
+  }, [])
 
   return (
     <>
-      {showOnboardingModule && (
+      <SearchBar
+        isSearchPage
+        placeholder="Search for service offerings"
+        initialValue={'fiware'}
+      />
+      {/* <SectionQueryResult title="Maria"  /> */}
+
+      {/* {showOnboardingModule && (
         <Container>
           <OnboardingSection />
         </Container>
-      )}
-      <Ecosystem />
-      <TopSales title="Publishers With Most Sales" />
+      )} */}
+      {/* <Ecosystem /> */}
+      {/* <TopSales title="Publishers With Most Sales" /> */}
       {/* <HomeContent /> */}
-      {hasFeaturedAssets() && (
+      {/* {hasFeaturedAssets() && (
         <>
           {queryFeatured.map((section, i) => (
             <SectionQueryResult
@@ -100,10 +140,10 @@ export default function HomePage(): ReactElement {
             />
           ))}
         </>
-      )}
-      <SectionQueryResult title="Recently Published" query={queryRecent} />
-      <SectionQueryResult title="Most Sales" query={queryMostSales} />
-      <AllAssetsButton />
+      )} */}
+      {/* <SectionQueryResult title="Recently Published" query={queryRecent} /> */}
+      {/* <SectionQueryResult title="Most Sales" query={queryMostSales} /> */}
+      {/* <AllAssetsButton /> */}
     </>
   )
 }

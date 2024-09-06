@@ -69,6 +69,8 @@ export default function SearchBar({
     if (value === '') setValue(' ')
 
     const urlEncodedValue = encodeURIComponent(value)
+    console.log('unencoded: ', value)
+    console.log('encoded: ', urlEncodedValue)
     const url = await addExistingParamsToUrl(location, [
       'text',
       'owner',
