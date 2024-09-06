@@ -20,7 +20,7 @@ export default function FormEditService({
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
 
   return (
-    <Form style={{ marginLeft: 20, marginRight: 20 }}>
+    <Form style={{ margin: 20 }}>
       <Accordion title={service.name || service.id}>
         <div style={{ marginTop: 20 }}>
           <Field
