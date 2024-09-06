@@ -5,12 +5,14 @@ import {
   ServiceComputeOptions
 } from '@oceanprotocol/lib'
 import { parseConsumerParameters, secondsToString } from '@utils/ddo'
-import {
-  AddServiceForm,
-  ComputeEditForm,
-  MetadataEditForm,
-  ServiceEditForm
-} from './_types'
+import { ComputeEditForm, MetadataEditForm, ServiceEditForm } from './_types'
+
+const defaultServiceComputeOptions: ServiceComputeOptions = {
+  allowRawAlgorithm: false,
+  allowNetworkAccess: true,
+  publisherTrustedAlgorithmPublishers: [],
+  publisherTrustedAlgorithms: []
+}
 
 export function getInitialValues(
   metadata: Metadata,
@@ -41,12 +43,12 @@ export function getInitialValues(
 export const getNewServiceInitialValues = (
   accountId: string,
   firstService: Service
-): AddServiceForm => {
-  console.log('firs', firstService)
+): ServiceEditForm => {
   return {
     name: 'New Service',
     description: '',
     access: 'access',
+    compute: defaultServiceComputeOptions,
     price: 1,
     paymentCollector: accountId,
     providerUrl: {
@@ -68,8 +70,15 @@ export const getServiceInitialValues = (
   return {
     name: service.name,
     description: service.description,
+    access: service.type as 'access' | 'compute',
+    compute: service.compute || defaultServiceComputeOptions,
     price: parseFloat(accessDetails.price),
     paymentCollector: accessDetails.paymentCollector,
+    providerUrl: {
+      url: service.serviceEndpoint,
+      valid: true,
+      custom: false
+    },
     files: [{ url: '', type: 'hidden' }],
     timeout: secondsToString(service.timeout),
     usesConsumerParameters: service.consumerParameters?.length > 0,

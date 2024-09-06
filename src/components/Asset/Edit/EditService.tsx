@@ -104,7 +104,10 @@ export default function EditService({
         name: values.name,
         description: values.description,
         timeout: mapTimeoutStringToSeconds(values.timeout),
-        files: updatedFiles // TODO: check if this works
+        files: updatedFiles, // TODO: check if this works
+        ...(values.access === 'compute' && {
+          compute: values.compute
+        })
       }
       if (values.consumerParameters) {
         updatedService.consumerParameters = transformConsumerParameters(

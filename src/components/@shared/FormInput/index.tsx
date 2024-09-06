@@ -109,6 +109,7 @@ export default function Input(props: Partial<InputProps>): ReactElement {
   } = props
 
   const isFormikField = typeof field !== 'undefined'
+  console.log('label', label, isFormikField)
   // TODO: this feels hacky as it assumes nested `values` store. But we can't use the
   // `useField()` hook in here to get `meta.error` so we have to match against form?.errors?
   // handling flat and nested data at same time.
@@ -123,6 +124,12 @@ export default function Input(props: Partial<InputProps>): ReactElement {
 
   useEffect(() => {
     if (!isFormikField) return
+
+    if (label === 'Access Type') {
+      console.log('isF', isFormikField)
+      console.log('dis', disclaimer)
+      console.log('disV', disclaimerValues)
+    }
 
     if (disclaimer && disclaimerValues) {
       setDisclaimerVisible(

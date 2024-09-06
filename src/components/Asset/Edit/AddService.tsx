@@ -10,7 +10,7 @@ import {
   getHash
 } from '@oceanprotocol/lib'
 import { getNewServiceInitialValues } from './_constants'
-import { AddServiceForm } from './_types'
+import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
@@ -43,7 +43,7 @@ export default function AddService({
   const hasFeedback = error || success
 
   // add new service
-  async function handleSubmit(values: AddServiceForm, resetForm: () => void) {
+  async function handleSubmit(values: ServiceEditForm, resetForm: () => void) {
     console.log('values', values)
     try {
       if (!isAssetNetwork) {
@@ -153,10 +153,9 @@ export default function AddService({
         datatokenAddress,
         serviceEndpoint: values.providerUrl.url,
         timeout: mapTimeoutStringToSeconds(values.timeout),
-        // TODO
-        // ...(access === 'compute' && {
-        //   compute: values.services[0].computeOptions
-        // }),
+        ...(values.access === 'compute' && {
+          compute: values.compute
+        }),
         consumerParameters: transformConsumerParameters(
           values.consumerParameters
         )

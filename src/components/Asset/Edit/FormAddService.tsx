@@ -5,7 +5,7 @@ import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
 import Accordion from '@components/@shared/Accordion'
-import { AddServiceForm } from './_types'
+import { ServiceEditForm } from './_types'
 import Button from '@components/@shared/atoms/Button'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
@@ -17,26 +17,26 @@ export default function FormAddService({
   data: FormFieldContent[]
   onRemove: () => void
 }): ReactElement {
-  const { values, setFieldValue } = useFormikContext<AddServiceForm>()
+  const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
 
   const accessTypeOptionsTitles = getFieldContent('access', data).options
 
   const accessTypeOptions = [
     {
-      name: 'download',
-      value: accessTypeOptionsTitles[0].toLowerCase(),
-      title: 'Download',
+      name: 'access-download',
+      value: 'access',
+      title: accessTypeOptionsTitles[0],
       icon: <IconDownload />,
       // BoxSelection component is not a Formik component
       // so we need to handle checked state manually.
-      checked: values.access === accessTypeOptionsTitles[0].toLowerCase()
+      checked: values.access === 'access'
     },
     {
-      name: accessTypeOptionsTitles[1].toLowerCase(),
-      value: accessTypeOptionsTitles[1].toLowerCase(),
+      name: 'access-compute',
+      value: 'compute',
       title: accessTypeOptionsTitles[1],
       icon: <IconCompute />,
-      checked: values.access === accessTypeOptionsTitles[1].toLowerCase()
+      checked: values.access === 'compute'
     }
   ]
 

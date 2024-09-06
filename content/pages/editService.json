@@ -23,10 +23,10 @@
         "label": "Access Type",
         "help": "Choose how you want your files to be accessible for the specified price.",
         "type": "boxSelection",
-        "options": ["Access", "Compute"],
+        "options": ["Download", "Compute"],
         "required": true,
         "disclaimer": "Please do not provide downloadable personal data without the consent of the data subjects.",
-        "disclaimerValues": ["Download"]
+        "disclaimerValues": ["access"]
       },
       {
         "name": "price",
