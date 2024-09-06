@@ -28,7 +28,7 @@ export default function EditService({
 }: {
   asset: AssetExtended
   service: Service
-  accessDetails: AccessDetails
+  accessDetails: AccessDetails | undefined
 }): ReactElement {
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
@@ -143,6 +143,8 @@ export default function EditService({
       setError(error.message)
     }
   }
+
+  if (!accessDetails) return null
 
   return (
     <Formik
