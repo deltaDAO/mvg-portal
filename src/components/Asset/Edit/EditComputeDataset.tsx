@@ -15,7 +15,6 @@ import { getComputeSettingsInitialValues } from './_constants'
 import { computeSettingsValidationSchema } from './_validation'
 import content from '../../../../content/pages/editComputeDataset.json'
 import { getServiceByName } from '@utils/ddo'
-import { setMinterToPublisher, setMinterToDispenser } from '@utils/dispenser'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useAbortController } from '@hooks/useAbortController'
 import DebugEditCompute from './DebugEditCompute'
@@ -47,18 +46,6 @@ export default function EditComputeDataset({
 
   async function handleSubmit(values: ComputeEditForm, resetForm: () => void) {
     try {
-      if (
-        asset?.accessDetails?.type === 'free' &&
-        asset?.accessDetails?.isPurchasable
-      ) {
-        const tx = await setMinterToPublisher(
-          signer,
-          asset?.accessDetails?.datatoken?.address,
-          accountId,
-          setError
-        )
-        if (!tx) return
-      }
       const newComputeSettings: ServiceComputeOptions =
         await transformComputeFormToServiceComputeOptions(
           values,
@@ -108,16 +95,6 @@ export default function EditComputeDataset({
         setError(content.form.error)
         LoggerInstance.error(content.form.error)
         return
-      } else {
-        if (asset.accessDetails.type === 'free') {
-          const tx = await setMinterToDispenser(
-            signer,
-            asset?.accessDetails?.datatoken?.address,
-            accountId,
-            setError
-          )
-          if (!tx) return
-        }
       }
       // Edit succeeded
       setSuccess(content.form.success)
