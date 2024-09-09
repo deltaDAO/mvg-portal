@@ -15,7 +15,7 @@ export default function Footer(): ReactElement {
       <Container className={styles.container}>
         <div>
           <a
-            href="https://delta-dao.com"
+            href="https://fiware-marketplace-a4eqd.ondigitalocean.app/"
             target="_blank"
             rel="noopener noreferrer"
           >
