@@ -3,51 +3,35 @@ title: Imprint
 description: Thanks for using our product and services.
 ---
 
-### FIWARE Foundation, e.V.
+## FIWARE Foundation, e.V.
 
-Franklinstrasse 13A  
-10587 Berlin  
-**Telephone**: +49 176 206 45 642
+Franklinstrasse 13A 10587 Berlin
 
-Daily between 8:30 and 16:00
+**Telephone**: +49 176 206 45 642, daily between 8:30 and 16:00
 
 **E-Mail**: fiware-general-help at lists.fiware.org
 
 **VAT Identification Number in accordance** with §27 a VAT Tax Act: DE309937516
 
-**Court of jurisdiction**  
-Vereinsregister Charlottenburg  
-Registered non for profit charitable association  
-Registration no. VR 35344B
+**Court of jurisdiction**: Vereinsregister Charlottenburg. Registered non for profit charitable association, registration no. VR 35344B
 
-**Responsible editor:**  
-fiware-website at lists.fiware.org
+**Responsible editor**: fiware-website at lists.fiware.org
 
-_Please note: If you have questions concerning FIWARE Foundation please refer to [CONTACT US](https://www.fiware.org/contact-us/) to issue us those questions._
+**Board of Officers**: Andrea Battaglia, Chief Executive Officer, Acting CTO/ Stefano De Panfilis, Chief Operating Officer/ Laura Ileana Schipani, Acting Chief Marketing Officer
 
-**Board of Officers**  
-Andrea Battaglia, Chief Executive Officer, Acting CTO  
-Stefano De Panfilis, Chief Operating Officer  
-Laura Ileana Schipani, Acting Chief Marketing Officer
+**Usage Rights**: Copyright © by FIWARE Foundation, e.V. All rights reserved
 
-**Usage Rights**  
-Copyright © by FIWARE Foundation, e.V.  
-All rights reserved.
+**Please note**: If you have questions concerning FIWARE Foundation please refer to [CONTACT US](https://www.fiware.org/contact-us/) to issue us those questions.\_
 
-**Permission**
+## Permission
 
-Permission is granted to download or print material published on this site for personal use only. Its use for any other purpose, and in particular its commercial use or distribution, are strictly forbidden in the absence of prior written approval. Please address your requests for approval to:
-
-FIWARE Foundation, e.V.  
-Franklinstrasse 13A  
-10587 Berlin  
-Germany
+Permission is granted to download or print material published on this site for personal use only. Its use for any other purpose, and in particular its commercial use or distribution, are strictly forbidden in the absence of prior written approval. Please address your requests for approval to **FIWARE Foundation, e.V. Franklinstrasse 13A, 10587 Berlin, Germany**.
 
 Notwithstanding this requirement, material may be downloaded or printed for use in connection with press reports on the activities of the FIWARE Foundation on condition that the following terms are complied with:
 
 No alterations may be made to pictorial content, with the exception of framing modifications to emphasize the central motif. The source must be quoted and two free reference copies must be sent to the above-mentioned address. Such usage is free of charge.
 
-**Disclaimer**
+## Disclaimer
 
 We cannot assume any liability for the content of external pages. Solely the operators of those linked pages are responsible for their content.
 
