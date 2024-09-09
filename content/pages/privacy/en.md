@@ -1,156 +1,81 @@
 ---
-title: Privacy Policy
-description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO) processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
+title: Personal Data Protection Policy
+description: This is the main privacy policy for fiware.org and for certain services provided through these and other FIWARE sites and applications (“Our Sites”) by FIWARE Foundation e.V. (“FIWARE”).
 ---
 
-### Table of contents
+At FIWARE we collect different types of information about our users for three main reasons:
 
-## 1. Contact details of the controller and Data Protection Officer
+1.  To provide personalised services unique to individual users
+1.  To help us to monitor and improve the services we offer
+1.  To market services, always in scope of the FIWARE Foundation mission, to the
+    users we have permission for.
 
-The controller pursuant to the EU General Data Protection Regulation ("GDPR") for the processing of your personal data is:
+There may be other privacy policies that apply to certain services we provide. Please read these when you register or subscribe for these services on those specific sites.
 
-deltaDAO AG  
-Katharinenstraße 30a  
-20457 Hamburg  
-Germany  
-E-mail: contact@delta-dao.com
+## Our principles
 
-If you have any questions about the protection of your personal data at deltaDAO, please contact our Data Protection Officer:
+FIWARE adopts the necessary technical and organisational measures to avoid the loss, misuse, alteration, unauthorised access, or theft of the personal data received, taking into account the state of technology, the nature of the data, and the risks to which they are exposed. This means: 1. we make sure that we have in place appropriate security measures to protect your information; and 1. we make sure that when we ask another organisation to provide a service for us, they have in place appropriate security measures as well.
 
-Data Protection Officer  
-deltaDAO AG  
-Katharinenstraße 30a  
-20457 Hamburg  
-Germany  
-E-mail: <privacy@delta-dao.com>
+To respect your privacy is topmost of our concerns. You should receive marketing emails only from us and, if you agree, from other organisations we have carefully chosen following the current European and German legislation. We will make sure it is clear when you can make these choices. However, we may email you occasionally with information or questions about your registration, your subscription account, or postings, for example, with reminders, warnings, business opportunities, or copyright requests.
 
-## 2. What's personal data?
+We will collect and use individual user details only if we have explicit permission to do so, or we have sensible business reasons for doing so, such as collecting enough information to manage subscriptions.
 
-Personal data is any information that can be (directly or indirectly) related to you. deltaDAO processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
+We will be clear in our dealings with you as to what information about you we will collect and how we will use it.
 
-- **IP address:** Your IP address is processed when visiting our portal demonstrator.
-- **E-mail:** If you contact deltaDAO via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
+We will use personal information only for the purposes for which it was originally collected, how they are defined at the beginning of this document, and we will make sure we delete it securely.
 
-For detailed information about the processing operations, lawfulness, purposes, and how your personal data serves to reach these purposes, please take a look at the chapter "Processing operations according to Article 13 GDPR".
+Our Site is accessible via the internet. This means that people around the World who access our site can see anything you post on the site or twitter comments with the FIWARE hash.
 
-## 3. Recipients and cross-border data transfer
+If we or our service providers transfer any information out of the European Union (EU), it will only be done with the relevant protection (stated under European and German law) being in place.
 
-**Visiting our portal demonstrator**  
-When visiting our portal demonstrator, your IP address is processed by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, USA. Vercel is a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Vercel using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely (but not guaranteed) be processed on a Vercel server within the EEA.
+The information that is collected from you consists of: when you register or become a member of our portals, when you use the site, through cookies.
 
-There is no adequacy decision for the USA from the European Commission. Our cooperation with Vercel is based on a Data Processing Agreement (DPA) including Standard Contractual Clauses (SCC). You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+Certain services that we provide may involve us collecting extra information (Membership, for example or subscription detail to the FIWARE Newsletter), such as where you are, therefore the service can be provided as designed. Please also note our [Cookies Policy](FIWARECookiesPolicy.md).
 
-- Here you can find Vercel&#39;s current [**DPA including SCC** &#8599;](https://vercel.com/legal/dpa).
-- Here you can find Vercel&#39;s [**privacy policy** &#8599;](https://vercel.com/legal/privacy-policy).
+## Registration
 
-**Contact via e-mail**  
-When you contact us via e-mail, our (mail) service provider Microsoft Corporation (located at 1 Microsoft Way, Redmond, Washington 98052-8300, USA) supports us in processing your personal data so we can communicate with you.
+The minimum information we need to register you is your name, email address, and a password. We might ask you for more information for different services, including newsletter subscriptions. Unless we say otherwise, you have to provide all the registration information needed for the specific service.
 
-There is no adequacy decision for the USA from the European Commission. However, Microsoft is EU-US DPF (EU‐US Data Privacy Framework) certified. The EU‐US DPF is an adequacy decision of the European Commission, limited to certified entities. Moreover, we have restricted storage on the EEA and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+All responsibility for the completion of forms with false, inaccurate, incomplete, or outdated information shall vest on the Users.
 
-- Here you can find Microsoft&#39;s current [**DPA including SCC** &#8599;](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
-- Here you can find Microsoft&#39;s [**privacy policy** &#8599;](https://privacy.microsoft.com/de-de/privacystatement).
-- Here you can find Microsoft&#39;s [**Data Privacy Framework List entry** &#8599;](https://www.dataprivacyframework.gov/s/participant-search/participant-detail?id=a2zt0000000KzNaAAK&status=Active).
+To assist us in our marketing, in addition to the data that you provide to us upon your registration, we may also obtain data from trusted third parties to help us to understand what you might be interested in. This ‘profiling’ information is obtained from a variety of sources, including publicly available data, or from sources such as surveys and polls where you have given your permission for your data to be shared. You can choose not to have such data shared with FIWARE just by informing us about it.
 
-**Self-Description verification functionality**  
-When you are verifying a Self-Description, your IP address is processed by Gaia-X AISBL (Gaia-X European Association for Data and Cloud AISBL, Avenue des Arts 6-9, 1210 Brussels, Belgium) to resolve your request (see also chapter 4.3).
+After you have registered, and with your permission, we may send you emails we think may be of interest to you. At any time, you can decide not to receive these emails and will be able to ‘unsubscribe’.
 
-## 4. Processing operations according to Article 13 GDPR
+**Is the provision of personal data obligatory?** If you have a business relationship with us, apply for Membership, send us a query or use our online services, you must provide the personal data necessary for performing that business function or service, and for fulfilling all associated contractual obligations or where we are subject to the legal obligation to collect such data. As a rule, without this data, we are obliged to reject the order or conclusion of the contract, or cannot continue to carry out an existing contract and may need to end such contract.
 
-We process your personal data for the following purposes.
+**How long do we keep your data?** We process and store your personal data as long as it is necessary to fulfil our contractual and legal obligations, or to fulfil legitimate interests. When this data is no longer necessary for the above purposes, it will be regularly deleted, except where - limited - data retention periods are required by commercial and tax laws such as the German Commercial Code and the German Fiscal Code. The retention periods specified in the above-mentioned Codes are six to ten years.
 
-**4.1 Providing our portal demonstrator and its functionalities and ensuring its security**  
-Your IP address is collected, used, and stored for providing our portal demonstrator and its functionalities and to maintain its security. Our portal demonstrator is hosted externally by our service provider Vercel (see also chapter 3).
+## Who we share data with
 
-**Purpose:**  
-Collecting and using your IP address is necessary for providing our portal demonstrator and its functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator. Your IP address is also processed for security, fraud-prevention, abuse-prevention, and troubleshooting purposes.
+We will not share your personal information with others for marketing purposes unless you have given us your permission. If we have your permission, we will share your information only with other organizations we have chosen carefully.
 
-**Legal basis:**  
-The legal basis for this processing is our legitimate interest, pursuant to Art. 6(1)(f) GDPR.
+We can access and release personal information to keep to relevant laws and government requests, to operate our systems properly and to protect both us and our users.
 
-**Legitimate interest:**  
-Our legitimate interest is to provide our portal demonstrator and its functionalities to you and to enable security, a technically error-free presentation, and the optimization of the portal demonstrator.
+Any other organizations who accesses your information in the course of providing services on our behalf will be governed by strict contractual restrictions to make sure that they protect your information and keep to data-protection and privacy laws which apply. We may also independently audit these service providers to make sure that they meet our standards. We may use service providers to help us run these sites (or services available on the sites), some of which may be based outside the EU.
 
-**Retention period:**  
-Vercel retains your personal data for as long as needed to provide their services. Additionally, Vercel does not delete the data when it is needed for the establishment, exercise, or defense of legal claims. In this case, the information is retained as long as needed for exercising respective potential legal claims.
+## Social Media Plug-Ins
 
-**4.2 Contact via e-mail**  
-If you contact us via e-mail, deltaDAO collects, uses and stores your e-mail address, and any other information you provide us in your message, such as your name.
+Our Sites might use plug-ins from Facebook, Twitter, and LinkedIn. When you visit a page of our site, your browser does not automatically establish a direct connection to the social media servers. A connection only takes place if you click the link to the social media servers. In this case, the social media provider will be informed that you have visited our site with your IP address.
 
-**Purpose:**  
-We collect, use and store this personal data to respond to your inquiries.
+We would like to point out that as a provider of our site, we do not receive from the social media providers any knowledge of the content of the transmitted data nor its use.
 
-**Legal basis:**  
-The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR.
+For further information go to the social media providers' privacy statements.
 
-**Legitimate interests:**  
-Our legitimate interest is to answer your inquiries.
+## Legal information and how to contact us
 
-**Retention period:**  
-deltaDAO deletes your personal data as soon as we no longer require them for processing your inquiry, except deltaDAO is obliged to comply with legal retention periods or in case of legal disputes.
+FIWARE advises users of Our Sites (“the Users”) that FIWARE complies with the current European legislation related to Personal Data Protection, Users' Privacy, and the Secrecy And Security of Personal Data, as established in the EU General Data Protection Regulation. The data controller is the organisation responsible for protecting information and, in our case, is FIWARE Foundation, e.V., Franklinstrasse 13A, 10587 Berlin. The Contact of the Data Protection Officer is [dataprotection@fiware.org](mailto:dataprotection@fiware.org).
 
-**4.3 Providing the Self-Description verification functionality**  
-When you are verifying a Self-Description, your IP address is processed as described in chapter 4.1. Additionally, your IP address is transferred from the portal demonstrator to a load balancer operated by Gaia-X AISBL (see also chapter 3). This load balancer is forwarding your verification request to a Compliance Service instance handling your request. The load balancer does not further transmit your IP address. So, the Compliance Service instances run by the Gaia-X Clearing Houses just receive the request without your IP address.
+We process your personal data in accordance with the EU's General Data Protection Regulation (GDPR) as follows:
 
-**Purpose:**  
-The transmission and usage of your IP address is necessary for providing the Self-Description verification functionality because it is a technical requirement for ensuring communication between your device and the load balancer.
+**a) To fulfil contractual obligations (Art. 6 (1) point (b) GDPR)** Your personal data is processed for the performance of a contract, and to take steps at your request prior to entering into the contract. Examples: - Application for Membership - Providing online services - Providing member services - Processing online contact forms
 
-**Legal basis:**  
-The legal basis for this processing is our legitimate interest, pursuant to Art. 6(1)(f) GDPR.
+**b) To fulfil legitimate interest/balancing of interest conditions (Art. 6 (1) point (f) GDPR)** Where necessary, we process your data for reasons beyond fulfilling the contract, e.g. for
 
-**Legitimate interest:**  
-Our legitimate interest is to provide the Self-Description verification functionality to you.
+**History of Changes:**
 
-**Retention period:**  
-Gaia-X AISBL retains your personal data for as long as needed to provide their service.
-
-## 5. Automated decision making including profiling according to Article 13(2)(f) GDPR
-
-Automated decision making including profiling does not take place.
-
-## 6. Cookies and web storage
-
-A cookie is a small file that stores Internet settings. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content. Web storage (local storage and session storage) has similar functionality to cookies.
-
-Our portal demonstrator does not use cookies or web storage for analytics or marketing purposes. We use your web storage to remember your page preferences, enable functionalities and to enhance your user experience. Your browser will remove the session storage once you close your browser. You have the option of disabling cookies and deleting cookies and web storage from your computer's hard disk at any time in your browser settings.
-
-## 7. External links
-
-Our portal demonstrator contains links to external websites that are beyond the control and responsibility of deltaDAO.
-
-## 8. Your rights
-
-If you want to make use of your rights described below, do not hesitate to contact us.
-
-**8.1 Right of access (Art. 15 GDPR)**  
-You have the right to obtain confirmation as to whether deltaDAO processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information defined in Art. 15 GDPR.
-
-**8.2 Right to rectification (Art. 16 GDPR)**  
-You have the right to obtain without undue delay the rectification of inaccurate personal data about you. Additionally, you have the right that incomplete personal data about you are completed.
-
-**8.3 Right to erasure (Art. 17 GDPR)**  
-You have the right to obtain without undue delay the erasure of personal data about you, where the defined legal grounds in Art. 17 GDPR apply.
-
-**8.4 Right to restriction (Art. 18 GDPR)**  
-Moreover, you have the right to obtain the restriction of processing your personal data where the defined legal grounds in Art. 18 GDPR apply.
-
-**8.5 Right to data portability (Art. 20 GDPR)**  
-You have the right to receive your personal data in a structured, commonly used, and machine-readable format. Additionally, you have the right to transmit those data to another controller without hindrance, where the defined legal grounds in Art. 20 GDPR apply. You can make use of your right to data portability by contacting us.
-
-**8.6 Right to object (Art. 21 GDPR)**  
-On grounds relating to your particular situation, you have the right to object to the processing of your personal data where we based the processing on legitimate interests (Art. 6(1)(f) GDPR). If you object, deltaDAO will no longer process your personal data unless we can demonstrate compelling legitimate grounds for the processing, overriding your rights, freedoms, and interests, or if the processing is required to establish, exercise, or defend legal claims.
-
-**8.7 Right to lodge a complaint (Art. 77 GDPR)**  
-You have the right to lodge a complaint with a supervisory authority if you consider the processing of your personal data by deltaDAO to infringe the GDPR. You can lodge a complaint in particular
-
-- in the Member State of your habitual residence,
-- in the Member State of your place of work, and
-- in the place of the alleged infringement.
-
-## 9. Questions
-
-For any requests regarding our privacy policy, please send us an e-mail to <privacy@delta-dao.com>.
-
-## 10. Changes to the Privacy Policy
-
-We adjust this policy from time to time, by publishing a new version on our portal demonstrator. You can find the date of the current version at the beginning of this policy. The latest version of this policy applies to the processing of your personal data.
+| Date          | Changes                                                                                                        |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
+| May 2018      | Changes due to the EU General Data Protection Regulation (GDPR).                                               |
+| December 2017 | Privacy Policy version due to Data Controller change (FI-NEXT: FIWARE_Privacy_Policy - FIWARE Privacy Policy). |
+| June 2016     | Creation of the FIWARE Privacy Policy.                                                                         |

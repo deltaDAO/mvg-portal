@@ -21,10 +21,11 @@
 .content h1,
 .content h2 {
   font-size: var(--font-size-h3);
+  margin-top: calc(var(--spacer) * 2);
 }
 
 .content h3 {
-  font-size: var(--font-size-h4);
+  font-size: var(--font-size-h5);
 }
 
 .content h4 {

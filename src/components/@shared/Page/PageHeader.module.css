@@ -1,5 +1,5 @@
 .header {
-  margin-bottom: var(--spacer);
+  margin-bottom: calc(var(--spacer) * 2);
 }
 
 .title {
@@ -55,14 +55,8 @@
   height: var(--home-gaia-x-logo-size-height);
 }
 
-@media (min-width: 40rem) {
-  .title {
-    font-size: var(--font-size-h2);
-  }
-}
-
 .description {
-  font-size: var(--font-size-h3);
+  font-size: var(--font-size-h5);
   margin-top: calc(var(--spacer) / 4);
   margin-bottom: 0;
 }
@@ -72,6 +66,7 @@
   margin-left: auto;
   margin-right: auto;
   text-align: center;
+  max-width: 40rem;
 }
 
 .search {

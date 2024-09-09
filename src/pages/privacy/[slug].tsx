@@ -7,11 +7,13 @@ import Container from '@shared/atoms/Container'
 import PrivacyPolicyHeader from '../../components/Privacy/PrivacyHeader'
 import { useRouter } from 'next/router'
 
-export default function PageMarkdown(page: PageData): ReactElement {
+export default function PageMarkdown(
+  page: PageData & { usePrivacyPolicyHeader: boolean }
+): ReactElement {
   const router = useRouter()
   if (!page || page.content === '') return null
   const { title, description } = page.frontmatter
-  const { slug, content } = page
+  const { slug, content, usePrivacyPolicyHeader } = page
 
   return (
     <Page
@@ -21,7 +23,9 @@ export default function PageMarkdown(page: PageData): ReactElement {
       headerCenter
     >
       <Container narrow>
-        <PrivacyPolicyHeader policy={slug.replace('/privacy/', '')} />
+        {usePrivacyPolicyHeader && (
+          <PrivacyPolicyHeader policy={slug.replace('/privacy/', '')} />
+        )}
         <div
           className={styles.content}
           dangerouslySetInnerHTML={{ __html: content }}
@@ -35,12 +39,14 @@ export async function getStaticProps({
   params
 }: {
   params: { slug: string }
-}): Promise<{ props: PageData }> {
+}): Promise<{ props: PageData & { usePrivacyPolicyHeader: boolean } }> {
   const page = getPageBySlug(params.slug, 'privacy')
   const content = markdownToHtmlWithToc(page?.content || '')
 
+  const usePrivacyPolicyHeader = false
+
   return {
-    props: { ...page, content }
+    props: { ...page, content, usePrivacyPolicyHeader }
   }
 }
 
