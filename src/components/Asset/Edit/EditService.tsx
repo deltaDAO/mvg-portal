@@ -20,6 +20,8 @@ import { getEncryptedFiles } from '@utils/provider'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { transformConsumerParameters } from '@components/Publish/_utils'
 import FormEditService from './FormEditService'
+import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
+import { useCancelToken } from '@hooks/useCancelToken'
 
 export default function EditService({
   asset,
@@ -35,6 +37,7 @@ export default function EditService({
   const { chain } = useNetwork()
   const { data: signer } = useSigner()
   const newAbortController = useAbortController()
+  const newCancelToken = useCancelToken()
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -106,7 +109,12 @@ export default function EditService({
         timeout: mapTimeoutStringToSeconds(values.timeout),
         files: updatedFiles, // TODO: check if this works
         ...(values.access === 'compute' && {
-          compute: values.compute
+          compute: await transformComputeFormToServiceComputeOptions(
+            values,
+            service.compute,
+            asset.chainId,
+            newCancelToken()
+          )
         })
       }
       if (values.consumerParameters) {
@@ -180,6 +188,7 @@ export default function EditService({
           <>
             <FormEditService
               data={content.form.data}
+              chainId={asset.chainId}
               service={service}
               accessDetails={accessDetails}
             />

@@ -8,13 +8,17 @@ import { Service } from '@oceanprotocol/lib'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
+import FormEditComputeService from './FormEditComputeService'
+import { defaultServiceComputeOptions } from './_constants'
 
 export default function FormEditService({
   data,
+  chainId,
   service,
   accessDetails
 }: {
   data: FormFieldContent[]
+  chainId: number
   service: Service
   accessDetails: AccessDetails
 }): ReactElement {
@@ -65,6 +69,14 @@ export default function FormEditService({
         disabled={true}
       />
 
+      {values.access === 'compute' && (
+        <FormEditComputeService
+          chainId={chainId}
+          serviceEndpoint={service.serviceEndpoint} // if we allow editing serviceEndpoint, we need to update it here
+          serviceCompute={service.compute || defaultServiceComputeOptions}
+        />
+      )}
+
       <Field
         {...getFieldContent('price', data)}
         component={Input}
@@ -82,7 +94,7 @@ export default function FormEditService({
         {...getFieldContent('providerUrl', data)}
         component={Input}
         name="providerUrl"
-        disabled={true} // TODO tied with files - not editable now
+        disabled={true} // TODO tied with files and compute - not editable now
       />
 
       <Field

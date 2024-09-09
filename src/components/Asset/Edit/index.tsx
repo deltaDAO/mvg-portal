@@ -3,7 +3,6 @@ import { useAsset } from '@context/Asset'
 import styles from './index.module.css'
 import Tabs from '@shared/atoms/Tabs'
 import EditMetadata from './EditMetadata'
-import EditComputeDataset from './EditComputeDataset'
 import Page from '@shared/Page'
 import Loader from '@shared/atoms/Loader'
 import Alert from '@shared/atoms/Alert'
@@ -13,7 +12,6 @@ import EditServices from './EditServices'
 
 export default function Edit({ uri }: { uri: string }): ReactElement {
   const { asset, error, isInPurgatory, title, isOwner } = useAsset()
-  const [isCompute, setIsCompute] = useState(false)
   const [pageTitle, setPageTitle] = useState<string>('')
   const [tabIndex, setTabIndex] = useState(0)
 
@@ -27,7 +25,6 @@ export default function Edit({ uri }: { uri: string }): ReactElement {
       : `Edit ${title}`
 
     setPageTitle(pageTitle)
-    setIsCompute(asset?.services[0]?.type === 'compute')
   }, [asset, isInPurgatory, title, isOwner])
 
   const tabs = [
@@ -38,16 +35,8 @@ export default function Edit({ uri }: { uri: string }): ReactElement {
     {
       title: 'Edit Services',
       content: <EditServices asset={asset} />
-    },
-    ...[
-      isCompute && asset?.metadata.type !== 'algorithm'
-        ? {
-            title: 'Edit Compute Settings',
-            content: <EditComputeDataset asset={asset} />
-          }
-        : undefined
-    ]
-  ].filter((tab) => tab !== undefined)
+    }
+  ]
 
   return (
     <Page title={pageTitle} description={contentPage.description} uri={uri}>

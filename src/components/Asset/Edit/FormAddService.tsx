@@ -7,11 +7,15 @@ import consumerParametersContent from '../../../../content/publish/consumerParam
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
+import FormEditComputeService from './FormEditComputeService'
+import { defaultServiceComputeOptions } from './_constants'
 
 export default function FormAddService({
-  data
+  data,
+  chainId
 }: {
   data: FormFieldContent[]
+  chainId: number
 }): ReactElement {
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
 
@@ -53,6 +57,14 @@ export default function FormAddService({
         options={accessTypeOptions}
       />
 
+      {values.access === 'compute' && (
+        <FormEditComputeService
+          chainId={chainId}
+          serviceEndpoint={values.providerUrl.url}
+          serviceCompute={defaultServiceComputeOptions}
+        />
+      )}
+
       <Field
         {...getFieldContent('price', data)}
         component={Input}
@@ -70,7 +82,7 @@ export default function FormAddService({
         {...getFieldContent('providerUrl', data)}
         component={Input}
         name="providerUrl"
-        disabled={true} // TODO tied with files - not editable now
+        disabled={true} // TODO tied with files and compute - not editable now
       />
 
       <Field

@@ -1,5 +1,5 @@
 import { FormConsumerParameter } from '@components/Publish/_types'
-import { FileInfo, ServiceComputeOptions } from '@oceanprotocol/lib'
+import { FileInfo } from '@oceanprotocol/lib'
 
 export interface MetadataEditForm {
   name: string
@@ -19,7 +19,6 @@ export interface ServiceEditForm {
   name: string
   description: string
   access: 'access' | 'compute'
-  compute: ServiceComputeOptions
   providerUrl: { url: string; valid: boolean; custom: boolean }
   price: number
   paymentCollector: string
@@ -27,8 +26,13 @@ export interface ServiceEditForm {
   timeout: string
   usesConsumerParameters: boolean
   consumerParameters: FormConsumerParameter[]
+  // compute
+  allowAllPublishedAlgorithms: boolean
+  publisherTrustedAlgorithms: string[]
+  publisherTrustedAlgorithmPublishers: string[]
 }
 
+// TODO delete
 export interface ComputeEditForm {
   allowAllPublishedAlgorithms: boolean
   publisherTrustedAlgorithms: string[]

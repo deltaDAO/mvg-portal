@@ -7,7 +7,7 @@ import {
 import { parseConsumerParameters, secondsToString } from '@utils/ddo'
 import { ComputeEditForm, MetadataEditForm, ServiceEditForm } from './_types'
 
-const defaultServiceComputeOptions: ServiceComputeOptions = {
+export const defaultServiceComputeOptions: ServiceComputeOptions = {
   allowRawAlgorithm: false,
   allowNetworkAccess: true,
   publisherTrustedAlgorithmPublishers: [],
@@ -40,53 +40,7 @@ export function getInitialValues(
   }
 }
 
-export const getNewServiceInitialValues = (
-  accountId: string,
-  firstService: Service
-): ServiceEditForm => {
-  return {
-    name: 'New Service',
-    description: '',
-    access: 'access',
-    compute: defaultServiceComputeOptions,
-    price: 1,
-    paymentCollector: accountId,
-    providerUrl: {
-      url: firstService.serviceEndpoint,
-      valid: false,
-      custom: false
-    },
-    files: [{ url: '', type: 'hidden' }],
-    timeout: '1 day',
-    usesConsumerParameters: false,
-    consumerParameters: []
-  }
-}
-
-export const getServiceInitialValues = (
-  service: Service,
-  accessDetails: AccessDetails
-): ServiceEditForm => {
-  return {
-    name: service.name,
-    description: service.description,
-    access: service.type as 'access' | 'compute',
-    compute: service.compute || defaultServiceComputeOptions,
-    price: parseFloat(accessDetails.price),
-    paymentCollector: accessDetails.paymentCollector,
-    providerUrl: {
-      url: service.serviceEndpoint,
-      valid: true,
-      custom: false
-    },
-    files: [{ url: '', type: 'hidden' }],
-    timeout: secondsToString(service.timeout),
-    usesConsumerParameters: service.consumerParameters?.length > 0,
-    consumerParameters: parseConsumerParameters(service.consumerParameters)
-  }
-}
-
-export function getComputeSettingsInitialValues({
+function getComputeSettingsInitialValues({
   publisherTrustedAlgorithms,
   publisherTrustedAlgorithmPublishers
 }: ServiceComputeOptions): ComputeEditForm {
@@ -99,5 +53,57 @@ export function getComputeSettingsInitialValues({
     allowAllPublishedAlgorithms,
     publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm,
     publisherTrustedAlgorithmPublishers
+  }
+}
+
+export const getNewServiceInitialValues = (
+  accountId: string,
+  firstService: Service
+): ServiceEditForm => {
+  const computeSettings = getComputeSettingsInitialValues(
+    defaultServiceComputeOptions
+  )
+  return {
+    name: 'New Service',
+    description: '',
+    access: 'access',
+    price: 1,
+    paymentCollector: accountId,
+    providerUrl: {
+      url: firstService.serviceEndpoint,
+      valid: false,
+      custom: false
+    },
+    files: [{ url: '', type: 'hidden' }],
+    timeout: '1 day',
+    usesConsumerParameters: false,
+    consumerParameters: [],
+    ...computeSettings
+  }
+}
+
+export const getServiceInitialValues = (
+  service: Service,
+  accessDetails: AccessDetails
+): ServiceEditForm => {
+  const computeSettings = getComputeSettingsInitialValues(
+    service.compute || defaultServiceComputeOptions
+  )
+  return {
+    name: service.name,
+    description: service.description,
+    access: service.type as 'access' | 'compute',
+    price: parseFloat(accessDetails.price),
+    paymentCollector: accessDetails.paymentCollector,
+    providerUrl: {
+      url: service.serviceEndpoint,
+      valid: true,
+      custom: false
+    },
+    files: [{ url: '', type: 'hidden' }],
+    timeout: secondsToString(service.timeout),
+    usesConsumerParameters: service.consumerParameters?.length > 0,
+    consumerParameters: parseConsumerParameters(service.consumerParameters),
+    ...computeSettings
   }
 }

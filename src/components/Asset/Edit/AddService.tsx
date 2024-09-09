@@ -9,7 +9,10 @@ import {
   DispenserParams,
   getHash
 } from '@oceanprotocol/lib'
-import { getNewServiceInitialValues } from './_constants'
+import {
+  defaultServiceComputeOptions,
+  getNewServiceInitialValues
+} from './_constants'
 import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
@@ -24,6 +27,8 @@ import { transformConsumerParameters } from '@components/Publish/_utils'
 import { marketFeeAddress, publisherMarketFixedSwapFee } from 'app.config'
 import { ethers } from 'ethers'
 import FormAddService from './FormAddService'
+import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
+import { useCancelToken } from '@hooks/useCancelToken'
 
 export default function AddService({
   asset
@@ -35,6 +40,7 @@ export default function AddService({
   const { chain } = useNetwork()
   const { data: signer } = useSigner()
   const newAbortController = useAbortController()
+  const newCancelToken = useCancelToken()
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -152,7 +158,12 @@ export default function AddService({
         serviceEndpoint: values.providerUrl.url,
         timeout: mapTimeoutStringToSeconds(values.timeout),
         ...(values.access === 'compute' && {
-          compute: values.compute
+          compute: await transformComputeFormToServiceComputeOptions(
+            values,
+            defaultServiceComputeOptions,
+            asset.chainId,
+            newCancelToken()
+          )
         }),
         consumerParameters: transformConsumerParameters(
           values.consumerParameters
@@ -219,7 +230,7 @@ export default function AddService({
           />
         ) : (
           <>
-            <FormAddService data={content.form.data} />
+            <FormAddService data={content.form.data} chainId={asset.chainId} />
 
             <Web3Feedback
               networkId={asset?.chainId}
