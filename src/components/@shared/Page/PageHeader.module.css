@@ -34,6 +34,7 @@
 .homeTitleContainer .subtitle p {
   margin: calc(var(--spacer) / 4) 0;
   font-size: var(--font-size-h3);
+  max-width: none;
 }
 
 .logoContainer {
@@ -57,8 +58,8 @@
 
 .description {
   font-size: var(--font-size-h5);
-  margin-top: calc(var(--spacer) / 4);
-  margin-bottom: 0;
+  max-width: 40rem;
+  margin: calc(var(--spacer) / 4) auto 0;
 }
 
 .center,
@@ -66,7 +67,6 @@
   margin-left: auto;
   margin-right: auto;
   text-align: center;
-  max-width: 40rem;
 }
 
 .search {
