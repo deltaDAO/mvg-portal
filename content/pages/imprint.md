@@ -21,7 +21,9 @@ Franklinstrasse 13A 10587 Berlin
 
 **Usage Rights**: Copyright © by FIWARE Foundation, e.V. All rights reserved
 
-**Please note**: If you have questions concerning FIWARE Foundation please refer to [CONTACT US](https://www.fiware.org/contact-us/) to issue us those questions.\_
+**Please note**: If you have questions concerning FIWARE Foundation please refer to [CONTACT US](https://www.fiware.org/contact-us/) to issue us those questions.
+
+---
 
 ## Permission
 
