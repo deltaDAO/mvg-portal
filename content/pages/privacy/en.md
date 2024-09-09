@@ -54,10 +54,6 @@ We can access and release personal information to keep to relevant laws and gove
 
 Any other organizations who accesses your information in the course of providing services on our behalf will be governed by strict contractual restrictions to make sure that they protect your information and keep to data-protection and privacy laws which apply. We may also independently audit these service providers to make sure that they meet our standards. We may use service providers to help us run these sites (or services available on the sites), some of which may be based outside the EU.
 
-## Google Analytics
-
-We use Google Analytics on our sites for anonymous reporting of site usage. If you would like to opt-out of Google Analytics monitoring your behavior on our sites please use this link (<https://tools.google.com/dlpage/gaoptout>).
-
 ## Social Media Plug-Ins
 
 Our Sites might use plug-ins from Facebook, Twitter, and LinkedIn. When you visit a page of our site, your browser does not automatically establish a direct connection to the social media servers. A connection only takes place if you click the link to the social media servers. In this case, the social media provider will be informed that you have visited our site with your IP address.
