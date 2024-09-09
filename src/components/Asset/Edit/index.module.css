@@ -30,3 +30,21 @@
   margin-bottom: calc(var(--spacer) / 8);
   max-width: 50rem;
 }
+
+.servicesGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 1fr; /* This ensures all rows have the same height */
+  gap: 1rem;
+}
+
+@media (max-width: 992px) {
+  .servicesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 576px) {
+  .servicesGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -4,6 +4,7 @@ import Button from '@components/@shared/atoms/Button'
 import AddService from './AddService'
 import ServiceCard from '../AssetContent/ServiceCard'
 import AddServiceCard from './AddServiceCard'
+import styles from './index.module.css'
 
 export default function EditServices({
   asset
@@ -14,13 +15,7 @@ export default function EditServices({
 
   return (
     <div>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: '1rem'
-        }}
-      >
+      <div className={styles.servicesGrid}>
         {asset.services.map((service, index) => (
           <ServiceCard
             key={service.id}

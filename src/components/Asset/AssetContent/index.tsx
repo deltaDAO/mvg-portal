@@ -81,14 +81,16 @@ export default function AssetContent({
               {selectedService === undefined ? (
                 <>
                   <h3>Available services:</h3>
-                  {asset.services.map((service, index) => (
-                    <ServiceCard
-                      key={service.id}
-                      service={service}
-                      accessDetails={asset.accessDetails[index]}
-                      onClick={() => setSelectedService(index)}
-                    />
-                  ))}
+                  <div className={styles.servicesGrid}>
+                    {asset.services.map((service, index) => (
+                      <ServiceCard
+                        key={service.id}
+                        service={service}
+                        accessDetails={asset.accessDetails[index]}
+                        onClick={() => setSelectedService(index)}
+                      />
+                    ))}
+                  </div>
                 </>
               ) : (
                 <AssetActions
