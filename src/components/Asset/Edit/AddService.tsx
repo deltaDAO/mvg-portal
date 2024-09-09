@@ -26,11 +26,9 @@ import { ethers } from 'ethers'
 import FormAddService from './FormAddService'
 
 export default function AddService({
-  asset,
-  onRemove
+  asset
 }: {
   asset: AssetExtended
-  onRemove: () => void
 }): ReactElement {
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
@@ -221,7 +219,7 @@ export default function AddService({
           />
         ) : (
           <>
-            <FormAddService data={content.form.data} onRemove={onRemove} />
+            <FormAddService data={content.form.data} />
 
             <Web3Feedback
               networkId={asset?.chainId}

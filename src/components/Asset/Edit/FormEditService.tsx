@@ -4,7 +4,6 @@ import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
-import Accordion from '@components/@shared/Accordion'
 import { Service } from '@oceanprotocol/lib'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
@@ -49,79 +48,71 @@ export default function FormEditService({
 
   return (
     <Form style={{ margin: 20 }}>
-      <Accordion title={service.name || service.id}>
-        <div style={{ marginTop: 20 }}>
-          <Field
-            {...getFieldContent('name', data)}
-            component={Input}
-            name="name"
-          />
+      <Field {...getFieldContent('name', data)} component={Input} name="name" />
 
-          <Field
-            {...getFieldContent('description', data)}
-            component={Input}
-            name="description"
-          />
+      <Field
+        {...getFieldContent('description', data)}
+        component={Input}
+        name="description"
+      />
 
-          <Field
-            {...getFieldContent('access', data)}
-            component={Input}
-            name="access"
-            options={accessTypeOptions}
-            onChange={handleAccessChange} // because BoxSelection component is not a Formik component and we have could have multiple Formiks on 1 page
-            disabled={true}
-          />
+      <Field
+        {...getFieldContent('access', data)}
+        component={Input}
+        name="access"
+        options={accessTypeOptions}
+        onChange={handleAccessChange} // because BoxSelection component is not a Formik component and we have could have multiple Formiks on 1 page
+        disabled={true}
+      />
 
-          <Field
-            {...getFieldContent('price', data)}
-            component={Input}
-            name="price"
-            disabled={accessDetails.type === 'free'}
-          />
+      <Field
+        {...getFieldContent('price', data)}
+        component={Input}
+        name="price"
+        disabled={accessDetails.type === 'free'}
+      />
 
-          <Field
-            {...getFieldContent('paymentCollector', data)}
-            component={Input}
-            name="paymentCollector"
-          />
+      <Field
+        {...getFieldContent('paymentCollector', data)}
+        component={Input}
+        name="paymentCollector"
+      />
 
-          <Field
-            {...getFieldContent('providerUrl', data)}
-            component={Input}
-            name="providerUrl"
-            disabled={true} // TODO tied with files - not editable now
-          />
+      <Field
+        {...getFieldContent('providerUrl', data)}
+        component={Input}
+        name="providerUrl"
+        disabled={true} // TODO tied with files - not editable now
+      />
 
-          <Field
-            {...getFieldContent('files', data)}
-            component={Input}
-            name="files"
-          />
+      <Field
+        {...getFieldContent('files', data)}
+        component={Input}
+        name="files"
+      />
 
-          <Field
-            {...getFieldContent('timeout', data)}
-            component={Input}
-            name="timeout"
-          />
+      <Field
+        {...getFieldContent('timeout', data)}
+        component={Input}
+        name="timeout"
+      />
 
-          <Field
-            {...getFieldContent('usesConsumerParameters', data)}
-            component={Input}
-            name="usesConsumerParameters"
-          />
-          {values.usesConsumerParameters && (
-            <Field
-              {...getFieldContent(
-                'consumerParameters',
-                consumerParametersContent.consumerParameters.fields
-              )}
-              component={Input}
-              name="consumerParameters"
-            />
+      <Field
+        {...getFieldContent('usesConsumerParameters', data)}
+        component={Input}
+        name="usesConsumerParameters"
+      />
+      {values.usesConsumerParameters && (
+        <Field
+          {...getFieldContent(
+            'consumerParameters',
+            consumerParametersContent.consumerParameters.fields
           )}
-          <FormActions />
-        </div>
-      </Accordion>
+          component={Input}
+          name="consumerParameters"
+        />
+      )}
+      <FormActions />
     </Form>
   )
 }
