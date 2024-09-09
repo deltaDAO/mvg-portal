@@ -22,6 +22,7 @@ import { transformConsumerParameters } from '@components/Publish/_utils'
 import FormEditService from './FormEditService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useCancelToken } from '@hooks/useCancelToken'
+import { serviceValidationSchema } from './_validation'
 
 export default function EditService({
   asset,
@@ -161,7 +162,7 @@ export default function EditService({
     <Formik
       enableReinitialize
       initialValues={getServiceInitialValues(service, accessDetails)}
-      // validationSchema={validationSchema} TODO
+      validationSchema={serviceValidationSchema}
       onSubmit={async (values, { resetForm }) => {
         // move user's focus to top of screen
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

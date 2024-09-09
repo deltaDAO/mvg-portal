@@ -29,6 +29,7 @@ import { ethers } from 'ethers'
 import FormAddService from './FormAddService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useCancelToken } from '@hooks/useCancelToken'
+import { serviceValidationSchema } from './_validation'
 
 export default function AddService({
   asset
@@ -205,7 +206,7 @@ export default function AddService({
     <Formik
       enableReinitialize
       initialValues={getNewServiceInitialValues(accountId, asset.services[0])}
-      // validationSchema={validationSchema} TODO
+      validationSchema={serviceValidationSchema}
       onSubmit={async (values, { resetForm }) => {
         // move user's focus to top of screen
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

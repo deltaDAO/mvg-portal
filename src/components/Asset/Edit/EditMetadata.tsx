@@ -1,7 +1,7 @@
 import { ReactElement, useState } from 'react'
 import { Formik } from 'formik'
 import { LoggerInstance, Asset, Nft, Metadata } from '@oceanprotocol/lib'
-import { validationSchema } from './_validation'
+import { metadataValidationSchema } from './_validation'
 import { getInitialValues } from './_constants'
 import { MetadataEditForm } from './_types'
 import { useUserPreferences } from '@context/UserPreferences'
@@ -126,7 +126,7 @@ export default function Edit({
         asset?.credentials,
         assetState
       )}
-      validationSchema={validationSchema}
+      validationSchema={metadataValidationSchema}
       onSubmit={async (values, { resetForm }) => {
         // move user's focus to top of screen
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
