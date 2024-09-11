@@ -23,6 +23,9 @@ import FormEditService from './FormEditService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { serviceValidationSchema } from './_validation'
+import { useUserPreferences } from '@context/UserPreferences'
+import DebugEditService from './DebugEditService'
+import styles from './index.module.css'
 
 export default function EditService({
   asset,
@@ -33,6 +36,7 @@ export default function EditService({
   service: Service
   accessDetails: AccessDetails | undefined
 }): ReactElement {
+  const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
@@ -199,6 +203,16 @@ export default function EditService({
               accountId={accountId}
               isAssetNetwork={isAssetNetwork}
             />
+
+            {debug === true && (
+              <div className={styles.grid}>
+                <DebugEditService
+                  values={values}
+                  asset={asset}
+                  service={service}
+                />
+              </div>
+            )}
           </>
         )
       }
