@@ -221,7 +221,7 @@ export default function AddService({
       {({ isSubmitting, values }) =>
         isSubmitting || hasFeedback ? (
           <EditFeedback
-            loading="Updating asset with new metadata..."
+            loading="Adding a new service..."
             error={error}
             success={success}
             setError={setError}

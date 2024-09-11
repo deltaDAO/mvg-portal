@@ -177,7 +177,7 @@ export default function EditService({
       {({ isSubmitting, values }) =>
         isSubmitting || hasFeedback ? (
           <EditFeedback
-            loading="Updating asset with new metadata..."
+            loading="Updating service..."
             error={error}
             success={success}
             setError={setError}
