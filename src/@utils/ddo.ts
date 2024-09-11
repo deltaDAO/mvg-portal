@@ -25,6 +25,7 @@ export function isValidDid(did: string): boolean {
   return regex.test(did)
 }
 
+// TODO: this function doesn't make sense, since market is now supporting multiple services. We should remove it after checking all the flows where it's being used.
 export function getServiceByName(
   ddo: Asset | DDO,
   name: 'access' | 'compute'
