@@ -49,6 +49,7 @@ export default function DebugEditService({
         ...service,
         name: values.name,
         description: values.description,
+        type: values.access,
         timeout: mapTimeoutStringToSeconds(values.timeout),
         files: updatedFiles, // TODO: check if this works
         ...(values.access === 'compute' && {

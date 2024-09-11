@@ -30,12 +30,16 @@ import FormAddService from './FormAddService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { serviceValidationSchema } from './_validation'
+import DebugEditService from './DebugEditService'
+import styles from './index.module.css'
+import { useUserPreferences } from '@context/UserPreferences'
 
 export default function AddService({
   asset
 }: {
   asset: AssetExtended
 }): ReactElement {
+  const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
@@ -238,6 +242,26 @@ export default function AddService({
               accountId={accountId}
               isAssetNetwork={isAssetNetwork}
             />
+
+            {debug === true && (
+              <div className={styles.grid}>
+                <DebugEditService
+                  values={values}
+                  asset={asset}
+                  service={{
+                    id: 'WILL BE CALCULATED AFTER SUBMIT',
+                    type: 'access',
+                    datatokenAddress: 'WILL BE FILLED AFTER SUBMIT',
+                    name: '',
+                    description: '',
+                    files: asset.services[0].files,
+                    serviceEndpoint: asset.services[0].serviceEndpoint,
+                    timeout: 0,
+                    consumerParameters: []
+                  }}
+                />
+              </div>
+            )}
           </>
         )
       }
