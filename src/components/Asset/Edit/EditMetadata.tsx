@@ -37,10 +37,7 @@ export default function Edit({
   const [error, setError] = useState<string>()
   const hasFeedback = error || success
 
-  async function handleSubmit(
-    values: Partial<MetadataEditForm>,
-    resetForm: () => void
-  ) {
+  async function handleSubmit(values: MetadataEditForm, resetForm: () => void) {
     try {
       const linksTransformed = values.links?.length &&
         values.links[0].valid && [sanitizeUrl(values.links[0].url)]

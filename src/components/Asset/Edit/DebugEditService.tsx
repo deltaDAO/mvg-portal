@@ -71,7 +71,7 @@ export default function DebugEditService({
     }
 
     transformValues()
-    setValuePreview(previewDebugPatch(values, asset.chainId))
+    setValuePreview(previewDebugPatch(values))
   }, [values, asset, newCancelToken, service])
 
   return (

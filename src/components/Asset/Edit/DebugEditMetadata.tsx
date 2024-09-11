@@ -13,52 +13,60 @@ export default function DebugEditMetadata({
   values,
   asset
 }: {
-  values: Partial<MetadataEditForm>
+  values: MetadataEditForm
   asset: Asset
 }): ReactElement {
   const [valuePreview, setValuePreview] = useState({})
-  const linksTransformed = values.links?.length &&
-    values.links[0].valid && [sanitizeUrl(values.links[0].url)]
-
-  const newMetadata: Metadata = {
-    ...asset?.metadata,
-    name: values.name,
-    description: values.description,
-    links: linksTransformed,
-    author: values.author,
-    tags: values.tags,
-    license: values.license,
-    additionalInformation: {
-      ...asset?.metadata?.additionalInformation
-    }
-  }
-  if (asset.metadata.type === 'algorithm') {
-    newMetadata.algorithm.consumerParameters = !values.usesConsumerParameters
-      ? undefined
-      : transformConsumerParameters(values.consumerParameters)
-  }
-
-  const updatedCredentials: Credentials = generateCredentials(
-    asset?.credentials,
-    values?.allow,
-    values?.deny
-  )
-
-  const updatedAsset: Asset = {
-    ...asset,
-    metadata: newMetadata,
-    credentials: updatedCredentials
-  }
-
-  // delete custom helper properties injected in the market that will not be written on chain
-  delete (updatedAsset as AssetExtended).accessDetails
-  delete (updatedAsset as AssetExtended).datatokens
-  delete (updatedAsset as AssetExtended).stats
-  delete (updatedAsset as AssetExtended).offchain
+  const [updatedAsset, setUpdatedAsset] = useState<Asset>()
 
   useEffect(() => {
-    setValuePreview(previewDebugPatch(values, asset.chainId))
-  }, [asset.chainId, values])
+    function transformValues() {
+      const linksTransformed = values.links?.length &&
+        values.links[0].valid && [sanitizeUrl(values.links[0].url)]
+
+      const newMetadata: Metadata = {
+        ...asset?.metadata,
+        name: values.name,
+        description: values.description,
+        links: linksTransformed,
+        author: values.author,
+        tags: values.tags,
+        license: values.license,
+        additionalInformation: {
+          ...asset?.metadata?.additionalInformation
+        }
+      }
+      if (asset.metadata.type === 'algorithm') {
+        newMetadata.algorithm.consumerParameters =
+          !values.usesConsumerParameters
+            ? undefined
+            : transformConsumerParameters(values.consumerParameters)
+      }
+
+      const updatedCredentials: Credentials = generateCredentials(
+        asset?.credentials,
+        values?.allow,
+        values?.deny
+      )
+
+      const tmpAsset: Asset = {
+        ...asset,
+        metadata: newMetadata,
+        credentials: updatedCredentials
+      }
+
+      // delete custom helper properties injected in the market that will not be written on chain
+      delete (tmpAsset as AssetExtended).accessDetails
+      delete (tmpAsset as AssetExtended).datatokens
+      delete (tmpAsset as AssetExtended).stats
+      delete (tmpAsset as AssetExtended).offchain
+
+      setUpdatedAsset(tmpAsset)
+    }
+
+    transformValues()
+    setValuePreview(previewDebugPatch(values))
+  }, [asset, values])
 
   return (
     <>

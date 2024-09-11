@@ -18,7 +18,7 @@ export function getInitialValues(
   metadata: Metadata,
   credentials: Credentials,
   assetState: string
-): Partial<MetadataEditForm> {
+): MetadataEditForm {
   return {
     name: metadata?.name,
     description: metadata?.description,
