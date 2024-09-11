@@ -53,7 +53,6 @@ export default function AddService({
 
   // add new service
   async function handleSubmit(values: ServiceEditForm, resetForm: () => void) {
-    console.log('values', values)
     try {
       if (!isAssetNetwork) {
         setError('Please switch to the correct network.')
@@ -79,7 +78,7 @@ export default function AddService({
         1
       )
 
-      console.log('Datatoken created.', datatokenAddress)
+      LoggerInstance.log('Datatoken created.', datatokenAddress)
 
       // --------------------------------------------------
       // 2. Create Pricing
@@ -88,7 +87,7 @@ export default function AddService({
 
       let pricingTransactionReceipt
       if (values.price > 0) {
-        console.log(
+        LoggerInstance.log(
           `Creating fixed rate exchange with price ${values.price} for datatoken ${datatokenAddress}`
         )
 
@@ -112,7 +111,9 @@ export default function AddService({
           freParams
         )
       } else {
-        console.log(`Creating dispenser for datatoken ${datatokenAddress}`)
+        LoggerInstance.log(
+          `Creating dispenser for datatoken ${datatokenAddress}`
+        )
 
         const dispenserParams: DispenserParams = {
           maxTokens: ethers.utils.parseEther('1').toString(),
@@ -128,15 +129,14 @@ export default function AddService({
         )
       }
 
-      const tx = await pricingTransactionReceipt.wait()
-      console.log('Pricing scheme created.')
+      await pricingTransactionReceipt.wait()
+      LoggerInstance.log('Pricing scheme created.')
 
       // --------------------------------------------------
       // 2. Update DDO
       // --------------------------------------------------
       let newFiles = asset.services[0].files // by default it could be the same file as in other services
       if (values.files[0]?.url) {
-        console.log('updating files')
         const file = {
           nftAddress: asset.nftAddress,
           datatokenAddress,
