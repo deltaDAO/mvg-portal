@@ -148,7 +148,7 @@ export default function Edit({
           />
         ) : (
           <>
-            <FormEditMetadata data={content.form.data} />
+            <FormEditMetadata />
 
             <Web3Feedback
               networkId={asset?.chainId}

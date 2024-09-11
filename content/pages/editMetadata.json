@@ -19,6 +19,14 @@
         "required": true
       },
       {
+        "name": "type",
+        "label": "Asset Type",
+        "type": "boxSelection",
+        "options": ["Dataset", "Algorithm"],
+        "disabled": true,
+        "help": "The asset type cannot be changed once set."
+      },
+      {
         "name": "links",
         "label": "Sample file",
         "prominentHelp": false,

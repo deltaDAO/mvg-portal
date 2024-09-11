@@ -3,25 +3,42 @@ import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { useAsset } from '@context/Asset'
-import { FormPublishData } from '@components/Publish/_types'
 import { getFileInfo } from '@utils/provider'
 import { getFieldContent } from '@utils/form'
 import { isGoogleUrl } from '@utils/url'
 import { MetadataEditForm } from './_types'
+import content from '../../../../content/pages/editMetadata.json'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
+import IconDataset from '@images/dataset.svg'
+import IconAlgorithm from '@images/algorithm.svg'
+import { BoxSelectionOption } from '@components/@shared/FormInput/InputElement/BoxSelection'
 
-export default function FormEditMetadata({
-  data
-}: {
-  data: FormFieldContent[]
-}): ReactElement {
+const { data } = content.form
+const assetTypeOptionsTitles = getFieldContent('type', data).options
+
+export default function FormEditMetadata(): ReactElement {
   const { asset } = useAsset()
-  const { values, setFieldValue } = useFormikContext<FormPublishData>()
+  const { values, setFieldValue } = useFormikContext<MetadataEditForm>()
+
+  // BoxSelection component is not a Formik component
+  // so we need to handle checked state manually.
+  const assetTypeOptions: BoxSelectionOption[] = [
+    {
+      name: assetTypeOptionsTitles[0].toLowerCase(),
+      title: assetTypeOptionsTitles[0],
+      checked: values.type === assetTypeOptionsTitles[0].toLowerCase(),
+      icon: <IconDataset />
+    },
+    {
+      name: assetTypeOptionsTitles[1].toLowerCase(),
+      title: assetTypeOptionsTitles[1],
+      checked: values.type === assetTypeOptionsTitles[1].toLowerCase(),
+      icon: <IconAlgorithm />
+    }
+  ]
 
   useEffect(() => {
-    const providerUrl = values?.services
-      ? values?.services[0].providerUrl.url
-      : asset.services[0].serviceEndpoint
+    const providerUrl = asset.services[0].serviceEndpoint
 
     // if we have a sample file, we need to get the files' info before setting defaults links value
     asset?.metadata?.links?.[0] &&
@@ -51,6 +68,14 @@ export default function FormEditMetadata({
 
   return (
     <Form>
+      <Field
+        {...getFieldContent('type', data)}
+        component={Input}
+        name="metadata.type"
+        options={assetTypeOptions}
+        disabled={true} // just for view purposes
+      />
+
       <Field {...getFieldContent('name', data)} component={Input} name="name" />
 
       <Field

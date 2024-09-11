@@ -4,6 +4,7 @@ import { FileInfo } from '@oceanprotocol/lib'
 export interface MetadataEditForm {
   name: string
   description: string
+  type: 'dataset' | 'algorithm'
   links?: FileInfo[]
   author?: string
   tags?: string[]
