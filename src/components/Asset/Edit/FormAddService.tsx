@@ -9,6 +9,7 @@ import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import FormEditComputeService from './FormEditComputeService'
 import { defaultServiceComputeOptions } from './_constants'
+import styles from './index.module.css'
 
 export default function FormAddService({
   data,
@@ -41,7 +42,7 @@ export default function FormAddService({
   ]
 
   return (
-    <Form style={{ margin: 20 }}>
+    <Form className={styles.form}>
       <Field {...getFieldContent('name', data)} component={Input} name="name" />
 
       <Field

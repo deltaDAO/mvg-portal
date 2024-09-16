@@ -29,15 +29,9 @@ export default function EditServices({
 
       {selectedService !== undefined && (
         <>
-          <hr style={{ marginTop: 20 }} />
+          <hr />
 
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginTop: 40
-            }}
-          >
+          <div className={styles.servicesHeader}>
             <h3>
               {selectedService === -1
                 ? 'Add a new service'
