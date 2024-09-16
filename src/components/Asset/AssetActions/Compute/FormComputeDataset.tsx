@@ -105,9 +105,30 @@ export default function FormStartCompute({
   }: FormikContextType<ComputeDatasetForm> = useFormikContext()
   const { isAssetNetwork } = useAsset() // TODO - is this needed?
 
-  const [datasetOrderPrice, setDatasetOrderPrice] = useState(
-    accessDetails.price
+  const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
+    null
   )
+
+  useEffect(() => {
+    if (asset.offchain && asset.offchain.stats?.services) {
+      const matchingService = asset.offchain.stats.services.find(
+        (offchainService) => offchainService.serviceId === service.id
+      )
+
+      if (
+        matchingService &&
+        matchingService.prices &&
+        matchingService.prices.length > 0
+      ) {
+        setDatasetOrderPrice(matchingService.prices[0].price)
+      } else {
+        setDatasetOrderPrice(accessDetails.price || null)
+      }
+    } else {
+      setDatasetOrderPrice(accessDetails.price || null)
+    }
+  }, [asset.offchain, service.id, accessDetails.price])
+
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
   )
@@ -185,7 +206,7 @@ export default function FormStartCompute({
   useEffect(() => {
     if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails?.length)
       return
-    setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
+    // setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
     setAlgoOrderPrice(
       algoOrderPriceAndFees?.price ||
         selectedAlgorithmAsset?.stats?.price?.value.toString()
@@ -212,7 +233,6 @@ export default function FormStartCompute({
     const feeDataset = new Decimal(consumeMarketOrderFee)
       .mul(priceDataset)
       .div(100)
-
     if (algorithmSymbol === providerFeesSymbol) {
       let sum = providerFees.add(priceAlgo).add(feeProvider).add(feeAlgo)
       totalPrices.push({

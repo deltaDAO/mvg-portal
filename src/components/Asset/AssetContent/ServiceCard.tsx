@@ -4,11 +4,11 @@ import { Service } from '@oceanprotocol/lib'
 
 export default function ServiceCard({
   service,
-  accessDetails,
+  price,
   onClick
 }: {
   service: Service
-  accessDetails: AccessDetails
+  price: string
   onClick: () => void
 }): ReactElement {
   return (
@@ -23,9 +23,7 @@ export default function ServiceCard({
       {service.type}
       <br />
       <span className={styles.title}>Price: </span>
-      {accessDetails.type === 'fixed'
-        ? `${accessDetails.price} ${accessDetails.baseToken.symbol}`
-        : '0'}
+      {price}
     </div>
   )
 }

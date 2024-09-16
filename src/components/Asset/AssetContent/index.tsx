@@ -86,7 +86,10 @@ export default function AssetContent({
                     <ServiceCard
                       key={service.id}
                       service={service}
-                      accessDetails={asset.accessDetails[index]}
+                      price={
+                        asset?.offchain?.stats?.services[index]?.prices[0]
+                          ?.price || '0'
+                      }
                       onClick={() => setSelectedService(index)}
                     />
                   ))}

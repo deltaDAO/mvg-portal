@@ -48,6 +48,7 @@ import { Decimal } from 'decimal.js'
 import { useAbortController } from '@hooks/useAbortController'
 import {
   getAvailablePrice,
+  getAvailablePriceOffchain,
   getOrderPriceAndFees
 } from '@utils/accessDetailsAndPricing'
 import { handleComputeOrder } from '@utils/order'
@@ -135,9 +136,17 @@ export default function Compute({
   const [retry, setRetry] = useState<boolean>(false)
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
-
-  const price: AssetPrice = getAvailablePrice(accessDetails)
-
+  let price: AssetPrice
+  if (asset.offchain) {
+    price = getAvailablePriceOffchain(
+      asset.offchain.stats?.services,
+      service.id,
+      accessDetails,
+      asset.chainId
+    )
+  } else {
+    price = getAvailablePrice(accessDetails)
+  }
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
     isOrdering === true ||

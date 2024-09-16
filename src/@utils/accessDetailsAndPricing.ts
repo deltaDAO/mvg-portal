@@ -189,3 +189,24 @@ export function getAvailablePrice(accessDetails: AccessDetails): AssetPrice {
 
   return price
 }
+
+export function getAvailablePriceOffchain(
+  services: ServiceStat[],
+  serviceId: string,
+  accessDetails: AccessDetails,
+  chainId: number
+): AssetPrice {
+  const service = services.find((service) => service.serviceId === serviceId)
+  let value = Number(accessDetails.price)
+  if (service && service.prices && service.prices.length > 0) {
+    value = Number(service.prices[0].price)
+  }
+  const price: AssetPrice = {
+    value,
+    tokenSymbol:
+      accessDetails.baseToken?.symbol || (chainId === 137 ? 'mOCEAN' : 'OCEAN'),
+    tokenAddress: accessDetails.baseToken?.address
+  }
+
+  return price
+}
