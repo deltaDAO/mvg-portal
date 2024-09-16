@@ -33,6 +33,7 @@ import { serviceValidationSchema } from './_validation'
 import DebugEditService from './DebugEditService'
 import styles from './index.module.css'
 import { useUserPreferences } from '@context/UserPreferences'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function AddService({
   asset
@@ -46,6 +47,7 @@ export default function AddService({
   const { data: signer } = useSigner()
   const newAbortController = useAbortController()
   const newCancelToken = useCancelToken()
+  const config = getOceanConfig(asset?.chainId)
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -70,7 +72,7 @@ export default function AddService({
         accountId,
         values.paymentCollector,
         marketFeeAddress,
-        process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
+        config.oceanTokenAddress,
         publisherMarketFixedSwapFee,
         '100000000',
         'DataToken',
@@ -92,8 +94,8 @@ export default function AddService({
         )
 
         const freParams: FreCreationParams = {
-          fixedRateAddress: process.env.NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS,
-          baseTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
+          fixedRateAddress: config.fixedRateExchangeAddress,
+          baseTokenAddress: config.oceanTokenAddress,
           owner: accountId,
           marketFeeCollector: marketFeeAddress,
           baseTokenDecimals: 18,
@@ -124,7 +126,7 @@ export default function AddService({
         pricingTransactionReceipt = await datatoken.createDispenser(
           datatokenAddress,
           accountId,
-          process.env.NEXT_PUBLIC_DISPENSER_ADDRESS,
+          config.dispenserAddress,
           dispenserParams
         )
       }
