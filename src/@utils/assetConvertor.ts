@@ -10,7 +10,7 @@ export async function transformAssetToAssetSelection(
   selectedAlgorithms?: PublisherTrustedAlgorithm[]
 ): Promise<AssetSelectionAsset[]> {
   const algorithmList: AssetSelectionAsset[] = []
-
+  if (!assets) return []
   for (const asset of assets) {
     const algoService =
       getServiceByName(asset, 'compute') || getServiceByName(asset, 'access')

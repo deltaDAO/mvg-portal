@@ -185,11 +185,10 @@ export default function FormStartCompute({
   useEffect(() => {
     if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails?.length)
       return
-
     setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
     setAlgoOrderPrice(
       algoOrderPriceAndFees?.price ||
-        selectedAlgorithmAsset?.accessDetails?.[0]?.price
+        selectedAlgorithmAsset?.stats?.price?.value.toString()
     )
     const totalPrices: totalPriceMap[] = []
     const priceDataset =
@@ -380,7 +379,6 @@ export default function FormStartCompute({
   )
 
   const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
-    console.log('totalPrice:', totalPrices)
     return (
       <div style={{ textAlign: 'left' }}>
         <>

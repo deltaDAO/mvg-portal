@@ -42,3 +42,11 @@ interface SearchResponse {
   }
   aggregations?: any
 }
+
+interface SearchResult {
+  _index: string
+  _id: string
+  _score: number
+  _ignored: string[]
+  _source: Asset
+}

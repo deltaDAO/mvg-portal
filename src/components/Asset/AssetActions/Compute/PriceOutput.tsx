@@ -88,7 +88,7 @@ export default function PriceOutput({
                       hasPreviousOrder={hasPreviousOrder}
                       hasDatatoken={hasDatatoken}
                       price={new Decimal(
-                        datasetOrderPrice || asset?.accessDetails?.price || 0
+                        datasetOrderPrice || asset?.accessDetails[0]?.price || 0
                       )
                         .toDecimalPlaces(MAX_DECIMALS)
                         .toString()}
