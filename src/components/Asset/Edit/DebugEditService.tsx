@@ -1,4 +1,4 @@
-import { Asset, Service } from '@oceanprotocol/lib'
+import { Asset, LoggerInstance, Service } from '@oceanprotocol/lib'
 import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -28,21 +28,29 @@ export default function DebugEditService({
   useEffect(() => {
     async function transformValues() {
       let updatedFiles = service.files
-      if (values.files[0]?.url) {
-        const file = {
-          nftAddress: asset.nftAddress,
-          datatokenAddress: service.datatokenAddress,
-          files: [
-            normalizeFile(values.files[0].type, values.files[0], asset.chainId)
-          ]
-        }
+      try {
+        if (values.files[0]?.url) {
+          const file = {
+            nftAddress: asset.nftAddress,
+            datatokenAddress: service.datatokenAddress,
+            files: [
+              normalizeFile(
+                values.files[0].type,
+                values.files[0],
+                asset.chainId
+              )
+            ]
+          }
 
-        const filesEncrypted = await getEncryptedFiles(
-          file,
-          asset.chainId,
-          service.serviceEndpoint
-        )
-        updatedFiles = filesEncrypted
+          const filesEncrypted = await getEncryptedFiles(
+            file,
+            asset.chainId,
+            service.serviceEndpoint
+          )
+          updatedFiles = filesEncrypted
+        }
+      } catch (error) {
+        LoggerInstance.error('Error encrypting files:', error.message)
       }
 
       const updatedService: Service = {
