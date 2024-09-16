@@ -24,7 +24,11 @@ import { setNftMetadata } from '@utils/nft'
 import { getEncryptedFiles } from '@utils/provider'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { transformConsumerParameters } from '@components/Publish/_utils'
-import { marketFeeAddress, publisherMarketFixedSwapFee } from 'app.config'
+import {
+  defaultDatatokenCap,
+  marketFeeAddress,
+  publisherMarketFixedSwapFee
+} from 'app.config'
 import { ethers } from 'ethers'
 import FormAddService from './FormAddService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
@@ -74,7 +78,7 @@ export default function AddService({
         marketFeeAddress,
         config.oceanTokenAddress,
         publisherMarketFixedSwapFee,
-        '100000000',
+        defaultDatatokenCap,
         'DataToken',
         'DT',
         1
