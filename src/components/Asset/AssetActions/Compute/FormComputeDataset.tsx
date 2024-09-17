@@ -181,11 +181,8 @@ export default function FormStartCompute({
   useEffect(() => {
     if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails?.length)
       return
-    // setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
-    setAlgoOrderPrice(
-      algoOrderPriceAndFees?.price ||
-        selectedAlgorithmAsset?.stats?.price?.value.toString()
-    )
+    setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
+    setAlgoOrderPrice(algoOrderPriceAndFees?.price)
     const totalPrices: totalPriceMap[] = []
     const priceDataset =
       !datasetOrderPrice || hasPreviousOrder || hasDatatoken
@@ -359,7 +356,6 @@ export default function FormStartCompute({
   )
 
   const handleFullPrice = () => {
-    console.log('handle')
     setIsFullPriceLoading(false)
   }
 

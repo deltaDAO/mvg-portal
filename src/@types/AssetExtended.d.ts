@@ -13,10 +13,10 @@ declare global {
 
   interface ServiceStat {
     datatokenAddress: string
-    name?: string
-    symbol?: string
+    name: string
+    symbol: string
     serviceId: string
-    orders?: number
+    orders: number
     prices: ServicePrice[]
   }
 

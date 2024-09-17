@@ -244,7 +244,6 @@ export default function Download({
   }
 
   const handleFullPrice = () => {
-    console.log('handle')
     setIsFullPriceLoading(false)
   }
 

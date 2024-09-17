@@ -50,22 +50,6 @@ declare global {
     validProviderFees?: ProviderFees
     paymentCollector: string
   }
-
-  interface PriceOffchain {
-    contract: string
-    price: string
-    type: string
-  }
-
-  interface ServiceOffchain {
-    dataTokenAddress: string
-    name: string
-    order: number
-    prices: PriceOffchain[]
-    serviceId: string
-    symbol: string
-  }
-
   interface PricePublishOptions {
     price: number
     baseToken: TokenInfo
