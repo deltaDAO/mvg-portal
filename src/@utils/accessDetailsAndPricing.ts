@@ -1,5 +1,7 @@
 import {
   AssetPrice,
+  Datatoken,
+  FixedRateExchange,
   getErrorMessage,
   LoggerInstance,
   ProviderFees,
@@ -16,6 +18,7 @@ import {
 } from '../../app.config'
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
+import { getDummySigner } from './wallet'
 
 /**
  * This will be used to get price including fees before ordering
@@ -108,18 +111,20 @@ export async function getOrderPriceAndFees(
 
 /**
  * @param {number} chainId
- * @param {string} datatokenAddress
- * @param {number} timeout timout of the service, this is needed to return order details
- * @param {string} account account that wants to buy, is needed to return order details
+ * @param {Service} service service of which you want access details to
  * @returns {Promise<AccessDetails>}
  */
 export async function getAccessDetails(
-  serviceStat: ServiceStat | undefined
+  chainId: number,
+  service: Service
 ): Promise<AccessDetails> {
+  const signer = await getDummySigner(chainId)
+  const datatoken = new Datatoken(signer, chainId)
+  const { datatokenAddress } = service
+
   const accessDetails: AccessDetails = {
     type: 'NOT_SUPPORTED',
     price: '0',
-    templateId: 0,
     addressOrId: '',
     baseToken: {
       address: '',
@@ -128,55 +133,54 @@ export async function getAccessDetails(
       decimals: 0
     },
     datatoken: {
-      address: '',
-      name: '',
-      symbol: '',
+      address: datatokenAddress,
+      name: await datatoken.getName(datatokenAddress),
+      symbol: await datatoken.getSymbol(datatokenAddress),
       decimals: 0
     },
+    paymentCollector: await datatoken.getPaymentCollector(datatokenAddress),
+    // TODO these 5 records
+    templateId: 1,
     isOwned: false,
-    validOrderTx: '',
-    isPurchasable: false,
+    validOrderTx: '', // should be possible to get from ocean-node - orders collection in typesense
+    isPurchasable: true,
     publisherMarketOrderFee: '0'
   }
 
-  if (serviceStat === undefined || serviceStat.prices.length === 0) {
-    return accessDetails
-  }
-
-  const tokenPrice = serviceStat.prices[0] // support only 1 price for now
-
-  if (tokenPrice.type === 'dispenser') {
-    accessDetails.type = 'free'
-    accessDetails.addressOrId = tokenPrice.contract
-    accessDetails.price = '0'
-  } else if (tokenPrice.type === 'fixedrate') {
-    accessDetails.type = 'fixed'
-    accessDetails.addressOrId = tokenPrice.exchangeId
-    accessDetails.price = tokenPrice.price
-    accessDetails.baseToken = {
-      address: tokenPrice.token.address,
-      name: tokenPrice.token.name,
-      symbol: tokenPrice.token.symbol,
-      decimals: tokenPrice.token.decimals
+  // if there is at least 1 dispenser => service is free and use first dispenser
+  const dispensers = await datatoken.getDispensers(datatokenAddress)
+  if (dispensers.length > 0) {
+    return {
+      ...accessDetails,
+      type: 'free',
+      addressOrId: dispensers[0],
+      price: '0'
     }
-  } else {
-    // unsupported type
-    return accessDetails
   }
 
-  accessDetails.datatoken = {
-    address: serviceStat.datatokenAddress,
-    name: serviceStat.name,
-    symbol: serviceStat.symbol
+  // if there is 0 dispensers and at least 1 fixed rate => use first fixed rate to get the price details
+  const fixedRates = await datatoken.getFixedRates(datatokenAddress)
+  if (fixedRates.length > 0) {
+    const freAddress = fixedRates[0].contractAddress
+    const exchangeId = fixedRates[0].id
+    const fre = new FixedRateExchange(freAddress, signer)
+    const exchange = await fre.getExchange(exchangeId)
+
+    return {
+      ...accessDetails,
+      type: 'fixed',
+      addressOrId: exchangeId,
+      price: exchange.fixedRate,
+      baseToken: {
+        address: exchange.baseToken,
+        name: await datatoken.getName(exchange.baseToken), // reuse the datatoken instance since it is ERC20
+        symbol: await datatoken.getSymbol(exchange.baseToken),
+        decimals: parseInt(exchange.btDecimals)
+      }
+    }
   }
 
-  // TODO
-  accessDetails.templateId = 1
-  accessDetails.isPurchasable = true
-  accessDetails.isOwned = false
-  accessDetails.validOrderTx = '' // should be possible to get from ocean-node - orders collection in typesense
-  accessDetails.publisherMarketOrderFee = '0'
-
+  // no dispensers and no fixed rates => service doesn't have price set up
   return accessDetails
 }
 
@@ -184,27 +188,6 @@ export function getAvailablePrice(accessDetails: AccessDetails): AssetPrice {
   const price: AssetPrice = {
     value: Number(accessDetails.price),
     tokenSymbol: accessDetails.baseToken?.symbol,
-    tokenAddress: accessDetails.baseToken?.address
-  }
-
-  return price
-}
-
-export function getAvailablePriceOffchain(
-  services: ServiceStat[],
-  serviceId: string,
-  accessDetails: AccessDetails,
-  chainId: number
-): AssetPrice {
-  const service = services.find((service) => service.serviceId === serviceId)
-  let value = Number(accessDetails.price)
-  if (service && service.prices && service.prices.length > 0) {
-    value = Number(service.prices[0].price)
-  }
-  const price: AssetPrice = {
-    value,
-    tokenSymbol:
-      accessDetails.baseToken?.symbol || (chainId === 137 ? 'mOCEAN' : 'OCEAN'),
     tokenAddress: accessDetails.baseToken?.address
   }
 

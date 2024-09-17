@@ -80,19 +80,18 @@ export default function AssetContent({
             <>
               {selectedService === undefined ? (
                 <>
-                  <h3>Available services</h3>
+                  <h3>Available services:</h3>
                   <h4>Please select one of the following:</h4>
-                  {asset.services.map((service, index) => (
-                    <ServiceCard
-                      key={service.id}
-                      service={service}
-                      price={
-                        asset?.offchain?.stats?.services[index]?.prices[0]
-                          ?.price || '0'
-                      }
-                      onClick={() => setSelectedService(index)}
-                    />
-                  ))}
+                  <div className={styles.servicesGrid}>
+                    {asset.services.map((service, index) => (
+                      <ServiceCard
+                        key={service.id}
+                        service={service}
+                        accessDetails={asset.accessDetails[index]}
+                        onClick={() => setSelectedService(index)}
+                      />
+                    ))}
+                  </div>
                 </>
               ) : (
                 <AssetActions

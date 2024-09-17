@@ -3,6 +3,9 @@
   border: var(--box-template-border-size) solid var(--box-template-border-color);
   cursor: pointer;
   padding: calc(var(--spacer) * 0.5) var(--spacer);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .service:hover {

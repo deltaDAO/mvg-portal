@@ -32,7 +32,8 @@ import {
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
   customProviderUrl,
-  defaultAccessTerms
+  defaultAccessTerms,
+  defaultDatatokenCap
 } from '../../../app.config'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
@@ -292,7 +293,7 @@ export async function createTokensAndPricing(
       values.pricing.baseToken.address,
     feeAmount: publisherMarketOrderFee,
     // max number
-    cap: '115792089237316195423570985008687907853269984665640564039457',
+    cap: defaultDatatokenCap,
     name: values.services[0].dataTokenOptions.name,
     symbol: values.services[0].dataTokenOptions.symbol
   }

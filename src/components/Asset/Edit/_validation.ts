@@ -4,9 +4,42 @@ import { isAddress } from 'ethers/lib/utils'
 import { testLinks } from '@utils/yup'
 import { validationConsumerParameters } from '@shared/FormInput/InputElement/ConsumerParameters/_validation'
 
-export const validationSchema = Yup.object().shape({
+export const metadataValidationSchema = Yup.object().shape({
   name: Yup.string()
     .min(4, (param) => `Title must be at least ${param.min} characters`)
+    .required('Required'),
+  description: Yup.string().required('Required').min(10),
+  links: Yup.array<FileInfo[]>().of(
+    Yup.object().shape({
+      url: testLinks(true),
+      valid: Yup.boolean().test((value, context) => {
+        // allow user to submit if the value is null
+        const { valid, url } = context.parent
+        // allow user to continue if the url is empty
+        if (!url) return true
+        return valid
+      })
+    })
+  ),
+  tags: Yup.array<string[]>().nullable(),
+  usesConsumerParameters: Yup.boolean(),
+  consumerParameters: Yup.array().when('usesConsumerParameters', {
+    is: true,
+    then: Yup.array()
+      .of(Yup.object().shape(validationConsumerParameters))
+      .required('Required'),
+    otherwise: Yup.array()
+      .nullable()
+      .transform((value) => value || null)
+  }),
+  allow: Yup.array().of(Yup.string()).nullable(),
+  deny: Yup.array().of(Yup.string()).nullable(),
+  retireAsset: Yup.string()
+})
+
+export const serviceValidationSchema = Yup.object().shape({
+  name: Yup.string()
+    .min(4, (param) => `Name must be at least ${param.min} characters`)
     .required('Required'),
   description: Yup.string().required('Required').min(10),
   price: Yup.number().required('Required'),
@@ -23,20 +56,7 @@ export const validationSchema = Yup.object().shape({
       })
     )
     .nullable(),
-  links: Yup.array<FileInfo[]>().of(
-    Yup.object().shape({
-      url: testLinks(true),
-      valid: Yup.boolean().test((value, context) => {
-        // allow user to submit if the value is null
-        const { valid, url } = context.parent
-        // allow user to continue if the url is empty
-        if (!url) return true
-        return valid
-      })
-    })
-  ),
   timeout: Yup.string().required('Required'),
-  tags: Yup.array<string[]>().nullable(),
   usesConsumerParameters: Yup.boolean(),
   consumerParameters: Yup.array().when('usesConsumerParameters', {
     is: true,
@@ -47,8 +67,6 @@ export const validationSchema = Yup.object().shape({
       .nullable()
       .transform((value) => value || null)
   }),
-  allow: Yup.array().of(Yup.string()).nullable(),
-  deny: Yup.array().of(Yup.string()).nullable(),
   paymentCollector: Yup.string().test(
     'ValidAddress',
     'Must be a valid Ethereum Address.',
@@ -56,22 +74,6 @@ export const validationSchema = Yup.object().shape({
       return isAddress(value)
     }
   ),
-  retireAsset: Yup.string(),
-  service: Yup.object().shape({
-    usesConsumerParameters: Yup.boolean(),
-    consumerParameters: Yup.array().when('usesConsumerParameters', {
-      is: true,
-      then: Yup.array()
-        .of(Yup.object().shape(validationConsumerParameters))
-        .required('Required'),
-      otherwise: Yup.array()
-        .nullable()
-        .transform((value) => value || null)
-    })
-  })
-})
-
-export const computeSettingsValidationSchema = Yup.object().shape({
   allowAllPublishedAlgorithms: Yup.boolean().nullable(),
   publisherTrustedAlgorithms: Yup.array().nullable(),
   publisherTrustedAlgorithmPublishers: Yup.array().nullable()

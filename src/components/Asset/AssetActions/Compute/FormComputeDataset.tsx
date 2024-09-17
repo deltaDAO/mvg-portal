@@ -106,28 +106,8 @@ export default function FormStartCompute({
   const { isAssetNetwork } = useAsset() // TODO - is this needed?
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
-    null
+    accessDetails.price
   )
-
-  useEffect(() => {
-    if (asset.offchain && asset.offchain.stats?.services) {
-      const matchingService = asset.offchain.stats.services.find(
-        (offchainService) => offchainService.serviceId === service.id
-      )
-
-      if (
-        matchingService &&
-        matchingService.prices &&
-        matchingService.prices.length > 0
-      ) {
-        setDatasetOrderPrice(matchingService.prices[0].price)
-      } else {
-        setDatasetOrderPrice(accessDetails.price || null)
-      }
-    } else {
-      setDatasetOrderPrice(accessDetails.price || null)
-    }
-  }, [asset.offchain, service.id, accessDetails.price])
 
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
@@ -173,14 +153,9 @@ export default function FormStartCompute({
     async function fetchAlgorithmAssetExtended() {
       // TODO test this type override
       const algorithmAsset: AssetExtended = getAlgorithmAsset(values.algorithm)
-
       const algoAccessDetails = await Promise.all(
         algorithmAsset.services.map((service) =>
-          getAccessDetails(
-            algorithmAsset.offchain?.stats.services.find(
-              (s) => s.serviceId === service.id
-            )
-          )
+          getAccessDetails(algorithmAsset.chainId, service)
         )
       )
 
