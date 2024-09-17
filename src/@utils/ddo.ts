@@ -1,6 +1,6 @@
 import {
-  ComputeEditForm,
-  MetadataEditForm
+  MetadataEditForm,
+  ServiceEditForm
 } from '@components/Asset/Edit/_types'
 import {
   FormConsumerParameter,
@@ -25,6 +25,7 @@ export function isValidDid(did: string): boolean {
   return regex.test(did)
 }
 
+// TODO: this function doesn't make sense, since market is now supporting multiple services. We should remove it after checking all the flows where it's being used.
 export function getServiceByName(
   ddo: Asset | DDO,
   name: 'access' | 'compute'
@@ -171,24 +172,11 @@ export function normalizeFile(
 }
 
 export function previewDebugPatch(
-  values: FormPublishData | Partial<MetadataEditForm> | ComputeEditForm,
-  chainId: number
+  values: FormPublishData | MetadataEditForm | ServiceEditForm
 ) {
   // handle file's object property dynamically
   // without braking Yup and type validation
   const buildValuesPreview = JSON.parse(JSON.stringify(values))
-
-  // fallback for edit mode under "edit compute settings"
-  if (!buildValuesPreview.services) return buildValuesPreview
-
-  const valuesService = buildValuesPreview.services
-    ? buildValuesPreview.services[0]
-    : buildValuesPreview
-  valuesService.files[0] = normalizeFile(
-    valuesService.files[0].type,
-    valuesService.files[0],
-    chainId
-  )
 
   return buildValuesPreview
 }

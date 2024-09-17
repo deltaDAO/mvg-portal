@@ -3,56 +3,42 @@ import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { useAsset } from '@context/Asset'
-import { FormPublishData } from '@components/Publish/_types'
 import { getFileInfo } from '@utils/provider'
 import { getFieldContent } from '@utils/form'
 import { isGoogleUrl } from '@utils/url'
 import { MetadataEditForm } from './_types'
+import content from '../../../../content/pages/editMetadata.json'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
-import styles from './FormEditMetadata.module.css'
+import IconDataset from '@images/dataset.svg'
+import IconAlgorithm from '@images/algorithm.svg'
+import { BoxSelectionOption } from '@components/@shared/FormInput/InputElement/BoxSelection'
 
-export function checkIfTimeoutInPredefinedValues(
-  timeout: string,
-  timeoutOptions: string[]
-): boolean {
-  if (timeoutOptions.indexOf(timeout) > -1) {
-    return true
-  }
-  return false
-}
+const { data } = content.form
+const assetTypeOptionsTitles = getFieldContent('type', data).options
 
-export default function FormEditMetadata({
-  data,
-  showPrice,
-  isComputeDataset
-}: {
-  data: FormFieldContent[]
-  showPrice: boolean
-  isComputeDataset: boolean
-}): ReactElement {
+export default function FormEditMetadata(): ReactElement {
   const { asset } = useAsset()
-  const { values, setFieldValue } = useFormikContext<FormPublishData>()
+  const { values, setFieldValue } = useFormikContext<MetadataEditForm>()
 
-  // This component is handled by Formik so it's not rendered like a "normal" react component,
-  // so handleTimeoutCustomOption is called only once.
-  // https://github.com/oceanprotocol/market/pull/324#discussion_r561132310
-  // if (data && values) handleTimeoutCustomOption(data, values)
-
-  const timeoutOptionsArray = data.filter(
-    (field) => field.name === 'timeout'
-  )[0].options as string[]
-
-  if (isComputeDataset && timeoutOptionsArray.includes('Forever')) {
-    const foreverOptionIndex = timeoutOptionsArray.indexOf('Forever')
-    timeoutOptionsArray.splice(foreverOptionIndex, 1)
-  } else if (!isComputeDataset && !timeoutOptionsArray.includes('Forever')) {
-    timeoutOptionsArray.push('Forever')
-  }
+  // BoxSelection component is not a Formik component
+  // so we need to handle checked state manually.
+  const assetTypeOptions: BoxSelectionOption[] = [
+    {
+      name: assetTypeOptionsTitles[0].toLowerCase(),
+      title: assetTypeOptionsTitles[0],
+      checked: values.type === assetTypeOptionsTitles[0].toLowerCase(),
+      icon: <IconDataset />
+    },
+    {
+      name: assetTypeOptionsTitles[1].toLowerCase(),
+      title: assetTypeOptionsTitles[1],
+      checked: values.type === assetTypeOptionsTitles[1].toLowerCase(),
+      icon: <IconAlgorithm />
+    }
+  ]
 
   useEffect(() => {
-    const providerUrl = values?.services
-      ? values?.services[0].providerUrl.url
-      : asset.services[0].serviceEndpoint
+    const providerUrl = asset.services[0].serviceEndpoint
 
     // if we have a sample file, we need to get the files' info before setting defaults links value
     asset?.metadata?.links?.[0] &&
@@ -82,6 +68,14 @@ export default function FormEditMetadata({
 
   return (
     <Form>
+      <Field
+        {...getFieldContent('type', data)}
+        component={Input}
+        name="metadata.type"
+        options={assetTypeOptions}
+        disabled={true} // just for view purposes
+      />
+
       <Field {...getFieldContent('name', data)} component={Input} name="name" />
 
       <Field
@@ -90,30 +84,10 @@ export default function FormEditMetadata({
         name="description"
       />
 
-      {showPrice && (
-        <Field
-          {...getFieldContent('price', data)}
-          component={Input}
-          name="price"
-        />
-      )}
-
-      <Field
-        {...getFieldContent('files', data)}
-        component={Input}
-        name="files"
-      />
-
       <Field
         {...getFieldContent('links', data)}
         component={Input}
         name="links"
-      />
-
-      <Field
-        {...getFieldContent('timeout', data)}
-        component={Input}
-        name="timeout"
       />
 
       <Field {...getFieldContent('tags', data)} component={Input} name="tags" />
@@ -143,41 +117,19 @@ export default function FormEditMetadata({
         name="allow"
       />
       <Field {...getFieldContent('deny', data)} component={Input} name="deny" />
-      <Field
-        {...getFieldContent('paymentCollector', data)}
-        component={Input}
-        name="paymentCollector"
-      />
+
       <Field
         {...getFieldContent('assetState', data)}
         component={Input}
         name="assetState"
       />
-      <div className={styles.serviceContainer}>
-        <h4>Service</h4>
 
-        <Field
-          {...getFieldContent('usesServiceConsumerParameters', data)}
-          component={Input}
-          name="service.usesConsumerParameters"
-        />
-        {(values as unknown as MetadataEditForm).service
-          .usesConsumerParameters && (
-          <Field
-            {...getFieldContent(
-              'consumerParameters',
-              consumerParametersContent.consumerParameters.fields
-            )}
-            component={Input}
-            name="service.consumerParameters"
-          />
-        )}
-      </div>
       <Field
         {...getFieldContent('license', data)}
         component={Input}
         name="license"
       />
+
       <FormActions />
     </Form>
   )

@@ -38,6 +38,7 @@ export default function BoxSelection({
             <input
               id={option.name}
               defaultChecked={option.checked}
+              checked={option.checked}
               onChange={(event) => handleChange(event)}
               {...props}
               type="radio"
