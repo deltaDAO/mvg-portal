@@ -1,0 +1,41 @@
+.timeout {
+  display: block;
+  text-align: right;
+  font-size: var(--font-size-mini);
+  color: var(--color-secondary);
+}
+
+.priceRow {
+  width: 100%;
+  border-bottom: 1px solid var(--border-color);
+  padding-top: calc(var(--spacer) / 7);
+  padding-bottom: calc(var(--spacer) / 7);
+  display: grid;
+  grid-template-columns: 5% 1fr 10%;
+  column-gap: calc(var(--spacer) / 10);
+}
+
+.priceRow:last-child {
+  border-bottom: none;
+  border-top: 1px solid var(--border-color);
+}
+
+.sign {
+  display: inline-block;
+  text-align: left;
+  color: var(--color-secondary);
+  font-size: var(--font-size-base);
+}
+
+.type {
+  display: inline-block;
+  text-align: left;
+  color: var(--color-secondary);
+  font-size: var(--font-size-mini);
+}
+
+.priceColumn {
+  display: grid;
+  text-align: right;
+  width: 100%;
+}

@@ -81,6 +81,7 @@ export default function AssetContent({
               {selectedService === undefined ? (
                 <>
                   <h3>Available services:</h3>
+                  <h4>Please select one of the following:</h4>
                   <div className={styles.servicesGrid}>
                     {asset.services.map((service, index) => (
                       <ServiceCard

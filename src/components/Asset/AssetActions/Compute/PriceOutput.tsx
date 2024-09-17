@@ -5,6 +5,7 @@ import Tooltip from '@shared/atoms/Tooltip'
 import styles from './PriceOutput.module.css'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
+import { Row } from '../Row'
 
 interface PriceOutputProps {
   hasPreviousOrder: boolean
@@ -22,46 +23,7 @@ interface PriceOutputProps {
   providerFeesSymbol?: string
   validUntil?: string
   totalPrices?: totalPriceMap[]
-}
-
-function Row({
-  price,
-  hasPreviousOrder,
-  hasDatatoken,
-  symbol,
-  timeout,
-  sign,
-  type
-}: {
-  price: string
-  hasPreviousOrder?: boolean
-  hasDatatoken?: boolean
-  symbol?: string
-  timeout?: string
-  sign?: string
-  type?: string
-}) {
-  return (
-    <div className={styles.priceRow}>
-      <div className={styles.sign}>{sign}</div>
-      <div className={styles.type}>{type}</div>
-      <div>
-        <PriceUnit
-          price={hasPreviousOrder || hasDatatoken ? 0 : Number(price)}
-          symbol={symbol}
-          size="small"
-          className={styles.price}
-          explicitZero
-        />
-        <span className={styles.timeout}>
-          {timeout &&
-            timeout !== 'Forever' &&
-            !hasPreviousOrder &&
-            `for ${timeout}`}
-        </span>
-      </div>
-    </div>
-  )
+  showInformation?: boolean
 }
 
 export default function PriceOutput({
@@ -79,7 +41,8 @@ export default function PriceOutput({
   providerFeeAmount,
   providerFeesSymbol,
   validUntil,
-  totalPrices
+  totalPrices,
+  showInformation
 }: PriceOutputProps): ReactElement {
   const { asset } = useAsset()
 
@@ -87,7 +50,9 @@ export default function PriceOutput({
     <div className={styles.priceComponent}>
       {totalPrices ? (
         totalPrices.length === 0 ? (
-          <>Select an algorithm to calculate the Compute Job price</>
+          showInformation && (
+            <>Select an algorithm to calculate the Compute Job price</>
+          )
         ) : (
           <>
             {totalPrices.every((price) => price.value === '0') ? (
@@ -97,65 +62,72 @@ export default function PriceOutput({
             ) : (
               <>
                 You will pay{' '}
-                {totalPrices.map((item, index) => (
-                  <div key={item.symbol}>
-                    <PriceUnit
-                      price={Number(item.value)}
-                      symbol={item.symbol}
-                      size="small"
-                      explicitZero
-                    />
-                    {index < totalPrices.length - 1 && <>&nbsp;{'&'}&nbsp;</>}
-                  </div>
-                ))}
+                {totalPrices
+                  .filter((item) => item.value !== '0')
+                  .map((item, index) => (
+                    <div key={item.symbol}>
+                      <PriceUnit
+                        price={Number(item.value)}
+                        symbol={item.symbol}
+                        size="small"
+                        explicitZero
+                      />
+                      {index <
+                        totalPrices.filter((item) => item.value !== '0')
+                          .length -
+                          1 && <>&nbsp;{'&'}&nbsp;</>}
+                    </div>
+                  ))}
               </>
             )}
-            <Tooltip
-              content={
-                <div className={styles.calculation}>
-                  <Row
-                    hasPreviousOrder={hasPreviousOrder}
-                    hasDatatoken={hasDatatoken}
-                    price={new Decimal(
-                      datasetOrderPrice || asset?.accessDetails?.price || 0
-                    )
-                      .toDecimalPlaces(MAX_DECIMALS)
-                      .toString()}
-                    timeout={assetTimeout}
-                    symbol={symbol}
-                    type="DATASET"
-                  />
-                  <Row
-                    hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
-                    hasDatatoken={hasDatatokenSelectedComputeAsset}
-                    price={new Decimal(
-                      algoOrderPrice || algorithmConsumeDetails?.price || 0
-                    )
-                      .toDecimalPlaces(MAX_DECIMALS)
-                      .toString()}
-                    timeout={selectedComputeAssetTimeout}
-                    symbol={algorithmSymbol}
-                    sign="+"
-                    type="ALGORITHM"
-                  />
-                  <Row
-                    price={providerFeeAmount} // initializeCompute.provider fee amount
-                    timeout={`${validUntil} seconds`} // valid until value
-                    symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
-                    sign="+"
-                    type="C2D RESOURCES"
-                  />
-                  {totalPrices.map((item, index) => (
+            {showInformation && (
+              <Tooltip
+                content={
+                  <div className={styles.calculation}>
                     <Row
-                      price={item.value}
-                      symbol={item.symbol}
-                      sign={index === 0 ? '=' : '&'}
-                      key={item.symbol}
+                      hasPreviousOrder={hasPreviousOrder}
+                      hasDatatoken={hasDatatoken}
+                      price={new Decimal(
+                        datasetOrderPrice || asset?.accessDetails[0]?.price || 0
+                      )
+                        .toDecimalPlaces(MAX_DECIMALS)
+                        .toString()}
+                      timeout={assetTimeout}
+                      symbol={symbol}
+                      type="DATASET"
                     />
-                  ))}
-                </div>
-              }
-            />
+                    <Row
+                      hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
+                      hasDatatoken={hasDatatokenSelectedComputeAsset}
+                      price={new Decimal(
+                        algoOrderPrice || algorithmConsumeDetails?.price || 0
+                      )
+                        .toDecimalPlaces(MAX_DECIMALS)
+                        .toString()}
+                      timeout={selectedComputeAssetTimeout}
+                      symbol={algorithmSymbol}
+                      sign="+"
+                      type="ALGORITHM"
+                    />
+                    <Row
+                      price={providerFeeAmount} // initializeCompute.provider fee amount
+                      timeout={`${validUntil} seconds`} // valid until value
+                      symbol={providerFeesSymbol} // we assume that provider fees will always be in OCEAN token
+                      sign="+"
+                      type="C2D RESOURCES"
+                    />
+                    {totalPrices.map((item, index) => (
+                      <Row
+                        price={item.value}
+                        symbol={item.symbol}
+                        sign={index === 0 ? '=' : '&'}
+                        key={item.symbol}
+                      />
+                    ))}
+                  </div>
+                }
+              />
+            )}
           </>
         )
       ) : (

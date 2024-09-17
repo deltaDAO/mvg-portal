@@ -150,16 +150,20 @@ export default function Compute({
   const isUnsupportedPricing = accessDetails.type === 'NOT_SUPPORTED'
 
   async function checkAssetDTBalance(algoAsset: AssetExtended | undefined) {
-    if (!algoAsset?.services[0].datatokenAddress) return
-    const dummySigner = await getDummySigner(algoAsset?.chainId)
-    const datatokenInstance = new Datatoken(dummySigner)
-    const dtBalance = await datatokenInstance.balance(
-      algoAsset?.services[0].datatokenAddress,
-      accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
-    )
-    setAlgorithmDTBalance(new Decimal(dtBalance).toString())
-    const hasAlgoDt = Number(dtBalance) >= 1
-    setHasAlgoAssetDatatoken(hasAlgoDt)
+    try {
+      if (!algoAsset?.services[0].datatokenAddress) return
+      const dummySigner = await getDummySigner(algoAsset?.chainId)
+      const datatokenInstance = new Datatoken(dummySigner)
+      const dtBalance = await datatokenInstance.balance(
+        algoAsset?.services[0].datatokenAddress,
+        accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
+      )
+      setAlgorithmDTBalance(new Decimal(dtBalance).toString())
+      const hasAlgoDt = Number(dtBalance) >= 1
+      setHasAlgoAssetDatatoken(hasAlgoDt)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   async function setComputeFees(
@@ -243,7 +247,6 @@ export default function Compute({
     try {
       if (!selectedComputeEnv || !selectedComputeEnv.id)
         throw new Error(`Error getting compute environment!`)
-
       const initializedProvider = await initializeProviderForCompute(
         asset,
         service,
@@ -252,14 +255,12 @@ export default function Compute({
         accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
         selectedComputeEnv
       )
-
       if (
         !initializedProvider ||
         !initializedProvider?.datasets ||
         !initializedProvider?.algorithm
       )
         throw new Error(`Error initializing provider for the compute job!`)
-
       setComputeStatusText(
         getComputeFeedback(
           accessDetails.baseToken?.symbol,
@@ -267,7 +268,6 @@ export default function Compute({
           asset.metadata.type
         )[0]
       )
-
       await setDatasetPrice(initializedProvider?.datasets?.[0]?.providerFee)
       setComputeStatusText(
         getComputeFeedback(
@@ -276,7 +276,6 @@ export default function Compute({
           selectedAlgorithmAsset?.metadata?.type
         )[0]
       )
-
       await setAlgoPrice(initializedProvider?.algorithm?.providerFee)
       const sanitizedResponse = await setComputeFees(initializedProvider)
       setInitializedProviderResponse(sanitizedResponse)
@@ -305,13 +304,11 @@ export default function Compute({
       selectedAlgorithmAsset?.accessDetails?.[0]?.validOrderTx
     )
     setAlgoOrderPriceAndFees(null)
-
     async function initSelectedAlgo() {
       await checkAssetDTBalance(selectedAlgorithmAsset)
       await initPriceAndFees()
       setIsRequestingAlgoOrderPrice(false)
     }
-
     initSelectedAlgo()
   }, [selectedAlgorithmAsset, accountId, selectedComputeEnv])
 

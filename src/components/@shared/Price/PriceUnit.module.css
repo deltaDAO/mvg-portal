@@ -35,6 +35,18 @@
   font-size: var(--font-size-small);
 }
 
+.priceNumber.mini {
+  display: inline-block;
+  font-size: var(--font-size-mini);
+  font-weight: bolder;
+}
+
+.priceNumber.small {
+  display: inline-block;
+  font-size: var(--font-size-small);
+  font-weight: bolder;
+}
+
 .price.mini .symbol {
   font-size: var(--font-size-mini);
 }

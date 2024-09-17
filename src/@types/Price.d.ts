@@ -50,7 +50,6 @@ declare global {
     validProviderFees?: ProviderFees
     paymentCollector: string
   }
-
   interface PricePublishOptions {
     price: number
     baseToken: TokenInfo

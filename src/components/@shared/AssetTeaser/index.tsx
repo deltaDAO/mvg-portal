@@ -32,7 +32,7 @@ export default function AssetTeaser({
   const isUnsupportedPricing =
     !asset.services.length ||
     price?.value === undefined ||
-    asset?.accessDetails[0].type === 'NOT_SUPPORTED'
+    (asset?.accessDetails && asset?.accessDetails[0].type === 'NOT_SUPPORTED')
   const { locale } = useUserPreferences()
 
   return (

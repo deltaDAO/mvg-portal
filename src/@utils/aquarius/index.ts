@@ -4,7 +4,6 @@ import axios, { CancelToken, AxiosResponse } from 'axios'
 import { OrdersData_orders as OrdersData } from '../../@types/subgraph/OrdersData'
 import { metadataCacheUri, allowDynamicPricing } from '../../../app.config'
 import {
-  FilterByTypeOptions,
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
@@ -102,14 +101,6 @@ FilterTerm | undefined {
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams
 ): SearchQuery {
-  const isMetadataTypeSelected = !!baseQueryParams?.filters?.find((e) =>
-    Object.hasOwn(e, 'term')
-      ? Object.keys(e?.term)?.includes('metadata.type')
-      : Object.hasOwn(e, 'terms')
-      ? Object.keys(e?.terms)?.includes('metadata.type')
-      : false
-  )
-
   const generatedQuery = {
     from: baseQueryParams.esPaginationOptions?.from || 0,
     size:
@@ -124,7 +115,6 @@ export function generateBaseQuery(
           ...(baseQueryParams.chainIds
             ? [getFilterTerm('chainId', baseQueryParams.chainIds)]
             : []),
-          getFilterTerm('_index', 'aquarius'),
           ...(baseQueryParams.ignorePurgatory
             ? []
             : [getFilterTerm('purgatory.state', false)]),
@@ -169,7 +159,7 @@ export function generateBaseQuery(
 }
 
 export function transformQueryResult(
-  queryResult: SearchResponse,
+  queryResult: SearchResult[],
   from = 0,
   size = 21
 ): PagedAssets {
@@ -180,23 +170,15 @@ export function transformQueryResult(
     totalResults: 0,
     aggregations: []
   }
+  const flattenedResults = queryResult.flat()
 
-  result.results = (queryResult.hits.hits || []).map(
-    (hit) => hit._source as Asset
-  )
+  result.results = flattenedResults.map((hit: any) => hit._source || hit)
 
-  result.aggregations = queryResult.aggregations
-  // Temporary fix to handle old Aquarius deployment
-  result.totalResults =
-    queryResult.hits.total?.value ||
-    (queryResult.hits.total as unknown as number)
+  result.totalResults = flattenedResults.length
 
-  result.totalPages =
-    result.totalResults / size < 1
-      ? Math.floor(result.totalResults / size)
-      : Math.ceil(result.totalResults / size)
-  result.page = from ? from / size + 1 : 1
+  result.totalPages = Math.ceil(result.totalResults / size)
 
+  result.page = from ? Math.floor(from / size) + 1 : 1
   return result
 }
 
@@ -206,13 +188,16 @@ export async function queryMetadata(
 ): Promise<PagedAssets> {
   try {
     const response: AxiosResponse<SearchResponse> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/query`,
+      `${metadataCacheUri}/api/aquarius/assets/metadata/query`,
       { ...query },
       { cancelToken }
     )
     if (!response || response.status !== 200 || !response.data) return
-
-    return transformQueryResult(response.data, query.from, query.size)
+    return transformQueryResult(
+      response.data as any as SearchResult[],
+      query.from,
+      query.size
+    )
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)
