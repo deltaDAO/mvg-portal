@@ -100,6 +100,12 @@ export default function Download({
   }, [asset.nft.state])
 
   useEffect(() => {
+    if (asset.accessDetails[0]?.type === 'free') {
+      setIsFullPriceLoading(false)
+    }
+  }, [asset])
+
+  useEffect(() => {
     if (isUnsupportedPricing) return
 
     setIsOwned(accessDetails.isOwned || false)
