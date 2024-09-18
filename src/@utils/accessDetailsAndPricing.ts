@@ -139,8 +139,8 @@ export async function getAccessDetails(
       decimals: 0
     },
     paymentCollector: await datatoken.getPaymentCollector(datatokenAddress),
-    // TODO these 5 records
-    templateId: 1,
+    templateId: await datatoken.getId(datatokenAddress),
+    // TODO these 4 records
     isOwned: false,
     validOrderTx: '', // should be possible to get from ocean-node - orders collection in typesense
     isPurchasable: true,
