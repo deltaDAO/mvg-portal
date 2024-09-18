@@ -526,11 +526,17 @@ export async function getTagsList(
 
   try {
     const response: AxiosResponse<SearchResponse> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/query`,
+      `${metadataCacheUri}/api/aquarius/assets/metadata/query`,
       { ...query },
       { cancelToken }
     )
-    if (response?.status !== 200 || !response?.data) return
+    // TODO check if this is the correct way to check for an empty response
+    if (
+      response?.status !== 200 ||
+      !response?.data ||
+      (Array.isArray(response.data) && response.data.length === 0)
+    )
+      return []
     const { buckets }: { buckets: AggregatedTag[] } =
       response.data.aggregations.tags
 
