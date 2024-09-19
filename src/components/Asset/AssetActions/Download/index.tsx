@@ -23,7 +23,6 @@ import {
 } from '@utils/accessDetailsAndPricing'
 import { toast } from 'react-toastify'
 import { useIsMounted } from '@hooks/useIsMounted'
-import { useMarketMetadata } from '@context/MarketMetadata'
 import Alert from '@shared/atoms/Alert'
 import Loader from '@shared/atoms/Loader'
 import { useAccount } from 'wagmi'
@@ -73,7 +72,6 @@ export default function Download({
 }): ReactElement {
   const { isConnected } = useAccount()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { getOpcFeeForToken } = useMarketMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
   const isMounted = useIsMounted()
 
@@ -82,7 +80,9 @@ export default function Download({
   const [statusText, setStatusText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isPriceLoading, setIsPriceLoading] = useState(false)
-  const [isFullPriceLoading, setIsFullPriceLoading] = useState(true)
+  const [isFullPriceLoading, setIsFullPriceLoading] = useState(
+    asset.accessDetails[0]?.type !== 'free'
+  )
   const [isOwned, setIsOwned] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')
   const [isOrderDisabled, setIsOrderDisabled] = useState(false)
@@ -330,7 +330,9 @@ export default function Download({
           <div className={styles.calculation}>
             <Row
               hasDatatoken={hasDatatoken}
-              price={new Decimal(price.value || 0)
+              price={new Decimal(
+                Number(orderPriceAndFees?.price) || price.value || 0
+              )
                 .toDecimalPlaces(MAX_DECIMALS)
                 .toString()}
               symbol={price.tokenSymbol}
@@ -339,7 +341,9 @@ export default function Download({
             <Row
               price={new Decimal(consumeMarketFixedSwapFee)
                 .mul(
-                  new Decimal(price.value || 0)
+                  new Decimal(
+                    Number(orderPriceAndFees?.price) || price.value || 0
+                  )
                     .toDecimalPlaces(MAX_DECIMALS)
                     .div(100)
                 )
@@ -349,11 +353,15 @@ export default function Download({
             />
             <Row
               price={new Decimal(
-                new Decimal(price.value || 0).toDecimalPlaces(MAX_DECIMALS)
+                new Decimal(
+                  Number(orderPriceAndFees?.price) || price.value || 0
+                ).toDecimalPlaces(MAX_DECIMALS)
               )
                 .add(
                   new Decimal(consumeMarketFixedSwapFee).mul(
-                    new Decimal(price.value || 0)
+                    new Decimal(
+                      Number(orderPriceAndFees?.price) || price.value || 0
+                    )
                       .toDecimalPlaces(MAX_DECIMALS)
                       .div(100)
                   )

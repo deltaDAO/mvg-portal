@@ -10,7 +10,6 @@ export default function Price({
 }: {
   price: AssetPrice
   orderPriceAndFees?: OrderPriceAndFees
-  assetId?: string
   className?: string
   size?: 'small' | 'mini' | 'large'
 }): ReactElement {

@@ -19,7 +19,6 @@ export default function PriceUnit({
   explicitZero?: boolean
 }): ReactElement {
   const { locale } = useUserPreferences()
-
   return (
     <div className={`${styles.price} ${styles[size]} ${className}`}>
       {price === 0 && !explicitZero ? (
