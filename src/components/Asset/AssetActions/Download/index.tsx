@@ -330,7 +330,9 @@ export default function Download({
           <div className={styles.calculation}>
             <Row
               hasDatatoken={hasDatatoken}
-              price={new Decimal(price.value || 0)
+              price={new Decimal(
+                Number(orderPriceAndFees?.price) || price.value || 0
+              )
                 .toDecimalPlaces(MAX_DECIMALS)
                 .toString()}
               symbol={price.tokenSymbol}
@@ -339,7 +341,9 @@ export default function Download({
             <Row
               price={new Decimal(consumeMarketFixedSwapFee)
                 .mul(
-                  new Decimal(price.value || 0)
+                  new Decimal(
+                    Number(orderPriceAndFees?.price) || price.value || 0
+                  )
                     .toDecimalPlaces(MAX_DECIMALS)
                     .div(100)
                 )
@@ -349,11 +353,15 @@ export default function Download({
             />
             <Row
               price={new Decimal(
-                new Decimal(price.value || 0).toDecimalPlaces(MAX_DECIMALS)
+                new Decimal(
+                  Number(orderPriceAndFees?.price) || price.value || 0
+                ).toDecimalPlaces(MAX_DECIMALS)
               )
                 .add(
                   new Decimal(consumeMarketFixedSwapFee).mul(
-                    new Decimal(price.value || 0)
+                    new Decimal(
+                      Number(orderPriceAndFees?.price) || price.value || 0
+                    )
                       .toDecimalPlaces(MAX_DECIMALS)
                       .div(100)
                   )

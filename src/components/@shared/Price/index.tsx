@@ -16,7 +16,7 @@ export default function Price({
   if (!price && !orderPriceAndFees) return
   return (
     <PriceUnit
-      price={price?.value || Number(orderPriceAndFees?.price)}
+      price={Number(orderPriceAndFees?.price) || price?.value}
       symbol={price?.tokenSymbol}
       className={className}
       size={size}
