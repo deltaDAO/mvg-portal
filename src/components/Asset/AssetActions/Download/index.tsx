@@ -81,7 +81,7 @@ export default function Download({
   const [isLoading, setIsLoading] = useState(false)
   const [isPriceLoading, setIsPriceLoading] = useState(false)
   const [isFullPriceLoading, setIsFullPriceLoading] = useState(
-    asset.accessDetails[0]?.type !== 'free'
+    accessDetails.type !== 'free'
   )
   const [isOwned, setIsOwned] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')

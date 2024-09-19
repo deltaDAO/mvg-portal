@@ -115,7 +115,7 @@ export default function FormStartCompute({
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const [isFullPriceLoading, setIsFullPriceLoading] = useState(
-    asset.accessDetails[0]?.type !== 'free'
+    accessDetails.type !== 'free'
   )
 
   function getAlgorithmAsset(algorithmId: string): Asset {
