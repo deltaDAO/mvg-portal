@@ -26,6 +26,7 @@ import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { transformConsumerParameters } from '@components/Publish/_utils'
 import {
   defaultDatatokenCap,
+  defaultDatatokenTemplateIndex,
   marketFeeAddress,
   publisherMarketFixedSwapFee
 } from 'app.config'
@@ -81,7 +82,7 @@ export default function AddService({
         defaultDatatokenCap,
         'DataToken',
         'DT',
-        1
+        defaultDatatokenTemplateIndex
       )
 
       LoggerInstance.log('Datatoken created.', datatokenAddress)

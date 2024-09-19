@@ -32,7 +32,7 @@ export default function FilesInput(props: InputProps): ReactElement {
   const query = field.value[0].query || undefined
   const abi = field.value[0].abi || undefined
   const headers = field.value[0].headers || undefined
-  const method = field.value[0].method || undefined
+  const method = field.value[0].method || 'get'
 
   async function handleValidation(e: React.SyntheticEvent, url: string) {
     // File example 'https://oceanprotocol.com/tech-whitepaper.pdf'
@@ -84,6 +84,7 @@ export default function FilesInput(props: InputProps): ReactElement {
           headers,
           abi,
           chainId,
+          method,
           ...checkedFile[0]
         }
       ])
