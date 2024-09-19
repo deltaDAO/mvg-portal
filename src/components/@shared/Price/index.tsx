@@ -10,14 +10,13 @@ export default function Price({
 }: {
   price: AssetPrice
   orderPriceAndFees?: OrderPriceAndFees
-  assetId?: string
   className?: string
   size?: 'small' | 'mini' | 'large'
 }): ReactElement {
   if (!price && !orderPriceAndFees) return
   return (
     <PriceUnit
-      price={Number(orderPriceAndFees?.price) || price?.value}
+      price={price?.value || Number(orderPriceAndFees?.price)}
       symbol={price?.tokenSymbol}
       className={className}
       size={size}
