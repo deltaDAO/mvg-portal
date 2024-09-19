@@ -1,4 +1,4 @@
-import { Asset, LoggerInstance, Service } from '@oceanprotocol/lib'
+import { Asset, Credentials, LoggerInstance, Service } from '@oceanprotocol/lib'
 import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -10,7 +10,10 @@ import {
   previewDebugPatch
 } from '@utils/ddo'
 import { getEncryptedFiles } from '@utils/provider'
-import { transformConsumerParameters } from '@components/Publish/_utils'
+import {
+  generateCredentials,
+  transformConsumerParameters
+} from '@components/Publish/_utils'
 
 export default function DebugEditService({
   values,
@@ -53,13 +56,20 @@ export default function DebugEditService({
         LoggerInstance.error('Error encrypting files:', error.message)
       }
 
+      const credentials: Credentials = generateCredentials(
+        service.credentials,
+        values.allow,
+        values.deny
+      )
+
       const updatedService: Service = {
         ...service,
         name: values.name,
         description: values.description,
         type: values.access,
         timeout: mapTimeoutStringToSeconds(values.timeout),
-        files: updatedFiles, // TODO: check if this works
+        files: updatedFiles, // TODO: check if this works,
+        credentials,
         ...(values.access === 'compute' && {
           compute: await transformComputeFormToServiceComputeOptions(
             values,

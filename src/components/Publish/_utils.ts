@@ -95,7 +95,7 @@ export function transformConsumerParameters(
 }
 
 export function generateCredentials(
-  oldCredentials: Credentials,
+  oldCredentials: Credentials | undefined,
   updatedAllow: string[],
   updatedDeny: string[]
 ): Credentials {

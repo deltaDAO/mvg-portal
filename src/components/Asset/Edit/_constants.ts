@@ -79,6 +79,8 @@ export const getNewServiceInitialValues = (
     timeout: '1 day',
     usesConsumerParameters: false,
     consumerParameters: [],
+    allow: [],
+    deny: [],
     ...computeSettings
   }
 }
@@ -105,6 +107,14 @@ export const getServiceInitialValues = (
     timeout: secondsToString(service.timeout),
     usesConsumerParameters: service.consumerParameters?.length > 0,
     consumerParameters: parseConsumerParameters(service.consumerParameters),
+    allow:
+      service.credentials?.allow?.find(
+        (credential) => credential.type === 'address'
+      )?.values || [],
+    deny:
+      service.credentials?.deny?.find(
+        (credential) => credential.type === 'address'
+      )?.values || [],
     ...computeSettings
   }
 }

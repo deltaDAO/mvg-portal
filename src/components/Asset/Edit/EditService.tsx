@@ -18,7 +18,10 @@ import { useAsset } from '@context/Asset'
 import { setNftMetadata } from '@utils/nft'
 import { getEncryptedFiles } from '@utils/provider'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
-import { transformConsumerParameters } from '@components/Publish/_utils'
+import {
+  generateCredentials,
+  transformConsumerParameters
+} from '@components/Publish/_utils'
 import FormEditService from './FormEditService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -103,12 +106,19 @@ export default function EditService({
         updatedFiles = filesEncrypted
       }
 
+      const updatedCredentials = generateCredentials(
+        service.credentials,
+        values.allow,
+        values.deny
+      )
+
       const updatedService: Service = {
         ...service,
         name: values.name,
         description: values.description,
         timeout: mapTimeoutStringToSeconds(values.timeout),
-        files: updatedFiles, // TODO: check if this works
+        files: updatedFiles, // TODO: check if this works,
+        credentials: updatedCredentials,
         ...(values.access === 'compute' && {
           compute: await transformComputeFormToServiceComputeOptions(
             values,

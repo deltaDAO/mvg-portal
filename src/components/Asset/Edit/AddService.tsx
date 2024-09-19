@@ -23,7 +23,10 @@ import { useAsset } from '@context/Asset'
 import { setNftMetadata } from '@utils/nft'
 import { getEncryptedFiles } from '@utils/provider'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
-import { transformConsumerParameters } from '@components/Publish/_utils'
+import {
+  generateCredentials,
+  transformConsumerParameters
+} from '@components/Publish/_utils'
 import {
   defaultDatatokenCap,
   defaultDatatokenTemplateIndex,
@@ -160,6 +163,12 @@ export default function AddService({
         newFiles = filesEncrypted
       }
 
+      const credentials = generateCredentials(
+        undefined,
+        values.allow,
+        values.deny
+      )
+
       const newService: Service = {
         id: getHash(datatokenAddress + newFiles),
         type: values.access,
@@ -169,6 +178,7 @@ export default function AddService({
         datatokenAddress,
         serviceEndpoint: values.providerUrl.url,
         timeout: mapTimeoutStringToSeconds(values.timeout),
+        credentials,
         ...(values.access === 'compute' && {
           compute: await transformComputeFormToServiceComputeOptions(
             values,

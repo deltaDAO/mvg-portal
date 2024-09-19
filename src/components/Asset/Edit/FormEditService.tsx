@@ -106,6 +106,13 @@ export default function FormEditService({
       />
 
       <Field
+        {...getFieldContent('allow', data)}
+        component={Input}
+        name="allow"
+      />
+      <Field {...getFieldContent('deny', data)} component={Input} name="deny" />
+
+      <Field
         {...getFieldContent('usesConsumerParameters', data)}
         component={Input}
         name="usesConsumerParameters"
