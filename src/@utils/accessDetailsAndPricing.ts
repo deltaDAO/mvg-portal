@@ -11,11 +11,7 @@ import {
 } from '@oceanprotocol/lib'
 import { getFixedBuyPrice } from './ocean/fixedRateExchange'
 import Decimal from 'decimal.js'
-import {
-  consumeMarketOrderFee,
-  publisherMarketOrderFee,
-  customProviderUrl
-} from '../../app.config'
+import { consumeMarketOrderFee, publisherMarketOrderFee, customProviderUrl } from '../../app.config'
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
 import { getDummySigner } from './wallet'
@@ -47,15 +43,7 @@ export async function getOrderPriceAndFees(
   // fetch provider fee
   let initializeData
   try {
-    initializeData =
-      !providerFees &&
-      (await ProviderInstance.initialize(
-        asset.id,
-        service.id,
-        0,
-        accountId,
-        customProviderUrl || service.serviceEndpoint
-      ))
+    initializeData = !providerFees && (await ProviderInstance.initialize(asset.id, service.id, 0, accountId, customProviderUrl || service.serviceEndpoint))
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Initialize Provider] Error:', message)
@@ -63,14 +51,9 @@ export async function getOrderPriceAndFees(
     // Customize error message for accountId non included in allow list
     if (
       // TODO: verify if the error code is correctly resolved by the provider
-      message.includes(
-        'ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST' || 'denied with code: 3'
-      )
+      message.includes('ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST' || 'denied with code: 3')
     ) {
-      accountId !== ZERO_ADDRESS &&
-        toast.error(
-          `Consumer address not found in allow list for service ${asset.id}. Access has been denied.`
-        )
+      accountId !== ZERO_ADDRESS && toast.error(`Consumer address not found in allow list for service ${asset.id}. Access has been denied.`)
       return
     }
     // Customize error message for accountId included in deny list
@@ -80,10 +63,7 @@ export async function getOrderPriceAndFees(
         'ConsumableCodes.CREDENTIAL_IN_DENY_LIST' || 'denied with code: 4'
       )
     ) {
-      accountId !== ZERO_ADDRESS &&
-        toast.error(
-          `Consumer address found in deny list for service ${asset.id}. Access has been denied.`
-        )
+      accountId !== ZERO_ADDRESS && toast.error(`Consumer address found in deny list for service ${asset.id}. Access has been denied.`)
       return
     }
 
@@ -101,6 +81,7 @@ export async function getOrderPriceAndFees(
   }
 
   // calculate full price, we assume that all the values are in ocean, otherwise this will be incorrect
+  // TODO show decompose price?
   orderPriceAndFee.price = new Decimal(+orderPriceAndFee.price || 0)
     .add(new Decimal(+orderPriceAndFee?.consumeMarketOrderFee || 0))
     .add(new Decimal(+orderPriceAndFee?.publisherMarketOrderFee || 0))
@@ -114,10 +95,7 @@ export async function getOrderPriceAndFees(
  * @param {Service} service service of which you want access details to
  * @returns {Promise<AccessDetails>}
  */
-export async function getAccessDetails(
-  chainId: number,
-  service: Service
-): Promise<AccessDetails> {
+export async function getAccessDetails(chainId: number, service: Service): Promise<AccessDetails> {
   const signer = await getDummySigner(chainId)
   const datatoken = new Datatoken(signer, chainId)
   const { datatokenAddress } = service
@@ -139,8 +117,8 @@ export async function getAccessDetails(
       decimals: 0
     },
     paymentCollector: await datatoken.getPaymentCollector(datatokenAddress),
-    // TODO these 5 records
-    templateId: 1,
+    templateId: await datatoken.getId(datatokenAddress),
+    // TODO these 4 records
     isOwned: false,
     validOrderTx: '', // should be possible to get from ocean-node - orders collection in typesense
     isPurchasable: true,

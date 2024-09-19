@@ -3,10 +3,7 @@ import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelecti
 import axios, { CancelToken, AxiosResponse } from 'axios'
 import { OrdersData_orders as OrdersData } from '../../@types/subgraph/OrdersData'
 import { metadataCacheUri, allowDynamicPricing } from '../../../app.config'
-import {
-  SortDirectionOptions,
-  SortTermOptions
-} from '../../@types/aquarius/SearchQuery'
+import { SortDirectionOptions, SortTermOptions } from '../../@types/aquarius/SearchQuery'
 import { transformAssetToAssetSelection } from '../assetConvertor'
 import addressConfig from '../../../address.config'
 import { isValidDid } from '@utils/ddo'
@@ -34,11 +31,7 @@ export function escapeEsReservedCharacters(value: string): string {
 type TFilterValue = string | number | boolean | number[] | string[]
 type TFilterKey = 'terms' | 'term' | 'match' | 'match_phrase'
 
-export function getFilterTerm(
-  filterField: string,
-  value: TFilterValue,
-  key: TFilterKey = 'term'
-): FilterTerm {
+export function getFilterTerm(filterField: string, value: TFilterValue, key: TFilterKey = 'term'): FilterTerm {
   const isArray = Array.isArray(value)
   const useKey = key === 'term' ? (isArray ? 'terms' : 'term') : key
   return {
@@ -48,10 +41,7 @@ export function getFilterTerm(
   }
 }
 
-export function parseFilters(
-  filtersList: Filters,
-  filterSets: { [key: string]: string[] }
-): FilterTerm[] {
+export function parseFilters(filtersList: Filters, filterSets: { [key: string]: string[] }): FilterTerm[] {
   const filterQueryPath = {
     accessType: 'services.type',
     serviceType: 'metadata.type',
@@ -60,17 +50,11 @@ export function parseFilters(
 
   const filterTerms = Object.keys(filtersList)?.map((key) => {
     if (key === 'filterSet') {
-      const tags = filtersList[key].reduce(
-        (acc, set) => [...acc, ...filterSets[set]],
-        []
-      )
+      const tags = filtersList[key].reduce((acc, set) => [...acc, ...filterSets[set]], [])
       const uniqueTags = [...new Set(tags)]
-      return uniqueTags.length > 0
-        ? getFilterTerm(filterQueryPath[key], uniqueTags)
-        : undefined
+      return uniqueTags.length > 0 ? getFilterTerm(filterQueryPath[key], uniqueTags) : undefined
     }
-    if (filtersList[key].length > 0)
-      return getFilterTerm(filterQueryPath[key], filtersList[key])
+    if (filtersList[key].length > 0) return getFilterTerm(filterQueryPath[key], filtersList[key])
 
     return undefined
   })
@@ -83,9 +67,7 @@ export function getWhitelistShould(): FilterTerm[] {
 
   const whitelistFilterTerms = Object.entries(whitelists)
     .filter(([field, whitelist]) => whitelist.length > 0)
-    .map(([field, whitelist]) =>
-      whitelist.map((address) => getFilterTerm(field, address, 'match'))
-    )
+    .map(([field, whitelist]) => whitelist.map((address) => getFilterTerm(field, address, 'match')))
     .reduce((prev, cur) => prev.concat(cur), [])
 
   return whitelistFilterTerms.length > 0 ? whitelistFilterTerms : []
@@ -93,37 +75,23 @@ export function getWhitelistShould(): FilterTerm[] {
 
 export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcase
 FilterTerm | undefined {
-  return allowDynamicPricing === 'true'
-    ? undefined
-    : getFilterTerm('price.type', 'pool')
+  return allowDynamicPricing === 'true' ? undefined : getFilterTerm('price.type', 'pool')
 }
 
-export function generateBaseQuery(
-  baseQueryParams: BaseQueryParams
-): SearchQuery {
+export function generateBaseQuery(baseQueryParams: BaseQueryParams): SearchQuery {
   const generatedQuery = {
     from: baseQueryParams.esPaginationOptions?.from || 0,
-    size:
-      baseQueryParams.esPaginationOptions?.size >= 0
-        ? baseQueryParams.esPaginationOptions?.size
-        : 1000,
+    size: baseQueryParams.esPaginationOptions?.size >= 0 ? baseQueryParams.esPaginationOptions?.size : 1000,
     query: {
       bool: {
         ...baseQueryParams.nestedQuery,
         filter: [
           ...(baseQueryParams.filters || []),
-          ...(baseQueryParams.chainIds
-            ? [getFilterTerm('chainId', baseQueryParams.chainIds)]
-            : []),
-          ...(baseQueryParams.ignorePurgatory
-            ? []
-            : [getFilterTerm('purgatory.state', false)]),
+          ...(baseQueryParams.chainIds ? [getFilterTerm('chainId', baseQueryParams.chainIds)] : []),
+          ...(baseQueryParams.ignorePurgatory ? [] : [getFilterTerm('purgatory.state', false)]),
           {
             bool: {
-              must_not: [
-                !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
-                getDynamicPricingMustNot()
-              ]
+              must_not: [!baseQueryParams.ignoreState && getFilterTerm('nft.state', 5), getDynamicPricingMustNot()]
             }
           }
         ]
@@ -137,9 +105,7 @@ export function generateBaseQuery(
 
   if (baseQueryParams.sortOptions !== undefined)
     generatedQuery.sort = {
-      [baseQueryParams.sortOptions.sortBy]:
-        baseQueryParams.sortOptions.sortDirection ||
-        SortDirectionOptions.Descending
+      [baseQueryParams.sortOptions.sortBy]: baseQueryParams.sortOptions.sortDirection || SortDirectionOptions.Descending
     }
 
   // add whitelist filtering
@@ -150,19 +116,13 @@ export function generateBaseQuery(
         minimum_should_match: 1
       }
     }
-    Object.hasOwn(generatedQuery.query.bool, 'must')
-      ? generatedQuery.query.bool.must.push(whitelistQuery)
-      : (generatedQuery.query.bool.must = [whitelistQuery])
+    Object.hasOwn(generatedQuery.query.bool, 'must') ? generatedQuery.query.bool.must.push(whitelistQuery) : (generatedQuery.query.bool.must = [whitelistQuery])
   }
 
   return generatedQuery
 }
 
-export function transformQueryResult(
-  queryResult: SearchResult[],
-  from = 0,
-  size = 21
-): PagedAssets {
+export function transformQueryResult(queryResult: SearchResult[], from = 0, size = 21): PagedAssets {
   const result: PagedAssets = {
     results: [],
     page: 0,
@@ -182,22 +142,11 @@ export function transformQueryResult(
   return result
 }
 
-export async function queryMetadata(
-  query: SearchQuery,
-  cancelToken: CancelToken
-): Promise<PagedAssets> {
+export async function queryMetadata(query: SearchQuery, cancelToken: CancelToken): Promise<PagedAssets> {
   try {
-    const response: AxiosResponse<SearchResponse> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/metadata/query`,
-      { ...query },
-      { cancelToken }
-    )
+    const response: AxiosResponse<SearchResponse> = await axios.post(`${metadataCacheUri}/api/aquarius/assets/metadata/query`, { ...query }, { cancelToken })
     if (!response || response.status !== 200 || !response.data) return
-    return transformQueryResult(
-      response.data as any as SearchResult[],
-      query.from,
-      query.size
-    )
+    return transformQueryResult(response.data as any as SearchResult[], query.from, query.size)
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)
@@ -207,17 +156,11 @@ export async function queryMetadata(
   }
 }
 
-export async function getAsset(
-  did: string,
-  cancelToken: CancelToken
-): Promise<Asset> {
+export async function getAsset(did: string, cancelToken: CancelToken): Promise<Asset> {
   try {
     if (!isValidDid(did)) return
 
-    const response: AxiosResponse<Asset> = await axios.get(
-      `${metadataCacheUri}/api/aquarius/assets/ddo/${did}`,
-      { cancelToken }
-    )
+    const response: AxiosResponse<Asset> = await axios.get(`${metadataCacheUri}/api/aquarius/assets/ddo/${did}`, { cancelToken })
     if (!response || response.status !== 200 || !response.data) return
 
     const data = { ...response.data }
@@ -231,16 +174,9 @@ export async function getAsset(
   }
 }
 
-export async function getAssetsNames(
-  didList: string[],
-  cancelToken: CancelToken
-): Promise<Record<string, string>> {
+export async function getAssetsNames(didList: string[], cancelToken: CancelToken): Promise<Record<string, string>> {
   try {
-    const response: AxiosResponse<Record<string, string>> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/names`,
-      { didList },
-      { cancelToken }
-    )
+    const response: AxiosResponse<Record<string, string>> = await axios.post(`${metadataCacheUri}/api/aquarius/assets/names`, { didList }, { cancelToken })
     if (!response || response.status !== 200 || !response.data) return
     return response.data
   } catch (error) {
@@ -252,11 +188,7 @@ export async function getAssetsNames(
   }
 }
 
-export async function getAssetsFromDids(
-  didList: string[],
-  chainIds: number[],
-  cancelToken: CancelToken
-): Promise<Asset[]> {
+export async function getAssetsFromDids(didList: string[], chainIds: number[], cancelToken: CancelToken): Promise<Asset[]> {
   if (didList?.length === 0 || chainIds?.length === 0) return []
 
   try {
@@ -307,12 +239,7 @@ export async function getAlgorithmDatasetsForCompute(
   const computeDatasets = await queryMetadata(query, cancelToken)
   if (computeDatasets?.results?.length === 0) return []
 
-  const datasets = await transformAssetToAssetSelection(
-    datasetProviderUri,
-    computeDatasets.results,
-    accountId,
-    []
-  )
+  const datasets = await transformAssetToAssetSelection(datasetProviderUri, computeDatasets.results, accountId, [])
   return datasets
 }
 
@@ -369,17 +296,10 @@ export async function getPublishedAssets(
   }
 }
 
-async function getTopPublishers(
-  chainIds: number[],
-  cancelToken: CancelToken,
-  page?: number,
-  type?: string,
-  accesType?: string
-): Promise<PagedAssets> {
+async function getTopPublishers(chainIds: number[], cancelToken: CancelToken, page?: number, type?: string, accesType?: string): Promise<PagedAssets> {
   const filters: FilterTerm[] = []
 
-  accesType !== undefined &&
-    filters.push(getFilterTerm('services.type', accesType))
+  accesType !== undefined && filters.push(getFilterTerm('services.type', accesType))
   type !== undefined && filters.push(getFilterTerm('metadata.type', type))
 
   const baseQueryParams = {
@@ -424,10 +344,7 @@ async function getTopPublishers(
   }
 }
 
-export async function getTopAssetsPublishers(
-  chainIds: number[],
-  nrItems = 9
-): Promise<UserSales[]> {
+export async function getTopAssetsPublishers(chainIds: number[], nrItems = 9): Promise<UserSales[]> {
   const publishers: UserSales[] = []
 
   const result = await getTopPublishers(chainIds, null)
@@ -445,10 +362,7 @@ export async function getTopAssetsPublishers(
   return publishers.slice(0, nrItems)
 }
 
-export async function getUserSales(
-  accountId: string,
-  chainIds: number[]
-): Promise<number> {
+export async function getUserSales(accountId: string, chainIds: number[]): Promise<number> {
   try {
     const result = await getPublishedAssets(accountId, chainIds, null)
     const { totalOrders } = result.aggregations
@@ -467,10 +381,7 @@ export async function getDownloadAssets(
 ): Promise<DownloadedAsset[]> {
   const baseQueryparams = {
     chainIds,
-    filters: [
-      getFilterTerm('services.datatokenAddress', dtList),
-      getFilterTerm('services.type', 'access')
-    ],
+    filters: [getFilterTerm('services.datatokenAddress', dtList), getFilterTerm('services.type', 'access')],
     ignorePurgatory: true,
     ignoreState
   } as BaseQueryParams
@@ -479,11 +390,7 @@ export async function getDownloadAssets(
     const result = await queryMetadata(query, cancelToken)
     const downloadedAssets: DownloadedAsset[] = result.results
       .map((asset) => {
-        const order = tokenOrders.find(
-          ({ datatoken }) =>
-            datatoken?.address.toLowerCase() ===
-            asset.services[0].datatokenAddress.toLowerCase()
-        )
+        const order = tokenOrders.find(({ datatoken }) => datatoken?.address.toLowerCase() === asset.services[0].datatokenAddress.toLowerCase())
 
         return {
           asset,
@@ -504,10 +411,7 @@ export async function getDownloadAssets(
   }
 }
 
-export async function getTagsList(
-  chainIds: number[],
-  cancelToken: CancelToken
-): Promise<string[]> {
+export async function getTagsList(chainIds: number[], cancelToken: CancelToken): Promise<string[]> {
   const baseQueryParams = {
     chainIds,
     esPaginationOptions: { from: 0, size: 0 }
@@ -525,20 +429,26 @@ export async function getTagsList(
   }
 
   try {
-    const response: AxiosResponse<SearchResponse> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/query`,
-      { ...query },
-      { cancelToken }
-    )
-    if (response?.status !== 200 || !response?.data) return
-    const { buckets }: { buckets: AggregatedTag[] } =
-      response.data.aggregations.tags
+    const response: AxiosResponse<any[]> = await axios.post(`${metadataCacheUri}/api/aquarius/assets/metadata/query`, { ...query }, { cancelToken })
+    if (
+      response?.status !== 200 ||
+      !response?.data ||
+      (Array.isArray(response.data) && response.data.every((item) => !Array.isArray(item) || item.length === 0))
+    ) {
+      return []
+    }
 
-    const tagsList = buckets
-      .filter((tag) => tag.key !== '')
-      .map((tag) => tag.key)
+    const tagsSet: Set<string> = new Set()
 
-    return tagsList.sort()
+    response.data.forEach((items) => {
+      items.forEach((item) => {
+        if (item._source?.metadata?.tags) {
+          item._source.metadata.tags.filter((tag: string) => tag !== '').forEach((tag: string) => tagsSet.add(tag))
+        }
+      })
+    })
+    const uniqueTagsList = Array.from(tagsSet).sort()
+    return uniqueTagsList
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)

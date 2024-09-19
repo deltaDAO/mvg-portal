@@ -24,15 +24,13 @@ export default function FilesInput(props: InputProps): ReactElement {
   const { chain } = useNetwork()
   const chainId = chain?.id
 
-  const providerUrl = props.form?.values?.services
-    ? props.form?.values?.services[0].providerUrl.url
-    : asset.services[0].serviceEndpoint
+  const providerUrl = props.form?.values?.services ? props.form?.values?.services[0].providerUrl.url : asset.services[0].serviceEndpoint
 
   const storageType = field.value[0].type
   const query = field.value[0].query || undefined
   const abi = field.value[0].abi || undefined
   const headers = field.value[0].headers || undefined
-  const method = field.value[0].method || undefined
+  const method = field.value[0].method || 'get'
 
   async function handleValidation(e: React.SyntheticEvent, url: string) {
     // File example 'https://oceanprotocol.com/tech-whitepaper.pdf'
@@ -42,37 +40,19 @@ export default function FilesInput(props: InputProps): ReactElement {
       setIsLoading(true)
 
       if (isUrl(url) && isGoogleUrl(url)) {
-        throw Error(
-          'Google Drive is not a supported hosting service. Please use an alternative.'
-        )
+        throw Error('Google Drive is not a supported hosting service. Please use an alternative.')
       }
 
       // Check if provider is a valid provider
       const isValid = await checkValidProvider(providerUrl)
-      if (!isValid)
-        throw Error(
-          '✗ Provider cannot be reached, please check status.oceanprotocol.com and try again later.'
-        )
+      if (!isValid) throw Error('✗ Provider cannot be reached, please check status.oceanprotocol.com and try again later.')
 
-      const checkedFile = await getFileInfo(
-        url,
-        providerUrl,
-        storageType,
-        query,
-        headers,
-        abi,
-        chain?.id,
-        method
-      )
+      const checkedFile = await getFileInfo(url, providerUrl, storageType, query, headers, abi, chain?.id, method)
 
       // error if something's not right from response
-      if (!checkedFile)
-        throw Error('Could not fetch file info. Is your network down?')
+      if (!checkedFile) throw Error('Could not fetch file info. Is your network down?')
 
-      if (checkedFile[0].valid === false)
-        throw Error(
-          `✗ No valid file detected. Check your ${props.label} and details, and try again.`
-        )
+      if (checkedFile[0].valid === false) throw Error(`✗ No valid file detected. Check your ${props.label} and details, and try again.`)
 
       // if all good, add file to formik state
       helpers.setValue([
@@ -84,6 +64,7 @@ export default function FilesInput(props: InputProps): ReactElement {
           headers,
           abi,
           chainId,
+          method,
           ...checkedFile[0]
         }
       ])
@@ -101,16 +82,13 @@ export default function FilesInput(props: InputProps): ReactElement {
 
   function handleClose() {
     helpers.setTouched(false)
-    helpers.setValue([
-      { url: '', type: storageType === 'hidden' ? 'ipfs' : storageType }
-    ])
+    helpers.setValue([{ url: '', type: storageType === 'hidden' ? 'ipfs' : storageType }])
   }
 
   useEffect(() => {
     storageType === 'graphql' && setDisabledButton(!providerUrl || !query)
 
-    storageType === 'smartcontract' &&
-      setDisabledButton(!providerUrl || !abi || !checkJson(abi))
+    storageType === 'smartcontract' && setDisabledButton(!providerUrl || !abi || !checkJson(abi))
 
     storageType === 'url' && setDisabledButton(!providerUrl)
 
@@ -122,8 +100,7 @@ export default function FilesInput(props: InputProps): ReactElement {
 
   return (
     <>
-      {field?.value?.[0]?.valid === true ||
-      field?.value?.[0]?.type === 'hidden' ? (
+      {field?.value?.[0]?.valid === true || field?.value?.[0]?.type === 'hidden' ? (
         <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
       ) : (
         <>
@@ -142,9 +119,7 @@ export default function FilesInput(props: InputProps): ReactElement {
               {...props}
               name={`${field.name}[0].url`}
               isLoading={isLoading}
-              hideButton={
-                storageType === 'graphql' || storageType === 'smartcontract'
-              }
+              hideButton={storageType === 'graphql' || storageType === 'smartcontract'}
               checkUrl={true}
               handleButtonClick={handleValidation}
               storageType={storageType}
@@ -160,11 +135,7 @@ export default function FilesInput(props: InputProps): ReactElement {
                       <>
                         <Field
                           key={i}
-                          component={
-                            innerField.type === 'headers'
-                              ? InputKeyValue
-                              : Input
-                          }
+                          component={innerField.type === 'headers' ? InputKeyValue : Input}
                           {...innerField}
                           name={`${field.name}[0].${innerField.value}`}
                           value={field.value[0][innerField.value]}
@@ -182,17 +153,7 @@ export default function FilesInput(props: InputProps): ReactElement {
                 }}
                 disabled={disabledButton}
               >
-                {isLoading ? (
-                  <Loader />
-                ) : (
-                  `submit ${
-                    storageType === 'graphql'
-                      ? 'query'
-                      : storageType === 'smartcontract'
-                      ? 'abi'
-                      : 'url'
-                  }`
-                )}
+                {isLoading ? <Loader /> : `submit ${storageType === 'graphql' ? 'query' : storageType === 'smartcontract' ? 'abi' : 'url'}`}
               </Button>
             </>
           )}

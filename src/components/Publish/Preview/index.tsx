@@ -5,9 +5,12 @@ import { useFormikContext } from 'formik'
 import AssetContent from '@components/Asset/AssetContent'
 import { transformPublishFormToDdo } from '../_utils'
 import { ZERO_ADDRESS } from '@oceanprotocol/lib'
+import { useAccount } from 'wagmi'
+import { defaultDatatokenTemplateIndex } from 'app.config'
 
 export default function Preview(): ReactElement {
   const [asset, setAsset] = useState<AssetExtended>()
+  const { address: accountId } = useAccount()
   const { values } = useFormikContext<FormPublishData>()
 
   useEffect(() => {
@@ -18,7 +21,7 @@ export default function Preview(): ReactElement {
         {
           type: values.pricing.type,
           addressOrId: ZERO_ADDRESS,
-          templateId: 1,
+          templateId: defaultDatatokenTemplateIndex,
           price: `${values.pricing.price}`,
           baseToken: {
             address: ZERO_ADDRESS,
@@ -33,7 +36,8 @@ export default function Preview(): ReactElement {
           isPurchasable: true,
           isOwned: false,
           validOrderTx: '',
-          publisherMarketOrderFee: '0'
+          publisherMarketOrderFee: '0',
+          paymentCollector: accountId
         }
       ]
       asset.stats = {
@@ -47,7 +51,7 @@ export default function Preview(): ReactElement {
       setAsset(asset)
     }
     makeDdo()
-  }, [values])
+  }, [accountId, values])
 
   return (
     <div className={styles.preview}>
