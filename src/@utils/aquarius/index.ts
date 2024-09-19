@@ -525,26 +525,35 @@ export async function getTagsList(
   }
 
   try {
-    const response: AxiosResponse<SearchResponse> = await axios.post(
+    const response: AxiosResponse<any[]> = await axios.post(
       `${metadataCacheUri}/api/aquarius/assets/metadata/query`,
       { ...query },
       { cancelToken }
     )
-    // TODO check if this is the correct way to check for an empty response
     if (
       response?.status !== 200 ||
       !response?.data ||
-      (Array.isArray(response.data) && response.data.length === 0)
-    )
+      (Array.isArray(response.data) &&
+        response.data.every(
+          (item) => !Array.isArray(item) || item.length === 0
+        ))
+    ) {
       return []
-    const { buckets }: { buckets: AggregatedTag[] } =
-      response.data.aggregations.tags
+    }
 
-    const tagsList = buckets
-      .filter((tag) => tag.key !== '')
-      .map((tag) => tag.key)
+    const tagsSet: Set<string> = new Set()
 
-    return tagsList.sort()
+    response.data.forEach((items) => {
+      items.forEach((item) => {
+        if (item._source?.metadata?.tags) {
+          item._source.metadata.tags
+            .filter((tag: string) => tag !== '')
+            .forEach((tag: string) => tagsSet.add(tag))
+        }
+      })
+    })
+    const uniqueTagsList = Array.from(tagsSet).sort()
+    return uniqueTagsList
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)
