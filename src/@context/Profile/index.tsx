@@ -134,7 +134,6 @@ function ProfileProvider({
 
       const dtList: string[] = []
       const tokenOrders = await getUserTokenOrders(accountId, chainIds)
-
       for (let i = 0; i < tokenOrders?.length; i++) {
         dtList.push(tokenOrders[i].datatoken.address)
       }

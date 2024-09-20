@@ -78,26 +78,6 @@ export function getVeChainNetworkIds(assetNetworkIds: number[]): number[] {
   return veNetworkIds
 }
 
-export async function getNftOwnAllocation(
-  userAddress: string,
-  nftAddress: string,
-  networkId: number
-): Promise<number> {
-  const veNetworkId = getVeChainNetworkId(networkId)
-  const queryContext = getQueryContext(veNetworkId)
-  const fetchedAllocation: OperationResult<NftOwnAllocationQuery, any> =
-    await fetchData(
-      NftOwnAllocation,
-      {
-        address: userAddress.toLowerCase(),
-        nftAddress: nftAddress.toLowerCase()
-      },
-      queryContext
-    )
-
-  return fetchedAllocation.data?.veAllocations[0]?.allocated
-}
-
 export async function getTotalAllocatedAndLocked(): Promise<TotalVe> {
   const totals = {
     totalLocked: 0,
@@ -118,6 +98,7 @@ export async function getTotalAllocatedAndLocked(): Promise<TotalVe> {
     null,
     queryContext
   )
+  console.log('getTotalAllocatedAndLocked', fetchedLocked)
   totals.totalLocked = fetchedLocked.data?.veOCEANs.reduce(
     (previousValue, currentValue) =>
       previousValue + Number(currentValue.lockedAmount),
@@ -126,32 +107,11 @@ export async function getTotalAllocatedAndLocked(): Promise<TotalVe> {
   return totals
 }
 
-export async function getLocked(
-  userAddress: string,
-  networkIds: number[]
-): Promise<number> {
-  let total = 0
-  const veNetworkIds = getVeChainNetworkIds(networkIds)
-  for (let i = 0; i < veNetworkIds.length; i++) {
-    const queryContext = getQueryContext(veNetworkIds[i])
-    const fetchedLocked: OperationResult<OceanLockedQuery, any> =
-      await fetchData(
-        OceanLocked,
-        { address: userAddress.toLowerCase() },
-        queryContext
-      )
-
-    fetchedLocked.data?.veOCEAN?.lockedAmount &&
-      (total += Number(fetchedLocked.data?.veOCEAN?.lockedAmount))
-  }
-
-  return total
-}
-
 export async function getOwnAllocations(
   networkIds: number[],
   userAddress: string
 ): Promise<Allocation[]> {
+  console.log('getOwnAllocations')
   const allocations: Allocation[] = []
   const veNetworkIds = getVeChainNetworkIds(networkIds)
   for (let i = 0; i < veNetworkIds.length; i++) {
@@ -162,7 +122,7 @@ export async function getOwnAllocations(
         { address: userAddress.toLowerCase() },
         queryContext
       )
-
+    console.log('getOwnAllocations', fetchedAllocations)
     fetchedAllocations.data?.veAllocations.forEach(
       (x) =>
         x.allocated !== '0' &&

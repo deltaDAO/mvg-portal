@@ -14,8 +14,13 @@ import {
 } from '@oceanprotocol/lib'
 import { CancelToken } from 'axios'
 import { gql } from 'urql'
-import { queryMetadata, getFilterTerm, generateBaseQuery, getAssetsFromDids } from './aquarius'
-import { fetchDataForMultipleChains, generateComputeOrdersQuery, generateComputeOrdersQueryByDatatokenAddress } from './subgraph'
+import {
+  queryMetadata,
+  getFilterTerm,
+  generateBaseQuery,
+  getAssetsFromDids
+} from './aquarius'
+import { fetchDataForMultipleChains } from './subgraph'
 import { getServiceById } from './ddo'
 import { SortTermOptions } from '../@types/aquarius/SearchQuery'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -26,7 +31,11 @@ import { toast } from 'react-toastify'
 
 const getComputeOrders = gql`
   query ComputeOrders($user: String!) {
-    orders(orderBy: createdTimestamp, orderDirection: desc, where: { payer: $user }) {
+    orders(
+      orderBy: createdTimestamp
+      orderDirection: desc
+      where: { payer: $user }
+    ) {
       id
       serviceIndex
       datatoken {
@@ -39,8 +48,15 @@ const getComputeOrders = gql`
 `
 
 const getComputeOrdersByDatatokenAddress = gql`
-  query ComputeOrdersByDatatokenAddress($user: String!, $datatokenAddress: String!) {
-    orders(orderBy: createdTimestamp, orderDirection: desc, where: { payer: $user, datatoken: $datatokenAddress }) {
+  query ComputeOrdersByDatatokenAddress(
+    $user: String!
+    $datatokenAddress: String!
+  ) {
+    orders(
+      orderBy: createdTimestamp
+      orderDirection: desc
+      where: { payer: $user, datatoken: $datatokenAddress }
+    ) {
       id
       serviceIndex
       datatoken {
@@ -52,10 +68,18 @@ const getComputeOrdersByDatatokenAddress = gql`
   }
 `
 
-async function getAssetMetadata(queryDtList: string[], cancelToken: CancelToken, chainIds: number[]): Promise<Asset[]> {
+async function getAssetMetadata(
+  queryDtList: string[],
+  cancelToken: CancelToken,
+  chainIds: number[]
+): Promise<Asset[]> {
   const baseQueryparams = {
     chainIds,
-    filters: [getFilterTerm('services.datatokenAddress', queryDtList), getFilterTerm('services.type', 'compute'), getFilterTerm('metadata.type', 'dataset')],
+    filters: [
+      getFilterTerm('services.datatokenAddress', queryDtList),
+      getFilterTerm('services.type', 'compute'),
+      getFilterTerm('metadata.type', 'dataset')
+    ],
     ignorePurgatory: true
   } as BaseQueryParams
   const query = generateBaseQuery(baseQueryparams)
@@ -63,7 +87,12 @@ async function getAssetMetadata(queryDtList: string[], cancelToken: CancelToken,
   return result?.results
 }
 
-export async function isOrderable(asset: AssetExtended, serviceId: string, algorithm: ComputeAlgorithm, algorithmDDO: Asset | DDO): Promise<boolean> {
+export async function isOrderable(
+  asset: AssetExtended,
+  serviceId: string,
+  algorithm: ComputeAlgorithm,
+  algorithmDDO: Asset | DDO
+): Promise<boolean> {
   const datasetService: Service = getServiceById(asset, serviceId)
   if (!datasetService) return false
 
@@ -75,10 +104,15 @@ export async function isOrderable(asset: AssetExtended, serviceId: string, algor
       return false
     }
     if (algorithm.documentId) {
-      const algoService: Service = getServiceById(algorithmDDO, algorithm.serviceId)
+      const algoService: Service = getServiceById(
+        algorithmDDO,
+        algorithm.serviceId
+      )
       if (algoService && algoService.type === 'compute') {
         if (algoService.serviceEndpoint !== datasetService.serviceEndpoint) {
-          this.logger.error('ERROR: Both assets with compute service are not served by the same provider')
+          this.logger.error(
+            'ERROR: Both assets with compute service are not served by the same provider'
+          )
           return false
         }
       }
@@ -87,7 +121,11 @@ export async function isOrderable(asset: AssetExtended, serviceId: string, algor
   return true
 }
 
-export function getValidUntilTime(computeEnvMaxJobDuration: number, datasetTimeout?: number, algorithmTimeout?: number) {
+export function getValidUntilTime(
+  computeEnvMaxJobDuration: number,
+  datasetTimeout?: number,
+  algorithmTimeout?: number
+) {
   const inputValues = []
   computeEnvMaxJobDuration && inputValues.push(computeEnvMaxJobDuration)
   datasetTimeout && inputValues.push(datasetTimeout)
@@ -99,22 +137,35 @@ export function getValidUntilTime(computeEnvMaxJobDuration: number, datasetTimeo
   return Math.floor(mytime.getTime() / 1000)
 }
 
-export async function getComputeEnvironment(asset: Asset): Promise<ComputeEnvironment> {
+export async function getComputeEnvironment(
+  asset: Asset
+): Promise<ComputeEnvironment> {
   if (asset?.services[0]?.type !== 'compute') return null
   try {
-    const computeEnvs = await ProviderInstance.getComputeEnvironments(asset.services[0].serviceEndpoint)
-    const computeEnv = Array.isArray(computeEnvs) ? computeEnvs[0] : computeEnvs[asset.chainId][0]
+    const computeEnvs = await ProviderInstance.getComputeEnvironments(
+      asset.services[0].serviceEndpoint
+    )
+    const computeEnv = Array.isArray(computeEnvs)
+      ? computeEnvs[0]
+      : computeEnvs[asset.chainId][0]
 
     if (!computeEnv) return null
     return computeEnv
   } catch (e) {
     const message = getErrorMessage(e.message)
-    LoggerInstance.error('[Compute to Data] Fetch compute environment:', message)
+    LoggerInstance.error(
+      '[Compute to Data] Fetch compute environment:',
+      message
+    )
     toast.error(message)
   }
 }
 
-export function getQueryString(trustedAlgorithmList: PublisherTrustedAlgorithm[], trustedPublishersList: string[], chainId?: number): SearchQuery {
+export function getQueryString(
+  trustedAlgorithmList: PublisherTrustedAlgorithm[],
+  trustedPublishersList: string[],
+  chainId?: number
+): SearchQuery {
   const algorithmDidList = trustedAlgorithmList?.map((x) => x.did)
 
   const baseParams = {
@@ -125,7 +176,8 @@ export function getQueryString(trustedAlgorithmList: PublisherTrustedAlgorithm[]
       size: 3000
     }
   } as BaseQueryParams
-  algorithmDidList?.length > 0 && baseParams.filters.push(getFilterTerm('_id', algorithmDidList))
+  algorithmDidList?.length > 0 &&
+    baseParams.filters.push(getFilterTerm('_id', algorithmDidList))
   trustedPublishersList?.length > 0 &&
     baseParams.filters.push(
       getFilterTerm(
@@ -138,39 +190,67 @@ export function getQueryString(trustedAlgorithmList: PublisherTrustedAlgorithm[]
   return query
 }
 
-export async function getAlgorithmsForAsset(asset: Asset, service: Service, token: CancelToken): Promise<Asset[]> {
-  if (!service.compute || (service.compute.publisherTrustedAlgorithms?.length === 0 && service.compute.publisherTrustedAlgorithmPublishers?.length === 0)) {
+export async function getAlgorithmsForAsset(
+  asset: Asset,
+  service: Service,
+  token: CancelToken
+): Promise<Asset[]> {
+  if (
+    !service.compute ||
+    (service.compute.publisherTrustedAlgorithms?.length === 0 &&
+      service.compute.publisherTrustedAlgorithmPublishers?.length === 0)
+  ) {
     return []
   }
 
   const gueryResults = await queryMetadata(
-    getQueryString(service.compute.publisherTrustedAlgorithms, service.compute.publisherTrustedAlgorithmPublishers, asset.chainId),
+    getQueryString(
+      service.compute.publisherTrustedAlgorithms,
+      service.compute.publisherTrustedAlgorithmPublishers,
+      asset.chainId
+    ),
     token
   )
   const algorithms: Asset[] = gueryResults?.results
   return algorithms
 }
 
-export async function getAlgorithmAssetSelectionList(service: Service, algorithms: Asset[], accountId: string): Promise<AssetSelectionAsset[]> {
+export async function getAlgorithmAssetSelectionList(
+  service: Service,
+  algorithms: Asset[],
+  accountId: string
+): Promise<AssetSelectionAsset[]> {
   if (!algorithms || algorithms?.length === 0) return []
 
   let algorithmSelectionList: AssetSelectionAsset[]
   if (!service.compute) {
     algorithmSelectionList = []
   } else {
-    algorithmSelectionList = await transformAssetToAssetSelection(service?.serviceEndpoint, algorithms, accountId, [])
+    algorithmSelectionList = await transformAssetToAssetSelection(
+      service?.serviceEndpoint,
+      algorithms,
+      accountId,
+      []
+    )
   }
   return algorithmSelectionList
 }
 
-async function getJobs(providerUrls: string[], accountId: string, assets: Asset[]): Promise<ComputeJobMetaData[]> {
+async function getJobs(
+  providerUrls: string[],
+  accountId: string,
+  assets: Asset[]
+): Promise<ComputeJobMetaData[]> {
   const uniqueProviders = [...new Set(providerUrls)]
   const providersComputeJobsExtended: ComputeJobExtended[] = []
   const computeJobs: ComputeJobMetaData[] = []
 
   try {
     for (let i = 0; i < uniqueProviders.length; i++) {
-      const providerComputeJobs = (await ProviderInstance.computeStatus(uniqueProviders[i], accountId)) as ComputeJob[]
+      const providerComputeJobs = (await ProviderInstance.computeStatus(
+        uniqueProviders[i],
+        accountId
+      )) as ComputeJob[]
 
       providerComputeJobs.forEach((job) =>
         providersComputeJobsExtended.push({
@@ -230,29 +310,43 @@ export async function getComputeJobs(
     user: accountId.toLowerCase(),
     datatokenAddress: assetDTAddress.toLowerCase()
   }
-  const query = assetDTAddress
-    ? generateComputeOrdersQueryByDatatokenAddress(assetDTAddress, accountId) // You can define this query generator
-    : generateComputeOrdersQuery(accountId) // Another query generator for fetching by accountId
-  console.log('Before in compute')
-  const results = await fetchDataForMultipleChains(query, variables, cancelToken)
 
-  console.log('resultssss hee:', results)
+  const results = await fetchDataForMultipleChains(
+    assetDTAddress ? getComputeOrdersByDatatokenAddress : getComputeOrders,
+    variables,
+    assetDTAddress ? [asset.chainId] : chainIds
+  )
+
   let tokenOrders: TokenOrder[] = []
-  results.map((result) => result.orders.forEach((tokenOrder: TokenOrder) => tokenOrders.push(tokenOrder)))
+  results.map((result) =>
+    result.orders.forEach((tokenOrder: TokenOrder) =>
+      tokenOrders.push(tokenOrder)
+    )
+  )
   if (tokenOrders.length === 0) {
     computeResult.isLoaded = true
     return computeResult
   }
 
-  tokenOrders = tokenOrders.sort((a, b) => b.createdTimestamp - a.createdTimestamp)
+  tokenOrders = tokenOrders.sort(
+    (a, b) => b.createdTimestamp - a.createdTimestamp
+  )
 
-  const datatokenAddressList = tokenOrders.map((tokenOrder: TokenOrder) => tokenOrder.datatoken.address)
+  const datatokenAddressList = tokenOrders.map(
+    (tokenOrder: TokenOrder) => tokenOrder.datatoken.address
+  )
   if (!datatokenAddressList) return
 
-  const assets = await getAssetMetadata(datatokenAddressList, cancelToken, chainIds)
+  const assets = await getAssetMetadata(
+    datatokenAddressList,
+    cancelToken,
+    chainIds
+  )
 
   const providerUrls: string[] = []
-  assets.forEach((asset: Asset) => providerUrls.push(asset.services[0].serviceEndpoint))
+  assets.forEach((asset: Asset) =>
+    providerUrls.push(asset.services[0].serviceEndpoint)
+  )
 
   computeResult.computeJobs = await getJobs(providerUrls, accountId, assets)
   computeResult.isLoaded = true
@@ -269,9 +363,14 @@ export async function createTrustedAlgorithmList(
 
   // Condition to prevent app from hitting Aquarius with empty DID list
   // when nothing is selected in the UI.
-  if (!selectedAlgorithms || selectedAlgorithms.length === 0) return trustedAlgorithms
+  if (!selectedAlgorithms || selectedAlgorithms.length === 0)
+    return trustedAlgorithms
 
-  const selectedAssets = await getAssetsFromDids(selectedAlgorithms, [assetChainId], cancelToken)
+  const selectedAssets = await getAssetsFromDids(
+    selectedAlgorithms,
+    [assetChainId],
+    cancelToken
+  )
 
   if (!selectedAssets || selectedAssets.length === 0) return []
 
@@ -282,7 +381,9 @@ export async function createTrustedAlgorithmList(
       selectedAlgorithm?.services?.[0]?.serviceEndpoint,
       true
     )
-    const containerChecksum = selectedAlgorithm.metadata.algorithm.container.entrypoint + selectedAlgorithm.metadata.algorithm.container.checksum
+    const containerChecksum =
+      selectedAlgorithm.metadata.algorithm.container.entrypoint +
+      selectedAlgorithm.metadata.algorithm.container.checksum
     const trustedAlgorithm = {
       did: selectedAlgorithm.id,
       containerSectionChecksum: getHash(containerChecksum),
@@ -301,7 +402,11 @@ export async function transformComputeFormToServiceComputeOptions(
 ): Promise<ServiceComputeOptions> {
   const publisherTrustedAlgorithms = values.allowAllPublishedAlgorithms
     ? null
-    : await createTrustedAlgorithmList(values.publisherTrustedAlgorithms, assetChainId, cancelToken)
+    : await createTrustedAlgorithmList(
+        values.publisherTrustedAlgorithms,
+        assetChainId,
+        cancelToken
+      )
 
   // TODO: add support for selecting trusted publishers and transforming here.
   // This only deals with basics so we don't accidentially allow all accounts
