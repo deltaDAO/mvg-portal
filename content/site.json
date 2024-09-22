@@ -59,7 +59,7 @@
           "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
           "image": "accurate-logo.webp",
           "category": "manufacturing",
-          "isLive": false
+          "isLive": true
         },
         {
           "name": "Airbus",
