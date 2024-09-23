@@ -120,15 +120,11 @@ export async function getOpcFees(chainId: number) {
   }
   const context = getQueryContext(chainId)
   try {
-    console.log('OpcFeesQuery', OpcFeesQuery)
-    console.log('variables', variables)
-    console.log('context:', context)
     const response: OperationResult<OpcFeesData> = await fetchData(
       OpcFeesQuery,
       variables,
       context
     )
-    console.log('getOpcFees', response)
     opcFees = response?.data?.opc
   } catch (error) {
     LoggerInstance.error('Error getOpcFees: ', error.message)
@@ -145,13 +141,11 @@ export async function getUserTokenOrders(
   const variables = { user: accountId?.toLowerCase() }
 
   try {
-    console.log('before fetchDataForMultipleChains')
     const tokenOrders = await fetchDataForMultipleChains(
       UserTokenOrders,
       variables,
       chainIds
     )
-    console.log('tokenOrders', tokenOrders)
     for (let i = 0; i < tokenOrders?.length; i++) {
       tokenOrders[i].orders.forEach((tokenOrder: OrdersData) => {
         data.push(tokenOrder)
@@ -177,7 +171,6 @@ export async function getOpcsApprovedTokens(
 
   try {
     const response = await fetchData(OpcsApprovedTokensQuery, null, context)
-    console.log('getOpcsApprovedTokens', response)
     if (!response?.data) return
 
     // TODO: remove the mocked EUROe integration

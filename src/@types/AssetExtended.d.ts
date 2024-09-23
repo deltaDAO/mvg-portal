@@ -32,5 +32,7 @@ declare global {
     metadata: MetadataExtended
     services: ServiceExtended[]
     offchain?: OffChain // TODO - in future it will be directly included in Asset type in @oceanprotocol/lib
+    _id: string
+    _source: any
   }
 }

@@ -79,20 +79,15 @@ function ProfileProvider({
 
     async function getAllPublished() {
       try {
-        const result: ExtendedPagedAssets = await getPublishedAssets(
+        const result = await getPublishedAssets(
           accountId,
           chainIds,
           cancelTokenSource.token,
           ownAccount,
           ownAccount
         )
-
         setAssets(result.results)
-        setAssetsTotal(
-          typeof result.totalResults === 'number'
-            ? result.totalResults
-            : result.totalResults?.value
-        )
+        setAssetsTotal(result.totalResults)
         LoggerInstance.log(
           `[profile] Fetched ${result.totalResults} assets.`,
           result.results
