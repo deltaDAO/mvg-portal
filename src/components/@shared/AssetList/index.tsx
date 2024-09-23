@@ -15,11 +15,11 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Dataset',
     selector: (row) => {
-      const { metadata } = row._source
+      const { metadata } = row
       return (
         <div>
-          <AssetTitle title={metadata.name} asset={row._source} />
-          <p>{row._id}</p>
+          <AssetTitle title={metadata.name} asset={row} />
+          <p>{row.id}</p>
         </div>
       )
     },
@@ -29,7 +29,7 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Type',
     selector: (row) => {
-      const { metadata } = row._source
+      const { metadata } = row
       const isCompute = Boolean(getServiceByName(row, 'compute'))
       const accessType = isCompute ? 'compute' : 'access'
       return (
@@ -45,25 +45,21 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Price',
     selector: (row) => {
-      return <Price price={row._source.stats.price} size="small" />
+      return <Price price={row.stats.price} size="small" />
     },
     maxWidth: '7rem'
   },
   {
     name: 'Sales',
     selector: (row) => {
-      return (
-        <strong>
-          {row._source.stats.orders < 0 ? 'N/A' : row._source.stats.orders}
-        </strong>
-      )
+      return <strong>{row.stats.orders < 0 ? 'N/A' : row.stats.orders}</strong>
     },
     maxWidth: '7rem'
   },
   {
     name: 'Published',
     selector: (row) => {
-      return <Time date={row._source.nft.created} />
+      return <Time date={row.nft.created} />
     },
     maxWidth: '7rem'
   }
@@ -135,8 +131,8 @@ export default function AssetList({
             {activeAssetView === AssetViewOptions.Grid &&
               assets?.map((asset) => (
                 <AssetTeaser
-                  asset={asset._source}
-                  key={asset._id}
+                  asset={asset}
+                  key={asset.id}
                   noPublisher={noPublisher}
                   noDescription={noDescription}
                   noPrice={noPrice}
