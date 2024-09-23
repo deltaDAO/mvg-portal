@@ -176,8 +176,7 @@ export function transformQueryResult(
   result.totalResults = queryResult.hits?.total?.value || 0
 
   result.totalPages = Math.ceil(result.totalResults / size)
-  result.page = from ? Math.floor(from / size) + 1 : 1
-
+  result.page = from ? from + 1 : 1
   result.aggregations = queryResult.aggregations || {}
   return result
 }
@@ -365,7 +364,7 @@ export async function getPublishedAssets(
     ignorePurgatory,
     ignoreState,
     esPaginationOptions: {
-      from: (Number(page) - 1 || 0) * 9,
+      from: Number(page) - 1 || 0,
       size: 9
     }
   } as BaseQueryParams
