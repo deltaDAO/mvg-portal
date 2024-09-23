@@ -58,7 +58,8 @@
             "object": true,
             "array": false
           }
-        ]
+        ],
+        "testing-library/no-node-access": "off"
       }
     }
   ]

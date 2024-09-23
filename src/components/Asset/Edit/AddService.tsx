@@ -1,7 +1,18 @@
 import { ReactElement, useState } from 'react'
 import { Formik } from 'formik'
-import { LoggerInstance, Datatoken, Service, Nft, FreCreationParams, DispenserParams, getHash } from '@oceanprotocol/lib'
-import { defaultServiceComputeOptions, getNewServiceInitialValues } from './_constants'
+import {
+  LoggerInstance,
+  Datatoken,
+  Service,
+  Nft,
+  FreCreationParams,
+  DispenserParams,
+  getHash
+} from '@oceanprotocol/lib'
+import {
+  defaultServiceComputeOptions,
+  getNewServiceInitialValues
+} from './_constants'
 import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
@@ -13,7 +24,12 @@ import { setNftMetadata } from '@utils/nft'
 import { getEncryptedFiles } from '@utils/provider'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { transformConsumerParameters } from '@components/Publish/_utils'
-import { defaultDatatokenCap, defaultDatatokenTemplateIndex, marketFeeAddress, publisherMarketFixedSwapFee } from 'app.config'
+import {
+  defaultDatatokenCap,
+  defaultDatatokenTemplateIndex,
+  marketFeeAddress,
+  publisherMarketFixedSwapFee
+} from 'app.config'
 import { ethers } from 'ethers'
 import FormAddService from './FormAddService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
@@ -24,7 +40,11 @@ import styles from './index.module.css'
 import { useUserPreferences } from '@context/UserPreferences'
 import { getOceanConfig } from '@utils/ocean'
 
-export default function AddService({ asset }: { asset: AssetExtended }): ReactElement {
+export default function AddService({
+  asset
+}: {
+  asset: AssetExtended
+}): ReactElement {
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
@@ -74,7 +94,9 @@ export default function AddService({ asset }: { asset: AssetExtended }): ReactEl
 
       let pricingTransactionReceipt
       if (values.price > 0) {
-        LoggerInstance.log(`Creating fixed rate exchange with price ${values.price} for datatoken ${datatokenAddress}`)
+        LoggerInstance.log(
+          `Creating fixed rate exchange with price ${values.price} for datatoken ${datatokenAddress}`
+        )
 
         const freParams: FreCreationParams = {
           fixedRateAddress: config.fixedRateExchangeAddress,
@@ -83,14 +105,22 @@ export default function AddService({ asset }: { asset: AssetExtended }): ReactEl
           marketFeeCollector: marketFeeAddress,
           baseTokenDecimals: 18,
           datatokenDecimals: 18,
-          fixedRate: ethers.utils.parseEther(values.price.toString()).toString(),
+          fixedRate: ethers.utils
+            .parseEther(values.price.toString())
+            .toString(),
           marketFee: publisherMarketFixedSwapFee,
           withMint: true
         }
 
-        pricingTransactionReceipt = await datatoken.createFixedRate(datatokenAddress, accountId, freParams)
+        pricingTransactionReceipt = await datatoken.createFixedRate(
+          datatokenAddress,
+          accountId,
+          freParams
+        )
       } else {
-        LoggerInstance.log(`Creating dispenser for datatoken ${datatokenAddress}`)
+        LoggerInstance.log(
+          `Creating dispenser for datatoken ${datatokenAddress}`
+        )
 
         const dispenserParams: DispenserParams = {
           maxTokens: ethers.utils.parseEther('1').toString(),
@@ -98,7 +128,12 @@ export default function AddService({ asset }: { asset: AssetExtended }): ReactEl
           withMint: true
         }
 
-        pricingTransactionReceipt = await datatoken.createDispenser(datatokenAddress, accountId, config.dispenserAddress, dispenserParams)
+        pricingTransactionReceipt = await datatoken.createDispenser(
+          datatokenAddress,
+          accountId,
+          config.dispenserAddress,
+          dispenserParams
+        )
       }
 
       await pricingTransactionReceipt.wait()
@@ -112,10 +147,16 @@ export default function AddService({ asset }: { asset: AssetExtended }): ReactEl
         const file = {
           nftAddress: asset.nftAddress,
           datatokenAddress,
-          files: [normalizeFile(values.files[0].type, values.files[0], chain?.id)]
+          files: [
+            normalizeFile(values.files[0].type, values.files[0], chain?.id)
+          ]
         }
 
-        const filesEncrypted = await getEncryptedFiles(file, asset.chainId, values.providerUrl.url)
+        const filesEncrypted = await getEncryptedFiles(
+          file,
+          asset.chainId,
+          values.providerUrl.url
+        )
         newFiles = filesEncrypted
       }
 
@@ -129,9 +170,16 @@ export default function AddService({ asset }: { asset: AssetExtended }): ReactEl
         serviceEndpoint: values.providerUrl.url,
         timeout: mapTimeoutStringToSeconds(values.timeout),
         ...(values.access === 'compute' && {
-          compute: await transformComputeFormToServiceComputeOptions(values, defaultServiceComputeOptions, asset.chainId, newCancelToken())
+          compute: await transformComputeFormToServiceComputeOptions(
+            values,
+            defaultServiceComputeOptions,
+            asset.chainId,
+            newCancelToken()
+          )
         }),
-        consumerParameters: transformConsumerParameters(values.consumerParameters)
+        consumerParameters: transformConsumerParameters(
+          values.consumerParameters
+        )
       }
 
       // update asset with new service
@@ -144,7 +192,12 @@ export default function AddService({ asset }: { asset: AssetExtended }): ReactEl
       delete (updatedAsset as AssetExtended).stats
       delete (updatedAsset as AssetExtended).offchain
 
-      const setMetadataTx = await setNftMetadata(updatedAsset, accountId, signer, newAbortController())
+      const setMetadataTx = await setNftMetadata(
+        updatedAsset,
+        accountId,
+        signer,
+        newAbortController()
+      )
 
       if (!setMetadataTx) {
         setError(content.form.error)
@@ -191,7 +244,11 @@ export default function AddService({ asset }: { asset: AssetExtended }): ReactEl
           <>
             <FormAddService data={content.form.data} chainId={asset.chainId} />
 
-            <Web3Feedback networkId={asset?.chainId} accountId={accountId} isAssetNetwork={isAssetNetwork} />
+            <Web3Feedback
+              networkId={asset?.chainId}
+              accountId={accountId}
+              isAssetNetwork={isAssetNetwork}
+            />
 
             {debug === true && (
               <div className={styles.grid}>

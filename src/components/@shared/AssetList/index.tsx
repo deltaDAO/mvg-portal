@@ -98,7 +98,6 @@ export default function AssetList({
   showAssetViewSelector,
   defaultAssetView
 }: AssetListProps): ReactElement {
-  console.log('assetLists:', assets)
   const [activeAssetView, setActiveAssetView] = useState<AssetViewOptions>(
     defaultAssetView || AssetViewOptions.Grid
   )

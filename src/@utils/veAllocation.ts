@@ -109,7 +109,6 @@ export async function getOwnAllocations(
   networkIds: number[],
   userAddress: string
 ): Promise<Allocation[]> {
-  console.log('getOwnAllocations')
   const allocations: Allocation[] = []
   const veNetworkIds = getVeChainNetworkIds(networkIds)
   for (let i = 0; i < veNetworkIds.length; i++) {
@@ -120,7 +119,6 @@ export async function getOwnAllocations(
         { address: userAddress.toLowerCase() },
         queryContext
       )
-    console.log('getOwnAllocations', fetchedAllocations)
     fetchedAllocations.data?.veAllocations.forEach(
       (x) =>
         x.allocated !== '0' &&

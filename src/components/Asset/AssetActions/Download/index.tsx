@@ -6,18 +6,30 @@ import ButtonBuy from '../ButtonBuy'
 import { secondsToString } from '@utils/ddo'
 import styles from './index.module.css'
 import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
-import { AssetPrice, FileInfo, LoggerInstance, Service, UserCustomParameters, ZERO_ADDRESS } from '@oceanprotocol/lib'
+import {
+  AssetPrice,
+  FileInfo,
+  LoggerInstance,
+  Service,
+  UserCustomParameters,
+  ZERO_ADDRESS
+} from '@oceanprotocol/lib'
 import { order } from '@utils/order'
 import { downloadFile } from '@utils/provider'
 import { getOrderFeedback } from '@utils/feedback'
-import { getAvailablePrice, getOrderPriceAndFees } from '@utils/accessDetailsAndPricing'
+import {
+  getAvailablePrice,
+  getOrderPriceAndFees
+} from '@utils/accessDetailsAndPricing'
 import { toast } from 'react-toastify'
 import { useIsMounted } from '@hooks/useIsMounted'
 import Alert from '@shared/atoms/Alert'
 import Loader from '@shared/atoms/Loader'
 import { useAccount } from 'wagmi'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import ConsumerParameters, { parseConsumerParameterValues } from '../ConsumerParameters'
+import ConsumerParameters, {
+  parseConsumerParameterValues
+} from '../ConsumerParameters'
 import { Field, Form, Formik, useFormikContext } from 'formik'
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
@@ -68,15 +80,20 @@ export default function Download({
   const [statusText, setStatusText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isPriceLoading, setIsPriceLoading] = useState(false)
-  const [isFullPriceLoading, setIsFullPriceLoading] = useState(accessDetails.type !== 'free')
+  const [isFullPriceLoading, setIsFullPriceLoading] = useState(
+    accessDetails.type !== 'free'
+  )
   const [isOwned, setIsOwned] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')
   const [isOrderDisabled, setIsOrderDisabled] = useState(false)
-  const [orderPriceAndFees, setOrderPriceAndFees] = useState<OrderPriceAndFees>()
+  const [orderPriceAndFees, setOrderPriceAndFees] =
+    useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
-  const isUnsupportedPricing = accessDetails.type === 'NOT_SUPPORTED' || (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
+  const isUnsupportedPricing =
+    accessDetails.type === 'NOT_SUPPORTED' ||
+    (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
 
   useEffect(() => {
     Number(asset.nft.state) === 4 && setIsOrderDisabled(true)
@@ -90,12 +107,21 @@ export default function Download({
 
     // get full price and fees
     async function init() {
-      if (accessDetails.addressOrId === ZERO_ADDRESS || accessDetails.type === 'free') return
+      if (
+        accessDetails.addressOrId === ZERO_ADDRESS ||
+        accessDetails.type === 'free'
+      )
+        return
 
       try {
         !orderPriceAndFees && setIsPriceLoading(true)
 
-        const _orderPriceAndFees = await getOrderPriceAndFees(asset, service, accessDetails, accountId || ZERO_ADDRESS)
+        const _orderPriceAndFees = await getOrderPriceAndFees(
+          asset,
+          service,
+          accessDetails,
+          accountId || ZERO_ADDRESS
+        )
         setOrderPriceAndFees(_orderPriceAndFees)
         !orderPriceAndFees && setIsPriceLoading(false)
       } catch (error) {
@@ -111,14 +137,27 @@ export default function Download({
      * based on the asset and the poolData's information.
      * Not adding isLoading and getOpcFeeForToken because we set these here. It is a compromise
      */
-  }, [accessDetails, accountId, asset, isUnsupportedPricing, orderPriceAndFees, service])
+  }, [
+    accessDetails,
+    accountId,
+    asset,
+    isUnsupportedPricing,
+    orderPriceAndFees,
+    service
+  ])
 
   useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
   }, [dtBalance])
 
   useEffect(() => {
-    if ((accessDetails.type === 'fixed' && !orderPriceAndFees) || !isMounted || !accountId || isUnsupportedPricing) return
+    if (
+      (accessDetails.type === 'fixed' && !orderPriceAndFees) ||
+      !isMounted ||
+      !accountId ||
+      isUnsupportedPricing
+    )
+      return
 
     /**
      * disabled in these cases:
@@ -129,7 +168,12 @@ export default function Download({
      * - if user is not whitelisted or blacklisted
      */
     const isDisabled =
-      !accessDetails.isPurchasable || !isAssetNetwork || ((!isBalanceSufficient || !isAssetNetwork) && !isOwned && !hasDatatoken) || !isAccountIdWhitelisted
+      !accessDetails.isPurchasable ||
+      !isAssetNetwork ||
+      ((!isBalanceSufficient || !isAssetNetwork) &&
+        !isOwned &&
+        !hasDatatoken) ||
+      !isAccountIdWhitelisted
     setIsDisabled(isDisabled)
   }, [
     isMounted,
@@ -149,12 +193,38 @@ export default function Download({
     setRetry(false)
     try {
       if (isOwned) {
-        setStatusText(getOrderFeedback(accessDetails.baseToken?.symbol, accessDetails.datatoken?.symbol)[3])
+        setStatusText(
+          getOrderFeedback(
+            accessDetails.baseToken?.symbol,
+            accessDetails.datatoken?.symbol
+          )[3]
+        )
 
-        await downloadFile(signer, asset, service, accessDetails, accountId, validOrderTx, dataParams)
+        await downloadFile(
+          signer,
+          asset,
+          service,
+          accessDetails,
+          accountId,
+          validOrderTx,
+          dataParams
+        )
       } else {
-        setStatusText(getOrderFeedback(accessDetails.baseToken?.symbol, accessDetails.datatoken?.symbol)[accessDetails.type === 'fixed' ? 2 : 1])
-        const orderTx = await order(signer, asset, service, accessDetails, orderPriceAndFees, accountId, hasDatatoken)
+        setStatusText(
+          getOrderFeedback(
+            accessDetails.baseToken?.symbol,
+            accessDetails.datatoken?.symbol
+          )[accessDetails.type === 'fixed' ? 2 : 1]
+        )
+        const orderTx = await order(
+          signer,
+          asset,
+          service,
+          accessDetails,
+          orderPriceAndFees,
+          accountId,
+          hasDatatoken
+        )
         const tx = await orderTx.wait()
         if (!tx) {
           throw new Error()
@@ -165,7 +235,9 @@ export default function Download({
     } catch (error) {
       LoggerInstance.error(error)
       setRetry(true)
-      const message = isOwned ? 'Failed to download file!' : 'An error occurred, please retry. Check console for more information.'
+      const message = isOwned
+        ? 'Failed to download file!'
+        : 'An error occurred, please retry. Check console for more information.'
       toast.error(message)
     }
     setIsLoading(false)
@@ -176,7 +248,12 @@ export default function Download({
   }
 
   const CalculateButton = ({ isValid }: { isValid?: boolean }) => (
-    <CalculateButtonBuy type="submit" onClick={handleFullPrice} stepText={statusText} isLoading={isLoading} />
+    <CalculateButtonBuy
+      type="submit"
+      onClick={handleFullPrice}
+      stepText={statusText}
+      isLoading={isLoading}
+    />
   )
 
   const PurchaseButton = ({ isValid }: { isValid?: boolean }) => (
@@ -209,15 +286,33 @@ export default function Download({
     return (
       <div>
         {isOrderDisabled ? (
-          <Alert className={styles.fieldWarning} state="info" text={`The publisher temporarily disabled ordering for this asset`} />
+          <Alert
+            className={styles.fieldWarning}
+            state="info"
+            text={`The publisher temporarily disabled ordering for this asset`}
+          />
         ) : (
           <>
             {isUnsupportedPricing ? (
-              <Alert className={styles.fieldWarning} state="info" text={`No pricing schema available for this asset.`} />
+              <Alert
+                className={styles.fieldWarning}
+                state="info"
+                text={`No pricing schema available for this asset.`}
+              />
             ) : (
               <div className={styles.priceWrapper}>
-                {isPriceLoading ? <Loader message="Calculating asset price" /> : <Price price={price} orderPriceAndFees={orderPriceAndFees} size="large" />}
-                {!isInPurgatory && isFullPriceLoading && <CalculateButton isValid={isValid} />}
+                {isPriceLoading ? (
+                  <Loader message="Calculating asset price" />
+                ) : (
+                  <Price
+                    price={price}
+                    orderPriceAndFees={orderPriceAndFees}
+                    size="large"
+                  />
+                )}
+                {!isInPurgatory && isFullPriceLoading && (
+                  <CalculateButton isValid={isValid} />
+                )}
               </div>
             )}
           </>
@@ -235,22 +330,40 @@ export default function Download({
           <div className={styles.calculation}>
             <Row
               hasDatatoken={hasDatatoken}
-              price={new Decimal(Number(orderPriceAndFees?.price) || price.value || 0).toDecimalPlaces(MAX_DECIMALS).toString()}
+              price={new Decimal(
+                Number(orderPriceAndFees?.price) || price.value || 0
+              )
+                .toDecimalPlaces(MAX_DECIMALS)
+                .toString()}
               symbol={price.tokenSymbol}
               type="DATASET"
             />
             <Row
               price={new Decimal(consumeMarketFixedSwapFee)
-                .mul(new Decimal(Number(orderPriceAndFees?.price) || price.value || 0).toDecimalPlaces(MAX_DECIMALS).div(100))
+                .mul(
+                  new Decimal(
+                    Number(orderPriceAndFees?.price) || price.value || 0
+                  )
+                    .toDecimalPlaces(MAX_DECIMALS)
+                    .div(100)
+                )
                 .toString()} // consume market fixed swap fee amount
               symbol={price.tokenSymbol}
               type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
             />
             <Row
-              price={new Decimal(new Decimal(Number(orderPriceAndFees?.price) || price.value || 0).toDecimalPlaces(MAX_DECIMALS))
+              price={new Decimal(
+                new Decimal(
+                  Number(orderPriceAndFees?.price) || price.value || 0
+                ).toDecimalPlaces(MAX_DECIMALS)
+              )
                 .add(
                   new Decimal(consumeMarketFixedSwapFee).mul(
-                    new Decimal(Number(orderPriceAndFees?.price) || price.value || 0).toDecimalPlaces(MAX_DECIMALS).div(100)
+                    new Decimal(
+                      Number(orderPriceAndFees?.price) || price.value || 0
+                    )
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
                   )
                 )
                 .toString()}
@@ -258,7 +371,9 @@ export default function Download({
             />
           </div>
         )}
-        <div style={{ textAlign: 'center' }}>{!isInPurgatory && <PurchaseButton isValid={isValid} />}</div>
+        <div style={{ textAlign: 'center' }}>
+          {!isInPurgatory && <PurchaseButton isValid={isValid} />}
+        </div>
       </div>
     )
   }
@@ -272,7 +387,10 @@ export default function Download({
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={async (values) => {
-        const dataServiceParams = parseConsumerParameterValues(values?.dataServiceParams, service.consumerParameters)
+        const dataServiceParams = parseConsumerParameterValues(
+          values?.dataServiceParams,
+          service.consumerParameters
+        )
 
         await handleOrderOrDownload(dataServiceParams)
       }}
@@ -281,7 +399,12 @@ export default function Download({
         <aside className={styles.consume}>
           <div className={styles.info}>
             <div className={styles.filewrapper}>
-              <FileIcon file={file} isAccountWhitelisted={isAccountIdWhitelisted} isLoading={fileIsLoading} small />
+              <FileIcon
+                file={file}
+                isAccountWhitelisted={isAccountIdWhitelisted}
+                isLoading={fileIsLoading}
+                small
+              />
             </div>
             <AssetAction asset={asset} />
           </div>
@@ -305,11 +428,24 @@ export default function Download({
           </div>
           {isOwned && (
             <div className={styles.confettiContainer}>
-              <SuccessConfetti success={`You successfully bought this ${asset.metadata.type} and are now able to download it.`} />
+              <SuccessConfetti
+                success={`You successfully bought this ${asset.metadata.type} and are now able to download it.`}
+              />
             </div>
           )}
-          {asset.metadata?.type === 'algorithm' && <AlgorithmDatasetsListForCompute asset={asset} service={service} accessDetails={accessDetails} />}
-          {accountId && <WhitelistIndicator accountId={accountId} isAccountIdWhitelisted={isAccountIdWhitelisted} />}
+          {asset.metadata?.type === 'algorithm' && (
+            <AlgorithmDatasetsListForCompute
+              asset={asset}
+              service={service}
+              accessDetails={accessDetails}
+            />
+          )}
+          {accountId && (
+            <WhitelistIndicator
+              accountId={accountId}
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+            />
+          )}
         </aside>
       </Form>
     </Formik>
