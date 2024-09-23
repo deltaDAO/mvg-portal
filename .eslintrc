@@ -35,7 +35,12 @@
         "plugin:react/jsx-runtime",
         "plugin:testing-library/react"
       ],
-      "plugins": ["@typescript-eslint", "prettier", "testing-library", "jest-dom"],
+      "plugins": [
+        "@typescript-eslint",
+        "prettier",
+        "testing-library",
+        "jest-dom"
+      ],
       "rules": {
         "react/prop-types": "off",
         "react/no-unused-prop-types": "off",

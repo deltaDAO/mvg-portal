@@ -27,7 +27,8 @@ export default function PriceUnit({
         <div>-</div>
       ) : (
         <div className={`${styles.priceNumber} ${styles[size]}`}>
-          {Number.isNaN(price) ? '-' : formatNumber(price, locale, decimals)} <span className={styles.symbol}>{symbol}</span>
+          {Number.isNaN(price) ? '-' : formatNumber(price, locale, decimals)}{' '}
+          <span className={styles.symbol}>{symbol}</span>
         </div>
       )}
     </div>
