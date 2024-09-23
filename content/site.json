@@ -54,6 +54,14 @@
           "isLive": true
         },
         {
+          "name": "ACCURATE",
+          "link": "https://accurate.pontus-x.eu",
+          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
+          "image": "accurate-logo.webp",
+          "category": "manufacturing",
+          "isLive": true
+        },
+        {
           "name": "Airbus",
           "link": "https://airbus.pontus-x.eu/",
           "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
@@ -67,14 +75,6 @@
           "description": "A curated framework of Open Source Platform components to accelerate the development of Smart Solutions.",
           "image": "logo-fiware-full.webp",
           "category": "smart city",
-          "isLive": true
-        },
-        {
-          "name": "Service-Meister",
-          "link": "https://servicemeister.pontus-x.eu/",
-          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
-          "image": "service-meister-logo.webp",
-          "category": "AI",
           "isLive": true
         },
         {
@@ -134,12 +134,12 @@
           "isLive": true
         },
         {
-          "name": "Under Construction: ACCURATE",
-          "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101138269/program/43108390/details",
-          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
-          "image": "accurate-logo.webp",
-          "category": "manufacturing",
-          "isLive": false
+          "name": "Service-Meister",
+          "link": "https://servicemeister.pontus-x.eu/",
+          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
+          "image": "service-meister-logo.webp",
+          "category": "AI",
+          "isLive": true
         },
         {
           "name": "deltaDAO AI marketplace",
