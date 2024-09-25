@@ -13,18 +13,10 @@ import { toast } from 'react-toastify'
 interface Content {
   title: string
   description: string
-  card: {
-    cardTitle: string
-    cardDescription: string
-    cardExplainerTitle: string
-    cardExplainerFirstStep: string
-    cardExplainerSecondStep: string
-    cardExplainerThirdStep: string
-    cardExplainerFourthStep: string
-    cardExplainerFithStep: string
-    cardExplainerNote: string
-    cardNetworkAddress: string
-    cardNetwork: string
+  input: {
+    label: string
+    placeholder: string
+    buttonLabel: string
   }
 }
 
@@ -34,21 +26,8 @@ const networkNameMap: { [key: number]: string } = {
 }
 
 const FaucetPage = (): ReactElement => {
-  const { buttonLabel }: Content = content
-  const { card }: Content = content
-  const {
-    cardTitle,
-    cardDescription,
-    cardExplainerTitle,
-    cardExplainerFirstStep,
-    cardExplainerSecondStep,
-    cardExplainerThirdStep,
-    cardExplainerFourthStep,
-    cardExplainerFithStep,
-    cardExplainerNote,
-    cardNetworkAddress,
-    cardNetwork
-  } = card
+  const { input }: Content = content
+  const { label, buttonLabel } = input
 
   const [isLoading, setIsLoading] = useState(false)
   const [isRequestingTokens, setIsRequestingTokens] = useState(false)
@@ -166,23 +145,40 @@ const FaucetPage = (): ReactElement => {
 
   return (
     <div className={styles.card}>
-      <h2 className={styles.title}>{cardTitle}</h2>
-      <p className={styles.description}>{cardDescription}</p>
+      <h2 className={styles.title}>Welcome to the Pontus-X Faucet</h2>
+      <p className={styles.description}>
+        A faucet is a service that provides free tokens for testing purposes.
+        Known accounts can request 10 EUROe fee tokens and 1000 EUROe payment
+        tokens to use on the Pontus-X network. These tokens are available every
+        12 hours.
+      </p>
       <div className={styles.instructions}>
-        <h3>{cardExplainerTitle}</h3>
+        <h3>How to Request Tokens:</h3>
         <ol>
-          <li>{cardExplainerFirstStep}</li>
-          <li>{cardExplainerSecondStep}</li>
-          <li>{cardExplainerThirdStep}</li>
-          <li>{cardExplainerFourthStep}</li>
-          <li>{cardExplainerFithStep}</li>
+          <li>Ensure you have a web3 wallet (e.g. MetaMask) connected.</li>
+          <li>
+            Your wallet address will be automatically detected and displayed
+            below.
+          </li>
+          <li>
+            Click the &quot;Get Tokens&quot; button to request your free tokens.
+          </li>
+          <li>Wait for a few seconds while the request is processed.</li>
+          <li>
+            You will receive a confirmation once the tokens are successfully
+            added to your wallet.
+          </li>
         </ol>
+        <p>
+          <strong>Note:</strong> You can only request tokens once every 12
+          hours. If you encounter any issues, please try again later.
+        </p>
       </div>
       <div className={styles.address}>
-        <strong>{cardNetworkAddress}:</strong> {address}
+        <strong>{label}:</strong> {address}
       </div>
       <div className={styles.network}>
-        <strong>{cardNetwork}:</strong> {network}
+        <strong>Connected Network:</strong> {network}
       </div>
       <form className={styles.form} onSubmit={handleSearchStart}>
         <Button
