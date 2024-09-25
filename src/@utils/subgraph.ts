@@ -1,9 +1,8 @@
-import { gql, OperationResult, TypedDocumentNode, OperationContext } from 'urql'
+import { gql, TypedDocumentNode, OperationContext } from 'urql'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { getUrqlClientInstance } from '@context/UrqlProvider'
 import { getOceanConfig } from './ocean'
 import { OrdersData_orders as OrdersData } from '../@types/subgraph/OrdersData'
-import { OpcFeesQuery as OpcFeesData } from '../@types/subgraph/OpcFeesQuery'
 import appConfig from '../../app.config'
 
 const UserTokenOrders = gql`
@@ -27,30 +26,6 @@ const UserTokenOrders = gql`
       }
       createdTimestamp
       tx
-    }
-  }
-`
-
-const OpcFeesQuery = gql`
-  query OpcFeesQuery($id: ID!) {
-    opc(id: $id) {
-      swapOceanFee
-      swapNonOceanFee
-      orderFee
-      providerFee
-    }
-  }
-`
-
-const OpcsApprovedTokensQuery = gql`
-  query OpcsApprovedTokensQuery {
-    opcs {
-      approvedTokens {
-        address: id
-        symbol
-        name
-        decimals
-      }
     }
   }
 `
@@ -113,26 +88,6 @@ export async function fetchDataForMultipleChains(
   }
 }
 
-export async function getOpcFees(chainId: number) {
-  let opcFees
-  const variables = {
-    id: 1
-  }
-  const context = getQueryContext(chainId)
-  try {
-    const response: OperationResult<OpcFeesData> = await fetchData(
-      OpcFeesQuery,
-      variables,
-      context
-    )
-    opcFees = response?.data?.opc
-  } catch (error) {
-    LoggerInstance.error('Error getOpcFees: ', error.message)
-    throw Error(error.message)
-  }
-  return opcFees
-}
-
 export async function getUserTokenOrders(
   accountId: string,
   chainIds: number[]
@@ -155,44 +110,5 @@ export async function getUserTokenOrders(
     return data
   } catch (error) {
     LoggerInstance.error('Error getUserTokenOrders', error.message)
-  }
-}
-
-export async function getOpcsApprovedTokens(
-  chainId: number
-): Promise<TokenInfo[]> {
-  const context = getQueryContext(chainId)
-
-  const tokenAddressesEUROe = {
-    100: '0xe974c4894996e012399dedbda0be7314a73bbff1',
-    137: '0x820802Fa8a99901F52e39acD21177b0BE6EE2974',
-    80001: '0xA089a21902914C3f3325dBE2334E9B466071E5f1'
-  }
-
-  try {
-    const response = await fetchData(OpcsApprovedTokensQuery, null, context)
-    if (!response?.data) return
-
-    // TODO: remove the mocked EUROe integration
-    const { approvedTokens } = response.data.opcs[0]
-    if (!Object.keys(tokenAddressesEUROe).includes(chainId.toString()))
-      return approvedTokens
-
-    return approvedTokens.includes(
-      (token) => token.address === tokenAddressesEUROe[chainId]
-    )
-      ? approvedTokens
-      : [
-          ...approvedTokens,
-          {
-            address: tokenAddressesEUROe[chainId],
-            decimals: 6,
-            name: 'EUROe',
-            symbol: 'EUROe'
-          }
-        ]
-  } catch (error) {
-    LoggerInstance.error('Error getOpcsApprovedTokens: ', error.message)
-    throw Error(error.message)
   }
 }

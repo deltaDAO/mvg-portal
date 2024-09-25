@@ -7,19 +7,12 @@ import {
   useEffect,
   useState
 } from 'react'
-import { OpcQuery } from '../../../src/@types/subgraph/OpcQuery'
-import { OperationResult } from 'urql'
-import { opcQuery } from './_queries'
 import { MarketMetadataProviderValue, OpcFee } from './_types'
 import siteContent from '../../../content/site.json'
 import appConfig from '../../../app.config'
-import {
-  fetchData,
-  getQueryContext,
-  getOpcsApprovedTokens
-} from '@utils/subgraph'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useNetwork, useConnect } from 'wagmi'
+import { useConnect } from 'wagmi'
+import useFactoryRouter from '@hooks/useRouter'
 
 const MarketMetadataContext = createContext({} as MarketMetadataProviderValue)
 
@@ -29,29 +22,13 @@ function MarketMetadataProvider({
   children: ReactNode
 }): ReactElement {
   const { isLoading } = useConnect()
-  const { chain } = useNetwork()
-
+  const { signer, getOpcData } = useFactoryRouter()
   const [opcFees, setOpcFees] = useState<OpcFee[]>()
   const [approvedBaseTokens, setApprovedBaseTokens] = useState<TokenInfo[]>()
 
   useEffect(() => {
-    async function getOpcData() {
-      const opcData = []
-      for (let i = 0; i < appConfig.chainIdsSupported.length; i++) {
-        const response: OperationResult<OpcQuery> = await fetchData(
-          opcQuery,
-          null,
-          getQueryContext(appConfig.chainIdsSupported[i])
-        )
-        opcData.push({
-          chainId: appConfig.chainIdsSupported[i],
-          approvedTokens: response.data?.opc?.approvedTokens?.map(
-            (token) => token.address
-          ),
-          swapApprovedFee: response.data?.opc?.swapOceanFee,
-          swapNotApprovedFee: response.data?.opc?.swapNonOceanFee
-        } as OpcFee)
-      }
+    async function getData() {
+      const opcData = await getOpcData(appConfig.chainIdsSupported)
       LoggerInstance.log('[MarketMetadata] Got new data.', {
         opcFees: opcData,
         siteContent,
@@ -59,8 +36,10 @@ function MarketMetadataProvider({
       })
       setOpcFees(opcData)
     }
-    getOpcData()
-  }, [])
+    if (signer) {
+      getData()
+    }
+  }, [signer])
 
   const getOpcFeeForToken = useCallback(
     (tokenAddress: string, chainId: number): string => {
@@ -73,35 +52,10 @@ function MarketMetadataProvider({
     [opcFees]
   )
 
-  // -----------------------------------
-  // Get and set approved base tokens list
-  // -----------------------------------
-  const getApprovedBaseTokens = useCallback(async (chainId: number) => {
-    try {
-      // TODO Doesn't work with subgraph anymore
-      // const approvedTokensList = await getOpcsApprovedTokens(chainId)
-      const approvedTokensList = [
-        {
-          address: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
-          decimals: 18,
-          symbol: 'OCEAN',
-          name: 'Ocean Token'
-        }
-      ]
-      setApprovedBaseTokens(approvedTokensList)
-      LoggerInstance.log(
-        '[MarketMetadata] Approved baseTokens',
-        approvedTokensList
-      )
-    } catch (error) {
-      LoggerInstance.error('[MarketMetadata] Error: ', error.message)
-    }
-  }, [])
-
   useEffect(() => {
     if (isLoading) return
-    getApprovedBaseTokens(chain?.id || 100)
-  }, [chain?.id, getApprovedBaseTokens, isLoading])
+    setApprovedBaseTokens(approvedBaseTokens)
+  }, [isLoading, approvedBaseTokens])
 
   return (
     <MarketMetadataContext.Provider
