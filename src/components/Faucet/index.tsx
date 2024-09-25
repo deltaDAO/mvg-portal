@@ -5,8 +5,9 @@ import Button from '@components/@shared/atoms/Button'
 import Loader from '@components/@shared/atoms/Loader'
 import Alert from '@components/@shared/atoms/Alert'
 import content from '../../../content/pages/faucet.json'
+import { ethers } from 'ethers'
 import { getMessage, requestTokens } from '../../@utils/faucet'
-import { useAccount, useNetwork, useSignMessage } from 'wagmi'
+import { useAccount, useSignMessage } from 'wagmi'
 import { toast } from 'react-toastify'
 
 interface Content {
@@ -51,18 +52,12 @@ const FaucetPage = (): ReactElement => {
 
   const [isLoading, setIsLoading] = useState(false)
   const [isRequestingTokens, setIsRequestingTokens] = useState(false)
+  const [address, setAddress] = useState<string>('')
+  const [network, setNetwork] = useState<string>('Unknown')
   const [message, setMessage] = useState<string>()
   const [error, setError] = useState<string>()
 
   const { address: accountAddress } = useAccount()
-  const { chain } = useNetwork()
-  const [network, setNetwork] = useState<string>('Unknown')
-
-  useEffect(() => {
-    if (chain) {
-      setNetwork(networkNameMap[chain.id] || 'Unknown')
-    }
-  }, [chain])
 
   const {
     data: signMessageData,
@@ -137,6 +132,38 @@ const FaucetPage = (): ReactElement => {
     faucetTokenRequest
   ])
 
+  useEffect(() => {
+    const fetchAddressAndNetwork = async () => {
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum)
+        const signer = provider.getSigner()
+        const address = await signer.getAddress()
+        const network = await provider.getNetwork()
+        setAddress(address)
+        setNetwork(networkNameMap[network.chainId] || 'Unknown')
+      } catch (error) {
+        LoggerInstance.error(error)
+      }
+    }
+
+    fetchAddressAndNetwork()
+
+    if (window.ethereum) {
+      window.ethereum.on('accountsChanged', fetchAddressAndNetwork)
+      window.ethereum.on('chainChanged', fetchAddressAndNetwork)
+    }
+
+    return () => {
+      if (window.ethereum) {
+        window.ethereum.removeListener(
+          'accountsChanged',
+          fetchAddressAndNetwork
+        )
+        window.ethereum.removeListener('chainChanged', fetchAddressAndNetwork)
+      }
+    }
+  }, [])
+
   return (
     <div className={styles.card}>
       <h2 className={styles.title}>{cardTitle}</h2>
@@ -152,14 +179,14 @@ const FaucetPage = (): ReactElement => {
         </ol>
       </div>
       <div className={styles.address}>
-        <strong>{cardNetworkAddress}:</strong> {accountAddress}
+        <strong>{cardNetworkAddress}:</strong> {address}
       </div>
       <div className={styles.network}>
         <strong>{cardNetwork}:</strong> {network}
       </div>
       <form className={styles.form} onSubmit={handleSearchStart}>
         <Button
-          disabled={!accountAddress || isLoading || isRequestingTokens}
+          disabled={!address || isLoading || isRequestingTokens}
           style="primary"
           size="small"
           type="submit"
