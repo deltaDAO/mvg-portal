@@ -473,6 +473,34 @@ export async function getUserSales(
   }
 }
 
+export async function getUserOrders(
+  accountId: string,
+  cancelToken: CancelToken,
+  page?: number
+): Promise<any> {
+  const filters: FilterTerm[] = []
+  filters.push(getFilterTerm('consumer.keyword', accountId))
+  const baseQueryparams = {
+    filters,
+    ignorePurgatory: true,
+    esPaginationOptions: {
+      from: Number(page) - 1 || 0,
+      size: 9
+    }
+  } as BaseQueryParams
+  const query = generateBaseQuery(baseQueryparams, 'order')
+  try {
+    const result = await queryMetadata(query, cancelToken)
+    return result
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      LoggerInstance.log(error.message)
+    } else {
+      LoggerInstance.error(error.message)
+    }
+  }
+}
+
 export async function getDownloadAssets(
   dtList: string[],
   tokenOrders: OrdersData[],

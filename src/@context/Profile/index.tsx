@@ -13,6 +13,7 @@ import { Asset, LoggerInstance } from '@oceanprotocol/lib'
 import {
   getDownloadAssets,
   getPublishedAssets,
+  getUserOrders,
   getUserSales
 } from '@utils/aquarius'
 import axios, { CancelToken } from 'axios'
@@ -130,6 +131,8 @@ function ProfileProvider({
       const dtList: string[] = []
       // TODO find another way to get this data from node
       const tokenOrders = await getUserTokenOrders(accountId, chainIds)
+      const orders = await getUserOrders(accountId, cancelToken)
+      console.log('orders:', orders)
       for (let i = 0; i < tokenOrders?.length; i++) {
         dtList.push(tokenOrders[i].datatoken.address)
       }
