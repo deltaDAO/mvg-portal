@@ -96,13 +96,11 @@ function useFactoryRouter() {
   const getOpcData = async (chainIds: number[]) => {
     const validChainIds = chainIds.filter((chainId) => {
       const config = getOceanConfig(chainId)
-      console.log('config:', config)
       return !!config?.routerFactoryAddress
     })
     const opcData = await Promise.all(
       validChainIds.map(async (chainId) => {
         const config = getOceanConfig(chainId)
-        console.log('config:', config?.routerFactoryAddress, chainId)
         const factory = new FactoryRouter(config?.routerFactoryAddress, signer)
         const fees = await fetchFees(factory)
         const approvedTokensAddresses =

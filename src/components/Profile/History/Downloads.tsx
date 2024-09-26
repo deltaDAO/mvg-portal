@@ -32,7 +32,7 @@ export default function ComputeDownloads({
 }): ReactElement {
   const { downloads, isDownloadsLoading } = useProfile()
   const { chainIds } = useUserPreferences()
-
+  // TODO paginations but is alredy done in main
   return accountId ? (
     <Table
       columns={columns}
