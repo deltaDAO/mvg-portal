@@ -87,28 +87,3 @@ export async function fetchDataForMultipleChains(
     LoggerInstance.error('Error fetchDataForMultipleChains: ', error.message)
   }
 }
-
-export async function getUserTokenOrders(
-  accountId: string,
-  chainIds: number[]
-): Promise<OrdersData[]> {
-  const data: OrdersData[] = []
-  const variables = { user: accountId?.toLowerCase() }
-
-  try {
-    const tokenOrders = await fetchDataForMultipleChains(
-      UserTokenOrders,
-      variables,
-      chainIds
-    )
-    for (let i = 0; i < tokenOrders?.length; i++) {
-      tokenOrders[i].orders.forEach((tokenOrder: OrdersData) => {
-        data.push(tokenOrder)
-      })
-    }
-
-    return data
-  } catch (error) {
-    LoggerInstance.error('Error getUserTokenOrders', error.message)
-  }
-}

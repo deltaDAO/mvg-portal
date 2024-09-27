@@ -480,6 +480,11 @@ export async function getUserOrders(
 ): Promise<any> {
   const filters: FilterTerm[] = []
   filters.push(getFilterTerm('consumer.keyword', accountId))
+  filters.push({
+    exists: {
+      field: 'datatokenAddress'
+    }
+  })
   const baseQueryparams = {
     filters,
     ignorePurgatory: true,
@@ -503,15 +508,13 @@ export async function getUserOrders(
 
 export async function getDownloadAssets(
   dtList: string[],
-  tokenOrders: OrdersData[],
   chainIds: number[],
   cancelToken: CancelToken,
   ignoreState = false,
   page?: number
 ): Promise<DownloadedAsset[]> {
-  // TODO this filter not work
   const filters: FilterTerm[] = []
-  // filters.push(getFilterTerm('services.datatokenAddress', dtList))
+  filters.push(getFilterTerm('services.datatokenAddress.keyword', dtList))
   filters.push(getFilterTerm('services.type', 'access'))
   const baseQueryparams = {
     chainIds,

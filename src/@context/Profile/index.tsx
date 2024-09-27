@@ -7,7 +7,6 @@ import {
   useCallback,
   ReactNode
 } from 'react'
-import { getUserTokenOrders } from '@utils/subgraph'
 import { useUserPreferences } from '../UserPreferences'
 import { Asset, LoggerInstance } from '@oceanprotocol/lib'
 import {
@@ -129,17 +128,13 @@ function ProfileProvider({
       if (!accountId || !chainIds) return
 
       const dtList: string[] = []
-      // TODO find another way to get this data from node
-      const tokenOrders = await getUserTokenOrders(accountId, chainIds)
       const orders = await getUserOrders(accountId, cancelToken)
-      console.log('orders:', orders)
-      for (let i = 0; i < tokenOrders?.length; i++) {
-        dtList.push(tokenOrders[i].datatoken.address)
+      for (let i = 0; i < orders?.results?.length; i++) {
+        dtList.push(orders.results[i].datatokenAddress)
       }
 
       const downloads = await getDownloadAssets(
         dtList,
-        tokenOrders,
         chainIds,
         cancelToken,
         ownAccount
