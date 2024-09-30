@@ -1,7 +1,6 @@
 import { Asset, LoggerInstance } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import axios, { CancelToken, AxiosResponse } from 'axios'
-import { OrdersData_orders as OrdersData } from '../../@types/subgraph/OrdersData'
 import { metadataCacheUri, allowDynamicPricing } from '../../../app.config'
 import {
   SortDirectionOptions,
@@ -512,7 +511,7 @@ export async function getDownloadAssets(
   cancelToken: CancelToken,
   ignoreState = false,
   page?: number
-): Promise<DownloadedAsset[]> {
+): Promise<{ downloadedAssets: DownloadedAsset[]; totalResults: number }> {
   const filters: FilterTerm[] = []
   filters.push(getFilterTerm('services.datatokenAddress.keyword', dtList))
   filters.push(getFilterTerm('services.type', 'access'))
@@ -540,7 +539,7 @@ export async function getDownloadAssets(
         }
       })
       .sort((a, b) => b.timestamp - a.timestamp)
-    return downloadedAssets
+    return { downloadedAssets, totalResults: result.totalResults }
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)

@@ -1,34 +1,8 @@
-import { gql, TypedDocumentNode, OperationContext } from 'urql'
+import { TypedDocumentNode, OperationContext } from 'urql'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { getUrqlClientInstance } from '@context/UrqlProvider'
 import { getOceanConfig } from './ocean'
-import { OrdersData_orders as OrdersData } from '../@types/subgraph/OrdersData'
 import appConfig from '../../app.config'
-
-const UserTokenOrders = gql`
-  query OrdersData($user: String!) {
-    orders(
-      orderBy: createdTimestamp
-      orderDirection: desc
-      where: { consumer: $user }
-    ) {
-      consumer {
-        id
-      }
-      datatoken {
-        id
-        address
-        symbol
-      }
-      consumerMarketToken {
-        address
-        symbol
-      }
-      createdTimestamp
-      tx
-    }
-  }
-`
 
 export function getSubgraphUri(chainId: number): string {
   const config = getOceanConfig(chainId)
@@ -79,6 +53,7 @@ export async function fetchDataForMultipleChains(
     for (const chainId of chainIds) {
       const context: OperationContext = getQueryContext(chainId)
       const response = await fetchData(query, variables, context)
+      console.log('fetchMultiple: ', response)
       if (!response || response.error) continue
       datas = datas.concat(response?.data)
     }
