@@ -53,7 +53,6 @@ export async function fetchDataForMultipleChains(
     for (const chainId of chainIds) {
       const context: OperationContext = getQueryContext(chainId)
       const response = await fetchData(query, variables, context)
-      console.log('fetchMultiple: ', response)
       if (!response || response.error) continue
       datas = datas.concat(response?.data)
     }

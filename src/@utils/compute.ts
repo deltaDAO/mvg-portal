@@ -310,7 +310,7 @@ export async function getComputeJobs(
     user: accountId.toLowerCase(),
     datatokenAddress: assetDTAddress.toLowerCase()
   }
-
+  // TODO changhe with call in node (compute enviroment barge)
   const results = await fetchDataForMultipleChains(
     assetDTAddress ? getComputeOrdersByDatatokenAddress : getComputeOrders,
     variables,
