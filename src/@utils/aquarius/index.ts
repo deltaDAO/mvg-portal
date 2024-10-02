@@ -476,7 +476,7 @@ export async function getUserOrders(
   accountId: string,
   cancelToken: CancelToken,
   page?: number
-): Promise<any> {
+): Promise<PagedAssets> {
   const filters: FilterTerm[] = []
   filters.push(getFilterTerm('consumer.keyword', accountId))
   filters.push({
@@ -494,8 +494,7 @@ export async function getUserOrders(
   } as BaseQueryParams
   const query = generateBaseQuery(baseQueryparams, 'order')
   try {
-    const result = await queryMetadata(query, cancelToken)
-    return result
+    return queryMetadata(query, cancelToken)
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)

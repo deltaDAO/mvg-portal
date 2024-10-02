@@ -21,15 +21,16 @@ function useFactoryRouter() {
   useEffect(() => {
     if (!signer || !chain?.id) return
     const config = getOceanConfig(chain.id)
-    const factory = new FactoryRouter(config?.routerFactoryAddress, signer)
-    setFactoryRouter(factory)
+    setFactoryRouter(new FactoryRouter(config?.routerFactoryAddress, signer))
   }, [signer, chain?.id])
 
   const fetchFees = async (router: FactoryRouter) => {
     try {
-      const opcFees = await router.contract.getOPCFees()
-      const consumeFee = await router.contract.getOPCConsumeFee()
-      const providerFee = await router.contract.getOPCProviderFee()
+      const [opcFees, consumeFee, providerFee] = await Promise.all([
+        router.contract.getOPCFees(),
+        router.contract.getOPCConsumeFee(),
+        router.contract.getOPCProviderFee()
+      ])
 
       return {
         swapOceanFee: ethers.utils.formatUnits(opcFees[0], 18),
