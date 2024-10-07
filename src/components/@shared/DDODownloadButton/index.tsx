@@ -9,7 +9,9 @@ export default function DDODownloadButton({
 }): ReactElement {
   return (
     <Button
-      onClick={() => downloadJSON(asset, `${asset.metadata.name}_metadata`)}
+      onClick={() =>
+        downloadJSON(JSON.stringify(asset), `${asset.metadata.name}_metadata`)
+      }
       size="small"
     >
       Download DDO
