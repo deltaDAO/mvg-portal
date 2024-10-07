@@ -1,6 +1,6 @@
 {
   "title": "Import custom tokens",
   "subtitle": "Before you can claim some test tokens you need to import the token's contract address to MetaMask",
-  "body": "Click on the button below to import the OCEAN and EUROe custom test tokens.",
+  "body": "Click on the button below to import the EUROe test payment token. Please be aware, that Pontus-X is also using a EUROe labelled network token to facilitate fee payments.",
   "image": "/images/onboarding/import_ocean_token.png"
 }

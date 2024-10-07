@@ -3,7 +3,7 @@
   "siteTagline": "Streamlined interoperability across digital service ecosystems.",
   "siteUrl": "https://portal.pontus-x.eu",
   "siteImage": "/share.png",
-  "copyright": "All Rights Reserved. Powered by [Gaia-X](https://gaia-x.eu/) and [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
+  "copyright": "All Rights Reserved. Powered by [Gaia-X](https://gaia-x.eu/) and [Ocean Enterprise](https://www.oceanenterprise.io/). Built by [deltaDAO](https://delta-dao.com).",
   "menu": [
     {
       "name": "Catalogue",
@@ -17,6 +17,11 @@
       "name": "Verify",
       "link": "/verify"
     },
+    {
+      "name": "Faucet",
+      "link": "/faucet"
+    },
+
     {
       "name": "Log",
       "link": "https://explorer.pontus-x.eu/"
@@ -42,9 +47,17 @@
         },
         {
           "name": "COOPERANTS",
-          "link": "https://cooperants.pontus-x.eu/",
+          "link": "https://federator.cooperants.info/marketplace",
           "description": "Gaia-X Lighthouse COOPERANTS is the collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
           "image": "cooperants-logo.webp",
+          "category": "manufacturing",
+          "isLive": true
+        },
+        {
+          "name": "ACCURATE",
+          "link": "https://accurate.pontus-x.eu",
+          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
+          "image": "accurate-logo.webp",
           "category": "manufacturing",
           "isLive": true
         },
@@ -57,11 +70,11 @@
           "isLive": true
         },
         {
-          "name": "Service-Meister",
-          "link": "https://servicemeister.pontus-x.eu/",
-          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
-          "image": "service-meister-logo.webp",
-          "category": "AI",
+          "name": "FIWARE",
+          "link": "https://fiware-marketplace-a4eqd.ondigitalocean.app/",
+          "description": "A curated framework of Open Source Platform components to accelerate the development of Smart Solutions.",
+          "image": "logo-fiware-full.webp",
+          "category": "smart city",
           "isLive": true
         },
         {
@@ -89,22 +102,6 @@
           "isLive": true
         },
         {
-          "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/",
-          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
-          "image": "energy-shr-logo.webp",
-          "category": "energy",
-          "isLive": true
-        },
-        {
-          "name": "Clinical Insights Exchange",
-          "link": "https://cix.triall.io/",
-          "description": "A federated data platform to change clinical data assets and analytics services in a trusted, privacy-friendly environment.",
-          "image": "clinical-insights-exchange-logo.webp",
-          "category": "health",
-          "isLive": true
-        },
-        {
           "name": "UdL Research Data Space",
           "link": "https://dataspace.angliru.udl.cat/",
           "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
@@ -113,12 +110,36 @@
           "isLive": true
         },
         {
-          "name": "Under Construction: ACCURATE",
-          "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101138269/program/43108390/details",
-          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
-          "image": "accurate-logo.webp",
-          "category": "manufacturing",
-          "isLive": false
+          "name": "Agrifood TEF",
+          "link": "http://dataspace.agrifoodtef.eu/",
+          "description": "The European Testing and Experimentation Facilities for Agrifood Innovation.",
+          "image": "agrifoodTEF.webp",
+          "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "Polish Agriculture Data Space",
+          "link": "https://dataspaces.psnc.pl/",
+          "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
+          "image": "PSNC.webp",
+          "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "EnergySHR",
+          "link": "https://www.energyshr.nl/",
+          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
+          "image": "energy-shr-logo.webp",
+          "category": "energy",
+          "isLive": true
+        },
+        {
+          "name": "Service-Meister",
+          "link": "https://servicemeister.pontus-x.eu/",
+          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
+          "image": "service-meister-logo.webp",
+          "category": "AI",
+          "isLive": true
         },
         {
           "name": "deltaDAO AI marketplace",
@@ -131,13 +152,13 @@
       ]
     }
   ],
-  "announcement": "",
+  "announcement": "The GEN-X network is deprecated and will be sunset on September 30, 2024. Please [migrate to the Pontus-X networks](https://docs.pontus-x.eu/docs/use-cases/migration-guide).",
   "devPreviewAnnouncement": "You are visiting the SITE-TITLE-PLACEHOLDER Developer Preview. Please note that some functionalities are in beta and may not work as expected. Visit the [SITE-TITLE-PLACEHOLDER portal](SITE-LINK-PLACEHOLDER) instead.",
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
   },
   "footer": {
-    "subtitle": "data economy solutions - GDPR compliant",
+    "subtitle": "Transforming Data Act Compliance into Scalable Monetization Opportunities",
     "copyright": "Built by [deltaDAO](https://delta-dao.com)",
     "privacyTitle": "Privacy",
     "content": [

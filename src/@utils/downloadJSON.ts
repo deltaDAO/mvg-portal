@@ -1,4 +1,5 @@
-export function isValidJSON(json: any): boolean {
+
+export function isValidJSON(json: string): boolean {
   try {
     JSON.parse(json)
     return true
@@ -8,11 +9,12 @@ export function isValidJSON(json: any): boolean {
 }
 
 // Download JSON file
-export function downloadJSON(json: any, filename: string): void {
+
+export function downloadJSON(json: string, filename: string): void {
   // check if the json is valid
-  if (isValidJSON(JSON.stringify(json))) {
+  if (isValidJSON(json)) {
     const element = document.createElement('a') // create an <a> tag
-    const file = new Blob([JSON.stringify(json)], {
+    const file = new Blob([json], {
       type: 'application/json'
     }) // create a file
     element.href = URL.createObjectURL(file) // create a URL for the file

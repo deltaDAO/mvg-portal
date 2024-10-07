@@ -12,7 +12,6 @@ import Time from '../atoms/Time'
 import Loader from '../atoms/Loader'
 import NetworkName from '../NetworkName'
 import { useUserPreferences } from '../../../@context/UserPreferences'
-import { ChainDoesNotSupportMulticallError } from 'wagmi'
 
 const networkColumn: TableOceanColumn<AssetExtended> = {
   name: 'Network',

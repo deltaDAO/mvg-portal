@@ -52,7 +52,7 @@ const computeOptions: ServiceComputeOptions = {
 export const initialValues: FormPublishData = {
   user: {
     stepCurrent: 1,
-    chainId: 100,
+    chainId: 32457,
     accountId: ''
   },
   metadata: {
@@ -84,13 +84,13 @@ export const initialValues: FormPublishData = {
   },
   services: [
     {
-      files: [{ url: '', type: 'ipfs' }],
+      files: [{ url: '', type: 'url' }],
       links: [{ url: '', type: 'url' }],
       dataTokenOptions: { name: '', symbol: '' },
       timeout: '',
       access: 'access',
       providerUrl: {
-        url: 'https://provider.mainnet.oceanprotocol.com',
+        url: 'https://provider.test.pontus-x.eu',
         valid: true,
         custom: false
       },
@@ -102,7 +102,7 @@ export const initialValues: FormPublishData = {
     }
   ],
   pricing: {
-    baseToken: { address: '', name: '', symbol: 'OCEAN', decimals: 18 },
+    baseToken: { address: '', name: '', symbol: 'EUROe', decimals: 6 },
     price: 0,
     type: allowFixedPricing === 'true' ? 'fixed' : 'free',
     freeAgreement: false

@@ -11,8 +11,7 @@ module.exports = {
   // const { appConfig } = useMarketMetadata()
   // return appConfig.metadataCacheUri
   metadataCacheUri:
-    process.env.NEXT_PUBLIC_METADATACACHE_URI ||
-    'https://aquarius510.v4.delta-dao.com',
+    process.env.NEXT_PUBLIC_METADATACACHE_URI || 'https://aquarius.pontus-x.eu',
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
@@ -106,5 +105,9 @@ module.exports = {
     statusEndpoints: {
       100: 'https://status.genx.delta-dao.com/api/check-blocks'
     }
+  },
+
+  faucet: {
+    baseUri: 'https://faucet.api.pontus-x.eu'
   }
 }
