@@ -106,7 +106,6 @@ export default function DDODownloadButton({
                   dependencyCredentialsList
                 )
               }
-              type="button"
             >
               add
             </Button>
@@ -121,7 +120,6 @@ export default function DDODownloadButton({
 
                     <Button
                       size="small"
-                      type="button"
                       style="text"
                       onClick={() =>
                         deleteCredential(
@@ -168,7 +166,6 @@ export default function DDODownloadButton({
                   serviceCredentialList
                 )
               }
-              type="button"
             >
               add
             </Button>
@@ -183,7 +180,6 @@ export default function DDODownloadButton({
 
                     <Button
                       size="small"
-                      type="button"
                       style="text"
                       onClick={() =>
                         deleteCredential(
