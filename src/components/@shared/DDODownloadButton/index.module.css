@@ -1,0 +1,6 @@
+.credential_margin_bottom {
+  margin-bottom: calc(var(--spacer) * var(--line-height));
+}
+.credential_input {
+  width: 70%;
+}

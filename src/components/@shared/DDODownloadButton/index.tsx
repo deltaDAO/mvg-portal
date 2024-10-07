@@ -4,6 +4,7 @@ import Modal from '../atoms/Modal'
 import Input from '../FormInput'
 import { createServiceCredential } from './createJSON'
 import { ListItem } from '../atoms/Lists'
+import styles from './index.module.css'
 
 export default function DDODownloadButton({
   asset
@@ -26,13 +27,18 @@ export default function DDODownloadButton({
       setCredential('')
     }
   }
+  // delete credential from the list
+  const deleteCredential = (index, setList, list) => {
+    list.splice(index, 1)
+    setList([...list])
+  }
   return (
     <>
       <Button onClick={() => setOpenModal(true)} size="small">
         Prepare Service Credential
       </Button>
       <Modal
-        title="test"
+        title="Prepare Service Credential"
         isOpen={openModal}
         onToggleModal={() => {
           setOpenModal(false)
@@ -73,20 +79,24 @@ export default function DDODownloadButton({
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center',
+              alignItems: 'flex-end',
               flexWrap: 'wrap',
               width: '100%'
             }}
           >
-            <Input
-              label="known dependency credentials"
-              type="text"
-              value={dependencyCredentials}
-              onChange={(e) => {
-                setDependencyCredentials((e.target as HTMLInputElement).value)
-              }}
-            />
+            <div className={`${styles.credential_input}`}>
+              <Input
+                label="known dependency credentials"
+                type="text"
+                value={dependencyCredentials}
+                onChange={(e) => {
+                  setDependencyCredentials((e.target as HTMLInputElement).value)
+                }}
+              />
+            </div>
+
             <Button
+              className={`${styles.credential_margin_bottom}`}
               onClick={(e) =>
                 addCredential(
                   e,
@@ -97,17 +107,33 @@ export default function DDODownloadButton({
                 )
               }
               type="button"
-              size="small"
             >
-              +
+              add
             </Button>
           </div>
           {dependencyCredentialsList.length > 0 && (
             <div>
-              <h3>known dependency credentials</h3>
-              <ul style={{ paddingBottom: '30px' }}>
-                {dependencyCredentialsList?.map((credential) => (
-                  <ListItem key={credential.id}>{credential.id}</ListItem>
+              <h5>known dependency credentials</h5>
+              <ul className={`${styles.credential_margin_bottom}`}>
+                {dependencyCredentialsList?.map((credential, index) => (
+                  <ListItem key={credential.id}>
+                    <span style={{ marginRight: '10px' }}>{credential.id}</span>
+
+                    <Button
+                      size="small"
+                      type="button"
+                      style="text"
+                      onClick={() =>
+                        deleteCredential(
+                          index,
+                          setDependencyCredentialsList,
+                          dependencyCredentialsList
+                        )
+                      }
+                    >
+                      delete
+                    </Button>
+                  </ListItem>
                 ))}
               </ul>
             </div>
@@ -117,19 +143,22 @@ export default function DDODownloadButton({
             style={{
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'center',
+              alignItems: 'flex-end',
               flexWrap: 'wrap'
             }}
           >
-            <Input
-              label="known aggregated service credentials"
-              type="text"
-              value={serviceCredential}
-              onChange={(e) => {
-                setServiceCredential((e.target as HTMLInputElement).value)
-              }}
-            />
+            <div className={`${styles.credential_input}`}>
+              <Input
+                label="known aggregated service credentials"
+                type="text"
+                value={serviceCredential}
+                onChange={(e) => {
+                  setServiceCredential((e.target as HTMLInputElement).value)
+                }}
+              />
+            </div>
             <Button
+              className={`${styles.credential_margin_bottom}`}
               onClick={(e) =>
                 addCredential(
                   e,
@@ -140,17 +169,33 @@ export default function DDODownloadButton({
                 )
               }
               type="button"
-              size="small"
             >
-              +
+              add
             </Button>
           </div>
           {serviceCredentialList.length > 0 && (
             <div>
-              <h3>known aggregated service credentials</h3>
+              <h5>known aggregated service credentials</h5>
               <ul style={{ paddingBottom: '30px' }}>
-                {serviceCredentialList?.map((credential) => (
-                  <ListItem key={credential.id}>{credential.id}</ListItem>
+                {serviceCredentialList?.map((credential, index) => (
+                  <ListItem key={credential.id}>
+                    <span style={{ marginRight: '10px' }}>{credential.id}</span>
+
+                    <Button
+                      size="small"
+                      type="button"
+                      style="text"
+                      onClick={() =>
+                        deleteCredential(
+                          index,
+                          setServiceCredentialList,
+                          serviceCredentialList
+                        )
+                      }
+                    >
+                      delete
+                    </Button>
+                  </ListItem>
                 ))}
               </ul>
             </div>

@@ -22,16 +22,14 @@ export function createServiceCredential(asset, formData) {
       'gx:maintainedBy': {
         id: formData.get('pathToParticipantCredential')
       },
-      'gx:serviceOffering:type': "['data', 'software', 'SaaS']",
       'gx:serviceOffering:serviceModel': 'subscription',
       'gx:serviceOffering:subscriptionDuration':
         asset.services[0].timeout || 'unlimited',
       'gx:policy': `${formData.get('credentialHostingPath')}/yourpolicy.json`,
       'gx:termsAndConditions': {
-        'gx:URL':
-          asset.metadata.additionalInformation.gaiaXInformation
-            .termsAndConditions[0].url[0],
-        'gx:hash': '[SHA256 Hash of the Terms and Condition Document]'
+        'gx:URL': 'https://portal.pontus-x.eu/terms',
+        'gx:hash':
+          'dc6cb5cd5f726e18cf14d9a17fc192a3c5239d7764d6cdb73138a8c53b550dd5f961252c8a0be4b1b8dc42260108dc65e9217053b61fec83634b3e1bb6e6822e'
       },
       'gx:dataAccountExport': {
         'gx:requestType': 'email',
