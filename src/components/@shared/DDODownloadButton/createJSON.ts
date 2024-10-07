@@ -53,5 +53,8 @@ export function createServiceCredential(asset, formData) {
       'gx:aggregationOf': JSON.parse(formData.get('serviceCredential')) || []
     }
   }
-  downloadJSON(metadata, `service_did_op_${asset.id.split(':')[2]}`)
+  downloadJSON(
+    JSON.stringify(metadata),
+    `service_did_op_${asset.id.split(':')[2]}`
+  )
 }
