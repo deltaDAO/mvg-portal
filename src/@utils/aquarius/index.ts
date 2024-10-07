@@ -13,6 +13,7 @@ import addressConfig from '../../../address.config'
 import { isValidDid } from '@utils/ddo'
 import { Filters } from '@context/Filter'
 import { filterSets } from '@components/Search/Filter'
+import { CHAIN_TO_INDEX_MAP, DEFAULT_INDEX } from './_constants'
 
 export interface UserSales {
   id: string
@@ -105,6 +106,15 @@ FilterTerm | undefined {
     : getFilterTerm('price.type', 'pool')
 }
 
+export function getIndexForChainIds(chainIds: number[]): string[] {
+  const indexes: string[] = []
+  for (const chainId of chainIds) {
+    const index = CHAIN_TO_INDEX_MAP[chainId] || DEFAULT_INDEX
+    indexes.push(index)
+  }
+  return indexes
+}
+
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams
 ): SearchQuery {
@@ -130,7 +140,10 @@ export function generateBaseQuery(
           ...(baseQueryParams.chainIds
             ? [getFilterTerm('chainId', baseQueryParams.chainIds)]
             : []),
-          getFilterTerm('_index', 'v510'),
+          getFilterTerm(
+            '_index',
+            getIndexForChainIds(baseQueryParams.chainIds)
+          ),
           ...(baseQueryParams.ignorePurgatory
             ? []
             : [getFilterTerm('purgatory.state', false)]),
