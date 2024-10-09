@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "title": "Metadata",
+    "fields": [
+      {
+        "name": "didweb",
+        "label": "did:web",
+        "required": true
+      },
+      {
+        "name": "credentialHostingPath",
+        "label": "Credential Hosting path",
+        "required": true
+      },
+      {
+        "name": "pathToParticipantCredential",
+        "label": "path to the participant credential",
+        "required": true
+      },
+      {
+        "name": "knownDependencyCredentials",
+        "label": "known dependency credentials",
+        "help": "List of known dependency credentials"
+      },
+      {
+        "name": "knownAggregatedServiceCredentials",
+        "label": "known aggregated service credentials",
+        "help": "List of known aggregated service credentials"
+      }
+    ]
+  },
+  "submission": {
+    "title": "Submit"
+  }
+}

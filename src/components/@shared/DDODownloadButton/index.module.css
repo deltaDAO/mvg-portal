@@ -4,3 +4,11 @@
 .credential_input {
   width: 70%;
 }
+
+.credential_input_div {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: 'wrap';
+  width: '100%';
+}
