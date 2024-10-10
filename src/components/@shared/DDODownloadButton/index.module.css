@@ -12,3 +12,7 @@
   flex-wrap: 'wrap';
   width: '100%';
 }
+
+.button {
+  max-height: 70px;
+}

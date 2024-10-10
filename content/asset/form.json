@@ -4,27 +4,32 @@
     "fields": [
       {
         "name": "didweb",
-        "label": "did:web",
+        "label": "DID:web",
+        "placeholder": "did:web:delta-dao.com",
         "required": true
       },
       {
         "name": "credentialHostingPath",
-        "label": "Credential Hosting path",
+        "label": "Credential hosting path",
+        "placeholder": "https://www.delta-dao.com",
         "required": true
       },
       {
         "name": "pathToParticipantCredential",
-        "label": "path to the participant credential",
+        "label": "Path to the participant credential",
+        "placeholder": "https://www.delta-dao.com",
         "required": true
       },
       {
         "name": "knownDependencyCredentials",
-        "label": "known dependency credentials",
+        "label": "Known dependency credentials",
+        "placeholder": "https://www.delta-dao.com/.well-known/2210_gx_service_provider_1.json",
         "help": "List of known dependency credentials"
       },
       {
         "name": "knownAggregatedServiceCredentials",
-        "label": "known aggregated service credentials",
+        "label": "Known aggregated service credentials",
+        "placeholder": "https://www.delta-dao.com/.well-known/2210_gx_resource_data_road_condition_7.json",
         "help": "List of known aggregated service credentials"
       }
     ]

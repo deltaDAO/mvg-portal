@@ -8,6 +8,7 @@ import { getFieldContent } from '@utils/form'
 import content from '../../../../content/asset/form.json'
 import { initialValuesAsset, validationAsset } from './_validation'
 import InputWithList from './inputWithList'
+import styles from './index.module.css'
 
 export default function DDODownloadButton({
   asset
@@ -33,9 +34,14 @@ export default function DDODownloadButton({
 
   return (
     <>
-      <Button onClick={() => setOpenModal(true)} size="small">
+      <Button
+        className={styles.button}
+        onClick={() => setOpenModal(true)}
+        size="small"
+      >
         Prepare Service Credential
       </Button>
+
       <Modal
         title="Prepare Service Credential"
         isOpen={openModal}

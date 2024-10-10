@@ -16,10 +16,10 @@ export function createServiceCredential(asset, formData) {
       id: asset.id,
       type: 'gx:ServiceOffering',
       'gx:providedBy': {
-        id: formData.pathToParticipantCredential
+        id: `${formData.pathToParticipantCredential}/.well-known/2210_gx_participant.json`
       },
       'gx:maintainedBy': {
-        id: formData.pathToParticipantCredential
+        id: `${formData.pathToParticipantCredential}/.well-known/2210_gx_participant.json`
       },
       'gx:serviceOffering:serviceModel': 'subscription',
       'gx:serviceOffering:subscriptionDuration':
