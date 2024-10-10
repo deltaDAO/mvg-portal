@@ -8,6 +8,7 @@ export function isValidJSON(json: string): boolean {
 }
 
 // Download JSON file
+
 export function downloadJSON(json: string, filename: string): void {
   // check if the json is valid
   if (isValidJSON(json)) {
