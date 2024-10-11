@@ -2,18 +2,26 @@ import { ReactElement, useState } from 'react'
 import Button from '../atoms/Button'
 import Modal from '../atoms/Modal'
 import Input from '../FormInput'
-import { createServiceCredential } from './createJSON'
+import { createServiceCredential, DDOData } from './createJSON'
 import { Field, Form, Formik } from 'formik'
 import { getFieldContent } from '@utils/form'
-import content from '../../../../content/asset/form.json'
+import content from '../../../../content/DDOtoServiceCredential/serviceCredentialForm.json'
 import { initialValuesAsset, validationAsset } from './_validation'
 import InputWithList from './inputWithList'
 import styles from './index.module.css'
 
+interface values {
+  didweb: string
+  credentialHostingPath: string
+  pathToParticipantCredential: string
+  knownDependencyCredentials: string
+  knownAggregatedServiceCredentials: string
+}
+
 export default function DDODownloadButton({
   asset
 }: {
-  asset: object
+  asset: DDOData
 }): ReactElement {
   const [openModal, setOpenModal] = useState(false)
   const [serviceCredentialList, setServiceCredentialList] = useState<
@@ -22,14 +30,22 @@ export default function DDODownloadButton({
   const [dependencyCredentialsList, setDependencyCredentialsList] = useState<
     { id: string }[]
   >([])
-  const handleSubmit = (values: object) => {
+  const clearLists = () => {
+    setOpenModal(false)
+    setServiceCredentialList([])
+    setDependencyCredentialsList([])
+  }
+  const handleSubmit = (values: values) => {
     const formData = {
       ...values,
       serviceCredentialList,
-      dependencyCredentialsList
+      dependencyCredentialsList,
+      termsAndConditionsURL: 'https://portal.pontus-x.eu/terms',
+      termsAndConditionsHash:
+        'dc6cb5cd5f726e18cf14d9a17fc192a3c5239d7764d6cdb73138a8c53b550dd5f961252c8a0be4b1b8dc42260108dc65e9217053b61fec83634b3e1bb6e6822e'
     }
     createServiceCredential(asset, formData)
-    setOpenModal(false)
+    clearLists()
   }
 
   return (
@@ -43,20 +59,28 @@ export default function DDODownloadButton({
       </Button>
 
       <Modal
-        title="Prepare Service Credential"
+        title="Prepare Gaia-X Service Credential"
         isOpen={openModal}
         onToggleModal={() => {
-          setOpenModal(false)
-          setServiceCredentialList([])
-          setDependencyCredentialsList([])
+          clearLists()
         }}
       >
+        <p>
+          This manual export functionality will assist you to create Gaia-X
+          Service Credentials for this service which can be added to this
+          service for verification against the&nbsp;
+          <Button
+            style="text"
+            href={'https://docs.gaia-x.eu/framework/?tab=clearing-house'}
+          >
+            Gaia-X Digital Clearing Houses (GXDCH)
+          </Button>
+          . Credentials should be signed and hosted by the service provider.
+        </p>
         <Formik
           initialValues={initialValuesAsset}
           validationSchema={validationAsset}
-          onSubmit={(values: object) => {
-            handleSubmit(values)
-          }}
+          onSubmit={handleSubmit}
         >
           <Form>
             <Field

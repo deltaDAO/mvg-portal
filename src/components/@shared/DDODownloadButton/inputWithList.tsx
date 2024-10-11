@@ -1,5 +1,5 @@
 import { getFieldContent } from '@utils/form'
-import content from '../../../../content/asset/form.json'
+import content from '../../../../content/DDOtoServiceCredential/serviceCredentialForm.json'
 import { Field, useFormikContext } from 'formik'
 import Input from '../FormInput'
 import Button from '../atoms/Button'
@@ -27,8 +27,8 @@ export default function InputWithList({
   }
   // delete credential from the list
   const deleteCredential = (index: number) => {
-    list.splice(index, 1)
-    setList([...list])
+    const filteredList = list.filter((_, i) => i !== index)
+    setList([...filteredList])
   }
   return (
     <>
@@ -40,7 +40,6 @@ export default function InputWithList({
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               setServiceCredential((e.target as HTMLInputElement).value)
               setFieldValue(fieldname, (e.target as HTMLInputElement).value)
-              console.log(errors[fieldname])
             }}
             component={Input}
             name={fieldname}
@@ -66,7 +65,11 @@ export default function InputWithList({
             {list.map((item, index) => (
               <ListItem key={index}>
                 <span style={{ marginRight: '10px' }}>{item.id}</span>
-                <Button style="text" onClick={() => deleteCredential(index)}>
+                <Button
+                  type="button"
+                  style="text"
+                  onClick={() => deleteCredential(index)}
+                >
                   delete
                 </Button>
               </ListItem>
