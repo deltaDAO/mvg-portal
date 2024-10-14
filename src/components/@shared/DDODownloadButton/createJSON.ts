@@ -11,8 +11,6 @@ interface FormData {
   pathToParticipantCredential: string
   dependencyCredentialsList: { id: string }[]
   serviceCredentialList: { id: string }[]
-  termsAndConditionsURL: string
-  termsAndConditionsHash: string
 }
 
 function getDomain(url: string) {
@@ -46,8 +44,8 @@ export function createServiceCredential(asset: DDOData, formData: FormData) {
         asset.services[0].timeout || 'unlimited',
       'gx:policy': `${formData.credentialHostingPath}/yourpolicy.json`,
       'gx:termsAndConditions': {
-        'gx:URL': formData.termsAndConditionsURL,
-        'gx:hash': formData.termsAndConditionsHash
+        'gx:URL': '[basedomain]/yourtermsandconditions.txt',
+        'gx:hash': '[hash]'
       },
       'gx:dataAccountExport': {
         'gx:requestType': 'email',

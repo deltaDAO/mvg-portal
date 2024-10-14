@@ -39,10 +39,7 @@ export default function DDODownloadButton({
     const formData = {
       ...values,
       serviceCredentialList,
-      dependencyCredentialsList,
-      termsAndConditionsURL: 'https://portal.pontus-x.eu/terms',
-      termsAndConditionsHash:
-        'dc6cb5cd5f726e18cf14d9a17fc192a3c5239d7764d6cdb73138a8c53b550dd5f961252c8a0be4b1b8dc42260108dc65e9217053b61fec83634b3e1bb6e6822e'
+      dependencyCredentialsList
     }
     createServiceCredential(asset, formData)
     clearLists()
