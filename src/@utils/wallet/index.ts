@@ -53,8 +53,8 @@ export const connectKitTheme = {
 
 export function accountTruncate(
   account: string,
-  begin: number = 6,
-  end: number = 38
+  begin: number = 6, // Specifies the starting index of the substring to be extracted.
+  end: number = 38 // Specifies the ending index of the substring to be extracted.
 ): string {
   if (!account || account === '') return
   const middle = account.substring(begin, end)
