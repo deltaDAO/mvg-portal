@@ -108,11 +108,39 @@ Gaia-X AISBL retains your personal data for as long as needed to provide their s
 
 Automated decision making including profiling does not take place.
 
-## 6. Cookies and web storage
+## 6. Cookies and Analytics
 
-A cookie is a small file that stores Internet settings. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content. Web storage (local storage and session storage) has similar functionality to cookies.
+**6.1 Cookies**
 
-Our portal demonstrator does not use cookies or web storage for analytics or marketing purposes. We use your web storage to remember your page preferences, enable functionalities and to enhance your user experience. Your browser will remove the session storage once you close your browser. You have the option of disabling cookies and deleting cookies and web storage from your computer's hard disk at any time in your browser settings.
+A cookie is a small file that stores information in your browser. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content. Some cookies are necessary for making websites work, and others are used for enhancing your experience on the visited website. Cookies can also be used for marketing and analytics purposes. Web storage (local storage and session storage) has similar functionality to cookies.
+
+Our portal demonstrator uses cookies and your web storage to remember your page preferences, enable functionalities and to enhance your user experience. You have the option of disabling cookies and deleting cookies and web storage from your computer's hard disk at any time in your browser settings.
+
+**6.2 Analytics**
+
+deltaDAO uses [Plausible Analytics](https://plausible.io/), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. We create aggregated statistics based on our legitimate interest to gain insights to improve existing and future features and services, and to evaluate user engagement. Plausible Analytics does not use cookies or similar technologies that require information to be stored on your device. Instead, the tool focuses on analyzing aggregated data without the need to access your end device or store information there.
+
+Plausible Analytics does not track individual visitors and does not create persistent identifiers. It does not use cross-platform or cross-device tracking and does not pass on data to third parties. Plausible Analytics primarily uses data that is recorded by default in server logs, such as requested URLs, access times, HTTP status codes and transferred data volumes. This information is used to analyze website traffic. Data processing at Plausible Analytics takes place in two steps:
+
+- Pseudonymization:
+
+  - When the data is received, it is pseudonymized using a hash function and a regularly changing key (“salt”). This process aims to change personal data in such a way that data subjects are no longer directly identifiable, but a distinction between sessions is made possible.
+
+  - hash(daily_salt + website_domain + ip_address + user_agent)
+
+  - Plausible Analytics never stores the raw data IP address and User-Agent in logs, databases or anywhere on disk at all.
+
+- Anonymization after 24 hours: Within 24 hours of pseudonymization, the data is completely anonymized by removing the “salt” so that it can no longer be traced back to the original user data. The remaining data does not allow any direct or indirect identification of data subjects.
+
+Plausible Analytics only uses EU-based service providers for hosting and additional services such as CDN and DDoS protection. The servers are located in Germany (operated by Hetzner) and additional services are provided by Bunny (based in Slovenia).
+
+deltaDAO signed a DPA with Plausible Analytics.
+
+- Here you can find Plausible Analytic’s current [DPA](https://plausible.io/dpa).
+
+- Here you can find Plausible Analytic’s [Privacy Policy](https://plausible.io/privacy).
+
+- Here you can find more information about Plausible Analytic’s [privacy practices](https://plausible.io/data-policy), [security practices](https://plausible.io/security) and a [legal assessment on GDPR compliance](https://plausible.io/blog/legal-assessment-gdpr-eprivacy).
 
 ## 7. External links
 
