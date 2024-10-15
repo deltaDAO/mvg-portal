@@ -51,11 +51,15 @@ export const connectKitTheme = {
   '--ck-secondary-button-border-radius': 'var(--border-radius)'
 }
 
-export function accountTruncate(account: string): string {
+export function accountTruncate(
+  account: string,
+  begin: number = 6,
+  end: number = 38
+): string {
   if (!account || account === '') return
-  const middle = account.substring(6, 38)
+  const middle = account.substring(begin, end)
   const truncated = account.replace(middle, '…')
-  return truncated
+  return truncated // for example 0xb9A3...941d
 }
 
 export async function addTokenToWallet(
