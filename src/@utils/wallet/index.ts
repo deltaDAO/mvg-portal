@@ -53,13 +53,13 @@ export const connectKitTheme = {
 
 export function accountTruncate(
   account: string,
-  begin: number = 6, // Specifies the starting index of the substring to be extracted.
-  end: number = 38 // Specifies the ending index of the substring to be extracted.
+  begin: number = 6,
+  end: number = 38
 ): string {
   if (!account || account === '') return
   const middle = account.substring(begin, end)
   const truncated = account.replace(middle, '…')
-  return truncated
+  return truncated // for example 0xb9A3...941d
 }
 
 export async function addTokenToWallet(
