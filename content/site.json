@@ -21,7 +21,6 @@
       "name": "Faucet",
       "link": "/faucet"
     },
-
     {
       "name": "Log",
       "link": "https://explorer.pontus-x.eu/"
@@ -150,6 +149,10 @@
           "isLive": false
         }
       ]
+    },
+    {
+      "name": "Docs",
+      "link": "https://docs.pontus-x.eu/"
     }
   ],
   "announcement": "The GEN-X network is deprecated and will be sunset on September 30, 2024. Please [migrate to the Pontus-X networks](https://docs.pontus-x.eu/docs/use-cases/migration-guide).",
