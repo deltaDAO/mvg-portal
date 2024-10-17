@@ -15,7 +15,7 @@ export interface ButtonProps {
   name?: string
   size?: 'small'
   style?: 'primary' | 'ghost' | 'text'
-  type?: 'submit'
+  type?: 'submit' | 'button'
   download?: boolean
   target?: string
   rel?: string
