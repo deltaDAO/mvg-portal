@@ -22,6 +22,7 @@ import {
 import ServiceCredentialVisualizer from '@components/@shared/ServiceCredentialVisualizer'
 import Web3Feedback from '@components/@shared/Web3Feedback'
 import { useAccount } from 'wagmi'
+import DDODownloadButton from '@components/@shared/DDODownloadButton'
 
 export default function AssetContent({
   asset
@@ -108,7 +109,16 @@ export default function AssetContent({
               </>
             )}
             <MetaFull ddo={asset} />
-            <EditHistory receipts={receipts} setReceipts={setReceipts} />
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap'
+              }}
+            >
+              <EditHistory receipts={receipts} setReceipts={setReceipts} />
+              <DDODownloadButton asset={asset} />
+            </div>
             {debug === true && <DebugOutput title="DDO" output={asset} />}
           </div>
         </div>
