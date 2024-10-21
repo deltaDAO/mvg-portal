@@ -54,7 +54,9 @@ export default function AssetTeaser({
           <Dotdotdot tagName="h1" clamp={3} className={styles.title}>
             {name.slice(0, 200)}
           </Dotdotdot>
-          {!noPublisher && <Publisher account={owner} minimal />}
+          {!noPublisher && (
+            <Publisher account={owner} minimal showName={true} />
+          )}
         </header>
         {!noDescription && (
           <div className={styles.content}>
