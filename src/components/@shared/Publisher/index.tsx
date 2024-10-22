@@ -30,7 +30,7 @@ export default function Publisher({
 
     // set default name on hook
     // to avoid side effect (UI not updating on account's change)
-    if (showName && isMounted()) {
+    if (showName && isMounted() && addresses[account]) {
       const accountName = addresses[account]
       accountName.length > 15
         ? setName(accountTruncate(accountName, 15))
