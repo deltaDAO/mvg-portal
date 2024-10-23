@@ -4,7 +4,6 @@
   scrollbar-width: none;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--background-highlight);
-  width: calc(100% + var(--spacer) 0 * 2);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
