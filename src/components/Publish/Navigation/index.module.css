@@ -16,14 +16,6 @@
   }
 }
 
-@media (min-width: 60rem) {
-  .navigation {
-    padding: var(--spacer) 0;
-    margin-left: calc(var(--spacer) * -4);
-    margin-right: calc(var(--spacer) * -4);
-  }
-}
-
 .navigation ol {
   white-space: nowrap;
   text-align: center;
@@ -34,6 +26,17 @@
   overflow-x: visible;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 60rem) {
+  .navigation {
+    margin-left: calc(var(--spacer) * -4);
+    margin-right: calc(var(--spacer) * -4);
+  }
+
+  .navigation ol {
+    padding: var(--spacer) 0;
+  }
 }
 
 .navigation li {
