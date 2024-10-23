@@ -110,27 +110,11 @@
           "isLive": true
         },
         {
-          "name": "Agrifood TEF",
-          "link": "http://dataspace.agrifoodtef.eu/",
-          "description": "The European Testing and Experimentation Facilities for Agrifood Innovation.",
-          "image": "agrifoodTEF.webp",
-          "category": "agriculture",
-          "isLive": true
-        },
-        {
           "name": "Polish Agriculture Data Space",
           "link": "https://dataspaces.psnc.pl/",
           "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
           "image": "PSNC.webp",
           "category": "agriculture",
-          "isLive": true
-        },
-        {
-          "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/",
-          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
-          "image": "energy-shr-logo.webp",
-          "category": "energy",
           "isLive": true
         },
         {
