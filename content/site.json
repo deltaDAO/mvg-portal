@@ -110,27 +110,11 @@
           "isLive": true
         },
         {
-          "name": "Agrifood TEF",
-          "link": "http://dataspace.agrifoodtef.eu/",
-          "description": "The European Testing and Experimentation Facilities for Agrifood Innovation.",
-          "image": "agrifoodTEF.webp",
-          "category": "agriculture",
-          "isLive": true
-        },
-        {
           "name": "Polish Agriculture Data Space",
           "link": "https://dataspaces.psnc.pl/",
           "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
           "image": "PSNC.webp",
           "category": "agriculture",
-          "isLive": true
-        },
-        {
-          "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/",
-          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
-          "image": "energy-shr-logo.webp",
-          "category": "energy",
           "isLive": true
         },
         {
@@ -152,7 +136,7 @@
       ]
     }
   ],
-  "announcement": "The GEN-X network is deprecated and will be sunset on September 30, 2024. Please [migrate to the Pontus-X networks](https://docs.pontus-x.eu/docs/use-cases/migration-guide).",
+  "announcement": "The Pontus-X Devnet is currently undergoing a scheduled load test. The network remains stable and fully operational during this period.",
   "devPreviewAnnouncement": "You are visiting the SITE-TITLE-PLACEHOLDER Developer Preview. Please note that some functionalities are in beta and may not work as expected. Visit the [SITE-TITLE-PLACEHOLDER portal](SITE-LINK-PLACEHOLDER) instead.",
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
