@@ -103,7 +103,7 @@ module.exports = {
     errorMargin: 10,
     // Map chainIds to their respective status endpoints
     statusEndpoints: {
-      100: 'https://status.genx.delta-dao.com/api/check-blocks'
+      32456: 'https://status.dev.pontus-x.eu/'
     }
   },
 

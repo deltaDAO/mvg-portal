@@ -20,7 +20,7 @@
     "type-check": "tsc --noEmit",
     "postinstall": "husky install && npm run copy:address",
     "copy:address": "node scripts/copy-addresses.js",
-    "codegen:apollo": "apollo client:codegen --endpoint=https://subgraph.v4.genx.minimal-gaia-x.eu/subgraphs/name/oceanprotocol/ocean-subgraph --target typescript --tsFileExtension=d.ts --outputFlat src/@types/subgraph/",
+    "codegen:apollo": "apollo client:codegen --endpoint=https://subgraph.test.pontus-x.eu/subgraphs/name/oceanprotocol/ocean-subgraph --target typescript --tsFileExtension=d.ts --outputFlat src/@types/subgraph/",
     "storybook": "cross-env NODE_ENV=test start-storybook -p 6006 --quiet",
     "storybook:build": "cross-env NODE_ENV=test build-storybook"
   },

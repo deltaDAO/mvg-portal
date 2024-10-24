@@ -3,28 +3,6 @@
 
 const networksMetadata = [
   {
-    chainId: 100,
-    networkId: 100,
-    name: 'GEN-X Testnet',
-    chain: 'GEN-X',
-    rpc: ['https://rpc.genx.minimal-gaia-x.eu'],
-    faucets: [],
-    nativeCurrency: {
-      name: 'GX',
-      symbol: 'GX',
-      decimals: 18
-    },
-    infoURL: 'https://docs.genx.minimal-gaia-x.eu',
-    shortName: 'GEN-X',
-    explorers: [
-      {
-        name: 'GEN-X Testnet Explorer',
-        url: 'https://explorer.genx.pontus-x.eu',
-        standard: ''
-      }
-    ]
-  },
-  {
     chainId: 32456,
     networkId: 32456,
     name: 'Pontus-X Devnet',
