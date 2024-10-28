@@ -60,7 +60,6 @@
 
 .assetMeta,
 .assetMeta code {
-  color: var(--color-secondary);
   font-size: var(--font-size-small);
   overflow: hidden;
   width: 100%;
@@ -70,6 +69,7 @@
 }
 
 .assetMeta span {
+  color: var(--color-secondary);
   flex: 1;
 }
 

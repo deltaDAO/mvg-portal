@@ -43,18 +43,30 @@
 }
 
 .primary,
-.primary:hover,
 .primary:focus,
 .primary:active {
+  border: var(--border-size-md) solid var(--button-primary-border-color);
   background: var(--button-primary-background);
+  transform: none;
+}
+
+.primary:hover {
+  background: var(--button-primary-hover-background);
+  border-color: var(--button-primary-hover-border-color);
+  transform: none;
 }
 
 .ghost,
-.ghost:hover,
 .ghost:focus,
 .ghost:active {
   color: var(--button-ghost-font-color);
   background: var(--button-ghost-background);
+}
+
+.ghost:hover {
+  color: var(--button-ghost-font-color);
+  background: var(--button-ghost-hover-background);
+  transform: none;
 }
 
 .text,

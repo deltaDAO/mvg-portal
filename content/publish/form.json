@@ -6,7 +6,7 @@
         "name": "nft",
         "label": "Data NFT",
         "type": "nft",
-        "help": "All metadata is stored on-chain in a newly deployed ERC-721 contract representing this asset, created with this name, symbol, description and image.",
+        "help": "Data NFTs are unique digital assets that represent the intellectual property of your digital services, enabling flexible licensing arrangements and enhanced control over your valuable business data. Each Data NFT can issue multiple access tokens with customized terms, enabling varied access levels and durations for your digital service.",
         "required": true
       },
       {
@@ -160,7 +160,7 @@
       },
       {
         "name": "providerUrl",
-        "label": "Provider URL",
+        "label": "Access Controller URL",
         "type": "providerUrl",
         "help": "Enter the URL for your custom [provider](https://github.com/oceanprotocol/provider/) or leave as is to use the default one. If you change your provider URL after adding your file, please add & validate your file again.",
         "placeholder": "e.g. https://provider.oceanprotocol.com/",
@@ -173,31 +173,21 @@
         "type": "tabs",
         "fields": [
           {
-            "value": "ipfs",
-            "title": "IPFS",
-            "label": "CID",
-            "placeholder": "e.g. bafkreidgvpkjawlxz6sffxzwgooowe5yt7i6wsyg236mfoks77nywkptdq",
-            "help": "This CID will be stored encrypted after publishing.",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": true
-          },
-          {
-            "value": "arweave",
-            "title": "Arweave",
-            "label": "Transaction ID",
-            "placeholder": "e.g. DBRCL94j3QqdPaUtt4VWRen8rZfJZBb7Ey40iMpXfhtd",
-            "help": "This Transaction ID will be stored encrypted after publishing.",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": true
-          },
-          {
             "value": "url",
             "title": "URL",
             "label": "File",
+            "placeholder": "e.g. https://file.com/file.json",
+            "help": "This URL will be stored encrypted after publishing. **Please make sure that the endpoint is accessible over the internet and is not protected by a firewall or by credentials.**",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true,
+            "methods": false
+          },
+          {
+            "value": "url",
+            "title": "API",
+            "label": "Endpoint",
             "placeholder": "e.g. https://file.com/file.json",
             "help": "This URL will be stored encrypted after publishing. **Please make sure that the endpoint is accessible over the internet and is not protected by a firewall or by credentials.**",
             "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
@@ -214,6 +204,30 @@
                 "help": "This HEADERS will be stored encrypted after publishing.",
                 "type": "headers",
                 "required": false
+              }
+            ]
+          },
+          {
+            "value": "saas",
+            "title": "SaaS",
+            "label": "Redirect URL",
+            "placeholder": "e.g. https://delta-dao/the-future-is-now",
+            "help": "The url the user will be redirected to after buying access to the Software as a Service offering.",
+            "prominentHelp": true,
+            "type": "saas",
+            "fieldFormPrefix": "metadata.saas",
+            "required": true,
+            "methods": false,
+            "innerFields": [
+              {
+                "value": "paymentMode",
+                "title": "PaymentMode",
+                "label": "PaymentMode",
+                "help": "Choose the payment mode of your Software as a Service offering.",
+                "type": "select",
+                "selected": "",
+                "options": ["Subscription", "Pay per use"],
+                "required": true
               }
             ]
           },
@@ -247,6 +261,17 @@
                 "required": true
               }
             ]
+          },
+          {
+            "value": "ipfs",
+            "title": "IPFS",
+            "label": "CID",
+            "placeholder": "e.g. bafkreidgvpkjawlxz6sffxzwgooowe5yt7i6wsyg236mfoks77nywkptdq",
+            "help": "This CID will be stored encrypted after publishing.",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true
           }
         ],
         "sortOptions": false,
@@ -290,15 +315,7 @@
         "disclaimer": "Please do not provide downloadable personal data without the consent of the data subjects.",
         "disclaimerValues": ["Download"]
       },
-      {
-        "name": "timeout",
-        "label": "Timeout",
-        "help": "Define how long buyers should be able to download the dataset again after the initial purchase.",
-        "type": "select",
-        "options": ["Forever", "1 day", "1 week", "1 month", "1 year"],
-        "sortOptions": false,
-        "required": true
-      },
+
       {
         "name": "usesConsumerParameters",
         "label": "User defined parameters",
@@ -306,19 +323,40 @@
         "type": "checkbox",
         "options": ["This asset uses user defined parameters"],
         "required": false
+      }
+    ]
+  },
+  "policies": {
+    "title": "Policies",
+    "fields": [
+      {
+        "name": "timeout",
+        "label": "Access Period",
+        "help": "Define how long buyers should be able to access your offering again after the initial purchase.",
+        "type": "select",
+        "options": [
+          "Forever",
+          "1 hour",
+          "1 day",
+          "1 week",
+          "1 month",
+          "1 year"
+        ],
+        "sortOptions": false,
+        "required": true
       },
       {
         "name": "allow",
-        "label": "Allow ETH Address",
+        "label": "Allow Wallet Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Enter an ETH address and click the ADD button to append to the list. Only ETH addresses in the allow list can consume this asset. If the list is empty anyone can download or compute this asset.",
+        "help": "Enter an wallet address and click the ADD button to append to the list. Only wallet addresses in the allow list can consume this asset. If the list is empty anyone can download or compute this asset. For more information, you can visit the [Pontus-X registry page](https://docs.pontus-x.eu/docs/participants-and-federators/ecosystem-participants).",
         "type": "credentials"
       },
       {
         "name": "deny",
-        "label": "Deny ETH Address",
+        "label": "Deny Wallet Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Enter an ETH address and click the ADD button to append to the list. If an ETH address is in the deny list, download or compute of this asset will be denied for that ETH address.",
+        "help": "Enter an wallet address and click the ADD button to append to the list. If an wallet address is in the deny list, download or compute of this asset will be denied for that wallet address. For more information, you can visit the [Pontus-X registry page](https://docs.pontus-x.eu/docs/participants-and-federators/ecosystem-participants).",
         "type": "credentials"
       }
     ]

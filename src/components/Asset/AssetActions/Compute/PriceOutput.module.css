@@ -15,6 +15,10 @@
   display: inline-block !important;
 }
 
+.priceComponent strong {
+  color: var(--color-secondary);
+}
+
 .calculation {
   min-width: 12rem;
 }

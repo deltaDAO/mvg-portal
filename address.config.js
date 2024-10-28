@@ -2,12 +2,45 @@ const PONTUSX_ADDRESSES = require('./pontusxAddresses.json')
 
 module.exports = {
   whitelists: {
-    'nft.owner': [],
-    'datatokens.address': []
+    'nft.owner': [
+      '0x4A806a4851472F7cFd579d3FF5465F03c3c2B5d4',
+      '0x21CF19e1FaF3A62f82B432f82152e8c5C0FdBdaF',
+      '0x9dfbda23b65efB1c836828D74a96eB8528A60f3C',
+      '0xb2AF8b92bFaC5299Cb6EDEf16150BFD1d4d26a93',
+      '0x3dB4E0b1fC6072271BF51e9a0CC17E3c7C4C99f5',
+      '0x9B421d0f5d378b66324251d6CDc1945a6560110b', //	SIMAVI
+      '0x13a9FfFC7fb684CCc623C305B46b7eD6b3a73C66', //	ENGINSOFT
+      '0x7d46Bb46ba45f08480bA80150d3594fd9f3e212d', //	IMT Atlantique
+      '0x670E5512aDBE5fAD672d825800f4a4A23Be744D1', //	Fraunhofer IAO
+      '0xc9034e58176c59153F53C6B59d5CFD5BBD58b5Fc', //	Aarhus University
+      '0xB9fB84b093D8bE26A78208b324D8074627374F49', //	HWR Berlin
+      '0xEEC041b73BC4FcAE2B0a66F9992d2b6d1959BbD1', //	Tronico SAS
+      '0x7e7cea5dda047F66b8755Cb4Bf1d8eDBFB236e35', //	Airbus Atlantic
+      '0x13f8514cA72C83386929f0BAa9bCe6B840cbA03A', //	Continental Automotive
+      '0x98bDc1EaDE6D4ad7032A091Dc8bE6D217cB37eF3', //	iED
+      '0x28080F654eED6CC00e8b16F4841E92CD0c2C0778' //	deltaDAO
+    ],
+    'datatokens.address': [
+      '0x25244fAad80E52E3d5E1f5f7B7D00132a97169D5', // Condition Monitoring Software - EuProGigant Validation Platform
+      '0xef0E7512F7AF5d4254eA39c7295D411bb3b73321', // CO2-Estimate Algorithm - EuProGigant Validation Platform
+      '0xA1C749aA0b77D129c181Cb7C7bDCB0D677AA5679', // Workpiece Data Part No. 882 - EuProGigant Cloud
+      '0x4800A8709656D23707260831552252C28D71B7A3', // Workpiece Data Part No. 881 - EuProGigant Cloud
+      '0x721c13C16914b1Dcc9f16Ca7F36443E3FF1f669d', // Workpiece Data Part No. 880 - EuProGigant Cloud
+      '0x04E12b7d8B0e1B9e38A7337Dc5327374b31727ac', // The Digital Project Management Office
+      '0x6621028a198614dE39358d017aC7983928a44384', // ProfiTrainer Production Dataset 1725364307631
+      '0x7759f4BCfc24DC16e8D0cDeE49598fCd30840Eee', // ProfiTrainer Production Dataset 1725365355208
+      '0x67a026D3356790B447c3287A5937E4f3851fba93', // ProfiTrainer Production Dataset 1725365954529
+      '0x5A365b74eFdD3bF1DD2C96CC42d964E201706d43', // Holowork
+      '0xb20D3889931517d9AA1D7306c9a521F506f88245', // Tool Recommendation Service
+      '0x6417a347ad30d0745cbb3a851df7c72517c4705c', // Process Optimization Service
+      '0x6406F91b03a7ffbf858e57C3fa205Ae549EFB1a5', // Tool Performance Report Service
+      '0x7622a7Ce0F976D6c5b2DA5755Dce0204973918a5', // CliCE-DiPP x ESCOM Algorithm - PCF-Service
+      '0xA9D37a7f7b2c2E31C74eb9006370CbAEE3818D78' // CliCE-DiPP x ESCOM Data Set
+    ]
   },
   featured: [
     {
-      title: 'Smart Mobility, Automotive',
+      title: 'Featured Service Offerings',
       assets: [
         'did:op:f892fdeb6e4aead439a992ee66322d96d625f7acfed999e633c4b5c81b0968a9', // Hamburg Urban Data
         'did:op:60345a1cffaf69e978846858760f69ebe6688e3fa1b9a21f2cdb81b82c415049', // Road Condition Short

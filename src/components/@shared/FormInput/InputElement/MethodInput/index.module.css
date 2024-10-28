@@ -34,7 +34,7 @@
   border: 0;
 }
 
-.hasError {
+.hasError input {
   color: var(--brand-alert-red);
   border-color: var(--brand-alert-red);
 }
