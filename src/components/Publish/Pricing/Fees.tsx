@@ -35,9 +35,11 @@ const Default = ({
 )
 
 export default function Fees({
-  tooltips
+  tooltips,
+  assetPrice
 }: {
   tooltips: { [key: string]: string }
+  assetPrice: number
 }): ReactElement {
   const [oceanCommunitySwapFee, setOceanCommunitySwapFee] = useState<string>('')
   const { chain } = useNetwork()
@@ -53,11 +55,18 @@ export default function Fees({
     })
   }, [chain?.id])
 
+  const earningsAfterFees =
+    !assetPrice || assetPrice <= 0
+      ? 0
+      : assetPrice -
+        (assetPrice * Number(oceanCommunitySwapFee)) / 100 -
+        (assetPrice * Number(appConfig?.publisherMarketFixedSwapFee || 0)) / 100
+
   return (
     <>
       <div className={styles.fees}>
         <Default
-          title="Community Swap Fee"
+          title="Pontus-X Community Fee"
           name="communityFee"
           tooltip={tooltips.communityFee}
           value={oceanCommunitySwapFee}
@@ -68,6 +77,13 @@ export default function Fees({
           name="marketplaceFee"
           tooltip={tooltips.marketplaceFee}
           value={appConfig?.publisherMarketFixedSwapFee}
+        />
+
+        <Default
+          title="Earnings after fees"
+          name="earningsAfterFees"
+          tooltip={tooltips.earningsAfterFees}
+          value={earningsAfterFees.toString()}
         />
       </div>
     </>

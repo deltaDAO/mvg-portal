@@ -1,21 +1,16 @@
 import { ReactElement } from 'react'
-import Button from '@shared/atoms/Button'
-// import { useOrbis } from '@context/DirectMessages'
-import { useDisconnect, useAccount, useConnect, useNetwork } from 'wagmi'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import styles from './Details.module.css'
 import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
-import AddTokenList from './AddTokenList'
-import { getCustomChainIds } from 'chains.config'
-import AddNetwork from '@components/@shared/AddNetwork'
+import Button from '@components/@shared/atoms/Button'
 
 export default function Details(): ReactElement {
-  const { connector: activeConnector, address: accountId } = useAccount()
+  const { address: accountId, connector: activeConnector } = useAccount()
 
   const { connect } = useConnect()
   const { disconnect } = useDisconnect()
-  const { chains } = useNetwork()
 
   return (
     <div className={styles.details}>
@@ -36,32 +31,18 @@ export default function Details(): ReactElement {
             className={styles.bookmarksButton}
           />
         </li>
-        <li className={styles.actions}>
+        <li>
           <div title="Connected provider" className={styles.walletInfo}>
             <span className={styles.walletLogoWrap}>
-              {/* <img className={styles.walletLogo} src={activeConnector?.logo} /> */}
               {activeConnector?.name}
             </span>
-            {chains &&
-              chains.map((chain) => {
-                if (!getCustomChainIds().includes(chain.id)) return false
-                return (
-                  <AddNetwork
-                    key={`Add-Network-Button${chain.id}`}
-                    chainId={chain.id}
-                    networkName={chain.name}
-                  />
-                )
-              })}
-            {activeConnector?.name === 'MetaMask' && <AddTokenList />}
           </div>
-          <p>
+          <div className={styles.actions}>
             <Button
               style="text"
               size="small"
               onClick={async () => {
                 connect()
-                // checkOrbisConnection({ address: accountId })
               }}
             >
               Switch Wallet
@@ -71,13 +52,12 @@ export default function Details(): ReactElement {
               size="small"
               onClick={() => {
                 disconnect()
-                // disconnectOrbis(accountId)
                 location.reload()
               }}
             >
               Disconnect
             </Button>
-          </p>
+          </div>
         </li>
       </ul>
     </div>

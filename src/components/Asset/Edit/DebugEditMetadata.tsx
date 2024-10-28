@@ -19,6 +19,15 @@ export default function DebugEditMetadata({
   const [valuePreview, setValuePreview] = useState({})
   const linksTransformed = values.links?.length &&
     values.links[0].valid && [sanitizeUrl(values.links[0].url)]
+  const saasDetails =
+    values.files[0].type === 'hidden'
+      ? asset?.metadata?.additionalInformation?.saas
+      : values.files[0].type === 'saas'
+      ? {
+          redirectUrl: sanitizeUrl(values.files[0].url),
+          paymentMode: values.saas.paymentMode
+        }
+      : {}
 
   const newMetadata: Metadata = {
     ...asset?.metadata,
@@ -30,9 +39,17 @@ export default function DebugEditMetadata({
     license: values.license,
     additionalInformation: {
       ...asset?.metadata?.additionalInformation,
-      gaiaXInformation: values.gaiaXInformation
+      gaiaXInformation: values.gaiaXInformation,
+      saas: saasDetails
     }
   }
+
+  const showSaas =
+    (values.files[0].type === 'hidden' &&
+      asset?.metadata?.additionalInformation?.saas) ||
+    values.files[0].type === 'saas'
+  if (!showSaas) delete newMetadata.additionalInformation.saas
+
   if (asset.metadata.type === 'algorithm') {
     newMetadata.algorithm.consumerParameters = !values.usesConsumerParameters
       ? undefined

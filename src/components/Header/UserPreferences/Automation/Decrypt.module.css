@@ -19,6 +19,10 @@
   margin: 0;
 }
 
+.form > input {
+  border: var(--border-size-sm) solid var(--border-color);
+}
+
 .form > button {
   margin-left: calc(var(--spacer) / 4);
   padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);

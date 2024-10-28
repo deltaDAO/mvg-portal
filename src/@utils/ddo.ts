@@ -46,6 +46,8 @@ export function mapTimeoutStringToSeconds(timeout: string): number {
   switch (timeout) {
     case 'Forever':
       return 0
+    case '1 hour':
+      return 3600
     case '1 day':
       return 86400
     case '1 week':
@@ -154,6 +156,16 @@ export function normalizeFile(
           ? JSON.parse(file[0]?.abi || file?.abi)
           : file[0]?.abi || file?.abi
       } as Smartcontract
+      break
+    }
+    case 'saas': {
+      fileObj = {
+        type: 'url',
+        index: 0,
+        url: file ? file[0]?.url || file?.url : null,
+        headers: headersProvider,
+        method: file.method
+      } as UrlFile
       break
     }
     default: {

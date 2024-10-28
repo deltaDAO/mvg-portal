@@ -48,6 +48,7 @@
   --menu-link-font-weight-active: var(--font-weight-bold);
   --menu-caret-size: var(--font-size-small);
   --menu-caret-fill-color: var(--color-primary);
+  --menu-caret-active-fill-color: var(--color-primary);
   --menu-network-badge-font-color: var(--brand-white);
 
   /* Footer */
@@ -85,8 +86,12 @@
   --button-active-background: var(--font-color-light);
   --button-primary-font-color: var(--brand-white);
   --button-primary-background: var(--brand-gradient);
+  --button-primary-border-color: var(--brand-black);
+  --button-primary-hover-background: var(--color-primary);
+  --button-primary-hover-border-color: var(--color-primary);
   --button-ghost-font-color: var(--color-primary);
   --button-ghost-background: var(--brand-white);
+  --button-ghost-hover-background: var(--brand-red-dark);
   --button-text-font-color: var(--color-highlight);
 
   /* Loading spinner */
