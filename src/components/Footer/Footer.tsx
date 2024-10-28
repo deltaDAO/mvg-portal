@@ -3,7 +3,8 @@ import styles from './Footer.module.css'
 import Markdown from '@shared/Markdown'
 import Links from './Links'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import DeltaDaoLogo from '@images/deltaDAO_Logo_small_RGB_white.svg'
+import FundingLogo from '@images/funding.svg'
+import FundingLogoAngliru from '@images/funding-angliru.svg'
 import Container from '@components/@shared/atoms/Container'
 
 export default function Footer(): ReactElement {
@@ -15,17 +16,29 @@ export default function Footer(): ReactElement {
     <footer className={styles.footer}>
       <Container className={styles.container}>
         <div>
-          <p className={styles.siteTitle}>{siteTitle}</p>
-          <a
-            href="https://delta-dao.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <div className={styles.main}>
-              <DeltaDaoLogo />
-              <p className={styles.subtitle}>{subtitle}</p>
-            </div>
-          </a>
+          <div className={styles.main}>
+            <FundingLogo /> <FundingLogoAngliru />
+          </div>
+          <p className={styles.siteTitle}>
+            Supported by projects{' '}
+            <a
+              style={{ fontWeight: 'bold' }}
+              target={'_blank'}
+              href="https://sede.mineco.gob.es/es/SedePublications/report_PRP_global.pdf"
+              rel="noreferrer"
+            >
+              TSI-100120-2024-28
+            </a>{' '}
+            and{' '}
+            <a
+              style={{ fontWeight: 'bold' }}
+              target={'_blank'}
+              href="https://angliru.udl.cat"
+              rel="noreferrer"
+            >
+              PID2020-117912RB-C22
+            </a>
+          </p>
         </div>
         <Links />
       </Container>

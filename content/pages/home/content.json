@@ -1,7 +1,7 @@
 {
   "teaser": {
-    "title": "Pontus-X: Technical Data Sovereignty",
-    "text": "Pontus-X represents the next generation of data infrastructure: an **open, transparent and secure digital ecosystem**, where data and services can be made available, collated and shared in an environment of trust. The architecture of Pontus-X is based on Gaia-X and on the principle of decentralization."
+    "title": "",
+    "text": ""
   },
   "paragraphs": [
     {
@@ -12,18 +12,11 @@
       "image": "/images/ecosystem.webp"
     },
     {
-      "title": "Compute-to-Data and its benefits",
-      "body": "One core concept of Ocean Enterprise is the **Compute-to-Data (CtD)** approach. Compute-to-Data is the functionality that solves the current trade-off between the benefits of using private data and the risks of exposing it. It allows data consumers to run compute jobs on private data while the data stays on-premise with the data provider.",
+      "title": "Data Sovereignty by Design",
+      "body": "One core concept of AgrospAI is the **Compute-to-Data (CtD)** approach. Compute-to-Data is the functionality that solves the current trade-off between the benefits of using private data and the risks of exposing it. It allows data consumers to run compute jobs on private data while the data stays on-premise with the data provider, who retains control.",
       "cta": "Learn More",
       "ctaTo": "https://docs.pontus-x.eu/docs/technical-architecture/architecture-overview",
       "image": "/images/ctd_benefits.webp"
-    },
-    {
-      "title": "Gaia-X Digital Clearing House (GXDCH)",
-      "body": "The Pontus-X ecosystem provided a direct integration with the Gaia-X Digital Clearing Houses (GXDCH). We fast track your onboarding to X-ecosystems and to offering your services in Gaia-X‍ ecosystems. The GXDCH safeguard the distributed, decentralised ways of running the Gaia-X compliance.",
-      "cta": "Learn More",
-      "ctaTo": "https://gaia-x.eu/gxdch/",
-      "image": "/images/gxdch_powered.webp"
     }
   ]
 }

@@ -6,6 +6,9 @@
   --color-secondary: var(--brand-grey-light);
   --color-highlight: var(--brand-blue);
 
+  --color-agrospai-light: rgb(212, 227, 147);
+  --color-agrospai-dark: rgb(41, 81, 64);
+
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
   --font-color-heading: var(--brand-black);
@@ -27,10 +30,10 @@
   /* Menubar */
   --menu-logo-color: var(--brand-gaia-x-blue);
   --menu-logo-color-hover: var(--brand-gaia-x-blue);
-  --menu-logo-size-width-sm: 3.5rem;
-  --menu-logo-size-height-sm: 3.5rem;
+  --menu-logo-size-width-sm: 5rem;
+  --menu-logo-size-height-sm: 5rem;
   --menu-logo-size-width-lg: 15rem;
-  --menu-logo-size-height-lg: 3.5rem;
+  --menu-logo-size-height-lg: 7rem;
   --menu-font-color: var(--color-primary);
   --menu-font-color-active: var(--font-color-heading);
   --menu-font-color-hover: var(--color-primary);
@@ -52,9 +55,9 @@
   --menu-network-badge-font-color: var(--brand-white);
 
   /* Footer */
-  --footer-background-color: var(--brand-grey);
+  --footer-background-color: var(--color-agrospai-dark);
   --footer-font-color: var(--brand-white);
-  --footer-font-color-highlight: var(--brand-cyan);
+  --footer-font-color-highlight: var(--color-agrospai-light);
   --footer-link-category-font-color: var(--brand-white);
 
   /* Homepage */

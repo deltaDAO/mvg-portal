@@ -1,5 +1,4 @@
 import SearchBar from '@components/Header/SearchBar'
-import BrandLogo from '@images/pontusx_logo_horizontal.svg'
 import GaiaXLogo from '@images/gaia-x-logo.svg'
 import Markdown from '@shared/Markdown'
 import classNames from 'classnames/bind'
@@ -31,7 +30,6 @@ export default function PageHeader({
     <header className={styleClasses}>
       {isHome ? (
         <div className={styles.homeTitleContainer}>
-          <BrandLogo />
           {description && (
             <Markdown text={description} className={styles.subtitle} />
           )}

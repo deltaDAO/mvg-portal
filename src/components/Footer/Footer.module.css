@@ -18,8 +18,12 @@
 }
 
 .siteTitle {
-  text-align: left;
+  text-align: center;
   margin-bottom: 0;
+}
+
+.siteTitle a {
+  color: var(--footer-font-color-highlight);
 }
 
 .main {
@@ -31,9 +35,15 @@
 }
 
 .main svg {
+  width: 40rem;
+  height: 4rem !important;
+  margin-left: -0.7rem;
+  margin-top: auto;
+}
+
+.main img {
   width: 15rem;
   height: 6rem !important;
-  margin-left: -0.7rem;
   margin-top: auto;
 }
 

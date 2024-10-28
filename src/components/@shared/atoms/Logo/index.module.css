@@ -2,14 +2,21 @@
   display: none;
 }
 .logoSmall {
+  position: absolute;
+  top: 0;
   display: block;
   width: var(--menu-logo-size-width-sm);
   height: var(--menu-logo-size-height-sm);
   margin: 0;
 }
+.logoWrappper {
+  position: relative;
+}
 
-@media screen and (min-width: 55rem) {
+@media screen and (min-width: 68rem) {
   .logo {
+    position: absolute;
+    top: 16px;
     display: block;
     width: var(--menu-logo-size-width-lg);
     height: var(--menu-logo-size-height-lg);

@@ -32,7 +32,7 @@
 }
 
 .homeTitleContainer .subtitle p {
-  margin: calc(var(--spacer) / 4) 0;
+  margin: 0;
   font-size: var(--font-size-h3);
 }
 

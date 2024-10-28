@@ -21,7 +21,7 @@
 
 .image {
   object-fit: contain;
-  width: 100%;
+  width: 40%;
   max-height: 25rem;
 }
 

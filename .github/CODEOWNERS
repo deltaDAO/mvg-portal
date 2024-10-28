@@ -10,3 +10,6 @@ pontusxAddresses.json @deltaDAO/qa @deltaDAO/frontend
 /content/ @deltaDAO/qa @deltaDAO/frontend
 # Directory managing publicly hosted images
 /public/images/ @deltaDAO/qa @deltaDAO/frontend
+
+# Adaptations for the AgrospAI marketplace
+* @rogargon

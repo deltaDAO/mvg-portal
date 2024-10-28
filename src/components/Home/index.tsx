@@ -87,9 +87,8 @@ export default function HomePage(): ReactElement {
           <OnboardingSection />
         </Container>
       )}
-      <Ecosystem />
-      <TopSales title="Publishers With Most Sales" />
-      <HomeContent />
+      {/* <Ecosystem /> */}
+      {/* <TopSales title="Publishers With Most Sales" /> */}
       {hasFeaturedAssets() && (
         <>
           {queryFeatured.map((section, i) => (
@@ -101,6 +100,7 @@ export default function HomePage(): ReactElement {
           ))}
         </>
       )}
+      <HomeContent />
       <SectionQueryResult title="Recently Published" query={queryRecent} />
       <SectionQueryResult title="Most Sales" query={queryMostSales} />
       <AllAssetsButton />

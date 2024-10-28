@@ -4,9 +4,9 @@
   overflow: hidden;
   display: flex;
   flex-direction: row-reverse;
-  justify-content: left;
+  justify-content: center;
   width: 100%;
-  padding: 5px 0;
+  padding: 15px 102px 0;
   padding-bottom: calc(var(--spacer) / 2);
   position: relative;
 }
