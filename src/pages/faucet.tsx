@@ -11,12 +11,8 @@ export default function PageVerify(): ReactElement {
 
   return (
     <AssetProvider did={did as string}>
-      <Page
-        title={content.title}
-        description={content.description}
-        uri={router.route}
-      >
-        <Verify didQueryString={did as string} />
+      <Page title={content.title} description={content.description} uri="">
+        <Verify />
       </Page>
     </AssetProvider>
   )
