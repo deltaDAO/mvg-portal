@@ -1,13 +1,14 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
-import { LoggerInstance } from '@oceanprotocol/lib'
-import styles from './index.module.css'
+import Alert from '@components/@shared/atoms/Alert'
 import Button from '@components/@shared/atoms/Button'
 import Loader from '@components/@shared/atoms/Loader'
-import Alert from '@components/@shared/atoms/Alert'
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+import { useAccount, useNetwork, useSignMessage } from 'wagmi'
 import content from '../../../content/pages/faucet.json'
 import { getMessage, requestTokens } from '../../@utils/faucet'
-import { useAccount, useNetwork, useSignMessage } from 'wagmi'
-import { toast } from 'react-toastify'
+import styles from './index.module.css'
+import NetworkName from '../@shared/NetworkName'
 
 interface Content {
   title: string
@@ -25,11 +26,6 @@ interface Content {
     cardNetworkAddress: string
     cardNetwork: string
   }
-}
-
-const networkNameMap: { [key: number]: string } = {
-  32456: 'Pontus-X Devnet',
-  32457: 'Pontus-X Testnet'
 }
 
 const FaucetPage = (): ReactElement => {
@@ -55,13 +51,6 @@ const FaucetPage = (): ReactElement => {
 
   const { address: accountAddress } = useAccount()
   const { chain } = useNetwork()
-  const [network, setNetwork] = useState<string>('Unknown')
-
-  useEffect(() => {
-    if (chain) {
-      setNetwork(networkNameMap[chain.id] || 'Unknown')
-    }
-  }, [chain])
 
   const {
     data: signMessageData,
@@ -154,7 +143,7 @@ const FaucetPage = (): ReactElement => {
         <strong>{cardNetworkAddress}:</strong> {accountAddress}
       </div>
       <div className={styles.network}>
-        <strong>{cardNetwork}:</strong> {network}
+        <strong>{cardNetwork}:</strong> <NetworkName networkId={chain?.id} />
       </div>
       <form className={styles.form} onSubmit={handleSearchStart}>
         <Button
