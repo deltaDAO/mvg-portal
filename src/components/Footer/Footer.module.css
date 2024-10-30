@@ -41,13 +41,13 @@
   position: absolute;
   top: 4rem;
   left: 5rem;
-  width: max-content;
   max-width: 100%;
-  word-wrap: break-word;
 }
+
 @media screen and (min-width: 60rem) {
   .subtitle {
-    max-width: max-content;
+    max-width: unset;
+    width: max-content;
   }
 
   .main {
