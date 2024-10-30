@@ -9,7 +9,6 @@
 @media (min-width: 40rem) {
   .details {
     padding: var(--sub-section-spacing);
-    margin-right: calc(var(--spacer) / 3);
     min-width: 20rem;
   }
 }
@@ -22,7 +21,6 @@
 .bookmarksLink {
   display: flex;
   align-items: center;
-  padding-top: calc(var(--sub-section-spacing) / 2);
 }
 
 .profileLink img,
@@ -42,61 +40,20 @@
   composes: link from '../../../components/Header/Menu.module.css';
 }
 
-.actions {
+.walletInfo {
+  margin-top: var(--sub-section-spacing);
+  margin-bottom: calc(var(--spacer) / 3);
+  padding-top: var(--sub-section-spacing);
   border-top: var(--menu-mobile-navigation-border-size) solid
     var(--menu-mobile-navigation-border-color);
-  margin-top: var(--sub-section-spacing);
-  padding-top: var(--sub-section-spacing);
-  padding-bottom: calc(var(--sub-section-spacing) / 2);
-  font-size: var(--font-size-small);
-  color: var(--font-color-text);
-  display: flex;
-  justify-content: space-between;
 }
 
 .walletLogoWrap {
   display: block;
 }
 
-.actions p {
-  margin: 0;
-}
-
-.actions button,
-.actions button:hover {
-  display: block;
-  font-size: var(--font-size-mini);
-  margin-top: calc(var(--spacer) / 3);
-  text-align: left;
-}
-
-.actions button:first-child {
-  margin-top: calc(var(--spacer) / 8);
-}
-
-.walletLogo {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: calc(var(--spacer) / 8);
-  margin-top: -0.2rem;
-}
-
-.actions select {
-  margin-top: calc(var(--spacer) / 4);
-  min-width: 6rem;
-}
-
-.walletInfo {
+.actions {
   display: flex;
   flex-direction: column;
-}
-
-.walletInfo button {
-  margin-top: calc(var(--spacer) / 5) !important;
-}
-
-.addToken {
-  margin-left: 0.3rem;
+  gap: calc(var(--spacer) / 3);
 }

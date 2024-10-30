@@ -17,7 +17,7 @@ export const validationSchema = Yup.object().shape({
         valid: Yup.boolean().test((value, context) => {
           const { type } = context.parent
           // allow user to submit if the value type is hidden
-          if (type === 'hidden') return true
+          if (type === 'hidden' || type === 'saas') return true
           return value || false
         })
       })

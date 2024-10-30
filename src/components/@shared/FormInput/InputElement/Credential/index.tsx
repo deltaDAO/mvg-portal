@@ -65,7 +65,12 @@ export default function Credentials(props: InputProps) {
             return (
               <div className={styles.addressListContainer} key={value}>
                 <InputGroup>
-                  <InputElement name={`address[${i}]`} value={value} disabled />
+                  <InputElement
+                    className={styles.address}
+                    name={`address[${i}]`}
+                    value={value}
+                    disabled
+                  />
                   <Button
                     style="primary"
                     size="small"

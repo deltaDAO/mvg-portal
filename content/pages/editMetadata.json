@@ -7,7 +7,7 @@
       {
         "name": "name",
         "label": "New Title",
-        "placeholder": "e.g. Shapes of Desert Plants",
+        "placeholder": "e.g. Production data of a manufacturing process",
         "help": "Enter a concise title.",
         "required": true
       },
@@ -35,28 +35,6 @@
         "type": "tabs",
         "fields": [
           {
-            "value": "ipfs",
-            "title": "IPFS",
-            "label": "CID",
-            "placeholder": "e.g. bafkreidgvpkjawlxz6sffxzwgooowe5yt7i6wsyg236mfoks77nywkptdq",
-            "help": "This CID will be stored encrypted after publishing.",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": true
-          },
-          {
-            "value": "arweave",
-            "title": "Arweave",
-            "label": "Transaction ID",
-            "placeholder": "e.g. DBRCL94j3QqdPaUtt4VWRen8rZfJZBb7Ey40iMpXfhtd",
-            "help": "This Transaction ID will be stored encrypted after publishing.",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": true
-          },
-          {
             "value": "url",
             "title": "URL",
             "label": "File",
@@ -66,6 +44,19 @@
             "prominentHelp": true,
             "type": "files",
             "required": true,
+            "methods": false
+          },
+          {
+            "value": "url",
+            "title": "API",
+            "label": "File",
+            "placeholder": "e.g. https://file.com/file.json",
+            "help": "This URL will be stored encrypted after publishing. **Please make sure that the endpoint is accessible over the internet and is not protected by a firewall or by credentials.**",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true,
+            "methods": true,
             "innerFields": [
               {
                 "value": "headers",
@@ -74,6 +65,30 @@
                 "placeholder_value": "Authorization",
                 "help": "This HEADERS will be stored encrypted after publishing.",
                 "type": "headers",
+                "required": false
+              }
+            ]
+          },
+          {
+            "value": "saas",
+            "title": "SaaS",
+            "label": "Redirect URL",
+            "placeholder": "e.g. https://delta-dao/the-future-is-now",
+            "help": "The url the user will be redirected to after buying access to the SaaS.",
+            "prominentHelp": true,
+            "type": "saas",
+            "fieldFormPrefix": "saas",
+            "required": true,
+            "methods": false,
+            "innerFields": [
+              {
+                "value": "paymentMode",
+                "title": "PaymentMode",
+                "label": "PaymentMode",
+                "help": "Choose how the payment mode for your Saas.",
+                "type": "select",
+                "selected": "",
+                "options": ["Subscription", "Pay per use"],
                 "required": true
               }
             ]
@@ -88,7 +103,6 @@
             "prominentHelp": true,
             "type": "files",
             "required": true,
-            "headers": true,
             "innerFields": [
               {
                 "value": "headers",
@@ -97,7 +111,7 @@
                 "placeholder_value": "Authorization",
                 "help": "This HEADERS will be stored encrypted after publishing.",
                 "type": "headers",
-                "required": true
+                "required": false
               },
               {
                 "value": "query",
@@ -109,6 +123,17 @@
                 "required": true
               }
             ]
+          },
+          {
+            "value": "ipfs",
+            "title": "IPFS",
+            "label": "CID",
+            "placeholder": "e.g. bafkreidgvpkjawlxz6sffxzwgooowe5yt7i6wsyg236mfoks77nywkptdq",
+            "help": "This CID will be stored encrypted after publishing.",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true
           }
         ],
         "sortOptions": false,
@@ -140,7 +165,14 @@
         "label": "Timeout",
         "help": "Define how long buyers should be able to download the dataset again after the initial purchase.",
         "type": "select",
-        "options": ["Forever", "1 day", "1 week", "1 month", "1 year"],
+        "options": [
+          "Forever",
+          "1 hour",
+          "1 day",
+          "1 week",
+          "1 month",
+          "1 year"
+        ],
         "sortOptions": false,
         "required": true
       },

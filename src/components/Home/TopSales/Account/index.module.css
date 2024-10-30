@@ -9,17 +9,20 @@
 
 .teaser {
   composes: box from '@shared/atoms/Box.module.css';
+
   padding: calc(var(--spacer) / 3) calc(var(--spacer) / 2);
   color: var(--color-secondary);
   position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
+  border: var(--teaser-border-size) solid var(--teaser-border-color);
 }
 
 .place {
   font-size: var(--font-size-large);
   margin-right: calc(var(--spacer) / 2);
+  color: var(--font-color-text);
 }
 
 .name {

@@ -93,24 +93,9 @@ export default function ServicesFields(): ReactElement {
         name="services[0].links"
       />
       <Field
-        {...getFieldContent('timeout', content.services.fields)}
-        component={Input}
-        name="services[0].timeout"
-      />
-      <Field
         {...getFieldContent('usesConsumerParameters', content.services.fields)}
         component={Input}
         name="services[0].usesConsumerParameters"
-      />
-      <Field
-        {...getFieldContent('allow', content.services.fields)}
-        component={Input}
-        name="services[0].allow"
-      />
-      <Field
-        {...getFieldContent('deny', content.services.fields)}
-        component={Input}
-        name="services[0].deny"
       />
       {values.services[0].usesConsumerParameters && (
         <Field
@@ -122,23 +107,6 @@ export default function ServicesFields(): ReactElement {
           name="services[0].consumerParameters"
         />
       )}
-
-      {/*
-       Licensing and Terms
-      */}
-      <Field
-        {...getFieldContent('license', content.metadata.fields)}
-        component={Input}
-        name="metadata.license"
-      />
-      <Field
-        {...getFieldContent(
-          'accessTermsAndConditions',
-          content.metadata.fields
-        )}
-        component={Input}
-        name="metadata.gaiaXInformation.termsAndConditions"
-      />
     </>
   )
 }

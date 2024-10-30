@@ -7,7 +7,7 @@ import content from '../../../../../content/onboarding/steps/importCustomTokens.
 import { useAccount, useNetwork, useProvider } from 'wagmi'
 import { addTokenToWallet } from '@utils/wallet'
 import { getErrorMessage } from '@utils/onboarding'
-import { tokenLogos } from '@components/Header/Wallet/AddTokenList'
+import { tokenLogos } from '@components/Header/NetworkMenu/AddTokenList'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { getSupportedChainIds } from '../../../../../chains.config'
 
