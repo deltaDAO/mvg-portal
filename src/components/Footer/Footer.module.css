@@ -27,6 +27,7 @@
   position: relative;
   text-align: left;
   color: var(--footer-font-color);
+  margin-bottom: var(--spacer);
 }
 
 .main svg {
@@ -38,9 +39,20 @@
 
 .subtitle {
   position: absolute;
-  width: max-content;
   top: 4rem;
   left: 5rem;
+  max-width: 100%;
+}
+
+@media screen and (min-width: 60rem) {
+  .subtitle {
+    max-width: unset;
+    width: max-content;
+  }
+
+  .main {
+    margin-bottom: unset;
+  }
 }
 
 .copyright a {
