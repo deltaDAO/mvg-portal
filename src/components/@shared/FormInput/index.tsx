@@ -79,6 +79,7 @@ export interface InputProps {
   disclaimerValues?: string[]
   accountId?: string
   actions?: string[]
+  fieldFormPrefix?: string
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {

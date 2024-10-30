@@ -1,4 +1,7 @@
-import { FormConsumerParameter } from '@components/Publish/_types'
+import {
+  FormConsumerParameter,
+  SAAS_PAYMENT_MODE
+} from '@components/Publish/_types'
 import { FileInfo } from '@oceanprotocol/lib'
 import { GaiaXInformation2210 } from 'src/@types/gaia-x/2210/GXInformation'
 import { ServiceCredential } from 'src/@types/gaia-x/2210/ServiceCredential'
@@ -28,6 +31,10 @@ export interface MetadataEditForm {
     serviceSD?: ServiceCredential
   }
   license?: string
+  saas: {
+    redirectUrl?: string
+    paymentMode?: SAAS_PAYMENT_MODE
+  }
 }
 
 export interface ComputeEditForm {
