@@ -1,42 +1,56 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
-import { LoggerInstance } from '@oceanprotocol/lib'
-import styles from './index.module.css'
+import Alert from '@components/@shared/atoms/Alert'
 import Button from '@components/@shared/atoms/Button'
 import Loader from '@components/@shared/atoms/Loader'
-import Alert from '@components/@shared/atoms/Alert'
-import content from '../../../content/pages/faucet.json'
-import { ethers } from 'ethers'
-import { getMessage, requestTokens } from '../../@utils/faucet'
-import { useAccount, useSignMessage } from 'wagmi'
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
+import { useAccount, useNetwork, useSignMessage } from 'wagmi'
+import content from '../../../content/pages/faucet.json'
+import { getMessage, requestTokens } from '../../@utils/faucet'
+import styles from './index.module.css'
+import NetworkName from '../@shared/NetworkName'
 
 interface Content {
   title: string
   description: string
-  input: {
-    label: string
-    placeholder: string
-    buttonLabel: string
+  buttonLabel: string
+  card: {
+    cardTitle: string
+    cardDescription: string
+    cardExplainerTitle: string
+    cardExplainerFirstStep: string
+    cardExplainerSecondStep: string
+    cardExplainerThirdStep: string
+    cardExplainerFourthStep: string
+    cardExplainerFithStep: string
+    cardNetworkAddress: string
+    cardNetwork: string
   }
 }
 
-const networkNameMap: { [key: number]: string } = {
-  32456: 'Pontus-X Devnet',
-  32457: 'Pontus-X Testnet'
-}
-
 const FaucetPage = (): ReactElement => {
-  const { input }: Content = content
-  const { label, buttonLabel } = input
+  const { buttonLabel }: Content = content
+  const { card }: Content = content
+  const {
+    cardTitle,
+    cardDescription,
+    cardExplainerTitle,
+    cardExplainerFirstStep,
+    cardExplainerSecondStep,
+    cardExplainerThirdStep,
+    cardExplainerFourthStep,
+    cardExplainerFithStep,
+    cardNetworkAddress,
+    cardNetwork
+  } = card
 
   const [isLoading, setIsLoading] = useState(false)
   const [isRequestingTokens, setIsRequestingTokens] = useState(false)
-  const [address, setAddress] = useState<string>('')
-  const [network, setNetwork] = useState<string>('Unknown')
   const [message, setMessage] = useState<string>()
   const [error, setError] = useState<string>()
 
   const { address: accountAddress } = useAccount()
+  const { chain } = useNetwork()
 
   const {
     data: signMessageData,
@@ -111,78 +125,29 @@ const FaucetPage = (): ReactElement => {
     faucetTokenRequest
   ])
 
-  useEffect(() => {
-    const fetchAddressAndNetwork = async () => {
-      try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        const signer = provider.getSigner()
-        const address = await signer.getAddress()
-        const network = await provider.getNetwork()
-        setAddress(address)
-        setNetwork(networkNameMap[network.chainId] || 'Unknown')
-      } catch (error) {
-        LoggerInstance.error(error)
-      }
-    }
-
-    fetchAddressAndNetwork()
-
-    if (window.ethereum) {
-      window.ethereum.on('accountsChanged', fetchAddressAndNetwork)
-      window.ethereum.on('chainChanged', fetchAddressAndNetwork)
-    }
-
-    return () => {
-      if (window.ethereum) {
-        window.ethereum.removeListener(
-          'accountsChanged',
-          fetchAddressAndNetwork
-        )
-        window.ethereum.removeListener('chainChanged', fetchAddressAndNetwork)
-      }
-    }
-  }, [])
-
   return (
     <div className={styles.card}>
-      <h2 className={styles.title}>Welcome to the Pontus-X Faucet</h2>
-      <p className={styles.description}>
-        A faucet is a service that provides free tokens for testing purposes.
-        Known accounts can request 10 EUROe fee tokens and 1000 EUROe payment
-        tokens to use on the Pontus-X network. These tokens are available every
-        12 hours.
-      </p>
+      <h2 className={styles.title}>{cardTitle}</h2>
+      <p className={styles.description}>{cardDescription}</p>
       <div className={styles.instructions}>
-        <h3>How to Request Tokens:</h3>
+        <h3>{cardExplainerTitle}</h3>
         <ol>
-          <li>Ensure you have a web3 wallet (e.g. MetaMask) connected.</li>
-          <li>
-            Your wallet address will be automatically detected and displayed
-            below.
-          </li>
-          <li>
-            Click the &quot;Get Tokens&quot; button to request your free tokens.
-          </li>
-          <li>Wait for a few seconds while the request is processed.</li>
-          <li>
-            You will receive a confirmation once the tokens are successfully
-            added to your wallet.
-          </li>
+          <li>{cardExplainerFirstStep}</li>
+          <li>{cardExplainerSecondStep}</li>
+          <li>{cardExplainerThirdStep}</li>
+          <li>{cardExplainerFourthStep}</li>
+          <li>{cardExplainerFithStep}</li>
         </ol>
-        <p>
-          <strong>Note:</strong> You can only request tokens once every 12
-          hours. If you encounter any issues, please try again later.
-        </p>
       </div>
       <div className={styles.address}>
-        <strong>{label}:</strong> {address}
+        <strong>{cardNetworkAddress}:</strong> {accountAddress}
       </div>
       <div className={styles.network}>
-        <strong>Connected Network:</strong> {network}
+        <strong>{cardNetwork}:</strong> <NetworkName networkId={chain?.id} />
       </div>
       <form className={styles.form} onSubmit={handleSearchStart}>
         <Button
-          disabled={!address || isLoading || isRequestingTokens}
+          disabled={!accountAddress || isLoading || isRequestingTokens}
           style="primary"
           size="small"
           type="submit"

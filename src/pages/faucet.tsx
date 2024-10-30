@@ -1,19 +1,12 @@
 import { ReactElement } from 'react'
-import { useRouter } from 'next/router'
-import Verify from '../components/Faucet'
-import AssetProvider from '@context/Asset'
+import Faucet from '../components/Faucet'
 import content from '../../content/pages/faucet.json'
 import Page from '@components/@shared/Page'
 
-export default function PageVerify(): ReactElement {
-  const router = useRouter()
-  const { did } = router.query
-
+export default function PageFaucet(): ReactElement {
   return (
-    <AssetProvider did={did as string}>
-      <Page title={content.title} description={content.description} uri="">
-        <Verify />
-      </Page>
-    </AssetProvider>
+    <Page title={content.title} description={content.description} uri="">
+      <Faucet />
+    </Page>
   )
 }
