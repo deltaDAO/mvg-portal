@@ -41,9 +41,9 @@ export default function AssetTeaser({
         <aside className={styles.detailLine}>
           <AssetType
             className={styles.typeLabel}
-            type={asset.metadata.additionalInformation?.saas ? 'saas' : type}
+            type={asset?.metadata?.additionalInformation?.saas ? 'saas' : type}
             accessType={
-              asset.metadata.additionalInformation?.saas ? 'saas' : accessType
+              asset?.metadata?.additionalInformation?.saas ? 'saas' : accessType
             }
           />
           <span className={styles.typeLabel}>

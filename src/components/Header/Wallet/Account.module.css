@@ -8,7 +8,6 @@
   white-space: nowrap;
   background: var(--background-content);
   margin: 0;
-  transition: border 0.2s ease-out;
   cursor: pointer;
   height: 100%;
   display: flex;
@@ -37,14 +36,12 @@
 .address {
   display: none;
   text-transform: none;
-  border-right: var(--menu-border-size) solid var(--menu-border-color);
-  padding-right: calc(var(--spacer) / 3);
   padding-left: calc(var(--spacer) / 8);
 }
 
 .button svg {
-  width: 1em;
-  height: 1em;
+  width: var(--menu-caret-size);
+  height: var(--menu-caret-size);
   fill: var(--menu-icon-color-fill);
   display: inline-block;
   vertical-align: middle;
@@ -78,7 +75,7 @@ svg.caret {
   }
 }
 
-@media screen and (min-width: 47rem) {
+@media screen and (min-width: 52rem) {
   .address {
     display: inline-block;
   }
