@@ -10,7 +10,7 @@ export default function Stats(): ReactElement {
     <div className={styles.stats}>
       <NumberUnit
         label={`Sale${sales === 1 ? '' : 's'}`}
-        value={sales < 0 ? 0 : sales}
+        value={typeof sales !== 'number' || sales < 0 ? 0 : sales}
       />
       <NumberUnit label="Published" value={assetsTotal} />
     </div>

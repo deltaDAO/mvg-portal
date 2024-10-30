@@ -13,6 +13,10 @@
   margin-bottom: var(--spacer);
 }
 
+.pairsAddedContainer input {
+  background-color: var(--input-background) !important;
+}
+
 .hasError label {
   color: var(--brand-alert-red);
 }

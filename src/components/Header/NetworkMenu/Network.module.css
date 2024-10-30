@@ -1,18 +1,20 @@
 .network {
+  height: 100%;
   border: var(--menu-border-size) solid var(--menu-border-color);
-  border-right: none;
   border-top-left-radius: var(--menu-border-radius);
   border-bottom-left-radius: var(--menu-border-radius);
   padding: calc(var(--spacer) / 6) calc(var(--spacer) / 3);
+  background: var(--background-content);
   white-space: nowrap;
-  margin-right: -3px;
   display: inline-flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .name {
   font-size: var(--font-size-small);
   color: var(--menu-font-color);
+  cursor: pointer;
 }
 
 .badge {
@@ -24,4 +26,26 @@
 
 .warning {
   margin-right: calc(var(--spacer) / 14);
+}
+
+.caret {
+  display: none;
+  width: var(--menu-caret-size);
+  height: var(--menu-caret-size);
+  fill: var(--menu-icon-color-fill);
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: calc(var(--spacer) / 3);
+  transition: transform 0.2s ease-out;
+}
+
+[aria-expanded='true'] .caret {
+  transform: rotate(180deg);
+}
+
+@media screen and (min-width: 25rem) {
+  .caret {
+    display: inline-block;
+    fill: var(--menu-icon-fill-color);
+  }
 }
