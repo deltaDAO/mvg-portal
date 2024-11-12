@@ -37,6 +37,8 @@ import WhitelistIndicator from '../Compute/WhitelistIndicator'
 import { Signer } from 'ethers'
 import SuccessConfetti from '@components/@shared/SuccessConfetti'
 import Input from '@components/@shared/FormInput'
+import ContractingProvider, { PAYMENT_MODES } from './ContractingProvider'
+import Button from '@components/@shared/atoms/Button'
 
 export default function Download({
   accountId,
@@ -61,7 +63,12 @@ export default function Download({
 }): ReactElement {
   const { isConnected } = useAccount()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { getOpcFeeForToken } = useMarketMetadata()
+  const {
+    getOpcFeeForToken,
+    appConfig: {
+      contractingProvider: { enable: isContractingFeatureEnabled }
+    }
+  } = useMarketMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
   const isMounted = useIsMounted()
 
@@ -171,16 +178,21 @@ export default function Download({
     isAccountIdWhitelisted
   ])
 
+  function redirectToSaasUrl() {
+    window.open(asset.metadata.additionalInformation.saas.redirectUrl, '_blank')
+  }
+
   async function handleOrderOrDownload(dataParams?: UserCustomParameters) {
     setIsLoading(true)
     setRetry(false)
     try {
-      if (isOwned) {
+      if (
+        isOwned &&
+        asset?.metadata?.additionalInformation?.saas?.paymentMode !==
+          PAYMENT_MODES.PAYPERUSE
+      ) {
         if (asset?.metadata?.additionalInformation?.saas?.redirectUrl) {
-          window.open(
-            asset.metadata.additionalInformation.saas.redirectUrl,
-            '_blank'
-          )
+          redirectToSaasUrl()
           setIsLoading(false)
           return
         }
@@ -236,11 +248,21 @@ export default function Download({
       dtSymbol={asset?.datatokens[0]?.symbol}
       dtBalance={dtBalance}
       type="submit"
-      assetTimeout={secondsToString(asset?.services?.[0]?.timeout)}
+      assetTimeout={
+        asset?.metadata?.additionalInformation?.saas?.paymentMode ===
+        PAYMENT_MODES.PAYPERUSE
+          ? // we dont have a timeout on payperuse
+            // as this is handled by service operators utilizing contracting provider
+            secondsToString(0)
+          : secondsToString(asset?.services?.[0]?.timeout)
+      }
       assetType={
         asset?.metadata?.additionalInformation?.saas
           ? 'saas'
           : asset?.metadata?.type
+      }
+      paymentMode={
+        asset?.metadata?.additionalInformation?.saas?.paymentMode ?? undefined
       }
       stepText={statusText}
       isLoading={isLoading}
@@ -284,7 +306,28 @@ export default function Download({
                     size="large"
                   />
                 )}
-                {!isInPurgatory && <PurchaseButton isValid={isValid} />}
+                {!isInPurgatory && (
+                  <>
+                    {asset?.metadata?.additionalInformation?.saas
+                      ?.paymentMode === PAYMENT_MODES.PAYPERUSE &&
+                      asset?.metadata?.additionalInformation?.saas
+                        ?.redirectUrl && (
+                        <div className={styles.payPerUseBtn}>
+                          <Button
+                            style="primary"
+                            onClick={(e) => {
+                              e.preventDefault()
+                              redirectToSaasUrl()
+                            }}
+                            disabled={!isValid}
+                          >
+                            Go to service
+                          </Button>
+                        </div>
+                      )}
+                    <PurchaseButton isValid={isValid} />
+                  </>
+                )}
                 <Field
                   component={Input}
                   name="termsAndConditions"
@@ -360,6 +403,11 @@ export default function Download({
               asset={asset}
             />
           )}
+          {isContractingFeatureEnabled &&
+            asset?.metadata?.additionalInformation?.saas?.paymentMode ===
+              PAYMENT_MODES.PAYPERUSE &&
+            accountId &&
+            isAccountIdWhitelisted && <ContractingProvider did={asset.id} />}
           {accountId && (
             <WhitelistIndicator
               accountId={accountId}
