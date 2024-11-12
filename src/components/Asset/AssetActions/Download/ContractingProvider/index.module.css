@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  margin-top: calc(var(--spacer) / 1.5);
+  margin-bottom: -1rem;
+  margin-left: calc(var(--spacer) / -1.5);
+  margin-right: calc(var(--spacer) / -1.5);
+  padding: calc(var(--spacer) / 1.5);
+  border-top: 1px solid var(--border-color);
+}
+
+.help {
+  composes: help from '../../ButtonBuy/index.module.css';
+}

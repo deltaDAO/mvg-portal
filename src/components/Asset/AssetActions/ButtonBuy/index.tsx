@@ -1,7 +1,8 @@
 import { FormEvent, ReactElement } from 'react'
 import Button from '../../../@shared/atoms/Button'
-import styles from './index.module.css'
 import Loader from '../../../@shared/atoms/Loader'
+import { PAYMENT_MODES, PaymentMode } from '../Download/ContractingProvider'
+import styles from './index.module.css'
 
 export interface ButtonBuyProps {
   action: 'download' | 'compute'
@@ -32,6 +33,7 @@ export interface ButtonBuyProps {
   isAccountConnected?: boolean
   hasProviderFee?: boolean
   retry?: boolean
+  paymentMode?: PaymentMode
 }
 
 function getConsumeHelpText(
@@ -166,6 +168,7 @@ export default function ButtonBuy({
   dtSymbol,
   dtBalance,
   assetType,
+  paymentMode,
   assetTimeout,
   isConsumable,
   consumableFeedback,
@@ -191,13 +194,19 @@ export default function ButtonBuy({
     ? 'Retry'
     : action === 'download'
     ? hasPreviousOrder && assetType === 'saas'
-      ? 'Go to service'
+      ? paymentMode === PAYMENT_MODES.PAYPERUSE
+        ? `Buy access credit`
+        : 'Go to service'
       : hasPreviousOrder
       ? 'Download'
       : priceType === 'free'
       ? 'Get'
       : assetType === 'saas'
-      ? `Subscribe ${assetTimeout === 'Forever' ? '' : ` for ${assetTimeout}`}`
+      ? paymentMode === PAYMENT_MODES.PAYPERUSE
+        ? `Buy access credit`
+        : `Subscribe ${
+            assetTimeout === 'Forever' ? '' : ` for ${assetTimeout}`
+          }`
       : `Buy ${assetTimeout === 'Forever' ? '' : ` for ${assetTimeout}`}`
     : hasPreviousOrder &&
       hasPreviousOrderSelectedComputeAsset &&

@@ -36,6 +36,10 @@ export interface AppConfig {
     roughTxGasEstimate: number
   }
   showPreviewAlert: string
+  contractingProvider: {
+    enable: boolean
+    endpoint: string
+  }
   networkAlertConfig: {
     // Refresh interval for network status - 30 sec
     refreshInterval: number
