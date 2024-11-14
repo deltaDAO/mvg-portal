@@ -76,5 +76,7 @@ export const serviceValidationSchema = Yup.object().shape({
   ),
   allowAllPublishedAlgorithms: Yup.boolean().nullable(),
   publisherTrustedAlgorithms: Yup.array().nullable(),
-  publisherTrustedAlgorithmPublishers: Yup.array().nullable()
+  publisherTrustedAlgorithmPublishers: Yup.array().nullable(),
+  allow: Yup.array().of(Yup.string()).nullable(),
+  deny: Yup.array().of(Yup.string()).nullable()
 })
