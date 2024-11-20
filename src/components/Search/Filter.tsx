@@ -23,6 +23,7 @@ interface FilterStructure {
   options: {
     label: string
     value: string
+    queryPath?: string
   }[]
 }
 
@@ -114,10 +115,37 @@ export default function Filter({
     router.push(urlLocation)
   }
 
-  async function handleSelectedFilter(value: string, filterId: string) {
-    const updatedFilters = filters[filterId].includes(value)
-      ? { ...filters, [filterId]: filters[filterId].filter((e) => e !== value) }
-      : { ...filters, [filterId]: [...filters[filterId], value] }
+  async function handleSelectedFilter(
+    value: { label: string; value: string; queryPath?: string },
+    filterId: string
+  ) {
+    let updatedFilters
+    if (value.queryPath) {
+      updatedFilters = filters[filterId].includes(
+        `${value.queryPath}=${value.value}`
+      )
+        ? {
+            ...filters,
+            [filterId]: filters[filterId].filter(
+              (e) => e !== `${value.queryPath}=${value.value}`
+            )
+          }
+        : {
+            ...filters,
+            [filterId]: [
+              ...filters[filterId],
+              `${value.queryPath}=${value.value}`
+            ]
+          }
+    } else {
+      updatedFilters = filters[filterId].includes(value.value)
+        ? {
+            ...filters,
+            [filterId]: filters[filterId].filter((e) => e !== value.value)
+          }
+        : { ...filters, [filterId]: [...filters[filterId], value.value] }
+    }
+
     setFilters(updatedFilters)
 
     await applyFilter(updatedFilters[filterId], filterId)
@@ -176,16 +204,25 @@ export default function Filter({
               <div key={filter.id} className={styles.filterType}>
                 <h5 className={styles.filterTypeLabel}>{filter.label}</h5>
                 {filter.options.map((option) => {
-                  const isSelected = filters[filter.id].includes(option.value)
+                  const isSelected =
+                    filter.id === 'gaiax'
+                      ? filters[filter.id].includes(
+                          `${option.queryPath}=${option.value}`
+                        )
+                      : filters[filter.id].includes(option.value)
                   return (
                     <Input
-                      key={option.value}
+                      key={
+                        option.queryPath
+                          ? option.value + option.queryPath
+                          : option.value
+                      }
                       name={option.label}
                       type="checkbox"
                       options={[option.label]}
                       checked={isSelected}
                       onChange={async () => {
-                        handleSelectedFilter(option.value, filter.id)
+                        handleSelectedFilter(option, filter.id)
                       }}
                     />
                   )
@@ -219,16 +256,25 @@ export default function Filter({
             >
               <div className={styles.compactOptionsContainer}>
                 {filter.options.map((option) => {
-                  const isSelected = filters[filter.id].includes(option.value)
+                  const isSelected =
+                    filter.id === 'gaiax'
+                      ? filters[filter.id].includes(
+                          `${option.queryPath}=${option.value}`
+                        )
+                      : filters[filter.id].includes(option.value)
                   return (
                     <Input
-                      key={option.value}
+                      key={
+                        option.queryPath
+                          ? option.value + option.queryPath
+                          : option.value
+                      }
                       name={option.label}
                       type="checkbox"
                       options={[option.label]}
                       checked={isSelected}
                       onChange={async () => {
-                        handleSelectedFilter(option.value, filter.id)
+                        handleSelectedFilter(option, filter.id)
                       }}
                     />
                   )

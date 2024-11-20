@@ -3,6 +3,21 @@ interface EsPaginationOptions {
   size?: number
 }
 
+interface boolFilter {
+  bool: {
+    must: {
+      exists: {
+        field: string
+      }
+    }
+    must_not?: {
+      term: {
+        [key: string]: string
+      }
+    }
+  }
+}
+
 interface BaseQueryParams {
   chainIds: number[]
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -11,6 +26,7 @@ interface BaseQueryParams {
   sortOptions?: SortOptions
   aggs?: any
   filters?: FilterTerm[]
+  bool?: boolFilter[]
   ignorePurgatory?: boolean
   ignoreState?: boolean
   showSaas?: boolean

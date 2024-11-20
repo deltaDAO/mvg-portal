@@ -2,6 +2,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import {
   escapeEsReservedCharacters,
   generateBaseQuery,
+  getFilter,
   getFilterTerm,
   parseFilters,
   queryMetadata
@@ -15,6 +16,21 @@ import {
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
 import { filterSets, getInitialFilters } from './Filter'
+
+export interface boolFilter {
+  bool: {
+    must: {
+      exists: {
+        field: string
+      }
+    }
+    must_not?: {
+      term: {
+        [key: string]: string
+      }
+    }
+  }
+}
 
 export function updateQueryStringParameter(
   uri: string,
@@ -43,15 +59,27 @@ export function getSearchQuery(
   serviceType?: string | string[],
   accessType?: string | string[],
   filterSet?: string | string[],
-  showSaas?: boolean
+  showSaas?: boolean,
+  gaiax?: string | string[]
 ): SearchQuery {
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
+  const bool: boolFilter[] = []
   let searchTerm = text || ''
   let nestedQuery
   if (tags) {
     filters.push(getFilterTerm('metadata.tags.keyword', tags))
+  } else if (gaiax) {
+    const filter = getFilter(gaiax)
+    filter.forEach((term) => {
+      const query = {
+        bool: {
+          ...term
+        }
+      }
+      bool.push(query)
+    })
   } else {
     searchTerm = searchTerm.trim()
     const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
@@ -120,8 +148,8 @@ export function getSearchQuery(
   }
 
   const filtersList = getInitialFilters(
-    { accessType, serviceType, filterSet },
-    ['accessType', 'serviceType', 'filterSet']
+    { accessType, serviceType, filterSet, gaiax },
+    ['accessType', 'serviceType', 'filterSet', 'gaiax']
   )
   parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
 
@@ -134,6 +162,7 @@ export function getSearchQuery(
     },
     sortOptions: { sortBy: sort, sortDirection },
     filters,
+    bool,
     showSaas
   } as BaseQueryParams
 
@@ -154,6 +183,7 @@ export async function getResults(
     serviceType?: string | string[]
     accessType?: string | string[]
     filterSet?: string[]
+    gaiax?: string | string[]
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -168,7 +198,8 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    filterSet
+    filterSet,
+    gaiax
   } = params
 
   const showSaas =
@@ -199,7 +230,8 @@ export async function getResults(
     sanitizedServiceType,
     accessType,
     filterSet,
-    showSaas
+    showSaas,
+    gaiax
   )
 
   const queryResult = await queryMetadata(searchQuery, cancelToken)

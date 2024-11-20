@@ -41,6 +41,18 @@ export function escapeEsReservedCharacters(value: string): string {
  */
 type TFilterValue = string | number | boolean | number[] | string[]
 type TFilterKey = 'terms' | 'term' | 'match' | 'match_phrase'
+type Query = {
+  must: {
+    exists: {
+      field: string
+    }
+  }
+  must_not?: {
+    term: {
+      [key: string]: string
+    }
+  }
+}
 
 export function getFilterTerm(
   filterField: string,
@@ -54,6 +66,39 @@ export function getFilterTerm(
       [filterField]: value
     }
   }
+}
+
+export function getFilter(...args: any[]) {
+  let filters = []
+  if (typeof args[0] === 'object') {
+    args[0].forEach((arg) => {
+      const filter = arg.split('=')
+      filters = [...filters, filter]
+    })
+  } else {
+    const filter = args[0].split('=')
+    filters = [...filters, filter]
+  }
+
+  let filter: Query[] = []
+  filters.forEach((filterItem) => {
+    let query: Query = {
+      must: {
+        exists: { field: filterItem[0] }
+      }
+    }
+    if (filterItem[1] === 'MUST_EXISTS_AND_NON_EMPTY') {
+      query = {
+        ...query,
+        must_not: {
+          term: { [filterItem[0] + '.keyword']: '' }
+        }
+      }
+    }
+    filter = [...filter, query]
+  })
+
+  return filter
 }
 
 export function parseFilters(
@@ -76,6 +121,9 @@ export function parseFilters(
       return uniqueTags.length > 0
         ? getFilterTerm(filterQueryPath[key], uniqueTags)
         : undefined
+    }
+    if (key === 'gaiax') {
+      return undefined
     }
     if (filtersList[key].length > 0)
       return getFilterTerm(filterQueryPath[key], filtersList[key])
@@ -160,7 +208,8 @@ export function generateBaseQuery(
                 ...(baseQueryParams.showSaas === false ? [saasFieldExists] : [])
               ]
             }
-          }
+          },
+          ...(baseQueryParams.bool || [])
         ]
       }
     }
