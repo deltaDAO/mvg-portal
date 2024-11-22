@@ -1,17 +1,35 @@
-const FILTER_VALUES = {
-  MUST_EXIST: 'MUST_EXIST',
-  MUST_EXISTS_AND_NON_EMPTY: 'MUST_EXISTS_AND_NON_EMPTY'
-  //...
-}
+const {
+  FilterByTypeOptions,
+  FilterByAccessOptions,
+  FILTER_VALUES
+} = require('src/@types/aquarius/SearchQuery')
 
 module.exports = {
   filters: [
+    {
+      id: 'serviceType',
+      label: 'Service Type',
+      type: 'filterList',
+      options: [
+        { label: 'datasets', value: FilterByTypeOptions.Data },
+        { label: 'algorithms', value: FilterByTypeOptions.Algorithm },
+        { label: 'saas', value: FilterByTypeOptions.Saas }
+      ]
+    },
+    {
+      id: 'accessType',
+      label: 'Access Type',
+      type: 'filterList',
+      options: [
+        { label: 'download', value: FilterByAccessOptions.Download },
+        { label: 'compute', value: FilterByAccessOptions.Compute }
+      ]
+    },
     {
       id: 'gaiax',
       label: 'Gaia-X Service',
       type: 'filterList',
       options: [
-        // a new filter value for a MUST_EXIST type could be added to handle this new functionality
         {
           label: 'Service SD',
           value: FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY,
@@ -24,7 +42,6 @@ module.exports = {
           queryPath:
             'metadata.additionalInformation.gaiaXInformation.termsAndConditions'
         },
-        // options can have their own queryPath defined that gets validated against the defined value
         {
           label: 'Verified',
           value: FILTER_VALUES.MUST_EXIST,

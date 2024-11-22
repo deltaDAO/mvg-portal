@@ -4,6 +4,7 @@ import axios, { CancelToken, AxiosResponse } from 'axios'
 import { OrdersData_orders as OrdersData } from '../../@types/subgraph/OrdersData'
 import { metadataCacheUri, allowDynamicPricing } from '../../../app.config'
 import {
+  FILTER_VALUES,
   FilterByTypeOptions,
   SortDirectionOptions,
   SortTermOptions
@@ -41,18 +42,6 @@ export function escapeEsReservedCharacters(value: string): string {
  */
 type TFilterValue = string | number | boolean | number[] | string[]
 type TFilterKey = 'terms' | 'term' | 'match' | 'match_phrase'
-type Query = {
-  must: {
-    exists: {
-      field: string
-    }
-  }
-  must_not?: {
-    term: {
-      [key: string]: string
-    }
-  }
-}
 
 export function getFilterTerm(
   filterField: string,
@@ -71,23 +60,23 @@ export function getFilterTerm(
 export function getFilter(...args: any[]) {
   let filters = []
   if (typeof args[0] === 'object') {
-    args[0].forEach((arg) => {
+    for (const arg of args[0]) {
       const filter = arg.split('=')
       filters = [...filters, filter]
-    })
+    }
   } else {
     const filter = args[0].split('=')
     filters = [...filters, filter]
   }
 
-  let filter: Query[] = []
+  let filter: BoolFilterQuery[] = []
   filters.forEach((filterItem) => {
-    let query: Query = {
+    let query: BoolFilterQuery = {
       must: {
         exists: { field: filterItem[0] }
       }
     }
-    if (filterItem[1] === 'MUST_EXISTS_AND_NON_EMPTY') {
+    if (filterItem[1] === FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY) {
       query = {
         ...query,
         must_not: {
@@ -209,7 +198,7 @@ export function generateBaseQuery(
               ]
             }
           },
-          ...(baseQueryParams.bool || [])
+          ...(baseQueryParams.boolFilter || [])
         ]
       }
     }

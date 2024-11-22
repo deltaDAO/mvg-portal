@@ -28,25 +28,6 @@ interface FilterStructure {
 }
 
 const filterList: FilterStructure[] = [
-  {
-    id: 'serviceType',
-    label: 'Service Type',
-    type: 'filterList',
-    options: [
-      { label: 'datasets', value: FilterByTypeOptions.Data },
-      { label: 'algorithms', value: FilterByTypeOptions.Algorithm },
-      { label: 'saas', value: FilterByTypeOptions.Saas }
-    ]
-  },
-  {
-    id: 'accessType',
-    label: 'Access Type',
-    type: 'filterList',
-    options: [
-      { label: 'download', value: FilterByAccessOptions.Download },
-      { label: 'compute', value: FilterByAccessOptions.Compute }
-    ]
-  },
   ...(Array.isArray(customFilters?.filters) &&
   customFilters?.filters?.length > 0 &&
   customFilters?.filters.some((filter) => filter !== undefined)
@@ -116,34 +97,34 @@ export default function Filter({
   }
 
   async function handleSelectedFilter(
-    value: { label: string; value: string; queryPath?: string },
+    option: { label: string; value: string; queryPath?: string },
     filterId: string
   ) {
     let updatedFilters
-    if (value.queryPath) {
+    if (option.queryPath) {
       updatedFilters = filters[filterId].includes(
-        `${value.queryPath}=${value.value}`
+        `${option.queryPath}=${option.value}`
       )
         ? {
             ...filters,
             [filterId]: filters[filterId].filter(
-              (e) => e !== `${value.queryPath}=${value.value}`
+              (e) => e !== `${option.queryPath}=${option.value}`
             )
           }
         : {
             ...filters,
             [filterId]: [
               ...filters[filterId],
-              `${value.queryPath}=${value.value}`
+              `${option.queryPath}=${option.value}`
             ]
           }
     } else {
-      updatedFilters = filters[filterId].includes(value.value)
+      updatedFilters = filters[filterId].includes(option.value)
         ? {
             ...filters,
-            [filterId]: filters[filterId].filter((e) => e !== value.value)
+            [filterId]: filters[filterId].filter((e) => e !== option.value)
           }
-        : { ...filters, [filterId]: [...filters[filterId], value.value] }
+        : { ...filters, [filterId]: [...filters[filterId], option.value] }
     }
 
     setFilters(updatedFilters)

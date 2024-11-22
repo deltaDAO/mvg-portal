@@ -17,21 +17,6 @@ import {
 } from '../../@types/aquarius/SearchQuery'
 import { filterSets, getInitialFilters } from './Filter'
 
-export interface boolFilter {
-  bool: {
-    must: {
-      exists: {
-        field: string
-      }
-    }
-    must_not?: {
-      term: {
-        [key: string]: string
-      }
-    }
-  }
-}
-
 export function updateQueryStringParameter(
   uri: string,
   key: string,
@@ -65,22 +50,12 @@ export function getSearchQuery(
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
-  const bool: boolFilter[] = []
+  const boolFilter: BoolFilter[] = []
   let searchTerm = text || ''
   let nestedQuery
   if (tags) {
     filters.push(getFilterTerm('metadata.tags.keyword', tags))
-  } else if (gaiax) {
-    const filter = getFilter(gaiax)
-    filter.forEach((term) => {
-      const query = {
-        bool: {
-          ...term
-        }
-      }
-      bool.push(query)
-    })
-  } else {
+  } else if (!gaiax) {
     searchTerm = searchTerm.trim()
     const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
     const noSpaceSearchTerm = searchTerm.split(' ').join('').trim()
@@ -145,6 +120,16 @@ export function getSearchQuery(
         }
       ]
     }
+  } else {
+    const filter = getFilter(gaiax)
+    filter.forEach((term) => {
+      const query = {
+        bool: {
+          ...term
+        }
+      }
+      boolFilter.push(query)
+    })
   }
 
   const filtersList = getInitialFilters(
@@ -162,7 +147,7 @@ export function getSearchQuery(
     },
     sortOptions: { sortBy: sort, sortDirection },
     filters,
-    bool,
+    boolFilter,
     showSaas
   } as BaseQueryParams
 
