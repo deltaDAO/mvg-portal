@@ -43,6 +43,7 @@ export interface AssetProviderValue {
   serviceCredentialIdMatch?: boolean
   serviceCredentialVersion: string
   verifiedServiceProviderName: string
+  matchVerifiable?: boolean
   fetchAsset: (token?: CancelToken) => Promise<void>
 }
 
@@ -82,6 +83,7 @@ function AssetProvider({
     useState<string>()
   const [verifiedServiceProviderName, setVerifiedServiceProviderName] =
     useState<string>()
+  const [matchVerifiable, setMatchVerifiable] = useState<boolean>()
 
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
@@ -202,13 +204,14 @@ function AssetProvider({
           ? await getServiceCredential(serviceCredential?.url)
           : serviceCredential?.raw
 
-        const { verified, complianceApiVersion, idMatch } =
+        const { verified, complianceApiVersion, idMatch, matchVerifiable } =
           await verifyRawServiceCredential(serviceCredentialContent, asset.id)
 
         setIsServiceCredentialVerified(verified && !!serviceCredentialContent)
         setServiceCredentialIdMatch(
-          verified && !!serviceCredentialContent && idMatch
+          verified && !!serviceCredentialContent && idMatch && matchVerifiable
         )
+        setMatchVerifiable(matchVerifiable)
         setServiceCredentialVersion(complianceApiVersion)
         const serviceProviderName = getPublisherFromServiceCredential(
           serviceCredentialContent
@@ -321,7 +324,8 @@ function AssetProvider({
           isServiceCredentialVerified,
           serviceCredentialIdMatch,
           serviceCredentialVersion,
-          verifiedServiceProviderName
+          verifiedServiceProviderName,
+          matchVerifiable
         } as AssetProviderValue
       }
     >

@@ -18,6 +18,7 @@ export default function MetaMain({
   const {
     isServiceCredentialVerified,
     serviceCredentialIdMatch,
+    matchVerifiable,
     serviceCredentialVersion,
     isVerifyingServiceCredential,
     verifiedServiceProviderName
@@ -44,6 +45,7 @@ export default function MetaMain({
               isLoading={isVerifyingServiceCredential}
               isValid={isServiceCredentialVerified}
               idMatch={serviceCredentialIdMatch}
+              matchVerifiable={matchVerifiable}
               apiVersion={serviceCredentialVersion}
               timestamp={isServiceCredentialVerified}
             />

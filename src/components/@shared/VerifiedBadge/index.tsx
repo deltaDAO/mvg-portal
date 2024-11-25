@@ -5,15 +5,18 @@ import Cross from '@images/cross.svg'
 import styles from './index.module.css'
 import Loader from '../atoms/Loader'
 import Time from '../atoms/Time'
+import Tooltip from '../atoms/Tooltip'
 
 const cx = classNames.bind(styles)
 
 export function Badge({
   isValid,
+  matchVerifiable,
   verifiedService,
   className
 }: {
   isValid: boolean
+  matchVerifiable?: boolean
   verifiedService: string
   className?: string
 }): ReactElement {
@@ -22,11 +25,25 @@ export function Badge({
       className={cx({
         mainLabel: true,
         isValid,
+        isWarning: matchVerifiable === false,
         [className]: className
       })}
     >
+      {matchVerifiable === false && (
+        <Tooltip content="gx:dependsOn could not be found" />
+      )}
       <span>{verifiedService}</span>
-      {isValid ? <VerifiedPatch /> : <Cross />}
+      {typeof matchVerifiable === 'undefined' ? (
+        isValid ? (
+          <VerifiedPatch />
+        ) : (
+          <Cross />
+        )
+      ) : isValid && matchVerifiable ? (
+        <VerifiedPatch />
+      ) : (
+        <Cross />
+      )}
     </div>
   )
 }
@@ -35,6 +52,7 @@ export default function VerifiedBadge({
   className,
   isValid,
   idMatch,
+  matchVerifiable,
   isLoading,
   apiVersion,
   timestamp
@@ -42,6 +60,7 @@ export default function VerifiedBadge({
   className?: string
   isValid?: boolean
   idMatch?: boolean
+  matchVerifiable?: boolean
   isLoading?: boolean
   apiVersion?: string
   timestamp?: boolean
@@ -61,7 +80,11 @@ export default function VerifiedBadge({
       ) : (
         <div className={styleClasses}>
           <Badge isValid={isValid} verifiedService="Service Credential" />
-          <Badge isValid={idMatch} verifiedService="Credential ID match" />
+          <Badge
+            isValid={idMatch}
+            matchVerifiable={matchVerifiable}
+            verifiedService="Credential ID match"
+          />
           <div className={styles.details}>
             {apiVersion && (
               <span className={styles.apiVersion}>

@@ -485,6 +485,7 @@ export async function verifyRawServiceCredential(
   verified: boolean
   complianceApiVersion?: string
   idMatch?: boolean
+  matchVerifiable?: boolean
   responseBody?: any
 }> {
   if (!rawServiceCredential) return { verified: false }
@@ -506,16 +507,27 @@ export async function verifyRawServiceCredential(
       }
     }
     if (response?.status === 201) {
-      const serviceOffering = parsedServiceCredential.verifiableCredential.find(
-        (credential) =>
-          credential?.credentialSubject?.type === 'gx:ServiceOffering'
-      )
-      const credentialId = serviceOffering?.credentialSubject?.id
+      const dependsOn = parsedServiceCredential.verifiableCredential
+        .filter(
+          (credential) =>
+            credential?.credentialSubject['gx:dependsOn'] !== undefined
+        )
+        .map(
+          (credential) => credential?.credentialSubject['gx:dependsOn'][0].id
+        )
+      const serviceOffering =
+        parsedServiceCredential.verifiableCredential.filter(
+          (credential) =>
+            credential?.credentialSubject?.type === 'gx:ServiceOffering' &&
+            credential?.credentialSubject?.id !== dependsOn?.[0]
+        )
+      const credentialId = serviceOffering[0]?.credentialSubject?.id
 
       return {
         verified: true,
         complianceApiVersion,
-        idMatch: did && did?.toLowerCase() === credentialId?.toLowerCase()
+        idMatch: did && did?.toLowerCase() === credentialId?.toLowerCase(),
+        matchVerifiable: dependsOn.length > 0
       }
     }
 
