@@ -111,8 +111,9 @@ module.exports = {
       32456: 'https://status.dev.pontus-x.eu/'
     }
   },
-
   faucet: {
     baseUri: 'https://faucet.api.pontus-x.eu'
-  }
+  },
+  showOnboardingModuleByDefault:
+    process.env.NEXT_PUBLIC_DEFAULT_SHOW_ONBOARDING_MODULE === 'true'
 }
