@@ -72,7 +72,7 @@ function UserPreferencesProvider({
   const [chainIds, setChainIds] = useState(
     localStorage?.chainIds || appConfig.chainIds
   )
-  const { defaultPrivacyPolicySlug } = appConfig
+  const { defaultPrivacyPolicySlug, showOnboardingModuleByDefault } = appConfig
 
   const [privacyPolicySlug, setPrivacyPolicySlug] = useState<string>(
     localStorage?.privacyPolicySlug || defaultPrivacyPolicySlug
@@ -96,9 +96,7 @@ function UserPreferencesProvider({
     )
 
   const [showOnboardingModule, setShowOnboardingModule] = useState<boolean>(
-    localStorage?.showOnboardingModule === undefined
-      ? false
-      : localStorage?.showOnboardingModule
+    localStorage?.showOnboardingModule ?? showOnboardingModuleByDefault
   )
 
   const [onboardingStep, setOnboardingStep] = useState<number>(

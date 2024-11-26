@@ -53,6 +53,7 @@ export interface AppConfig {
   faucet: {
     baseUri: string
   }
+  showOnboardingModuleByDefault: boolean
 }
 export interface SiteContent {
   siteTitle: string
