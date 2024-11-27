@@ -11,12 +11,12 @@ const cx = classNames.bind(styles)
 
 export function Badge({
   isValid,
-  matchVerifiable,
+  isIdMatchVerifiable,
   verifiedService,
   className
 }: {
   isValid: boolean
-  matchVerifiable?: boolean
+  isIdMatchVerifiable?: boolean | string
   verifiedService: string
   className?: string
 }): ReactElement {
@@ -25,24 +25,22 @@ export function Badge({
       className={cx({
         mainLabel: true,
         isValid,
-        isWarning: matchVerifiable === false,
+        isWarning: isIdMatchVerifiable === false,
         [className]: className
       })}
     >
-      {matchVerifiable === false && (
-        <Tooltip content="gx:dependsOn could not be found" />
-      )}
-      <span>{verifiedService}</span>
-      {typeof matchVerifiable === 'undefined' ? (
-        isValid ? (
-          <VerifiedPatch />
-        ) : (
-          <Cross />
-        )
-      ) : isValid && matchVerifiable ? (
-        <VerifiedPatch />
+      {typeof isIdMatchVerifiable === 'string' ? (
+        <Tooltip content={isIdMatchVerifiable}>
+          <div className={`${styles.mainLabel} ${styles.isWarning}`}>
+            <span>{verifiedService}</span>
+            <Cross />
+          </div>
+        </Tooltip>
       ) : (
-        <Cross />
+        <>
+          <span>{verifiedService}</span>
+          {isValid ? <VerifiedPatch /> : <Cross />}
+        </>
       )}
     </div>
   )
@@ -52,7 +50,7 @@ export default function VerifiedBadge({
   className,
   isValid,
   idMatch,
-  matchVerifiable,
+  isIdMatchVerifiable,
   isLoading,
   apiVersion,
   timestamp
@@ -60,7 +58,7 @@ export default function VerifiedBadge({
   className?: string
   isValid?: boolean
   idMatch?: boolean
-  matchVerifiable?: boolean
+  isIdMatchVerifiable?: boolean | string
   isLoading?: boolean
   apiVersion?: string
   timestamp?: boolean
@@ -82,7 +80,7 @@ export default function VerifiedBadge({
           <Badge isValid={isValid} verifiedService="Service Credential" />
           <Badge
             isValid={idMatch}
-            matchVerifiable={matchVerifiable}
+            isIdMatchVerifiable={isIdMatchVerifiable}
             verifiedService="Credential ID match"
           />
           <div className={styles.details}>
