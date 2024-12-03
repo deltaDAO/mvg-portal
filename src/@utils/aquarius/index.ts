@@ -50,28 +50,49 @@ export function getFilterTerm(
 ): FilterTerm {
   const isArray = Array.isArray(value)
   const useKey = key === 'term' ? (isArray ? 'terms' : 'term') : key
-  return {
-    [useKey]: {
-      [filterField]: value
+  const filters = []
+  let field
+  if (isArray) {
+    for (const val of value) {
+      if (typeof val === 'string' && val.includes('=')) {
+        const [fieldFilter, values] = val.split('=') as [string, string]
+        field = fieldFilter
+        filters.push(values)
+      }
+    }
+  }
+  if (filters.length > 0) {
+    return {
+      [useKey]: {
+        [field]: filters
+      }
+    }
+  } else if (filterField) {
+    return {
+      [useKey]: {
+        [filterField]: value
+      }
     }
   }
 }
 
-export function getFilter(...args: any[]) {
+function splitArg(arg: string) {
+  return arg.split('=')
+}
+
+export function getFilter(args: string | string[]) {
   let filters = []
-  if (typeof args[0] === 'object') {
-    for (const arg of args[0]) {
-      const filter = arg.split('=')
-      filters = [...filters, filter]
+  if (typeof args === 'object') {
+    for (const arg of args) {
+      filters = [...filters, splitArg(arg)]
     }
   } else {
-    const filter = args[0].split('=')
-    filters = [...filters, filter]
+    filters = [...filters, splitArg(args)]
   }
 
-  let filter: BoolFilterQuery[] = []
+  let filter: (MustNotTermQuery<string> & MustExistQuery<string>)[] = []
   filters.forEach((filterItem) => {
-    let query: BoolFilterQuery = {
+    let query: MustNotTermQuery<string> & MustExistQuery<string> = {
       must: {
         exists: { field: filterItem[0] }
       }
@@ -94,12 +115,6 @@ export function parseFilters(
   filtersList: Filters,
   filterSets: { [key: string]: string[] }
 ): FilterTerm[] {
-  const filterQueryPath = {
-    accessType: 'services.type',
-    serviceType: 'metadata.type',
-    filterSet: 'metadata.tags.keyword'
-  }
-
   const filterTerms = Object.keys(filtersList)?.map((key) => {
     if (key === 'filterSet') {
       const tags = filtersList[key].reduce(
@@ -107,15 +122,13 @@ export function parseFilters(
         []
       )
       const uniqueTags = [...new Set(tags)]
-      return uniqueTags.length > 0
-        ? getFilterTerm(filterQueryPath[key], uniqueTags)
-        : undefined
+      return uniqueTags.length > 0 ? getFilterTerm(null, uniqueTags) : undefined
     }
     if (key === 'gaiax') {
       return undefined
     }
     if (filtersList[key].length > 0)
-      return getFilterTerm(filterQueryPath[key], filtersList[key])
+      return getFilterTerm(null, filtersList[key])
 
     return undefined
   })
@@ -197,8 +210,7 @@ export function generateBaseQuery(
                 ...(baseQueryParams.showSaas === false ? [saasFieldExists] : [])
               ]
             }
-          },
-          ...(baseQueryParams.boolFilter || [])
+          }
         ]
       }
     }
@@ -206,6 +218,10 @@ export function generateBaseQuery(
 
   if (baseQueryParams.aggs !== undefined) {
     generatedQuery.aggs = baseQueryParams.aggs
+  }
+
+  if (baseQueryParams.boolFilter !== undefined) {
+    generatedQuery.query.bool.filter.push(...baseQueryParams.boolFilter)
   }
 
   if (baseQueryParams.sortOptions !== undefined)

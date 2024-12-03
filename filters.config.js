@@ -10,6 +10,7 @@ module.exports = {
       id: 'serviceType',
       label: 'Service Type',
       type: 'filterList',
+      queryPath: 'metadata.type',
       options: [
         { label: 'datasets', value: FilterByTypeOptions.Data },
         { label: 'algorithms', value: FilterByTypeOptions.Algorithm },
@@ -20,6 +21,7 @@ module.exports = {
       id: 'accessType',
       label: 'Access Type',
       type: 'filterList',
+      queryPath: 'services.type',
       options: [
         { label: 'download', value: FilterByAccessOptions.Download },
         { label: 'compute', value: FilterByAccessOptions.Compute }

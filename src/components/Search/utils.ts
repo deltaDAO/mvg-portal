@@ -45,12 +45,13 @@ export function getSearchQuery(
   accessType?: string | string[],
   filterSet?: string | string[],
   showSaas?: boolean,
-  gaiax?: string | string[]
+  gaiax?: string | string[],
+  custom?: string | string[]
 ): SearchQuery {
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
-  const boolFilter: BoolFilter[] = []
+  const boolFilter: BoolFilter<string>[] = []
   let searchTerm = text || ''
   let nestedQuery
   if (tags) {
@@ -133,8 +134,8 @@ export function getSearchQuery(
   }
 
   const filtersList = getInitialFilters(
-    { accessType, serviceType, filterSet, gaiax },
-    ['accessType', 'serviceType', 'filterSet', 'gaiax']
+    { accessType, serviceType, filterSet, gaiax, custom },
+    ['accessType', 'serviceType', 'filterSet', 'gaiax', 'custom']
   )
   parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
 
@@ -169,6 +170,7 @@ export async function getResults(
     accessType?: string | string[]
     filterSet?: string[]
     gaiax?: string | string[]
+    custom?: string | string[]
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -190,16 +192,17 @@ export async function getResults(
   const showSaas =
     serviceType === undefined
       ? undefined
-      : serviceType === FilterByTypeOptions.Saas ||
+      : serviceType === 'metadata.type=' + FilterByTypeOptions.Saas ||
         (typeof serviceType !== 'string' &&
-          serviceType.includes(FilterByTypeOptions.Saas))
-
+          serviceType.includes('metadata.type=' + FilterByTypeOptions.Saas))
   // we make sure to query only for service types that are expected
   // by Aqua ("dataset" or "algorithm") by removing "saas"
   const sanitizedServiceType =
     serviceType !== undefined && typeof serviceType !== 'string'
-      ? serviceType.filter((type) => type !== FilterByTypeOptions.Saas)
-      : serviceType === FilterByTypeOptions.Saas
+      ? serviceType.filter(
+          (type) => type !== 'metadata.type=' + FilterByTypeOptions.Saas
+        )
+      : serviceType === 'metadata.type=' + FilterByTypeOptions.Saas
       ? undefined
       : serviceType
 

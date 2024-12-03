@@ -3,19 +3,24 @@ interface EsPaginationOptions {
   size?: number
 }
 
-interface BoolFilter {
-  bool: BoolFilterQuery
+type FieldPath = string
+
+interface BoolFilter<T extends FieldPath> {
+  bool: MustExistQuery<T> & MustNotTermQuery<T>
 }
 
-interface BoolFilterQuery {
+interface MustExistQuery<T extends FieldPath> {
   must: {
     exists: {
-      field: string
+      field: T
     }
   }
+}
+
+interface MustNotTermQuery<T extends FieldPath> {
   must_not?: {
     term: {
-      [key: string]: string
+      [field in T]: string
     }
   }
 }
@@ -28,7 +33,7 @@ interface BaseQueryParams {
   sortOptions?: SortOptions
   aggs?: any
   filters?: FilterTerm[]
-  boolFilter?: BoolFilter[]
+  boolFilter?: BoolFilter
   ignorePurgatory?: boolean
   ignoreState?: boolean
   showSaas?: boolean
