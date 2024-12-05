@@ -170,8 +170,8 @@ export default function Filter({
           }
         >
           <div className={styleClasses}>
-            {filterList.map((filter) => (
-              <div key={filter.id} className={styles.filterType}>
+            {filterList.map((filter, index) => (
+              <div key={filter.id + index} className={styles.filterType}>
                 <h5 className={styles.filterTypeLabel}>{filter.label}</h5>
                 {filter.options.map((option) => {
                   const isSelected = filters[filter.id].includes(
@@ -214,8 +214,11 @@ export default function Filter({
         </Accordion>
       </div>
       <div className={styles.topPositioning}>
-        {filterList.map((filter) => (
-          <div key={filter.id} className={styles.compactFilterContainer}>
+        {filterList.map((filter, index) => (
+          <div
+            key={filter.id + index}
+            className={styles.compactFilterContainer}
+          >
             <Accordion
               title={filter.label}
               badgeNumber={filters[filter.id].length}
