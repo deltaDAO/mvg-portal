@@ -46,3 +46,11 @@
 .isValid svg path {
   fill: var(--color-primary);
 }
+
+.isWarning {
+  color: var(--brand-alert-yellow);
+}
+
+.isWarning svg path {
+  fill: var(--brand-alert-yellow);
+}
