@@ -2,6 +2,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import {
   escapeEsReservedCharacters,
   generateBaseQuery,
+  getFilter,
   getFilterTerm,
   parseFilters,
   queryMetadata
@@ -43,16 +44,19 @@ export function getSearchQuery(
   serviceType?: string | string[],
   accessType?: string | string[],
   filterSet?: string | string[],
-  showSaas?: boolean
+  showSaas?: boolean,
+  gaiax?: string | string[],
+  custom?: string | string[]
 ): SearchQuery {
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
+  const boolFilter: BoolFilter<string>[] = []
   let searchTerm = text || ''
   let nestedQuery
   if (tags) {
     filters.push(getFilterTerm('metadata.tags.keyword', tags))
-  } else {
+  } else if (!gaiax) {
     searchTerm = searchTerm.trim()
     const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
     const noSpaceSearchTerm = searchTerm.split(' ').join('').trim()
@@ -117,11 +121,21 @@ export function getSearchQuery(
         }
       ]
     }
+  } else {
+    const filter = getFilter(gaiax)
+    filter.forEach((term) => {
+      const query = {
+        bool: {
+          ...term
+        }
+      }
+      boolFilter.push(query)
+    })
   }
 
   const filtersList = getInitialFilters(
-    { accessType, serviceType, filterSet },
-    ['accessType', 'serviceType', 'filterSet']
+    { accessType, serviceType, filterSet, gaiax, custom },
+    ['accessType', 'serviceType', 'filterSet', 'gaiax', 'custom']
   )
   parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
 
@@ -134,6 +148,7 @@ export function getSearchQuery(
     },
     sortOptions: { sortBy: sort, sortDirection },
     filters,
+    boolFilter,
     showSaas
   } as BaseQueryParams
 
@@ -154,6 +169,8 @@ export async function getResults(
     serviceType?: string | string[]
     accessType?: string | string[]
     filterSet?: string[]
+    gaiax?: string | string[]
+    custom?: string | string[]
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -168,22 +185,24 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    filterSet
+    filterSet,
+    gaiax
   } = params
 
   const showSaas =
     serviceType === undefined
       ? undefined
-      : serviceType === FilterByTypeOptions.Saas ||
+      : serviceType === 'metadata.type=' + FilterByTypeOptions.Saas ||
         (typeof serviceType !== 'string' &&
-          serviceType.includes(FilterByTypeOptions.Saas))
-
+          serviceType.includes('metadata.type=' + FilterByTypeOptions.Saas))
   // we make sure to query only for service types that are expected
   // by Aqua ("dataset" or "algorithm") by removing "saas"
   const sanitizedServiceType =
     serviceType !== undefined && typeof serviceType !== 'string'
-      ? serviceType.filter((type) => type !== FilterByTypeOptions.Saas)
-      : serviceType === FilterByTypeOptions.Saas
+      ? serviceType.filter(
+          (type) => type !== 'metadata.type=' + FilterByTypeOptions.Saas
+        )
+      : serviceType === 'metadata.type=' + FilterByTypeOptions.Saas
       ? undefined
       : serviceType
 
@@ -199,7 +218,8 @@ export async function getResults(
     sanitizedServiceType,
     accessType,
     filterSet,
-    showSaas
+    showSaas,
+    gaiax
   )
 
   const queryResult = await queryMetadata(searchQuery, cancelToken)
