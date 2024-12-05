@@ -35,7 +35,8 @@ function FilterProvider({ children }: { children: ReactNode }): ReactElement {
     accessType: [],
     serviceType: [],
     filterSet: [],
-    gaiax: []
+    gaiax: [],
+    custom: []
   })
   const [ignorePurgatory, setIgnorePurgatory] = useState<boolean>(true)
   const [sort, setSort] = useState<Sort>({

@@ -227,7 +227,7 @@ export default function Filter({
               <div className={styles.compactOptionsContainer}>
                 {filter.options.map((option) => {
                   const isSelected = filters[filter.id].includes(
-                    `${option.queryPath}=${option.value}`
+                    `${filter.queryPath || option.queryPath}=${option.value}`
                   )
 
                   return (
