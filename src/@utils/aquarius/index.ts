@@ -171,9 +171,11 @@ export function transformQueryResult(
     totalResults: 0,
     aggregations: {}
   }
-  result.results = queryResult.hits?.hits.map((hit: Asset) => hit._source) || []
+  result.results =
+    queryResult.hits?.hits.map((hit: Asset) => hit._source) || queryResult
 
-  result.totalResults = queryResult.hits?.total?.value || 0
+  result.totalResults =
+    queryResult.hits?.total?.value || queryResult.length || 0
 
   result.totalPages = Math.ceil(result.totalResults / size)
   result.page = from ? from + 1 : 1
