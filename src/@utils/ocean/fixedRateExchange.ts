@@ -30,7 +30,7 @@ export async function getFixedBuyPrice(
   const fixed = new FixedRateExchange(config.fixedRateExchangeAddress, signer)
   const estimatedPrice = await fixed.calcBaseInGivenDatatokensOut(
     accessDetails.addressOrId,
-    '1',
+    1,
     consumeMarketFixedSwapFee
   )
 
