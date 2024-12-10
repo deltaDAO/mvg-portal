@@ -13,14 +13,12 @@ import {
   getErrorMessage
 } from '@oceanprotocol/lib'
 import { CancelToken } from 'axios'
-import { gql } from 'urql'
 import {
   queryMetadata,
   getFilterTerm,
   generateBaseQuery,
   getAssetsFromDids
 } from './aquarius'
-import { fetchDataForMultipleChains } from './subgraph'
 import { getServiceById } from './ddo'
 import { SortTermOptions } from '../@types/aquarius/SearchQuery'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -29,54 +27,17 @@ import { ComputeEditForm } from '../components/Asset/Edit/_types'
 import { getFileDidInfo } from './provider'
 import { toast } from 'react-toastify'
 
-const getComputeOrders = gql`
-  query ComputeOrders($user: String!) {
-    orders(
-      orderBy: createdTimestamp
-      orderDirection: desc
-      where: { payer: $user }
-    ) {
-      id
-      serviceIndex
-      datatoken {
-        address
-      }
-      tx
-      createdTimestamp
-    }
-  }
-`
-
-const getComputeOrdersByDatatokenAddress = gql`
-  query ComputeOrdersByDatatokenAddress(
-    $user: String!
-    $datatokenAddress: String!
-  ) {
-    orders(
-      orderBy: createdTimestamp
-      orderDirection: desc
-      where: { payer: $user, datatoken: $datatokenAddress }
-    ) {
-      id
-      serviceIndex
-      datatoken {
-        address
-      }
-      tx
-      createdTimestamp
-    }
-  }
-`
-
 async function getAssetMetadata(
   queryDtList: string[],
   cancelToken: CancelToken,
-  chainIds: number[]
+  chainIds: number[],
+  index?: string
 ): Promise<Asset[]> {
   const baseQueryparams = {
+    index: index ?? 'op_ddo_v4.1.0',
     chainIds,
     filters: [
-      getFilterTerm('services.datatokenAddress', queryDtList),
+      getFilterTerm('services.datatokenAddress.keyword', queryDtList),
       getFilterTerm('services.type', 'compute'),
       getFilterTerm('metadata.type', 'dataset')
     ],
@@ -244,14 +205,12 @@ async function getJobs(
   const uniqueProviders = [...new Set(providerUrls)]
   const providersComputeJobsExtended: ComputeJobExtended[] = []
   const computeJobs: ComputeJobMetaData[] = []
-
   try {
     for (let i = 0; i < uniqueProviders.length; i++) {
       const providerComputeJobs = (await ProviderInstance.computeStatus(
         uniqueProviders[i],
         accountId
       )) as ComputeJob[]
-
       providerComputeJobs.forEach((job) =>
         providersComputeJobsExtended.push({
           ...job,
@@ -301,42 +260,12 @@ export async function getComputeJobs(
   cancelToken?: CancelToken
 ): Promise<ComputeResults> {
   if (!accountId) return
-  const assetDTAddress = service.datatokenAddress
+  const datatokenAddressList = [service.datatokenAddress]
   const computeResult: ComputeResults = {
     computeJobs: [],
     isLoaded: false
   }
-  const variables = {
-    user: accountId.toLowerCase(),
-    datatokenAddress: assetDTAddress.toLowerCase()
-  }
-
-  const results = await fetchDataForMultipleChains(
-    assetDTAddress ? getComputeOrdersByDatatokenAddress : getComputeOrders,
-    variables,
-    assetDTAddress ? [asset.chainId] : chainIds
-  )
-
-  let tokenOrders: TokenOrder[] = []
-  results.map((result) =>
-    result.orders.forEach((tokenOrder: TokenOrder) =>
-      tokenOrders.push(tokenOrder)
-    )
-  )
-  if (tokenOrders.length === 0) {
-    computeResult.isLoaded = true
-    return computeResult
-  }
-
-  tokenOrders = tokenOrders.sort(
-    (a, b) => b.createdTimestamp - a.createdTimestamp
-  )
-
-  const datatokenAddressList = tokenOrders.map(
-    (tokenOrder: TokenOrder) => tokenOrder.datatoken.address
-  )
   if (!datatokenAddressList) return
-
   const assets = await getAssetMetadata(
     datatokenAddressList,
     cancelToken,

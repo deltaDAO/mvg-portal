@@ -60,6 +60,9 @@ export default function TagsAutoComplete({
     input: string
   ): void => {
     setInput(input)
+    if (!Array.isArray(options)) {
+      return
+    }
     const matchedTagsList = matchSorter(options, input, { keys: ['value'] })
     setMatchedTagsList(matchedTagsList)
   }

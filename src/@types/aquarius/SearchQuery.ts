@@ -8,7 +8,8 @@ export enum SortTermOptions {
   Relevance = '_score',
   Orders = 'stats.orders',
   Allocated = 'stats.allocated',
-  Price = 'stats.price.value'
+  Price = 'stats.price.value',
+  TokenSymbol = 'stats.price.tokenSymbol.keyword'
 }
 
 // Note: could not figure out how to get `enum` to be ambiant
