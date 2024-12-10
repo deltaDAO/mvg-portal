@@ -579,16 +579,23 @@ export async function getTagsList(
     if (response?.status !== 200 || !response?.data) {
       return []
     }
-
     const tagsSet: Set<string> = new Set()
     response.data.forEach((items) => {
-      items.hits.hits.forEach((item) => {
-        if (item._source?.metadata?.tags) {
-          item._source.metadata.tags
+      if (items.hits) {
+        items.hits?.hits.forEach((item) => {
+          if (item._source?.metadata?.tags) {
+            item._source.metadata.tags
+              .filter((tag: string) => tag !== '')
+              .forEach((tag: string) => tagsSet.add(tag))
+          }
+        })
+      } else {
+        items.forEach((item) => {
+          item.metadata.tags
             .filter((tag: string) => tag !== '')
             .forEach((tag: string) => tagsSet.add(tag))
-        }
-      })
+        })
+      }
     })
     const uniqueTagsList = Array.from(tagsSet).sort()
     return uniqueTagsList
