@@ -13,7 +13,7 @@ import {
   getDownloadAssets,
   getPublishedAssets,
   getUserOrders,
-  getUserSales
+  getUserSalesAndRavenue
 } from '@utils/aquarius'
 import axios, { CancelToken } from 'axios'
 import { useMarketMetadata } from '../MarketMetadata'
@@ -28,6 +28,7 @@ interface ProfileProviderValue {
   isDownloadsLoading: boolean
   sales: number
   ownAccount: boolean
+  revenue: number
   handlePageChange: (pageNumber: number) => void
 }
 
@@ -46,6 +47,7 @@ function ProfileProvider({
 }): ReactElement {
   const { chainIds } = useUserPreferences()
   const { appConfig } = useMarketMetadata()
+  const [revenue, setRevenue] = useState(0)
 
   const [isEthAddress, setIsEthAddress] = useState<boolean>()
   //
@@ -185,6 +187,7 @@ function ProfileProvider({
   // SALES NUMBER
   //
   const [sales, setSales] = useState(0)
+
   useEffect(() => {
     if (!accountId || chainIds.length === 0) {
       setSales(0)
@@ -192,9 +195,16 @@ function ProfileProvider({
     }
     async function getUserSalesNumber() {
       try {
-        const result = await getUserSales(accountId, chainIds)
-        setSales(result)
-        LoggerInstance.log(`[profile] Fetched sales number: ${result}.`, result)
+        const { totalOrders, totalRevenue } = await getUserSalesAndRavenue(
+          accountId,
+          chainIds
+        )
+        setRevenue(totalRevenue)
+        setSales(totalOrders)
+        LoggerInstance.log(
+          `[profile] Fetched sales number: ${totalOrders}.`,
+          totalOrders
+        )
       } catch (error) {
         LoggerInstance.error(error.message)
       }
@@ -213,7 +223,8 @@ function ProfileProvider({
         isDownloadsLoading,
         handlePageChange,
         ownAccount,
-        sales
+        sales,
+        revenue
       }}
     >
       {children}

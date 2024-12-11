@@ -47,6 +47,19 @@ export function getFilterTerm(
   }
 }
 
+export function getRangeFilterTerm(
+  filterField: string,
+  gteValue: string
+): FilterTerm {
+  return {
+    range: {
+      [filterField]: {
+        gte: gteValue
+      }
+    }
+  }
+}
+
 export function parseFilters(
   filtersList: Filters,
   filterSets: { [key: string]: string[] }
@@ -54,27 +67,36 @@ export function parseFilters(
   const filterQueryPath = {
     accessType: 'services.type',
     serviceType: 'metadata.type',
-    filterSet: 'metadata.tags.keyword'
+    filterSet: 'metadata.tags.keyword',
+    filterTime: 'metadata.created'
   }
+  if (filtersList) {
+    const filterTerms = Object.keys(filtersList)?.map((key) => {
+      if (key === 'filterSet') {
+        const tags = filtersList[key].reduce(
+          (acc, set) => [...acc, ...filterSets[set]],
+          []
+        )
+        const uniqueTags = [...new Set(tags)]
+        return uniqueTags.length > 0
+          ? getFilterTerm(filterQueryPath[key], uniqueTags)
+          : undefined
+      }
+      if (key === 'filterTime' && filtersList[key].length > 0) {
+        const now = new Date()
+        const targetDate = new Date(now.getTime() - Number(filtersList[key][0]))
+        const targetDateISOString = targetDate.toISOString()
+        return getRangeFilterTerm(filterQueryPath[key], targetDateISOString)
+      }
+      if (filtersList[key].length > 0) {
+        return getFilterTerm(filterQueryPath[key], filtersList[key])
+      }
+      return undefined
+    })
 
-  const filterTerms = Object.keys(filtersList)?.map((key) => {
-    if (key === 'filterSet') {
-      const tags = filtersList[key].reduce(
-        (acc, set) => [...acc, ...filterSets[set]],
-        []
-      )
-      const uniqueTags = [...new Set(tags)]
-      return uniqueTags.length > 0
-        ? getFilterTerm(filterQueryPath[key], uniqueTags)
-        : undefined
-    }
-    if (filtersList[key].length > 0)
-      return getFilterTerm(filterQueryPath[key], filtersList[key])
-
-    return undefined
-  })
-
-  return filterTerms.filter((term) => term !== undefined)
+    return filterTerms.filter((term) => term !== undefined)
+  }
+  return []
 }
 
 export function getWhitelistShould(): FilterTerm[] {
@@ -375,7 +397,8 @@ export async function getPublishedAssets(
   const query = generateBaseQuery(baseQueryParams)
 
   try {
-    return queryMetadata(query, cancelToken)
+    const result = await queryMetadata(query, cancelToken)
+    return result
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)
@@ -461,16 +484,46 @@ export async function getTopAssetsPublishers(
   return publishers.slice(0, nrItems)
 }
 
-export async function getUserSales(
+export async function getUserSalesAndRavenue(
   accountId: string,
   chainIds: number[]
-): Promise<number> {
+): Promise<{ totalOrders: number; totalRevenue: number }> {
   try {
-    const result = await getPublishedAssets(accountId, chainIds, null)
-    const { totalOrders } = result.aggregations
-    return totalOrders ? totalOrders.value : '0'
+    let page = 1
+    let totalOrders = 0
+    let totalRevenue = 0
+    let assets: PagedAssets
+
+    do {
+      assets = await getPublishedAssets(
+        accountId,
+        chainIds,
+        null,
+        false,
+        false,
+        undefined,
+        page
+      )
+      if (assets && assets.results) {
+        assets.results.forEach((asset) => {
+          const orders = asset?.stats?.orders || 0
+          const price = asset?.stats?.price?.value || 0
+          totalOrders += orders
+          totalRevenue += orders * price
+        })
+      }
+      page++
+    } while (
+      assets &&
+      assets.results &&
+      assets.results.length > 0 &&
+      page < assets.totalPages
+    )
+
+    return { totalOrders, totalRevenue }
   } catch (error) {
-    LoggerInstance.error('Error getUserSales', error.message)
+    LoggerInstance.error('Error in getUserSales', error.message)
+    return { totalOrders: 0, totalRevenue: 0 }
   }
 }
 

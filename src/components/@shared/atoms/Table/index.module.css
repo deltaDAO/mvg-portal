@@ -1,0 +1,21 @@
+.containerHistory {
+  display: flex;
+  flex-direction: row;
+  gap: calc(var(--spacer) / 4);
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.buttonContainer {
+  display: flex;
+  margin-top: 2%;
+}
+
+.totalContainer {
+  display: flex;
+  flex-direction: row;
+  margin-top: 5%;
+  align-items: flex-start;
+  gap: 16px;
+}

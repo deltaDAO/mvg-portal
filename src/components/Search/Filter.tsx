@@ -4,6 +4,7 @@ import { addExistingParamsToUrl } from './utils'
 import Button from '@shared/atoms/Button'
 import {
   FilterByAccessOptions,
+  FilterByTimeOptions,
   FilterByTypeOptions
 } from '../../@types/aquarius/SearchQuery'
 import { useRouter } from 'next/router'
@@ -26,36 +27,8 @@ interface FilterStructure {
   }[]
 }
 
-const filterList: FilterStructure[] = [
-  {
-    id: 'serviceType',
-    label: 'Service Type',
-    type: 'filterList',
-    options: [
-      { label: 'datasets', value: FilterByTypeOptions.Data },
-      { label: 'algorithms', value: FilterByTypeOptions.Algorithm }
-    ]
-  },
-  {
-    id: 'accessType',
-    label: 'Access Type',
-    type: 'filterList',
-    options: [
-      { label: 'download', value: FilterByAccessOptions.Download },
-      { label: 'compute', value: FilterByAccessOptions.Compute }
-    ]
-  },
-  ...(Array.isArray(customFilters?.filters) &&
-  customFilters?.filters?.length > 0 &&
-  customFilters?.filters.some((filter) => filter !== undefined)
-    ? // eslint-disable-next-line no-unsafe-optional-chaining
-      customFilters?.filters
-    : [])
-]
-
 export const filterSets = customFilters?.filterSets || {}
-
-const purgatoryFilterItem = { display: 'show purgatory ', value: 'purgatory' }
+const purgatoryFilterItem = { display: 'show purgatory', value: 'purgatory' }
 
 export function getInitialFilters(
   parsedUrlParams: queryString.ParsedQuery<string>,
@@ -79,12 +52,14 @@ export default function Filter({
   addFiltersToUrl,
   showPurgatoryOption,
   expanded,
-  className
+  className,
+  showTime
 }: {
   addFiltersToUrl?: boolean
   showPurgatoryOption?: boolean
   expanded?: boolean
   className?: string
+  showTime?: boolean
 }): ReactElement {
   const { filters, setFilters, ignorePurgatory, setIgnorePurgatory } =
     useFilter()
@@ -102,9 +77,7 @@ export default function Filter({
 
   async function applyFilter(filter: string[], filterId: string) {
     if (!addFiltersToUrl) return
-
     let urlLocation = await addExistingParamsToUrl(location, [filterId])
-
     if (filter.length > 0 && urlLocation.indexOf(filterId) === -1) {
       const parsedFilter = filter.join(',')
       urlLocation = `${urlLocation}&${filterId}=${parsedFilter}`
@@ -114,11 +87,23 @@ export default function Filter({
   }
 
   async function handleSelectedFilter(value: string, filterId: string) {
-    const updatedFilters = filters[filterId].includes(value)
-      ? { ...filters, [filterId]: filters[filterId].filter((e) => e !== value) }
-      : { ...filters, [filterId]: [...filters[filterId], value] }
-    setFilters(updatedFilters)
+    let updatedFilters = { ...filters }
+    if (filterId === 'filterTime') {
+      if (filters[filterId].includes(value)) {
+        updatedFilters[filterId] = []
+      } else {
+        updatedFilters[filterId] = [value]
+      }
+    } else {
+      updatedFilters = filters[filterId].includes(value)
+        ? {
+            ...filters,
+            [filterId]: filters[filterId].filter((e) => e !== value)
+          }
+        : { ...filters, [filterId]: [...filters[filterId], value] }
+    }
 
+    setFilters(updatedFilters)
     await applyFilter(updatedFilters[filterId], filterId)
   }
 
@@ -137,6 +122,53 @@ export default function Filter({
     )
     router.push(urlLocation)
   }
+
+  const filterList: FilterStructure[] = [
+    {
+      id: 'serviceType',
+      label: 'Service Type',
+      type: 'filterList',
+      options: [
+        { label: 'datasets', value: FilterByTypeOptions.Data },
+        { label: 'algorithms', value: FilterByTypeOptions.Algorithm }
+      ]
+    },
+    {
+      id: 'accessType',
+      label: 'Access Type',
+      type: 'filterList',
+      options: [
+        { label: 'download', value: FilterByAccessOptions.Download },
+        { label: 'compute', value: FilterByAccessOptions.Compute }
+      ]
+    },
+    ...(showTime
+      ? [
+          {
+            id: 'filterTime',
+            label: 'Time',
+            type: 'filterList',
+            options: [
+              {
+                label: 'last 3 months',
+                value: FilterByTimeOptions.Last3Months
+              },
+              {
+                label: 'last 6 months',
+                value: FilterByTimeOptions.Last6Months
+              },
+              { label: 'last year', value: FilterByTimeOptions.LastYear }
+            ]
+          }
+        ]
+      : []),
+    ...(Array.isArray(customFilters?.filters) &&
+    customFilters?.filters?.length > 0 &&
+    customFilters?.filters.some((filter) => filter !== undefined)
+      ? // eslint-disable-next-line no-unsafe-optional-chaining
+        customFilters?.filters
+      : [])
+  ]
 
   const styleClasses = cx({
     filterList: true,
@@ -235,6 +267,7 @@ export default function Filter({
             </Accordion>
           </div>
         ))}
+
         {showPurgatoryOption && (
           <div className={styles.compactFilterContainer}>
             <Accordion
