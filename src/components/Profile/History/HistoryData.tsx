@@ -15,6 +15,7 @@ import Time from '@shared/atoms/Time'
 import AssetTitle from '@shared/AssetListTitle'
 import NetworkName from '@shared/NetworkName'
 import HistoryTable from '@components/@shared/atoms/Table/HistoryTable'
+import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 
 const columns: TableOceanColumn<Asset>[] = [
   {
@@ -44,10 +45,13 @@ const columns: TableOceanColumn<Asset>[] = [
   },
   {
     name: 'Price',
-    selector: (asset) =>
-      `${asset.stats?.price?.value || 0} ${
-        asset.stats?.price?.tokenSymbol || 'OCEAN'
-      }`
+    selector: (asset) => {
+      const price =
+        asset.stats?.price?.value ??
+        (asset.accessDetails?.price ? parseFloat(asset.accessDetails.price) : 0)
+      const tokenSymbol = asset.stats?.price?.tokenSymbol || 'OCEAN'
+      return `${price} ${tokenSymbol}`
+    }
   },
   {
     name: 'Revenue',
@@ -115,7 +119,23 @@ export default function HistoryData({
         )
         setSales(totalOrders)
         setRevenue(totalRevenue)
-        setQueryResult(result)
+        const updatedResults = await Promise.all(
+          result.results.map(async (item) => {
+            const accessDetails = await getAccessDetails(
+              item.chainId,
+              item.services[0]
+            )
+
+            return {
+              ...item,
+              accessDetails
+            }
+          })
+        )
+        setQueryResult({
+          ...result,
+          results: updatedResults
+        })
       } catch (error) {
         LoggerInstance.error(error.message)
       } finally {
