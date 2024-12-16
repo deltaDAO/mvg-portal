@@ -13,7 +13,7 @@ import {
   getDownloadAssets,
   getPublishedAssets,
   getUserOrders,
-  getUserSalesAndRavenue
+  getUserSalesAndRevenue
 } from '@utils/aquarius'
 import axios, { CancelToken } from 'axios'
 import { useMarketMetadata } from '../MarketMetadata'
@@ -195,7 +195,7 @@ function ProfileProvider({
     }
     async function getUserSalesNumber() {
       try {
-        const { totalOrders, totalRevenue } = await getUserSalesAndRavenue(
+        const { totalOrders, totalRevenue } = await getUserSalesAndRevenue(
           accountId,
           chainIds
         )

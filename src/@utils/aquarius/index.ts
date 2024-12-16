@@ -484,7 +484,7 @@ export async function getTopAssetsPublishers(
   return publishers.slice(0, nrItems)
 }
 
-export async function getUserSalesAndRavenue(
+export async function getUserSalesAndRevenue(
   accountId: string,
   chainIds: number[]
 ): Promise<{ totalOrders: number; totalRevenue: number }> {
