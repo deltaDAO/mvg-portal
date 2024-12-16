@@ -9,6 +9,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useAccount } from 'wagmi'
+import HistoryData from './HistoryData'
 
 interface HistoryTab {
   title: string
@@ -48,6 +49,15 @@ function getTabs(
   if (accountId === userAccountId) {
     defaultTabs.push(computeTab)
   }
+
+  const history: HistoryTab = {
+    title: 'History',
+    content: <HistoryData accountId={accountId} />
+  }
+  if (accountId === userAccountId) {
+    defaultTabs.push(history)
+  }
+
   return defaultTabs
 }
 

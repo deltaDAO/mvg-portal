@@ -32,6 +32,12 @@ export enum FilterByAccessOptions {
   Compute = 'compute'
 }
 
+export enum FilterByTimeOptions {
+  Last3Months = `${1000 * 60 * 60 * 24 * 30 * 3}`,
+  Last6Months = `${1000 * 60 * 60 * 24 * 30 * 6}`,
+  LastYear = `${1000 * 60 * 60 * 24 * 365}`
+}
+
 declare global {
   interface SortOptions {
     sortBy: SortTermOptions
@@ -40,7 +46,13 @@ declare global {
 
   interface FilterTerm {
     [property: string]: {
-      [property: string]: string | number | boolean | number[] | string[]
+      [property: string]:
+        | string
+        | number
+        | boolean
+        | number[]
+        | string[]
+        | { gte: string }
     }
   }
 

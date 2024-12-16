@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Link from 'next/link'
 import Dotdotdot from 'react-dotdotdot'
 import Price from '@shared/Price'
@@ -10,6 +10,7 @@ import styles from './index.module.css'
 import { getServiceByName } from '@utils/ddo'
 import { useUserPreferences } from '@context/UserPreferences'
 import { formatNumber } from '@utils/numbers'
+import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 
 export declare type AssetTeaserProps = {
   asset: AssetExtended
@@ -29,11 +30,28 @@ export default function AssetTeaser({
   const accessType = isCompute ? 'compute' : 'access'
   const owner = asset.nft?.owner
   const { orders, allocated, price } = asset.stats || {}
-  const isUnsupportedPricing =
-    !asset.services.length ||
-    price?.value === undefined ||
-    (asset?.accessDetails && asset?.accessDetails[0].type === 'NOT_SUPPORTED')
+  const [accessDetails, setAccessDetails] = useState(null)
+  const [isUnsupportedPricing, setIsUnsupportedPricing] = useState(false)
+
   const { locale } = useUserPreferences()
+
+  useEffect(() => {
+    async function fetchAccessDetails() {
+      if (asset.services?.length > 0) {
+        const details = await getAccessDetails(asset.chainId, asset.services[0])
+        setAccessDetails(details)
+      }
+    }
+
+    fetchAccessDetails()
+  }, [asset.chainId, asset.services])
+
+  useEffect(() => {
+    const unsupported =
+      !asset.services.length ||
+      (accessDetails && accessDetails.type === 'NOT_SUPPORTED')
+    setIsUnsupportedPricing(unsupported)
+  }, [asset.services, price?.value, accessDetails])
 
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
@@ -65,7 +83,11 @@ export default function AssetTeaser({
           {isUnsupportedPricing ? (
             <strong>No pricing schema available</strong>
           ) : (
-            <Price price={price} assetId={asset.id} size="small" />
+            <Price
+              price={price || { value: parseFloat(accessDetails.price) }}
+              assetId={asset.id}
+              size="small"
+            />
           )}
         </div>
         <footer className={styles.footer}>

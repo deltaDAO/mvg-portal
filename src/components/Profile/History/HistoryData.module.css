@@ -1,0 +1,28 @@
+.containerHistory {
+  display: flex;
+  flex-direction: row; /* Changed from column to row */
+  gap: calc(var(--spacer) / 4);
+  width: 100%;
+}
+
+.filterContainer {
+  display: flex;
+  flex-direction: column; /* Changed from row to column */
+  flex-wrap: wrap;
+  gap: calc(var(--spacer) / 4);
+  width: 20%; /* Adjust width as needed */
+  padding-right: calc(var(--spacer) / 1.2);
+}
+
+.tableContainer {
+  flex-grow: 1; /* Take up remaining space */
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 4);
+}
+
+.empty {
+  color: var(--color-secondary);
+  font-size: var(--font-size-small);
+  font-style: italic;
+}
