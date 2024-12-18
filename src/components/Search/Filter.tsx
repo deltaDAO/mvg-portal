@@ -102,7 +102,7 @@ export default function Filter({
     filterId: string,
     queryPath?: string
   ) {
-    const getFilterQueryString = `${queryPath || option.queryPath}=${
+    const getFilterQueryString = `${option.queryPath || queryPath}=${
       option.value
     }`
     const updatedFilters = filters[filterId].includes(getFilterQueryString)
@@ -175,7 +175,7 @@ export default function Filter({
                 <h5 className={styles.filterTypeLabel}>{filter.label}</h5>
                 {filter.options.map((option) => {
                   const isSelected = filters[filter.id].includes(
-                    `${filter.queryPath || option.queryPath}=${option.value}`
+                    `${option.queryPath || filter.queryPath}=${option.value}`
                   )
                   return (
                     <Input
@@ -227,7 +227,7 @@ export default function Filter({
               <div className={styles.compactOptionsContainer}>
                 {filter.options.map((option) => {
                   const isSelected = filters[filter.id].includes(
-                    `${filter.queryPath || option.queryPath}=${option.value}`
+                    `${option.queryPath || filter.queryPath}=${option.value}`
                   )
 
                   return (

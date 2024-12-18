@@ -116,6 +116,11 @@ export function parseFilters(
   filterSets: { [key: string]: string[] }
 ): FilterTerm[] {
   const filterTerms = Object.keys(filtersList)?.map((key) => {
+    filtersList[key] = filtersList[key].filter(
+      (filter) =>
+        !filter.includes(FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY) &&
+        !filter.includes(FILTER_VALUES.MUST_EXIST)
+    )
     if (key === 'filterSet') {
       const tags = filtersList[key].reduce(
         (acc, set) => [...acc, ...filterSets[set]],
@@ -123,9 +128,6 @@ export function parseFilters(
       )
       const uniqueTags = [...new Set(tags)]
       return uniqueTags.length > 0 ? getFilterTerm(null, uniqueTags) : undefined
-    }
-    if (key === 'gaiax') {
-      return undefined
     }
     if (filtersList[key].length > 0)
       return getFilterTerm(null, filtersList[key])

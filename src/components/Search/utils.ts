@@ -10,6 +10,7 @@ import {
 import queryString from 'query-string'
 import { CancelToken } from 'axios'
 import {
+  FILTER_VALUES,
   FilterByAccessOptions,
   FilterByTypeOptions,
   SortDirectionOptions,
@@ -52,11 +53,34 @@ export function getSearchQuery(
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
   const boolFilter: BoolFilter<string>[] = []
-  let searchTerm = text || ''
+  const filterList = [filterSet, gaiax, custom, accessType, serviceType]
+  const checkMustExists = () => {
+    return filterList.some((filter) => {
+      let isValueMustExist =
+        filter?.includes(FILTER_VALUES.MUST_EXIST) ||
+        filter?.includes(FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY)
+      const isArray = typeof filter !== 'string'
+      if (isArray) {
+        isValueMustExist = filter?.some((term) => {
+          console.log(term)
+          return (
+            term.includes(FILTER_VALUES.MUST_EXIST) ||
+            term.includes(FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY)
+          )
+        })
+      }
+
+      if (isValueMustExist) {
+        console.log(filter, 'true')
+        return true
+      }
+      console.log(filter, 'false')
+      return false
+    })
+  }
+  const searchTerm = text || ''
   let nestedQuery
-  if (tags) {
-    filters.push(getFilterTerm('metadata.tags.keyword', tags))
-  } else if (!gaiax) {
+  const getSearchTerm = (searchTerm: string) => {
     searchTerm = searchTerm.trim()
     const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
     const noSpaceSearchTerm = searchTerm.split(' ').join('').trim()
@@ -121,16 +145,42 @@ export function getSearchQuery(
         }
       ]
     }
+  }
+  const getMustExistFilter = (filter: string) => {
+    if (
+      filter.includes(FILTER_VALUES.MUST_EXIST) ||
+      filter.includes(FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY)
+    ) {
+      const filters = getFilter(filter)
+      filters.forEach((term) => {
+        const query = {
+          bool: {
+            ...term
+          }
+        }
+        boolFilter.push(query)
+      })
+    } else {
+      getSearchTerm(searchTerm)
+    }
+  }
+  if (tags) {
+    filters.push(getFilterTerm('metadata.tags.keyword', tags))
+  } else if (!checkMustExists()) {
+    getSearchTerm(searchTerm)
   } else {
-    const filter = getFilter(gaiax)
-    filter.forEach((term) => {
-      const query = {
-        bool: {
-          ...term
+    for (const filters of filterList) {
+      if (typeof filters !== 'undefined') {
+        const isArray = typeof filters !== 'string'
+        if (isArray) {
+          for (const filter of filters) {
+            getMustExistFilter(filter)
+          }
+        } else {
+          getMustExistFilter(filters)
         }
       }
-      boolFilter.push(query)
-    })
+    }
   }
 
   const filtersList = getInitialFilters(
