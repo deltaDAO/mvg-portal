@@ -80,15 +80,16 @@ export default function AssetTeaser({
           </div>
         )}
         <div className={styles.price}>
-          {isUnsupportedPricing ? (
-            <strong>No pricing schema available</strong>
-          ) : (
-            <Price
-              price={price || { value: parseFloat(accessDetails.price) }}
-              assetId={asset.id}
-              size="small"
-            />
-          )}
+          {accessDetails &&
+            (isUnsupportedPricing ? (
+              <strong>No pricing schema available</strong>
+            ) : (
+              <Price
+                price={price || { value: parseFloat(accessDetails.price) }}
+                assetId={asset.id}
+                size="small"
+              />
+            ))}
         </div>
         <footer className={styles.footer}>
           <div className={styles.stats}>
