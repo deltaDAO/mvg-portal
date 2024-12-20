@@ -2,7 +2,6 @@ import { Event, ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/abstract-provider'
 import { InvoiceData } from '../../@types/invoice/InvoiceData'
 import ERC20TemplateEnterprise from '@oceanprotocol/contracts/artifacts/contracts/templates/ERC20TemplateEnterprise.sol/ERC20TemplateEnterprise.json'
-import DispenserAbi from '@oceanprotocol/contracts/artifacts/contracts/pools/dispenser/Dispenser.sol/Dispenser.json'
 import FixedRateExchange from '@oceanprotocol/contracts/artifacts/contracts/pools/fixedRate/FixedRateExchange.sol/FixedRateExchange.json'
 import {
   consumeMarketFixedSwapFee,
@@ -30,7 +29,7 @@ function createInvoices(
     })
 
     const indexSeller = events.findIndex(
-      (item) => item.event === 'TokenDispensed'
+      (item) => item.event === 'TokenCollected'
     )
     const indexOrder = events.findIndex((item) => item.event === 'OrderStarted')
     const indexProvider = events.findIndex(
@@ -39,8 +38,9 @@ function createInvoices(
     let seller = 'Seller Name'
     if (indexSeller >= 0) {
       seller = events[indexSeller].args.to
+    } else {
+      seller = events[indexProvider].args.providerFeeAddress
     }
-    console.log('here__', events, indexOrder, indexProvider, indexSeller)
     const invoiceData: InvoiceData = {
       invoice_id: '1',
       invoice_date: formattedInvoiceDate,
@@ -208,7 +208,6 @@ function createInvoices(
         taxID: '123-45-6789'
       }
     }
-    console.log('invoiceData', invoiceData)
     return [invoiceData, invoiceData2, invoiceData3, invoiceData4]
   } catch (error) {
     console.error('Error in create invoice:', error)
@@ -631,7 +630,6 @@ export async function decodeBuy(
   try {
     const transaction = await provider.getTransaction(txHash)
     const contractAddress = transaction.to // Extract contract address from transaction details
-    console.log('contractAddress:', contractAddress)
     const txReceipt = await provider.getTransactionReceipt(txHash)
     const gasPriceInGwei = Number(transaction.gasPrice) / 1e9
     const gasUsed = Number(txReceipt.gasUsed)
@@ -642,7 +640,7 @@ export async function decodeBuy(
     const invoiceDate = new Date(timestamp * 1000)
     const contract = new ethers.Contract(
       contractAddress,
-      DispenserAbi.abi,
+      ERC20TemplateEnterprise.abi,
       provider
     )
     const events = await contract.queryFilter(
@@ -650,7 +648,6 @@ export async function decodeBuy(
       transaction.blockNumber,
       transaction.blockNumber
     )
-    console.log('events here haha', events)
     const decodedEvents = []
     for (const event of events) {
       decodedEvents.push({
@@ -659,7 +656,6 @@ export async function decodeBuy(
       })
     }
 
-    console.log('decoded:', decodedEvents)
     const { fixedRateExchangeAddress } = getOceanConfig(chainId)
     const contractFixedRateExchange = new ethers.Contract(
       fixedRateExchangeAddress,
@@ -667,11 +663,10 @@ export async function decodeBuy(
       provider
     )
     const eventsFixedRate = await contractFixedRateExchange.queryFilter(
-      'TokenCollected',
-      transaction.blockNumber,
-      transaction.blockNumber
+      '*',
+      transaction.blockNumber - 10,
+      transaction.blockNumber + 10
     )
-    console.log('eventsFixed:', eventsFixedRate)
     if (eventsFixedRate.length > 0) {
       decodedEvents.push({
         event: eventsFixedRate[0].event,
@@ -712,7 +707,7 @@ export async function decodeBuyDataSet(
       ERC20TemplateEnterprise.abi,
       provider
     )
-    const events = await contract.queryFilter('Transfer')
+    const events = await contract.queryFilter('OrderStarted')
     const filteredEvents = events.filter(
       (event) => event.args[1] === fromAddress
     )

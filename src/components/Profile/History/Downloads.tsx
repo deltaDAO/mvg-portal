@@ -8,6 +8,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import Button from '@components/@shared/atoms/Button'
 import { getPdf } from '@utils/invoice/createInvoice'
 import { decodeBuyDataSet } from '../../../@types/invoice/buyInvoice'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function ComputeDownloads({
   accountId
@@ -29,21 +30,19 @@ export default function ComputeDownloads({
       setLoadingInvoice(row.asset.id)
       let pdfUrlsResponse: Blob[]
       if (!jsonInvoices[row.asset.id]) {
+        const config = getOceanConfig(row.asset?.chainId)
         const response = await decodeBuyDataSet(
           row.asset.id,
           row.asset.datatokens[0].address,
           row.asset.chainId,
-          row.asset.stats.price.tokenSymbol,
-          row.asset.stats.price.tokenAddress,
+          row.asset.stats.price.tokenSymbol || 'OCEAN',
+          row.asset.stats.price.tokenAddress || config.oceanTokenAddress,
           row.asset.stats.price.value,
           accountId
         )
-        console.log('response:', response)
         pdfUrlsResponse = await getPdf(response)
-        console.log('pdfUrlsResponse', pdfUrlsResponse)
       } else {
         pdfUrlsResponse = await getPdf(jsonInvoices[row.asset.id])
-        console.log('pdfUrlsResponse', pdfUrlsResponse)
       }
       setPdfUrls({ ...pdfUrls, [row.asset.id]: pdfUrlsResponse })
     } catch (error) {
@@ -58,16 +57,16 @@ export default function ComputeDownloads({
     try {
       setLoadingInvoiceJson(row.asset.id)
       if (!jsonInvoices[row.asset.id]) {
+        const config = getOceanConfig(row.asset?.chainId)
         const response = await decodeBuyDataSet(
           row.asset.id,
           row.asset.datatokens[0].address,
           row.asset.chainId,
-          row.asset.stats.price.tokenSymbol,
-          row.asset.stats.price.tokenAddress,
+          row.asset.stats.price.tokenSymbol || 'OCEAN',
+          row.asset.stats.price.tokenAddress || config.oceanTokenAddress,
           row.asset.stats.price.value,
           accountId
         )
-        console.log('response:', response)
         setJsonInvoices({ ...jsonInvoices, [row.asset.id]: response })
       }
     } catch (error) {
