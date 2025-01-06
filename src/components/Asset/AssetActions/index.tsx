@@ -164,17 +164,6 @@ export default function AssetActions({
       accessDetails.baseToken?.symbol
     )
 
-    console.log(
-      'baseTokenBalance',
-      baseTokenBalance,
-      accessDetails.price,
-      compareAsBN(baseTokenBalance, `${accessDetails.price}`),
-      Number(dtBalance) >= 1,
-      dtBalance,
-      compareAsBN(baseTokenBalance, `${accessDetails.price}`) ||
-        Number(dtBalance) >= 1
-    )
-
     setIsBalanceSufficient(
       compareAsBN(baseTokenBalance, `${accessDetails.price}`) ||
         Number(dtBalance) >= 1
