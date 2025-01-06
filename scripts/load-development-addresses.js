@@ -59,5 +59,9 @@ updateEnvFile([
   { key: 'NEXT_PUBLIC_DISPENSER_ADDRESS', value: addresses.Dispenser },
   { key: 'NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS', value: addresses.Ocean },
   { key: 'NEXT_PUBLIC_ROUTER_FACTORY_ADDRESS', value: addresses.Router },
+  {
+    key: 'NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS',
+    value: addresses.AccessListFactory
+  },
   { key: 'NEXT_PUBLIC_MARKET_DEVELOPMENT', value: true }
 ])
