@@ -163,28 +163,31 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 1,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0x403f7f69caa8c0db7cd2f14d8f90b488ec7e70e83ff1c30d7bbdcd9d3605c529',
-      price: '100',
-      isPurchasable: true,
-      baseToken: {
-        address: '0x282d8efce846a88b159800bd4130ad77443fa1a1',
-        name: 'Ocean Token (PoS)',
-        symbol: 'mOCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0xe5e5056a988eae27f1624cf1212895f5b01d487b',
-        name: 'Limpid Ray Token',
-        symbol: 'LIMRAY-96'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 1,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0x403f7f69caa8c0db7cd2f14d8f90b488ec7e70e83ff1c30d7bbdcd9d3605c529',
+        price: '100',
+        isPurchasable: true,
+        baseToken: {
+          address: '0x282d8efce846a88b159800bd4130ad77443fa1a1',
+          name: 'Ocean Token (PoS)',
+          symbol: 'mOCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0xe5e5056a988eae27f1624cf1212895f5b01d487b',
+          name: 'Limpid Ray Token',
+          symbol: 'LIMRAY-96'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -257,28 +260,31 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 2,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0x6f09253bd70ed45e9e5d807e80319b71c0f444a27360cf51be749c520d0bbc9b',
-      price: '7',
-      isPurchasable: true,
-      baseToken: {
-        address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0x57201e593912f4abbb62feaa4479598c3ad0010b',
-        name: 'Delighted Anchovy Token',
-        symbol: 'DELANC-21'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 2,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0x6f09253bd70ed45e9e5d807e80319b71c0f444a27360cf51be749c520d0bbc9b',
+        price: '7',
+        isPurchasable: true,
+        baseToken: {
+          address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0x57201e593912f4abbb62feaa4479598c3ad0010b',
+          name: 'Delighted Anchovy Token',
+          symbol: 'DELANC-21'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -351,28 +357,31 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 1,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0xcaf28ecd5a5a3674f7f7b2d61d9546fa50d16607d55ba7a8f9a4ac818f35f311',
-      price: '10',
-      isPurchasable: true,
-      baseToken: {
-        address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0xc48934b7ffe9a061039e8a2a0dae303d2b1b68af',
-        name: 'Arcadian Shell Token',
-        symbol: 'ARCSHE-59'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 1,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0xcaf28ecd5a5a3674f7f7b2d61d9546fa50d16607d55ba7a8f9a4ac818f35f311',
+        price: '10',
+        isPurchasable: true,
+        baseToken: {
+          address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0xc48934b7ffe9a061039e8a2a0dae303d2b1b68af',
+          name: 'Arcadian Shell Token',
+          symbol: 'ARCSHE-59'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -451,53 +460,59 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 1,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0x938802c3fe89c54a0e6b1cd47fa5263817282185a2e0f78fa2957ec1aff970fc',
-      price: '6',
-      isPurchasable: true,
-      baseToken: {
-        address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0x1fc8db81e8b68eb1891f83e742377827b56a0663',
-        name: 'Querulous Plankton Token',
-        symbol: 'QUEPLA-8'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 1,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0x938802c3fe89c54a0e6b1cd47fa5263817282185a2e0f78fa2957ec1aff970fc',
+        price: '6',
+        isPurchasable: true,
+        baseToken: {
+          address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0x1fc8db81e8b68eb1891f83e742377827b56a0663',
+          name: 'Querulous Plankton Token',
+          symbol: 'QUEPLA-8'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
-    accessDetails: {
-      templateId: 1,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0xb9060a712a494f584b072b0753dc275e1c531178510679ac085053ee38b5f742',
-      price: '5',
-      isPurchasable: true,
-      baseToken: {
-        address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0x0a9cfaff200efb1d6f125e342dfc78fb3edd28a4',
-        name: 'Inspired Ling Token',
-        symbol: 'INSLIN-54'
-      },
-      isOwned: false,
-      validOrderTx: null
-    },
+    accessDetails: [
+      {
+        templateId: 1,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0xb9060a712a494f584b072b0753dc275e1c531178510679ac085053ee38b5f742',
+        price: '5',
+        isPurchasable: true,
+        baseToken: {
+          address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0x0a9cfaff200efb1d6f125e342dfc78fb3edd28a4',
+          name: 'Inspired Ling Token',
+          symbol: 'INSLIN-54'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ],
     chainId: 5,
     datatokens: [
       {
@@ -669,28 +684,31 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 1,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0x1c4f156e06d1b9eeb5aa367869c9d14386918aa12ef4969c3bf242ef6bcba7c8',
-      price: '5',
-      isPurchasable: true,
-      baseToken: {
-        address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0x7626de49a774c18e0f7fc658821a87e103f80fab',
-        name: 'Lovely Prawn Token',
-        symbol: 'LOVPRA-51'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 1,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0x1c4f156e06d1b9eeb5aa367869c9d14386918aa12ef4969c3bf242ef6bcba7c8',
+        price: '5',
+        isPurchasable: true,
+        baseToken: {
+          address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0x7626de49a774c18e0f7fc658821a87e103f80fab',
+          name: 'Lovely Prawn Token',
+          symbol: 'LOVPRA-51'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -763,28 +781,31 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 1,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0xe6665bd4541c6584a3e31dbf73a74e91da6c791954ea3d61905e50b6e00e0b4e',
-      price: '5',
-      isPurchasable: true,
-      baseToken: {
-        address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0x40c929b5265f13e668a3e81c4289a279bd2f7452',
-        name: 'Fecund Anchovy Token',
-        symbol: 'FECANC-54'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 1,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0xe6665bd4541c6584a3e31dbf73a74e91da6c791954ea3d61905e50b6e00e0b4e',
+        price: '5',
+        isPurchasable: true,
+        baseToken: {
+          address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0x40c929b5265f13e668a3e81c4289a279bd2f7452',
+          name: 'Fecund Anchovy Token',
+          symbol: 'FECANC-54'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -856,22 +877,25 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 1,
-      publisherMarketOrderFee: '0',
-      type: 'free',
-      addressOrId: '0x0a81f1c69e5428067e6124817c7affe8bc0adf9f',
-      price: '0',
-      isPurchasable: true,
-      datatoken: {
-        address: '0x0a81f1c69e5428067e6124817c7affe8bc0adf9f',
-        name: 'Fabulous Walrus Token',
-        symbol: 'FABWAL-60'
-      },
-      baseToken: null,
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 1,
+        publisherMarketOrderFee: '0',
+        type: 'free',
+        addressOrId: '0x0a81f1c69e5428067e6124817c7affe8bc0adf9f',
+        price: '0',
+        isPurchasable: true,
+        datatoken: {
+          address: '0x0a81f1c69e5428067e6124817c7affe8bc0adf9f',
+          name: 'Fabulous Walrus Token',
+          symbol: 'FABWAL-60'
+        },
+        baseToken: null,
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -941,28 +965,31 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 1,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0xdbfa14546d4f2caa1e0d59cbf8ae775c65b0d34369f8c62990c0b0d0bc73ff10',
-      price: '2',
-      isPurchasable: true,
-      baseToken: {
-        address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0xbadac447bf4868aeca6a9c7448ddadfe6632509a',
-        name: 'Tactful Shark Token',
-        symbol: 'TACSHA-14'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 1,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0xdbfa14546d4f2caa1e0d59cbf8ae775c65b0d34369f8c62990c0b0d0bc73ff10',
+        price: '2',
+        isPurchasable: true,
+        baseToken: {
+          address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0xbadac447bf4868aeca6a9c7448ddadfe6632509a',
+          name: 'Tactful Shark Token',
+          symbol: 'TACSHA-14'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -1032,22 +1059,25 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 2,
-      publisherMarketOrderFee: '0',
-      type: 'free',
-      addressOrId: '0x772224c2c2bddb88a55b3905aaaf8c7188b02ce3',
-      price: '0',
-      isPurchasable: true,
-      datatoken: {
-        address: '0x772224c2c2bddb88a55b3905aaaf8c7188b02ce3',
-        name: 'Rebarbative Barnacle Token',
-        symbol: 'REBBAR-99'
-      },
-      baseToken: null,
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 2,
+        publisherMarketOrderFee: '0',
+        type: 'free',
+        addressOrId: '0x772224c2c2bddb88a55b3905aaaf8c7188b02ce3',
+        price: '0',
+        isPurchasable: true,
+        datatoken: {
+          address: '0x772224c2c2bddb88a55b3905aaaf8c7188b02ce3',
+          name: 'Rebarbative Barnacle Token',
+          symbol: 'REBBAR-99'
+        },
+        baseToken: null,
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -1117,22 +1147,25 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 2,
-      publisherMarketOrderFee: '0',
-      type: 'free',
-      addressOrId: '0x89a0170556bb80438081d69f43d8c07a90e9aa24',
-      price: '0',
-      isPurchasable: true,
-      datatoken: {
-        address: '0x89a0170556bb80438081d69f43d8c07a90e9aa24',
-        name: 'Invidious Octopus Token',
-        symbol: 'INVOCT-85'
-      },
-      baseToken: null,
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 2,
+        publisherMarketOrderFee: '0',
+        type: 'free',
+        addressOrId: '0x89a0170556bb80438081d69f43d8c07a90e9aa24',
+        price: '0',
+        isPurchasable: true,
+        datatoken: {
+          address: '0x89a0170556bb80438081d69f43d8c07a90e9aa24',
+          name: 'Invidious Octopus Token',
+          symbol: 'INVOCT-85'
+        },
+        baseToken: null,
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -1200,22 +1233,25 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 2,
-      publisherMarketOrderFee: '0',
-      type: 'free',
-      addressOrId: '0xad42c7afee47140b5cd87f05d5846c418145f43a',
-      price: '0',
-      isPurchasable: true,
-      datatoken: {
-        address: '0xad42c7afee47140b5cd87f05d5846c418145f43a',
-        name: 'Zealous Clam Token',
-        symbol: 'ZEACLA-28'
-      },
-      baseToken: null,
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 2,
+        publisherMarketOrderFee: '0',
+        type: 'free',
+        addressOrId: '0xad42c7afee47140b5cd87f05d5846c418145f43a',
+        price: '0',
+        isPurchasable: true,
+        datatoken: {
+          address: '0xad42c7afee47140b5cd87f05d5846c418145f43a',
+          name: 'Zealous Clam Token',
+          symbol: 'ZEACLA-28'
+        },
+        baseToken: null,
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -1359,28 +1395,31 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 2,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0xadd592e83c3830058bb3649e499b9066c681616ffe6ea12e28dc6adcc63dac16',
-      price: '1',
-      isPurchasable: true,
-      baseToken: {
-        address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0xf5dbd5a675248f92e3f37da98090144c1355abb5',
-        name: 'Feckless Orca Token',
-        symbol: 'FECORC-10'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 2,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0xadd592e83c3830058bb3649e499b9066c681616ffe6ea12e28dc6adcc63dac16',
+        price: '1',
+        isPurchasable: true,
+        baseToken: {
+          address: '0xcfdda22c9837ae76e0faa845354f33c62e03653a',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0xf5dbd5a675248f92e3f37da98090144c1355abb5',
+          name: 'Feckless Orca Token',
+          symbol: 'FECORC-10'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -1448,22 +1487,25 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 2,
-      publisherMarketOrderFee: '0',
-      type: 'free',
-      addressOrId: '0x23c1fd10dadcaf558fb7173b79cfd0d867568a3d',
-      price: '0',
-      isPurchasable: true,
-      datatoken: {
-        address: '0x23c1fd10dadcaf558fb7173b79cfd0d867568a3d',
-        name: 'Equanimous Barracuda Token',
-        symbol: 'EQUBAR-39'
-      },
-      baseToken: null,
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 2,
+        publisherMarketOrderFee: '0',
+        type: 'free',
+        addressOrId: '0x23c1fd10dadcaf558fb7173b79cfd0d867568a3d',
+        price: '0',
+        isPurchasable: true,
+        datatoken: {
+          address: '0x23c1fd10dadcaf558fb7173b79cfd0d867568a3d',
+          name: 'Equanimous Barracuda Token',
+          symbol: 'EQUBAR-39'
+        },
+        baseToken: null,
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   },
   {
     '@context': ['https://w3id.org/did/v1'],
@@ -1545,27 +1587,30 @@ export const assets: AssetExtended[] = [
       }
     },
     version: '4.1.0',
-    accessDetails: {
-      templateId: 2,
-      publisherMarketOrderFee: '0',
-      type: 'fixed',
-      addressOrId:
-        '0xfcf20144a14c7b2f51319d938436e34041acbd65e1e29319549ed7923b9fd86e',
-      price: '1000000',
-      isPurchasable: true,
-      baseToken: {
-        address: '0x967da4048cd07ab37855c090aaf366e4ce1b9f48',
-        name: 'Ocean Token',
-        symbol: 'OCEAN',
-        decimals: 18
-      },
-      datatoken: {
-        address: '0x98d87b273ed411a5940a0c4a3717d58c81917eb5',
-        name: 'Egregious Anchovy Token',
-        symbol: 'EGRANC-29'
-      },
-      isOwned: false,
-      validOrderTx: null
-    }
+    accessDetails: [
+      {
+        templateId: 2,
+        publisherMarketOrderFee: '0',
+        type: 'fixed',
+        addressOrId:
+          '0xfcf20144a14c7b2f51319d938436e34041acbd65e1e29319549ed7923b9fd86e',
+        price: '1000000',
+        isPurchasable: true,
+        baseToken: {
+          address: '0x967da4048cd07ab37855c090aaf366e4ce1b9f48',
+          name: 'Ocean Token',
+          symbol: 'OCEAN',
+          decimals: 18
+        },
+        datatoken: {
+          address: '0x98d87b273ed411a5940a0c4a3717d58c81917eb5',
+          name: 'Egregious Anchovy Token',
+          symbol: 'EGRANC-29'
+        },
+        isOwned: false,
+        validOrderTx: null,
+        paymentCollector: ''
+      }
+    ]
   }
 ]

@@ -63,30 +63,29 @@ export async function getOrderPriceAndFees(
     // Customize error message for accountId non included in allow list
     if (
       // TODO: verify if the error code is correctly resolved by the provider
-      message.includes(
-        'ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST' || 'denied with code: 3'
-      )
+      message.includes('ConsumableCodes.CREDENTIAL_NOT_IN_ALLOW_LIST') ||
+      message.includes('denied with code: 3')
     ) {
-      accountId !== ZERO_ADDRESS &&
+      if (accountId !== ZERO_ADDRESS) {
         toast.error(
           `Consumer address not found in allow list for service ${asset.id}. Access has been denied.`
         )
+      }
       return
     }
     // Customize error message for accountId included in deny list
     if (
-      message.includes(
-        // TODO: verify if the error code is correctly resolved by the provider
-        'ConsumableCodes.CREDENTIAL_IN_DENY_LIST' || 'denied with code: 4'
-      )
+      // TODO: verify if the error code is correctly resolved by the provider
+      message.includes('ConsumableCodes.CREDENTIAL_IN_DENY_LIST') ||
+      message.includes('denied with code: 4')
     ) {
-      accountId !== ZERO_ADDRESS &&
+      if (accountId !== ZERO_ADDRESS) {
         toast.error(
           `Consumer address found in deny list for service ${asset.id}. Access has been denied.`
         )
+      }
       return
     }
-
     toast.error(message)
   }
   orderPriceAndFee.providerFee = providerFees || initializeData.providerFee
@@ -94,19 +93,25 @@ export async function getOrderPriceAndFees(
   // fetch price and swap fees
   if (accessDetails.type === 'fixed') {
     const fixed = await getFixedBuyPrice(accessDetails, asset.chainId, signer)
-    orderPriceAndFee.price = fixed.baseTokenAmount
+    orderPriceAndFee.price = accessDetails.price
     orderPriceAndFee.opcFee = fixed.oceanFeeAmount
     orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount
     orderPriceAndFee.consumeMarketFixedSwapFee = fixed.consumeMarketFeeAmount
   }
 
-  // calculate full price, we assume that all the values are in ocean, otherwise this will be incorrect
-  // TODO show decompose price?
-  orderPriceAndFee.price = new Decimal(+orderPriceAndFee.price || 0)
-    .add(new Decimal(+orderPriceAndFee?.consumeMarketOrderFee || 0))
-    .add(new Decimal(+orderPriceAndFee?.publisherMarketOrderFee || 0))
-    .toString()
+  const price = new Decimal(+accessDetails.price || 0)
+  const consumeMarketFeePercentage =
+    +orderPriceAndFee?.consumeMarketOrderFee || 0
+  const publisherMarketFeePercentage =
+    +orderPriceAndFee?.publisherMarketOrderFee || 0
 
+  // Calculate percentage-based fees
+  const consumeMarketFee = price.mul(consumeMarketFeePercentage).div(100)
+  const publisherMarketFee = price.mul(publisherMarketFeePercentage).div(100)
+
+  // Calculate total
+  const result = price.add(consumeMarketFee).add(publisherMarketFee).toString()
+  orderPriceAndFee.price = result
   return orderPriceAndFee
 }
 

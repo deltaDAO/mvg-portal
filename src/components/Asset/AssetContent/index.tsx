@@ -38,21 +38,15 @@ export default function AssetContent({
   const [jsonInvoice, setJsonInvoice] = useState(null)
 
   async function handleGeneratePdf(id: string, tx: string) {
-    console.log('id:', id)
-    console.log('event:', tx)
-    console.log('asset:', asset)
     try {
       setLoadingInvoice(true)
       let pdfUrlResponse: Blob[]
       if (!jsonInvoice) {
         const response = await decodePublish(id, tx, asset.chainId)
-        console.log('response:', response)
         setJsonInvoice(jsonInvoice)
         pdfUrlResponse = await getPdf([response])
-        console.log('pdfUrl:', pdfUrlResponse)
       } else {
         pdfUrlResponse = await getPdf([jsonInvoice])
-        console.log('pdfUrl:', pdfUrlResponse)
       }
       if (pdfUrlResponse.length > 0) {
         setPdfUrl(pdfUrlResponse[0])
@@ -70,7 +64,6 @@ export default function AssetContent({
       setLoadingInvoiceJson(true)
       if (!jsonInvoice) {
         const response = await decodePublish(id, tx, asset.chainId)
-        console.log('response:', response)
         setJsonInvoice(response)
       }
     } catch (error) {

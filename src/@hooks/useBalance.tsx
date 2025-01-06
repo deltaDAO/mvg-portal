@@ -35,12 +35,10 @@ function useBalance(): BalanceProviderValue {
       !web3provider
     )
       return
-
     try {
       const userBalance = balanceNativeToken?.formatted
       const key = balanceNativeToken?.symbol.toLowerCase()
       const newBalance: UserBalance = { [key]: userBalance }
-
       if (approvedBaseTokens?.length > 0) {
         await Promise.all(
           approvedBaseTokens.map(async (token) => {

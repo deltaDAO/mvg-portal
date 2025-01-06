@@ -17,7 +17,7 @@ import NetworkName from '@shared/NetworkName'
 import HistoryTable from '@components/@shared/atoms/Table/HistoryTable'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 
-const columns: TableOceanColumn<Asset>[] = [
+const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Dataset',
     selector: (asset) => <AssetTitle asset={asset} />
@@ -48,7 +48,9 @@ const columns: TableOceanColumn<Asset>[] = [
     selector: (asset) => {
       const price =
         asset.stats?.price?.value ??
-        (asset.accessDetails?.price ? parseFloat(asset.accessDetails.price) : 0)
+        (asset.accessDetails[0]?.price
+          ? parseFloat(asset.accessDetails[0]?.price)
+          : 0)
       const tokenSymbol = asset.stats?.price?.tokenSymbol || 'OCEAN'
       return `${price} ${tokenSymbol}`
     }

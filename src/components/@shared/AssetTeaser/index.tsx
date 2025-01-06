@@ -10,7 +10,10 @@ import styles from './index.module.css'
 import { getServiceByName } from '@utils/ddo'
 import { useUserPreferences } from '@context/UserPreferences'
 import { formatNumber } from '@utils/numbers'
-import { getAccessDetails } from '@utils/accessDetailsAndPricing'
+import {
+  getAccessDetails,
+  getOrderPriceAndFees
+} from '@utils/accessDetailsAndPricing'
 
 export declare type AssetTeaserProps = {
   asset: AssetExtended
@@ -31,6 +34,7 @@ export default function AssetTeaser({
   const owner = asset.nft?.owner
   const { orders, allocated, price } = asset.stats || {}
   const [accessDetails, setAccessDetails] = useState(null)
+  const [orderPriceAndFees, setOrderPriceAndFees] = useState(null)
   const [isUnsupportedPricing, setIsUnsupportedPricing] = useState(false)
 
   const { locale } = useUserPreferences()
@@ -45,6 +49,21 @@ export default function AssetTeaser({
 
     fetchAccessDetails()
   }, [asset.chainId, asset.services])
+
+  useEffect(() => {
+    async function fetchOrderPriceAndFees() {
+      if (asset.services?.length > 0) {
+        const orderPrice = await getOrderPriceAndFees(
+          asset,
+          asset.services[0],
+          accessDetails,
+          owner
+        )
+        setOrderPriceAndFees(orderPrice)
+      }
+    }
+    if (accessDetails) fetchOrderPriceAndFees()
+  }, [asset.chainId, asset.services, accessDetails])
 
   useEffect(() => {
     const unsupported =
@@ -86,7 +105,7 @@ export default function AssetTeaser({
             ) : (
               <Price
                 price={price || { value: parseFloat(accessDetails.price) }}
-                assetId={asset.id}
+                orderPriceAndFees={orderPriceAndFees}
                 size="small"
               />
             ))}

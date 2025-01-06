@@ -194,7 +194,8 @@ export function transformQueryResult(
     aggregations: {}
   }
   result.results =
-    queryResult.hits?.hits.map((hit: Asset) => hit._source) || queryResult
+    queryResult.hits?.hits.map((hit: Asset) => (hit as any)._source) ||
+    queryResult
 
   result.totalResults =
     queryResult.hits?.total?.value || queryResult.length || 0

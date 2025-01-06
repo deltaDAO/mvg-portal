@@ -100,12 +100,9 @@ export default function ComputeJobs({
           ownerAlgo,
           ownerAsset
         )
-        console.log('response:', response)
         pdfUrlsResponse = await getPdf(response)
-        console.log('pdfUrls,', pdfUrlsResponse)
       } else {
         pdfUrlsResponse = await getPdf(jsonInvoices[row.agreementId])
-        console.log('pdfUrlsResponse', pdfUrlsResponse)
       }
 
       setPdfUrls({ ...pdfUrls, [row.agreementId]: pdfUrlsResponse })
@@ -142,7 +139,6 @@ export default function ComputeJobs({
           ownerAlgo,
           ownerAsset
         )
-        console.log('response:', response)
         setJsonInvoices({ ...jsonInvoices, [row.agreementId]: response })
       }
     } catch (error) {

@@ -110,9 +110,17 @@ function AssetProvider({
       }
       if (asset) {
         setError(undefined)
+        if (!asset?.chainId || !asset?.services?.length) return
+
+        const accessDetails = await Promise.all(
+          asset.services.map((service: Service) =>
+            getAccessDetails(asset.chainId, service)
+          )
+        )
         setAsset((prevState) => ({
           ...prevState,
-          ...asset
+          ...asset,
+          accessDetails
         }))
         setTitle(asset.metadata?.name)
         setOwner(asset.nft?.owner)

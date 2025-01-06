@@ -121,7 +121,7 @@ function useFactoryRouter() {
     }
 
     if (factoryRouter) {
-      fetchOpcData(chainIds)
+      return fetchOpcData(chainIds)
     }
   }
 
