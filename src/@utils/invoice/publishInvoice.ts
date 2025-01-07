@@ -31,7 +31,7 @@ function createInvoicePublish(
     items: [
       {
         name: `Publish fee for ${invoiceId}`,
-        price: Number(event.args.PublishMarketFeeAmount)
+        price: Number(event.args.PublishMarketFeeAmount) / 10 ** 18
       }
     ],
     tax: transactionFee,
@@ -71,9 +71,7 @@ export async function decodePublish(
     const { nftFactoryAddress, nodeUri } = getOceanConfig(chainId)
     const provider = new ethers.providers.JsonRpcProvider(nodeUri)
     const transactionPublish = await provider.getTransaction(txHash)
-    console.log('transactionPu:', transactionPublish)
     const txReceipt = await provider.getTransactionReceipt(txHash)
-    console.log('txReceipt:', txReceipt)
 
     const gasPriceInGwei = Number(transactionPublish.gasPrice) / 1e9
     const transactionFeeWei = (gasPriceInGwei * Number(txReceipt.gasUsed)) / 1e9
@@ -92,7 +90,6 @@ export async function decodePublish(
       transactionPublish.blockNumber - 10, // fromBlockOrBlockhash
       transactionPublish.blockNumber // toBlock
     )
-    console.log('eventInstance:', eventInstance)
     const filteredEvents = eventInstance.filter(
       (event) => event.args.instance === transactionPublish.to
     )

@@ -19,7 +19,7 @@ async function emptySearch() {
   const searchParams = new URLSearchParams(window?.location.href)
   const text = searchParams.get('text')
 
-  if (text !== ('' || undefined || null)) {
+  if (text !== '' && text !== undefined && text !== null) {
     await addExistingParamsToUrl(location, ['text', 'owner', 'tags'])
   }
 }
@@ -61,9 +61,7 @@ export default function SearchBar({
     }
   }, [isSearchBarVisible, homeSearchBarFocus])
 
-  async function startSearch(e: FormEvent<HTMLButtonElement>) {
-    e.preventDefault()
-
+  async function startSearch() {
     if (value === '') setValue(' ')
 
     const urlEncodedValue = encodeURIComponent(value)
@@ -82,13 +80,13 @@ export default function SearchBar({
 
   async function handleKeyPress(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
-      await startSearch(e)
+      await startSearch()
     }
   }
 
   async function handleButtonClick(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
-    await startSearch(e)
+    await startSearch()
   }
 
   const springStile = useSpring({

@@ -125,12 +125,18 @@ export async function order(
             config.fixedRateExchangeAddress,
             signer
           )
+          const consumeMarketFee = (
+            (parseFloat(orderPriceAndFees.price) *
+              parseFloat(consumeMarketFixedSwapFee)) /
+            100
+          ).toFixed(2)
+
           const freTx = await fre.buyDatatokens(
             accessDetails.addressOrId,
             '1',
             orderPriceAndFees.price,
             marketFeeAddress,
-            consumeMarketFixedSwapFee
+            '0'
           )
           const buyDtTx = await freTx.wait()
         }

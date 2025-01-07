@@ -260,6 +260,7 @@ export async function getComputeJobs(
   cancelToken?: CancelToken
 ): Promise<ComputeResults> {
   if (!accountId) return
+  if (!service) return
   const datatokenAddressList = [service.datatokenAddress]
   const computeResult: ComputeResults = {
     computeJobs: [],

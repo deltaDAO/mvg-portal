@@ -20,5 +20,6 @@ module.exports = {
       title: 'Finance, Business Analytics, and more',
       assets: []
     }
-  ]
+  ],
+  verifiedWallets: {}
 }

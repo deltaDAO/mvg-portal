@@ -93,6 +93,7 @@ export default function HistoryPage({
           chainIds,
           accountId,
           null,
+          null, // TODO whitch service?
           newCancelToken()
         )
         setJobs(computeJobs.computeJobs)

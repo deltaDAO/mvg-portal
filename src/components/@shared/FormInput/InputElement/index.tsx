@@ -41,7 +41,11 @@ const DefaultInput = forwardRef(
       ref={ref}
       className={cx({ input: true, [size]: size, [className]: className })}
       id={props.name}
-      onWheel={(e) => props.type === 'number' && e.target.blur()}
+      onWheel={(e) => {
+        if (props.type === 'number') {
+          ;(e.target as HTMLInputElement).blur()
+        }
+      }}
       {...props}
     />
   )

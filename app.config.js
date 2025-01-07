@@ -81,5 +81,6 @@ module.exports = {
     'https://dockerhub-proxy.oceanprotocol.com',
 
   // Display alert banner for the developer preview deployment
-  showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false'
+  showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false',
+  oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
 }
