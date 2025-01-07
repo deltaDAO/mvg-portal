@@ -512,7 +512,6 @@ export async function verifyRawServiceCredential(
           (credential) =>
             credential?.credentialSubject?.type === 'gx:ServiceOffering'
         )
-      console.log('serviceOfferings', serviceOfferings)
       if (serviceOfferings.length === 1) {
         return {
           verified: true,
@@ -527,14 +526,12 @@ export async function verifyRawServiceCredential(
           .filter((service) => service?.credentialSubject?.['gx:dependsOn'])
           .flatMap((service) => service?.credentialSubject?.['gx:dependsOn'])
           .flatMap((dependsOn) => dependsOn?.id)
-        console.log('dependsOnIds', dependsOnIds)
 
         const rootService = serviceOfferings
           .filter(
             (service) => !dependsOnIds.includes(service?.credentialSubject?.id)
           )
           .map((service) => service?.credentialSubject?.id)
-        console.log('rootService', rootService)
 
         if (rootService.length > 1) {
           return {
