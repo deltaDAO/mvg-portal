@@ -43,7 +43,7 @@ export interface AssetProviderValue {
   serviceCredentialIdMatch?: boolean
   serviceCredentialVersion: string
   verifiedServiceProviderName: string
-  isIdMatchVerifiable?: boolean | string
+  isIdMatchVerifiable?: string
   fetchAsset: (token?: CancelToken) => Promise<void>
 }
 
@@ -83,9 +83,7 @@ function AssetProvider({
     useState<string>()
   const [verifiedServiceProviderName, setVerifiedServiceProviderName] =
     useState<string>()
-  const [isIdMatchVerifiable, setisIdMatchVerifiable] = useState<
-    boolean | string
-  >()
+  const [isIdMatchVerifiable, setisIdMatchVerifiable] = useState<string>()
 
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()

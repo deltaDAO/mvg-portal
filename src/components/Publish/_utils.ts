@@ -485,7 +485,7 @@ export async function verifyRawServiceCredential(
   verified: boolean
   complianceApiVersion?: string
   idMatch?: boolean
-  isIdMatchVerifiable?: boolean | string
+  isIdMatchVerifiable?: string
   responseBody?: any
 }> {
   if (!rawServiceCredential) return { verified: false }
@@ -512,6 +512,7 @@ export async function verifyRawServiceCredential(
           (credential) =>
             credential?.credentialSubject?.type === 'gx:ServiceOffering'
         )
+      console.log('serviceOfferings', serviceOfferings)
       if (serviceOfferings.length === 1) {
         return {
           verified: true,
@@ -519,34 +520,41 @@ export async function verifyRawServiceCredential(
           idMatch:
             did &&
             did?.toLowerCase() ===
-              serviceOfferings?.credentialSubject?.id.toLowerCase(),
-          isIdMatchVerifiable: true
+              serviceOfferings?.credentialSubject?.id.toLowerCase()
         }
       } else {
         const dependsOnIds = serviceOfferings
           .filter((service) => service?.credentialSubject?.['gx:dependsOn'])
-          .flatMap(
-            (service) => service?.credentialSubject?.['gx:dependsOn']?.[0]?.id
-          )
+          .flatMap((service) => service?.credentialSubject?.['gx:dependsOn'])
+          .flatMap((dependsOn) => dependsOn?.id)
+        console.log('dependsOnIds', dependsOnIds)
+
         const rootService = serviceOfferings
           .filter(
             (service) => !dependsOnIds.includes(service?.credentialSubject?.id)
           )
-          .flatMap((service) => service?.credentialSubject?.id)
+          .map((service) => service?.credentialSubject?.id)
+        console.log('rootService', rootService)
 
-        if (rootService.length !== 1) {
+        if (rootService.length > 1) {
           return {
             verified: true,
             complianceApiVersion,
             idMatch: rootService?.includes(did || did.toLowerCase()),
             isIdMatchVerifiable: 'Too many root services'
           }
+        } else if (rootService.length === 0) {
+          return {
+            verified: true,
+            complianceApiVersion,
+            idMatch: false,
+            isIdMatchVerifiable: 'No root service found'
+          }
         } else {
           return {
             verified: true,
             complianceApiVersion,
-            idMatch: rootService?.includes(did || did.toLowerCase()),
-            isIdMatchVerifiable: true
+            idMatch: rootService?.includes(did || did.toLowerCase())
           }
         }
       }

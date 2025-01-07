@@ -16,7 +16,7 @@ export function Badge({
   className
 }: {
   isValid: boolean
-  isIdMatchVerifiable?: boolean | string
+  isIdMatchVerifiable?: string
   verifiedService: string
   className?: string
 }): ReactElement {
@@ -25,11 +25,11 @@ export function Badge({
       className={cx({
         mainLabel: true,
         isValid,
-        isWarning: isIdMatchVerifiable === false,
+        isWarning: isIdMatchVerifiable,
         [className]: className
       })}
     >
-      {typeof isIdMatchVerifiable === 'string' ? (
+      {isIdMatchVerifiable ? (
         <Tooltip content={isIdMatchVerifiable}>
           <div className={`${styles.mainLabel} ${styles.isWarning}`}>
             <span>{verifiedService}</span>
@@ -58,7 +58,7 @@ export default function VerifiedBadge({
   className?: string
   isValid?: boolean
   idMatch?: boolean
-  isIdMatchVerifiable?: boolean | string
+  isIdMatchVerifiable?: string
   isLoading?: boolean
   apiVersion?: string
   timestamp?: boolean
