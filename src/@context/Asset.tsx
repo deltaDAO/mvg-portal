@@ -83,7 +83,7 @@ function AssetProvider({
     useState<string>()
   const [verifiedServiceProviderName, setVerifiedServiceProviderName] =
     useState<string>()
-  const [isIdMatchVerifiable, setisIdMatchVerifiable] = useState<string>()
+  const [isIdMatchVerifiable, setIsIdMatchVerifiable] = useState<string>()
 
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
@@ -211,7 +211,7 @@ function AssetProvider({
         setServiceCredentialIdMatch(
           verified && !!serviceCredentialContent && idMatch
         )
-        setisIdMatchVerifiable(isIdMatchVerifiable)
+        setIsIdMatchVerifiable(isIdMatchVerifiable)
         setServiceCredentialVersion(complianceApiVersion)
         const serviceProviderName = getPublisherFromServiceCredential(
           serviceCredentialContent
