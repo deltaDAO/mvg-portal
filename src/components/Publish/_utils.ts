@@ -517,12 +517,11 @@ export async function verifyRawServiceCredential(
             credential?.credentialSubject?.type === 'gx:ServiceOffering'
         )
       if (serviceOfferings.length === 1) {
+        const credentialSubject = serviceOfferings?.credentialSubject
         return {
           ...verifiedAndComplianceApiVersion,
           idMatch:
-            did &&
-            did?.toLowerCase() ===
-              serviceOfferings?.credentialSubject?.id.toLowerCase()
+            did && did?.toLowerCase() === credentialSubject.id.toLowerCase()
         }
       } else {
         const dependsOnIds = serviceOfferings
