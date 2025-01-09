@@ -497,6 +497,10 @@ export async function verifyRawServiceCredential(
   // )
 
   const baseUrl = `${complianceUri}/v1/api/credential-offers`
+  const verifiedAndComplianceApiVersion = {
+    verified: true,
+    complianceApiVersion
+  }
 
   try {
     const response = await axios.post(baseUrl, parsedServiceCredential)
@@ -514,8 +518,7 @@ export async function verifyRawServiceCredential(
         )
       if (serviceOfferings.length === 1) {
         return {
-          verified: true,
-          complianceApiVersion,
+          ...verifiedAndComplianceApiVersion,
           idMatch:
             did &&
             did?.toLowerCase() ===
@@ -525,7 +528,7 @@ export async function verifyRawServiceCredential(
         const dependsOnIds = serviceOfferings
           .filter((service) => service?.credentialSubject?.['gx:dependsOn'])
           .flatMap((service) => service?.credentialSubject?.['gx:dependsOn'])
-          .flatMap((dependsOn) => dependsOn?.id)
+          .map((dependsOn) => dependsOn?.id)
 
         const rootService = serviceOfferings
           .filter(
@@ -535,22 +538,19 @@ export async function verifyRawServiceCredential(
 
         if (rootService.length > 1) {
           return {
-            verified: true,
-            complianceApiVersion,
+            ...verifiedAndComplianceApiVersion,
             idMatch: rootService?.includes(did || did.toLowerCase()),
             isIdMatchVerifiable: 'Too many root services'
           }
         } else if (rootService.length === 0) {
           return {
-            verified: true,
-            complianceApiVersion,
+            ...verifiedAndComplianceApiVersion,
             idMatch: false,
             isIdMatchVerifiable: 'No root service found'
           }
         } else {
           return {
-            verified: true,
-            complianceApiVersion,
+            ...verifiedAndComplianceApiVersion,
             idMatch: rootService?.includes(did || did.toLowerCase())
           }
         }
