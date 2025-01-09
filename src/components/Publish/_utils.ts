@@ -542,7 +542,7 @@ export async function verifyRawServiceCredential(
             idMatch: rootService?.includes(did || did.toLowerCase()),
             isIdMatchVerifiable: 'Too many root services'
           }
-        } else if (rootService.length === 0) {
+        } else if (rootService.length < 1) {
           return {
             ...verifiedAndComplianceApiVersion,
             idMatch: false,
