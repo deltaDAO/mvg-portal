@@ -194,8 +194,7 @@ export async function transformPublishFormToDdo(
     description,
     tags: transformTags(tags),
     author,
-    license:
-      values.metadata.license || 'https://market.oceanprotocol.com/terms',
+    license: values.metadata.license || 'https://portal.pontus-x.eu/terms',
     links: linksTransformed,
     additionalInformation: {
       termsAndConditions,
