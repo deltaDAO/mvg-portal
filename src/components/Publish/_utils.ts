@@ -484,6 +484,7 @@ export async function verifyRawServiceCredential(
   verified: boolean
   complianceApiVersion?: string
   idMatch?: boolean
+  isIdMatchVerifiable?: string
   responseBody?: any
 }> {
   if (!rawServiceCredential) return { verified: false }
@@ -495,6 +496,10 @@ export async function verifyRawServiceCredential(
   // )
 
   const baseUrl = `${complianceUri}/v1/api/credential-offers`
+  const verifiedAndComplianceApiVersion = {
+    verified: true,
+    complianceApiVersion
+  }
 
   try {
     const response = await axios.post(baseUrl, parsedServiceCredential)
@@ -505,16 +510,52 @@ export async function verifyRawServiceCredential(
       }
     }
     if (response?.status === 201) {
-      const serviceOffering = parsedServiceCredential.verifiableCredential.find(
-        (credential) =>
-          credential?.credentialSubject?.type === 'gx:ServiceOffering'
-      )
-      const credentialId = serviceOffering?.credentialSubject?.id
+      const serviceOfferings =
+        parsedServiceCredential.verifiableCredential.filter(
+          (credential) =>
+            credential?.credentialSubject?.type === 'gx:ServiceOffering'
+        )
+      if (serviceOfferings.length === 1) {
+        const credentialSubject = serviceOfferings?.credentialSubject
+        return {
+          ...verifiedAndComplianceApiVersion,
+          idMatch:
+            did && did?.toLowerCase() === credentialSubject.id.toLowerCase()
+        }
+      } else {
+        const dependsOnIds = serviceOfferings
+          .filter((service) => service?.credentialSubject?.['gx:dependsOn'])
+          .flatMap((service) => service?.credentialSubject?.['gx:dependsOn'])
+          .map((dependsOn) => dependsOn?.id)
 
-      return {
-        verified: true,
-        complianceApiVersion,
-        idMatch: did && did?.toLowerCase() === credentialId?.toLowerCase()
+        const rootService = serviceOfferings
+          .filter(
+            (service) => !dependsOnIds.includes(service?.credentialSubject?.id)
+          )
+          .map((service) => service?.credentialSubject?.id)
+
+        if (rootService.length > 1) {
+          return {
+            ...verifiedAndComplianceApiVersion,
+            idMatch:
+              rootService?.includes(did) ||
+              rootService?.includes(did.toLowerCase()),
+            isIdMatchVerifiable: 'Too many root services'
+          }
+        } else if (rootService.length < 1) {
+          return {
+            ...verifiedAndComplianceApiVersion,
+            idMatch: false,
+            isIdMatchVerifiable: 'No root service found'
+          }
+        } else {
+          return {
+            ...verifiedAndComplianceApiVersion,
+            idMatch:
+              rootService?.includes(did) ||
+              rootService?.includes(did.toLowerCase())
+          }
+        }
       }
     }
 
