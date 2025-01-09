@@ -538,7 +538,9 @@ export async function verifyRawServiceCredential(
         if (rootService.length > 1) {
           return {
             ...verifiedAndComplianceApiVersion,
-            idMatch: rootService?.includes(did || did.toLowerCase()),
+            idMatch:
+              rootService?.includes(did) ||
+              rootService?.includes(did.toLowerCase()),
             isIdMatchVerifiable: 'Too many root services'
           }
         } else if (rootService.length < 1) {
@@ -550,7 +552,9 @@ export async function verifyRawServiceCredential(
         } else {
           return {
             ...verifiedAndComplianceApiVersion,
-            idMatch: rootService?.includes(did || did.toLowerCase())
+            idMatch:
+              rootService?.includes(did) ||
+              rootService?.includes(did.toLowerCase())
           }
         }
       }
