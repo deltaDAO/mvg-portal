@@ -25,11 +25,11 @@ export function Badge({
       className={cx({
         mainLabel: true,
         isValid,
-        isWarning: isIdMatchVerifiable,
+        isWarning: isIdMatchVerifiable?.length > 0,
         [className]: className
       })}
     >
-      {isIdMatchVerifiable ? (
+      {isIdMatchVerifiable?.length > 0 ? (
         <Tooltip content={isIdMatchVerifiable}>
           <div className={`${styles.mainLabel} ${styles.isWarning}`}>
             <span>{verifiedService}</span>
