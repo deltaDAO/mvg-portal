@@ -388,7 +388,10 @@ export default function Download({
             <div className={styles.confettiContainer}>
               <SuccessConfetti
                 success={`You successfully bought this ${
-                  asset.metadata.type
+                  asset?.metadata?.additionalInformation?.saas?.paymentMode ===
+                  'Subscription'
+                    ? 'service'
+                    : asset.metadata.type
                 } and are now able to ${
                   asset?.metadata?.additionalInformation?.saas
                     ? 'access'
