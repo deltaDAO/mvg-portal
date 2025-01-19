@@ -3,7 +3,7 @@ import styles from './index.module.css'
 import Link from 'next/link'
 import { accountTruncate } from '@utils/wallet'
 import { useIsMounted } from '@hooks/useIsMounted'
-import addresses from 'pontusxAddresses.json'
+import addresses from '../../../../pontusxAddresses.json'
 
 export interface PublisherProps {
   account: string

@@ -15,7 +15,7 @@ const defaultBaseQueryReturn: SearchQuery = {
     bool: {
       filter: [
         { terms: { chainId: [1, 3] } },
-        { term: { _index: 'v510' } },
+        { terms: { _index: ['v510', 'v510'] } },
         { term: { 'purgatory.state': false } },
         {
           bool: {
