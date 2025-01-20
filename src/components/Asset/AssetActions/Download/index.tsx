@@ -388,8 +388,8 @@ export default function Download({
             <div className={styles.confettiContainer}>
               <SuccessConfetti
                 success={`You successfully bought this ${
-                  asset?.metadata?.additionalInformation?.saas?.paymentMode ===
-                  'Subscription'
+                  asset?.metadata?.additionalInformation?.saas?.redirectUrl
+                    ?.length > 0
                     ? 'service'
                     : asset.metadata.type
                 } and are now able to ${
