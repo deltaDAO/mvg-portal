@@ -2,7 +2,7 @@ const {
   FilterByTypeOptions,
   FilterByAccessOptions,
   FILTER_VALUES
-} = require('src/@types/aquarius/SearchQuery')
+} = require('./src/@types/aquarius/SearchQuery')
 
 module.exports = {
   filters: [
