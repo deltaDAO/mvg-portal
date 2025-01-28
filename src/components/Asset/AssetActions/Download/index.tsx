@@ -334,7 +334,7 @@ export default function Download({
                   type="checkbox"
                   options={['Terms and Conditions']}
                   prefixes={['I agree to the']}
-                  actions={['/terms']}
+                  actions={[asset?.metadata?.license]}
                   disabled={isLoading}
                 />
               </div>

@@ -390,7 +390,11 @@ export default function FormStartCompute({
         isAccountConnected={isConnected}
       />
       <Field
-        {...content.form.termsAndConditions}
+        name="termsAndConditions"
+        type="checkbox"
+        options={['Terms and Conditions']}
+        prefixes={['I agree to the']}
+        actions={[asset?.metadata?.license]}
         component={Input}
         disabled={isLoading}
         onChange={() =>
