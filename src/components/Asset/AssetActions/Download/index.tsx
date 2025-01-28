@@ -39,6 +39,7 @@ import SuccessConfetti from '@components/@shared/SuccessConfetti'
 import Input from '@components/@shared/FormInput'
 import ContractingProvider, { PAYMENT_MODES } from './ContractingProvider'
 import Button from '@components/@shared/atoms/Button'
+import TermsAndConditionsCheckbox from '../TermsAndConditionsCheckbox'
 
 export default function Download({
   accountId,
@@ -328,12 +329,7 @@ export default function Download({
                     <PurchaseButton isValid={isValid} />
                   </>
                 )}
-                <Field
-                  component={Input}
-                  name="termsAndConditions"
-                  type="checkbox"
-                  options={['Terms and Conditions']}
-                  prefixes={['I agree to the']}
+                <TermsAndConditionsCheckbox
                   actions={[asset?.metadata?.license]}
                   disabled={isLoading}
                 />

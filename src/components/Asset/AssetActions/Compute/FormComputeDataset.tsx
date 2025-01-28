@@ -19,6 +19,7 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import TermsAndConditionsCheckbox from '../TermsAndConditionsCheckbox'
 
 export default function FormStartCompute({
   algorithms,
@@ -389,13 +390,8 @@ export default function FormStartCompute({
         retry={retry}
         isAccountConnected={isConnected}
       />
-      <Field
-        name="termsAndConditions"
-        type="checkbox"
-        options={['Terms and Conditions']}
-        prefixes={['I agree to the']}
+      <TermsAndConditionsCheckbox
         actions={[asset?.metadata?.license]}
-        component={Input}
         disabled={isLoading}
         onChange={() =>
           setTermsAndConditions((termsAndConditions) => !termsAndConditions)
