@@ -15,6 +15,7 @@ import { toast } from 'react-toastify'
 import { useMarketMetadata } from '../MarketMetadata'
 import DeleteAutomationModal from './DeleteAutomationModal'
 import useBalance from '../../@hooks/useBalance'
+import { automationConfig } from '../../../app.config'
 
 export enum AUTOMATION_MODES {
   SIMPLE = 'simple',
@@ -72,8 +73,14 @@ function AutomationProvider({ children }) {
   const wagmiProvider = useProvider()
 
   useEffect(() => {
+    if (automationConfig.enableAutomation !== 'true') {
+      setIsAutomationEnabled(false)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!automationWalletJSON) setAutoWalletAddress(undefined)
-    else
+    else if (automationConfig.enableAutomation === 'true')
       setAutoWalletAddress(
         ethers.utils.getJsonWalletAddress(automationWalletJSON)
       )
