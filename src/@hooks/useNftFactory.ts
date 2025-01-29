@@ -12,7 +12,12 @@ function useNftFactory(): NftFactory {
     if (!signer || !chain?.id) return
 
     const config = getOceanConfig(chain.id)
-    const factory = new NftFactory(config?.nftFactoryAddress, signer)
+    const factory = new NftFactory(
+      config?.nftFactoryAddress,
+      signer,
+      config.chainId,
+      config
+    )
     setNftFactory(factory)
   }, [signer, chain?.id])
 
