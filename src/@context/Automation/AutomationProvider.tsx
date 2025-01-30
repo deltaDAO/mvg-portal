@@ -15,7 +15,6 @@ import { toast } from 'react-toastify'
 import { useMarketMetadata } from '../MarketMetadata'
 import DeleteAutomationModal from './DeleteAutomationModal'
 import useBalance from '../../@hooks/useBalance'
-import { automationConfig } from '../../../app.config'
 
 export enum AUTOMATION_MODES {
   SIMPLE = 'simple',
@@ -46,7 +45,7 @@ const AutomationContext = createContext({} as AutomationProviderValue)
 // Provider
 function AutomationProvider({ children }) {
   const { getApprovedTokenBalances } = useBalance()
-  const { approvedBaseTokens } = useMarketMetadata()
+  const { approvedBaseTokens, appConfig } = useMarketMetadata()
   const { automationWalletJSON, setAutomationWalletJSON } = useUserPreferences()
 
   const [autoWallet, setAutoWallet] = useState<Wallet>()
@@ -73,14 +72,8 @@ function AutomationProvider({ children }) {
   const wagmiProvider = useProvider()
 
   useEffect(() => {
-    if (automationConfig.enableAutomation !== 'true') {
-      setIsAutomationEnabled(false)
-    }
-  }, [])
-
-  useEffect(() => {
     if (!automationWalletJSON) setAutoWalletAddress(undefined)
-    else if (automationConfig.enableAutomation === 'true')
+    else
       setAutoWalletAddress(
         ethers.utils.getJsonWalletAddress(automationWalletJSON)
       )
@@ -214,30 +207,36 @@ function AutomationProvider({ children }) {
   )
 
   return (
-    <AutomationContext.Provider
-      value={{
-        autoWallet,
-        autoWalletAddress,
-        balance,
-        isAutomationEnabled,
-        isLoading,
-        decryptPercentage,
-        hasValidEncryptedWallet,
-        setIsAutomationEnabled,
-        updateBalance,
-        deleteCurrentAutomationWallet,
-        importAutomationWallet,
-        decryptAutomationWallet
-      }}
-    >
-      {children}
-      <DeleteAutomationModal
-        hasDeleteRequest={hasDeleteRequest}
-        setHasDeleteRequest={setHasDeleteRequest}
-        disabled={isLoading}
-        onDeleteConfirm={() => removeAutomationWalletAndCleanup()}
-      />
-    </AutomationContext.Provider>
+    <>
+      {appConfig.automationConfig.enableAutomation === 'true' ? (
+        <AutomationContext.Provider
+          value={{
+            autoWallet,
+            autoWalletAddress,
+            balance,
+            isAutomationEnabled,
+            isLoading,
+            decryptPercentage,
+            hasValidEncryptedWallet,
+            setIsAutomationEnabled,
+            updateBalance,
+            deleteCurrentAutomationWallet,
+            importAutomationWallet,
+            decryptAutomationWallet
+          }}
+        >
+          {children}
+          <DeleteAutomationModal
+            hasDeleteRequest={hasDeleteRequest}
+            setHasDeleteRequest={setHasDeleteRequest}
+            disabled={isLoading}
+            onDeleteConfirm={() => removeAutomationWalletAndCleanup()}
+          />
+        </AutomationContext.Provider>
+      ) : (
+        <>{children}</>
+      )}
+    </>
   )
 }
 
