@@ -27,7 +27,8 @@ module.exports = {
   // List of all supported chainIds. Used to populate the Chains user preferences list.
   chainIdsSupported: getSupportedChainIds(),
 
-  customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
+  customProviderUrl:
+    process.env.NEXT_PUBLIC_PROVIDER_URL || 'https://provider.test.pontus-x.eu',
 
   infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
 
@@ -117,5 +118,10 @@ module.exports = {
   },
 
   showOnboardingModuleByDefault:
-    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'true'
+    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'true',
+
+  allowedGaiaXRegistryDomains: [
+    'https://registry.gaia-x.eu/v2206',
+    'https://registry.lab.gaia-x.eu/v2206'
+  ]
 }
