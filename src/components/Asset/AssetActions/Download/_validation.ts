@@ -12,6 +12,9 @@ export function getDownloadValidationSchema(
     dataServiceParams: getUserCustomParameterValidationSchema(parameters),
     termsAndConditions: Yup.boolean()
       .required('Required')
+      .isTrue('Please agree to the Terms and Conditions.'),
+    defaultTermsAndConditions: Yup.boolean()
+      .required('Required')
       .isTrue('Please agree to the Terms and Conditions.')
   })
 }

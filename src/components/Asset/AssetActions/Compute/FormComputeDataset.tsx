@@ -391,6 +391,7 @@ export default function FormStartCompute({
         isAccountConnected={isConnected}
       />
       <TermsAndConditionsCheckbox
+        {...content.form.termsAndConditions}
         actions={[asset?.metadata?.license]}
         disabled={isLoading}
         onChange={() =>

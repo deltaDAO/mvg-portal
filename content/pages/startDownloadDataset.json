@@ -1,0 +1,14 @@
+{
+  "form": {
+    "defaultTermsAndConditions": {
+      "name": "defaultTermsAndConditions",
+      "options": ["Portal Terms and Conditions"],
+      "prefixes": ["I agree to the"]
+    },
+    "termsAndConditions": {
+      "name": "termsAndConditions",
+      "options": ["Asset Terms and Conditions"],
+      "prefixes": ["I agree to the"]
+    }
+  }
+}

@@ -18,6 +18,11 @@
         "options": [],
         "sortOptions": false
       }
-    ]
+    ],
+    "termsAndConditions": {
+      "name": "termsAndConditions",
+      "options": ["Terms and Conditions"],
+      "prefixes": ["I agree to the"]
+    }
   }
 }

@@ -1,25 +1,33 @@
 import Input from '@components/@shared/FormInput'
 import { Field } from 'formik'
+import styles from './index.module.css'
 
 export default function TermsAndConditionsCheckbox({
+  name,
   actions,
   onChange,
-  disabled
+  disabled,
+  options,
+  prefixes
 }: {
+  name: string
   actions: any
   onChange?: (termsAndConditions: boolean) => void
   disabled: boolean
+  options: string[]
+  prefixes: string[]
 }) {
   return (
     <Field
-      name="termsAndConditions"
+      name={name}
       type="checkbox"
-      options={['Terms and Conditions']}
-      prefixes={['I agree to the']}
+      options={options}
+      prefixes={prefixes}
       actions={actions}
       component={Input}
       disabled={disabled}
-      onChange={onChange}
+      {...(onChange && { onChange })}
+      className={styles.termsAndConditionsCheckbox}
     />
   )
 }

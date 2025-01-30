@@ -106,7 +106,8 @@ export default function Input(props: Partial<InputProps>): ReactElement {
     form,
     field,
     disclaimer,
-    disclaimerValues
+    disclaimerValues,
+    className
   } = props
 
   const isFormikField = typeof field !== 'undefined'
@@ -117,7 +118,8 @@ export default function Input(props: Partial<InputProps>): ReactElement {
 
   const styleClasses = cx({
     field: true,
-    hasError: hasFormikError
+    hasError: hasFormikError,
+    [className]: className
   })
 
   const [disclaimerVisible, setDisclaimerVisible] = useState(true)

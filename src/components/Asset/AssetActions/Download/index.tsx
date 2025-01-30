@@ -40,6 +40,8 @@ import Input from '@components/@shared/FormInput'
 import ContractingProvider, { PAYMENT_MODES } from './ContractingProvider'
 import Button from '@components/@shared/atoms/Button'
 import TermsAndConditionsCheckbox from '../TermsAndConditionsCheckbox'
+import { defaultTermsAndConditionsUrl } from 'app.config'
+import content from '../../../../../content/pages/startDownloadDataset.json'
 
 export default function Download({
   accountId,
@@ -330,6 +332,12 @@ export default function Download({
                   </>
                 )}
                 <TermsAndConditionsCheckbox
+                  {...content.form.defaultTermsAndConditions}
+                  actions={[defaultTermsAndConditionsUrl]}
+                  disabled={isLoading}
+                />
+                <TermsAndConditionsCheckbox
+                  {...content.form.termsAndConditions}
                   actions={[asset?.metadata?.license]}
                   disabled={isLoading}
                 />
