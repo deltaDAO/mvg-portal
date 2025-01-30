@@ -31,6 +31,7 @@ export interface AppConfig {
   purgatoryUrl: string
   dockerHubProxyUrl: string
   automationConfig: {
+    enableAutomation: string
     networkTokenFundDefaultValue: string
     erc20ApprovalDefaultValue: string
     roughTxGasEstimate: number

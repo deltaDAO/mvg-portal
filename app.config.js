@@ -89,6 +89,7 @@ module.exports = {
     'https://dockerhub-proxy.delta-dao.com',
 
   automationConfig: {
+    enableAutomation: process.env.NEXT_PUBLIC_ENABLE_AUTOMATION || 'true',
     networkTokenFundDefaultValue: '2',
     erc20ApprovalDefaultValue: '50',
     roughTxGasEstimate: 0.02
