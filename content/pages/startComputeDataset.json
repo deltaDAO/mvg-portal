@@ -19,9 +19,14 @@
         "sortOptions": false
       }
     ],
-    "termsAndConditions": {
-      "name": "termsAndConditions",
-      "options": ["Terms and Conditions"],
+    "portalTermsAndConditions": {
+      "name": "portalTermsAndConditions",
+      "options": ["Portal Terms and Conditions"],
+      "prefixes": ["I agree to the"]
+    },
+    "assetTermsAndConditions": {
+      "name": "assetTermsAndConditions",
+      "options": ["Asset Terms and Conditions"],
       "prefixes": ["I agree to the"]
     }
   }

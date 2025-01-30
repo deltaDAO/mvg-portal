@@ -1,12 +1,12 @@
 {
   "form": {
-    "defaultTermsAndConditions": {
-      "name": "defaultTermsAndConditions",
+    "portalTermsAndConditions": {
+      "name": "portalTermsAndConditions",
       "options": ["Portal Terms and Conditions"],
       "prefixes": ["I agree to the"]
     },
-    "termsAndConditions": {
-      "name": "termsAndConditions",
+    "assetTermsAndConditions": {
+      "name": "assetTermsAndConditions",
       "options": ["Asset Terms and Conditions"],
       "prefixes": ["I agree to the"]
     }
