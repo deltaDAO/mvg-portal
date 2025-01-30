@@ -34,7 +34,8 @@ import {
   customProviderUrl,
   defaultAccessTerms,
   complianceApiVersion,
-  complianceUri
+  complianceUri,
+  allowedGaiaXRegistryDomains
 } from '../../../app.config'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
@@ -412,15 +413,12 @@ export async function createTokensAndPricing(
 export function getComplianceApiVersion(context?: string[]): string {
   const latest = complianceApiVersion
 
-  const allowedRegistryDomains = [
-    'https://registry.gaia-x.eu/v2206',
-    'https://registry.lab.gaia-x.eu/v2206'
-  ]
   if (
     !context ||
     !context.length ||
     context.some(
-      (e) => allowedRegistryDomains.findIndex((x) => e.startsWith(x)) !== -1
+      (e) =>
+        allowedGaiaXRegistryDomains.findIndex((x) => e.startsWith(x)) !== -1
     )
   )
     return latest
