@@ -288,9 +288,7 @@ export async function createTokensAndPricing(
     minter: accountId,
     paymentCollector: accountId,
     mpFeeAddress: marketFeeAddress,
-    feeToken:
-      process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS ||
-      values.pricing.baseToken.address,
+    feeToken: config.oceanTokenAddress,
     feeAmount: publisherMarketOrderFee,
     // max number
     cap: defaultDatatokenCap,

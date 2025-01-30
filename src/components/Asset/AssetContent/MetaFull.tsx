@@ -17,7 +17,7 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
     async function getInitialPaymentCollector() {
       try {
         const signer = await getDummySigner(ddo.chainId)
-        const datatoken = new Datatoken(signer)
+        const datatoken = new Datatoken(signer, ddo.chainId)
         setPaymentCollector(
           await datatoken.getPaymentCollector(ddo.datatokens[0].address)
         )
