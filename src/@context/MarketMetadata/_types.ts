@@ -27,7 +27,7 @@ export interface AppConfig {
     classNameLight: string
     storageKey: string
   }
-  defaultAccessTerms: string
+  defaultTermsAndConditionsUrl: string
   purgatoryUrl: string
   dockerHubProxyUrl: string
   automationConfig: {

@@ -32,7 +32,7 @@ import {
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
   customProviderUrl,
-  defaultAccessTerms,
+  defaultTermsAndConditionsUrl,
   complianceApiVersion,
   complianceUri,
   allowedGaiaXRegistryDomains
@@ -195,13 +195,13 @@ export async function transformPublishFormToDdo(
     description,
     tags: transformTags(tags),
     author,
-    license: values.metadata.license || 'https://portal.pontus-x.eu/terms',
+    license: values.metadata.license || defaultTermsAndConditionsUrl,
     links: linksTransformed,
     additionalInformation: {
       termsAndConditions,
       gaiaXInformation: {
         termsAndConditions: [
-          { url: accessTermsUrlTransformed || defaultAccessTerms }
+          { url: accessTermsUrlTransformed || defaultTermsAndConditionsUrl }
         ],
         ...(type === 'dataset' && {
           containsPII: gaiaXInformation.containsPII,
