@@ -8,14 +8,16 @@ export default function TermsAndConditionsCheckbox({
   onChange,
   disabled,
   options,
-  prefixes
+  prefixes,
+  postfixes
 }: {
   name: string
-  actions: any
+  actions?: any
   onChange?: (termsAndConditions: boolean) => void
   disabled: boolean
   options: string[]
   prefixes: string[]
+  postfixes?: string[]
 }) {
   return (
     <Field
@@ -23,6 +25,7 @@ export default function TermsAndConditionsCheckbox({
       type="checkbox"
       options={options}
       prefixes={prefixes}
+      postfixes={postfixes}
       actions={actions}
       component={Input}
       disabled={disabled}
