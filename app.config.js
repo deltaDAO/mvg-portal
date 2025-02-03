@@ -77,8 +77,7 @@ module.exports = {
     process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'true',
 
   // Default terms to be used for service offerings made on this marketplace
-  defaultAccessTerms:
-    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md',
+  defaultTermsAndConditionsUrl: 'https://portal.pontus-x.eu/privacy/en',
 
   // Purgatory URI, leave as an empty string to disable the API call
   purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || '',
