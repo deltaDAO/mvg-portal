@@ -7,8 +7,8 @@
     },
     "assetTermsAndConditions": {
       "name": "assetTermsAndConditions",
-      "options": ["Asset Terms and Conditions"],
-      "prefixes": ["I agree to the"]
+      "prefixes": ["I acknowledge that the asset is made available under"],
+      "postfixes": ["license and agree to the terms"]
     }
   }
 }
