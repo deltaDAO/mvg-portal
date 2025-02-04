@@ -70,6 +70,14 @@
           "isLive": true
         },
         {
+          "name": "beebucket",
+          "link": "https://daseen.pontus-x.eu/",
+          "description": "The beebucket portal features access to the Extended Dataset Profile Service (EDPS) and Dataset Search Engine (daseen).",
+          "image": "beebucket.webp",
+          "category": "AI",
+          "isLive": true
+        },
+        {
           "name": "FIWARE",
           "link": "https://fiware-marketplace-a4eqd.ondigitalocean.app/",
           "description": "A curated framework of Open Source Platform components to accelerate the development of Smart Solutions.",
