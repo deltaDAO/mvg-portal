@@ -407,16 +407,8 @@ export default function FormStartCompute({
       />
       <TermsAndConditionsCheckbox
         {...content.form.assetTermsAndConditions}
-        options={[
-          asset?.metadata?.license.includes('http')
-            ? 'a custom'
-            : asset?.metadata?.license
-        ]}
-        actions={
-          asset?.metadata?.license.includes('http')
-            ? [asset?.metadata?.license]
-            : undefined
-        }
+        options={[asset?.metadata?.license]}
+        actions={[asset?.metadata?.license]}
         disabled={isLoading}
         onChange={() =>
           setAssetTermsAndConditions(
