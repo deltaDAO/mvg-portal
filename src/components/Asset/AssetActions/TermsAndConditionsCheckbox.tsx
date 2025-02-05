@@ -23,10 +23,12 @@ export default function TermsAndConditionsCheckbox({
     <Field
       name={name}
       type="checkbox"
-      options={options}
+      options={options?.map((option) =>
+        option.includes('http') ? 'a custom' : `the ${options}`
+      )}
       prefixes={prefixes}
       postfixes={postfixes}
-      actions={actions}
+      actions={actions?.map((action) => action.includes('http') && action)}
       component={Input}
       disabled={disabled}
       {...(onChange && { onChange })}
