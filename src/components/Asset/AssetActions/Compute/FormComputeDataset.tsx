@@ -397,7 +397,7 @@ export default function FormStartCompute({
       />
       <TermsAndConditionsCheckbox
         {...content.form.portalTermsAndConditions}
-        actions={[appConfig.defaultTermsAndConditionsUrl]}
+        licence={[appConfig.defaultTermsAndConditionsUrl]}
         disabled={isLoading}
         onChange={() =>
           setPortalTermsAndConditions(
@@ -407,8 +407,7 @@ export default function FormStartCompute({
       />
       <TermsAndConditionsCheckbox
         {...content.form.assetTermsAndConditions}
-        options={[asset?.metadata?.license]}
-        actions={[asset?.metadata?.license]}
+        licence={[asset?.metadata?.license]}
         disabled={isLoading}
         onChange={() =>
           setAssetTermsAndConditions(
