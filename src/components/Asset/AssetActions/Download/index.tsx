@@ -333,12 +333,12 @@ export default function Download({
                 )}
                 <TermsAndConditionsCheckbox
                   {...content.form.portalTermsAndConditions}
-                  actions={[defaultTermsAndConditionsUrl]}
+                  licenses={[defaultTermsAndConditionsUrl]}
                   disabled={isLoading}
                 />
                 <TermsAndConditionsCheckbox
                   {...content.form.assetTermsAndConditions}
-                  actions={[asset?.metadata?.license]}
+                  licenses={[asset?.metadata?.license]}
                   disabled={isLoading}
                 />
               </div>
