@@ -15,7 +15,7 @@ module.exports = {
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
-    'https://compliance.lab.gaia-x.eu',
+    'https://www.delta-dao.com/compliance',
 
   complianceApiVersion:
     process.env.NEXT_PUBLIC_COMPLIANCE_API_VERSION || '2210',
