@@ -4,6 +4,7 @@ import content from '../../../../content/onboarding/index.json'
 import Container from '../atoms/Container'
 import Markdown from '../Markdown'
 import LightBulb from '@images/lightBulb.svg'
+import Button from '../atoms/Button'
 
 interface OnboardingHeaderData {
   title: string
@@ -11,7 +12,11 @@ interface OnboardingHeaderData {
   body: string
 }
 
-export default function Header(): ReactElement {
+export default function Header({
+  setShowOnboardingModule
+}: {
+  setShowOnboardingModule: (value: boolean) => void
+}): ReactElement {
   const { title, subtitle, body }: OnboardingHeaderData = content
 
   return (
@@ -22,6 +27,9 @@ export default function Header(): ReactElement {
         <Markdown text={body} className={styles.paragraph} />
       </div>
       <LightBulb />
+      <Button style="primary" onClick={() => setShowOnboardingModule(false)}>
+        Hide
+      </Button>
     </Container>
   )
 }

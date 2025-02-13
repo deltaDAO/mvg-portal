@@ -46,7 +46,8 @@ export default function OnboardingSection(): ReactElement {
   const { balance } = useBalance()
   const web3Provider = useProvider()
   const { chain } = useNetwork()
-  const { onboardingStep, setOnboardingStep } = useUserPreferences()
+  const { onboardingStep, setOnboardingStep, setShowOnboardingModule } =
+    useUserPreferences()
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   const [navigationDirection, setNavigationDirection] =
     useState<NavigationDirections>()
@@ -68,7 +69,7 @@ export default function OnboardingSection(): ReactElement {
 
   return (
     <div className={styles.wrapper}>
-      <Header />
+      <Header setShowOnboardingModule={setShowOnboardingModule} />
       <Container className={styles.cardWrapper}>
         <div className={styles.cardContainer}>
           <Stepper
