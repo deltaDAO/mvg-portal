@@ -62,6 +62,7 @@ export const tokenAddressesEUROe = {
   137: '0x820802Fa8a99901F52e39acD21177b0BE6EE2974',
   32456: '0x8A4826071983655805bF4f29828577Cd6b1aC0cB',
   32457: '0xdd0a0278f6BAF167999ccd8Aa6C11A9e2fA37F0a',
+  23294: '0x431aE822B6D59cc96dA181dB632396f58932dA9d',
   80001: '0xA089a21902914C3f3325dBE2334E9B466071E5f1'
 }
 
@@ -203,7 +204,7 @@ export async function getOpcsApprovedTokens(
           {
             address: tokenAddressesEUROe[chainId],
             // TODO: revert once decimals changed to 6 on pontus-x
-            decimals: chainId === 32456 ? 18 : 6,
+            decimals: chainId === 32456 || chainId === 23294 ? 18 : 6,
             name: 'EUROe',
             symbol: 'EUROe'
           }
