@@ -11,7 +11,8 @@ module.exports = {
   // const { appConfig } = useMarketMetadata()
   // return appConfig.metadataCacheUri
   metadataCacheUri:
-    process.env.NEXT_PUBLIC_METADATACACHE_URI || 'https://aquarius.pontus-x.eu',
+    process.env.NEXT_PUBLIC_METADATACACHE_URI ||
+    'https://mainnet-archive.sapphire.oasis.io/',
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
