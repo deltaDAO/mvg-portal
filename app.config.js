@@ -12,7 +12,7 @@ module.exports = {
   // return appConfig.metadataCacheUri
   metadataCacheUri:
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
-    'https://mainnet-archive.sapphire.oasis.io/',
+    'https://aquarius.main.pontus-x.eu',
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
