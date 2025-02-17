@@ -4,7 +4,7 @@ import content from '../../../../content/onboarding/index.json'
 import Container from '../atoms/Container'
 import Markdown from '../Markdown'
 import LightBulb from '@images/lightBulb.svg'
-import Button from '../atoms/Button'
+import HideButton from './HideButton'
 
 interface OnboardingHeaderData {
   title: string
@@ -27,9 +27,12 @@ export default function Header({
         <Markdown text={body} className={styles.paragraph} />
       </div>
       <LightBulb />
-      <Button style="primary" onClick={() => setShowOnboardingModule(false)}>
-        Hide
-      </Button>
+      <div className={styles.hideButtonContainer}>
+        <HideButton
+          setShowOnboardingModule={setShowOnboardingModule}
+          hintText={content.hideHint}
+        />
+      </div>
     </Container>
   )
 }

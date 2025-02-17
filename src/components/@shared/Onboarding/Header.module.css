@@ -7,6 +7,7 @@
   color: var(--brand-white);
   border-radius: var(--border-radius) var(--border-radius) 0 0;
   box-shadow: var(--box-template-box-shadow);
+  position: relative;
 }
 
 .content {
@@ -32,6 +33,18 @@
 
 .container svg {
   display: none;
+}
+
+.hideButtonContainer {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  background-color: var(--background-content);
+  right: 0;
+  top: 0;
+  aspect-ratio: 1 / 1;
+  padding: calc(var(--spacer) / 3);
+  border-bottom-left-radius: var(--border-radius);
 }
 
 @media screen and (min-width: 40rem) {
