@@ -6,11 +6,7 @@ import { FormPublishData } from '@components/Publish/_types'
 import NftTooltip from './NftTooltip'
 import styles from './index.module.css'
 
-export default function Nft({
-  isBlockscoutExplorer
-}: {
-  isBlockscoutExplorer: boolean
-}) {
+export default function Nft() {
   const { asset } = useAsset()
   const nftMetadata = decodeTokenURI(asset?.nft?.tokenURI)
 
@@ -49,7 +45,6 @@ export default function Nft({
               nftImage={nftImage}
               address={asset?.nftAddress}
               chainId={asset?.chainId}
-              isBlockscoutExplorer={isBlockscoutExplorer}
             />
           }
         />
