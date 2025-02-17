@@ -68,12 +68,14 @@ export function useAddressConfig(): UseAddressConfig {
     )
   }
 
-  const getVerifiedAddressName = (address: string) => {
+  const getVerifiedAddressName: (address: string) => string | undefined = (
+    address
+  ) => {
     const addressKey = Object.keys(verifiedAddresses).find((key) => {
       return key.toLowerCase() === address.toLowerCase()
     })
     const addressName = verifiedAddresses[addressKey]
-    return addressName?.length > 0 ? addressName : undefined
+    return addressName
   }
 
   return {
