@@ -13,7 +13,7 @@ export default function Credentials(props: InputProps) {
   const [field, meta, helpers] = useField(props.name)
   const [addressList, setAddressList] = useState<string[]>(field.value || [])
   const [value, setValue] = useState('')
-  const { verifiedAddresses } = useAddressConfig()
+  const { getVerifiedAddressName } = useAddressConfig()
 
   useEffect(() => {
     helpers.setValue(addressList)
@@ -40,11 +40,8 @@ export default function Credentials(props: InputProps) {
   }
 
   const showAddressName = (address: string) => {
-    const addressKey = Object.keys(verifiedAddresses).filter((key) => {
-      return key.toLowerCase() === address.toLowerCase()
-    })
-    const addressName = verifiedAddresses[addressKey[0]]
-    return addressName?.length > 0 ? `${address} (${addressName})` : address
+    const addressName = getVerifiedAddressName(address)
+    return addressName ? `${address} (${addressName})` : address
   }
 
   return (
