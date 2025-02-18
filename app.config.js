@@ -27,7 +27,8 @@ module.exports = {
   // List of all supported chainIds. Used to populate the Chains user preferences list.
   chainIdsSupported: getSupportedChainIds(),
 
-  customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
+  customProviderUrl:
+    process.env.NEXT_PUBLIC_PROVIDER_URL || 'https://provider.test.pontus-x.eu',
 
   infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
 
@@ -76,8 +77,7 @@ module.exports = {
     process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'true',
 
   // Default terms to be used for service offerings made on this marketplace
-  defaultAccessTerms:
-    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md',
+  defaultTermsAndConditionsUrl: 'https://portal.pontus-x.eu/privacy/en',
 
   // Purgatory URI, leave as an empty string to disable the API call
   purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || '',
@@ -88,6 +88,7 @@ module.exports = {
     'https://dockerhub-proxy.delta-dao.com',
 
   automationConfig: {
+    enableAutomation: process.env.NEXT_PUBLIC_ENABLE_AUTOMATION || 'true',
     networkTokenFundDefaultValue: '2',
     erc20ApprovalDefaultValue: '50',
     roughTxGasEstimate: 0.02
@@ -117,5 +118,10 @@ module.exports = {
   },
 
   showOnboardingModuleByDefault:
-    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'true'
+    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'true',
+
+  allowedGaiaXRegistryDomains: [
+    'https://registry.gaia-x.eu/v2206',
+    'https://registry.lab.gaia-x.eu/v2206'
+  ]
 }

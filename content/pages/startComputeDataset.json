@@ -19,12 +19,15 @@
         "sortOptions": false
       }
     ],
-    "termsAndConditions": {
-      "name": "termsAndConditions",
-      "type": "checkbox",
-      "options": ["Terms and Conditions"],
-      "prefixes": ["I agree to the"],
-      "actions": ["/terms"]
+    "portalTermsAndConditions": {
+      "name": "portalTermsAndConditions",
+      "options": ["Portal Terms and Conditions"],
+      "prefixes": ["I agree to the"]
+    },
+    "assetTermsAndConditions": {
+      "name": "assetTermsAndConditions",
+      "prefixes": ["I acknowledge that the asset is made available under"],
+      "postfixes": ["license and agree to the terms"]
     }
   }
 }

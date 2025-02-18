@@ -39,6 +39,8 @@ import SuccessConfetti from '@components/@shared/SuccessConfetti'
 import Input from '@components/@shared/FormInput'
 import ContractingProvider, { PAYMENT_MODES } from './ContractingProvider'
 import Button from '@components/@shared/atoms/Button'
+import TermsAndConditionsCheckbox from '../TermsAndConditionsCheckbox'
+import content from '../../../../../content/pages/startDownloadDataset.json'
 
 export default function Download({
   accountId,
@@ -66,7 +68,8 @@ export default function Download({
   const {
     getOpcFeeForToken,
     appConfig: {
-      contractingProvider: { enable: isContractingFeatureEnabled }
+      contractingProvider: { enable: isContractingFeatureEnabled },
+      defaultTermsAndConditionsUrl
     }
   } = useMarketMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
@@ -328,13 +331,14 @@ export default function Download({
                     <PurchaseButton isValid={isValid} />
                   </>
                 )}
-                <Field
-                  component={Input}
-                  name="termsAndConditions"
-                  type="checkbox"
-                  options={['Terms and Conditions']}
-                  prefixes={['I agree to the']}
-                  actions={['/terms']}
+                <TermsAndConditionsCheckbox
+                  {...content.form.portalTermsAndConditions}
+                  licenses={[defaultTermsAndConditionsUrl]}
+                  disabled={isLoading}
+                />
+                <TermsAndConditionsCheckbox
+                  {...content.form.assetTermsAndConditions}
+                  licenses={[asset?.metadata?.license]}
                   disabled={isLoading}
                 />
               </div>

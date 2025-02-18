@@ -27,10 +27,11 @@ export interface AppConfig {
     classNameLight: string
     storageKey: string
   }
-  defaultAccessTerms: string
+  defaultTermsAndConditionsUrl: string
   purgatoryUrl: string
   dockerHubProxyUrl: string
   automationConfig: {
+    enableAutomation: string
     networkTokenFundDefaultValue: string
     erc20ApprovalDefaultValue: string
     roughTxGasEstimate: number

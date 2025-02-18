@@ -1,0 +1,4 @@
+.hideButton svg {
+  display: inline;
+  width: var(--spacer);
+}
