@@ -12,11 +12,7 @@ interface OnboardingHeaderData {
   body: string
 }
 
-export default function Header({
-  setShowOnboardingModule
-}: {
-  setShowOnboardingModule: (value: boolean) => void
-}): ReactElement {
+export default function Header(): ReactElement {
   const { title, subtitle, body }: OnboardingHeaderData = content
 
   return (
@@ -28,10 +24,7 @@ export default function Header({
       </div>
       <LightBulb />
       <div className={styles.hideButtonContainer}>
-        <HideButton
-          setShowOnboardingModule={setShowOnboardingModule}
-          hintText={content.hideHint}
-        />
+        <HideButton />
       </div>
     </Container>
   )
