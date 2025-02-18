@@ -1,18 +1,16 @@
 import { useAsset } from '@context/Asset'
 import { Asset } from '@oceanprotocol/lib'
 import AddToken from '@shared/AddToken'
-import ExplorerLink from '@shared/ExplorerLink'
 import Publisher from '@shared/Publisher'
 import { ReactElement } from 'react'
 import { useAccount } from 'wagmi'
+import ExplorerTokenLink from '../../../@shared/ExplorerLink/ExplorerTokenLink'
 import styles from './MetaAsset.module.css'
 
 export default function MetaAsset({
-  asset,
-  isBlockscoutExplorer
+  asset
 }: {
   asset: AssetExtended
-  isBlockscoutExplorer: boolean
 }): ReactElement {
   const { isAssetNetwork } = useAsset()
   const { connector: activeConnector } = useAccount()
@@ -26,17 +24,13 @@ export default function MetaAsset({
         <Publisher account={asset?.nft?.owner} showName={true} />
       </span>
       <span>
-        <ExplorerLink
-          className={styles.datatoken}
+        <ExplorerTokenLink
+          tokenAddress={asset?.services?.[0]?.datatokenAddress}
           networkId={asset?.chainId}
-          path={
-            isBlockscoutExplorer
-              ? `tokens/${asset?.services?.[0]?.datatokenAddress}`
-              : `token/${asset?.services?.[0]?.datatokenAddress}`
-          }
+          className={styles.datatoken}
         >
           {`Accessed with ${dataTokenSymbol}`}
-        </ExplorerLink>
+        </ExplorerTokenLink>
         {activeConnector?.name === 'MetaMask' && isAssetNetwork && (
           <span className={styles.addWrap}>
             <AddToken
