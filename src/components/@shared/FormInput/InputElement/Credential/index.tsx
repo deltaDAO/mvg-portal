@@ -7,11 +7,13 @@ import { toast } from 'react-toastify'
 import InputGroup from '../../InputGroup'
 import InputElement from '..'
 import { InputProps } from '../..'
+import { useAddressConfig } from '@hooks/useAddressConfig'
 
 export default function Credentials(props: InputProps) {
   const [field, meta, helpers] = useField(props.name)
   const [addressList, setAddressList] = useState<string[]>(field.value || [])
   const [value, setValue] = useState('')
+  const { getVerifiedAddressName } = useAddressConfig()
 
   useEffect(() => {
     helpers.setValue(addressList)
@@ -35,6 +37,11 @@ export default function Credentials(props: InputProps) {
     }
     setAddressList((addressList) => [...addressList, value.toLowerCase()])
     setValue('')
+  }
+
+  const showAddressName = (address: string) => {
+    const addressName = getVerifiedAddressName(address)
+    return addressName ? `${address} (${addressName})` : address
   }
 
   return (
@@ -68,7 +75,7 @@ export default function Credentials(props: InputProps) {
                   <InputElement
                     className={styles.address}
                     name={`address[${i}]`}
-                    value={value}
+                    value={showAddressName(value)}
                     disabled
                   />
                   <Button
