@@ -18,7 +18,7 @@ export default function Preview(): ReactElement {
         type: values.pricing.type,
         addressOrId: ZERO_ADDRESS,
         templateId: 1,
-        price: `${values.pricing.price}`,
+        price: `${values.pricing.type === 'free' ? 0 : values.pricing.price}`,
         baseToken: {
           address: ZERO_ADDRESS,
           name: values.pricing?.baseToken?.symbol || 'OCEAN',
