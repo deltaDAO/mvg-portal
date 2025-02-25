@@ -113,7 +113,7 @@ export async function setNftMetadata(
     encryptedDdo = await ProviderInstance.encrypt(
       asset,
       asset.chainId,
-      defaultProviderUrl || asset.services[0].serviceEndpoint,
+      asset.services[0].serviceEndpoint || defaultProviderUrl,
       signal
     )
   } catch (err) {
@@ -155,7 +155,7 @@ export async function setNFTMetadataAndTokenURI(
     encryptedDdo = await ProviderInstance.encrypt(
       asset,
       asset.chainId,
-      defaultProviderUrl || asset.services[0].serviceEndpoint,
+      asset.services[0].serviceEndpoint || defaultProviderUrl,
       signal
     )
   } catch (err) {

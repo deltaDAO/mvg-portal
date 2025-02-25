@@ -52,7 +52,7 @@ export async function initializeProviderForCompute(
       computeAlgo,
       computeEnv?.id,
       validUntil,
-      defaultProviderUrl || dataset.services[0].serviceEndpoint,
+      dataset.services[0].serviceEndpoint || defaultProviderUrl,
       accountId
     )
   } catch (error) {
@@ -74,7 +74,7 @@ export async function getEncryptedFiles(
     const response = await ProviderInstance.encrypt(
       files,
       chainId,
-      defaultProviderUrl || providerUrl
+      providerUrl || defaultProviderUrl
     )
     return response
   } catch (error) {
@@ -94,7 +94,7 @@ export async function getFileDidInfo(
     const response = await ProviderInstance.checkDidFiles(
       did,
       serviceId,
-      defaultProviderUrl || providerUrl,
+      providerUrl || defaultProviderUrl,
       withChecksum
     )
     return response
@@ -135,7 +135,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileIPFS,
-          defaultProviderUrl || providerUrl,
+          providerUrl || defaultProviderUrl,
           withChecksum
         )
       } catch (error) {
@@ -153,7 +153,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileArweave,
-          defaultProviderUrl || providerUrl,
+          providerUrl || defaultProviderUrl,
           withChecksum
         )
       } catch (error) {
@@ -173,7 +173,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileGraphql,
-          defaultProviderUrl || providerUrl
+          providerUrl || defaultProviderUrl
         )
       } catch (error) {
         const message = getErrorMessage(error.message)
@@ -193,7 +193,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileSmartContract,
-          defaultProviderUrl || providerUrl
+          providerUrl || defaultProviderUrl
         )
       } catch (error) {
         const message = getErrorMessage(error.message)
@@ -213,7 +213,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileUrl,
-          defaultProviderUrl || providerUrl,
+          providerUrl || defaultProviderUrl,
           withChecksum
         )
       } catch (error) {
@@ -241,7 +241,7 @@ export async function downloadFile(
       asset.services[0].id,
       0,
       validOrderTx || asset.accessDetails.validOrderTx,
-      defaultProviderUrl || asset.services[0].serviceEndpoint,
+      asset.services[0].serviceEndpoint || defaultProviderUrl,
       signer,
       userCustomParameters
     )

@@ -36,7 +36,7 @@ async function initializeProvider(
       asset.services[0].id,
       0,
       accountId,
-      defaultProviderUrl || asset.services[0].serviceEndpoint
+      asset.services[0].serviceEndpoint || defaultProviderUrl
     )
     return provider
   } catch (error) {
