@@ -1,4 +1,4 @@
-import { allowFixedPricing, customProviderUrl } from '../../../app.config'
+import { allowFixedPricing, defaultProviderUrl } from '../../../app.config'
 import {
   FormPublishData,
   MetadataAlgorithmContainer,
@@ -99,7 +99,7 @@ export const initialValues: FormPublishData = {
       dataTokenOptions: { name: '', symbol: '' },
       access: 'access',
       providerUrl: {
-        url: customProviderUrl,
+        url: defaultProviderUrl,
         valid: true,
         custom: false
       },

@@ -27,7 +27,7 @@ module.exports = {
   // List of all supported chainIds. Used to populate the Chains user preferences list.
   chainIdsSupported: getSupportedChainIds(),
 
-  customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
+  defaultProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
 
   infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
 

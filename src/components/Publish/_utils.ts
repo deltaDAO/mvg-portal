@@ -31,7 +31,7 @@ import {
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
-  customProviderUrl,
+  defaultProviderUrl,
   defaultTermsAndConditionsUrl,
   complianceApiVersion,
   complianceUri,

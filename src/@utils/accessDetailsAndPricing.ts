@@ -17,7 +17,7 @@ import Decimal from 'decimal.js'
 import {
   consumeMarketOrderFee,
   publisherMarketOrderFee,
-  customProviderUrl
+  defaultProviderUrl
 } from '../../app.config'
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
@@ -191,7 +191,7 @@ export async function getOrderPriceAndFees(
         asset?.services[0].id,
         0,
         accountId,
-        customProviderUrl || asset?.services[0].serviceEndpoint
+        asset?.services[0].serviceEndpoint || defaultProviderUrl
       ))
   } catch (error) {
     const message = getErrorMessage(error.message)
