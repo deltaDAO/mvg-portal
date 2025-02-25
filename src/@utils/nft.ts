@@ -10,7 +10,7 @@ import {
   getErrorMessage
 } from '@oceanprotocol/lib'
 import { SvgWaves } from './SvgWaves'
-import { customProviderUrl } from '../../app.config'
+import { defaultProviderUrl } from '../../app.config'
 import { Signer, ethers } from 'ethers'
 import { toast } from 'react-toastify'
 
@@ -113,7 +113,7 @@ export async function setNftMetadata(
     encryptedDdo = await ProviderInstance.encrypt(
       asset,
       asset.chainId,
-      customProviderUrl || asset.services[0].serviceEndpoint,
+      defaultProviderUrl || asset.services[0].serviceEndpoint,
       signal
     )
   } catch (err) {
@@ -155,7 +155,7 @@ export async function setNFTMetadataAndTokenURI(
     encryptedDdo = await ProviderInstance.encrypt(
       asset,
       asset.chainId,
-      customProviderUrl || asset.services[0].serviceEndpoint,
+      defaultProviderUrl || asset.services[0].serviceEndpoint,
       signal
     )
   } catch (err) {

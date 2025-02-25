@@ -20,7 +20,7 @@ import {
   marketFeeAddress,
   consumeMarketOrderFee,
   consumeMarketFixedSwapFee,
-  customProviderUrl
+  defaultProviderUrl
 } from '../../app.config'
 import { toast } from 'react-toastify'
 
@@ -36,7 +36,7 @@ async function initializeProvider(
       asset.services[0].id,
       0,
       accountId,
-      customProviderUrl || asset.services[0].serviceEndpoint
+      defaultProviderUrl || asset.services[0].serviceEndpoint
     )
     return provider
   } catch (error) {

@@ -16,8 +16,8 @@ import {
   UserCustomParameters,
   getErrorMessage
 } from '@oceanprotocol/lib'
-// if customProviderUrl is set, we need to call provider using this custom endpoint
-import { customProviderUrl } from '../../app.config'
+// if defaultProviderUrl is set, we need to call provider using this custom endpoint
+import { defaultProviderUrl } from '../../app.config'
 import { KeyValuePair } from '@shared/FormInput/InputElement/KeyValueInput'
 import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
@@ -52,7 +52,7 @@ export async function initializeProviderForCompute(
       computeAlgo,
       computeEnv?.id,
       validUntil,
-      customProviderUrl || dataset.services[0].serviceEndpoint,
+      defaultProviderUrl || dataset.services[0].serviceEndpoint,
       accountId
     )
   } catch (error) {
@@ -74,7 +74,7 @@ export async function getEncryptedFiles(
     const response = await ProviderInstance.encrypt(
       files,
       chainId,
-      customProviderUrl || providerUrl
+      defaultProviderUrl || providerUrl
     )
     return response
   } catch (error) {
@@ -94,7 +94,7 @@ export async function getFileDidInfo(
     const response = await ProviderInstance.checkDidFiles(
       did,
       serviceId,
-      customProviderUrl || providerUrl,
+      defaultProviderUrl || providerUrl,
       withChecksum
     )
     return response
@@ -135,7 +135,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileIPFS,
-          customProviderUrl || providerUrl,
+          defaultProviderUrl || providerUrl,
           withChecksum
         )
       } catch (error) {
@@ -153,7 +153,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileArweave,
-          customProviderUrl || providerUrl,
+          defaultProviderUrl || providerUrl,
           withChecksum
         )
       } catch (error) {
@@ -173,7 +173,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileGraphql,
-          customProviderUrl || providerUrl
+          defaultProviderUrl || providerUrl
         )
       } catch (error) {
         const message = getErrorMessage(error.message)
@@ -193,7 +193,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileSmartContract,
-          customProviderUrl || providerUrl
+          defaultProviderUrl || providerUrl
         )
       } catch (error) {
         const message = getErrorMessage(error.message)
@@ -213,7 +213,7 @@ export async function getFileInfo(
       try {
         response = await ProviderInstance.getFileInfo(
           fileUrl,
-          customProviderUrl || providerUrl,
+          defaultProviderUrl || providerUrl,
           withChecksum
         )
       } catch (error) {
@@ -241,7 +241,7 @@ export async function downloadFile(
       asset.services[0].id,
       0,
       validOrderTx || asset.accessDetails.validOrderTx,
-      customProviderUrl || asset.services[0].serviceEndpoint,
+      defaultProviderUrl || asset.services[0].serviceEndpoint,
       signer,
       userCustomParameters
     )

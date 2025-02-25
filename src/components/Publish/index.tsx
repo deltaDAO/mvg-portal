@@ -23,7 +23,7 @@ import { getOceanConfig } from '@utils/ocean'
 import { validationSchema } from './_validation'
 import { useAbortController } from '@hooks/useAbortController'
 import { setNFTMetadataAndTokenURI } from '@utils/nft'
-import { customProviderUrl } from '../../../app.config'
+import { defaultProviderUrl } from '../../../app.config'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { useAutomation } from '../../@context/Automation/AutomationProvider'
 
@@ -160,7 +160,7 @@ export default function PublishPage({
         ddoEncrypted = await ProviderInstance.encrypt(
           ddo,
           ddo.chainId,
-          customProviderUrl || values.services[0].providerUrl.url,
+          defaultProviderUrl || values.services[0].providerUrl.url,
           newAbortController()
         )
       } catch (error) {
