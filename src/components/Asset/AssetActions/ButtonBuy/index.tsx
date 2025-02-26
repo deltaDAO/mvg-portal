@@ -33,7 +33,7 @@ export interface ButtonBuyProps {
   isAccountConnected?: boolean
   hasProviderFee?: boolean
   retry?: boolean
-  paymentMode?: PaymentMode
+  paymentMode?: PaymentMode | 'Pay per use'
 }
 
 function getConsumeHelpText(
@@ -194,7 +194,7 @@ export default function ButtonBuy({
     ? 'Retry'
     : action === 'download'
     ? hasPreviousOrder && assetType === 'saas'
-      ? paymentMode === PAYMENT_MODES.PAYPERUSE
+      ? paymentMode === PAYMENT_MODES.PAYPERUSE || paymentMode === 'Pay per use'
         ? `Buy access credit`
         : 'Go to service'
       : hasPreviousOrder
@@ -202,7 +202,7 @@ export default function ButtonBuy({
       : priceType === 'free'
       ? 'Get'
       : assetType === 'saas'
-      ? paymentMode === PAYMENT_MODES.PAYPERUSE
+      ? paymentMode === PAYMENT_MODES.PAYPERUSE || paymentMode === 'Pay per use'
         ? `Buy access credit`
         : `Subscribe ${
             assetTimeout === 'Forever' ? '' : ` for ${assetTimeout}`

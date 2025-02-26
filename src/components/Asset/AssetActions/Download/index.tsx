@@ -311,8 +311,10 @@ export default function Download({
                 )}
                 {!isInPurgatory && (
                   <>
-                    {asset?.metadata?.additionalInformation?.saas
-                      ?.paymentMode === PAYMENT_MODES.PAYPERUSE &&
+                    {(asset?.metadata?.additionalInformation?.saas
+                      ?.paymentMode === PAYMENT_MODES.PAYPERUSE ||
+                      asset?.metadata?.additionalInformation?.saas
+                        ?.paymentMode === 'Pay per use') &&
                       asset?.metadata?.additionalInformation?.saas
                         ?.redirectUrl && (
                         <div className={styles.payPerUseBtn}>
@@ -411,8 +413,10 @@ export default function Download({
             />
           )}
           {isContractingFeatureEnabled &&
-            asset?.metadata?.additionalInformation?.saas?.paymentMode ===
-              PAYMENT_MODES.PAYPERUSE &&
+            (asset?.metadata?.additionalInformation?.saas?.paymentMode ===
+              PAYMENT_MODES.PAYPERUSE ||
+              asset?.metadata?.additionalInformation?.saas?.paymentMode ===
+                'Pay per use') &&
             accountId &&
             isAccountIdWhitelisted && <ContractingProvider did={asset.id} />}
           {accountId && (
