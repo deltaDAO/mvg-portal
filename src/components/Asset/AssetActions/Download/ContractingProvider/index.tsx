@@ -70,6 +70,7 @@ export default function ContractingProvider(props: {
       signature,
       did
     )
+    console.log('count', count)
     setAccessCreditsCount(count)
     setIsRequesting(false)
   }, [contractingProviderEndpoint, activeAddress, signature, did])
@@ -88,7 +89,7 @@ export default function ContractingProvider(props: {
 
   return (
     <div className={styles.container}>
-      {accessCreditsCount ? (
+      {typeof accessCreditsCount !== 'undefined' ? (
         <Alert
           state="info"
           text={`You purchased access to this service **${accessCreditsCount} time${
