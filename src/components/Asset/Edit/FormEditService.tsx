@@ -1,16 +1,20 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
-import { Service } from '@oceanprotocol/lib'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import FormEditComputeService from './FormEditComputeService'
 import { defaultServiceComputeOptions } from './_constants'
 import styles from './index.module.css'
+import { Service } from 'src/@types/ddo/Service'
+import { getDefaultPolicies } from '@components/Publish/_utils'
+import appConfig from 'app.config.cjs'
+import { PolicyEditor } from '@components/@shared/PolicyEditor'
+import { LoggerInstance } from '@oceanprotocol/lib'
 
 export default function FormEditService({
   data,
@@ -25,6 +29,7 @@ export default function FormEditService({
 }): ReactElement {
   const formUniqueId = service.id // because BoxSelection component is not a Formik component
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
+  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
   const accessTypeOptionsTitles = getFieldContent('access', data).options
 
@@ -46,6 +51,24 @@ export default function FormEditService({
       checked: values.access === 'compute'
     }
   ]
+
+  useEffect(() => {
+    if (appConfig.ssiEnabled) {
+      getDefaultPolicies()
+        .then((policies) => {
+          const newVcPolicies = [
+            ...new Set(policies.concat(values.credentials.vcPolicies))
+          ]
+          setFieldValue('credentials.vcPolicies', newVcPolicies)
+          setDefaultPolicies(policies)
+        })
+        .catch((error) => {
+          LoggerInstance.error(error)
+          setFieldValue('credentials.vcPolicies', [])
+          setDefaultPolicies([])
+        })
+    }
+  }, [])
 
   return (
     <Form className={styles.form}>
@@ -108,9 +131,27 @@ export default function FormEditService({
       <Field
         {...getFieldContent('allow', data)}
         component={Input}
-        name="allow"
+        name="credentials.allow"
       />
-      <Field {...getFieldContent('deny', data)} component={Input} name="deny" />
+      <Field
+        {...getFieldContent('deny', data)}
+        component={Input}
+        name="credentials.deny"
+      />
+
+      {appConfig.ssiEnabled ? (
+        <PolicyEditor
+          label="SSI Policies"
+          credentials={values.credentials}
+          setCredentials={(newCredentials) =>
+            setFieldValue('credentials', newCredentials)
+          }
+          defaultPolicies={defaultPolicies}
+          name="credentials"
+        />
+      ) : (
+        <></>
+      )}
 
       <Field
         {...getFieldContent('usesConsumerParameters', data)}

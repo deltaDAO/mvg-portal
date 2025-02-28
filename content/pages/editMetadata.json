@@ -76,6 +76,18 @@
         "type": "credentials"
       },
       {
+        "name": "requestPolicies",
+        "label": "Request Policies",
+        "type": "policyList",
+        "placeholder": "e.g. PassPort"
+      },
+      {
+        "name": "customPolicies",
+        "label": "Custom Policies",
+        "type": "textarea",
+        "placeholder": "Example:\n\npackage access\n\ndefault allow=false\n\nallow {\n\tinput.credentials.password.placeOfBirth=\"Paris\"\n}"
+      },
+      {
         "name": "assetState",
         "label": "Asset Status",
         "help": "This asset will no longer be visible to other users and it won't be possible to purchase it.  More info available in our [docs](https://docs.oceanprotocol.com/core-concepts/did-ddo#state).",
@@ -92,8 +104,27 @@
       {
         "name": "license",
         "label": "License",
-        "placeholder": "e.g. MIT",
-        "help": "A SPDX identifier of the license applicable to this service."
+        "prominentHelp": false,
+        "type": "tabs",
+        "fields": [
+          {
+            "value": "url",
+            "title": "URL",
+            "label": "File",
+            "placeholder": "e.g. https://file.com/license.json",
+            "help": "A SPDX identifier of the license applicable to this service.",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "licenseTypeSelection",
+        "label": "Use Remote License",
+        "type": "checkbox",
+        "options": ["Select if you want to upload a license file"]
       },
       {
         "name": "accessTermsAndConditions",

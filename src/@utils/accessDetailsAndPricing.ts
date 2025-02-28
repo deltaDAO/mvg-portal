@@ -6,7 +6,6 @@ import {
   LoggerInstance,
   ProviderFees,
   ProviderInstance,
-  Service,
   ZERO_ADDRESS
 } from '@oceanprotocol/lib'
 import { getFixedBuyPrice } from './ocean/fixedRateExchange'
@@ -15,10 +14,12 @@ import {
   consumeMarketOrderFee,
   publisherMarketOrderFee,
   customProviderUrl
-} from '../../app.config'
+} from '../../app.config.cjs'
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
 import { getDummySigner } from './wallet'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 /**
  * This will be used to get price including fees before ordering
@@ -92,7 +93,11 @@ export async function getOrderPriceAndFees(
 
   // fetch price and swap fees
   if (accessDetails.type === 'fixed') {
-    const fixed = await getFixedBuyPrice(accessDetails, asset.chainId, signer)
+    const fixed = await getFixedBuyPrice(
+      accessDetails,
+      asset.credentialSubject.chainId,
+      signer
+    )
     orderPriceAndFee.price = accessDetails.price
     orderPriceAndFee.opcFee = fixed.oceanFeeAmount
     orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount

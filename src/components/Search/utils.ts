@@ -9,8 +9,6 @@ import {
 import queryString from 'query-string'
 import { CancelToken } from 'axios'
 import {
-  FilterByAccessOptions,
-  FilterByTypeOptions,
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'

@@ -16,6 +16,7 @@ import AssetTitle from '@shared/AssetListTitle'
 import NetworkName from '@shared/NetworkName'
 import HistoryTable from '@components/@shared/atoms/Table/HistoryTable'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
@@ -41,26 +42,28 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   },
   {
     name: 'Sales',
-    selector: (asset) => asset.stats?.orders || 0
+    selector: (asset) => asset.credentialSubject.stats?.orders || 0
   },
   {
     name: 'Price',
     selector: (asset) => {
       const price =
-        asset.stats?.price?.value ??
+        asset.credentialSubject.stats?.price?.value ??
         (asset.accessDetails[0]?.price
           ? parseFloat(asset.accessDetails[0]?.price)
           : 0)
-      const tokenSymbol = asset.stats?.price?.tokenSymbol || 'OCEAN'
+      const tokenSymbol =
+        asset.credentialSubject.stats?.price?.tokenSymbol || 'OCEAN'
       return `${price} ${tokenSymbol}`
     }
   },
   {
     name: 'Revenue',
     selector: (asset) =>
-      `${(asset.stats?.orders || 0) * (asset.stats?.price?.value || 0)} ${
-        asset.stats?.price?.tokenSymbol || 'OCEAN'
-      }`
+      `${
+        (asset.credentialSubject.stats?.orders || 0) *
+        (asset.credentialSubject.stats?.price?.value || 0)
+      } ${asset.credentialSubject.stats?.price?.tokenSymbol || 'OCEAN'}`
   }
 ]
 

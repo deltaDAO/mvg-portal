@@ -1,4 +1,4 @@
-import { allowFixedPricing, defaultAccessTerms } from '../../../app.config'
+import { allowFixedPricing } from '../../../app.config.cjs'
 import {
   FormPublishData,
   MetadataAlgorithmContainer,
@@ -11,8 +11,9 @@ import MetadataFields from './Metadata'
 import ServicesFields from './Services'
 import Preview from './Preview'
 import Submission from './Submission'
-import { ServiceComputeOptions } from '@oceanprotocol/lib'
 import contentFeedback from '../../../content/publish/feedback.json'
+import { Compute } from 'src/@types/ddo/Service'
+import { AdditionalDdoWizardTab } from '../@shared/AdditionalDdos'
 
 export const wizardSteps: StepContent[] = [
   {
@@ -32,17 +33,22 @@ export const wizardSteps: StepContent[] = [
   },
   {
     step: 4,
+    title: content.additionalDdos.title,
+    component: <AdditionalDdoWizardTab />
+  },
+  {
+    step: 5,
     title: content.preview.title,
     component: <Preview />
   },
   {
-    step: 5,
+    step: 6,
     title: content.submission.title,
     component: <Submission />
   }
 ]
 
-const computeOptions: ServiceComputeOptions = {
+const computeOptions: Compute = {
   allowRawAlgorithm: false,
   allowNetworkAccess: true,
   publisherTrustedAlgorithmPublishers: [],
@@ -69,7 +75,10 @@ export const initialValues: FormPublishData = {
     dockerImageCustomTag: '',
     dockerImageCustomEntrypoint: '',
     usesConsumerParameters: false,
-    consumerParameters: []
+    consumerParameters: [],
+    useRemoteLicense: false,
+    licenseUrl: [{ url: '', type: 'url' }],
+    uploadedLicense: undefined
   },
   services: [
     {
@@ -86,8 +95,13 @@ export const initialValues: FormPublishData = {
       computeOptions,
       usesConsumerParameters: false,
       consumerParameters: [],
-      allow: [],
-      deny: []
+      credentials: {
+        allow: [],
+        deny: [],
+        requestCredentials: [],
+        vcPolicies: [],
+        vpPolicies: []
+      }
     }
   ],
   pricing: {
@@ -95,7 +109,17 @@ export const initialValues: FormPublishData = {
     price: 0,
     type: allowFixedPricing === 'true' ? 'fixed' : 'free',
     freeAgreement: false
-  }
+  },
+  additionalDdos: [],
+  additionalDdosPageVisited: false,
+  credentials: {
+    allow: [],
+    deny: [],
+    requestCredentials: [],
+    vcPolicies: [],
+    vpPolicies: []
+  },
+  previewPageVisited: false
 }
 
 export const algorithmContainerPresets: MetadataAlgorithmContainer[] = [

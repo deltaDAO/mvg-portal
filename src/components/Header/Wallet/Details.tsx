@@ -8,11 +8,25 @@ import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
 import AddTokenList from './AddTokenList'
 import AddNetwork from '@components/@shared/AddNetwork'
+import { useSsiWallet } from '@context/SsiWallet'
+import { disconnectFromWallet } from '@utils/wallet/ssiWallet'
+import { LoggerInstance } from '@oceanprotocol/lib'
 
 export default function Details(): ReactElement {
   const { connector: activeConnector, address: accountId } = useAccount()
   const { connect } = useConnect()
   const { disconnect } = useDisconnect()
+
+  const { setSessionToken } = useSsiWallet()
+
+  async function disconnectSsiWallet() {
+    try {
+      disconnectFromWallet()
+      setSessionToken(undefined)
+    } catch (error) {
+      LoggerInstance.error(error)
+    }
+  }
 
   return (
     <div className={styles.details}>
@@ -59,10 +73,12 @@ export default function Details(): ReactElement {
             <Button
               style="text"
               size="small"
-              onClick={() => {
+              onClick={async () => {
                 disconnect()
+                await disconnectSsiWallet()
+
                 // disconnectOrbis(accountId)
-                location.reload()
+                // location.reload()
               }}
             >
               Disconnect

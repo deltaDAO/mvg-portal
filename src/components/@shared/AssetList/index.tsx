@@ -10,6 +10,7 @@ import { getServiceByName } from '@utils/ddo'
 import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
 import Time from '../atoms/Time'
 import Loader from '../atoms/Loader'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
@@ -45,21 +46,27 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Price',
     selector: (row) => {
-      return <Price price={row.stats.price} size="small" />
+      return <Price price={row.credentialSubject.stats.price} size="small" />
     },
     maxWidth: '7rem'
   },
   {
     name: 'Sales',
     selector: (row) => {
-      return <strong>{row.stats.orders < 0 ? 'N/A' : row.stats.orders}</strong>
+      return (
+        <strong>
+          {row.credentialSubject.stats.orders < 0
+            ? 'N/A'
+            : row.credentialSubject.stats.orders}
+        </strong>
+      )
     },
     maxWidth: '7rem'
   },
   {
     name: 'Published',
     selector: (row) => {
-      return <Time date={row.nft.created} />
+      return <Time date={row.credentialSubject.nft.created} />
     },
     maxWidth: '7rem'
   }

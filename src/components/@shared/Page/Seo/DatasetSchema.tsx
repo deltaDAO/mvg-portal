@@ -17,15 +17,18 @@ const DatasetSchema = (): object => {
   )
 
   // only show schema on main nets
-  const isMainNetwork = networksMain.includes(asset?.chainId)
+  const isMainNetwork = networksMain.includes(asset?.credentialSubject?.chainId)
 
-  const isDataset = asset?.metadata?.type === 'dataset'
+  const isDataset = asset?.credentialSubject?.metadata?.type === 'dataset'
 
   if (!asset || !isMainNetwork || !isDataset || isInPurgatory) return null
 
   let isDownloadable = false
-  if (asset?.services && Array.isArray(asset?.services)) {
-    for (const service of asset.services) {
+  if (
+    asset?.credentialSubject?.services &&
+    Array.isArray(asset?.credentialSubject?.services)
+  ) {
+    for (const service of asset.credentialSubject.services) {
       if (service?.type === 'access') {
         isDownloadable = true
         break
@@ -33,18 +36,25 @@ const DatasetSchema = (): object => {
     }
   }
 
+  const description = asset?.credentialSubject?.metadata?.description?.[
+    '@value'
+  ]?.substring(0, 5000)
+
   // https://developers.google.com/search/docs/advanced/structured-data/dataset
   const datasetSchema = {
     '@context': 'https://schema.org/',
     '@type': 'Dataset',
-    name: asset?.metadata?.name,
+    name: asset?.credentialSubject?.metadata?.name,
     description: removeMarkdown(
-      asset?.metadata?.description?.substring(0, 5000) || ''
+      asset?.credentialSubject?.metadata?.description?.['@value']?.substring(
+        0,
+        5000
+      ) || ''
     ),
-    keywords: asset?.metadata?.tags,
-    datePublished: asset?.metadata?.created,
-    dateModified: asset?.metadata?.updated,
-    license: asset?.metadata?.license,
+    keywords: asset?.credentialSubject?.metadata?.tags,
+    datePublished: asset?.credentialSubject?.metadata?.created,
+    dateModified: asset?.credentialSubject?.metadata?.updated,
+    license: asset?.credentialSubject?.metadata?.license,
     ...(asset?.accessDetails[0]?.type === 'free'
       ? { isAccessibleForFree: true }
       : {
@@ -59,7 +69,7 @@ const DatasetSchema = (): object => {
         }),
     creator: {
       '@type': 'Organization',
-      name: asset?.metadata?.author
+      name: asset?.credentialSubject?.metadata?.author
     },
     ...(isDownloadable && {
       distribution: [

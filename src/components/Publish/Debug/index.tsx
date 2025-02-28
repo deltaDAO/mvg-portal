@@ -4,13 +4,13 @@ import { FormPublishData } from '../_types'
 import { useFormikContext } from 'formik'
 import { transformPublishFormToDdo } from '../_utils'
 import styles from './index.module.css'
-import { DDO } from '@oceanprotocol/lib'
 import { previewDebugPatch } from '@utils/ddo'
+import { Asset } from 'src/@types/Asset'
 
 export default function Debug(): ReactElement {
   const { values } = useFormikContext<FormPublishData>()
   const [valuePreview, setValuePreview] = useState({})
-  const [ddo, setDdo] = useState<DDO>()
+  const [ddo, setDdo] = useState<Asset>()
 
   useEffect(() => {
     async function makeDdo() {

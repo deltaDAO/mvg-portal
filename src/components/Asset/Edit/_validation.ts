@@ -34,7 +34,34 @@ export const metadataValidationSchema = Yup.object().shape({
   }),
   allow: Yup.array().of(Yup.string()).nullable(),
   deny: Yup.array().of(Yup.string()).nullable(),
-  retireAsset: Yup.string()
+  retireAsset: Yup.string(),
+  useRemoteLicense: Yup.boolean(),
+  licenseUrl: Yup.array().when('useRemoteLicense', {
+    is: false,
+    then: Yup.array().test('urlTest', (array, context) => {
+      if (!array) {
+        return context.createError({ message: `Need a valid url` })
+      }
+      const { url, valid } = array?.[0] as {
+        url: string
+        type: 'url'
+        valid: boolean
+      }
+      if (!url || url?.length === 0 || !valid) {
+        return context.createError({ message: `Need a valid url` })
+      }
+      return true
+    })
+  }),
+  uploadedLicense: Yup.object().when('useRemoteLicense', {
+    is: true,
+    then: Yup.object().test('remoteTest', (license, context) => {
+      if (!license) {
+        return context.createError({ message: `Need a license file` })
+      }
+      return true
+    })
+  })
 })
 
 export const serviceValidationSchema = Yup.object().shape({

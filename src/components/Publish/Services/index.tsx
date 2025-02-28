@@ -1,12 +1,16 @@
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import content from '../../../../content/publish/form.json'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
 import { getFieldContent } from '@utils/form'
 import { FormPublishData } from '../_types'
+import { useMarketMetadata } from '@context/MarketMetadata'
+import { PolicyEditor } from '@components/@shared/PolicyEditor'
+import { getDefaultPolicies } from '../_utils'
+import { LoggerInstance } from '@oceanprotocol/lib'
 
 const accessTypeOptionsTitles = getFieldContent(
   'access',
@@ -14,6 +18,9 @@ const accessTypeOptionsTitles = getFieldContent(
 ).options
 
 export default function ServicesFields(): ReactElement {
+  const { appConfig } = useMarketMetadata()
+  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
+
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
 
@@ -53,6 +60,21 @@ export default function ServicesFields(): ReactElement {
       values.services[0].algorithmPrivacy === true ? 'compute' : 'access'
     )
   }, [values.services[0].algorithmPrivacy, setFieldValue])
+
+  useEffect(() => {
+    if (appConfig.ssiEnabled) {
+      getDefaultPolicies()
+        .then((policies) => {
+          setFieldValue('services[0].credentials.vcPolicies', policies)
+          setDefaultPolicies(policies)
+        })
+        .catch((error) => {
+          LoggerInstance.error(error)
+          setFieldValue('services[0].credentials.vcPolicies', [])
+          setDefaultPolicies([])
+        })
+    }
+  }, [])
 
   return (
     <>
@@ -97,21 +119,38 @@ export default function ServicesFields(): ReactElement {
         component={Input}
         name="services[0].timeout"
       />
+
+      <Field
+        {...getFieldContent('allow', content.credentials.fields)}
+        component={Input}
+        name="services[0].credentials.allow"
+      />
+      <Field
+        {...getFieldContent('deny', content.credentials.fields)}
+        component={Input}
+        name="services[0].credentials.deny"
+      />
+
+      {appConfig.ssiEnabled ? (
+        <PolicyEditor
+          label="SSI Policies"
+          credentials={values.services[0].credentials}
+          setCredentials={(newCredentials) =>
+            setFieldValue('services[0].credentials', newCredentials)
+          }
+          name="services[0].credentials"
+          defaultPolicies={defaultPolicies}
+        />
+      ) : (
+        <></>
+      )}
+
       <Field
         {...getFieldContent('usesConsumerParameters', content.services.fields)}
         component={Input}
         name="services[0].usesConsumerParameters"
       />
-      <Field
-        {...getFieldContent('allow', content.services.fields)}
-        component={Input}
-        name="services[0].allow"
-      />
-      <Field
-        {...getFieldContent('deny', content.services.fields)}
-        component={Input}
-        name="services[0].deny"
-      />
+
       {values.services[0].usesConsumerParameters && (
         <Field
           {...getFieldContent(
@@ -122,15 +161,6 @@ export default function ServicesFields(): ReactElement {
           name="services[0].consumerParameters"
         />
       )}
-
-      {/*
-       Licensing and Terms
-      */}
-      <Field
-        {...getFieldContent('license', content.metadata.fields)}
-        component={Input}
-        name="metadata.license"
-      />
     </>
   )
 }

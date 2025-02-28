@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, RefObject } from 'react'
+import { FormEvent, ReactElement, RefObject, useEffect } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
@@ -56,7 +56,8 @@ export default function Actions({
   const isContinueDisabled =
     (values.user.stepCurrent === 1 && errors.metadata !== undefined) ||
     (values.user.stepCurrent === 2 && errors.services !== undefined) ||
-    (values.user.stepCurrent === 3 && errors.pricing !== undefined)
+    (values.user.stepCurrent === 3 && errors.pricing !== undefined) ||
+    (values.user.stepCurrent === 4 && errors.additionalDdos !== undefined)
 
   const hasSubmitError =
     values.feedback?.[1].status === 'error' ||

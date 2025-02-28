@@ -10,6 +10,7 @@ import styles from './index.module.css'
 import { getServiceByName } from '@utils/ddo'
 import { useUserPreferences } from '@context/UserPreferences'
 import { formatNumber } from '@utils/numbers'
+import { AssetExtended } from 'src/@types/AssetExtended'
 import {
   getAccessDetails,
   getOrderPriceAndFees
@@ -27,12 +28,12 @@ export default function AssetTeaser({
   noPublisher,
   noDescription
 }: AssetTeaserProps): ReactElement {
-  const { name, type, description } = asset.metadata
-  const { datatokens } = asset
+  const { name, type, description } = asset.credentialSubject.metadata
+  const { datatokens } = asset.credentialSubject
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
-  const owner = asset.nft?.owner
-  const { orders, allocated, price } = asset.stats || {}
+  const owner = asset.credentialSubject.nft?.owner
+  const { orders, allocated, price } = asset.credentialSubject.stats || {}
   const [accessDetails, setAccessDetails] = useState(null)
   const [orderPriceAndFees, setOrderPriceAndFees] = useState(null)
   const [isUnsupportedPricing, setIsUnsupportedPricing] = useState(false)
@@ -41,21 +42,24 @@ export default function AssetTeaser({
 
   useEffect(() => {
     async function fetchAccessDetails() {
-      if (asset.services?.length > 0) {
-        const details = await getAccessDetails(asset.chainId, asset.services[0])
+      if (asset.credentialSubject?.services?.length > 0) {
+        const details = await getAccessDetails(
+          asset.credentialSubject?.chainId,
+          asset.credentialSubject?.services[0]
+        )
         setAccessDetails(details)
       }
     }
 
     fetchAccessDetails()
-  }, [asset.chainId, asset.services])
+  }, [asset.credentialSubject?.chainId, asset.credentialSubject?.services])
 
   useEffect(() => {
     async function fetchOrderPriceAndFees() {
-      if (asset.services?.length > 0) {
+      if (asset.credentialSubject?.services?.length > 0) {
         const orderPrice = await getOrderPriceAndFees(
           asset,
-          asset.services[0],
+          asset.credentialSubject?.services[0],
           accessDetails,
           owner
         )
@@ -63,14 +67,18 @@ export default function AssetTeaser({
       }
     }
     if (accessDetails) fetchOrderPriceAndFees()
-  }, [asset.chainId, asset.services, accessDetails])
+  }, [
+    asset.credentialSubject?.chainId,
+    asset.credentialSubject?.services,
+    accessDetails
+  ])
 
   useEffect(() => {
     const unsupported =
-      !asset.services.length ||
+      !asset.credentialSubject?.services.length ||
       (accessDetails && accessDetails.type === 'NOT_SUPPORTED')
     setIsUnsupportedPricing(unsupported)
-  }, [asset.services, price?.value, accessDetails])
+  }, [asset.credentialSubject?.services, price?.value, accessDetails])
 
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
@@ -94,7 +102,7 @@ export default function AssetTeaser({
         {!noDescription && (
           <div className={styles.content}>
             <Dotdotdot tagName="p" clamp={3}>
-              {removeMarkdown(description?.substring(0, 300) || '')}
+              {removeMarkdown(description?.['@value']?.substring(0, 300) || '')}
             </Dotdotdot>
           </div>
         )}
@@ -149,7 +157,7 @@ export default function AssetTeaser({
             ) : null}
           </div>
           <NetworkName
-            networkId={asset.chainId}
+            networkId={asset.credentialSubject?.chainId}
             className={styles.networkName}
           />
         </footer>

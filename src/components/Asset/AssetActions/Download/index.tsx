@@ -7,10 +7,8 @@ import { secondsToString } from '@utils/ddo'
 import styles from './index.module.css'
 import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import {
-  AssetPrice,
   FileInfo,
   LoggerInstance,
-  Service,
   UserCustomParameters,
   ZERO_ADDRESS
 } from '@oceanprotocol/lib'
@@ -40,8 +38,14 @@ import Input from '@components/@shared/FormInput'
 import CalculateButtonBuy from '../CalculateButtonBuy'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
-import { consumeMarketFixedSwapFee } from 'app.config'
+import { consumeMarketFixedSwapFee } from 'app.config.cjs'
 import { Row } from '../Row'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { AssetPrice } from 'src/@types/Asset'
+import { useSsiWallet } from '@context/SsiWallet'
+import { checkSessionId } from '@utils/wallet/policyServer'
+import { AssetActionCheckCredentials } from '../CheckCredentials'
 
 export default function Download({
   accountId,
@@ -90,14 +94,16 @@ export default function Download({
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
 
+  const { verifierSessionId, setVerifierSessionId } = useSsiWallet()
+
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
     accessDetails.type === 'NOT_SUPPORTED' ||
     (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
 
   useEffect(() => {
-    Number(asset.nft.state) === 4 && setIsOrderDisabled(true)
-  }, [asset.nft.state])
+    Number(asset.credentialSubject.nft.state) === 4 && setIsOrderDisabled(true)
+  }, [asset.credentialSubject.nft.state])
 
   useEffect(() => {
     if (isUnsupportedPricing) return
@@ -256,29 +262,31 @@ export default function Download({
     />
   )
 
-  const PurchaseButton = ({ isValid }: { isValid?: boolean }) => (
-    <ButtonBuy
-      action="download"
-      disabled={isDisabled || !isValid}
-      hasPreviousOrder={isOwned}
-      hasDatatoken={hasDatatoken}
-      btSymbol={accessDetails.baseToken?.symbol}
-      dtSymbol={asset.datatokens[serviceIndex]?.symbol} // TODO - check datatokens
-      dtBalance={dtBalance}
-      type="submit"
-      assetTimeout={secondsToString(service.timeout)}
-      assetType={asset.metadata?.type}
-      stepText={statusText}
-      isLoading={isLoading}
-      priceType={accessDetails.type}
-      isConsumable={accessDetails.isPurchasable}
-      isBalanceSufficient={isBalanceSufficient}
-      consumableFeedback={consumableFeedback}
-      retry={retry}
-      isSupportedOceanNetwork={isSupportedOceanNetwork}
-      isAccountConnected={isConnected}
-    />
-  )
+  const PurchaseButton = ({ isValid }: { isValid?: boolean }) => {
+    return (
+      <ButtonBuy
+        action="download"
+        disabled={isDisabled || !isValid}
+        hasPreviousOrder={isOwned}
+        hasDatatoken={hasDatatoken}
+        btSymbol={accessDetails.baseToken?.symbol}
+        dtSymbol={asset.credentialSubject?.datatokens[serviceIndex]?.symbol} // TODO - check datatokens
+        dtBalance={dtBalance}
+        type="submit"
+        assetTimeout={secondsToString(service.timeout)}
+        assetType={asset.credentialSubject?.metadata?.type}
+        stepText={statusText}
+        isLoading={isLoading}
+        priceType={accessDetails.type}
+        isConsumable={accessDetails.isPurchasable}
+        isBalanceSufficient={isBalanceSufficient}
+        consumableFeedback={consumableFeedback}
+        retry={retry}
+        isSupportedOceanNetwork={isSupportedOceanNetwork}
+        isAccountConnected={isConnected}
+      />
+    )
+  }
 
   const AssetAction = ({ asset }: { asset: AssetExtended }) => {
     const { isValid } = useFormikContext()
@@ -323,7 +331,6 @@ export default function Download({
 
   const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
     const { isValid } = useFormikContext()
-
     return (
       <div style={{ textAlign: 'left', marginTop: '2%' }}>
         {!isPriceLoading && new Decimal(price.value || 0).greaterThan(0) && (
@@ -382,11 +389,19 @@ export default function Download({
     <Formik
       initialValues={{
         dataServiceParams: getDefaultValues(service.consumerParameters),
-        termsAndConditions: false
+        termsAndConditions: false,
+        acceptPublishingLicense: false
       }}
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={async (values) => {
+        try {
+          const result = await checkSessionId(verifierSessionId)
+        } catch (error) {
+          setVerifierSessionId(undefined)
+          return
+        }
+
         const dataServiceParams = parseConsumerParameterValues(
           values?.dataServiceParams,
           service.consumerParameters
@@ -410,16 +425,30 @@ export default function Download({
           </div>
           {!isFullPriceLoading && (
             <>
-              <AssetActionBuy asset={asset} />
-              <Field
-                component={Input}
-                name="termsAndConditions"
-                type="checkbox"
-                options={['Terms and Conditions']}
-                prefixes={['I agree to the']}
-                actions={['/terms']}
-                disabled={isLoading}
-              />
+              {verifierSessionId && verifierSessionId?.length > 0 ? (
+                <>
+                  <AssetActionBuy asset={asset} />
+                  <Field
+                    component={Input}
+                    name="termsAndConditions"
+                    type="checkbox"
+                    options={['Terms and Conditions']}
+                    prefixes={['I agree to the']}
+                    actions={['/terms']}
+                    disabled={isLoading}
+                  />
+                  <Field
+                    component={Input}
+                    name="acceptPublishingLicense"
+                    type="checkbox"
+                    options={['Publishing License']}
+                    prefixes={['I agree the']}
+                    disabled={isLoading}
+                  />
+                </>
+              ) : (
+                <AssetActionCheckCredentials asset={asset} />
+              )}
             </>
           )}
           <div className={styles.consumerParameters}>
@@ -429,11 +458,11 @@ export default function Download({
           {isOwned && (
             <div className={styles.confettiContainer}>
               <SuccessConfetti
-                success={`You successfully bought this ${asset.metadata.type} and are now able to download it.`}
+                success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
               />
             </div>
           )}
-          {asset.metadata?.type === 'algorithm' && (
+          {asset.credentialSubject?.metadata?.type === 'algorithm' && (
             <AlgorithmDatasetsListForCompute
               asset={asset}
               service={service}

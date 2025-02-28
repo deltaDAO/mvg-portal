@@ -1,9 +1,19 @@
-module.exports = (phase, { defaultConfig }) => {
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+
+export default (phase, { defaultConfig }) => {
   /**
    * @type {import('next').NextConfig}
    */
   const nextConfig = {
+    experimental: {
+      esmExternals: 'loose'
+    },
     webpack: (config, options) => {
+      const { isServer } = options
+      if (!isServer) {
+        config.resolve.fallback.fs = false
+      }
       config.module.rules.push(
         {
           test: /\.svg$/,
@@ -60,8 +70,38 @@ module.exports = (phase, { defaultConfig }) => {
           permanent: true
         }
       ]
-    }
+    },
 
+    async rewrites() {
+      const walletApiBase =
+        process.env.NEXT_PUBLIC_SSI_WALLET_API || 'https://wallet.demo.walt.id'
+
+      const providerUrl = process.env.NEXT_PUBLIC_PROVIDER_URL
+
+      const ssiPolicyServer =
+        process.env.NEXT_PUBLIC_SSI_POLICY_SERVER ||
+        'http://ocean-node-vm2.oceanenterprise.io:8100'
+
+      const routes = [
+        {
+          source: '/ssi/:path*',
+          destination: `${walletApiBase}/:path*`
+        },
+        {
+          source: '/provider/:path*',
+          destination: `${providerUrl}/:path*`
+        },
+        {
+          source: '/policy/:path*',
+          destination: `${ssiPolicyServer}/:path*`
+        }
+      ]
+
+      console.log('Routes:')
+      console.log(routes)
+
+      return routes
+    }
     // Prefer loading of ES Modules over CommonJS
     // https://nextjs.org/blog/next-11-1#es-modules-support
     // experimental: { esmExternals: true }

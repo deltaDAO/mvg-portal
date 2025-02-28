@@ -35,9 +35,10 @@ export default function ComputeDownloads({
           row.asset.id,
           row.asset.datatokens[0].address,
           row.asset.chainId,
-          row.asset.stats.price.tokenSymbol || 'OCEAN',
-          row.asset.stats.price.tokenAddress || config.oceanTokenAddress,
-          row.asset.stats.price.value,
+          row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
+          row.asset.credentialSubject.stats.price.tokenAddress ||
+            config.oceanTokenAddress,
+          row.asset.credentialSubject.stats.price.value,
           accountId
         )
         pdfUrlsResponse = await getPdf(response)
@@ -62,9 +63,10 @@ export default function ComputeDownloads({
           row.asset.id,
           row.asset.datatokens[0].address,
           row.asset.chainId,
-          row.asset.stats.price.tokenSymbol || 'OCEAN',
-          row.asset.stats.price.tokenAddress || config.oceanTokenAddress,
-          row.asset.stats.price.value,
+          row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
+          row.asset.credentialSubject.stats.price.tokenAddress ||
+            config.oceanTokenAddress,
+          row.asset.credentialSubject.stats.price.value,
           accountId
         )
         setJsonInvoices({ ...jsonInvoices, [row.asset.id]: response })

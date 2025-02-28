@@ -1,6 +1,6 @@
 import { ReactElement } from 'react'
-import { AssetPrice } from '@oceanprotocol/lib'
 import PriceUnit from './PriceUnit'
+import { AssetPrice } from 'src/@types/Asset'
 
 export default function Price({
   price,

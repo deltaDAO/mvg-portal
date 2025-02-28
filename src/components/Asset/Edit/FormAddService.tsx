@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
@@ -10,6 +10,10 @@ import IconCompute from '@images/compute.svg'
 import FormEditComputeService from './FormEditComputeService'
 import { defaultServiceComputeOptions } from './_constants'
 import styles from './index.module.css'
+import { getDefaultPolicies } from '@components/Publish/_utils'
+import appConfig from 'app.config.cjs'
+import { PolicyEditor } from '@components/@shared/PolicyEditor'
+import { LoggerInstance } from '@oceanprotocol/lib'
 
 export default function FormAddService({
   data,
@@ -19,6 +23,7 @@ export default function FormAddService({
   chainId: number
 }): ReactElement {
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
+  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
   const accessTypeOptionsTitles = getFieldContent('access', data).options
 
@@ -40,6 +45,21 @@ export default function FormAddService({
       checked: values.access === 'compute'
     }
   ]
+
+  useEffect(() => {
+    if (appConfig.ssiEnabled) {
+      getDefaultPolicies()
+        .then((policies) => {
+          setFieldValue('credentials.vcPolicies', policies)
+          setDefaultPolicies(policies)
+        })
+        .catch((error) => {
+          LoggerInstance.error(error)
+          setFieldValue('credentials.vcPolicies', [])
+          setDefaultPolicies([])
+        })
+    }
+  }, [])
 
   return (
     <Form className={styles.form}>
@@ -99,12 +119,30 @@ export default function FormAddService({
         name="timeout"
       />
 
+      {appConfig.ssiEnabled ? (
+        <PolicyEditor
+          label="SSI Policies"
+          credentials={values.credentials}
+          setCredentials={(newCredentials) =>
+            setFieldValue('credentials', newCredentials)
+          }
+          name="credentials"
+          defaultPolicies={defaultPolicies}
+        />
+      ) : (
+        <></>
+      )}
+
       <Field
         {...getFieldContent('allow', data)}
         component={Input}
-        name="allow"
+        name="credentials.allow"
       />
-      <Field {...getFieldContent('deny', data)} component={Input} name="deny" />
+      <Field
+        {...getFieldContent('deny', data)}
+        component={Input}
+        name="credentials.deny"
+      />
 
       <Field
         {...getFieldContent('usesConsumerParameters', data)}

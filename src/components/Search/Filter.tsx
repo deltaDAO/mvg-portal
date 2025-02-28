@@ -13,7 +13,7 @@ import styles from './Filter.module.css'
 import { useFilter, Filters } from '@context/Filter'
 import Input from '@components/@shared/FormInput'
 import Accordion from '@components/@shared/Accordion'
-import customFilters from '../../../filters.config'
+import customFilters from '../../../filters.config.cjs'
 
 const cx = classNames.bind(styles)
 

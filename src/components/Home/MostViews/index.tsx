@@ -11,6 +11,7 @@ import AssetList from '@shared/AssetList'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { sortAssets } from '@utils/index'
 import axios, { AxiosResponse } from 'axios'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 export default function MostViews(): ReactElement {
   const [loading, setLoading] = useState<boolean>()

@@ -82,5 +82,32 @@ module.exports = {
 
   // Display alert banner for the developer preview deployment
   showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false',
-  oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
+
+  encryptAsset: process.env.NEXT_PUBLIC_ENCRYPT_ASSET
+    ? process.env.NEXT_PUBLIC_ENCRYPT_ASSET === 'true'
+    : false,
+
+  // This enables / disables the ssi support
+  ssiEnabled: process.env.NEXT_PUBLIC_SSI_ENABLED
+    ? process.env.NEXT_PUBLIC_SSI_ENABLED === 'true'
+    : false,
+  ssiWalletApi:
+    process.env.NEXT_PUBLIC_SSI_WALLET_API || 'https://wallet.demo.walt.id',
+  ssiDefaultPolicyUrl:
+    process.env.NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL ||
+    'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
+  ssiPolicyServer:
+    process.env.NEXT_PUBLIC_SSI_POLICY_SERVER ||
+    'http://ocean-node-vm2.oceanenterprise.io:8100',
+
+  ipfsApiKey: process.env.NEXT_PUBLIC_IPFS_API_KEY,
+  ipfsSecretApiKey: process.env.NEXT_PUBLIC_IPFS_SECRET_API_KEY,
+  ipfsGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY,
+  ipfsUnpinFiles: process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES
+    ? process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES === 'true'
+    : false,
+
+  oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
+
+  opaServer: process.env.NEXT_PUBLIC_PS_OPA_SERVER
 }

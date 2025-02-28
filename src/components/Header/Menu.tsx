@@ -11,6 +11,7 @@ import MenuDropdown from '@components/@shared/MenuDropdown'
 import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
+import { SsiWallet } from '@components/Header/SsiWallet'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -73,6 +74,7 @@ export default function Menu(): ReactElement {
         {appConfig.chainIdsSupported.length > 1 && <Networks />}
         <Wallet />
         <UserPreferences />
+        <SsiWallet />
       </div>
     </nav>
   )

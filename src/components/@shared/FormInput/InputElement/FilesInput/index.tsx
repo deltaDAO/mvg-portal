@@ -26,7 +26,7 @@ export default function FilesInput(props: InputProps): ReactElement {
 
   const providerUrl = props.form?.values?.services
     ? props.form?.values?.services[0].providerUrl.url
-    : asset.services[0].serviceEndpoint
+    : asset.credentialSubject?.services[0].serviceEndpoint
 
   const storageType = field.value[0].type
   const query = field.value[0].query || undefined

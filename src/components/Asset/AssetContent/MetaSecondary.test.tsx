@@ -7,7 +7,7 @@ describe('src/components/Asset/AssetContent/MetaSecondary.tsx', () => {
   it('renders tags', () => {
     render(<MetaSecondary ddo={datasetAquarius} />)
     expect(
-      screen.getByText(datasetAquarius.metadata.tags[0])
+      screen.getByText(datasetAquarius.credentialSubject.metadata.tags[0])
     ).toBeInTheDocument()
   })
   it('renders download sample button', () => {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Router as FactoryRouter } from '@oceanprotocol/lib'
+import { Router as FactoryRouter, LoggerInstance } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 import { useNetwork, useSigner } from 'wagmi'
 import { ethers } from 'ethers'

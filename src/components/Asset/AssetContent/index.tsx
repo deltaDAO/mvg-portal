@@ -19,6 +19,8 @@ import { useAccount } from 'wagmi'
 import { decodePublish } from '@utils/invoice/publishInvoice'
 import ServiceCard from './ServiceCard'
 import { getPdf } from '@utils/invoice/createInvoice'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
 
 export default function AssetContent({
   asset
@@ -42,7 +44,11 @@ export default function AssetContent({
       setLoadingInvoice(true)
       let pdfUrlResponse: Blob[]
       if (!jsonInvoice) {
-        const response = await decodePublish(id, tx, asset.chainId)
+        const response = await decodePublish(
+          id,
+          tx,
+          asset.credentialSubject.chainId
+        )
         setJsonInvoice(jsonInvoice)
         pdfUrlResponse = await getPdf([response])
       } else {
@@ -63,7 +69,11 @@ export default function AssetContent({
     try {
       setLoadingInvoiceJson(true)
       if (!jsonInvoice) {
-        const response = await decodePublish(id, tx, asset.chainId)
+        const response = await decodePublish(
+          id,
+          tx,
+          asset.credentialSubject.chainId
+        )
         setJsonInvoice(response)
       }
     } catch (error) {
@@ -77,15 +87,20 @@ export default function AssetContent({
   useEffect(() => {
     if (!receipts.length) return
 
-    const publisher = receipts?.find((e) => e.type === 'METADATA_CREATED')?.nft
-      ?.owner
+    const publisher = receipts?.find((e) => e.type === 'METADATA_CREATED')
+      ?.credentialSubject.nft?.owner
     setNftPublisher(publisher)
   }, [receipts])
 
+  const isDescriptionIsString =
+    typeof asset.credentialSubject?.metadata?.description === 'string'
   return (
     <>
       <div className={styles.networkWrap}>
-        <NetworkName networkId={asset.chainId} className={styles.network} />
+        <NetworkName
+          networkId={asset.credentialSubject?.chainId}
+          className={styles.network}
+        />
       </div>
 
       <article className={styles.grid}>
@@ -100,11 +115,27 @@ export default function AssetContent({
                 text={content.asset.description}
                 state="error"
               />
+            ) : isDescriptionIsString ? (
+              <>
+                <Markdown
+                  className={styles.description}
+                  text={
+                    asset.credentialSubject?.metadata?.description['@value']
+                  }
+                  blockImages={!allowExternalContent}
+                />
+                <MetaSecondary ddo={asset} />
+              </>
             ) : (
               <>
                 <Markdown
                   className={styles.description}
-                  text={asset.metadata?.description || ''}
+                  text={
+                    (
+                      asset.credentialSubject?.metadata
+                        ?.description as LanguageValueObject
+                    )['@value'] || ''
+                  }
                   blockImages={!allowExternalContent}
                 />
                 <MetaSecondary ddo={asset} />
@@ -125,20 +156,22 @@ export default function AssetContent({
                   <h3>Available services:</h3>
                   <h4>Please select one of the following:</h4>
                   <div className={styles.servicesGrid}>
-                    {asset.services.map((service, index) => (
-                      <ServiceCard
-                        key={service.id}
-                        service={service}
-                        accessDetails={asset.accessDetails[index]}
-                        onClick={() => setSelectedService(index)}
-                      />
-                    ))}
+                    {asset.credentialSubject?.services?.map(
+                      (service, index) => (
+                        <ServiceCard
+                          key={service.id}
+                          service={service}
+                          accessDetails={asset.accessDetails[index]}
+                          onClick={() => setSelectedService(index)}
+                        />
+                      )
+                    )}
                   </div>
                 </>
               ) : (
                 <AssetActions
                   asset={asset}
-                  service={asset.services[selectedService]}
+                  service={asset.credentialSubject?.services[selectedService]}
                   accessDetails={asset.accessDetails[selectedService]}
                   serviceIndex={selectedService}
                   handleBack={() => setSelectedService(undefined)}
@@ -167,7 +200,12 @@ export default function AssetContent({
                 <Button
                   style="text"
                   size="small"
-                  onClick={() => handleGeneratePdf(asset.id, asset.event.tx)}
+                  onClick={() =>
+                    handleGeneratePdf(
+                      asset.id,
+                      asset.credentialSubject.event.txid
+                    )
+                  }
                   disabled={loadingInvoice}
                 >
                   {loadingInvoice
@@ -193,7 +231,12 @@ export default function AssetContent({
                 <Button
                   style="text"
                   size="small"
-                  onClick={() => handleGenerateJson(asset.id, asset.event.tx)}
+                  onClick={() =>
+                    handleGenerateJson(
+                      asset.id,
+                      asset.credentialSubject.event.txid
+                    )
+                  }
                   disabled={loadingInvoiceJson}
                 >
                   {loadingInvoiceJson
@@ -205,7 +248,7 @@ export default function AssetContent({
           )}
 
           <Web3Feedback
-            networkId={asset.chainId}
+            networkId={asset.credentialSubject?.chainId}
             accountId={accountId}
             isAssetNetwork={isAssetNetwork}
           />

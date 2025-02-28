@@ -7,7 +7,7 @@ import { getDefaultClient } from 'connectkit'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
-import { chainIdsSupported } from '../../../app.config'
+import { chainIdsSupported } from '../../../app.config.cjs'
 
 export async function getDummySigner(chainId: number): Promise<Signer> {
   if (typeof chainId !== 'number') {

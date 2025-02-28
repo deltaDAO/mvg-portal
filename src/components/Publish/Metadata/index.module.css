@@ -12,3 +12,13 @@
 .gdpr > div {
   margin-bottom: calc(var(--spacer) / 2);
 }
+
+.license {
+  display: flex;
+  align-items: center;
+}
+
+.licenseItem {
+  height: 40px;
+  width: 100%;
+}

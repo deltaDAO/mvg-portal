@@ -9,6 +9,7 @@ import styles from './Details.module.css'
 import { useCancelToken } from '@hooks/useCancelToken'
 import MetaItem from '../../../Asset/AssetContent/MetaItem'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import { Asset as AssetType } from 'src/@types/Asset'
 
 function Asset({
   title,
@@ -49,9 +50,9 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
 
   useEffect(() => {
     async function getAlgoMetadata() {
-      const ddo = await getAsset(job.algoDID, newCancelToken())
-      setAlgoDtSymbol(ddo.datatokens[0].symbol)
-      setAlgoName(ddo?.metadata.name)
+      const ddo = (await getAsset(job.algoDID, newCancelToken())) as AssetType
+      setAlgoDtSymbol(ddo.credentialSubject.datatokens[0].symbol)
+      setAlgoName(ddo?.credentialSubject.metadata.name)
     }
     getAlgoMetadata()
   }, [appConfig.metadataCacheUri, job.algoDID, newCancelToken])

@@ -6,14 +6,18 @@ export default function AssetStats() {
 
   return (
     <footer className={styles.stats}>
-      {!asset?.stats || asset?.stats?.orders < 0 ? (
+      {!asset?.credentialSubject.stats ||
+      asset?.credentialSubject.stats?.orders < 0 ? (
         <span className={styles.stat}>N/A</span>
-      ) : asset?.stats?.orders === 0 ? (
+      ) : asset?.credentialSubject.stats?.orders === 0 ? (
         <span className={styles.stat}>No sales yet</span>
       ) : (
         <span className={styles.stat}>
-          <span className={styles.number}>{asset.stats.orders}</span> sale
-          {asset.stats.orders === 1 ? '' : 's'}
+          <span className={styles.number}>
+            {asset.credentialSubject.stats.orders}
+          </span>{' '}
+          sale
+          {asset.credentialSubject.stats.orders === 1 ? '' : 's'}
         </span>
       )}
     </footer>

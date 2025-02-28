@@ -1,0 +1,46 @@
+.dropareaform {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0 20px 0;
+}
+
+.dropline {
+  display: flex;
+}
+
+.dropitem {
+  display: flex;
+  align-items: center;
+  margin: 10px 0 0 0;
+}
+
+.dropitemtext {
+  margin: 0 0 0 10px;
+}
+
+.filedrop {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  width: 100%;
+  border: var(--input-border-size) solid var(--input-border-color);
+  box-shadow: none;
+  border-radius: var(--input-border-radius);
+}
+
+.dragged {
+  background-color: white;
+}
+
+.dragover {
+  background-color: lightgray;
+}
+
+.applybutton {
+  min-width: fit-content;
+}
+
+.error {
+  color: red;
+}

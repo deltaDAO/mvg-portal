@@ -8,7 +8,7 @@ import ButtonBuy from '../ButtonBuy'
 import PriceOutput from './PriceOutput'
 import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
-import { Asset, ComputeEnvironment, Service } from '@oceanprotocol/lib'
+import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
@@ -19,8 +19,11 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
 import CalculateButtonBuy from '../CalculateButtonBuy'
-import { consumeMarketOrderFee } from 'app.config'
+import { consumeMarketOrderFee } from 'app.config.cjs'
 import { Row } from '../Row'
+import { Service } from 'src/@types/ddo/Service'
+import { Asset } from 'src/@types/Asset'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 export default function FormStartCompute({
   asset,
@@ -48,7 +51,6 @@ export default function FormStartCompute({
   selectedComputeAssetTimeout,
   computeEnvs,
   setSelectedComputeEnv,
-  setTermsAndConditions,
   stepText,
   isConsumable,
   consumableFeedback,
@@ -85,7 +87,6 @@ export default function FormStartCompute({
   setSelectedComputeEnv: React.Dispatch<
     React.SetStateAction<ComputeEnvironment>
   >
-  setTermsAndConditions: React.Dispatch<React.SetStateAction<boolean>>
   stepText: string
   isConsumable: boolean
   consumableFeedback: string
@@ -156,8 +157,8 @@ export default function FormStartCompute({
       // TODO test this type override
       const algorithmAsset: AssetExtended = getAlgorithmAsset(values.algorithm)
       const algoAccessDetails = await Promise.all(
-        algorithmAsset.services.map((service) =>
-          getAccessDetails(algorithmAsset.chainId, service)
+        algorithmAsset.credentialSubject?.services.map((service) =>
+          getAccessDetails(algorithmAsset.credentialSubject?.chainId, service)
         )
       )
 
@@ -331,7 +332,7 @@ export default function FormStartCompute({
       dtSymbol={accessDetails.datatoken?.symbol}
       dtBalance={dtBalance}
       assetTimeout={assetTimeout}
-      assetType={asset.metadata.type}
+      assetType={asset.credentialSubject?.metadata.type}
       hasPreviousOrderSelectedComputeAsset={
         hasPreviousOrderSelectedComputeAsset
       }
@@ -387,9 +388,7 @@ export default function FormStartCompute({
               hasDatatokenSelectedComputeAsset={
                 hasDatatokenSelectedComputeAsset
               }
-              algorithmConsumeDetails={
-                selectedAlgorithmAsset?.accessDetails?.[0]
-              }
+              algorithmConsumeDetails={selectedAlgorithmAsset?.accessDetails[0]}
               symbol={datasetSymbol}
               algorithmSymbol={algorithmSymbol}
               datasetOrderPrice={datasetOrderPrice}
@@ -423,7 +422,7 @@ export default function FormStartCompute({
                 hasDatatoken={hasDatatokenSelectedComputeAsset}
                 price={new Decimal(
                   algoOrderPrice ||
-                    selectedAlgorithmAsset?.accessDetails?.[0]?.price ||
+                    selectedAlgorithmAsset?.accessDetails[0]?.price ||
                     0
                 )
                   .toDecimalPlaces(MAX_DECIMALS)
@@ -459,7 +458,7 @@ export default function FormStartCompute({
                   .mul(
                     new Decimal(
                       algoOrderPrice ||
-                        selectedAlgorithmAsset?.accessDetails?.[0]?.price ||
+                        selectedAlgorithmAsset?.accessDetails[0]?.price ||
                         0
                     )
                   )
@@ -545,6 +544,14 @@ export default function FormStartCompute({
             options={['Terms and Conditions']}
             prefixes={['I agree to the']}
             actions={['/terms']}
+            disabled={isLoading}
+          />
+          <Field
+            component={Input}
+            name="acceptPublishingLicense"
+            type="checkbox"
+            options={['Publishing License']}
+            prefixes={['I agree the']}
             disabled={isLoading}
           />
         </>

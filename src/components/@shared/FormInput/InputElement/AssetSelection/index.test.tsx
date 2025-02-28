@@ -4,7 +4,7 @@ import { fireEvent, render, screen } from '@testing-library/react'
 describe('@shared/FormInput/InputElement/AssetSelection', () => {
   const assets: AssetSelectionAsset[] = [
     {
-      did: 'did:op:xxx',
+      did: 'did:ope:xxx',
       name: 'Asset',
       price: 10,
       tokenSymbol: 'OCEAN',
@@ -13,7 +13,7 @@ describe('@shared/FormInput/InputElement/AssetSelection', () => {
       isAccountIdWhitelisted: true
     },
     {
-      did: 'did:op:yyy',
+      did: 'did:ope:yyy',
       name: 'Asset',
       price: 10,
       tokenSymbol: 'OCEAN',
@@ -22,7 +22,7 @@ describe('@shared/FormInput/InputElement/AssetSelection', () => {
       isAccountIdWhitelisted: true
     },
     {
-      did: 'did:op:zzz',
+      did: 'did:ope:zzz',
       name: 'Asset',
       price: 0,
       tokenSymbol: 'OCEAN',

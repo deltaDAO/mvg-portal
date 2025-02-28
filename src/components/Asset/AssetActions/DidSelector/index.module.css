@@ -1,0 +1,94 @@
+.panelColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.panelRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.widthAuto {
+  width: auto;
+}
+
+.widthFitContent {
+  width: fit-content;
+}
+
+.marginRight2 {
+  margin-right: 2em;
+}
+
+.ssiPanel {
+  padding: 1em;
+  color: white;
+}
+
+.connected {
+  background-color: green;
+}
+
+.connected:hover {
+  background-color: darkgreen;
+  cursor: pointer;
+}
+
+.disconnected {
+  background-color: red;
+}
+
+.disconnected:hover {
+  background-color: darkred;
+  cursor: pointer;
+}
+
+.marginBottom7px {
+  margin-bottom: 7.5px;
+}
+
+.marginBottom2 {
+  margin-bottom: 2em;
+}
+
+.marginBottom3 {
+  margin-bottom: 3em;
+}
+
+.padding1 {
+  padding: 1em;
+}
+
+.width100p {
+  width: 100%;
+}
+
+.dialogBorder {
+  border: 1px solid var(--border-color);
+  border-bottom-left-radius: var(--border-radius);
+  border-bottom-right-radius: var(--border-radius);
+  border-top: 0;
+  padding: 2em;
+}
+
+.closeButton {
+  padding: calc(var(--spacer) / 3) var(--spacer);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--button-border-radius);
+}
+
+.inputField {
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--input-font-color);
+  border: var(--input-border-size) solid var(--input-border-color);
+  box-shadow: none;
+  width: 100%;
+  background: var(--background-content);
+  padding: calc(var(--spacer) / 3);
+  border-radius: var(--input-border-radius);
+  height: 43px;
+}

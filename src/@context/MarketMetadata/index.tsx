@@ -9,7 +9,7 @@ import {
 } from 'react'
 import { MarketMetadataProviderValue, OpcFee } from './_types'
 import siteContent from '../../../content/site.json'
-import appConfig from '../../../app.config'
+import appConfig from '../../../app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useConnect } from 'wagmi'
 import useFactoryRouter from '@hooks/useRouter'

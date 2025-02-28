@@ -38,18 +38,33 @@
       {
         "name": "license",
         "label": "License",
-        "placeholder": "e.g. MIT",
-        "help": "A SPDX identifier of the license applicable to this service."
+        "prominentHelp": false,
+        "type": "tabs",
+        "fields": [
+          {
+            "value": "url",
+            "title": "URL",
+            "label": "File",
+            "placeholder": "e.g. https://file.com/license.json",
+            "help": "A SPDX identifier of the license applicable to this service.",
+            "type": "files",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "licenseTypeSelection",
+        "label": "Use Remote License",
+        "type": "checkbox",
+        "options": ["Select if you want to upload a license file"]
       },
       {
         "name": "accessTermsAndConditions",
-        "value": "url",
         "title": "URL",
         "label": "Terms and Conditions",
         "placeholder": "e.g. https://file.com/tandc.md",
         "help": "The Terms and Conditions under which this service can be accessed. A resolvable link to the T&C document is expected. If no Terms are given the default [terms of this portal](/terms) will be applied.",
         "prominentHelp": true,
-        "type": "files",
         "required": false
       },
       {
@@ -308,7 +323,30 @@
         "type": "checkbox",
         "options": ["This asset uses user defined parameters"],
         "required": false
+      }
+    ]
+  },
+  "additionalDdos": {
+    "title": "Additional Credentials",
+    "fields": [
+      {
+        "name": "additionalCredential",
+        "label": "Additional Credential",
+        "placeholder": "{ ... }",
+        "help": "Insert an additional credential",
+        "type": "textarea"
       },
+      {
+        "name": "ddoType",
+        "label": "Type",
+        "help": "Insert the ddo's type",
+        "type": "text"
+      }
+    ]
+  },
+  "credentials": {
+    "title": "Credentials",
+    "fields": [
       {
         "name": "allow",
         "label": "Allow ETH Address",

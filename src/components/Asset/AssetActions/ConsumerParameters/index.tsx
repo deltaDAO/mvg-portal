@@ -2,24 +2,22 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import FormConsumerParameters from './FormConsumerParameters'
 import styles from './index.module.css'
 import Tabs, { TabsItem } from '@shared/atoms/Tabs'
-import {
-  ConsumerParameter,
-  Service,
-  UserCustomParameters
-} from '@oceanprotocol/lib'
+import { UserCustomParameters } from '@oceanprotocol/lib'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Option } from 'src/@types/ddo/Option'
 
 export function parseConsumerParameterValues(
   formValues?: UserCustomParameters,
-  parameters?: ConsumerParameter[]
+  consumerParameters?: Record<string, string | number | boolean | Option[]>[]
 ): UserCustomParameters {
-  if (!formValues) return
+  if (!formValues || !consumerParameters) return
 
   const parsedValues = {}
   Object.entries(formValues)?.forEach((userCustomParameter) => {
     const [userCustomParameterKey, userCustomParameterValue] =
       userCustomParameter
-
-    const { type } = parameters.find(
+    const { type } = consumerParameters.find(
       (param) => param.name === userCustomParameterKey
     )
 
@@ -63,20 +61,27 @@ export default function ConsumerParameters({
       })
     }
     // TODO -
-    if (selectedAlgorithmAsset?.services[0]?.consumerParameters?.length > 0) {
+    if (
+      selectedAlgorithmAsset?.credentialSubject?.services[0]?.consumerParameters
+        .length > 0
+    ) {
       tabs.push({
         title: 'Algo Service',
         content: (
           <FormConsumerParameters
             name="algoServiceParams"
-            parameters={selectedAlgorithmAsset.services[0].consumerParameters}
+            parameters={
+              selectedAlgorithmAsset.credentialSubject?.services[0]
+                .consumerParameters
+            }
             disabled={isLoading}
           />
         )
       })
     }
     if (
-      selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters?.length
+      selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+        ?.consumerParameters?.length
     ) {
       tabs.push({
         title: 'Algo Params',
@@ -84,7 +89,8 @@ export default function ConsumerParameters({
           <FormConsumerParameters
             name="algoParams"
             parameters={
-              selectedAlgorithmAsset.metadata?.algorithm.consumerParameters
+              selectedAlgorithmAsset.credentialSubject?.metadata?.algorithm
+                .consumerParameters
             }
             disabled={isLoading}
           />

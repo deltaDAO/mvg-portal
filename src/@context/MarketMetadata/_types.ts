@@ -29,6 +29,7 @@ export interface AppConfig {
   purgatoryUrl: string
   dockerHubProxyUrl: string
   showPreviewAlert: string
+  ssiEnabled: boolean
 }
 export interface SiteContent {
   siteTitle: string

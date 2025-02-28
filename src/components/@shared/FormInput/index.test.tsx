@@ -56,7 +56,7 @@ describe('@shared/FormInput', () => {
   it('renders assetSelection', () => {
     const assets: AssetSelectionAsset[] = [
       {
-        did: 'did:op:xxx',
+        did: 'did:ope:xxx',
         name: 'Asset',
         price: 10,
         tokenSymbol: 'OCEAN',
@@ -65,7 +65,7 @@ describe('@shared/FormInput', () => {
         isAccountIdWhitelisted: true
       },
       {
-        did: 'did:op:yyy',
+        did: 'did:ope:yyy',
         name: 'Asset',
         price: 10,
         tokenSymbol: 'OCEAN',

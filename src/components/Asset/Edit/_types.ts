@@ -1,19 +1,27 @@
-import { FormConsumerParameter } from '@components/Publish/_types'
+import {
+  FormAdditionalDdo,
+  FormConsumerParameter
+} from '@components/Publish/_types'
 import { FileInfo } from '@oceanprotocol/lib'
+import { License } from '../../../@types/ddo/License'
+import { CredentialForm } from '@components/@shared/PolicyEditor/types'
 
 export interface MetadataEditForm {
   name: string
   description: string
-  type: 'dataset' | 'algorithm'
+  type: string
   links?: FileInfo[]
   author?: string
   tags?: string[]
   usesConsumerParameters?: boolean
   consumerParameters?: FormConsumerParameter[]
-  allow?: string[]
-  deny?: string[]
+  credentials: CredentialForm
   assetState?: string
-  license?: string
+  license?: License
+  useRemoteLicense: boolean
+  licenseUrl: FileInfo[]
+  uploadedLicense: License
+  additionalDdos: FormAdditionalDdo[]
 }
 
 export interface ServiceEditForm {
@@ -27,8 +35,7 @@ export interface ServiceEditForm {
   timeout: string
   usesConsumerParameters: boolean
   consumerParameters: FormConsumerParameter[]
-  allow: string[]
-  deny: string[]
+  credentials: CredentialForm
   // compute
   allowAllPublishedAlgorithms: boolean
   publisherTrustedAlgorithms: string[]

@@ -1,7 +1,6 @@
 // TODO - selectedAlgorithmAsset works now only with first service
 import { useState, ReactElement, useEffect, useCallback } from 'react'
 import {
-  Asset,
   FileInfo,
   Datatoken,
   ProviderInstance,
@@ -14,10 +13,8 @@ import {
   ProviderComputeInitializeResults,
   unitsToAmount,
   ProviderFees,
-  AssetPrice,
   UserCustomParameters,
-  getErrorMessage,
-  Service
+  getErrorMessage
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
 import Price from '@shared/Price'
@@ -64,6 +61,9 @@ import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
 import { Signer } from 'ethers'
 import { useAccount } from 'wagmi'
+import { Service } from 'src/@types/ddo/Service'
+import { Asset, AssetPrice } from 'src/@types/Asset'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -118,6 +118,8 @@ export default function Compute({
   const [selectedComputeEnv, setSelectedComputeEnv] =
     useState<ComputeEnvironment>()
   const [termsAndConditions, setTermsAndConditions] = useState<boolean>(false)
+  const [acceptPublishingLicense, setAcceptPublishingLicense] =
+    useState<boolean>(false)
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
   const [providerFeeAmount, setProviderFeeAmount] = useState<string>('0')
@@ -151,18 +153,20 @@ export default function Compute({
 
   async function checkAssetDTBalance(algoAsset: AssetExtended | undefined) {
     try {
-      if (!algoAsset?.services[0].datatokenAddress) return
-      const dummySigner = await getDummySigner(algoAsset?.chainId)
+      if (!algoAsset?.credentialSubject?.services[0].datatokenAddress) return
+      const dummySigner = await getDummySigner(
+        algoAsset?.credentialSubject?.chainId
+      )
       const datatokenInstance = new Datatoken(dummySigner)
       const dtBalance = await datatokenInstance.balance(
-        algoAsset?.services[0].datatokenAddress,
+        algoAsset?.credentialSubject?.services[0].datatokenAddress,
         accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
       )
       setAlgorithmDTBalance(new Decimal(dtBalance).toString())
       const hasAlgoDt = Number(dtBalance) >= 1
       setHasAlgoAssetDatatoken(hasAlgoDt)
     } catch (error) {
-      console.log(error)
+      LoggerInstance.error(error)
     }
   }
 
@@ -182,14 +186,16 @@ export default function Compute({
 
     const feeAmount = await unitsToAmount(
       !isSupportedOceanNetwork || !isAssetNetwork
-        ? await getDummySigner(asset.chainId)
+        ? await getDummySigner(asset.credentialSubject?.chainId)
         : signer,
       providerFeeToken,
       providerFeeAmount
     )
     setProviderFeeAmount(feeAmount)
 
-    const datatoken = new Datatoken(await getDummySigner(asset?.chainId))
+    const datatoken = new Datatoken(
+      await getDummySigner(asset?.credentialSubject?.chainId)
+    )
     setProviderFeesSymbol(await datatoken.getSymbol(providerFeeToken))
 
     const computeDuration = accessDetails.validProviderFees
@@ -209,7 +215,7 @@ export default function Compute({
     ) {
       const algorithmOrderPriceAndFees = await getOrderPriceAndFees(
         selectedAlgorithmAsset,
-        selectedAlgorithmAsset.services?.[0],
+        selectedAlgorithmAsset.credentialSubject?.services?.[0],
         selectedAlgorithmAsset.accessDetails?.[0],
         accountId || ZERO_ADDRESS,
         signer,
@@ -265,15 +271,15 @@ export default function Compute({
         getComputeFeedback(
           accessDetails.baseToken?.symbol,
           accessDetails.datatoken?.symbol,
-          asset.metadata.type
+          asset.credentialSubject?.metadata.type
         )[0]
       )
       await setDatasetPrice(initializedProvider?.datasets?.[0]?.providerFee)
       setComputeStatusText(
         getComputeFeedback(
-          selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken?.symbol,
-          selectedAlgorithmAsset?.accessDetails?.[0]?.datatoken?.symbol,
-          selectedAlgorithmAsset?.metadata?.type
+          selectedAlgorithmAsset?.accessDetails[0]?.baseToken?.symbol,
+          selectedAlgorithmAsset?.accessDetails[0]?.datatoken?.symbol,
+          selectedAlgorithmAsset?.credentialSubject?.metadata?.type
         )[0]
       )
       await setAlgoPrice(initializedProvider?.algorithm?.providerFee)
@@ -332,7 +338,7 @@ export default function Compute({
   const initializeComputeEnvironment = useCallback(async () => {
     const computeEnvs = await getComputeEnvironments(
       service.serviceEndpoint,
-      asset.chainId
+      asset.credentialSubject?.chainId
     )
     setComputeEnvs(computeEnvs || [])
   }, [asset, service])
@@ -350,7 +356,9 @@ export default function Compute({
       try {
         type === 'init' && setIsLoadingJobs(true)
         const computeJobs = await getComputeJobs(
-          [asset?.chainId] || chainIds,
+          asset.credentialSubject?.chainId !== undefined
+            ? [asset.credentialSubject.chainId]
+            : chainIds,
           address,
           asset,
           service,
@@ -399,7 +407,7 @@ export default function Compute({
       setError(undefined)
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: selectedAlgorithmAsset?.id,
-        serviceId: selectedAlgorithmAsset?.services[0].id,
+        serviceId: selectedAlgorithmAsset?.credentialSubject?.services[0].id,
         algocustomdata: userCustomParameters?.algoParams,
         userdata: userCustomParameters?.algoServiceParams
       }
@@ -422,15 +430,15 @@ export default function Compute({
         getComputeFeedback(
           selectedAlgorithmAsset.accessDetails?.[0]?.baseToken?.symbol,
           selectedAlgorithmAsset.accessDetails?.[0]?.datatoken?.symbol,
-          selectedAlgorithmAsset.metadata.type
+          selectedAlgorithmAsset.credentialSubject?.metadata.type
         )[selectedAlgorithmAsset.accessDetails?.[0]?.type === 'fixed' ? 2 : 3]
       )
 
       const algorithmOrderTx = await handleComputeOrder(
         signer,
         selectedAlgorithmAsset,
-        selectedAlgorithmAsset?.services[0],
-        selectedAlgorithmAsset?.accessDetails?.[0],
+        selectedAlgorithmAsset?.credentialSubject?.services[0],
+        selectedAlgorithmAsset?.accessDetails[0],
         algoOrderPriceAndFees,
         accountId,
         initializedProviderResponse.algorithm,
@@ -443,7 +451,7 @@ export default function Compute({
         getComputeFeedback(
           accessDetails.baseToken?.symbol,
           accessDetails.datatoken?.symbol,
-          asset.metadata.type
+          asset.credentialSubject?.metadata.type
         )[accessDetails.type === 'fixed' ? 2 : 3]
       )
 
@@ -500,7 +508,12 @@ export default function Compute({
   }
 
   const onSubmit = async (values: ComputeDatasetForm) => {
-    if (!values.algorithm || !values.computeEnv || !values.termsAndConditions)
+    if (
+      !values.algorithm ||
+      !values.computeEnv ||
+      !values.termsAndConditions ||
+      !values.acceptPublishingLicense
+    )
       return
 
     const userCustomParameters = {
@@ -510,11 +523,13 @@ export default function Compute({
       ),
       algoServiceParams: parseConsumerParameterValues(
         values?.algoServiceParams,
-        selectedAlgorithmAsset?.services[0].consumerParameters
+        selectedAlgorithmAsset?.credentialSubject?.services[0]
+          .consumerParameters
       ),
       algoParams: parseConsumerParameterValues(
         values?.algoParams,
-        selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters
+        selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+          ?.consumerParameters
       )
     }
 
@@ -548,7 +563,8 @@ export default function Compute({
         )}
       </div>
 
-      {isUnsupportedPricing ? null : asset.metadata.type === 'algorithm' ? (
+      {isUnsupportedPricing ? null : asset.credentialSubject?.metadata.type ===
+        'algorithm' ? (
         <>
           {service.type === 'compute' && (
             <Alert
@@ -570,13 +586,16 @@ export default function Compute({
             service,
             selectedAlgorithmAsset,
             selectedComputeEnv,
-            termsAndConditions
+            termsAndConditions,
+            acceptPublishingLicense
           )}
           validateOnMount
           validationSchema={getComputeValidationSchema(
             service.consumerParameters,
-            selectedAlgorithmAsset?.services[0].consumerParameters,
-            selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters
+            selectedAlgorithmAsset?.credentialSubject?.services[0]
+              .consumerParameters,
+            selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+              ?.consumerParameters
           )}
           enableReinitialize
           onSubmit={onSubmit}
@@ -600,11 +619,13 @@ export default function Compute({
             isAccountIdWhitelisted={isAccountIdWhitelisted}
             datasetSymbol={
               accessDetails.baseToken?.symbol ||
-              (asset.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+              (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
             }
             algorithmSymbol={
               selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken?.symbol ||
-              (selectedAlgorithmAsset?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+              (selectedAlgorithmAsset?.credentialSubject?.chainId === 137
+                ? 'mOCEAN'
+                : 'OCEAN')
             }
             providerFeesSymbol={providerFeesSymbol}
             dtSymbolSelectedComputeAsset={
@@ -613,11 +634,10 @@ export default function Compute({
             dtBalanceSelectedComputeAsset={algorithmDTBalance}
             selectedComputeAssetType="algorithm"
             selectedComputeAssetTimeout={secondsToString(
-              selectedAlgorithmAsset?.services[0]?.timeout
+              selectedAlgorithmAsset?.credentialSubject?.services[0]?.timeout
             )}
             computeEnvs={computeEnvs}
             setSelectedComputeEnv={setSelectedComputeEnv}
-            setTermsAndConditions={setTermsAndConditions}
             // lazy comment when removing pricingStepText
             stepText={computeStatusText}
             isConsumable={isConsumablePrice}

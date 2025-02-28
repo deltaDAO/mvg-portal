@@ -7,7 +7,7 @@ import {
   consumeMarketFixedSwapFee,
   consumeMarketOrderFee,
   marketCommunityFee
-} from 'app.config'
+} from 'app.config.cjs'
 import Decimal from 'decimal.js'
 import { getOceanConfig } from '@utils/ocean'
 
