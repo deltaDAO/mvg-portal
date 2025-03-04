@@ -135,7 +135,7 @@ We store your personal data as long as we need it to process your inquires. We s
 
 **Right to object:** You have the right to object to the processing of your personal data (see also chapter 8.6).
 
-## **4.4 Aggregated statistics**
+## 4.4 Aggregated statistics
 
 deltaDAO uses [**Plausible Analytics**](https://plausible.io/) (see also chapter 3), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. Plausible Analytics **does not use cookies or similar technologies** that require information to be stored on your device. Instead, the tool focuses on analyzing **aggregated data without the need to access your end device or store information there**. Plausible Analytics **does not track individual visitors** and **does not create persistent identifiers**. It **does not use cross-platform or cross-device tracking** and **does not pass on data** to third parties. Plausible Analytics primarily uses data that is recorded by default in server logs, such as requested URLs, access times, HTTP status codes and transferred data volumes. This information is used to analyze website traffic. Data processing at Plausible Analytics takes place in two steps:
 
@@ -193,7 +193,7 @@ A cookie is a small file that stores information in your browser. Your web brows
 
 Our portal demonstrator uses cookies and your web storage to remember your page preferences, enable functionalities and to enhance your user experience. You have the option of disabling cookies and deleting cookies and web storage from your computer's hard disk at any time in your browser settings.
 
-## **6.2 Analytics**
+## 6.2 Analytics
 
 deltaDAO uses [**Plausible Analytics**](https://plausible.io/), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. Plausible Analytics **does not use cookies or similar technologies** that require information to be stored on your device. Plausible Analytics **does not track individual visitors** and **does not create persistent identifiers**. It does not use cross-platform or cross-device tracking and does not pass on data to third parties. You can find further information in chapter 3 and 4.
 
