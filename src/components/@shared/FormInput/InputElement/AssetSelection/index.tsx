@@ -93,9 +93,9 @@ export default function AssetSelection({
                   checked={selected && asset.did === selected}
                   defaultChecked={asset.checked}
                   disabled={
-                    isOnEditPage
+                    disabled || isOnEditPage
                       ? false
-                      : disabled || !asset.isAccountIdWhitelisted
+                      : !asset.isAccountIdWhitelisted
                   }
                   type={multiple ? 'checkbox' : 'radio'}
                   value={asset.did}
