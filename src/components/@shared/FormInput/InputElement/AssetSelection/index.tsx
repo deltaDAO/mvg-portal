@@ -10,6 +10,7 @@ import WhitelistIndicator from '@components/Asset/AssetActions/Compute/Whitelist
 import { Badge } from '@components/@shared/VerifiedBadge'
 import styles from './index.module.css'
 import classNames from 'classnames/bind'
+import { useRouter } from 'next/router'
 
 const cx = classNames.bind(styles)
 
@@ -42,7 +43,8 @@ export default function AssetSelection({
   accountId?: string
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
-
+  const router = useRouter()
+  const isOnEditPage = router.pathname.includes('/edit')
   const styleClassesWrapper = `${styles.selection} ${
     disabled ? styles.disabled : ''
   }`
@@ -90,7 +92,11 @@ export default function AssetSelection({
                   {...props}
                   checked={selected && asset.did === selected}
                   defaultChecked={asset.checked}
-                  disabled={disabled || !asset.isAccountIdWhitelisted}
+                  disabled={
+                    disabled || isOnEditPage
+                      ? false
+                      : !asset.isAccountIdWhitelisted
+                  }
                   type={multiple ? 'checkbox' : 'radio'}
                   value={asset.did}
                 />
@@ -104,7 +110,7 @@ export default function AssetSelection({
                       clamp={1}
                       tagName="span"
                       className={cx({
-                        disabled: !asset.isAccountIdWhitelisted
+                        disabled: !isOnEditPage && !asset.isAccountIdWhitelisted
                       })}
                     >
                       {asset.name}
@@ -124,7 +130,7 @@ export default function AssetSelection({
                     tagName="code"
                     className={cx({
                       did: true,
-                      disabled: !asset.isAccountIdWhitelisted
+                      disabled: !isOnEditPage && !asset.isAccountIdWhitelisted
                     })}
                   >
                     {asset.symbol} | {asset.did}
@@ -134,7 +140,7 @@ export default function AssetSelection({
                     size="small"
                     className={cx({
                       price: true,
-                      disabled: !asset.isAccountIdWhitelisted
+                      disabled: !isOnEditPage && !asset.isAccountIdWhitelisted
                     })}
                     symbol={asset.tokenSymbol}
                   />
