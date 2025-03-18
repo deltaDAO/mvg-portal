@@ -36,7 +36,7 @@ async function getAssetMetadata(
   index?: string
 ): Promise<Asset[]> {
   const baseQueryparams = {
-    index: index ?? 'op_ddo_v4.1.0',
+    index: index ?? 'op_ddo_v5.0.0',
     chainIds,
     filters: [
       getFilterTerm('services.datatokenAddress.keyword', queryDtList),
