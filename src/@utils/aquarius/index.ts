@@ -166,7 +166,7 @@ export function generateBaseQuery(
 
   if (baseQueryParams.sortOptions !== undefined) {
     generatedQuery.sort = {
-      [`${baseQueryParams.sortOptions.sortBy}.keyword`]:
+      [`${baseQueryParams.sortOptions.sortBy}`]:
         baseQueryParams.sortOptions.sortDirection ||
         SortDirectionOptions.Descending
     }

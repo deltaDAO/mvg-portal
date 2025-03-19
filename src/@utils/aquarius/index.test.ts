@@ -88,7 +88,7 @@ describe('@utils/aquarius', () => {
     ).toStrictEqual({
       ...defaultBaseQueryReturn,
       sort: {
-        'nft.created': 'asc'
+        'credentialSubject.nft.created': 'asc'
       }
     })
   })
