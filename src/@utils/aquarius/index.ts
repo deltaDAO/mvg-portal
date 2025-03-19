@@ -355,8 +355,10 @@ export async function getPublishedAssets(
 ): Promise<PagedAssets> {
   if (!accountId) return
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('nft.state', [0, 4, 5]))
-  filters.push(getFilterTerm('nft.owner', accountId.toLowerCase()))
+  filters.push(getFilterTerm('credentialSubject.nft.state', [0, 4, 5]))
+  filters.push(
+    getFilterTerm('credentialSubject.nft.owner', accountId.toLowerCase())
+  )
   if (filtersList) {
     parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
   }
@@ -439,7 +441,7 @@ async function getTopPublishers(
     aggs: {
       topPublishers: {
         terms: {
-          field: 'nft.owner.keyword',
+          field: 'credentialSubject.nft.owner.keyword',
           order: { totalSales: 'desc' }
         },
         aggs: {

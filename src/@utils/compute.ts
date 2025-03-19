@@ -144,7 +144,7 @@ export function getQueryString(
   trustedPublishersList?.length > 0 &&
     baseParams.filters.push(
       getFilterTerm(
-        'nft.owner',
+        'credentialSubject.nft.owner',
         trustedPublishersList.map((address) => address.toLowerCase())
       )
     )
