@@ -6,10 +6,10 @@ export enum SortDirectionOptions {
 export enum SortTermOptions {
   Created = 'credentialSubject.nft.created',
   Relevance = '_score',
-  Orders = 'stats.orders',
-  Allocated = 'stats.allocated',
-  Price = 'stats.price.value',
-  TokenSymbol = 'stats.price.tokenSymbol.keyword'
+  Orders = 'credentialSubject.stats.orders',
+  Allocated = 'credentialSubject.stats.allocated',
+  Price = 'credentialSubject.stats.price.value.keyword',
+  TokenSymbol = 'credentialSubject.stats.price.tokenSymbol'
 }
 
 // Note: could not figure out how to get `enum` to be ambiant
