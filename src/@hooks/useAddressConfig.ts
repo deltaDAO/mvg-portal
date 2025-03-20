@@ -13,7 +13,7 @@ const {
 export interface UseAddressConfig {
   whitelists: {
     'credentialSubject.nft.owner': string[]
-    'datatokens.address': string[]
+    'credentialSubject.datatokens.address': string[]
   }
   featured: { assets: string[]; title: string }[]
   verifiedWallets: {
@@ -65,7 +65,10 @@ export function useAddressConfig(): UseAddressConfig {
       ) ||
         ddo.credentialSubject.datatokens
           .map((datatoken) => {
-            return isAddressWhitelisted(datatoken.address, 'datatokens.address')
+            return isAddressWhitelisted(
+              datatoken.address,
+              'credentialSubject.datatokens.address'
+            )
           })
           .some((isWhitelisted) => isWhitelisted === true))
     )
