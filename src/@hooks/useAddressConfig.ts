@@ -12,7 +12,7 @@ const {
 
 export interface UseAddressConfig {
   whitelists: {
-    'nft.owner': string[]
+    'credentialSubject.nft.owner': string[]
     'datatokens.address': string[]
   }
   featured: { assets: string[]; title: string }[]
@@ -59,7 +59,10 @@ export function useAddressConfig(): UseAddressConfig {
     if (!isWhitelistEnabled()) return true
     return (
       ddo &&
-      (isAddressWhitelisted(ddo.credentialSubject.nft.owner, 'nft.owner') ||
+      (isAddressWhitelisted(
+        ddo.credentialSubject.nft.owner,
+        'credentialSubject.nft.owner'
+      ) ||
         ddo.credentialSubject.datatokens
           .map((datatoken) => {
             return isAddressWhitelisted(datatoken.address, 'datatokens.address')

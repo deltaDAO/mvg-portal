@@ -16,7 +16,7 @@ const Tag = ({ tag, noLinks }: { tag: string; noLinks?: boolean }) => {
     <span className={styles.tag}>{tag}</span>
   ) : (
     <Link
-      href={`/search?tags=${urlEncodedTag}&sort=nft.created&sortOrder=desc`}
+      href={`/search?tags=${urlEncodedTag}&sort=credentialSubject.nft.created&sortOrder=desc`}
       className={styles.tag}
       title={tag}
     >

@@ -7,7 +7,7 @@
   "menu": [
     {
       "name": "Catalogue",
-      "link": "/search?sort=nft.created&sortOrder=desc"
+      "link": "/search?sort=credentialSubject.nft.created&sortOrder=desc"
     },
     {
       "name": "Publish",
@@ -52,7 +52,7 @@
           },
           {
             "name": "Catalogue",
-            "link": "/search?sort=nft.created&sortOrder=desc"
+            "link": "/search?sort=credentialSubject.nft.created&sortOrder=desc"
           },
           {
             "name": "Profile",

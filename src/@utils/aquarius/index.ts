@@ -33,7 +33,6 @@ export function escapeEsReservedCharacters(value: string): string {
  */
 type TFilterValue = string | number | boolean | number[] | string[]
 type TFilterKey = 'terms' | 'term' | 'match' | 'match_phrase'
-
 export function getFilterTerm(
   filterField: string,
   value: TFilterValue,
@@ -125,7 +124,7 @@ export function generateBaseQuery(
   index?: string
 ): SearchQuery {
   const generatedQuery = {
-    index: index ?? 'op_ddo_v4.1.0',
+    index: index ?? 'op_ddo_v5.0.0',
     from: baseQueryParams.esPaginationOptions?.from || 0,
     size:
       baseQueryParams.esPaginationOptions?.size >= 0
@@ -137,15 +136,21 @@ export function generateBaseQuery(
         filter: [
           ...(baseQueryParams.filters || []),
           ...(baseQueryParams.chainIds
-            ? [getFilterTerm('chainId', baseQueryParams.chainIds)]
+            ? [
+                getFilterTerm(
+                  'credentialSubject.chainId',
+                  baseQueryParams.chainIds
+                )
+              ]
             : []),
           ...(baseQueryParams.ignorePurgatory
             ? []
-            : [getFilterTerm('purgatory.state', false)]),
+            : [getFilterTerm('credentialSubject.purgatory.state', false)]),
           {
             bool: {
               must_not: [
-                !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
+                !baseQueryParams.ignoreState &&
+                  getFilterTerm('credentialSubject.nft.state', 5),
                 getDynamicPricingMustNot()
               ]
             }
@@ -159,12 +164,13 @@ export function generateBaseQuery(
     generatedQuery.aggs = baseQueryParams.aggs
   }
 
-  if (baseQueryParams.sortOptions !== undefined)
+  if (baseQueryParams.sortOptions !== undefined) {
     generatedQuery.sort = {
-      [baseQueryParams.sortOptions.sortBy]:
+      [`${baseQueryParams.sortOptions.sortBy}`]:
         baseQueryParams.sortOptions.sortDirection ||
         SortDirectionOptions.Descending
     }
+  }
 
   // add whitelist filtering
   if (getWhitelistShould()?.length > 0) {
@@ -349,8 +355,10 @@ export async function getPublishedAssets(
 ): Promise<PagedAssets> {
   if (!accountId) return
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('nft.state', [0, 4, 5]))
-  filters.push(getFilterTerm('nft.owner', accountId.toLowerCase()))
+  filters.push(getFilterTerm('credentialSubject.nft.state', [0, 4, 5]))
+  filters.push(
+    getFilterTerm('credentialSubject.nft.owner', accountId.toLowerCase())
+  )
   if (filtersList) {
     parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
   }
@@ -433,7 +441,7 @@ async function getTopPublishers(
     aggs: {
       topPublishers: {
         terms: {
-          field: 'nft.owner.keyword',
+          field: 'credentialSubject.nft.owner.keyword',
           order: { totalSales: 'desc' }
         },
         aggs: {
