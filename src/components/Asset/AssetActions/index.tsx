@@ -14,7 +14,7 @@ import { FormPublishData } from '@components/Publish/_types'
 import { getApprovedTokenBalanceFromSymbol } from '@utils/wallet'
 import AssetStats from './AssetStats'
 import { isAddressWhitelisted } from '@utils/ddo'
-import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useAutomation } from '../../../@context/Automation/AutomationProvider'
 import { Signer } from 'ethers'
@@ -24,16 +24,15 @@ export default function AssetActions({
 }: {
   asset: AssetExtended
 }): ReactElement {
-  const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
+  const { chain, address: accountId } = useAccount()
+  const { data: signer } = useWalletClient()
   const { balance } = useBalance()
   const {
     isAutomationEnabled,
     autoWallet,
     balance: automationBalance
   } = useAutomation()
-  const { chain } = useNetwork()
-  const web3Provider = useProvider()
+  const web3Provider = usePublicClient()
   const { isAssetNetwork } = useAsset()
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()

@@ -23,7 +23,7 @@ import {
   getServiceCredential,
   verifyRawServiceCredential
 } from '@components/Publish/_utils'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { useAutomation } from './Automation/AutomationProvider'
 
 export interface AssetProviderValue {
@@ -57,9 +57,8 @@ function AssetProvider({
   children: ReactNode
 }): ReactElement {
   const { appConfig } = useMarketMetadata()
-  const { address: accountId } = useAccount()
+  const { chain, address: accountId } = useAccount()
   const { autoWallet, isAutomationEnabled } = useAutomation()
-  const { chain } = useNetwork()
 
   const { isDDOWhitelisted } = useAddressConfig()
   const [isInPurgatory, setIsInPurgatory] = useState(false)

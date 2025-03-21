@@ -24,8 +24,9 @@ import { validationSchema } from './_validation'
 import { useAbortController } from '@hooks/useAbortController'
 import { setNFTMetadataAndTokenURI } from '@utils/nft'
 import { customProviderUrl } from '../../../app.config'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import { useAutomation } from '../../@context/Automation/AutomationProvider'
+import { getEthersSigner } from '@utils/getEthersSigner'
 
 export default function PublishPage({
   content
@@ -33,9 +34,8 @@ export default function PublishPage({
   content: { title: string; description: string; warning: string }
 }): ReactElement {
   const { debug } = useUserPreferences()
-  const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
-  const { chain } = useNetwork()
+  const { chain, address: accountId } = useAccount()
+  const { data: signer } = useWalletClient()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
   const scrollToRef = useRef()
   const nftFactory = useNftFactory()
@@ -54,15 +54,17 @@ export default function PublishPage({
 
   const { autoWallet, isAutomationEnabled } = useAutomation()
   const [accountIdToUse, setAccountIdToUse] = useState<string>(accountId)
-  const [signerToUse, setSignerToUse] = useState(signer)
+  const [signerToUse, setSignerToUse] = useState(
+    getEthersSigner({ chainId: chain.id, client: signer })
+  )
 
   useEffect(() => {
     if (isAutomationEnabled && autoWallet?.address) {
       setAccountIdToUse(autoWallet.address)
-      setSignerToUse(autoWallet)
+      setSignerToUse(getEthersSigner({ chainId: chain.id, client: autoWallet }))
     } else {
       setAccountIdToUse(accountId)
-      setSignerToUse(signer)
+      setSignerToUse(getEthersSigner({ chainId: chain.id, client: signer }))
     }
   }, [isAutomationEnabled, autoWallet, accountId, signer])
 

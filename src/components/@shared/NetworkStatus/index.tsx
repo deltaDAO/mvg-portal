@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useState } from 'react'
-import { useNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { useMarketMetadata } from '../../../@context/MarketMetadata'
 import Alert from '../atoms/Alert'
 import axios from 'axios'
@@ -13,7 +13,7 @@ export default function NetworkStatus({
   const [showNetworkAlert, setShowNetworkAlert] = useState(false)
   const [network, setNetwork] = useState<string>()
   const { appConfig } = useMarketMetadata()
-  const { chain } = useNetwork()
+  const { chain } = useAccount()
 
   const { networkAlertConfig } = appConfig
 

@@ -24,7 +24,7 @@ import { getEncryptedFiles } from '@utils/provider'
 import { sanitizeUrl } from '@utils/url'
 import { Formik } from 'formik'
 import { ReactElement, useEffect, useState } from 'react'
-import { useAccount, useNetwork, useProvider, useSigner } from 'wagmi'
+import { useAccount, usePublicClient, useWalletClient } from 'wagmi'
 import content from '../../../../content/pages/editMetadata.json'
 import { useAutomation } from '../../../@context/Automation/AutomationProvider'
 import DebugEditMetadata from './DebugEditMetadata'
@@ -42,10 +42,9 @@ export default function Edit({
 }): ReactElement {
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork, assetState } = useAsset()
-  const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
-  const provider = useProvider()
-  const { data: signer, refetch: refetchSigner } = useSigner()
+  const { chain, address: accountId } = useAccount()
+  const provider = usePublicClient()
+  const { data: signer, refetch: refetchSigner } = useWalletClient()
   const newAbortController = useAbortController()
 
   const [success, setSuccess] = useState<string>()

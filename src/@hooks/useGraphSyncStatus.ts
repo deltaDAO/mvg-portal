@@ -10,8 +10,8 @@ const graphQueryBody =
 
 export interface UseGraphSyncStatus {
   isGraphSynced: boolean
-  blockHead: number
-  blockGraph: number
+  blockHead: bigint
+  blockGraph: bigint
 }
 
 async function fetchGraph(
@@ -37,7 +37,7 @@ async function getBlockSubgraph(subgraphUri: string) {
 
 export function useGraphSyncStatus(networkId: number): UseGraphSyncStatus {
   const { data: blockHead, isLoading } = useBlockNumber()
-  const [blockGraph, setBlockGraph] = useState<number>()
+  const [blockGraph, setBlockGraph] = useState<bigint>()
   const [isGraphSynced, setIsGraphSynced] = useState(true)
   const [isSubgraphLoading, setIsSubgraphLoading] = useState(false)
   const [oceanConfig, setOceanConfig] = useState<Config>()
@@ -63,7 +63,7 @@ export function useGraphSyncStatus(networkId: number): UseGraphSyncStatus {
     async function initBlockSubgraph() {
       setIsSubgraphLoading(true)
       const blockGraph = await getBlockSubgraph(oceanConfig.subgraphUri)
-      setBlockGraph(blockGraph)
+      setBlockGraph(BigInt(blockGraph))
       setIsSubgraphLoading(false)
       LoggerInstance.log(
         '[GraphStatus] Latest block from subgraph: ',

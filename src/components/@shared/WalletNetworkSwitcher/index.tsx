@@ -6,12 +6,12 @@ import useNetworkMetadata, {
   getNetworkDisplayName
 } from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
+import { useAccount, useSwitchChain } from 'wagmi'
 
 export default function WalletNetworkSwitcher(): ReactElement {
-  const { chain } = useNetwork()
+  const { chain } = useAccount()
   const { asset } = useAsset()
-  const { switchNetwork } = useSwitchNetwork({ chainId: asset?.chainId })
+  const { switchChain } = useSwitchChain()
   const { networksList } = useNetworkMetadata()
 
   const ddoNetworkData = getNetworkDataById(networksList, asset.chainId)
@@ -31,7 +31,10 @@ export default function WalletNetworkSwitcher(): ReactElement {
         to {walletNetworkName}. Connect to {ddoNetworkName} to interact with
         this asset.
       </p>
-      <Button size="small" onClick={() => switchNetwork()}>
+      <Button
+        size="small"
+        onClick={() => switchChain({ chainId: asset?.chainId })}
+      >
         Switch to {ddoNetworkName}
       </Button>
     </>

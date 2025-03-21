@@ -3,7 +3,7 @@ import { useFormikContext } from 'formik'
 import { wizardSteps, initialPublishFeedback } from './_constants'
 import { FormPublishData, PublishFeedback } from './_types'
 import { getOceanConfig } from '@utils/ocean'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { useMarketMetadata } from '@context/MarketMetadata'
 
 export function Steps({
@@ -11,8 +11,7 @@ export function Steps({
 }: {
   feedback: PublishFeedback
 }): ReactElement {
-  const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
+  const { chain, address: accountId } = useAccount()
   const { approvedBaseTokens } = useMarketMetadata()
   const { values, setFieldValue, touched, setTouched } =
     useFormikContext<FormPublishData>()

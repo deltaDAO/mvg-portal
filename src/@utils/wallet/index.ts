@@ -1,8 +1,10 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { createClient, erc20ABI } from 'wagmi'
+import { createConfig, http, usePublicClient } from 'wagmi'
+import { erc20Abi, formatUnits } from 'viem'
+import { Chain } from 'wagmi/chains'
 import { ethers, Contract, Signer } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
-import { getDefaultClient } from 'connectkit'
+import { getDefaultConfig } from 'connectkit'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
@@ -26,13 +28,22 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
 }
 
 // Wagmi client
-export const wagmiClient = createClient(
-  getDefaultClient({
+export const wagmiClient = createConfig(
+  getDefaultConfig({
     appName: 'Pontus-X',
-    infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
     // TODO: mapping between appConfig.chainIdsSupported and wagmi chainId
-    chains: getSupportedChains(chainIdsSupported),
+    chains: getSupportedChains(chainIdsSupported) as unknown as readonly [
+      Chain,
+      ...Chain[]
+    ],
     walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+    /* transports: {
+      // Configure providers based on your ConnectKit version
+      // For example:
+      [chainId]: http(
+        `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_PROJECT_ID}`
+      )
+    } */
   })
 )
 
@@ -163,20 +174,41 @@ export function getAdjustDecimalsValue(
 }
 
 export async function getTokenBalance(
-  accountId: string,
+  accountId: `0x${string}`,
   decimals: number,
-  tokenAddress: string,
-  web3Provider: ethers.providers.Provider
+  tokenAddress: `0x${string}`,
+  web3Provider: ReturnType<typeof usePublicClient>
 ): Promise<string> {
-  if (!web3Provider || !accountId || !tokenAddress) return
+  if (!web3Provider || !accountId || !tokenAddress) return '0'
 
   try {
-    const token = new Contract(tokenAddress, erc20ABI, web3Provider)
-    const balance = await token.balanceOf(accountId)
+    const code = await web3Provider.getBytecode({ address: tokenAddress })
+    if (!code || code === '0x') {
+      LoggerInstance.warn(`No contract found at address: ${tokenAddress}`)
+      return '0'
+    }
 
-    return getAdjustDecimalsValue(balance, decimals)
+    const rawBalance = await web3Provider.readContract({
+      address: tokenAddress,
+      abi: erc20Abi,
+      functionName: 'balanceOf',
+      args: [accountId]
+    })
+
+    if (rawBalance === null || rawBalance === undefined) {
+      LoggerInstance.warn(
+        `Contract at ${tokenAddress} returned no data for balanceOf`
+      )
+      return '0'
+    }
+
+    const balance = formatUnits(rawBalance, decimals)
+    return balance
   } catch (e) {
-    LoggerInstance.error(`ERROR: Failed to get the balance: ${e.message}`)
+    LoggerInstance.error(
+      `ERROR: Failed to get the balance for token ${tokenAddress}: ${e.message}`
+    )
+    return '0'
   }
 }
 

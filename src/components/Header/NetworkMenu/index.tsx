@@ -3,10 +3,10 @@ import Network from './Network'
 import Details from './Details'
 import Tooltip from '@shared/atoms/Tooltip'
 import styles from './index.module.css'
-import { useNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 export default function NetworkMenu(): ReactElement {
-  const { chain } = useNetwork()
+  const { chain } = useAccount()
 
   return chain?.id ? (
     <div className={styles.networkMenu}>

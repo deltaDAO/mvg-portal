@@ -7,7 +7,11 @@ import {
   useEffect,
   useState
 } from 'react'
-import { useProvider, useBalance as useWagmiBalance } from 'wagmi'
+import {
+  usePublicClient,
+  useBalance as useWagmiBalance,
+  useAccount
+} from 'wagmi'
 import { accountTruncate } from '../../@utils/wallet'
 import { useUserPreferences } from '../UserPreferences'
 import { toast } from 'react-toastify'
@@ -15,6 +19,8 @@ import { toast } from 'react-toastify'
 import { useMarketMetadata } from '../MarketMetadata'
 import DeleteAutomationModal from './DeleteAutomationModal'
 import useBalance from '../../@hooks/useBalance'
+import { createWalletClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
 
 export enum AUTOMATION_MODES {
   SIMPLE = 'simple',
@@ -47,6 +53,7 @@ function AutomationProvider({ children }) {
   const { getApprovedTokenBalances } = useBalance()
   const { approvedBaseTokens, appConfig } = useMarketMetadata()
   const { automationWalletJSON, setAutomationWalletJSON } = useUserPreferences()
+  const { chain } = useAccount()
 
   const [autoWallet, setAutoWallet] = useState<Wallet>()
   const [isAutomationEnabled, setIsAutomationEnabled] = useState<boolean>(false)
@@ -69,7 +76,7 @@ function AutomationProvider({ children }) {
 
   const [hasDeleteRequest, setHasDeleteRequest] = useState(false)
 
-  const wagmiProvider = useProvider()
+  const wagmiProvider = usePublicClient()
 
   useEffect(() => {
     if (!automationWalletJSON) setAutoWalletAddress(undefined)
@@ -179,18 +186,34 @@ function AutomationProvider({ children }) {
         LoggerInstance.log(
           '[AutomationProvider] Start decrypting wallet from local storage'
         )
-        const wallet = await ethers.Wallet.fromEncryptedJson(
+
+        // Decrypt JSON wallet with ethers (keep this part)
+        const ethersWallet = await ethers.Wallet.fromEncryptedJson(
           automationWalletJSON,
           password,
           (percent) => setDecryptPercentage(percent)
         )
-        const connectedWallet = wallet.connect(wagmiProvider)
-        LoggerInstance.log('[AutomationProvider] Finished decrypting:', {
-          connectedWallet
+
+        // Instead of connecting to provider, create a viem account from private key
+        const privateKey = ethersWallet.privateKey as `0x${string}`
+        const viemAccount = privateKeyToAccount(privateKey)
+
+        // Create a wallet client with the account
+        const viemWalletClient = createWalletClient({
+          account: viemAccount,
+          chain,
+          transport: http()
         })
-        setAutoWallet(connectedWallet)
+
+        // Store the wallet for later use
+        setAutoWallet(ethersWallet)
+
+        LoggerInstance.log('[AutomationProvider] Finished decrypting:', {
+          address: viemAccount.address
+        })
+
         toast.success(
-          `Successfully imported wallet ${connectedWallet.address} for automation.`
+          `Successfully imported wallet ${viemAccount.address} for automation.`
         )
         return true
       } catch (e) {

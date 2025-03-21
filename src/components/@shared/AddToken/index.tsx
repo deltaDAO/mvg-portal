@@ -4,7 +4,7 @@ import { addTokenToWallet } from '@utils/wallet'
 import Button from '@shared/atoms/Button'
 import OceanLogo from '@images/logo.svg'
 import styles from './index.module.css'
-import { useNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 const cx = classNames.bind(styles)
 
@@ -30,7 +30,7 @@ export default function AddToken({
   className,
   minimal
 }: AddTokenProps): ReactElement {
-  const { chain } = useNetwork()
+  const { chain } = useAccount()
 
   const styleClasses = cx({
     button: true,

@@ -9,41 +9,45 @@ import '@oceanprotocol/typographies/css/ocean-typo.css'
 import '../stylesGlobal/styles.css'
 import Decimal from 'decimal.js'
 import MarketMetadataProvider from '@context/MarketMetadata'
-import { WagmiConfig } from 'wagmi'
+import { WagmiProvider } from 'wagmi'
 import { ConnectKitProvider } from 'connectkit'
 import { connectKitTheme, wagmiClient } from '@utils/wallet'
 import AutomationProvider from '../@context/Automation/AutomationProvider'
 import { FilterProvider } from '@context/Filter'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
+  const queryClient = new QueryClient()
 
   return (
     <>
-      <WagmiConfig client={wagmiClient}>
-        <ConnectKitProvider
-          options={{ initialChainId: 0 }}
-          customTheme={connectKitTheme}
-        >
-          <MarketMetadataProvider>
-            <UrqlProvider>
-              <UserPreferencesProvider>
-                <AutomationProvider>
-                  <ConsentProvider>
-                    <SearchBarStatusProvider>
-                      <FilterProvider>
-                        <App>
-                          <Component {...pageProps} />
-                        </App>
-                      </FilterProvider>
-                    </SearchBarStatusProvider>
-                  </ConsentProvider>
-                </AutomationProvider>
-              </UserPreferencesProvider>
-            </UrqlProvider>
-          </MarketMetadataProvider>
-        </ConnectKitProvider>
-      </WagmiConfig>
+      <WagmiProvider config={wagmiClient}>
+        <QueryClientProvider client={queryClient}>
+          <ConnectKitProvider
+            options={{ initialChainId: 0 }}
+            customTheme={connectKitTheme}
+          >
+            <MarketMetadataProvider>
+              <UrqlProvider>
+                <UserPreferencesProvider>
+                  <AutomationProvider>
+                    <ConsentProvider>
+                      <SearchBarStatusProvider>
+                        <FilterProvider>
+                          <App>
+                            <Component {...pageProps} />
+                          </App>
+                        </FilterProvider>
+                      </SearchBarStatusProvider>
+                    </ConsentProvider>
+                  </AutomationProvider>
+                </UserPreferencesProvider>
+              </UrqlProvider>
+            </MarketMetadataProvider>
+          </ConnectKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
     </>
   )
 }

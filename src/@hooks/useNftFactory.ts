@@ -1,23 +1,26 @@
 import { LoggerInstance, NftFactory } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 import { useEffect, useState } from 'react'
-import { useNetwork, useSigner } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import { useAutomation } from '../@context/Automation/AutomationProvider'
+import { getEthersSigner } from '@utils/getEthersSigner'
 
 function useNftFactory(): NftFactory {
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const { chain } = useAccount()
+  const { data: signer } = useWalletClient()
   const { autoWallet, isAutomationEnabled } = useAutomation()
-  const [signerToUse, setSignerToUse] = useState(signer)
+  const [signerToUse, setSignerToUse] = useState(
+    getEthersSigner({ client: signer, chainId: chain?.id })
+  )
   const [nftFactory, setNftFactory] = useState<NftFactory>()
 
   useEffect(() => {
     if (isAutomationEnabled && autoWallet?.address) {
       setSignerToUse(autoWallet)
     } else {
-      setSignerToUse(signer)
+      setSignerToUse(getEthersSigner({ client: signer, chainId: chain?.id }))
     }
-  }, [isAutomationEnabled, autoWallet, signer])
+  }, [isAutomationEnabled, autoWallet, signer, chain?.id])
 
   useEffect(() => {
     if (!signerToUse || !chain?.id) return

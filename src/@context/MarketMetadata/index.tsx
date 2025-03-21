@@ -19,7 +19,7 @@ import {
   getOpcsApprovedTokens
 } from '@utils/subgraph'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useNetwork, useConnect } from 'wagmi'
+import { useAccount, useConnect } from 'wagmi'
 
 const MarketMetadataContext = createContext({} as MarketMetadataProviderValue)
 
@@ -28,8 +28,9 @@ function MarketMetadataProvider({
 }: {
   children: ReactNode
 }): ReactElement {
-  const { isLoading } = useConnect()
-  const { chain } = useNetwork()
+  const { status } = useConnect()
+  const { chain } = useAccount()
+  const isLoading = status === 'pending'
 
   const [opcFees, setOpcFees] = useState<OpcFee[]>()
   const [approvedBaseTokens, setApprovedBaseTokens] = useState<TokenInfo[]>()

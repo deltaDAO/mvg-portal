@@ -2,10 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useMarketMetadata } from '../@context/MarketMetadata'
 import {
-  useNetwork,
   useAccount,
-  useProvider,
-  useBalance as useBalanceWagmi
+  useBalance as useBalanceWagmi,
+  usePublicClient
 } from 'wagmi'
 import { getTokenBalance } from '@utils/wallet'
 
@@ -15,11 +14,10 @@ interface BalanceProviderValue {
 }
 
 function useBalance(): BalanceProviderValue {
-  const { address } = useAccount()
+  const { chain, address } = useAccount()
   const { data: balanceNativeToken } = useBalanceWagmi({ address })
-  const web3provider = useProvider()
+  const web3provider = usePublicClient()
   const { approvedBaseTokens } = useMarketMetadata()
-  const { chain } = useNetwork()
 
   const [balance, setBalance] = useState<UserBalance>({
     native: {

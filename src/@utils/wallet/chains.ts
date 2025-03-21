@@ -1,4 +1,4 @@
-import { Chain } from 'wagmi'
+import type { Chain } from 'wagmi/chains'
 import * as wagmiChains from 'wagmi/chains'
 import { networksMetadata } from '../../../networksMetadata.config'
 

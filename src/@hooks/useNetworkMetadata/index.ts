@@ -8,11 +8,11 @@ import {
   NetworkType
 } from './utils'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import { useNetwork } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 export default function useNetworkMetadata(): UseNetworkMetadata {
   const { appConfig } = useMarketMetadata()
-  const { chain } = useNetwork()
+  const { chain } = useAccount()
 
   const [networkDisplayName, setNetworkDisplayName] = useState<string>()
   const [networkData, setNetworkData] = useState<EthereumListsChain>()
