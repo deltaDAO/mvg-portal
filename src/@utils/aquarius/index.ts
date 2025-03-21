@@ -65,10 +65,10 @@ export function parseFilters(
   filterSets: { [key: string]: string[] }
 ): FilterTerm[] {
   const filterQueryPath = {
-    accessType: 'services.type',
-    serviceType: 'metadata.type',
-    filterSet: 'metadata.tags.keyword',
-    filterTime: 'metadata.created'
+    accessType: 'credentialSubject.services.type',
+    serviceType: 'credentialSubject.metadata.type',
+    filterSet: 'credentialSubject.metadata.tags.keyword',
+    filterTime: 'credentialSubject.metadata.created'
   }
   if (filtersList) {
     const filterTerms = Object.keys(filtersList)?.map((key) => {
@@ -428,8 +428,9 @@ async function getTopPublishers(
   const filters: FilterTerm[] = []
 
   accesType !== undefined &&
-    filters.push(getFilterTerm('services.type', accesType))
-  type !== undefined && filters.push(getFilterTerm('metadata.type', type))
+    filters.push(getFilterTerm('credentialSubject.services.type', accesType))
+  type !== undefined &&
+    filters.push(getFilterTerm('credentialSubject.metadata.type', type))
 
   const baseQueryParams = {
     chainIds,
@@ -581,8 +582,10 @@ export async function getDownloadAssets(
   page?: number
 ): Promise<{ downloadedAssets: DownloadedAsset[]; totalResults: number }> {
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('services.datatokenAddress.keyword', dtList))
-  filters.push(getFilterTerm('services.type', 'access'))
+  filters.push(
+    getFilterTerm('credentialSubject.services.datatokenAddress.keyword', dtList)
+  )
+  filters.push(getFilterTerm('credentialSubject.services.type', 'access'))
   const baseQueryparams = {
     chainIds,
     filters,
@@ -630,7 +633,7 @@ export async function getTagsList(
     aggs: {
       tags: {
         terms: {
-          field: 'metadata.tags.keyword',
+          field: 'credentialSubject.metadata.tags.keyword',
           size: 1000
         }
       }
@@ -650,15 +653,15 @@ export async function getTagsList(
     response.data.forEach((items) => {
       if (items.hits) {
         items.hits?.hits.forEach((item) => {
-          if (item._source?.metadata?.tags) {
-            item._source.metadata.tags
+          if (item._source?.credentialSubject.metadata?.tags) {
+            item._source.credentialSubject.metadata.tags
               .filter((tag: string) => tag !== '')
               .forEach((tag: string) => tagsSet.add(tag))
           }
         })
       } else {
         items.forEach((item) => {
-          item.metadata.tags
+          item.credentialSubject.metadata.tags
             .filter((tag: string) => tag !== '')
             .forEach((tag: string) => tagsSet.add(tag))
         })
