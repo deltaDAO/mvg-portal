@@ -75,7 +75,6 @@ function AssetProvider({
     async (token?: CancelToken) => {
       if (!did) return
       const isDid = isValidDid(did)
-
       if (!isDid) {
         setError(`The url is not for a valid DID`)
         LoggerInstance.error(`[asset] Not a valid DID`)
@@ -92,7 +91,7 @@ function AssetProvider({
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const asset: Asset = await getAsset(did, token)
-
+      console.log('assethere:', asset)
       parseCredentialPolicies(asset?.credentialSubject?.credentials)
       asset?.credentialSubject?.services?.forEach((service) => {
         parseCredentialPolicies(service.credentials)

@@ -228,24 +228,25 @@ export function parseCredentialPolicies(credentials: Credential) {
   if (!credentials) {
     return
   }
-
   credentials.allow = credentials?.allow?.map((credential) => {
     if (isCredentialPolicyBased(credential)) {
       credential.values = credential.values.map((value) => {
         value.request_credentials = value.request_credentials.map(
           (requestCredentials) => {
-            requestCredentials.policies = requestCredentials.policies
-              .map((policy) => {
-                try {
-                  return typeof policy === 'string'
-                    ? JSON.parse(policy)
-                    : undefined
-                } catch (error) {
-                  LoggerInstance.error(error)
-                  return undefined
-                }
-              })
-              .filter((policy) => policy !== undefined)
+            if (requestCredentials.policies) {
+              requestCredentials.policies = requestCredentials.policies
+                .map((policy) => {
+                  try {
+                    return typeof policy === 'string'
+                      ? JSON.parse(policy)
+                      : undefined
+                  } catch (error) {
+                    LoggerInstance.error(error)
+                    return undefined
+                  }
+                })
+                .filter((policy) => policy !== undefined)
+            }
             return requestCredentials
           }
         )
