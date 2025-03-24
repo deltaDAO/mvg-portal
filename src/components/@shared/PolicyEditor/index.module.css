@@ -97,6 +97,10 @@
   margin-right: 0;
 }
 
+.marginRight1em {
+  margin-right: 1em;
+}
+
 .space {
   margin-left: 0.5em;
 }

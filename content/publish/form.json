@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "Metadata",
+    "title": "Asset Metadata",
     "fields": [
       {
         "name": "nft",
@@ -326,14 +326,17 @@
       }
     ]
   },
+  "policies": {
+    "title": "Asset Level Credentials"
+  },
   "additionalDdos": {
-    "title": "Additional Credentials",
+    "title": "Additional Asset Descriptions",
     "fields": [
       {
         "name": "additionalCredential",
-        "label": "Additional Credential",
+        "label": "Additional Description",
         "placeholder": "{ ... }",
-        "help": "Insert an additional credential",
+        "help": "Insert an additional description",
         "type": "textarea"
       },
       {

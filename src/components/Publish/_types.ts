@@ -64,6 +64,7 @@ export interface FormPublishData {
   additionalDdosPageVisited: boolean
   previewPageVisited: boolean
   credentials: CredentialForm
+  accessPolicyPageVisited: boolean
 }
 
 export interface StepContent {

@@ -1,30 +1,35 @@
 /* eslint-disable camelcase */
 import axios from 'axios'
-import { AssetExtended } from 'src/@types/AssetExtended'
+import { Asset } from 'src/@types/Asset'
 import {
   PolicyServerInitiateAction,
   PolicyServerResponse,
-  PolicyServerCheckSessionIdAction
+  PolicyServerCheckSessionIdAction,
+  PolicyServerInitiateActionData,
+  PolicyServerActions
 } from 'src/@types/PolicyServer'
-import appConfig from 'app.config.cjs'
 
-export async function requestCredentialPresentation(
-  asset: AssetExtended
-): Promise<string> {
+export async function requestCredentialPresentation(asset: Asset): Promise<{
+  success: boolean
+  openid4vc: string
+  policyServerData: PolicyServerInitiateActionData
+}> {
   try {
     const apiUrl = `${window.location.origin}`
     const sessionId = crypto.randomUUID()
 
+    const policyServer: PolicyServerInitiateActionData = {
+      successRedirectUri: `${apiUrl}/api/policy/success`,
+      errorRedirectUri: `${apiUrl}/api/policy/error`,
+      responseRedirectUri: `${apiUrl}/policy/verify/${sessionId}`,
+      presentationDefinitionUri: `${apiUrl}/policy/pd/${sessionId}`
+    }
+
     const action: PolicyServerInitiateAction = {
-      action: 'initiate',
+      action: PolicyServerActions.INITIATE,
       sessionId,
       ddo: asset,
-      policyServer: {
-        successRedirectUri: `${apiUrl}/api/policy/success`,
-        errorRedirectUri: `${apiUrl}/api/policy/error`,
-        responseRedirectUri: `${apiUrl}/policy/verify/${sessionId}`,
-        presentationDefinitionUri: `${apiUrl}/policy/pd/${sessionId}`
-      }
+      policyServer
     }
     const response = await axios.post(
       `/provider/api/services/PolicyServerPassthrough`,
@@ -32,46 +37,31 @@ export async function requestCredentialPresentation(
         policyServerPassthrough: action
       }
     )
-    return response.data.message
+
+    if (response.data.length === 0) {
+      // eslint-disable-next-line no-throw-literal
+      throw { success: false, message: 'No openid4vc url found' }
+    }
+
+    return {
+      success: response.data?.success,
+      openid4vc: response.data?.message,
+      policyServerData: policyServer
+    }
   } catch (error) {
-    throw error.response
+    if (error.response?.data) {
+      throw error.response?.data
+    }
+    throw error
   }
 }
 
-export async function serverSidePresentationDefinition(
+export async function checkVerifierSessionId(
   sessionId: string
 ): Promise<PolicyServerResponse> {
   try {
-    const response = await axios.get(
-      `${appConfig.ssiPolicyServer}/pd/${sessionId}`
-    )
-    return response.data
-  } catch (error) {
-    throw error.response
-  }
-}
-
-export async function serverSidePresentationRequest(
-  sessionId: string,
-  body: any
-): Promise<PolicyServerResponse> {
-  try {
-    const result = await axios.post(
-      `${appConfig.ssiPolicyServer}/verify/${sessionId}`,
-      body
-    )
-    return result.data
-  } catch (error) {
-    throw error.response
-  }
-}
-
-export async function checkSessionId(sessionId: string): Promise<string> {
-  try {
-    const apiUrl = `${window.location.origin}`
-
     const action: PolicyServerCheckSessionIdAction = {
-      action: 'checkSessionId',
+      action: PolicyServerActions.CHECK_SESSION_ID,
       sessionId
     }
     const response = await axios.post(
@@ -80,9 +70,17 @@ export async function checkSessionId(sessionId: string): Promise<string> {
         policyServerPassthrough: action
       }
     )
-    console.log(response.data)
-    return response.data.message
+
+    if (typeof response.data === 'string' && response.data.length === 0) {
+      // eslint-disable-next-line no-throw-literal
+      throw { success: false, message: 'Invalid session id' }
+    }
+
+    return response.data
   } catch (error) {
-    throw error.response
+    if (error.response?.data) {
+      throw error.response?.data
+    }
+    throw error
   }
 }

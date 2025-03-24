@@ -50,11 +50,24 @@ export interface PolicyRule {
   operator: string
 }
 
+export interface StaticVpPolicy {
+  type: 'staticVpPolicy'
+  name: string
+}
+
+export interface ArgumentVpPolicy {
+  type: 'argumentVpPolicy'
+  policy: string
+  args: string
+}
+
+export type VpPolicyType = StaticVpPolicy | ArgumentVpPolicy
+
 export interface CredentialForm {
   allow?: string[]
   deny?: string[]
   requestCredentials?: RequestCredentialForm[]
-  vpPolicies?: string[]
+  vpPolicies?: VpPolicyType[]
   vcPolicies?: string[]
 }
 

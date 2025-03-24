@@ -24,6 +24,7 @@ import {
   generateCredentials,
   IpfsUpload,
   signAssetAndUploadToIpfs,
+  stringifyCredentialPolicies,
   transformConsumerParameters
 } from '@components/Publish/_utils'
 import {
@@ -196,10 +197,15 @@ export default function AddService({
         ),
         state: State.Active
       }
-
+      console.log(newService)
       // update asset with new service
       const updatedAsset = { ...asset }
       updatedAsset.credentialSubject.services.push(newService)
+
+      stringifyCredentialPolicies(updatedAsset.credentialSubject.credentials)
+      updatedAsset.credentialSubject.services.forEach((service) => {
+        stringifyCredentialPolicies(service.credentials)
+      })
 
       // delete custom helper properties injected in the market so we don't write them on chain
       delete (updatedAsset as AssetExtended).accessDetails

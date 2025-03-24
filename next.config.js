@@ -1,19 +1,22 @@
 import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
+import withTM from 'next-transpile-modules'
 
-export default (phase, { defaultConfig }) => {
+const nextConfig = (phase, { defaultConfig }) => {
   /**
    * @type {import('next').NextConfig}
    */
-  const nextConfig = {
+  const config = {
     experimental: {
       esmExternals: 'loose'
     },
     webpack: (config, options) => {
       const { isServer } = options
+
       if (!isServer) {
         config.resolve.fallback.fs = false
       }
+
       config.module.rules.push(
         {
           test: /\.svg$/,
@@ -22,24 +25,18 @@ export default (phase, { defaultConfig }) => {
         },
         {
           test: /\.gif$/,
-          // yay for webpack 5
-          // https://webpack.js.org/guides/asset-management/#loading-images
           type: 'asset/resource'
         }
       )
-      // for old ocean.js, most likely can be removed later on
+
       config.plugins.push(
         new options.webpack.IgnorePlugin({
           resourceRegExp: /^electron$/
         })
       )
+
       const fallback = config.resolve.fallback || {}
       Object.assign(fallback, {
-        // crypto: require.resolve('crypto-browserify'),
-        // stream: require.resolve('stream-browserify'),
-        // assert: require.resolve('assert'),
-        // os: require.resolve('os-browserify'),
-        // url: require.resolve('url'),
         http: require.resolve('stream-http'),
         https: require.resolve('https-browserify'),
         fs: false,
@@ -58,9 +55,8 @@ export default (phase, { defaultConfig }) => {
           Buffer: ['buffer', 'Buffer']
         })
       ])
-      return typeof defaultConfig.webpack === 'function'
-        ? defaultConfig.webpack(config, options)
-        : config
+
+      return config
     },
     async redirects() {
       return [
@@ -71,7 +67,6 @@ export default (phase, { defaultConfig }) => {
         }
       ]
     },
-
     async rewrites() {
       const walletApiBase =
         process.env.NEXT_PUBLIC_SSI_WALLET_API || 'https://wallet.demo.walt.id'
@@ -102,10 +97,9 @@ export default (phase, { defaultConfig }) => {
 
       return routes
     }
-    // Prefer loading of ES Modules over CommonJS
-    // https://nextjs.org/blog/next-11-1#es-modules-support
-    // experimental: { esmExternals: true }
   }
 
-  return nextConfig
+  return withTM(['@oceanprotocol/lib'])(config)
 }
+
+export default nextConfig

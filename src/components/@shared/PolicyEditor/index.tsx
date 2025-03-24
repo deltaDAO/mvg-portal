@@ -11,7 +11,10 @@ import {
   PolicyEditorProps,
   PolicyType,
   RequestCredentialForm,
-  StaticPolicy
+  StaticPolicy,
+  StaticVpPolicy,
+  ArgumentVpPolicy,
+  VpPolicyType
 } from './types'
 import fields from './editor.json'
 
@@ -24,7 +27,14 @@ interface PolicyViewProps {
   onValueChange: () => void
 }
 
-function StaticPolicyView(props): ReactElement {
+interface VpPolicyViewProps {
+  policy: VpPolicyType
+  name: string
+  index: number
+  onDeletePolicy: () => void
+}
+
+function StaticPolicyView(props: PolicyViewProps): ReactElement {
   const { index, innerIndex, name, onDeletePolicy }: PolicyViewProps = props
   return (
     <>
@@ -54,7 +64,7 @@ function StaticPolicyView(props): ReactElement {
   )
 }
 
-function ParameterizedPolicyView(props): ReactElement {
+function ParameterizedPolicyView(props: PolicyViewProps): ReactElement {
   const {
     policy,
     index,
@@ -138,7 +148,7 @@ function ParameterizedPolicyView(props): ReactElement {
   )
 }
 
-function CustomUrlPolicyView(props): ReactElement {
+function CustomUrlPolicyView(props: PolicyViewProps): ReactElement {
   const {
     policy,
     index,
@@ -242,7 +252,7 @@ function CustomUrlPolicyView(props): ReactElement {
   )
 }
 
-function CustomPolicyView(props): ReactElement {
+function CustomPolicyView(props: PolicyViewProps): ReactElement {
   const {
     policy,
     index,
@@ -390,7 +400,7 @@ function CustomPolicyView(props): ReactElement {
   )
 }
 
-function PolicyView(props): ReactElement {
+function PolicyView(props: PolicyViewProps): ReactElement {
   const { policy }: PolicyViewProps = props
   switch (policy?.type) {
     case 'staticPolicy':
@@ -401,6 +411,89 @@ function PolicyView(props): ReactElement {
       return CustomUrlPolicyView(props)
     case 'customPolicy':
       return CustomPolicyView(props)
+    default:
+      return <></>
+  }
+}
+
+function StaticVpPolicyView(props: VpPolicyViewProps): ReactElement {
+  const { index, onDeletePolicy, name }: VpPolicyViewProps = props
+  return (
+    <>
+      <label>{{ ...getFieldContent('staticVpPolicy', fields) }.label}</label>
+      <div className={`${styles.editorPanel} ${styles.marginBottom1em}`}>
+        <div
+          className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
+        >
+          <div className={`${styles.flexGrow}`}>
+            <Field
+              {...getFieldContent('name', fields)}
+              component={Input}
+              name={`${name}.vpPolicies[${index}].name`}
+            />
+          </div>
+          <Button
+            type="button"
+            style="primary"
+            onClick={onDeletePolicy}
+            className={`${styles.deleteButton} ${styles.marginBottomButton}`}
+          >
+            Delete
+          </Button>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function ArgumentVpPolicyView(props: VpPolicyViewProps): ReactElement {
+  const { index, onDeletePolicy, name }: VpPolicyViewProps = props
+  return (
+    <>
+      <label>{{ ...getFieldContent('argumentVpPolicy', fields) }.label}</label>
+      <div className={`${styles.editorPanel} ${styles.marginBottom1em}`}>
+        <div
+          className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
+        >
+          <div
+            className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100} ${styles.flexGrow}`}
+          >
+            <div className={styles.flexGrow}>
+              <Field
+                {...getFieldContent('policy', fields)}
+                component={Input}
+                name={`${name}.vpPolicies[${index}].policy`}
+              />
+            </div>
+            <div className={styles.flexGrow}>
+              <Field
+                {...getFieldContent('args', fields)}
+                component={Input}
+                name={`${name}.vpPolicies[${index}].args`}
+              />
+            </div>
+            <Button
+              type="button"
+              style="primary"
+              onClick={onDeletePolicy}
+              className={`${styles.deleteButton} ${styles.marginBottomButton}`}
+            >
+              Delete
+            </Button>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function VpPolicyView(props: VpPolicyViewProps): ReactElement {
+  const { policy }: VpPolicyViewProps = props
+  switch (policy?.type) {
+    case 'staticVpPolicy':
+      return StaticVpPolicyView(props)
+    case 'argumentVpPolicy':
+      return ArgumentVpPolicyView(props)
     default:
       return <></>
   }
@@ -503,10 +596,89 @@ export function PolicyEditor(props): ReactElement {
     return field
   }
 
+  function handleNewStaticVpPolicy() {
+    const policy: StaticVpPolicy = {
+      type: 'staticVpPolicy',
+      name: ''
+    }
+    credentials?.vpPolicies?.push(policy)
+    setCredentials(credentials)
+  }
+
+  function handleNewVpPolicy() {
+    const policy: ArgumentVpPolicy = {
+      type: 'argumentVpPolicy',
+      policy: '',
+      args: ''
+    }
+    credentials?.vpPolicies?.push(policy)
+    setCredentials(credentials)
+  }
+
+  function handleDeleteVpPolicy(index: number) {
+    credentials.vpPolicies.splice(index, 1)
+    setCredentials(credentials)
+  }
+
   return (
     <>
       <label className={styles.editorLabel}>{label}</label>
       <div className={`${styles.editorPanel} ${styles.marginBottom4em}`}>
+        <div
+          className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
+        >
+          <Button
+            type="button"
+            style="primary"
+            className={`${styles.marginBottom1em}`}
+            onClick={handleNewStaticPolicy}
+          >
+            New {{ ...getFieldContent('staticPolicy', fields) }.label}
+          </Button>
+
+          {credentials?.vcPolicies?.map((rule, index) => (
+            <div
+              key={index}
+              className={`${styles.panelColumn} ${styles.width100}`}
+            >
+              <div
+                className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
+              >
+                <div className={`${styles.flexGrow}`}>
+                  <Field
+                    key={index}
+                    {...staticPolicyLabel(index)}
+                    component={Input}
+                    name={`${name}.vcPolicies[${index}]`}
+                    readOnly={
+                      index < filteredDefaultPolicies?.length &&
+                      filteredDefaultPolicies.includes(
+                        credentials?.vcPolicies[index]
+                      ) &&
+                      credentials?.vcPolicies[index]?.length > 0
+                    }
+                  />
+                </div>
+                <Button
+                  type="button"
+                  style="primary"
+                  disabled={
+                    index < filteredDefaultPolicies?.length &&
+                    filteredDefaultPolicies.includes(
+                      credentials?.vcPolicies[index]
+                    ) &&
+                    credentials?.vcPolicies[index]?.length > 0
+                  }
+                  onClick={() => handleDeleteStaticPolicy(index)}
+                  className={`${styles.deleteButton} ${styles.marginBottomButton}`}
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div className={`${styles.panelColumn} ${styles.marginBottom2em}`}>
           <Button
             type="button"
@@ -620,55 +792,35 @@ export function PolicyEditor(props): ReactElement {
         <div
           className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
         >
-          <Button
-            type="button"
-            style="primary"
-            className={`${styles.marginBottom1em} ${styles.marginTop2em}`}
-            onClick={handleNewStaticPolicy}
+          <div
+            className={`${styles.panelRow} ${styles.marginBottom2em} ${styles.marginBottom1em}`}
           >
-            New {{ ...getFieldContent('staticPolicy', fields) }.label}
-          </Button>
-
-          {credentials?.vcPolicies?.map((rule, index) => (
-            <div
-              key={index}
-              className={`${styles.panelColumn} ${styles.width100}`}
+            <Button
+              type="button"
+              style="primary"
+              onClick={handleNewStaticVpPolicy}
             >
-              <div
-                className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-              >
-                <div className={`${styles.flexGrow}`}>
-                  <Field
-                    key={index}
-                    {...staticPolicyLabel(index)}
-                    component={Input}
-                    name={`${name}.vcPolicies[${index}]`}
-                    readOnly={
-                      index < filteredDefaultPolicies?.length &&
-                      filteredDefaultPolicies.includes(
-                        credentials?.vcPolicies[index]
-                      ) &&
-                      credentials?.vcPolicies[index]?.length > 0
-                    }
-                  />
-                </div>
-                <Button
-                  type="button"
-                  style="primary"
-                  disabled={
-                    index < filteredDefaultPolicies?.length &&
-                    filteredDefaultPolicies.includes(
-                      credentials?.vcPolicies[index]
-                    ) &&
-                    credentials?.vcPolicies[index]?.length > 0
-                  }
-                  onClick={() => handleDeleteStaticPolicy(index)}
-                  className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
+              New {{ ...getFieldContent('staticVpPolicy', fields) }.label}
+            </Button>
+
+            <Button
+              className={`${styles.space}`}
+              type="button"
+              style="primary"
+              onClick={handleNewVpPolicy}
+            >
+              New {{ ...getFieldContent('argumentVpPolicy', fields) }.label}
+            </Button>
+          </div>
+
+          {credentials?.vpPolicies?.map((policy, index) => (
+            <VpPolicyView
+              key={index}
+              index={index}
+              name={name}
+              policy={policy}
+              onDeletePolicy={() => handleDeleteVpPolicy(index)}
+            />
           ))}
         </div>
       </div>

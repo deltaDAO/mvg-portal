@@ -1,0 +1,54 @@
+.panelColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.marginTop1 {
+  margin-top: 1em;
+}
+
+.marginTop2p {
+  margin-top: 2%;
+}
+
+.marginTop6px {
+  margin-top: 6px;
+}
+
+.textAlignCenter {
+  text-align: left;
+}
+
+.alignItemsCemter {
+  align-items: center;
+}
+
+.errorMessage {
+  font-size: 1.3em;
+  color: red;
+}
+
+.list {
+  margin: 1em 0em 0em 2em;
+}
+
+.listItem {
+  display: list-item;
+}
+
+.panelGrid {
+  display: grid;
+}
+
+.panelTemplateData {
+  grid-template-columns: minmax(max-content, 10%) auto;
+  gap: 0.3em;
+}
+
+.fillRed {
+  fill: red;
+}
+
+.fillGreen {
+  fill: var(--color-primary);
+}

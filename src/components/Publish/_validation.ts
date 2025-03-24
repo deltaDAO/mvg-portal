@@ -160,11 +160,28 @@ const validationRequestCredentials = {
   )
 }
 
+const validationVpPolicy = {
+  type: Yup.string().required('Required'),
+  name: Yup.string().when('type', {
+    is: 'staticVpPolicy',
+    then: (shema) => shema.required('Required')
+  }),
+  policy: Yup.string().when('type', {
+    is: 'argumentVpPolicy',
+    then: (shema) => shema.required('Required')
+  }),
+  args: Yup.number().when('type', {
+    is: 'argumentVpPolicy',
+    then: (shema) => shema.required('Required')
+  })
+}
+
 const validationCredentials = {
   requestCredentials: Yup.array().of(
     Yup.object().shape(validationRequestCredentials)
   ),
   vcPolicies: Yup.array().of(Yup.string().required('Required')),
+  vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
   deny: Yup.array().of(Yup.string()).nullable()
 }

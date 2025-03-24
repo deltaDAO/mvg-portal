@@ -8,6 +8,35 @@
   flex-direction: column;
 }
 
+.panelGrid {
+  display: grid;
+}
+
+.panelTemplateList {
+  grid-template-columns: max-content auto;
+}
+
+.panelTemplateData {
+  grid-template-columns: minmax(max-content, 30%) auto;
+  gap: 0.2em;
+}
+
+.dialogWidth {
+  width: 60%;
+}
+
+@media (max-width: 1900px) {
+  .dialogWidth {
+    width: 80%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .dialogWidth {
+    width: 100%;
+  }
+}
+
 .widthAuto {
   width: auto;
 }
@@ -18,6 +47,10 @@
 
 .marginRight2 {
   margin-right: 2em;
+}
+
+.marginRight3 {
+  margin-right: 3em;
 }
 
 .marginBottom7px {
@@ -71,9 +104,29 @@
   color: var(--input-font-color);
   border: var(--input-border-size) solid var(--input-border-color);
   box-shadow: none;
-  width: 100%;
+  width: 2em;
   background: var(--background-content);
   padding: calc(var(--spacer) / 3);
   border-radius: var(--input-border-radius);
-  height: 43px;
+  height: 1.5em;
+}
+
+.tableCell {
+  padding: 0px;
+}
+
+.alignItemsCenter {
+  align-items: center;
+}
+
+.justifyItemsStrech {
+  justify-items: stretch;
+}
+
+.justifyContentFlexEnd {
+  justify-content: flex-end;
+}
+
+.flexWrap {
+  flex-wrap: wrap;
 }
