@@ -8,7 +8,7 @@ export default function PageHome(): ReactElement {
   // const { siteContent } = useMarketMetadata()
   const router = useRouter()
   useEffect(() => {
-    router.replace('/search?sort=nft.created&sortOrder=desc')
+    router.replace('/search?sort=credentialSubject.nft.created&sortOrder=desc')
   }, [])
 
   return null
