@@ -136,15 +136,20 @@ export default function AssetList({
             )}
 
             {activeAssetView === AssetViewOptions.Grid &&
-              assets?.map((asset) => (
-                <AssetTeaser
-                  asset={asset}
-                  key={asset.id}
-                  noPublisher={noPublisher}
-                  noDescription={noDescription}
-                  noPrice={noPrice}
-                />
-              ))}
+              assets?.map((asset) => {
+                if (asset.credentialSubject) {
+                  return (
+                    <AssetTeaser
+                      asset={asset}
+                      key={asset.id}
+                      noPublisher={noPublisher}
+                      noDescription={noDescription}
+                      noPrice={noPrice}
+                    />
+                  )
+                }
+                return null
+              })}
           </>
         ) : (
           <div className={styles.empty}>No results found</div>

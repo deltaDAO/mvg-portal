@@ -179,7 +179,7 @@ export function SsiWallet(): ReactElement {
                 className={`${styles.ssiPanel} ${styles.connected}`}
                 onClick={handleOpenDialog}
               >
-                SSI Wallet
+                SSI
               </div>
             </>
           ) : (
@@ -188,11 +188,7 @@ export function SsiWallet(): ReactElement {
               disabled={!(isConnected && signer)}
               onClick={handleReconnection}
             >
-              {isConnected && signer ? (
-                <>Reconnect SSI Wallet</>
-              ) : (
-                <>SSI Wallet</>
-              )}
+              {isConnected && signer ? <>Connect SSI</> : <>SSI Wallet</>}
             </button>
           )}
         </>
