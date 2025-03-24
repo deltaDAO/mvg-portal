@@ -69,6 +69,10 @@
   margin-bottom: 7.5px;
 }
 
+.marginBottom1 {
+  margin-bottom: 1em;
+}
+
 .marginBottom2 {
   margin-bottom: 2em;
 }
@@ -103,6 +107,14 @@
 .closeButton {
   padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
   font-size: var(--font-size-small);
+}
+
+.resetButton {
+  padding: calc(var(--spacer) / 3) var(--spacer);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--button-border-radius);
 }
 
 .inputField {
@@ -161,4 +173,12 @@
     margin-top: auto;
     margin-bottom: auto;
   }
+}
+
+.list {
+  margin: 1em 0em 0em 2em;
+}
+
+.listItem {
+  display: list-item;
 }

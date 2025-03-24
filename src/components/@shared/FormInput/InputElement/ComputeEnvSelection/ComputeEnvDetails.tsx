@@ -16,23 +16,21 @@ export default function ComputeEnvDetails({
 }: {
   computeEnv: ComputeEnvironmentExtended
 }) {
-  const {
-    id,
-    desc,
-    cpuNumber,
-    cpuType,
-    gpuNumber,
-    gpuType,
-    ramGB,
-    diskGB,
-    currentJobs,
-    maxJobs
-  } = computeEnv
+  const { id, description, maxJobs } = computeEnv
+
+  // ToDo: ComputeEnvironmentExtended - needs to be adapted for the new data structure
+  const gpuNumber = 0
+  const gpuType = ''
+  const cpuNumber = 0
+  const cpuType = ''
+  const ramGB = ''
+  const diskGB = ''
+  const currentJobs = 0
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <div>
-          <h4 className={styles.title}>{desc || id}</h4>
+          <h4 className={styles.title}>{description || id}</h4>
         </div>
         {gpuNumber > 0 ? <GPU /> : <CPU />}
       </div>

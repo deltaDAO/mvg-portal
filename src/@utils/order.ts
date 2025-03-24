@@ -279,6 +279,7 @@ export async function handleComputeOrder(
   accountId: string,
   initializeData: ProviderComputeInitialize,
   hasDatatoken,
+  verifierSessionId: string,
   computeConsumerAddress?: string
 ): Promise<string> {
   LoggerInstance.log(

@@ -64,6 +64,10 @@ import { useAccount } from 'wagmi'
 import { Service } from 'src/@types/ddo/Service'
 import { Asset, AssetPrice } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import { AssetActionCheckCredentials } from '../CheckCredentials'
+import { useSsiWallet } from '@context/SsiWallet'
+import { checkVerifierSessionId } from '@utils/wallet/policyServer'
+import appConfig from 'app.config.cjs'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -137,6 +141,7 @@ export default function Compute({
   const [retry, setRetry] = useState<boolean>(false)
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
+  const { verifierSessionId, setVerifierSessionId } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
 
@@ -258,7 +263,7 @@ export default function Compute({
         service,
         accessDetails,
         selectedAlgorithmAsset,
-        accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
+        signer,
         selectedComputeEnv
       )
       if (
@@ -443,6 +448,7 @@ export default function Compute({
         accountId,
         initializedProviderResponse.algorithm,
         hasAlgoAssetDatatoken,
+        verifierSessionId,
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
@@ -464,6 +470,7 @@ export default function Compute({
         accountId,
         initializedProviderResponse.datasets[0],
         hasDatatoken,
+        verifierSessionId,
         selectedComputeEnv.consumerAddress
       )
       if (!datasetOrderTx) throw new Error('Failed to order dataset.')
@@ -485,11 +492,12 @@ export default function Compute({
         service.serviceEndpoint,
         signer,
         selectedComputeEnv?.id,
-        computeAsset,
+        [computeAsset],
         computeAlgorithm,
-        newAbortController(),
         null,
-        output
+        null,
+        output,
+        newAbortController()
       )
       if (!response) throw new Error('Error starting compute job.')
 
@@ -508,32 +516,47 @@ export default function Compute({
   }
 
   const onSubmit = async (values: ComputeDatasetForm) => {
-    if (
-      !values.algorithm ||
-      !values.computeEnv ||
-      !values.termsAndConditions ||
-      !values.acceptPublishingLicense
-    )
-      return
+    try {
+      if (appConfig.ssiEnabled) {
+        const result = await checkVerifierSessionId(verifierSessionId)
+        if (!result.success) {
+          toast.error('Invalid session')
+          setVerifierSessionId(undefined)
+          return
+        }
+      }
 
-    const userCustomParameters = {
-      dataServiceParams: parseConsumerParameterValues(
-        values?.dataServiceParams,
-        service.consumerParameters
-      ),
-      algoServiceParams: parseConsumerParameterValues(
-        values?.algoServiceParams,
-        selectedAlgorithmAsset?.credentialSubject?.services[0]
-          .consumerParameters
-      ),
-      algoParams: parseConsumerParameterValues(
-        values?.algoParams,
-        selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
-          ?.consumerParameters
+      if (
+        !values.algorithm ||
+        !values.computeEnv ||
+        !values.termsAndConditions ||
+        !values.acceptPublishingLicense
       )
-    }
+        return
 
-    await startJob(userCustomParameters)
+      const userCustomParameters = {
+        dataServiceParams: parseConsumerParameterValues(
+          values?.dataServiceParams,
+          service.consumerParameters
+        ),
+        algoServiceParams: parseConsumerParameterValues(
+          values?.algoServiceParams,
+          selectedAlgorithmAsset?.credentialSubject?.services[0]
+            .consumerParameters
+        ),
+        algoParams: parseConsumerParameterValues(
+          values?.algoParams,
+          selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+            ?.consumerParameters
+        )
+      }
+
+      await startJob(userCustomParameters)
+    } catch (error) {
+      setVerifierSessionId(undefined)
+      toast.error(error.message)
+      LoggerInstance.error(error)
+    }
   }
 
   return (
@@ -598,56 +621,122 @@ export default function Compute({
               ?.consumerParameters
           )}
           enableReinitialize
-          onSubmit={onSubmit}
+          onSubmit={(values) => {
+            if (!verifierSessionId) {
+              return
+            }
+            onSubmit(values)
+          }}
         >
-          <FormStartComputeDataset
-            asset={asset}
-            service={service}
-            accessDetails={accessDetails}
-            algorithms={algorithmList}
-            ddoListAlgorithms={ddoAlgorithmList}
-            selectedAlgorithmAsset={selectedAlgorithmAsset}
-            setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
-            isLoading={isOrdering || isRequestingAlgoOrderPrice}
-            isComputeButtonDisabled={isComputeButtonDisabled}
-            hasPreviousOrder={!!validOrderTx}
-            hasDatatoken={hasDatatoken}
-            dtBalance={dtBalance}
-            assetTimeout={secondsToString(service.timeout)}
-            hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
-            hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
-            isAccountIdWhitelisted={isAccountIdWhitelisted}
-            datasetSymbol={
-              accessDetails.baseToken?.symbol ||
-              (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
-            }
-            algorithmSymbol={
-              selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken?.symbol ||
-              (selectedAlgorithmAsset?.credentialSubject?.chainId === 137
-                ? 'mOCEAN'
-                : 'OCEAN')
-            }
-            providerFeesSymbol={providerFeesSymbol}
-            dtSymbolSelectedComputeAsset={
-              selectedAlgorithmAsset?.accessDetails?.[0]?.datatoken.symbol
-            }
-            dtBalanceSelectedComputeAsset={algorithmDTBalance}
-            selectedComputeAssetType="algorithm"
-            selectedComputeAssetTimeout={secondsToString(
-              selectedAlgorithmAsset?.credentialSubject?.services[0]?.timeout
-            )}
-            computeEnvs={computeEnvs}
-            setSelectedComputeEnv={setSelectedComputeEnv}
-            // lazy comment when removing pricingStepText
-            stepText={computeStatusText}
-            isConsumable={isConsumablePrice}
-            consumableFeedback={consumableFeedback}
-            datasetOrderPriceAndFees={datasetOrderPriceAndFees}
-            algoOrderPriceAndFees={algoOrderPriceAndFees}
-            providerFeeAmount={providerFeeAmount}
-            validUntil={computeValidUntil}
-            retry={retry}
-          />
+          {appConfig.ssiEnabled ? (
+            <>
+              {verifierSessionId && verifierSessionId?.length > 0 ? (
+                <FormStartComputeDataset
+                  asset={asset}
+                  service={service}
+                  accessDetails={accessDetails}
+                  algorithms={algorithmList}
+                  ddoListAlgorithms={ddoAlgorithmList}
+                  selectedAlgorithmAsset={selectedAlgorithmAsset}
+                  setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+                  isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                  isComputeButtonDisabled={isComputeButtonDisabled}
+                  hasPreviousOrder={!!validOrderTx}
+                  hasDatatoken={hasDatatoken}
+                  dtBalance={dtBalance}
+                  assetTimeout={secondsToString(service.timeout)}
+                  hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
+                  hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+                  isAccountIdWhitelisted={isAccountIdWhitelisted}
+                  datasetSymbol={
+                    accessDetails.baseToken?.symbol ||
+                    (asset.credentialSubject?.chainId === 137
+                      ? 'mOCEAN'
+                      : 'OCEAN')
+                  }
+                  algorithmSymbol={
+                    selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken
+                      ?.symbol ||
+                    (selectedAlgorithmAsset?.credentialSubject?.chainId === 137
+                      ? 'mOCEAN'
+                      : 'OCEAN')
+                  }
+                  providerFeesSymbol={providerFeesSymbol}
+                  dtSymbolSelectedComputeAsset={
+                    selectedAlgorithmAsset?.accessDetails?.[0]?.datatoken.symbol
+                  }
+                  dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                  selectedComputeAssetType="algorithm"
+                  selectedComputeAssetTimeout={secondsToString(
+                    selectedAlgorithmAsset?.credentialSubject?.services[0]
+                      ?.timeout
+                  )}
+                  computeEnvs={computeEnvs}
+                  setSelectedComputeEnv={setSelectedComputeEnv}
+                  // lazy comment when removing pricingStepText
+                  stepText={computeStatusText}
+                  isConsumable={isConsumablePrice}
+                  consumableFeedback={consumableFeedback}
+                  datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                  algoOrderPriceAndFees={algoOrderPriceAndFees}
+                  providerFeeAmount={providerFeeAmount}
+                  validUntil={computeValidUntil}
+                  retry={retry}
+                />
+              ) : (
+                <AssetActionCheckCredentials asset={asset} />
+              )}
+            </>
+          ) : (
+            <FormStartComputeDataset
+              asset={asset}
+              service={service}
+              accessDetails={accessDetails}
+              algorithms={algorithmList}
+              ddoListAlgorithms={ddoAlgorithmList}
+              selectedAlgorithmAsset={selectedAlgorithmAsset}
+              setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+              isLoading={isOrdering || isRequestingAlgoOrderPrice}
+              isComputeButtonDisabled={isComputeButtonDisabled}
+              hasPreviousOrder={!!validOrderTx}
+              hasDatatoken={hasDatatoken}
+              dtBalance={dtBalance}
+              assetTimeout={secondsToString(service.timeout)}
+              hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
+              hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              datasetSymbol={
+                accessDetails.baseToken?.symbol ||
+                (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+              }
+              algorithmSymbol={
+                selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken?.symbol ||
+                (selectedAlgorithmAsset?.credentialSubject?.chainId === 137
+                  ? 'mOCEAN'
+                  : 'OCEAN')
+              }
+              providerFeesSymbol={providerFeesSymbol}
+              dtSymbolSelectedComputeAsset={
+                selectedAlgorithmAsset?.accessDetails?.[0]?.datatoken.symbol
+              }
+              dtBalanceSelectedComputeAsset={algorithmDTBalance}
+              selectedComputeAssetType="algorithm"
+              selectedComputeAssetTimeout={secondsToString(
+                selectedAlgorithmAsset?.credentialSubject?.services[0]?.timeout
+              )}
+              computeEnvs={computeEnvs}
+              setSelectedComputeEnv={setSelectedComputeEnv}
+              // lazy comment when removing pricingStepText
+              stepText={computeStatusText}
+              isConsumable={isConsumablePrice}
+              consumableFeedback={consumableFeedback}
+              datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+              algoOrderPriceAndFees={algoOrderPriceAndFees}
+              providerFeeAmount={providerFeeAmount}
+              validUntil={computeValidUntil}
+              retry={retry}
+            />
+          )}
         </Formik>
       )}
 

@@ -33,53 +33,80 @@ export default function ComputeEnvSelection({
         ) : computeEnvs && !computeEnvs.length ? (
           <Empty message="No Compute Environment available." />
         ) : (
-          computeEnvs.map((env) => (
-            <div className={styles.row} key={env.id}>
-              <input
-                id={slugify(env.id)}
-                className={`${assetSelectionStyles.input} ${assetSelectionStyles.radio}`}
-                {...props}
-                checked={selected && env.id === selected}
-                type="radio"
-                value={env.id}
-              />
-              <label
-                className={assetSelectionStyles.label}
-                htmlFor={slugify(env.desc || env.id)}
-                title={env.desc || env.id}
-              >
-                <h3 className={assetSelectionStyles.title}>
-                  <Dotdotdot clamp={1} tagName="span">
-                    {env.desc || env.id}
-                  </Dotdotdot>
-                  <Tooltip content={<ComputeEnvDetails computeEnv={env} />} />
-                </h3>
-                <Dotdotdot clamp={1} tagName="code" className={styles.details}>
-                  {env?.cpuNumber > 0 && 'CPU | '}
-                  {env?.gpuNumber > 0 && 'GPU | '}
-                  {'max duration: '}
-                  {formatDuration(
-                    intervalToDuration({
-                      start: 0,
-                      end: env?.maxJobDuration * 1000
-                    })
-                  )}
-                </Dotdotdot>
-                <PriceUnit
-                  price={env.priceMin}
-                  size="small"
-                  className={assetSelectionStyles.price}
-                  symbol={`${
-                    approvedBaseTokens?.find(
-                      (token) =>
-                        token.address.toLowerCase() ===
-                        env.feeToken.toLowerCase()
-                    )?.symbol || 'EUROe'
-                  } / minute`}
+          computeEnvs
+            // ToDo: ComputeEnvironmentExtended - needs to be adapted for the new data structure
+            .map(
+              (env) =>
+                env as unknown as {
+                  id: string
+                  description: string
+                  cpuNumber: number
+                  gpuNumber: number
+                  maxJobDuration: number
+                  priceMin: number
+                  feeToken: string
+                }
+            )
+            .map((env) => (
+              <div className={styles.row} key={env.id}>
+                <input
+                  id={slugify(env.id)}
+                  className={`${assetSelectionStyles.input} ${assetSelectionStyles.radio}`}
+                  {...props}
+                  checked={selected && env.id === selected}
+                  type="radio"
+                  value={env.id}
                 />
-              </label>
-            </div>
-          ))
+                <label
+                  className={assetSelectionStyles.label}
+                  htmlFor={slugify(env.description || env.id)}
+                  title={env.description || env.id}
+                >
+                  <h3 className={assetSelectionStyles.title}>
+                    <Dotdotdot clamp={1} tagName="span">
+                      {env.description || env.id}
+                    </Dotdotdot>
+                    <Tooltip
+                      content={
+                        <ComputeEnvDetails
+                          computeEnv={
+                            // ToDo: ComputeEnvironmentExtended - needs to be adapted for the new data structure
+                            env as unknown as ComputeEnvironmentExtended
+                          }
+                        />
+                      }
+                    />
+                  </h3>
+                  <Dotdotdot
+                    clamp={1}
+                    tagName="code"
+                    className={styles.details}
+                  >
+                    {env?.cpuNumber > 0 && 'CPU | '}
+                    {env?.gpuNumber > 0 && 'GPU | '}
+                    {'max duration: '}
+                    {formatDuration(
+                      intervalToDuration({
+                        start: 0,
+                        end: env?.maxJobDuration * 1000
+                      })
+                    )}
+                  </Dotdotdot>
+                  <PriceUnit
+                    price={env.priceMin}
+                    size="small"
+                    className={assetSelectionStyles.price}
+                    symbol={`${
+                      approvedBaseTokens?.find(
+                        (token) =>
+                          token.address.toLowerCase() ===
+                          env.feeToken.toLowerCase()
+                      )?.symbol || 'EUROe'
+                    } / minute`}
+                  />
+                </label>
+              </div>
+            ))
         )}
       </div>
     </div>

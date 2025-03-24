@@ -5,6 +5,7 @@ import styles from './index.module.css'
 import { SsiKeyDesc, SsiWalletDesc } from 'src/@types/SsiWallet'
 import {
   connectToWallet,
+  getSsiVerifiableCredentialType,
   getWalletKeys,
   getWallets,
   isSessionValid
@@ -12,6 +13,7 @@ import {
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useAccount, useSigner } from 'wagmi'
 import appConfig from 'app.config.cjs'
+import { toast } from 'react-toastify'
 
 export function SsiWallet(): ReactElement {
   const {
@@ -20,7 +22,11 @@ export function SsiWallet(): ReactElement {
     selectedWallet,
     setSelectedWallet,
     selectedKey,
-    setSelectedKey
+    setSelectedKey,
+    ssiWalletCache,
+    cachedCredentials,
+    setCachedCredentials,
+    setVerifierSessionId
   } = useSsiWallet()
 
   const [ssiWallets, setSsiWallets] = useState<SsiWalletDesc[]>([])
@@ -40,7 +46,7 @@ export function SsiWallet(): ReactElement {
       setSessionToken(undefined)
       LoggerInstance.error(error)
     }
-  }, [setSelectedWallet, selectedWallet])
+  }, [selectedWallet])
 
   const fetchKeys = useCallback(async () => {
     if (!selectedWallet) {
@@ -54,7 +60,7 @@ export function SsiWallet(): ReactElement {
       setSessionToken(undefined)
       LoggerInstance.error(error)
     }
-  }, [selectedWallet, setSelectedKey, selectedKey])
+  }, [selectedWallet, selectedKey])
 
   useEffect(() => {
     if (!sessionToken) {
@@ -70,25 +76,39 @@ export function SsiWallet(): ReactElement {
   }, [sessionToken, selectedWallet, selectedKey])
 
   async function handleReconnection() {
-    const valid = await isSessionValid()
-    if ((!valid || !sessionToken) && isConnected && signer) {
-      try {
-        const session = await connectToWallet(signer)
-        setSessionToken(session)
-      } catch (error) {
-        setSessionToken(undefined)
-        LoggerInstance.error(error)
-        return false
+    if (isConnected && signer) {
+      const valid = await isSessionValid()
+      if ((!valid || !sessionToken) && isConnected && signer) {
+        try {
+          const session = await connectToWallet(signer)
+          setSessionToken(session)
+        } catch (error) {
+          setSessionToken(undefined)
+          LoggerInstance.error(error)
+          return false
+        }
       }
+      return true
+    } else {
+      toast.error('You need to connect to your wallet first')
+      return false
     }
-    return true
   }
 
   async function handleOpenDialog() {
+    const valid = await isSessionValid()
+    if (!valid) {
+      toast.error('SSI wallet session token is invalid or expired')
+      setSessionToken(undefined)
+      return
+    }
+
     const succeed = await handleReconnection()
     if (!succeed) {
       return
     }
+
+    setCachedCredentials(ssiWalletCache.readCredentialStorage())
 
     selectorDialog.current.showModal()
 
@@ -108,6 +128,12 @@ export function SsiWallet(): ReactElement {
       (key) => key.keyId.id === (event.target.value as string)
     )
     setSelectedKey(result)
+  }
+
+  function handleResetWalletCache() {
+    ssiWalletCache.clearCredentials()
+    setCachedCredentials(ssiWalletCache.readCredentialStorage())
+    setVerifierSessionId(undefined)
   }
 
   return (
@@ -146,7 +172,7 @@ export function SsiWallet(): ReactElement {
               <select
                 value={selectedKey?.keyId.id}
                 id="ssiKeys"
-                className={`${styles.marginBottom3} ${styles.padding1} ${styles.inputField}`}
+                className={`${styles.marginBottom2} ${styles.padding1} ${styles.inputField}`}
                 onChange={handleKeySelection}
               >
                 {ssiKeys?.map((keys) => {
@@ -161,6 +187,30 @@ export function SsiWallet(): ReactElement {
                   )
                 })}
               </select>
+
+              <Button
+                style="primary"
+                size="small"
+                className={`${styles.width100p} ${styles.resetButton} ${styles.marginBottom1}`}
+                onClick={handleResetWalletCache}
+              >
+                Reset Credential Cache
+              </Button>
+
+              {cachedCredentials?.length > 0 ? (
+                <div className={`${styles.marginBottom2}`}>
+                  <label>Cached Credentials:</label>
+                  <ul className={styles.list}>
+                    {cachedCredentials?.map((credential) => (
+                      <li key={credential.id} className={styles.listItem}>
+                        {getSsiVerifiableCredentialType(credential)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div className={`${styles.marginBottom1}`} />
+              )}
 
               <Button
                 style="primary"
@@ -185,7 +235,6 @@ export function SsiWallet(): ReactElement {
           ) : (
             <button
               className={`${styles.ssiPanel} ${styles.disconnected}`}
-              disabled={!(isConnected && signer)}
               onClick={handleReconnection}
             >
               {isConnected && signer ? <>Connect SSI</> : <>SSI Wallet</>}

@@ -33,7 +33,6 @@ export function escapeEsReservedCharacters(value: string): string {
  */
 type TFilterValue = string | number | boolean | number[] | string[]
 type TFilterKey = 'terms' | 'term' | 'match' | 'match_phrase'
-
 export function getFilterTerm(
   filterField: string,
   value: TFilterValue,
@@ -66,10 +65,10 @@ export function parseFilters(
   filterSets: { [key: string]: string[] }
 ): FilterTerm[] {
   const filterQueryPath = {
-    accessType: 'services.type',
-    serviceType: 'metadata.type',
-    filterSet: 'metadata.tags.keyword',
-    filterTime: 'metadata.created'
+    accessType: 'credentialSubject.services.type',
+    serviceType: 'credentialSubject.metadata.type',
+    filterSet: 'credentialSubject.metadata.tags.keyword',
+    filterTime: 'credentialSubject.metadata.created'
   }
   if (filtersList) {
     const filterTerms = Object.keys(filtersList)?.map((key) => {
@@ -125,7 +124,7 @@ export function generateBaseQuery(
   index?: string
 ): SearchQuery {
   const generatedQuery = {
-    index: index ?? 'op_ddo_v4.1.0',
+    index: index ?? 'op_ddo_v5.0.0',
     from: baseQueryParams.esPaginationOptions?.from || 0,
     size:
       baseQueryParams.esPaginationOptions?.size >= 0
@@ -137,15 +136,21 @@ export function generateBaseQuery(
         filter: [
           ...(baseQueryParams.filters || []),
           ...(baseQueryParams.chainIds
-            ? [getFilterTerm('chainId', baseQueryParams.chainIds)]
+            ? [
+                getFilterTerm(
+                  'credentialSubject.chainId',
+                  baseQueryParams.chainIds
+                )
+              ]
             : []),
           ...(baseQueryParams.ignorePurgatory
             ? []
-            : [getFilterTerm('purgatory.state', false)]),
+            : [getFilterTerm('credentialSubject.purgatory.state', false)]),
           {
             bool: {
               must_not: [
-                !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
+                !baseQueryParams.ignoreState &&
+                  getFilterTerm('credentialSubject.nft.state', 5),
                 getDynamicPricingMustNot()
               ]
             }
@@ -159,12 +164,13 @@ export function generateBaseQuery(
     generatedQuery.aggs = baseQueryParams.aggs
   }
 
-  if (baseQueryParams.sortOptions !== undefined)
+  if (baseQueryParams.sortOptions !== undefined) {
     generatedQuery.sort = {
-      [baseQueryParams.sortOptions.sortBy]:
+      [`${baseQueryParams.sortOptions.sortBy}`]:
         baseQueryParams.sortOptions.sortDirection ||
         SortDirectionOptions.Descending
     }
+  }
 
   // add whitelist filtering
   if (getWhitelistShould()?.length > 0) {
@@ -349,8 +355,10 @@ export async function getPublishedAssets(
 ): Promise<PagedAssets> {
   if (!accountId) return
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('nft.state', [0, 4, 5]))
-  filters.push(getFilterTerm('nft.owner', accountId.toLowerCase()))
+  filters.push(getFilterTerm('credentialSubject.nft.state', [0, 4, 5]))
+  filters.push(
+    getFilterTerm('credentialSubject.nft.owner', accountId.toLowerCase())
+  )
   if (filtersList) {
     parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
   }
@@ -420,8 +428,9 @@ async function getTopPublishers(
   const filters: FilterTerm[] = []
 
   accesType !== undefined &&
-    filters.push(getFilterTerm('services.type', accesType))
-  type !== undefined && filters.push(getFilterTerm('metadata.type', type))
+    filters.push(getFilterTerm('credentialSubject.services.type', accesType))
+  type !== undefined &&
+    filters.push(getFilterTerm('credentialSubject.metadata.type', type))
 
   const baseQueryParams = {
     chainIds,
@@ -433,7 +442,7 @@ async function getTopPublishers(
     aggs: {
       topPublishers: {
         terms: {
-          field: 'nft.owner.keyword',
+          field: 'credentialSubject.nft.owner.keyword',
           order: { totalSales: 'desc' }
         },
         aggs: {
@@ -573,8 +582,10 @@ export async function getDownloadAssets(
   page?: number
 ): Promise<{ downloadedAssets: DownloadedAsset[]; totalResults: number }> {
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('services.datatokenAddress.keyword', dtList))
-  filters.push(getFilterTerm('services.type', 'access'))
+  filters.push(
+    getFilterTerm('credentialSubject.services.datatokenAddress.keyword', dtList)
+  )
+  filters.push(getFilterTerm('credentialSubject.services.type', 'access'))
   const baseQueryparams = {
     chainIds,
     filters,
@@ -622,7 +633,7 @@ export async function getTagsList(
     aggs: {
       tags: {
         terms: {
-          field: 'metadata.tags.keyword',
+          field: 'credentialSubject.metadata.tags.keyword',
           size: 1000
         }
       }
@@ -642,15 +653,15 @@ export async function getTagsList(
     response.data.forEach((items) => {
       if (items.hits) {
         items.hits?.hits.forEach((item) => {
-          if (item._source?.metadata?.tags) {
-            item._source.metadata.tags
+          if (item._source?.credentialSubject.metadata?.tags) {
+            item._source.credentialSubject.metadata.tags
               .filter((tag: string) => tag !== '')
               .forEach((tag: string) => tagsSet.add(tag))
           }
         })
       } else {
         items.forEach((item) => {
-          item.metadata.tags
+          item.credentialSubject.metadata.tags
             .filter((tag: string) => tag !== '')
             .forEach((tag: string) => tagsSet.add(tag))
         })

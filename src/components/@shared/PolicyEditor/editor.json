@@ -51,7 +51,7 @@
   },
   {
     "name": "requestCredential",
-    "label": "Request Credential",
+    "label": "Credential Request",
     "type": "textarea",
     "placeholder": "Example:\n{\n\t\"type\": \"OpenBadgeCredential\",\n\t\"format\": \"jwt_vc_json\"\n\t\"policies\": [\"signature\"]\n}"
   },
@@ -59,6 +59,12 @@
     "name": "argument",
     "label": "Argument",
     "type": "text"
+  },
+  {
+    "name": "args",
+    "label": "Args",
+    "type": "text",
+    "required": true
   },
   {
     "name": "policy",
@@ -120,8 +126,13 @@
     "type": "text"
   },
   {
-    "name": "vpPolicy",
-    "label": "VP Policy",
+    "name": "argumentVpPolicy",
+    "label": "Argument VP Policy",
+    "type": "text"
+  },
+  {
+    "name": "staticVpPolicy",
+    "label": "Static VP Policy",
     "type": "text"
   },
   {

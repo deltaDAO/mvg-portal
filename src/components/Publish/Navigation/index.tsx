@@ -21,6 +21,8 @@ export default function Navigation(): ReactElement {
 
   function getSuccessClass(step: number) {
     const isSuccessMetadata = errors.metadata === undefined
+    const isSuccessAccessPolicies =
+      values.accessPolicyPageVisited && errors.credentials === undefined
     const isSuccessServices = errors.services === undefined
     const isSuccessPricing =
       errors.pricing === undefined &&
@@ -35,6 +37,7 @@ export default function Navigation(): ReactElement {
 
     const isSuccessPreview =
       isSuccessMetadata &&
+      isSuccessAccessPolicies &&
       isSuccessServices &&
       isSuccessPricing &&
       isSuccessCustomDDO &&
@@ -42,10 +45,11 @@ export default function Navigation(): ReactElement {
 
     const isSuccess =
       (step === 1 && isSuccessMetadata) ||
-      (step === 2 && isSuccessServices) ||
-      (step === 3 && isSuccessPricing) ||
-      (step === 4 && isSuccessCustomDDO) ||
-      (step === 5 && isSuccessPreview)
+      (step === 2 && isSuccessAccessPolicies) ||
+      (step === 3 && isSuccessServices) ||
+      (step === 4 && isSuccessPricing) ||
+      (step === 5 && isSuccessCustomDDO) ||
+      (step === 6 && isSuccessPreview)
 
     return isSuccess ? styles.success : null
   }

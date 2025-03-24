@@ -200,7 +200,7 @@ export async function usePresentationRequest(
   did: string,
   presentationRequest: string,
   selectedCredentials: string[]
-): Promise<{ success: boolean; data: any }> {
+): Promise<{ redirectUri: string }> {
   try {
     const response = await axios.post(
       `/ssi/wallet-api/wallet/${walletId}/exchange/usePresentationRequest`,
@@ -212,11 +212,22 @@ export async function usePresentationRequest(
       { withCredentials: true }
     )
 
-    return {
-      success: true,
-      data: response.data
-    }
+    return response.data
   } catch (error) {
     throw error.response
   }
+}
+
+export function getSsiVerifiableCredentialType(
+  credential: SsiVerifiableCredential
+): string {
+  let result = 'Unknown'
+  const list = credential?.parsedDocument?.type?.filter(
+    (value) =>
+      value !== 'VerifiableCredential' && value !== 'VerifiableAttestation'
+  )
+  if (list?.length > 0) {
+    result = list[0]
+  }
+  return result
 }

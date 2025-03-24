@@ -62,14 +62,14 @@ export function getSearchQuery(
         : '**'
     const searchFields = [
       'id',
-      'nft.owner',
-      'datatokens.address',
-      'datatokens.name',
-      'datatokens.symbol',
-      'metadata.name^10',
-      'metadata.author',
-      'metadata.description',
-      'metadata.tags'
+      'credentialSubject.nft.owner',
+      'credentialSubject.datatokens.address',
+      'credentialSubject.datatokens.name',
+      'credentialSubject.datatokens.symbol',
+      'credentialSubject.metadata.name^10',
+      'credentialSubject.metadata.author',
+      'credentialSubject.metadata.description',
+      'credentialSubject.metadata.tags'
     ]
 
     nestedQuery = {

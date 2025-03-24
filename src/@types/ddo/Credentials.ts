@@ -5,9 +5,13 @@ export interface Credential {
   deny?: CredentialAddressBased[]
 }
 
+export interface Address {
+  address: string
+}
+
 export interface CredentialAddressBased {
   type: 'address'
-  values: string[]
+  values: Address[]
 }
 
 export interface CredentialPolicyBased {
@@ -17,7 +21,7 @@ export interface CredentialPolicyBased {
 
 export interface PolicyValue {
   request_credentials: RequestCredential[]
-  vp_policies: VP[]
+  vp_policies: any[]
   vc_policies: VC[]
 }
 
@@ -28,16 +32,16 @@ export interface VPValue {
 
 export type VC = string
 export type VP = string | VPValue
-
 export interface RequestCredential {
   type: string
   format: string
   policies: any[]
 }
 
-export function isVpType(data: any): data is VP {
+export function isVpValue(data: any): data is VPValue {
   return (
     data &&
+    typeof data === 'object' &&
     'policy' in data &&
     typeof data.policy === 'string' &&
     'args' in data &&

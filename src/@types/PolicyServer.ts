@@ -1,33 +1,44 @@
+export enum PolicyServerActions {
+  INITIATE = 'initiate',
+  GET_PD = 'getPd',
+  CHECK_SESSION_ID = 'checkSessionId',
+  PRESENTATION_REQUEST = 'presentationRequest',
+  DOWNLOAD = 'download',
+  PASSTHROUGH = 'passthrough'
+}
+
 export interface PolicyServerResponse {
   success: boolean
   message: string
   httpStatus: number
 }
 
+export interface PolicyServerInitiateActionData {
+  successRedirectUri: string
+  errorRedirectUri: string
+  responseRedirectUri: string
+  presentationDefinitionUri: string
+}
+
 export interface PolicyServerInitiateAction {
-  action: 'initiate'
+  action: PolicyServerActions.INITIATE
   sessionId?: string
   ddo: any
-  policyServer: {
-    successRedirectUri: string
-    errorRedirectUri: string
-    responseRedirectUri: string
-    presentationDefinitionUri: string
-  }
+  policyServer: PolicyServerInitiateActionData
 }
 
 export interface PolicyServerGetPdAction {
-  action: 'getPD'
+  action: PolicyServerActions.GET_PD
   sessionId: string
 }
 
 export interface PolicyServerCheckSessionIdAction {
-  action: 'checkSessionId'
+  action: PolicyServerActions.CHECK_SESSION_ID
   sessionId: string
 }
 
 export interface PolicyServerPresentationRequestAction {
-  action: 'presentationRequest'
+  action: PolicyServerActions.PRESENTATION_REQUEST
   sessionId: string
   vp_token: any
   response: any
@@ -35,14 +46,14 @@ export interface PolicyServerPresentationRequestAction {
 }
 
 export interface PolicyServerDownloadAction {
-  action: 'download'
+  action: PolicyServerActions.DOWNLOAD
   policyServer: {
     sessionId: string
   }
 }
 
 export interface PolicyServerPassthrough {
-  action: 'passthrough'
+  action: PolicyServerActions.PASSTHROUGH
   url: string
   httpMethod: 'GET'
   body: any

@@ -13,7 +13,8 @@ import Preview from './Preview'
 import Submission from './Submission'
 import contentFeedback from '../../../content/publish/feedback.json'
 import { Compute } from 'src/@types/ddo/Service'
-import { AdditionalDdoWizardTab } from '../@shared/AdditionalDdos'
+import { AdditionalCredentials } from './AdditionalCredentials'
+import { AccessPolicies } from './AccessPolicies'
 
 export const wizardSteps: StepContent[] = [
   {
@@ -23,26 +24,31 @@ export const wizardSteps: StepContent[] = [
   },
   {
     step: 2,
+    title: content.policies.title,
+    component: <AccessPolicies />
+  },
+  {
+    step: 3,
     title: content.services.title,
     component: <ServicesFields />
   },
   {
-    step: 3,
+    step: 4,
     title: content.pricing.title,
     component: <PricingFields />
   },
   {
-    step: 4,
+    step: 5,
     title: content.additionalDdos.title,
-    component: <AdditionalDdoWizardTab />
+    component: <AdditionalCredentials />
   },
   {
-    step: 5,
+    step: 6,
     title: content.preview.title,
     component: <Preview />
   },
   {
-    step: 6,
+    step: 7,
     title: content.submission.title,
     component: <Submission />
   }
@@ -119,6 +125,7 @@ export const initialValues: FormPublishData = {
     vcPolicies: [],
     vpPolicies: []
   },
+  accessPolicyPageVisited: false,
   previewPageVisited: false
 }
 

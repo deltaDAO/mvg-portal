@@ -43,7 +43,6 @@ import {
   Credential,
   CredentialAddressBased,
   CredentialPolicyBased,
-  isVpType,
   RequestCredential,
   VP
 } from 'src/@types/ddo/Credentials'
@@ -59,7 +58,8 @@ import {
   PolicyRuleLeftValuePrefix,
   PolicyRuleRightValuePrefix,
   PolicyType,
-  CredentialForm
+  CredentialForm,
+  VpPolicyType
 } from '@components/@shared/PolicyEditor/types'
 import { SsiWalletContext } from '@context/SsiWallet'
 import {
@@ -228,30 +228,43 @@ export function parseCredentialPolicies(credentials: Credential) {
   if (!credentials) {
     return
   }
-
   credentials.allow = credentials?.allow?.map((credential) => {
     if (isCredentialPolicyBased(credential)) {
       credential.values = credential.values.map((value) => {
         value.request_credentials = value.request_credentials.map(
           (requestCredentials) => {
-            requestCredentials.policies = requestCredentials.policies
-              .map((policy) => {
-                try {
-                  return typeof policy === 'string'
-                    ? JSON.parse(policy)
-                    : undefined
-                } catch (error) {
-                  LoggerInstance.error(error)
-                  return undefined
-                }
-              })
-              .filter((policy) => policy !== undefined)
+            if (requestCredentials.policies) {
+              requestCredentials.policies = requestCredentials.policies
+                .map((policy) => {
+                  try {
+                    return typeof policy === 'string'
+                      ? JSON.parse(policy)
+                      : undefined
+                  } catch (error) {
+                    LoggerInstance.error(error)
+                    return undefined
+                  }
+                })
+                .filter((policy) => policy !== undefined)
+            }
             return requestCredentials
           }
         )
+
+        value.vp_policies = value.vp_policies
+          .map((policy) => {
+            try {
+              return JSON.parse(policy)
+            } catch (error) {
+              LoggerInstance.error(error)
+              return null
+            }
+          })
+          .filter((policy) => !!policy)
         return value
       })
     }
+
     return credential
   })
 }
@@ -260,8 +273,6 @@ export function stringifyCredentialPolicies(credentials: Credential) {
   if (!credentials) {
     return
   }
-
-  console.log(credentials?.allow)
 
   credentials.allow = credentials?.allow?.map((credential) => {
     if (isCredentialPolicyBased(credential)) {
@@ -280,6 +291,10 @@ export function stringifyCredentialPolicies(credentials: Credential) {
               .filter((policy) => policy !== undefined)
             return requestCredentials
           }
+        )
+
+        value.vp_policies = value.vp_policies.map((policy) =>
+          JSON.stringify(policy)
         )
         return value
       })
@@ -313,18 +328,21 @@ export function generateCredentials(
         }
       )
 
-    const vpPolicies: VP[] = updatedCredentials?.vpPolicies?.map<VP>(
-      (credential) => {
-        try {
-          const obj = JSON.parse(credential)
-          if (isVpType(obj)) {
-            return obj as VP
-          } else {
-            return credential
-          }
-        } catch (error) {
-          return credential
+    const vpPolicies: VP[] = updatedCredentials?.vpPolicies?.map(
+      (credential: VpPolicyType) => {
+        let policy: VP
+        switch (credential.type) {
+          case 'staticVpPolicy':
+            policy = credential.name
+            break
+          case 'argumentVpPolicy':
+            policy = {
+              policy: credential.policy,
+              args: parseInt(credential.args)
+            }
+            break
         }
+        return policy
       }
     )
 
@@ -343,17 +361,29 @@ export function generateCredentials(
   }
 
   if (updatedCredentials?.allow?.length > 0) {
+    const newList = updatedCredentials?.allow?.map((address: string) => {
+      return {
+        address
+      }
+    })
+
     const newAllowList: CredentialAddressBased = {
       type: 'address',
-      values: updatedCredentials?.allow
+      values: newList
     }
     newCredentials.allow.push(newAllowList)
   }
 
   if (updatedCredentials?.deny?.length > 0) {
+    const newList = updatedCredentials?.deny?.map((address: string) => {
+      return {
+        address
+      }
+    })
+
     const newDenyList: CredentialAddressBased = {
       type: 'address',
-      values: updatedCredentials?.deny
+      values: newList
     }
     newCredentials.deny.push(newDenyList)
   }
