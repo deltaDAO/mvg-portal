@@ -229,7 +229,8 @@ export function parseConsumerParameters(
 
 export function findCredential(
   credentials: (CredentialAddressBased | CredentialPolicyBased)[],
-  consumerCredentials: CredentialAddressBased
+  consumerCredentials: CredentialAddressBased,
+  type?: string
 ) {
   return credentials.find((credential) => {
     if (!isCredentialAddressBased(credential)) {
@@ -242,10 +243,12 @@ export function findCredential(
         const credentialValues = credential.values.map((v) => v.address)
         const result =
           credentialType === consumerCredentials.type &&
-          credentialValues.includes(consumerCredentials.values[0].address)
+          (credentialValues.includes('*') ||
+            credentialValues.includes(consumerCredentials.values[0].address))
         return result
       }
     }
+    if (type === 'service') return true
     return false
   })
 }
@@ -272,7 +275,11 @@ export function checkCredentials(
   }
   // check allow access
   if (Array.isArray(credentials?.allow) && credentials.allow.length > 0) {
-    const accessAllow = findCredential(credentials.allow, consumerCredentials)
+    const accessAllow = findCredential(
+      credentials.allow,
+      consumerCredentials,
+      'service'
+    )
     if (!accessAllow) {
       return false
     }

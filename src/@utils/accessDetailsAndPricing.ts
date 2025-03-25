@@ -48,18 +48,23 @@ export async function getOrderPriceAndFees(
   // fetch provider fee
   let initializeData
   try {
-    initializeData =
-      !providerFees &&
-      (await ProviderInstance.initialize(
-        asset.id,
-        service.id,
-        0,
-        accountId,
-        customProviderUrl || service.serviceEndpoint
-      ))
+    const initialize = await ProviderInstance.initialize(
+      asset.id,
+      service.id,
+      0,
+      accountId,
+      customProviderUrl || service.serviceEndpoint
+    )
+    initializeData = !providerFees && initialize
   } catch (error) {
+    if (error.message.includes('Unexpected token')) {
+      toast.error(
+        `Use the initializeCompute endpoint to initialize compute jobs`
+      )
+      return
+    }
     const message = getErrorMessage(error.message)
-    LoggerInstance.error('[Initialize Provider] Error:', message)
+    // LoggerInstance.error('[Initialize Provider] Error:', message)
 
     // Customize error message for accountId non included in allow list
     if (
@@ -89,7 +94,7 @@ export async function getOrderPriceAndFees(
     }
     toast.error(message)
   }
-  orderPriceAndFee.providerFee = providerFees || initializeData.providerFee
+  orderPriceAndFee.providerFee = providerFees || initializeData?.providerFee
 
   // fetch price and swap fees
   if (accessDetails.type === 'fixed') {
