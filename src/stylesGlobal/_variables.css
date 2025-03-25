@@ -29,8 +29,8 @@
   --menu-logo-color-hover: var(--brand-blue);
   --menu-logo-size-width-sm: 7.5rem;
   --menu-logo-size-height-sm: 3.5rem;
-  --menu-logo-size-width-lg: 7.5rem;
-  --menu-logo-size-height-lg: 3.5rem;
+  --menu-logo-size-width-lg: 16.5rem;
+  --menu-logo-size-height-lg: 5.5rem;
   --menu-font-color: var(--color-primary);
   --menu-font-color-active: var(--color-secondary);
   --menu-font-color-hover: var(--color-secondary);
@@ -155,7 +155,7 @@
   --font-size-h2: 2.5rem;
   --font-size-h3: 1.7rem;
   --font-size-h4: 1.3rem;
-  --font-size-h5: 1.1rem;
+  --font-size-h5: clamp(1.1rem, 2vw, 1.3rem);
   --font-weight-base: 500;
   --font-weight-bold: 600;
   --line-height: 1.6;
