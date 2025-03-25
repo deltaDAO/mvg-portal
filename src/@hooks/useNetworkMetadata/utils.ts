@@ -42,7 +42,7 @@ export function getNetworkDisplayName(data: EthereumListsChain): string {
       displayName = 'Görli'
       break
     case 100:
-      displayName = 'OCE Testnet'
+      displayName = 'OEC Testnet'
       break
     default:
       displayName = data
