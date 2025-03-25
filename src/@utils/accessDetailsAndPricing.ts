@@ -64,7 +64,7 @@ export async function getOrderPriceAndFees(
       return
     }
     const message = getErrorMessage(error.message)
-    // LoggerInstance.error('[Initialize Provider] Error:', message)
+    LoggerInstance.error('[Initialize Provider] Error:', message)
 
     // Customize error message for accountId non included in allow list
     if (
