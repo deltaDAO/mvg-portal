@@ -15,7 +15,7 @@ import { getOceanConfig } from '@utils/ocean'
 import axios from 'axios'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { useNetwork } from 'wagmi'
-import { toast } from 'react-toastify'
+import { customProviderUrl } from 'app.config.cjs'
 
 export default function CustomProvider(props: InputProps): ReactElement {
   const { chain } = useNetwork()
@@ -96,14 +96,12 @@ export default function CustomProvider(props: InputProps): ReactElement {
 
   function handleDefault(e: React.SyntheticEvent) {
     e.preventDefault()
-    const envProviderUrl = process.env.NEXT_PUBLIC_PROVIDER_URL
     const oceanConfig = getOceanConfig(chain?.id || 100)
     const providerUrl =
-      envProviderUrl ||
+      customProviderUrl ||
       oceanConfig?.providerUri ||
       initialValues.services[0].providerUrl.url
-
-    helpers.setValue({ url: providerUrl, valid: true, custom: false })
+    helpers.setValue({ url: providerUrl, valid: true, custom: true })
   }
 
   return field?.value?.valid === true ? (
