@@ -22,6 +22,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
   const newCancelToken = useCancelToken()
   const { initialValues, setFieldError } = useFormikContext<FormPublishData>()
   const [field, meta, helpers] = useField(props.name)
+  helpers.setValue({ url: customProviderUrl, valid: true, custom: true })
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleValidation(e: React.SyntheticEvent) {
