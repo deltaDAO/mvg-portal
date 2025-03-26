@@ -13,6 +13,8 @@ export default function Credentials(props: InputProps) {
   const [addressList, setAddressList] = useState<string[]>(field.value || [])
   const [value, setValue] = useState('')
 
+  const hasWildcard = addressList.includes('*')
+
   useEffect(() => {
     helpers.setValue(addressList)
   }, [addressList])
@@ -25,15 +27,24 @@ export default function Credentials(props: InputProps) {
 
   function handleAddValue(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
-    if (!isAddress(value)) {
+
+    if (!(value === '*' || isAddress(value))) {
       toast.error('Wallet address is invalid')
       return
     }
+
     if (addressList.includes(value.toLowerCase())) {
-      toast.error('Wallet address already added into hte list')
+      toast.error('Wallet address already added into the list')
       return
     }
+
     setAddressList((addressList) => [...addressList, value.toLowerCase()])
+    setValue('')
+  }
+
+  function handleAddAll(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault()
+    setAddressList(['*'])
     setValue('')
   }
 
@@ -47,39 +58,46 @@ export default function Credentials(props: InputProps) {
           onChange={(e: ChangeEvent<HTMLInputElement>) =>
             setValue(e.target.value)
           }
+          disabled={hasWildcard}
         />
         <Button
           style="primary"
           size="small"
-          onClick={(e: FormEvent<HTMLButtonElement>) => {
-            e.preventDefault()
-            handleAddValue(e)
-          }}
+          onClick={handleAddValue}
+          disabled={hasWildcard}
         >
           Add
         </Button>
+        {!hasWildcard && (
+          <Button style="primary" size="small" onClick={handleAddAll}>
+            Add All
+          </Button>
+        )}
       </InputGroup>
+
       <div>
         {addressList.length > 0 &&
-          addressList.map((value, i) => {
-            return (
-              <div className={styles.addressListContainer} key={value}>
-                <InputGroup>
-                  <InputElement name={`address[${i}]`} value={value} disabled />
-                  <Button
-                    style="primary"
-                    size="small"
-                    onClick={(e: React.SyntheticEvent) => {
-                      e.preventDefault()
-                      handleDeleteAddress(value)
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </InputGroup>
-              </div>
-            )
-          })}
+          addressList.map((value, i) => (
+            <div className={styles.addressListContainer} key={value}>
+              <InputGroup>
+                <InputElement
+                  name={`address[${i}]`}
+                  value={value === '*' ? 'All Wallets (*)' : value}
+                  disabled
+                />
+                <Button
+                  style="primary"
+                  size="small"
+                  onClick={(e: React.SyntheticEvent) => {
+                    e.preventDefault()
+                    handleDeleteAddress(value)
+                  }}
+                >
+                  Remove
+                </Button>
+              </InputGroup>
+            </div>
+          ))}
       </div>
     </div>
   )
