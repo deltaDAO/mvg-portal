@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useField, useFormikContext } from 'formik'
 import UrlInput from '../URLInput'
 import { InputProps } from '@shared/FormInput'
@@ -22,8 +22,11 @@ export default function CustomProvider(props: InputProps): ReactElement {
   const newCancelToken = useCancelToken()
   const { initialValues, setFieldError } = useFormikContext<FormPublishData>()
   const [field, meta, helpers] = useField(props.name)
-  helpers.setValue({ url: customProviderUrl, valid: true, custom: true })
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    helpers.setValue({ url: customProviderUrl, valid: true, custom: true })
+  }, [])
 
   async function handleValidation(e: React.SyntheticEvent) {
     e.preventDefault()
