@@ -98,11 +98,20 @@ export async function getWalletKeys(
   }
 }
 
-export async function getWalletKey(walletId: string, keyId: string) {
+export async function getWalletKey(
+  walletId: string,
+  keyId: string,
+  token: string
+) {
   try {
     const response = await axios.get(
       `${ssiWalletApi}/wallet-api/wallet/${walletId}/keys/${keyId}/load`,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+      }
     )
 
     return response.data
@@ -114,13 +123,19 @@ export async function getWalletKey(walletId: string, keyId: string) {
 export async function signMessage(
   walletId: string,
   keyId: string,
-  message: any
+  message: any,
+  token: string
 ): Promise<string> {
   try {
     const response = await axios.post(
       `${ssiWalletApi}/wallet-api/wallet/${walletId}/keys/${keyId}/sign`,
       message,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+      }
     )
 
     return response.data
@@ -130,12 +145,18 @@ export async function signMessage(
 }
 
 export async function getWalletIssuers(
-  walletId: string
+  walletId: string,
+  token: string
 ): Promise<SsiWalletIssuer[]> {
   try {
     const response = await axios.get(
       `${ssiWalletApi}/wallet-api/wallet/${walletId}/issuers`,
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+      }
     )
 
     return response.data

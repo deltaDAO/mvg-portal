@@ -647,14 +647,16 @@ export async function signAssetAndUploadToIpfs(
     if (valid) {
       const key = await getWalletKey(
         ssiWalletContext?.selectedWallet?.id,
-        ssiWalletContext?.selectedKey?.keyId?.id
+        ssiWalletContext?.selectedKey?.keyId?.id,
+        ssiWalletContext.sessionToken.token
       )
       const keyBase64 = base64url(JSON.stringify(key))
       credential.issuer = `did:jwk:${keyBase64}`
       jwtVerifiableCredential = await signMessage(
         ssiWalletContext?.selectedWallet?.id,
         ssiWalletContext?.selectedKey.keyId?.id,
-        credential as VCDataModel.Credential
+        credential as VCDataModel.Credential,
+        ssiWalletContext.sessionToken.token
       )
     } else {
       ssiWalletContext.setSessionToken(undefined)
