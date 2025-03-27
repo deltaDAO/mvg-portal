@@ -73,10 +73,6 @@ const nextConfig = (phase, { defaultConfig }) => {
 
       const providerUrl = process.env.NEXT_PUBLIC_PROVIDER_URL
 
-      const ssiPolicyServer =
-        process.env.NEXT_PUBLIC_SSI_POLICY_SERVER ||
-        'http://ocean-node-vm2.oceanenterprise.io:8100'
-
       const routes = [
         {
           source: '/ssi/:path*',
@@ -85,10 +81,6 @@ const nextConfig = (phase, { defaultConfig }) => {
         {
           source: '/provider/:path*',
           destination: `${providerUrl}/:path*`
-        },
-        {
-          source: '/policy/:path*',
-          destination: `${ssiPolicyServer}/:path*`
         }
       ]
 

@@ -39,21 +39,23 @@ export function SsiWallet(): ReactElement {
 
   const fetchWallets = useCallback(async () => {
     try {
-      const wallets = await getWallets()
-      setSelectedWallet(selectedWallet || wallets[0])
-      setSsiWallets(wallets)
+      if (sessionToken) {
+        const wallets = await getWallets(sessionToken.token)
+        setSelectedWallet(selectedWallet || wallets[0])
+        setSsiWallets(wallets)
+      }
     } catch (error) {
       setSessionToken(undefined)
       LoggerInstance.error(error)
     }
-  }, [selectedWallet])
+  }, [selectedWallet, sessionToken])
 
   const fetchKeys = useCallback(async () => {
-    if (!selectedWallet) {
+    if (!selectedWallet || !sessionToken) {
       return
     }
     try {
-      const keys = await getWalletKeys(selectedWallet)
+      const keys = await getWalletKeys(selectedWallet, sessionToken.token)
       setSsiKey(keys)
       setSelectedKey(selectedKey || keys[0])
     } catch (error) {
@@ -77,7 +79,10 @@ export function SsiWallet(): ReactElement {
 
   async function handleReconnection() {
     if (isConnected && signer) {
-      const valid = await isSessionValid()
+      let valid = false
+      if (sessionToken) {
+        valid = await isSessionValid(sessionToken.token)
+      }
       if ((!valid || !sessionToken) && isConnected && signer) {
         try {
           const session = await connectToWallet(signer)
@@ -96,7 +101,7 @@ export function SsiWallet(): ReactElement {
   }
 
   async function handleOpenDialog() {
-    const valid = await isSessionValid()
+    const valid = await isSessionValid(sessionToken.token)
     if (!valid) {
       toast.error('SSI wallet session token is invalid or expired')
       setSessionToken(undefined)

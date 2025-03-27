@@ -2,10 +2,12 @@
 import Button from '@components/@shared/atoms/Button'
 import { useSsiWallet } from '@context/SsiWallet'
 import { toast } from 'react-toastify'
-import { requestCredentialPresentation } from '@utils/wallet/policyServer'
+import {
+  getPd,
+  requestCredentialPresentation
+} from '@utils/wallet/policyServer'
 import {
   extractURLSearchParams,
-  requestPresentationDefinition,
   matchCredentialForPresentationDefinition,
   getWalletDids,
   resolvePresentationRequest,
@@ -19,7 +21,6 @@ import { DidSelector } from '../DidSelector'
 import styles from './index.module.css'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
-import Cross from '@images/cross.svg'
 import VerifiedPatch from '@images/patch_check.svg'
 import { Asset } from 'src/@types/Asset'
 
@@ -80,7 +81,8 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
     selectedWallet,
     ssiWalletCache,
     cachedCredentials,
-    setCachedCredentials
+    setCachedCredentials,
+    sessionToken
   } = useSsiWallet()
 
   useEffect(() => {
@@ -95,13 +97,11 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
           const searchParams = extractURLSearchParams(
             exchangeStateData.openid4vp
           )
-          const { presentation_definition_uri, state } = searchParams
+
+          const { state } = searchParams
           exchangeStateData.sessionId = state
 
-          const presentationDefinition = await requestPresentationDefinition(
-            presentation_definition_uri
-          )
-
+          const presentationDefinition = await getPd(state)
           const resultRequiredCredentials =
             presentationDefinition.input_descriptors.map(
               (credential) => credential.id
@@ -112,14 +112,14 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             resultRequiredCredentials
           )
           setCachedCredentials(resultCachedCredentials)
-
           if (
             resultRequiredCredentials.length > resultCachedCredentials.length
           ) {
             exchangeStateData.verifiableCredentials =
               await matchCredentialForPresentationDefinition(
                 selectedWallet?.id,
-                presentationDefinition
+                presentationDefinition,
+                sessionToken.token
               )
 
             const cachedCredentialsIds = resultCachedCredentials.map(
@@ -171,7 +171,10 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
           ssiWalletCache.cacheCredentials(selectedCredentials)
           setCachedCredentials(selectedCredentials)
 
-          exchangeStateData.dids = await getWalletDids(selectedWallet.id)
+          exchangeStateData.dids = await getWalletDids(
+            selectedWallet.id,
+            sessionToken.token
+          )
 
           exchangeStateData.selectedDid =
             exchangeStateData.dids.length > 0
@@ -186,7 +189,8 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
         case CheckCredentialState.ResolveCredentials: {
           const resolvedPresentationRequest = await resolvePresentationRequest(
             selectedWallet?.id,
-            exchangeStateData.openid4vp
+            exchangeStateData.openid4vp,
+            sessionToken.token
           )
 
           // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -194,13 +198,11 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             selectedWallet?.id,
             exchangeStateData.selectedDid,
             resolvedPresentationRequest,
-            exchangeStateData.selectedCredentials
+            exchangeStateData.selectedCredentials,
+            sessionToken.token
           )
 
-          if (
-            exchangeStateData.poliyServerData?.successRedirectUri ===
-            result.redirectUri
-          ) {
+          if (result.redirectUri.includes('success')) {
             setVerifierSessionId(exchangeStateData.sessionId)
           } else {
             toast.error('Validation was not successful')
@@ -302,13 +304,6 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
                       className={`${styles.marginTop6px} ${styles.fillRed}`}
                     ></div>
                   )}
-
-                  {
-                    // <Cross
-                    // key={credential}
-                    // className={`${styles.marginTop6px} ${styles.fillRed}`}
-                    // />
-                  }
 
                   {credential}
                 </>
