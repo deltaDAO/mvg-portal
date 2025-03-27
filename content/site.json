@@ -134,11 +134,11 @@
           "isLive": true
         },
         {
-          "name": "Future Mobility Marketplace",
-          "link": "https://marketplace.future-mobility-alliance.org/",
-          "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
-          "image": "fmdm-logo.webp",
-          "category": "mobility",
+          "name": "Open Dataspace Lab",
+          "link": "https://www.opendataspacelab.eu/",
+          "description": "Open Dataspace Lab connects supply and demand for all types of data and AI algorithms.",
+          "image": "odl-logo.webp",
+          "category": "general",
           "isLive": true
         },
         {
