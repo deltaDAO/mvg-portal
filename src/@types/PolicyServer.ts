@@ -1,6 +1,6 @@
 export enum PolicyServerActions {
   INITIATE = 'initiate',
-  GET_PD = 'getPd',
+  GET_PD = 'getPD',
   CHECK_SESSION_ID = 'checkSessionId',
   PRESENTATION_REQUEST = 'presentationRequest',
   DOWNLOAD = 'download',
@@ -57,4 +57,8 @@ export interface PolicyServerPassthrough {
   url: string
   httpMethod: 'GET'
   body: any
+}
+
+export interface PolicyServerPresentationDefinition {
+  input_descriptors: any[]
 }

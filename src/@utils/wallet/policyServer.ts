@@ -6,7 +6,9 @@ import {
   PolicyServerResponse,
   PolicyServerCheckSessionIdAction,
   PolicyServerInitiateActionData,
-  PolicyServerActions
+  PolicyServerActions,
+  PolicyServerGetPdAction,
+  PolicyServerPresentationDefinition
 } from 'src/@types/PolicyServer'
 
 export async function requestCredentialPresentation(asset: Asset): Promise<{
@@ -77,6 +79,38 @@ export async function checkVerifierSessionId(
     }
 
     return response.data
+  } catch (error) {
+    if (error.response?.data) {
+      throw error.response?.data
+    }
+    throw error
+  }
+}
+
+export async function getPd(
+  sessionId: string
+): Promise<PolicyServerPresentationDefinition> {
+  try {
+    const action: PolicyServerGetPdAction = {
+      action: PolicyServerActions.GET_PD,
+      sessionId
+    }
+    const response = await axios.post(
+      `/provider/api/services/PolicyServerPassthrough`,
+      {
+        policyServerPassthrough: action
+      }
+    )
+
+    if (typeof response.data === 'string' && response.data.length === 0) {
+      // eslint-disable-next-line no-throw-literal
+      throw {
+        success: false,
+        message: 'Could not read presentation definition'
+      }
+    }
+
+    return response.data?.message
   } catch (error) {
     if (error.response?.data) {
       throw error.response?.data

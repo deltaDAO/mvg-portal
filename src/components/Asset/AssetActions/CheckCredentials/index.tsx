@@ -2,10 +2,12 @@
 import Button from '@components/@shared/atoms/Button'
 import { useSsiWallet } from '@context/SsiWallet'
 import { toast } from 'react-toastify'
-import { requestCredentialPresentation } from '@utils/wallet/policyServer'
+import {
+  getPd,
+  requestCredentialPresentation
+} from '@utils/wallet/policyServer'
 import {
   extractURLSearchParams,
-  requestPresentationDefinition,
   matchCredentialForPresentationDefinition,
   getWalletDids,
   resolvePresentationRequest,
@@ -19,7 +21,6 @@ import { DidSelector } from '../DidSelector'
 import styles from './index.module.css'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
-import Cross from '@images/cross.svg'
 import VerifiedPatch from '@images/patch_check.svg'
 import { Asset } from 'src/@types/Asset'
 
@@ -95,12 +96,11 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
           const searchParams = extractURLSearchParams(
             exchangeStateData.openid4vp
           )
-          const { presentation_definition_uri, state } = searchParams
+
+          const { state } = searchParams
           exchangeStateData.sessionId = state
 
-          const presentationDefinition = await requestPresentationDefinition(
-            presentation_definition_uri
-          )
+          const presentationDefinition = await getPd(state)
 
           const resultRequiredCredentials =
             presentationDefinition.input_descriptors.map(
@@ -302,13 +302,6 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
                       className={`${styles.marginTop6px} ${styles.fillRed}`}
                     ></div>
                   )}
-
-                  {
-                    // <Cross
-                    // key={credential}
-                    // className={`${styles.marginTop6px} ${styles.fillRed}`}
-                    // />
-                  }
 
                   {credential}
                 </>
