@@ -68,27 +68,12 @@ const nextConfig = (phase, { defaultConfig }) => {
       ]
     },
     async rewrites() {
-      const walletApiBase =
-        process.env.NEXT_PUBLIC_SSI_WALLET_API || 'https://wallet.demo.walt.id'
-
       const providerUrl = process.env.NEXT_PUBLIC_PROVIDER_URL
-
-      const ssiPolicyServer =
-        process.env.NEXT_PUBLIC_SSI_POLICY_SERVER ||
-        'http://ocean-node-vm2.oceanenterprise.io:8100'
 
       const routes = [
         {
-          source: '/ssi/:path*',
-          destination: `${walletApiBase}/:path*`
-        },
-        {
           source: '/provider/:path*',
           destination: `${providerUrl}/:path*`
-        },
-        {
-          source: '/policy/:path*',
-          destination: `${ssiPolicyServer}/:path*`
         }
       ]
 

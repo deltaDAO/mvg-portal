@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+import { customProviderUrl } from 'app.config.cjs'
 import axios from 'axios'
 import { Asset } from 'src/@types/Asset'
 import {
@@ -17,14 +18,13 @@ export async function requestCredentialPresentation(asset: Asset): Promise<{
   policyServerData: PolicyServerInitiateActionData
 }> {
   try {
-    const apiUrl = `${window.location.origin}`
     const sessionId = crypto.randomUUID()
 
     const policyServer: PolicyServerInitiateActionData = {
-      successRedirectUri: `${apiUrl}/api/policy/success`,
-      errorRedirectUri: `${apiUrl}/api/policy/error`,
-      responseRedirectUri: `${apiUrl}/policy/verify/${sessionId}`,
-      presentationDefinitionUri: `${apiUrl}/policy/pd/${sessionId}`
+      successRedirectUri: ``,
+      errorRedirectUri: ``,
+      responseRedirectUri: ``,
+      presentationDefinitionUri: ``
     }
 
     const action: PolicyServerInitiateAction = {
@@ -34,7 +34,7 @@ export async function requestCredentialPresentation(asset: Asset): Promise<{
       policyServer
     }
     const response = await axios.post(
-      `/provider/api/services/PolicyServerPassthrough`,
+      `${customProviderUrl}/api/services/PolicyServerPassthrough`,
       {
         policyServerPassthrough: action
       }
@@ -96,7 +96,7 @@ export async function getPd(
       sessionId
     }
     const response = await axios.post(
-      `/provider/api/services/PolicyServerPassthrough`,
+      `${customProviderUrl}/api/services/PolicyServerPassthrough`,
       {
         policyServerPassthrough: action
       }

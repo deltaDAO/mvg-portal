@@ -639,7 +639,11 @@ export async function signAssetAndUploadToIpfs(
 
   let jwtVerifiableCredential
   if (appConfig.ssiEnabled) {
-    const valid = await isSessionValid()
+    let valid = false
+
+    if (ssiWalletContext.sessionToken) {
+      valid = await isSessionValid(ssiWalletContext.sessionToken.token)
+    }
     if (valid) {
       const key = await getWalletKey(
         ssiWalletContext?.selectedWallet?.id,
