@@ -7,6 +7,6 @@ address.config.js @deltaDAO/qa @deltaDAO/frontend
 # File to manage address resolution
 pontusxAddresses.json @deltaDAO/qa @deltaDAO/frontend
 # Directory including .md and .json files to manage displayed content
-content/* @deltaDAO/qa @deltaDAO/frontend
+/content/ @deltaDAO/qa @deltaDAO/frontend
 # Directory managing publicly hosted images
-public/images/* @deltaDAO/qa @deltaDAO/frontend
+/public/images/ @deltaDAO/qa @deltaDAO/frontend
