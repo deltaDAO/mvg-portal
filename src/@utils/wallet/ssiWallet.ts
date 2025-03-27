@@ -184,17 +184,6 @@ export async function resolvePresentationRequest(
   }
 }
 
-export async function requestPresentationDefinition(
-  presentationDefinitionUri: string
-): Promise<any> {
-  try {
-    const response = await axios.get(`${presentationDefinitionUri}`)
-    return response.data
-  } catch (error) {
-    throw error.response
-  }
-}
-
 export async function usePresentationRequest(
   walletId: string,
   did: string,
