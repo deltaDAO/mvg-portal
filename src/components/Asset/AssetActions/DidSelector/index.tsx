@@ -72,6 +72,7 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
           {dids?.map((did) => {
             return (
               <option key={did.did} value={`${did.did}`}>
+                {did?.alias} -{' '}
                 {did?.did?.length > maxLength
                   ? did?.did?.slice(0, maxLength).concat('...')
                   : did?.did}

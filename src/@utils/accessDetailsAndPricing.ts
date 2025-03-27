@@ -58,9 +58,9 @@ export async function getOrderPriceAndFees(
     initializeData = !providerFees && initialize
   } catch (error) {
     if (error.message.includes('Unexpected token')) {
-      toast.error(
-        `Use the initializeCompute endpoint to initialize compute jobs`
-      )
+      // toast.error(
+      //   `Use the initializeCompute endpoint to initialize compute jobs`
+      // )
       return
     }
     const message = getErrorMessage(error.message)
