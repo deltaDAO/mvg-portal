@@ -413,9 +413,7 @@ export default function Download({
   return (
     <Formik
       initialValues={{
-        dataServiceParams: getDefaultValues(service.consumerParameters),
-        termsAndConditions: false,
-        acceptPublishingLicense: false
+        dataServiceParams: getDefaultValues(service.consumerParameters)
       }}
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
