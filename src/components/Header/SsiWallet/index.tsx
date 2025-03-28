@@ -113,8 +113,6 @@ export function SsiWallet(): ReactElement {
       return
     }
 
-    setCachedCredentials(ssiWalletCache.readCredentialStorage())
-
     selectorDialog.current.showModal()
 
     fetchWallets()
@@ -137,7 +135,7 @@ export function SsiWallet(): ReactElement {
 
   function handleResetWalletCache() {
     ssiWalletCache.clearCredentials()
-    setCachedCredentials(ssiWalletCache.readCredentialStorage())
+    setCachedCredentials(undefined)
     setVerifierSessionId(undefined)
   }
 
