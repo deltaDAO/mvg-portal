@@ -94,7 +94,7 @@ export default function Download({
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
 
-  const { getVerifierSessionId, setVerifierSessionId } = useSsiWallet()
+  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
@@ -212,7 +212,7 @@ export default function Download({
           service,
           accessDetails,
           accountId,
-          getVerifierSessionId(asset.id, service.id),
+          lookupVerifierSessionId(asset.id, service.id),
           validOrderTx,
           dataParams
         )
@@ -254,11 +254,10 @@ export default function Download({
     try {
       if (appConfig.ssiEnabled) {
         const result = await checkVerifierSessionId(
-          getVerifierSessionId(asset.id, service.id)
+          lookupVerifierSessionId(asset.id, service.id)
         )
         if (!result.success) {
           toast.error('Invalid session')
-          setVerifierSessionId(undefined)
           return
         }
       }
@@ -270,7 +269,6 @@ export default function Download({
 
       await handleOrderOrDownload(dataServiceParams)
     } catch (error) {
-      setVerifierSessionId(undefined)
       toast.error(error.message)
       LoggerInstance.error(error)
     }
@@ -422,7 +420,7 @@ export default function Download({
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={(values) => {
-        if (!getVerifierSessionId(asset.id, service.id)) {
+        if (!lookupVerifierSessionId(asset.id, service.id)) {
           return
         }
         handleFormSubmit(values)
@@ -444,7 +442,8 @@ export default function Download({
           {!isFullPriceLoading &&
             (appConfig.ssiEnabled ? (
               <>
-                {getVerifierSessionId(asset.id, service.id) ? (
+                {verifierSessionCache &&
+                lookupVerifierSessionId(asset.id, service.id) ? (
                   <>
                     <AssetActionBuy asset={asset} />
                     <Field

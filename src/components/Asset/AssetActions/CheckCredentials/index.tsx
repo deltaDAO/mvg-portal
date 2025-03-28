@@ -87,7 +87,7 @@ export function AssetActionCheckCredentials({
   const [showDidDialog, setShowDidDialog] = useState<boolean>(false)
 
   const {
-    setVerifierSessionId,
+    cacheVerifierSessionId,
     selectedWallet,
     ssiWalletCache,
     cachedCredentials,
@@ -219,11 +219,11 @@ export function AssetActionCheckCredentials({
             ) {
               toast.error('Validation was not successful')
             } else {
-              setVerifierSessionId({
-                did: asset.id,
-                serviceId: service.id,
-                sessionId: exchangeStateData.sessionId
-              })
+              cacheVerifierSessionId(
+                asset.id,
+                service.id,
+                exchangeStateData.sessionId
+              )
             }
           } catch (error) {
             toast.error('Validation was not successful')
@@ -235,7 +235,6 @@ export function AssetActionCheckCredentials({
         }
 
         case CheckCredentialState.AbortSelection: {
-          setVerifierSessionId(undefined)
           setExchangeStateData(newExchangeStateData())
           setCheckCredentialState(CheckCredentialState.Stop)
           break
@@ -244,7 +243,6 @@ export function AssetActionCheckCredentials({
     }
 
     handleCredentialExchange().catch((error) => {
-      setVerifierSessionId(undefined)
       setExchangeStateData(newExchangeStateData())
       setCheckCredentialState(CheckCredentialState.Stop)
 
