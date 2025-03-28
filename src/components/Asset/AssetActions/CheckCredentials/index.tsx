@@ -193,18 +193,24 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             sessionToken.token
           )
 
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const result = await usePresentationRequest(
-            selectedWallet?.id,
-            exchangeStateData.selectedDid,
-            resolvedPresentationRequest,
-            exchangeStateData.selectedCredentials,
-            sessionToken.token
-          )
-
-          if (result.redirectUri.includes('success')) {
-            setVerifierSessionId(exchangeStateData.sessionId)
-          } else {
+          try {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const result = await usePresentationRequest(
+              selectedWallet?.id,
+              exchangeStateData.selectedDid,
+              resolvedPresentationRequest,
+              exchangeStateData.selectedCredentials,
+              sessionToken.token
+            )
+            if (
+              'errorMessage' in result ||
+              result.redirectUri.includes('error')
+            ) {
+              toast.error('Validation was not successful')
+            } else {
+              setVerifierSessionId(exchangeStateData.sessionId)
+            }
+          } catch (error) {
             toast.error('Validation was not successful')
           }
 
