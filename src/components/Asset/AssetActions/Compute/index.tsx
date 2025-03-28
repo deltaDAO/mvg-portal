@@ -622,7 +622,7 @@ export default function Compute({
           )}
           enableReinitialize
           onSubmit={(values) => {
-            if (!verifierSessionId) {
+            if (!verifierSessionId && appConfig.ssiEnabled) {
               return
             }
             onSubmit(values)

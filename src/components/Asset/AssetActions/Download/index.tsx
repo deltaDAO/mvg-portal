@@ -420,7 +420,7 @@ export default function Download({
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={(values) => {
-        if (!verifierSessionId) {
+        if (!verifierSessionId && appConfig.ssiEnabled) {
           return
         }
         handleFormSubmit(values)
