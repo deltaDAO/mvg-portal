@@ -622,7 +622,10 @@ export default function Compute({
           )}
           enableReinitialize
           onSubmit={(values) => {
-            if (!lookupVerifierSessionId(asset.id, service.id)) {
+            if (
+              !lookupVerifierSessionId(asset.id, service.id) &&
+              appConfig.ssiEnabled
+            ) {
               return
             }
             onSubmit(values)
