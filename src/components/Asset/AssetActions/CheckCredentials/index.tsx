@@ -14,7 +14,7 @@ import {
   usePresentationRequest,
   getSsiVerifiableCredentialType
 } from '@utils/wallet/ssiWallet'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SsiVerifiableCredential, SsiWalletDid } from 'src/@types/SsiWallet'
 import { VpSelector } from '../VpSelector'
 import { DidSelector } from '../DidSelector'
@@ -311,7 +311,7 @@ export function AssetActionCheckCredentials({
             )
             .map((credential) => {
               return (
-                <>
+                <React.Fragment key={credential}>
                   {isCredentialCached(cachedCredentials, credential) ? (
                     <VerifiedPatch
                       key={credential}
@@ -325,7 +325,7 @@ export function AssetActionCheckCredentials({
                   )}
 
                   {credential}
-                </>
+                </React.Fragment>
               )
             })}
         </div>

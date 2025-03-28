@@ -1,5 +1,5 @@
 import Button from '@components/@shared/atoms/Button'
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import styles from './index.module.css'
 import { SsiVerifiableCredential } from 'src/@types/SsiWallet'
 import { getSsiVerifiableCredentialType } from '@utils/wallet/ssiWallet'
@@ -53,6 +53,7 @@ function VpField(props: VpFieldProps): ReactElement {
       >
         {getSsiVerifiableCredentialType(credential)}
         <input
+          value={'false'}
           type="checkbox"
           className={styles.inputField}
           onChange={() => onChange(index, !checked)}
@@ -66,7 +67,7 @@ function VpField(props: VpFieldProps): ReactElement {
           .sort((key1, key2) => key1.localeCompare(key2))
           .map((key) => {
             return (
-              <>
+              <React.Fragment key={key}>
                 <div>{key}</div>
                 <div>
                   <DataView
@@ -74,7 +75,7 @@ function VpField(props: VpFieldProps): ReactElement {
                     maxLength={maxLength}
                   />
                 </div>
-              </>
+              </React.Fragment>
             )
           })}
       </div>
@@ -154,13 +155,14 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
             ?.sort(sortCredentials)
             .map((credential, index) => {
               return (
-                <VpField
-                  key={credential.id}
-                  credential={credential}
-                  onChange={handleOnChange}
-                  index={index}
-                  checked={selections[index]}
-                />
+                <React.Fragment key={credential.id}>
+                  <VpField
+                    credential={credential}
+                    onChange={handleOnChange}
+                    index={index}
+                    checked={selections[index] || false}
+                  />
+                </React.Fragment>
               )
             })}
         </div>
