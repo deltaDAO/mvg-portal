@@ -519,6 +519,7 @@ export async function getUserSalesAndRevenue(
         undefined,
         page
       )
+      // TODO stats is not in ddo
       if (assets && assets.results) {
         assets.results.forEach((asset) => {
           const orders = asset?.stats?.orders || 0
@@ -549,11 +550,6 @@ export async function getUserOrders(
 ): Promise<PagedAssets> {
   const filters: FilterTerm[] = []
   filters.push(getFilterTerm('consumer.keyword', accountId))
-  filters.push({
-    exists: {
-      field: 'datatokenAddress'
-    }
-  })
   const baseQueryparams = {
     filters,
     ignorePurgatory: true,
@@ -582,9 +578,6 @@ export async function getDownloadAssets(
   page?: number
 ): Promise<{ downloadedAssets: DownloadedAsset[]; totalResults: number }> {
   const filters: FilterTerm[] = []
-  filters.push(
-    getFilterTerm('credentialSubject.services.datatokenAddress.keyword', dtList)
-  )
   filters.push(getFilterTerm('credentialSubject.services.type', 'access'))
   const baseQueryparams = {
     chainIds,
@@ -601,7 +594,9 @@ export async function getDownloadAssets(
     const result = await queryMetadata(query, cancelToken)
     const downloadedAssets: DownloadedAsset[] = result.results
       .map((asset) => {
-        const timestamp = new Date(asset.event.datetime).getTime()
+        const timestamp = new Date(
+          asset?.credentialSubject?.event.datetime
+        ).getTime()
         return {
           asset,
           networkId: asset?.credentialSubject?.chainId,
