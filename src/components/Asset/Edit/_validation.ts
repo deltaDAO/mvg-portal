@@ -88,9 +88,9 @@ const validationVpPolicy = {
 }
 
 const validationCredentials = {
-  requestCredentials: Yup.array().of(
-    Yup.object().shape(validationRequestCredentials)
-  ),
+  requestCredentials: Yup.array()
+    .of(Yup.object().shape(validationRequestCredentials))
+    .min(1, 'Please add at least one required credential'),
   vcPolicies: Yup.array().of(Yup.string().required('Required')),
   vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
