@@ -94,7 +94,7 @@ export default function Download({
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
 
-  const { verifierSessionId, setVerifierSessionId } = useSsiWallet()
+  const { getVerifierSessionId, setVerifierSessionId } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
@@ -212,7 +212,7 @@ export default function Download({
           service,
           accessDetails,
           accountId,
-          verifierSessionId,
+          getVerifierSessionId(asset.id, service.id),
           validOrderTx,
           dataParams
         )
@@ -253,7 +253,9 @@ export default function Download({
   async function handleFormSubmit(values: any) {
     try {
       if (appConfig.ssiEnabled) {
-        const result = await checkVerifierSessionId(verifierSessionId)
+        const result = await checkVerifierSessionId(
+          getVerifierSessionId(asset.id, service.id)
+        )
         if (!result.success) {
           toast.error('Invalid session')
           setVerifierSessionId(undefined)
@@ -420,7 +422,7 @@ export default function Download({
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={(values) => {
-        if (!verifierSessionId) {
+        if (!getVerifierSessionId(asset.id, service.id)) {
           return
         }
         handleFormSubmit(values)
@@ -442,7 +444,7 @@ export default function Download({
           {!isFullPriceLoading &&
             (appConfig.ssiEnabled ? (
               <>
-                {verifierSessionId && verifierSessionId.length > 0 ? (
+                {getVerifierSessionId(asset.id, service.id) ? (
                   <>
                     <AssetActionBuy asset={asset} />
                     <Field
@@ -464,7 +466,10 @@ export default function Download({
                     />
                   </>
                 ) : (
-                  <AssetActionCheckCredentials asset={asset} />
+                  <AssetActionCheckCredentials
+                    asset={asset}
+                    service={service}
+                  />
                 )}
               </>
             ) : (

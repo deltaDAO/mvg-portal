@@ -23,6 +23,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
 import VerifiedPatch from '@images/patch_check.svg'
 import { Asset } from 'src/@types/Asset'
+import { Service } from 'src/@types/ddo/Service'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -58,13 +59,22 @@ function isCredentialCached(
   cachedCredentials: SsiVerifiableCredential[],
   credentialType: string
 ): boolean {
+  if (!cachedCredentials) {
+    return false
+  }
   const credentials = cachedCredentials.map((credential) =>
     getSsiVerifiableCredentialType(credential)
   )
   return credentials.includes(credentialType)
 }
 
-export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
+export function AssetActionCheckCredentials({
+  asset,
+  service
+}: {
+  asset: Asset
+  service: Service
+}) {
   const [checkCredentialState, setCheckCredentialState] =
     useState<CheckCredentialState>(CheckCredentialState.Stop)
   const [requiredCredentials, setRequiredCredentials] = useState<string[]>([])
@@ -209,7 +219,11 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             ) {
               toast.error('Validation was not successful')
             } else {
-              setVerifierSessionId(exchangeStateData.sessionId)
+              setVerifierSessionId({
+                did: asset.id,
+                serviceId: service.id,
+                sessionId: exchangeStateData.sessionId
+              })
             }
           } catch (error) {
             toast.error('Validation was not successful')

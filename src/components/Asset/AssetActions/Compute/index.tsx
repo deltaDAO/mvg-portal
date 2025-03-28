@@ -141,7 +141,7 @@ export default function Compute({
   const [retry, setRetry] = useState<boolean>(false)
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
-  const { verifierSessionId, setVerifierSessionId } = useSsiWallet()
+  const { getVerifierSessionId, setVerifierSessionId } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
 
@@ -448,7 +448,7 @@ export default function Compute({
         accountId,
         initializedProviderResponse.algorithm,
         hasAlgoAssetDatatoken,
-        verifierSessionId,
+        getVerifierSessionId(asset.id, service.id),
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
@@ -470,7 +470,7 @@ export default function Compute({
         accountId,
         initializedProviderResponse.datasets[0],
         hasDatatoken,
-        verifierSessionId,
+        getVerifierSessionId(asset.id, service.id),
         selectedComputeEnv.consumerAddress
       )
       if (!datasetOrderTx) throw new Error('Failed to order dataset.')
@@ -518,7 +518,9 @@ export default function Compute({
   const onSubmit = async (values: ComputeDatasetForm) => {
     try {
       if (appConfig.ssiEnabled) {
-        const result = await checkVerifierSessionId(verifierSessionId)
+        const result = await checkVerifierSessionId(
+          getVerifierSessionId(asset.id, service.id)
+        )
         if (!result.success) {
           toast.error('Invalid session')
           setVerifierSessionId(undefined)
@@ -622,7 +624,7 @@ export default function Compute({
           )}
           enableReinitialize
           onSubmit={(values) => {
-            if (!verifierSessionId) {
+            if (!getVerifierSessionId(asset.id, service.id)) {
               return
             }
             onSubmit(values)
@@ -630,7 +632,7 @@ export default function Compute({
         >
           {appConfig.ssiEnabled ? (
             <>
-              {verifierSessionId && verifierSessionId?.length > 0 ? (
+              {getVerifierSessionId(asset.id, service.id) ? (
                 <FormStartComputeDataset
                   asset={asset}
                   service={service}
@@ -684,7 +686,7 @@ export default function Compute({
                   retry={retry}
                 />
               ) : (
-                <AssetActionCheckCredentials asset={asset} />
+                <AssetActionCheckCredentials asset={asset} service={service} />
               )}
             </>
           ) : (

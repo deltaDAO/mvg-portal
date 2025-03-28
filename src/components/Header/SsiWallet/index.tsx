@@ -26,7 +26,8 @@ export function SsiWallet(): ReactElement {
     ssiWalletCache,
     cachedCredentials,
     setCachedCredentials,
-    setVerifierSessionId
+    setVerifierSessionId,
+    clearVerifierSessionIdCache
   } = useSsiWallet()
 
   const [ssiWallets, setSsiWallets] = useState<SsiWalletDesc[]>([])
@@ -135,6 +136,7 @@ export function SsiWallet(): ReactElement {
 
   function handleResetWalletCache() {
     ssiWalletCache.clearCredentials()
+    clearVerifierSessionIdCache()
     setCachedCredentials(undefined)
     setVerifierSessionId(undefined)
   }
