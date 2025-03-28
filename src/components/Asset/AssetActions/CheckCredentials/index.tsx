@@ -82,7 +82,8 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
     ssiWalletCache,
     cachedCredentials,
     setCachedCredentials,
-    sessionToken
+    sessionToken,
+    cacheVerifierSessionId
   } = useSsiWallet()
 
   useEffect(() => {
@@ -109,6 +110,7 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
           setRequiredCredentials(resultRequiredCredentials)
 
           const resultCachedCredentials = ssiWalletCache.lookupCredentials(
+            asset.id,
             resultRequiredCredentials
           )
           setCachedCredentials(resultCachedCredentials)
@@ -168,7 +170,7 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             break
           }
 
-          ssiWalletCache.cacheCredentials(selectedCredentials)
+          ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
           setCachedCredentials(selectedCredentials)
 
           exchangeStateData.dids = await getWalletDids(
@@ -208,6 +210,7 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             ) {
               toast.error('Validation was not successful')
             } else {
+              cacheVerifierSessionId(asset.id, exchangeStateData.sessionId)
               setVerifierSessionId(exchangeStateData.sessionId)
             }
           } catch (error) {
