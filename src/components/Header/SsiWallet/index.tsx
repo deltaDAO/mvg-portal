@@ -199,7 +199,7 @@ export function SsiWallet(): ReactElement {
                 className={`${styles.width100p} ${styles.resetButton} ${styles.marginBottom1}`}
                 onClick={handleResetWalletCache}
               >
-                Reset Credential Cache
+                Reset Wallet Cache
               </Button>
 
               {cachedCredentials?.length > 0 ? (
