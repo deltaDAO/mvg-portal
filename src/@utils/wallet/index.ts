@@ -38,10 +38,7 @@ export const wagmiClient = createClient({
   autoConnect: true,
   connectors: [
     new MetaMaskConnector({
-      chains,
-      options: {
-        shimDisconnect: true
-      }
+      chains
     })
   ],
   provider,
