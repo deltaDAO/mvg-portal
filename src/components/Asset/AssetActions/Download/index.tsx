@@ -429,7 +429,6 @@ export default function Download({
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={(values) => {
-        console.log('on submit')
         if (
           !lookupVerifierSessionId(asset.id, service.id) &&
           appConfig.ssiEnabled
