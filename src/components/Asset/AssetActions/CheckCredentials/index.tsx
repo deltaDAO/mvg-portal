@@ -97,147 +97,162 @@ export function AssetActionCheckCredentials({
 
   useEffect(() => {
     async function handleCredentialExchange() {
-      switch (checkCredentialState) {
-        case CheckCredentialState.StartCredentialExchange: {
-          const presentationResult = await requestCredentialPresentation(asset)
-          exchangeStateData.openid4vp = presentationResult.openid4vc
-          exchangeStateData.poliyServerData =
-            presentationResult.policyServerData
+      try {
+        switch (checkCredentialState) {
+          case CheckCredentialState.StartCredentialExchange: {
+            const presentationResult = await requestCredentialPresentation(
+              asset
+            )
+            exchangeStateData.openid4vp = presentationResult.openid4vc
+            exchangeStateData.poliyServerData =
+              presentationResult.policyServerData
 
-          const searchParams = extractURLSearchParams(
-            exchangeStateData.openid4vp
-          )
+            const searchParams = extractURLSearchParams(
+              exchangeStateData.openid4vp
+            )
 
-          const { state } = searchParams
-          exchangeStateData.sessionId = state
+            const { state } = searchParams
+            exchangeStateData.sessionId = state
 
-          const presentationDefinition = await getPd(state)
-          const resultRequiredCredentials =
-            presentationDefinition.input_descriptors.map(
+            const presentationDefinition = await getPd(state)
+            const resultRequiredCredentials =
+              presentationDefinition.input_descriptors.map(
+                (credential) => credential.id
+              )
+            setRequiredCredentials(resultRequiredCredentials)
+
+            const resultCachedCredentials = ssiWalletCache.lookupCredentials(
+              asset.id,
+              resultRequiredCredentials
+            )
+            setCachedCredentials(resultCachedCredentials)
+            if (
+              resultRequiredCredentials.length > resultCachedCredentials.length
+            ) {
+              exchangeStateData.verifiableCredentials =
+                await matchCredentialForPresentationDefinition(
+                  selectedWallet?.id,
+                  presentationDefinition,
+                  sessionToken.token
+                )
+
+              const cachedCredentialsIds = resultCachedCredentials.map(
+                (credential) => credential.id
+              )
+
+              exchangeStateData.verifiableCredentials =
+                exchangeStateData.verifiableCredentials.filter(
+                  (credential) => !cachedCredentialsIds.includes(credential.id)
+                )
+
+              if (exchangeStateData.verifiableCredentials.length > 0) {
+                setShowVpDialog(true)
+              } else {
+                toast.info('No more credentials found in your ssi wallet')
+                setCheckCredentialState(CheckCredentialState.ReadDids)
+              }
+            } else {
+              exchangeStateData.selectedCredentials =
+                exchangeStateData.verifiableCredentials.map(
+                  (credential) => credential.parsedDocument.id
+                )
+              setCheckCredentialState(CheckCredentialState.ReadDids)
+            }
+
+            setExchangeStateData(exchangeStateData)
+            break
+          }
+
+          case CheckCredentialState.ReadDids: {
+            let selectedCredentials =
+              exchangeStateData.verifiableCredentials.filter((credential) =>
+                exchangeStateData.selectedCredentials.includes(
+                  credential.parsedDocument.id
+                )
+              )
+
+            selectedCredentials = [...selectedCredentials, ...cachedCredentials]
+            exchangeStateData.selectedCredentials = selectedCredentials.map(
               (credential) => credential.id
             )
-          setRequiredCredentials(resultRequiredCredentials)
 
-          const resultCachedCredentials = ssiWalletCache.lookupCredentials(
-            asset.id,
-            resultRequiredCredentials
-          )
-          setCachedCredentials(resultCachedCredentials)
-          if (
-            resultRequiredCredentials.length > resultCachedCredentials.length
-          ) {
-            exchangeStateData.verifiableCredentials =
-              await matchCredentialForPresentationDefinition(
+            if (selectedCredentials.length === 0) {
+              toast.error('You must select at least one credential to present')
+              setCheckCredentialState(CheckCredentialState.Stop)
+              break
+            }
+
+            ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
+            setCachedCredentials(selectedCredentials)
+
+            exchangeStateData.dids = await getWalletDids(
+              selectedWallet.id,
+              sessionToken.token
+            )
+
+            exchangeStateData.selectedDid =
+              exchangeStateData.dids.length > 0
+                ? exchangeStateData.dids[0].did
+                : ''
+
+            setShowDidDialog(true)
+            setExchangeStateData(exchangeStateData)
+            break
+          }
+
+          case CheckCredentialState.ResolveCredentials: {
+            const resolvedPresentationRequest =
+              await resolvePresentationRequest(
                 selectedWallet?.id,
-                presentationDefinition,
+                exchangeStateData.openid4vp,
                 sessionToken.token
               )
 
-            const cachedCredentialsIds = resultCachedCredentials.map(
-              (credential) => credential.id
-            )
-
-            exchangeStateData.verifiableCredentials =
-              exchangeStateData.verifiableCredentials.filter(
-                (credential) => !cachedCredentialsIds.includes(credential.id)
+            try {
+              // eslint-disable-next-line react-hooks/rules-of-hooks
+              const result = await usePresentationRequest(
+                selectedWallet?.id,
+                exchangeStateData.selectedDid,
+                resolvedPresentationRequest,
+                exchangeStateData.selectedCredentials,
+                sessionToken.token
               )
-
-            if (exchangeStateData.verifiableCredentials.length > 0) {
-              setShowVpDialog(true)
-            } else {
-              toast.info('No more credentials found in your ssi wallet')
-              setCheckCredentialState(CheckCredentialState.ReadDids)
+              if (
+                'errorMessage' in result ||
+                result.redirectUri.includes('error')
+              ) {
+                toast.error('Validation was not successful')
+              } else {
+                cacheVerifierSessionId(
+                  asset.id,
+                  service.id,
+                  exchangeStateData.sessionId
+                )
+              }
+            } catch (error) {
+              toast.error('Validation was not successful')
             }
-          } else {
-            exchangeStateData.selectedCredentials =
-              exchangeStateData.verifiableCredentials.map(
-                (credential) => credential.parsedDocument.id
-              )
-            setCheckCredentialState(CheckCredentialState.ReadDids)
-          }
 
-          setExchangeStateData(exchangeStateData)
-          break
-        }
-
-        case CheckCredentialState.ReadDids: {
-          let selectedCredentials =
-            exchangeStateData.verifiableCredentials.filter((credential) =>
-              exchangeStateData.selectedCredentials.includes(
-                credential.parsedDocument.id
-              )
-            )
-
-          selectedCredentials = [...selectedCredentials, ...cachedCredentials]
-          exchangeStateData.selectedCredentials = selectedCredentials.map(
-            (credential) => credential.id
-          )
-
-          if (selectedCredentials.length === 0) {
-            toast.error('You must select at least one credential to present')
+            setExchangeStateData(newExchangeStateData())
             setCheckCredentialState(CheckCredentialState.Stop)
             break
           }
 
-          ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
-          setCachedCredentials(selectedCredentials)
-
-          exchangeStateData.dids = await getWalletDids(
-            selectedWallet.id,
-            sessionToken.token
-          )
-
-          exchangeStateData.selectedDid =
-            exchangeStateData.dids.length > 0
-              ? exchangeStateData.dids[0].did
-              : ''
-
-          setShowDidDialog(true)
-          setExchangeStateData(exchangeStateData)
-          break
-        }
-
-        case CheckCredentialState.ResolveCredentials: {
-          const resolvedPresentationRequest = await resolvePresentationRequest(
-            selectedWallet?.id,
-            exchangeStateData.openid4vp,
-            sessionToken.token
-          )
-
-          try {
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            const result = await usePresentationRequest(
-              selectedWallet?.id,
-              exchangeStateData.selectedDid,
-              resolvedPresentationRequest,
-              exchangeStateData.selectedCredentials,
-              sessionToken.token
-            )
-            if (
-              'errorMessage' in result ||
-              result.redirectUri.includes('error')
-            ) {
-              toast.error('Validation was not successful')
-            } else {
-              cacheVerifierSessionId(
-                asset.id,
-                service.id,
-                exchangeStateData.sessionId
-              )
-            }
-          } catch (error) {
-            toast.error('Validation was not successful')
+          case CheckCredentialState.AbortSelection: {
+            setExchangeStateData(newExchangeStateData())
+            setCheckCredentialState(CheckCredentialState.Stop)
+            break
           }
-
-          setExchangeStateData(newExchangeStateData())
-          setCheckCredentialState(CheckCredentialState.Stop)
-          break
         }
-
-        case CheckCredentialState.AbortSelection: {
-          setExchangeStateData(newExchangeStateData())
-          setCheckCredentialState(CheckCredentialState.Stop)
-          break
+      } catch (error) {
+        if (error.message) {
+          toast.error(
+            `SSI credential validation was not succesful: ${error.message}`
+          )
+        } else {
+          toast.error(
+            'An error occurred during SSI credential validation. Please check the console'
+          )
         }
       }
     }
@@ -269,7 +284,7 @@ export function AssetActionCheckCredentials({
   }
 
   return (
-    <div className={`${styles.textAlignLeft} ${styles.marginTop2p}`}>
+    <div className={` ${styles.marginTop2p}`}>
       <div className={`${styles.panelColumn} ${styles.alignItemsCemter}`}>
         <VpSelector
           setShowDialog={setShowVpDialog}
