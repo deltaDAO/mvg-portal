@@ -20,7 +20,8 @@ jest.mock('wagmi', () => ({
   useNetwork: () => ({ network }),
   useSwitchNetwork: () => ({ switchNetwork: () => jest.fn() }),
   useProvider: () => jest.fn(),
-  createClient: () => jest.fn()
+  createClient: () => jest.fn(),
+  configureChains: () => jest.fn()
 }))
 
 jest.mock('../../@context/SearchBarStatus', () => ({
