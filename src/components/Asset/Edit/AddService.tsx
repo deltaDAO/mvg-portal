@@ -197,7 +197,7 @@ export default function AddService({
         ),
         state: State.Active
       }
-      console.log(newService)
+
       // update asset with new service
       const updatedAsset = { ...asset }
       updatedAsset.credentialSubject.services.push(newService)

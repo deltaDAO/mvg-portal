@@ -14,7 +14,7 @@ import {
   usePresentationRequest,
   getSsiVerifiableCredentialType
 } from '@utils/wallet/ssiWallet'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { SsiVerifiableCredential, SsiWalletDid } from 'src/@types/SsiWallet'
 import { VpSelector } from '../VpSelector'
 import { DidSelector } from '../DidSelector'
@@ -23,6 +23,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
 import VerifiedPatch from '@images/patch_check.svg'
 import { Asset } from 'src/@types/Asset'
+import { Service } from 'src/@types/ddo/Service'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -58,13 +59,22 @@ function isCredentialCached(
   cachedCredentials: SsiVerifiableCredential[],
   credentialType: string
 ): boolean {
+  if (!cachedCredentials) {
+    return false
+  }
   const credentials = cachedCredentials.map((credential) =>
     getSsiVerifiableCredentialType(credential)
   )
   return credentials.includes(credentialType)
 }
 
-export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
+export function AssetActionCheckCredentials({
+  asset,
+  service
+}: {
+  asset: Asset
+  service: Service
+}) {
   const [checkCredentialState, setCheckCredentialState] =
     useState<CheckCredentialState>(CheckCredentialState.Stop)
   const [requiredCredentials, setRequiredCredentials] = useState<string[]>([])
@@ -77,7 +87,7 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
   const [showDidDialog, setShowDidDialog] = useState<boolean>(false)
 
   const {
-    setVerifierSessionId,
+    cacheVerifierSessionId,
     selectedWallet,
     ssiWalletCache,
     cachedCredentials,
@@ -109,6 +119,7 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
           setRequiredCredentials(resultRequiredCredentials)
 
           const resultCachedCredentials = ssiWalletCache.lookupCredentials(
+            asset.id,
             resultRequiredCredentials
           )
           setCachedCredentials(resultCachedCredentials)
@@ -168,7 +179,7 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             break
           }
 
-          ssiWalletCache.cacheCredentials(selectedCredentials)
+          ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
           setCachedCredentials(selectedCredentials)
 
           exchangeStateData.dids = await getWalletDids(
@@ -193,18 +204,28 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             sessionToken.token
           )
 
-          // eslint-disable-next-line react-hooks/rules-of-hooks
-          const result = await usePresentationRequest(
-            selectedWallet?.id,
-            exchangeStateData.selectedDid,
-            resolvedPresentationRequest,
-            exchangeStateData.selectedCredentials,
-            sessionToken.token
-          )
-
-          if (result.redirectUri.includes('success')) {
-            setVerifierSessionId(exchangeStateData.sessionId)
-          } else {
+          try {
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            const result = await usePresentationRequest(
+              selectedWallet?.id,
+              exchangeStateData.selectedDid,
+              resolvedPresentationRequest,
+              exchangeStateData.selectedCredentials,
+              sessionToken.token
+            )
+            if (
+              'errorMessage' in result ||
+              result.redirectUri.includes('error')
+            ) {
+              toast.error('Validation was not successful')
+            } else {
+              cacheVerifierSessionId(
+                asset.id,
+                service.id,
+                exchangeStateData.sessionId
+              )
+            }
+          } catch (error) {
             toast.error('Validation was not successful')
           }
 
@@ -214,7 +235,6 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
         }
 
         case CheckCredentialState.AbortSelection: {
-          setVerifierSessionId(undefined)
           setExchangeStateData(newExchangeStateData())
           setCheckCredentialState(CheckCredentialState.Stop)
           break
@@ -223,7 +243,6 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
     }
 
     handleCredentialExchange().catch((error) => {
-      setVerifierSessionId(undefined)
       setExchangeStateData(newExchangeStateData())
       setCheckCredentialState(CheckCredentialState.Stop)
 
@@ -292,7 +311,7 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
             )
             .map((credential) => {
               return (
-                <>
+                <React.Fragment key={credential}>
                   {isCredentialCached(cachedCredentials, credential) ? (
                     <VerifiedPatch
                       key={credential}
@@ -306,7 +325,7 @@ export function AssetActionCheckCredentials({ asset }: { asset: Asset }) {
                   )}
 
                   {credential}
-                </>
+                </React.Fragment>
               )
             })}
         </div>

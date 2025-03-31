@@ -1,3 +1,4 @@
+import { set } from 'date-fns'
 import {
   createContext,
   ReactElement,
@@ -14,9 +15,6 @@ import {
   SsiWalletSession
 } from 'src/@types/SsiWallet'
 
-const verifierSessionIdStorage = 'verifierSessionId'
-const sessionTokenStorage = 'sessionToken'
-
 export interface SsiWalletContext {
   sessionToken: SsiWalletSession
   setSessionToken: (token: SsiWalletSession) => void
@@ -24,13 +22,22 @@ export interface SsiWalletContext {
   setSelectedWallet: (wallet: SsiWalletDesc) => void
   selectedKey: SsiKeyDesc
   setSelectedKey: (key: SsiKeyDesc) => void
-  verifierSessionId: string
-  setVerifierSessionId: (id: string) => void
+  lookupVerifierSessionId: (did: string, serviceId: string) => string
+  cacheVerifierSessionId: (
+    did: string,
+    serviceId: string,
+    sessionId: string
+  ) => void
+  clearVerifierSessionCache: () => void
+  verifierSessionCache: Record<string, string>
   ssiWalletCache: SsiWalletCache
   setSsiWalletCache: (cache: SsiWalletCache) => void
   cachedCredentials: SsiVerifiableCredential[]
   setCachedCredentials: (credentials: SsiVerifiableCredential[]) => void
 }
+
+const SessionTokenStorage = 'sessionToken'
+const VerifierSessionIdStorage = 'verifierSessionId'
 
 const SsiWalletContext = createContext(null)
 
@@ -42,7 +49,6 @@ export function SsiWalletProvider({
   const [sessionToken, setSessionToken] = useState<SsiWalletSession>()
   const [selectedWallet, setSelectedWallet] = useState<SsiWalletDesc>()
   const [selectedKey, setSelectedKey] = useState<SsiKeyDesc>()
-  const [verifierSessionId, setVerifierSessionId] = useState<string>()
   const [ssiWalletCache, setSsiWalletCache] = useState<SsiWalletCache>(
     new SsiWalletCache()
   )
@@ -50,18 +56,27 @@ export function SsiWalletProvider({
     SsiVerifiableCredential[]
   >([])
 
+  const [verifierSessionCache, setVerifierSessionCache] = useState<
+    Record<string, string>
+  >({})
+
   useEffect(() => {
     try {
-      const token = localStorage.getItem(sessionTokenStorage)
+      const token = localStorage.getItem(SessionTokenStorage)
       setSessionToken(JSON.parse(token))
     } catch (error) {
       setSessionToken(undefined)
     }
-    const token = localStorage.getItem(verifierSessionIdStorage)
-    if (token) {
-      setVerifierSessionId(token)
-    } else {
-      setVerifierSessionId(undefined)
+
+    try {
+      const storageString = localStorage.getItem(VerifierSessionIdStorage)
+      let sessions = JSON.parse(storageString) as Record<string, string>
+      if (!sessions) {
+        sessions = {}
+      }
+      setVerifierSessionCache(sessions)
+    } catch (error) {
+      setVerifierSessionCache({})
     }
   }, [])
 
@@ -70,17 +85,38 @@ export function SsiWalletProvider({
       setSelectedWallet(undefined)
       setSelectedKey(undefined)
     }
-
-    localStorage.setItem(sessionTokenStorage, JSON.stringify(sessionToken))
+    localStorage.setItem(SessionTokenStorage, JSON.stringify(sessionToken))
   }, [sessionToken])
 
-  useEffect(() => {
-    if (verifierSessionId) {
-      localStorage.setItem(verifierSessionIdStorage, verifierSessionId)
-    } else {
-      localStorage.removeItem(verifierSessionIdStorage)
+  function lookupVerifierSessionId(did: string, serviceId: string): string {
+    return verifierSessionCache?.[`${did}_${serviceId}`]
+  }
+
+  function cacheVerifierSessionId(
+    did: string,
+    serviceId: string,
+    sessionId: string
+  ) {
+    let storageString = localStorage.getItem(VerifierSessionIdStorage)
+    let sessions
+    try {
+      sessions = JSON.parse(storageString) as Record<string, string>
+      if (!sessions) {
+        sessions = {}
+      }
+    } catch (error) {
+      sessions = {}
     }
-  }, [verifierSessionId])
+    sessions[`${did}_${serviceId}`] = sessionId
+    storageString = JSON.stringify(sessions)
+    localStorage.setItem(VerifierSessionIdStorage, storageString)
+    setVerifierSessionCache(sessions)
+  }
+
+  function clearVerifierSessionCache() {
+    localStorage.removeItem(VerifierSessionIdStorage)
+    setVerifierSessionCache({})
+  }
 
   return (
     <SsiWalletContext.Provider
@@ -92,8 +128,10 @@ export function SsiWalletProvider({
           setSelectedWallet,
           selectedKey,
           setSelectedKey,
-          verifierSessionId,
-          setVerifierSessionId,
+          lookupVerifierSessionId,
+          cacheVerifierSessionId,
+          clearVerifierSessionCache,
+          verifierSessionCache,
           ssiWalletCache,
           setSsiWalletCache,
           cachedCredentials,
