@@ -13,6 +13,7 @@ import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
 import Automation from './UserPreferences/Automation'
 import NetworkMenu from './NetworkMenu'
+import { useWagmiClient } from '@context/WagmiClient'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -54,6 +55,7 @@ export function MenuLink({ name, link, className, isLive }: MenuItem) {
 
 export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
+  const { isWagmiAllowed, setIsWagmiAllowed } = useWagmiClient()
 
   return (
     <nav className={styles.menu}>
@@ -77,7 +79,17 @@ export default function Menu(): ReactElement {
         <SearchButton />
         {appConfig.chainIdsSupported.length > 1 && <Networks />}
         <NetworkMenu />
-        <Wallet />
+        {isWagmiAllowed ? (
+          <Wallet />
+        ) : (
+          <button
+            className={`${styles.button}`}
+            onClick={() => setIsWagmiAllowed(true)}
+          >
+            allow Wallet
+          </button>
+        )}
+
         {appConfig.automationConfig.enableAutomation === 'true' && (
           <Automation />
         )}

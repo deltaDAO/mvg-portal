@@ -16,6 +16,27 @@
   align-items: center;
 }
 
+.button {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  border: var(--menu-border-size) solid var(--menu-border-color);
+  border-radius: var(--menu-border-radius);
+  padding: calc(var(--spacer) / 3) calc(var(--spacer) / 4);
+  white-space: nowrap;
+  background: var(--background-content);
+  box-shadow: none;
+  margin: 0;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.button {
+  color: var(--menu-font-color);
+}
+
 .navigation {
   order: 3;
   margin-top: calc(var(--spacer) / 2);

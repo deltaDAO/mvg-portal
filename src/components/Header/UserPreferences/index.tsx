@@ -8,6 +8,7 @@ import ExternalContent from './ExternalContent'
 import AutomationWalletMode from './AutomationWalletMode'
 import Onboarding from './Onboarding'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import Web3 from './Web3'
 
 export default function UserPreferences(): ReactElement {
   const { appConfig } = useMarketMetadata()
@@ -18,6 +19,9 @@ export default function UserPreferences(): ReactElement {
         <ul className={styles.preferencesDetails}>
           <li>
             <ExternalContent />
+          </li>
+          <li>
+            <Web3 />
           </li>
           {appConfig.automationConfig.enableAutomation === 'true' && (
             <li>

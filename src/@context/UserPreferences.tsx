@@ -10,6 +10,7 @@ import { LoggerInstance, LogLevel } from '@oceanprotocol/lib'
 import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from './MarketMetadata'
 import { AUTOMATION_MODES } from './Automation/AutomationProvider'
+import { useWagmiClient } from './WagmiClient'
 
 interface UserPreferencesValue {
   debug: boolean
@@ -36,13 +37,15 @@ interface UserPreferencesValue {
   setShowOnboardingModule: (value: boolean) => void
   onboardingStep: number
   setOnboardingStep: (step: number) => void
+  isWagmiAllowed: boolean
+  setIsWagmiAllowed: (value: boolean) => void
 }
 
 const UserPreferencesContext = createContext(null)
 
 const localStorageKey = 'ocean-user-preferences-v4'
 
-function getLocalStorage(): UserPreferencesValue {
+export function getLocalStorage(): UserPreferencesValue {
   const storageParsed =
     isBrowser && JSON.parse(window.localStorage.getItem(localStorageKey))
   return storageParsed
@@ -77,6 +80,8 @@ function UserPreferencesProvider({
   const [privacyPolicySlug, setPrivacyPolicySlug] = useState<string>(
     localStorage?.privacyPolicySlug || defaultPrivacyPolicySlug
   )
+
+  const { isWagmiAllowed } = useWagmiClient()
 
   const [showPPC, setShowPPC] = useState<boolean>(
     localStorage?.showPPC !== false
@@ -116,7 +121,8 @@ function UserPreferencesProvider({
       automationWalletJSON: automationWallet,
       automationWalletMode,
       showOnboardingModule,
-      onboardingStep
+      onboardingStep,
+      isWagmiAllowed
     })
   }, [
     chainIds,
@@ -129,7 +135,8 @@ function UserPreferencesProvider({
     automationWallet,
     automationWalletMode,
     showOnboardingModule,
-    onboardingStep
+    onboardingStep,
+    isWagmiAllowed
   ])
 
   // Set ocean.js log levels, default: Error
