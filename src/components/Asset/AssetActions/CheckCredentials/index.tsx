@@ -246,10 +246,12 @@ export function AssetActionCheckCredentials({
         }
       } catch (error) {
         if (error.message) {
-          toast.error(error.message)
+          toast.error(
+            `SSI credential validation was not succesful: ${error.message}`
+          )
         } else {
           toast.error(
-            'An error occurred during check credentials. Please check the console'
+            'An error occurred during SSI credential validation. Please check the console'
           )
         }
       }
