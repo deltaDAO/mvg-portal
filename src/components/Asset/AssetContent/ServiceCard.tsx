@@ -33,7 +33,7 @@ export default function ServiceCard({
       <span className={styles.title}>Price: </span>
       {accessDetails.type === 'fixed'
         ? `${accessDetails.price} ${accessDetails.baseToken.symbol}`
-        : '0'}
+        : 'free'}
     </div>
   )
 }

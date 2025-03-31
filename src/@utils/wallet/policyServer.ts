@@ -51,6 +51,10 @@ export async function requestCredentialPresentation(asset: Asset): Promise<{
       policyServerData: policyServer
     }
   } catch (error) {
+    if (error.request?.response) {
+      const err = JSON.parse(error.request.response)
+      throw err
+    }
     if (error.response?.data) {
       throw error.response?.data
     }

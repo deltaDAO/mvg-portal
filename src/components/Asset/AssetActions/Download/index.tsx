@@ -384,6 +384,15 @@ export default function Download({
               type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
             />
             <Row
+              price={orderPriceAndFees?.opcFee || '0'}
+              symbol={price.tokenSymbol}
+              type={`OPC FEE (${(
+                (parseFloat(orderPriceAndFees.opcFee) /
+                  parseFloat(orderPriceAndFees.price)) *
+                100
+              ).toFixed(1)}%)`}
+            />
+            <Row
               price={new Decimal(
                 new Decimal(
                   Number(orderPriceAndFees?.price) || price.value || 0
@@ -398,11 +407,13 @@ export default function Download({
                       .div(100)
                   )
                 )
+                .add(new Decimal(orderPriceAndFees?.opcFee || 0))
                 .toString()}
               symbol={price.tokenSymbol}
             />
           </div>
         )}
+
         <div style={{ textAlign: 'center' }}>
           {!isInPurgatory && <PurchaseButton isValid={isValid} />}
         </div>
@@ -418,6 +429,7 @@ export default function Download({
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={(values) => {
+        console.log('on submit')
         if (
           !lookupVerifierSessionId(asset.id, service.id) &&
           appConfig.ssiEnabled

@@ -13,6 +13,7 @@ import { formatNumber } from '@utils/numbers'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import {
   getAccessDetails,
+  getAvailablePrice,
   getOrderPriceAndFees
 } from '@utils/accessDetailsAndPricing'
 
@@ -33,10 +34,11 @@ export default function AssetTeaser({
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
   const owner = asset.credentialSubject.nft?.owner
-  const { orders, allocated, price } = asset.credentialSubject.stats || {}
+  const { orders, allocated } = asset.credentialSubject.stats || {}
   const [accessDetails, setAccessDetails] = useState(null)
   const [orderPriceAndFees, setOrderPriceAndFees] = useState(null)
   const [isUnsupportedPricing, setIsUnsupportedPricing] = useState(false)
+  const [price, setPrice] = useState(null)
 
   const { locale } = useUserPreferences()
 
@@ -80,6 +82,13 @@ export default function AssetTeaser({
     setIsUnsupportedPricing(unsupported)
   }, [asset.credentialSubject?.services, price?.value, accessDetails])
 
+  useEffect(() => {
+    if (accessDetails) {
+      const avaiablePrice = getAvailablePrice(accessDetails)
+      setPrice(avaiablePrice)
+    }
+  }, [accessDetails])
+
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
       <Link href={`/asset/${asset.id}`} className={styles.link}>
@@ -107,16 +116,17 @@ export default function AssetTeaser({
           </div>
         )}
         <div className={styles.price}>
-          {accessDetails &&
-            (isUnsupportedPricing ? (
-              <strong>No pricing schema available</strong>
-            ) : (
-              <Price
-                price={price || { value: parseFloat(accessDetails.price) }}
-                orderPriceAndFees={orderPriceAndFees}
-                size="small"
-              />
-            ))}
+          {!price ? (
+            <div className={styles.loadingContainer}>Loading Price...</div>
+          ) : isUnsupportedPricing ? (
+            <strong>No pricing schema available</strong>
+          ) : (
+            <Price
+              price={price || { value: parseFloat(accessDetails.price) }}
+              orderPriceAndFees={orderPriceAndFees}
+              size="small"
+            />
+          )}
         </div>
         <footer className={styles.footer}>
           <div className={styles.stats}>
