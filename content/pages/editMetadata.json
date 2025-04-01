@@ -65,7 +65,7 @@
         "name": "allow",
         "label": "Allow ETH Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Enter an ETH address and click the ADD button to append to the list. Only ETH addresses in the allow list can consume this asset. If the list is empty anyone can download or compute this asset.",
+        "help": "Enter an ETH address and click the ADD button to append to the list. Only ETH addresses in the allow list can consume this asset. If the list is empty, no one can download or compute this asset.",
         "type": "credentials"
       },
       {

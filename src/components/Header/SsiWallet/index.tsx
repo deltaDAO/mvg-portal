@@ -234,7 +234,7 @@ export function SsiWallet(): ReactElement {
                 className={`${styles.ssiPanel} ${styles.connected}`}
                 onClick={handleOpenDialog}
               >
-                SSI
+                SSI Wallet connected
               </div>
             </>
           ) : (
