@@ -578,6 +578,9 @@ export async function getDownloadAssets(
   page?: number
 ): Promise<{ downloadedAssets: DownloadedAsset[]; totalResults: number }> {
   const filters: FilterTerm[] = []
+  filters.push(
+    getFilterTerm('credentialSubject.services.datatokenAddress.keyword', dtList)
+  )
   filters.push(getFilterTerm('credentialSubject.services.type', 'access'))
   const baseQueryparams = {
     chainIds,
