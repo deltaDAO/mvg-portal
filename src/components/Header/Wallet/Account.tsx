@@ -57,7 +57,7 @@ const Account = forwardRef((props, ref: any) => {
       // the Tippy to show in this state.
       ref={ref}
     >
-      Connect Wallet
+      Connect web3 Wallet
     </button>
   )
 })
