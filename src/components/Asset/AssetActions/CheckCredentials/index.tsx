@@ -228,9 +228,7 @@ export function AssetActionCheckCredentials({
                 'errorMessage' in result ||
                 result.redirectUri.includes('error')
               ) {
-                toast.error(
-                  'Validation was not successful as use presentiation'
-                )
+                toast.error('Validation was not successful as use presentation')
                 handleResetWalletCache()
               } else {
                 cacheVerifierSessionId(
