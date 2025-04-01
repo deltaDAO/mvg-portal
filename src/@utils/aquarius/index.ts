@@ -522,8 +522,8 @@ export async function getUserSalesAndRevenue(
       // TODO stats is not in ddo
       if (assets && assets.results) {
         assets.results.forEach((asset) => {
-          const orders = asset?.stats?.orders || 0
-          const price = asset?.stats?.price?.value || 0
+          const orders = asset?.credentialSubject?.stats?.orders || 0
+          const price = asset?.credentialSubject?.stats?.price?.value || 0
           totalOrders += orders
           totalRevenue += orders * price
         })
