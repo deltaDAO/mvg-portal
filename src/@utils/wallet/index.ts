@@ -7,7 +7,7 @@ import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
 import { chainIdsSupported } from '../../../app.config'
 import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
+import { publicProvider } from 'wagmi/providers/public'
 
 export async function getDummySigner(chainId: number): Promise<Signer> {
   if (typeof chainId !== 'number') {
@@ -25,18 +25,11 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
     throw new Error(`Failed to create dummy signer: ${error.message}`)
   }
 }
-function getProvider() {
-  return jsonRpcProvider({
-    rpc: (chain) => {
-      const config = getOceanConfig(chain.id)
-      return { http: config.nodeUri }
-    }
-  })
-}
 const supportedChains = getSupportedChains(chainIdsSupported)
+
 const { chains, provider, webSocketProvider } = configureChains(
   supportedChains,
-  [getProvider()]
+  [publicProvider()]
 )
 
 // Wagmi client
