@@ -19,8 +19,9 @@
   text-align: left;
 }
 
-.alignItemsCemter {
-  align-items: center;
+.alignItemsCenter {
+  margin-left: 18%;
+  margin-top: -10%;
 }
 
 .errorMessage {

@@ -92,8 +92,15 @@ export function AssetActionCheckCredentials({
     ssiWalletCache,
     cachedCredentials,
     setCachedCredentials,
-    sessionToken
+    sessionToken,
+    clearVerifierSessionCache
   } = useSsiWallet()
+
+  function handleResetWalletCache() {
+    ssiWalletCache.clearCredentials()
+    setCachedCredentials(undefined)
+    clearVerifierSessionCache()
+  }
 
   useEffect(() => {
     async function handleCredentialExchange() {
@@ -221,7 +228,8 @@ export function AssetActionCheckCredentials({
                 'errorMessage' in result ||
                 result.redirectUri.includes('error')
               ) {
-                toast.error('Validation was not successful')
+                toast.error('Validation was not successful as use presentation')
+                handleResetWalletCache()
               } else {
                 cacheVerifierSessionId(
                   asset.id,
@@ -230,9 +238,9 @@ export function AssetActionCheckCredentials({
                 )
               }
             } catch (error) {
+              handleResetWalletCache()
               toast.error('Validation was not successful')
             }
-
             setExchangeStateData(newExchangeStateData())
             setCheckCredentialState(CheckCredentialState.Stop)
             break
@@ -254,6 +262,7 @@ export function AssetActionCheckCredentials({
             'An error occurred during SSI credential validation. Please check the console'
           )
         }
+        handleResetWalletCache()
       }
     }
 
@@ -284,66 +293,61 @@ export function AssetActionCheckCredentials({
   }
 
   return (
-    <div className={` ${styles.marginTop2p}`}>
-      <div className={`${styles.panelColumn} ${styles.alignItemsCemter}`}>
-        <VpSelector
-          setShowDialog={setShowVpDialog}
-          showDialog={showVpDialog}
-          acceptSelection={handleAcceptCredentialSelection}
-          abortSelection={() =>
-            setCheckCredentialState(CheckCredentialState.AbortSelection)
-          }
-          ssiVerifiableCredentials={exchangeStateData.verifiableCredentials}
-        />
-        <DidSelector
-          setShowDialog={setShowDidDialog}
-          showDialog={showDidDialog}
-          acceptSelection={handleAcceptDidSelection}
-          abortSelection={() =>
-            setCheckCredentialState(CheckCredentialState.AbortSelection)
-          }
-          dids={exchangeStateData.dids}
-        />
-        <Button
-          type="button"
-          style="primary"
-          onClick={() =>
-            setCheckCredentialState(
-              CheckCredentialState.StartCredentialExchange
-            )
-          }
-          disabled={!selectedWallet?.id}
-        >
-          Check Credentials
-        </Button>
+    <div className={`${styles.panelColumn} ${styles.alignItemsCenter}`}>
+      <VpSelector
+        setShowDialog={setShowVpDialog}
+        showDialog={showVpDialog}
+        acceptSelection={handleAcceptCredentialSelection}
+        abortSelection={() =>
+          setCheckCredentialState(CheckCredentialState.AbortSelection)
+        }
+        ssiVerifiableCredentials={exchangeStateData.verifiableCredentials}
+      />
+      <DidSelector
+        setShowDialog={setShowDidDialog}
+        showDialog={showDidDialog}
+        acceptSelection={handleAcceptDidSelection}
+        abortSelection={() =>
+          setCheckCredentialState(CheckCredentialState.AbortSelection)
+        }
+        dids={exchangeStateData.dids}
+      />
+      <Button
+        type="button"
+        style="primary"
+        onClick={() =>
+          setCheckCredentialState(CheckCredentialState.StartCredentialExchange)
+        }
+        disabled={!selectedWallet?.id}
+      >
+        Check Credentials
+      </Button>
+      <div
+        className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
+      >
+        {requiredCredentials
+          ?.sort((credential1, credential2) =>
+            credential1.localeCompare(credential2)
+          )
+          .map((credential) => {
+            return (
+              <React.Fragment key={credential}>
+                {isCredentialCached(cachedCredentials, credential) ? (
+                  <VerifiedPatch
+                    key={credential}
+                    className={`${styles.marginTop6px} ${styles.fillGreen}`}
+                  />
+                ) : (
+                  <div
+                    key={credential}
+                    className={`${styles.marginTop6px} ${styles.fillRed}`}
+                  ></div>
+                )}
 
-        <div
-          className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
-        >
-          {requiredCredentials
-            ?.sort((credential1, credential2) =>
-              credential1.localeCompare(credential2)
+                {credential}
+              </React.Fragment>
             )
-            .map((credential) => {
-              return (
-                <React.Fragment key={credential}>
-                  {isCredentialCached(cachedCredentials, credential) ? (
-                    <VerifiedPatch
-                      key={credential}
-                      className={`${styles.marginTop6px} ${styles.fillGreen}`}
-                    />
-                  ) : (
-                    <div
-                      key={credential}
-                      className={`${styles.marginTop6px} ${styles.fillRed}`}
-                    ></div>
-                  )}
-
-                  {credential}
-                </React.Fragment>
-              )
-            })}
-        </div>
+          })}
       </div>
     </div>
   )
