@@ -13,7 +13,7 @@
   },
   {
     "name": "leftValue",
-    "label": "Argument",
+    "label": "Credential field",
     "type": "text",
     "required": true
   },

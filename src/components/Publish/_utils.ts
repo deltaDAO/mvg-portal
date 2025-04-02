@@ -151,11 +151,21 @@ function generatePolicyArgument(
   return argument
 }
 
+function generatePolicyArgumentFromRule(
+  rules: PolicyRule[]
+): Record<string, string> {
+  const argument = {}
+  rules?.forEach((rule) => {
+    argument[rule.leftValue] = rule.rightValue
+  })
+  return argument
+}
+
 function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
   const rulesStrings = []
   rules?.forEach((rule) => {
     rulesStrings.push(
-      `${PolicyRuleLeftValuePrefix}.${rule.leftValue} ${rule.operator} ${PolicyRuleRightValuePrefix}.${rule.rightValue}`
+      `${PolicyRuleRightValuePrefix}.${rule.leftValue}  ${rule.operator} ${PolicyRuleLeftValuePrefix}.${rule.leftValue}`
     )
   })
 
@@ -214,7 +224,7 @@ function generateSsiPolicy(policy: PolicyType): any {
             rules: {
               rego: generateCustomPolicyScript(policy.name, policy.rules)
             },
-            argument: generatePolicyArgument(policy.arguments)
+            argument: generatePolicyArgumentFromRule(policy.rules)
           }
         }
         result = item
