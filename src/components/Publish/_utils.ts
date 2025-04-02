@@ -164,9 +164,17 @@ function generatePolicyArgumentFromRule(
 function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
   const rulesStrings = []
   rules?.forEach((rule) => {
-    rulesStrings.push(
-      `lower(${PolicyRuleRightValuePrefix}.${rule.leftValue}) ${rule.operator} lower(${PolicyRuleLeftValuePrefix}.${rule.leftValue})`
-    )
+    const left =
+      rule.operator === '=='
+        ? `lower(${PolicyRuleRightValuePrefix}.${rule.leftValue})`
+        : `${PolicyRuleRightValuePrefix}.${rule.leftValue}`
+
+    const right =
+      rule.operator === '=='
+        ? `lower(${PolicyRuleLeftValuePrefix}.${rule.leftValue})`
+        : `${PolicyRuleLeftValuePrefix}.${rule.leftValue}`
+
+    rulesStrings.push(`${left} ${rule.operator} ${right}`)
   })
 
   const result = String.raw`package data.${name}
