@@ -156,7 +156,8 @@ function generatePolicyArgumentFromRule(
 ): Record<string, string> {
   const argument = {}
   rules?.forEach((rule) => {
-    argument[rule.leftValue] = rule.rightValue
+    const updatedValue = rule.leftValue.replace(/\./g, '')
+    argument[updatedValue] = rule.rightValue
   })
   return argument
 }
@@ -165,15 +166,17 @@ function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
   const rulesStrings = []
   rules?.forEach((rule) => {
     const left =
-      rule.operator === '=='
+      rule.operator === '==' || rule.operator === '!='
         ? `lower(${PolicyRuleRightValuePrefix}.${rule.leftValue})`
         : `${PolicyRuleRightValuePrefix}.${rule.leftValue}`
 
+    const updatedValue = rule.leftValue.replace(/\./g, '')
     const right =
-      rule.operator === '=='
-        ? `lower(${PolicyRuleLeftValuePrefix}.${rule.leftValue})`
-        : `${PolicyRuleLeftValuePrefix}.${rule.leftValue}`
+      rule.operator === '==' || rule.operator === '!='
+        ? `lower(${PolicyRuleLeftValuePrefix}.${updatedValue})`
+        : `${PolicyRuleLeftValuePrefix}.${updatedValue}`
 
+    console.log('right:', right)
     rulesStrings.push(`${left} ${rule.operator} ${right}`)
   })
 
