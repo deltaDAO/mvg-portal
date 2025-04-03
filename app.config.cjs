@@ -109,5 +109,5 @@ module.exports = {
 
   oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
 
-  opaServer: process.env.NEXT_PUBLIC_PS_OPA_SERVER
+  opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL
 }

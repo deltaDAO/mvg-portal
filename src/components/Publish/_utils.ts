@@ -151,12 +151,30 @@ function generatePolicyArgument(
   return argument
 }
 
+function generatePolicyArgumentFromRule(
+  rules: PolicyRule[]
+): Record<string, string> {
+  const argument = {}
+  rules?.forEach((rule) => {
+    argument[rule.leftValue] = rule.rightValue
+  })
+  return argument
+}
+
 function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
   const rulesStrings = []
   rules?.forEach((rule) => {
-    rulesStrings.push(
-      `${PolicyRuleLeftValuePrefix}.${rule.leftValue} ${rule.operator} ${PolicyRuleRightValuePrefix}.${rule.rightValue}`
-    )
+    const left =
+      rule.operator === '=='
+        ? `lower(${PolicyRuleRightValuePrefix}.${rule.leftValue})`
+        : `${PolicyRuleRightValuePrefix}.${rule.leftValue}`
+
+    const right =
+      rule.operator === '=='
+        ? `lower(${PolicyRuleLeftValuePrefix}.${rule.leftValue})`
+        : `${PolicyRuleLeftValuePrefix}.${rule.leftValue}`
+
+    rulesStrings.push(`${left} ${rule.operator} ${right}`)
   })
 
   const result = String.raw`package data.${name}
@@ -214,7 +232,7 @@ function generateSsiPolicy(policy: PolicyType): any {
             rules: {
               rego: generateCustomPolicyScript(policy.name, policy.rules)
             },
-            argument: generatePolicyArgument(policy.arguments)
+            argument: generatePolicyArgumentFromRule(policy.rules)
           }
         }
         result = item

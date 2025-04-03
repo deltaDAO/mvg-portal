@@ -264,19 +264,6 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
 
   const customPolicy = policy as CustomPolicy
 
-  function newArgument(policy: CustomPolicy): void {
-    policy.arguments?.push({
-      name: '',
-      value: ''
-    })
-    onValueChange()
-  }
-
-  function deleteArgument(policy: CustomPolicy, index: number) {
-    policy.arguments?.splice(index, 1)
-    onValueChange()
-  }
-
   function newRule(policy: CustomPolicy): void {
     policy.rules?.push({ leftValue: '', operator: '', rightValue: '' })
     onValueChange()
@@ -309,47 +296,6 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
           >
             Delete
           </Button>
-        </div>
-
-        <Button
-          type="button"
-          className={`${styles.marginTopMinus2em} ${styles.marginBottom2em}`}
-          style="primary"
-          onClick={() => newArgument(customPolicy)}
-        >
-          New {{ ...getFieldContent('argument', fields) }.label}
-        </Button>
-        <div className={styles.marginBottom2em}>
-          {customPolicy?.arguments?.map((argument, argumentIndex) => (
-            <div key={argumentIndex} className={styles.panelColumn}>
-              <div
-                className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100} ${styles.paddingLeft3em}`}
-              >
-                <div className={styles.flexGrow}>
-                  <Field
-                    {...getFieldContent('name', fields)}
-                    component={Input}
-                    name={`${name}.requestCredentials[${index}].policies[${innerIndex}].arguments[${argumentIndex}].name`}
-                  />
-                </div>
-                <div className={styles.flexGrow}>
-                  <Field
-                    {...getFieldContent('value', fields)}
-                    component={Input}
-                    name={`${name}.requestCredentials[${index}].policies[${innerIndex}].arguments[${argumentIndex}].value`}
-                  />
-                </div>
-                <Button
-                  type="button"
-                  style="primary"
-                  onClick={() => deleteArgument(customPolicy, argumentIndex)}
-                  className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          ))}
         </div>
 
         <Button
