@@ -200,12 +200,10 @@ export function transformQueryResult(
     totalResults: 0,
     aggregations: {}
   }
-  result.results =
-    queryResult.hits?.hits.map((hit: Asset) => (hit as any)._source) ||
-    queryResult
+  result.results = queryResult.results
 
   result.totalResults =
-    queryResult.hits?.total?.value || queryResult.length || 0
+    queryResult.totalResults || queryResult.results.length || 0
 
   result.totalPages = Math.ceil(result.totalResults / size)
   result.page = from ? from + 1 : 1
@@ -405,7 +403,6 @@ export async function getPublishedAssets(
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
-
   try {
     const result = await queryMetadata(query, cancelToken)
     return result
@@ -533,7 +530,7 @@ export async function getUserSalesAndRevenue(
       assets &&
       assets.results &&
       assets.results.length > 0 &&
-      page < assets.totalPages
+      page <= assets.totalPages
     )
 
     return { totalOrders, totalRevenue }
