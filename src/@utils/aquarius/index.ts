@@ -501,7 +501,7 @@ export async function getUserSalesAndRevenue(
   chainIds: number[]
 ): Promise<{ totalOrders: number; totalRevenue: number }> {
   try {
-    let page = 0
+    let page = 1
     let totalOrders = 0
     let totalRevenue = 0
     let assets: PagedAssets
@@ -530,7 +530,7 @@ export async function getUserSalesAndRevenue(
       assets &&
       assets.results &&
       assets.results.length > 0 &&
-      page < assets.totalPages
+      page <= assets.totalPages
     )
 
     return { totalOrders, totalRevenue }
