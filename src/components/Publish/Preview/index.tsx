@@ -6,7 +6,10 @@ import AssetContent from '@components/Asset/AssetContent'
 import { transformPublishFormToDdo } from '../_utils'
 import { ZERO_ADDRESS } from '@oceanprotocol/lib'
 import { useAccount } from 'wagmi'
-import { defaultDatatokenTemplateIndex } from 'app.config.cjs'
+import {
+  defaultDatatokenTemplateIndex,
+  oceanTokenAddress
+} from 'app.config.cjs'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
 export default function Preview(): ReactElement {
@@ -42,11 +45,12 @@ export default function Preview(): ReactElement {
         }
       ]
       asset.credentialSubject.stats = {
-        orders: null,
+        orders: 0,
+        allocated: 0,
         price: {
           value: values.pricing.type === 'free' ? 0 : values.pricing.price,
           tokenSymbol: values.pricing?.baseToken?.symbol || 'OCEAN',
-          tokenAddress: ZERO_ADDRESS
+          tokenAddress: values.pricing?.baseToken?.address || oceanTokenAddress
         }
       }
       setAsset(asset)

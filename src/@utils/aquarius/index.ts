@@ -116,7 +116,7 @@ export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcas
 FilterTerm | undefined {
   return allowDynamicPricing === 'true'
     ? undefined
-    : getFilterTerm('price.type', 'pool')
+    : getFilterTerm('credentialSubject.price.type', 'pool')
 }
 
 export function generateBaseQuery(
@@ -371,26 +371,6 @@ export async function getPublishedAssets(
       totalOrders: {
         sum: {
           field: SortTermOptions.Orders
-        }
-      },
-      totalRevenue: {
-        terms: {
-          field: SortTermOptions.TokenSymbol
-        },
-        aggs: {
-          totalValue: {
-            sum: {
-              script: {
-                source:
-                  "doc['" +
-                  SortTermOptions.Price +
-                  "'].value * doc['" +
-                  SortTermOptions.Orders +
-                  "'].value",
-                lang: 'painless'
-              }
-            }
-          }
         }
       }
     },
