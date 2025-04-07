@@ -5,6 +5,7 @@ import normalizeUrl from 'normalize-url'
 import { getAccessDetails, getAvailablePrice } from './accessDetailsAndPricing'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
+import axios from 'axios'
 
 export async function transformAssetToAssetSelection(
   datasetProviderEndpoint: string,
@@ -29,10 +30,15 @@ export async function transformAssetToAssetSelection(
           selected = true
         }
       })
-
+      const cancelTokenSource = axios.CancelToken.source()
       const accessDetails = await Promise.all(
         asset.credentialSubject?.services.map((service: Service) =>
-          getAccessDetails(asset.credentialSubject?.chainId, service)
+          getAccessDetails(
+            asset.credentialSubject?.chainId,
+            service,
+            accountId,
+            cancelTokenSource.token
+          )
         )
       )
       const price = getAvailablePrice(accessDetails[0])
