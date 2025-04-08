@@ -149,25 +149,32 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
+        freParams.maxBaseTokenAmount = (
+          Number(freParams.maxBaseTokenAmount) +
+          (Number(freParams.maxBaseTokenAmount) +
+            Number(orderPriceAndFees.opcFee))
+        ).toString()
         const tx: any = await approve(
           signer,
           config,
           accountId,
           accessDetails.baseToken.address,
           accessDetails.datatoken.address,
-          orderPriceAndFees.price,
+          (
+            Number(orderPriceAndFees.price) + Number(orderPriceAndFees.opcFee)
+          ).toString(),
           false
         )
-
         const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
         if (!txApprove) {
           return
         }
-        return await datatoken.buyFromFreAndOrder(
+        const buyTx = await datatoken.buyFromFreAndOrder(
           accessDetails.datatoken.address,
           orderParams,
           freParams
         )
+        return buyTx
       }
       break
     }

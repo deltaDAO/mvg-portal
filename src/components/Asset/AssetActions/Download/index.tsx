@@ -94,7 +94,7 @@ export default function Download({
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
 
-  const { verifierSessionId, setVerifierSessionId } = useSsiWallet()
+  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
@@ -212,7 +212,7 @@ export default function Download({
           service,
           accessDetails,
           accountId,
-          verifierSessionId,
+          lookupVerifierSessionId(asset.id, service.id),
           validOrderTx,
           dataParams
         )
@@ -253,10 +253,11 @@ export default function Download({
   async function handleFormSubmit(values: any) {
     try {
       if (appConfig.ssiEnabled) {
-        const result = await checkVerifierSessionId(verifierSessionId)
+        const result = await checkVerifierSessionId(
+          lookupVerifierSessionId(asset.id, service.id)
+        )
         if (!result.success) {
           toast.error('Invalid session')
-          setVerifierSessionId(undefined)
           return
         }
       }
@@ -268,7 +269,6 @@ export default function Download({
 
       await handleOrderOrDownload(dataServiceParams)
     } catch (error) {
-      setVerifierSessionId(undefined)
       toast.error(error.message)
       LoggerInstance.error(error)
     }
@@ -384,6 +384,15 @@ export default function Download({
               type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
             />
             <Row
+              price={orderPriceAndFees?.opcFee || '0'}
+              symbol={price.tokenSymbol}
+              type={`OPC FEE (${(
+                (parseFloat(orderPriceAndFees.opcFee) /
+                  parseFloat(orderPriceAndFees.price)) *
+                100
+              ).toFixed(1)}%)`}
+            />
+            <Row
               price={new Decimal(
                 new Decimal(
                   Number(orderPriceAndFees?.price) || price.value || 0
@@ -398,11 +407,13 @@ export default function Download({
                       .div(100)
                   )
                 )
+                .add(new Decimal(orderPriceAndFees?.opcFee || 0))
                 .toString()}
               symbol={price.tokenSymbol}
             />
           </div>
         )}
+
         <div style={{ textAlign: 'center' }}>
           {!isInPurgatory && <PurchaseButton isValid={isValid} />}
         </div>
@@ -413,14 +424,15 @@ export default function Download({
   return (
     <Formik
       initialValues={{
-        dataServiceParams: getDefaultValues(service.consumerParameters),
-        termsAndConditions: false,
-        acceptPublishingLicense: false
+        dataServiceParams: getDefaultValues(service.consumerParameters)
       }}
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={(values) => {
-        if (!verifierSessionId) {
+        if (
+          !lookupVerifierSessionId(asset.id, service.id) &&
+          appConfig.ssiEnabled
+        ) {
           return
         }
         handleFormSubmit(values)
@@ -442,7 +454,8 @@ export default function Download({
           {!isFullPriceLoading &&
             (appConfig.ssiEnabled ? (
               <>
-                {verifierSessionId && verifierSessionId.length > 0 ? (
+                {verifierSessionCache &&
+                lookupVerifierSessionId(asset.id, service.id) ? (
                   <>
                     <AssetActionBuy asset={asset} />
                     <Field
@@ -464,7 +477,10 @@ export default function Download({
                     />
                   </>
                 ) : (
-                  <AssetActionCheckCredentials asset={asset} />
+                  <AssetActionCheckCredentials
+                    asset={asset}
+                    service={service}
+                  />
                 )}
               </>
             ) : (

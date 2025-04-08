@@ -116,7 +116,7 @@ export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcas
 FilterTerm | undefined {
   return allowDynamicPricing === 'true'
     ? undefined
-    : getFilterTerm('price.type', 'pool')
+    : getFilterTerm('credentialSubject.price.type', 'pool')
 }
 
 export function generateBaseQuery(
@@ -200,12 +200,10 @@ export function transformQueryResult(
     totalResults: 0,
     aggregations: {}
   }
-  result.results =
-    queryResult.hits?.hits.map((hit: Asset) => (hit as any)._source) ||
-    queryResult
+  result.results = queryResult.results
 
   result.totalResults =
-    queryResult.hits?.total?.value || queryResult.length || 0
+    queryResult.totalResults || queryResult.results.length || 0
 
   result.totalPages = Math.ceil(result.totalResults / size)
   result.page = from ? from + 1 : 1
@@ -374,38 +372,17 @@ export async function getPublishedAssets(
         sum: {
           field: SortTermOptions.Orders
         }
-      },
-      totalRevenue: {
-        terms: {
-          field: SortTermOptions.TokenSymbol
-        },
-        aggs: {
-          totalValue: {
-            sum: {
-              script: {
-                source:
-                  "doc['" +
-                  SortTermOptions.Price +
-                  "'].value * doc['" +
-                  SortTermOptions.Orders +
-                  "'].value",
-                lang: 'painless'
-              }
-            }
-          }
-        }
       }
     },
     ignorePurgatory,
     ignoreState,
     esPaginationOptions: {
-      from: Number(page) - 1 || 0,
+      from: page || 0,
       size: 9
     }
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
-
   try {
     const result = await queryMetadata(query, cancelToken)
     return result
@@ -455,7 +432,7 @@ async function getTopPublishers(
       }
     },
     esPaginationOptions: {
-      from: (Number(page) - 1 || 0) * 9,
+      from: page || 0,
       size: 9
     }
   } as BaseQueryParams
@@ -519,10 +496,11 @@ export async function getUserSalesAndRevenue(
         undefined,
         page
       )
+      // TODO stats is not in ddo
       if (assets && assets.results) {
         assets.results.forEach((asset) => {
-          const orders = asset?.stats?.orders || 0
-          const price = asset?.stats?.price?.value || 0
+          const orders = asset?.credentialSubject?.stats?.orders || 0
+          const price = asset?.credentialSubject?.stats?.price?.value || 0
           totalOrders += orders
           totalRevenue += orders * price
         })
@@ -532,7 +510,7 @@ export async function getUserSalesAndRevenue(
       assets &&
       assets.results &&
       assets.results.length > 0 &&
-      page < assets.totalPages
+      page <= assets.totalPages
     )
 
     return { totalOrders, totalRevenue }
@@ -549,16 +527,11 @@ export async function getUserOrders(
 ): Promise<PagedAssets> {
   const filters: FilterTerm[] = []
   filters.push(getFilterTerm('consumer.keyword', accountId))
-  filters.push({
-    exists: {
-      field: 'datatokenAddress'
-    }
-  })
   const baseQueryparams = {
     filters,
     ignorePurgatory: true,
     esPaginationOptions: {
-      from: Number(page) - 1 || 0,
+      from: page || 0,
       size: 9
     }
   } as BaseQueryParams
@@ -592,7 +565,7 @@ export async function getDownloadAssets(
     ignorePurgatory: true,
     ignoreState,
     esPaginationOptions: {
-      from: Number(page) - 1 || 0,
+      from: page || 0,
       size: 9
     }
   } as BaseQueryParams
@@ -601,7 +574,9 @@ export async function getDownloadAssets(
     const result = await queryMetadata(query, cancelToken)
     const downloadedAssets: DownloadedAsset[] = result.results
       .map((asset) => {
-        const timestamp = new Date(asset.event.datetime).getTime()
+        const timestamp = new Date(
+          asset?.credentialSubject?.event.datetime
+        ).getTime()
         return {
           asset,
           networkId: asset?.credentialSubject?.chainId,

@@ -26,7 +26,8 @@ import appConfig, {
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
-  defaultDatatokenCap
+  defaultDatatokenCap,
+  oceanTokenAddress
 } from '../../../app.config.cjs'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
@@ -151,12 +152,33 @@ function generatePolicyArgument(
   return argument
 }
 
+function generatePolicyArgumentFromRule(
+  rules: PolicyRule[]
+): Record<string, string> {
+  const argument = {}
+  rules?.forEach((rule) => {
+    const updatedValue = rule.leftValue.replace(/\./g, '')
+    argument[updatedValue] = rule.rightValue
+  })
+  return argument
+}
+
 function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
   const rulesStrings = []
   rules?.forEach((rule) => {
-    rulesStrings.push(
-      `${PolicyRuleLeftValuePrefix}.${rule.leftValue} ${rule.operator} ${PolicyRuleRightValuePrefix}.${rule.rightValue}`
-    )
+    const left =
+      rule.operator === '==' || rule.operator === '!='
+        ? `lower(${PolicyRuleRightValuePrefix}.${rule.leftValue})`
+        : `${PolicyRuleRightValuePrefix}.${rule.leftValue}`
+
+    const updatedValue = rule.leftValue.replace(/\./g, '')
+    const right =
+      rule.operator === '==' || rule.operator === '!='
+        ? `lower(${PolicyRuleLeftValuePrefix}.${updatedValue})`
+        : `${PolicyRuleLeftValuePrefix}.${updatedValue}`
+
+    console.log('right:', right)
+    rulesStrings.push(`${left} ${rule.operator} ${right}`)
   })
 
   const result = String.raw`package data.${name}
@@ -214,7 +236,7 @@ function generateSsiPolicy(policy: PolicyType): any {
             rules: {
               rego: generateCustomPolicyScript(policy.name, policy.rules)
             },
-            argument: generatePolicyArgument(policy.arguments)
+            argument: generatePolicyArgumentFromRule(policy.rules)
           }
         }
         result = item
@@ -569,6 +591,15 @@ export async function transformPublishFormToDdo(
         address: '',
         state: 0,
         created: ''
+      },
+      stats: {
+        allocated: 0,
+        orders: 0,
+        price: {
+          value: values?.pricing.type === 'free' ? 0 : values.pricing.price,
+          tokenSymbol: values.pricing?.baseToken?.symbol || 'OCEAN',
+          tokenAddress: values.pricing?.baseToken?.address || oceanTokenAddress
+        }
       }
     },
     additionalDdos: values?.additionalDdos || []

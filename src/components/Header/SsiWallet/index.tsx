@@ -28,7 +28,7 @@ export function SsiWallet(): ReactElement {
     ssiWalletCache,
     cachedCredentials,
     setCachedCredentials,
-    setVerifierSessionId
+    clearVerifierSessionCache
   } = useSsiWallet()
 
   const [ssiWallets, setSsiWallets] = useState<SsiWalletDesc[]>([])
@@ -115,8 +115,6 @@ export function SsiWallet(): ReactElement {
       return
     }
 
-    setCachedCredentials(ssiWalletCache.readCredentialStorage())
-
     selectorDialog.current.showModal()
 
     fetchWallets()
@@ -139,8 +137,10 @@ export function SsiWallet(): ReactElement {
 
   function handleResetWalletCache() {
     ssiWalletCache.clearCredentials()
-    setCachedCredentials(ssiWalletCache.readCredentialStorage())
-    setVerifierSessionId(undefined)
+    setCachedCredentials(undefined)
+    clearVerifierSessionCache()
+
+    toast.info('SSI wallet cache cleared')
   }
 
   return (
@@ -201,7 +201,7 @@ export function SsiWallet(): ReactElement {
                 className={`${styles.width100p} ${styles.resetButton} ${styles.marginBottom1}`}
                 onClick={handleResetWalletCache}
               >
-                Reset Credential Cache
+                Reset Wallet Cache
               </Button>
 
               {cachedCredentials?.length > 0 ? (
@@ -246,6 +246,7 @@ export function SsiWallet(): ReactElement {
               className={`${styles.ssiPanel} ${styles.disconnected}`}
               onClick={handleReconnection}
             >
+              {' '}
               <span className={styles.text}>
                 {isConnected && signer ? 'Connect SSI' : 'SSI Wallet'}
               </span>

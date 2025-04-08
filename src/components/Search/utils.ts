@@ -126,7 +126,7 @@ export function getSearchQuery(
     chainIds,
     nestedQuery,
     esPaginationOptions: {
-      from: (Number(page) - 1 || 0) * (Number(offset) || 21),
+      from: page || 0,
       size: Number(offset) || 21
     },
     sortOptions: { sortBy: sort, sortDirection },

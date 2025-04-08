@@ -7,7 +7,7 @@ module.exports = {
   // return appConfig.metadataCacheUri
   metadataCacheUri:
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
-    'https://v4.aquarius.oceanprotocol.com',
+    'https://ocean-node-vm3.oceanenterprise.io',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
@@ -109,5 +109,5 @@ module.exports = {
 
   oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
 
-  opaServer: process.env.NEXT_PUBLIC_PS_OPA_SERVER
+  opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL
 }

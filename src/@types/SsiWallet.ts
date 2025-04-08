@@ -52,8 +52,8 @@ export class SsiWalletCache {
   credentialStorage = 'cachedCredentials'
   credentialSelectionStorage = 'credentialSelectionStorage'
 
-  public readCredentialStorage(): SsiVerifiableCredential[] {
-    let credentialStorage = []
+  public readCredentialStorage(): Record<string, SsiVerifiableCredential[]> {
+    let credentialStorage: Record<string, SsiVerifiableCredential[]> = {}
     try {
       const cachedCredentialString = localStorage.getItem(
         this.credentialStorage
@@ -62,18 +62,20 @@ export class SsiWalletCache {
         credentialStorage = JSON.parse(cachedCredentialString)
       }
     } catch (error) {
-      credentialStorage = []
+      credentialStorage = {}
     }
     return credentialStorage
   }
 
-  writeCredentialStorage(credentialStorage: SsiVerifiableCredential[]) {
+  writeCredentialStorage(
+    credentialStorage: Record<string, SsiVerifiableCredential[]>
+  ) {
     const credentialString = JSON.stringify(credentialStorage)
     localStorage.setItem(this.credentialStorage, credentialString)
   }
 
-  readCredentialSelectionStorage(): string[] {
-    let credentialSelectionStorage = []
+  readCredentialSelectionStorage(): Record<string, string[]> {
+    let credentialSelectionStorage: Record<string, string[]> = {}
     try {
       const cachedCredentialSelectionString = localStorage.getItem(
         this.credentialSelectionStorage
@@ -82,12 +84,14 @@ export class SsiWalletCache {
         credentialSelectionStorage = JSON.parse(cachedCredentialSelectionString)
       }
     } catch (error) {
-      credentialSelectionStorage = []
+      credentialSelectionStorage = {}
     }
     return credentialSelectionStorage
   }
 
-  writeCredentialSelectionStorage(credentialSelectionStorage: string[]) {
+  writeCredentialSelectionStorage(
+    credentialSelectionStorage: Record<string, string[]>
+  ) {
     const credentialSelectionString = JSON.stringify(credentialSelectionStorage)
     localStorage.setItem(
       this.credentialSelectionStorage,
@@ -95,39 +99,44 @@ export class SsiWalletCache {
     )
   }
 
-  public cacheCredentials(credentials: SsiVerifiableCredential[]) {
-    let credentialStorage = this.readCredentialStorage()
-    credentialStorage = [...credentialStorage, ...credentials]
-    credentialStorage = this.removeDups(credentialStorage)
+  public cacheCredentials(did: string, credentials: SsiVerifiableCredential[]) {
+    const credentialStorage = this.readCredentialStorage()
+    const oldList = credentialStorage[did] || []
+    credentialStorage[did] = [...oldList, ...credentials]
+    credentialStorage[did] = this.removeDups(credentialStorage[did])
     this.writeCredentialStorage(credentialStorage)
   }
 
   public lookupCredentials(
+    did: string,
     credentialTypes: string[]
   ): SsiVerifiableCredential[] {
     const credentialStorage = this.readCredentialStorage()
-    return credentialStorage.filter((credential) => {
-      const credentialType = getSsiVerifiableCredentialType(credential)
-      return credentialTypes.includes(credentialType)
-    })
+    return (
+      credentialStorage[did]?.filter((credential) => {
+        const credentialType = getSsiVerifiableCredentialType(credential)
+        return credentialTypes.includes(credentialType)
+      }) || []
+    )
   }
 
   public clearCredentials() {
     localStorage.removeItem(this.credentialStorage)
   }
 
-  public cacheCredentialSelection(credentialSelection: string[]) {
-    let credentialSelectionStorage = this.readCredentialSelectionStorage()
-    credentialSelectionStorage = [
-      ...credentialSelectionStorage,
-      ...credentialSelection
-    ]
-    credentialSelectionStorage = this.removeDups(credentialSelectionStorage)
+  public cacheCredentialSelection(did: string, credentialSelection: string[]) {
+    const credentialSelectionStorage = this.readCredentialSelectionStorage()
+    const oldList = credentialSelectionStorage[did] || []
+    credentialSelectionStorage[did] = [...oldList, ...credentialSelection]
+    credentialSelectionStorage[did] = this.removeDups(
+      credentialSelectionStorage[did]
+    )
     this.writeCredentialSelectionStorage(credentialSelectionStorage)
   }
 
-  public lookupCredentialSelection(): string[] {
-    return this.readCredentialSelectionStorage()
+  public lookupCredentialSelection(did: string): string[] {
+    const selections = this.readCredentialSelectionStorage()
+    return selections[did] || []
   }
 
   private removeDups<T>(array: T[]): T[] {

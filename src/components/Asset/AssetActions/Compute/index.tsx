@@ -141,7 +141,7 @@ export default function Compute({
   const [retry, setRetry] = useState<boolean>(false)
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
-  const { verifierSessionId, setVerifierSessionId } = useSsiWallet()
+  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
 
@@ -448,7 +448,7 @@ export default function Compute({
         accountId,
         initializedProviderResponse.algorithm,
         hasAlgoAssetDatatoken,
-        verifierSessionId,
+        lookupVerifierSessionId(asset.id, service.id),
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
@@ -470,7 +470,7 @@ export default function Compute({
         accountId,
         initializedProviderResponse.datasets[0],
         hasDatatoken,
-        verifierSessionId,
+        lookupVerifierSessionId(asset.id, service.id),
         selectedComputeEnv.consumerAddress
       )
       if (!datasetOrderTx) throw new Error('Failed to order dataset.')
@@ -518,10 +518,11 @@ export default function Compute({
   const onSubmit = async (values: ComputeDatasetForm) => {
     try {
       if (appConfig.ssiEnabled) {
-        const result = await checkVerifierSessionId(verifierSessionId)
+        const result = await checkVerifierSessionId(
+          lookupVerifierSessionId(asset.id, service.id)
+        )
         if (!result.success) {
           toast.error('Invalid session')
-          setVerifierSessionId(undefined)
           return
         }
       }
@@ -553,7 +554,6 @@ export default function Compute({
 
       await startJob(userCustomParameters)
     } catch (error) {
-      setVerifierSessionId(undefined)
       toast.error(error.message)
       LoggerInstance.error(error)
     }
@@ -622,7 +622,10 @@ export default function Compute({
           )}
           enableReinitialize
           onSubmit={(values) => {
-            if (!verifierSessionId) {
+            if (
+              !lookupVerifierSessionId(asset.id, service.id) &&
+              appConfig.ssiEnabled
+            ) {
               return
             }
             onSubmit(values)
@@ -630,7 +633,8 @@ export default function Compute({
         >
           {appConfig.ssiEnabled ? (
             <>
-              {verifierSessionId && verifierSessionId?.length > 0 ? (
+              {verifierSessionCache &&
+              lookupVerifierSessionId(asset.id, service.id) ? (
                 <FormStartComputeDataset
                   asset={asset}
                   service={service}
@@ -684,7 +688,7 @@ export default function Compute({
                   retry={retry}
                 />
               ) : (
-                <AssetActionCheckCredentials asset={asset} />
+                <AssetActionCheckCredentials asset={asset} service={service} />
               )}
             </>
           ) : (

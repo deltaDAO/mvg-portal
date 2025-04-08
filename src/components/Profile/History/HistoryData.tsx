@@ -25,17 +25,19 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   },
   {
     name: 'Network',
-    selector: (asset) => <NetworkName networkId={asset.chainId} />
+    selector: (asset) => (
+      <NetworkName networkId={asset.credentialSubject.chainId} />
+    )
   },
   {
     name: 'Datatoken',
-    selector: (asset) => asset.datatokens[0].symbol
+    selector: (asset) => asset.credentialSubject.datatokens[0].symbol
   },
   {
     name: 'Time',
     selector: (asset) => {
       const unixTime = Math.floor(
-        new Date(asset.metadata.created).getTime()
+        new Date(asset.credentialSubject.metadata.created).getTime()
       ).toString()
       return <Time date={unixTime} relative isUnix />
     }
@@ -127,8 +129,8 @@ export default function HistoryData({
         const updatedResults = await Promise.all(
           result.results.map(async (item) => {
             const accessDetails = await getAccessDetails(
-              item.chainId,
-              item.services[0]
+              item.credentialSubject.chainId,
+              item.credentialSubject.services[0]
             )
 
             return {
