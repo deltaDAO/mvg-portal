@@ -54,8 +54,14 @@
 }
 
 .text {
+  font-family: var(--font-family);
+  font-weight: 400;
   display: inline-block;
   position: relative;
+  /* font-size: 8px; */
+  line-height: 100%;
+  text-align: center;
+  color: rgba(48, 48, 49, 0.8);
 }
 
 .symbol {

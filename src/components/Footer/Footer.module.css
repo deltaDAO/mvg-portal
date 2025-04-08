@@ -1,6 +1,6 @@
 .footer {
-  padding: var(--spacer);
-  padding-bottom: calc(var(--spacer) / 2);
+  /* padding: var(--spacer); */
+  /* padding-bottom: calc(var(--spacer) / 2); */
   text-align: center;
   color: #fff;
   background-color: #2b2f3a;
@@ -15,8 +15,8 @@
   gap: var(--spacer);
   margin: auto;
   margin-bottom: var(--spacer);
-  width: 100%;
-  max-width: 1200px;
+  width: 1160px;
+  height: 136px;
 }
 
 .logoSection {
@@ -47,5 +47,26 @@
   .logoSection {
     align-items: flex-start;
     text-align: left;
+  }
+}
+@media screen and (min-width: 250px) and (max-width: 900px) {
+  .container {
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: calc(var(--spacer) / 2);
+  }
+}
+
+@media screen and (min-width: 901px) and (max-width: 1250px) {
+  .container {
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: calc(var(--spacer) / 2);
   }
 }

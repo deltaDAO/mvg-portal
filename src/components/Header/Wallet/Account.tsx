@@ -1,7 +1,6 @@
 import { forwardRef, FormEvent, useEffect } from 'react'
 import Caret from '@images/caret.svg'
 import { accountTruncate } from '@utils/wallet'
-// import Loader from '@shared/atoms/Loader'
 import styles from './Account.module.css'
 import Avatar from '@shared/atoms/Avatar'
 import { useAccount, useSigner } from 'wagmi'
@@ -30,9 +29,7 @@ const Account = forwardRef((props, ref: any) => {
   }, [isConnected, setSessionToken, signer])
 
   async function handleActivation(e: FormEvent<HTMLButtonElement>) {
-    // prevent accidentally submitting a form the button might be in
     e.preventDefault()
-
     setOpen(true)
   }
 
@@ -53,11 +50,9 @@ const Account = forwardRef((props, ref: any) => {
     <button
       className={`${styles.button} ${styles.initial}`}
       onClick={(e) => handleActivation(e)}
-      // Need the `ref` here although we do not want
-      // the Tippy to show in this state.
       ref={ref}
     >
-      Connect Wallet
+      ConnectWallet
     </button>
   )
 })

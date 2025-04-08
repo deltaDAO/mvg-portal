@@ -1,20 +1,400 @@
-.section {
-  margin-top: calc(var(--spacer) * 2);
+.hero {
+  width: 100%;
+  height: 100%;
+  min-height: 861px;
+  background: linear-gradient(
+    135deg,
+    #1f2c50 0%,
+    rgba(8, 52, 78, 0.8) 27.47%,
+    rgba(10, 75, 112, 0.7) 43.49%,
+    rgba(6, 68, 103, 0.8) 55.43%,
+    #1e2e52 100%
+  );
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
 }
 
-.section h3 {
-  font-size: var(--font-size-large);
-  color: var(--color-secondary);
+.contentContainer {
+  width: 1160px;
+  height: 770px;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
-.section h3 span {
-  font-size: var(--font-size-small);
-  color: var(--color-secondary);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-base);
+.textContent {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  width: 1135px;
+  height: 294px;
 }
 
-.section [class*='button'],
-.allAssetsButton {
-  margin-top: var(--spacer);
+.title {
+  line-height: 1.15;
+  font-weight: 700;
+  font-size: 53px;
+  color: #fdd655;
+}
+
+.subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 90%;
+}
+
+.subtitle p {
+  font-family: var(--font-family);
+  color: white;
+  font-size: 24px;
+  line-height: 1.3;
+  margin: 0 auto;
+  font-weight: 400;
+}
+
+.ctaContainer {
+  width: 945px;
+  height: 92px;
+  display: flex;
+  justify-content: left;
+  gap: 60px;
+  align-items: flex-start;
+  margin: 3.5rem 0;
+}
+
+.ctaBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 179px;
+  height: 92px;
+}
+
+.ctaTitle {
+  color: #fdd655;
+  font-size: 24px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.ctaButton {
+  background: white;
+  border-radius: 50px;
+  border: none;
+  box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s;
+  border-radius: 20px;
+  padding: 12px 30px;
+  width: 179px;
+  height: 50px;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+}
+
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.buttonText {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 92%;
+  text-align: center;
+  color: #0a4b70;
+}
+
+.divider {
+  width: 1px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.15);
+  margin-top: 0px;
+}
+
+.searchBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  width: 565px;
+  height: 92px;
+}
+
+.searchContainer {
+  width: 100%;
+  height: 55px;
+  background: white;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  color: rgba(30, 30, 30, 0.8);
+  padding: 0 20px;
+  background: transparent;
+  border-radius: 20px;
+  width: 565px;
+  height: 50px;
+}
+
+.searchInput::placeholder {
+  color: rgba(30, 30, 30, 0.5);
+}
+
+.searchButton {
+  width: 80px;
+  height: 100%;
+  background: #fdd655;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.2s;
+  position: relative;
+}
+
+.searchButton:hover {
+  background: #f3ce4a;
+}
+
+.searchIcon {
+  width: 24px;
+  height: 24px;
+  fill: #072d3b;
+  transition: transform 0.2s ease;
+}
+
+.searchButton:hover .searchIcon {
+  transform: scale(1.1);
+}
+
+.ecosystem {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 1135px;
+  height: 157px;
+}
+
+.ecosystemDivider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.ecosystemTitle {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.logos {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+}
+
+.logoItem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoImage {
+  height: 105px;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  opacity: 0.9;
+  transition: opacity 0.3s ease;
+}
+
+.logoImage:hover {
+  opacity: 1;
+}
+
+.uploadIcon {
+  width: 24px;
+  height: 24px;
+}
+
+/* ================== RESPONSIVE ADJUSTMENTS ================== */
+/* Media Queries */
+/* Small phones (portrait) */
+@media (max-width: 480px) {
+  .hero {
+    min-height: auto;
+    padding: 60px 0;
+  }
+
+  .contentContainer {
+    gap: 30px;
+  }
+
+  .title {
+    font-size: 1.8rem;
+  }
+
+  .subtitle p {
+    font-size: 1rem;
+  }
+
+  .ctaContainer {
+    gap: 30px;
+  }
+
+  .ctaButton {
+    max-width: 100%;
+  }
+
+  .logoImage {
+    max-height: 40px;
+    max-width: 80px;
+  }
+}
+
+/* Small phones (landscape) and tablets (portrait) */
+@media (min-width: 481px) and (max-width: 767px) {
+  .title {
+    font-size: 2rem;
+  }
+
+  .subtitle p {
+    font-size: 1.1rem;
+  }
+
+  .ctaContainer {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .divider {
+    width: 1px;
+    height: 80px;
+    margin: 0 20px;
+  }
+}
+
+/* Tablets (landscape) and small laptops */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .title {
+    font-size: 2.2rem;
+  }
+
+  .ctaContainer {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .divider {
+    width: 1px;
+    height: 100px;
+    margin: 0 30px;
+  }
+
+  .searchBlock {
+    max-width: 400px;
+  }
+}
+
+/* Standard desktop screens */
+@media (min-width: 1025px) {
+  .ctaContainer {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .divider {
+    width: 1px;
+    height: 120px;
+    margin: 0 40px;
+  }
+
+  .searchBlock {
+    max-width: 565px;
+  }
+}
+
+/* Large desktop screens */
+@media (min-width: 1441px) and (max-width: 1920px) {
+  .contentContainer {
+    max-width: 1300px;
+  }
+
+  .title {
+    font-size: 3rem;
+  }
+
+  .subtitle p {
+    font-size: 1.4rem;
+  }
+
+  .ctaTitle {
+    font-size: 1.4rem;
+  }
+
+  .buttonText {
+    font-size: 1.2rem;
+  }
+}
+
+/* 4K and larger displays */
+@media (min-width: 1921px) {
+  .contentContainer {
+    max-width: 1600px;
+    gap: 60px;
+  }
+
+  .title {
+    font-size: 3.5rem;
+  }
+
+  .subtitle p {
+    font-size: 1.6rem;
+  }
+
+  .ctaContainer {
+    margin: 4rem 0;
+  }
+
+  .ctaTitle {
+    font-size: 1.6rem;
+  }
+
+  .buttonText {
+    font-size: 1.3rem;
+  }
+
+  .logoImage {
+    max-height: 100px;
+    max-width: 180px;
+  }
 }

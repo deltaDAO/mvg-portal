@@ -1,22 +1,17 @@
+/* Updated to remove all boxes while keeping functionality */
 .button {
   font-family: var(--font-family-base);
-  font-size: var(--font-size-small);
+  font-size: 20px;
   text-transform: uppercase;
-  border: var(--menu-border-size) solid var(--menu-border-color);
-  border-radius: var(--menu-border-radius);
-  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 3);
+  padding: 0;
   white-space: nowrap;
-  background: var(--background-content);
   margin: 0;
-  transition: border 0.2s ease-out;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  height: 100%;
+  height: auto;
   display: flex;
   align-items: center;
-}
-
-.button,
-.address {
   color: var(--menu-font-color);
 }
 
@@ -24,10 +19,20 @@
 .button:focus {
   transform: none;
   outline: 0;
+  /* text-decoration: underline; */
 }
 
 .button.initial {
-  color: var(--menu-font-color);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 137%;
+  text-align: center;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .button.initial span {
@@ -35,11 +40,12 @@
 }
 
 .address {
+  font-family: var(--font-family);
   display: none;
   text-transform: none;
-  border-right: var(--menu-border-size) solid var(--menu-border-color);
   padding-right: calc(var(--spacer) / 3);
   padding-left: calc(var(--spacer) / 8);
+  color: #fff;
 }
 
 .button svg {
@@ -67,7 +73,7 @@ svg.caret {
   display: none;
 }
 
-@media screen and (min-width: 25rem) {
+@media screen and (min-width: 15rem) and (max-width: 30rem) {
   .button.initial span {
     display: inline;
   }
@@ -75,6 +81,10 @@ svg.caret {
   svg.caret {
     display: inline-block;
     fill: var(--menu-icon-fill-color);
+  }
+  .button.initial {
+    font-size: 12px;
+    max-width: 80px;
   }
 }
 

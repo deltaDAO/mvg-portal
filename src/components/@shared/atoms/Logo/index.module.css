@@ -6,7 +6,7 @@
 }
 
 .logo path {
-  fill: var(--menu-logo-color);
+  fill: white;
 }
 
 a > .logo:hover path {

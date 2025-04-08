@@ -13,7 +13,7 @@ export default function Footer(): ReactElement {
 
   return (
     <footer className={styles.footer}>
-      <Container className={styles.container}>
+      <div className={styles.container}>
         <div className={styles.logoSection}>
           <Image
             src={logo}
@@ -24,7 +24,7 @@ export default function Footer(): ReactElement {
           <p className={styles.copyright}>{copyright}</p>
         </div>
         <Links />
-      </Container>
+      </div>
     </footer>
   )
 }

@@ -57,7 +57,7 @@ export default function Menu(): ReactElement {
         <Logo />
       </Link>
 
-      <ul className={styles.navigation}>
+      {/* <ul className={styles.navigation}>
         {siteContent?.menu.map((item: MenuItem) => (
           <li key={item.name}>
             {item?.subItems ? (
@@ -67,13 +67,13 @@ export default function Menu(): ReactElement {
             )}
           </li>
         ))}
-      </ul>
+      </ul> */}
 
       <div className={styles.actions}>
-        <SearchButton />
+        {/* <SearchButton /> */}
         {appConfig.chainIdsSupported.length > 1 && <Networks />}
-        <Wallet />
         <UserPreferences />
+        <Wallet />
         <SsiWallet />
       </div>
     </nav>

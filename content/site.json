@@ -1,6 +1,7 @@
 {
   "siteTitle": "Ocean Protocol Enterprise",
-  "siteTagline": "The enterprise data ecosystem",
+  "siteTagline": "Publish, find, compare, manage and monetize proprietary data & AI products in a secure,",
+  "taglineContinuation": "Continuted",
   "siteUrl": "https://enterprise.oceanprotocol.com",
   "siteImage": "/share.png",
   "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com).",
@@ -23,6 +24,7 @@
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in beta phase."
   },
+  "siteDescription": "A decentralized data marketplace powered by Ocean Protocol.",
   "footer": {
     "subtitle": "The enterprise data market",
     "copyright": "© Ocean Enterprise 2025",
