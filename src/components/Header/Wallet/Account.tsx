@@ -26,7 +26,7 @@ const Account = forwardRef((props, ref: any) => {
         })
         .catch((error) => LoggerInstance.error(error))
     }
-  }, [isConnected, setSessionToken, signer])
+  }, [sessionToken, isConnected, setSessionToken, signer])
 
   async function handleActivation(e: FormEvent<HTMLButtonElement>) {
     e.preventDefault()
@@ -52,7 +52,7 @@ const Account = forwardRef((props, ref: any) => {
       onClick={(e) => handleActivation(e)}
       ref={ref}
     >
-     ConnectWallet
+      ConnectWallet
     </button>
   )
 })
