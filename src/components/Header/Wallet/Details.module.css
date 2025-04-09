@@ -201,7 +201,6 @@
 @media (min-width: 2560px) {
   .details {
     padding: 3rem 2.5rem;
-    min-width: 28rem;
     font-size: 1.25rem;
   }
 

@@ -371,6 +371,7 @@
   .contentContainer {
     max-width: 1600px;
     gap: 60px;
+    height: 790px;
   }
 
   .title {
