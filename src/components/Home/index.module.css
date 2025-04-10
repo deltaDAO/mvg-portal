@@ -59,7 +59,7 @@
 }
 
 .ctaContainer {
-  width: 945px;
+  width: 1090px;
   height: 92px;
   display: flex;
   justify-content: left;
@@ -130,7 +130,7 @@
   flex-direction: column;
   gap: 16px;
   flex: 1;
-  width: 565px;
+  width: 240px;
   height: 92px;
 }
 
@@ -250,104 +250,191 @@
 /* Media Queries */
 /* Small phones (portrait) */
 @media (max-width: 480px) {
-  .hero {
-    min-height: auto;
-    padding: 60px 0;
+  .contentContainer {
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+    gap: 40px;
+    text-align: center;
   }
 
-  .contentContainer {
-    gap: 30px;
+  .textContent {
+    width: 100%;
+    height: auto;
+    align-items: center;
+    text-align: center;
+    margin-top: 3rem;
   }
 
   .title {
-    font-size: 1.8rem;
+    font-size: 32px;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .subtitle {
+    max-width: 100%;
+    align-items: center;
+    gap: 12px;
   }
 
   .subtitle p {
-    font-size: 1rem;
-  }
-
-  .ctaContainer {
-    gap: 30px;
-  }
-
-  .ctaButton {
-    max-width: 100%;
+    font-size: 18px;
+    line-height: 1.5;
+    margin: 0 auto;
+    text-align: center;
   }
 
   .logoImage {
     max-height: 40px;
     max-width: 80px;
   }
-}
+  .ctaContainer {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    gap: 24px;
+    padding: 1.5rem 1rem;
+  }
 
-/* Small phones (landscape) and tablets (portrait) */
-@media (min-width: 481px) and (max-width: 767px) {
+  .ctaBlock {
+    width: 60%;
+    max-width: 95%;
+    text-align: center;
+    height: auto;
+  }
+
+  .searchBlock {
+    width: 100%;
+    max-width: 95%;
+    text-align: center;
+    height: auto;
+  }
+
+  .ctaButton {
+    width: 100%;
+    max-width: 100%;
+    font-size: 18px;
+    padding: 12px 20px;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .searchContainer {
+    width: 100%;
+  }
+
+  .searchInput {
+    width: 100%;
+  }
+
+  .searchButton {
+    width: 22%;
+  }
+}
+@media (min-width: 481px) and (max-width: 1024px) {
+  .contentContainer {
+    width: 100%;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    padding: 3rem 2rem;
+    gap: 50px;
+    text-align: center;
+  }
+
+  .textContent {
+    width: 100%;
+    height: auto;
+    align-items: center;
+    text-align: center;
+    margin-top: 2.5rem;
+  }
+
   .title {
-    font-size: 2rem;
+    font-size: 40px;
+    line-height: 1.25;
+    text-align: center;
+  }
+
+  .subtitle {
+    max-width: 90%;
+    align-items: center;
+    gap: 14px;
   }
 
   .subtitle p {
-    font-size: 1.1rem;
+    font-size: 20px;
+    line-height: 1.5;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .logoImage {
+    max-height: 60px;
+    max-width: 120px;
   }
 
   .ctaContainer {
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    gap: 32px;
+    padding: 2rem 2rem;
   }
 
-  .divider {
-    width: 1px;
-    height: 80px;
-    margin: 0 20px;
-  }
-}
-
-/* Tablets (landscape) and small laptops */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .title {
-    font-size: 2.2rem;
-  }
-
-  .ctaContainer {
-    flex-direction: row;
+  .ctaBlock {
+    width: 70%;
+    max-width: 100%;
+    text-align: center;
+    height: auto;
     align-items: center;
   }
 
-  .divider {
-    width: 1px;
-    height: 100px;
-    margin: 0 30px;
-  }
-
   .searchBlock {
-    max-width: 400px;
+    width: 100%;
+    max-width: 90%;
+    text-align: center;
+    height: auto;
   }
-}
 
-/* Standard desktop screens */
-@media (min-width: 1025px) {
-  .ctaContainer {
+  .ctaButton {
+    width: 100%;
+    max-width: 300px;
+    font-size: 18px;
+    padding: 14px 24px;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .searchContainer {
+    width: 100%;
+    display: flex;
     flex-direction: row;
-    align-items: center;
-    gap: 50px;
-    width: 1120px;
+    gap: 12px;
   }
 
-  .divider {
-    width: 1px;
-    height: 120px;
-    margin: 0 40px;
+  .searchInput {
+    width: 100%;
   }
 
-  .searchBlock {
-    width: 400px;
-    max-width: 565px;
+  .searchButton {
+    width: 120px;
   }
 }
 
 /* Large desktop screens */
-@media screen and (min-width: 1450px) and (max-width: 2549px) {
+@media screen and (min-width: 1550px) and (max-width: 2549px) {
   .contentContainer {
     width: 1500px;
   }
