@@ -153,6 +153,12 @@ export default function Download({
   ])
 
   useEffect(() => {
+    if (isOwned) {
+      setIsFullPriceLoading(false)
+    }
+  }, [isOwned])
+
+  useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
   }, [dtBalance])
 
