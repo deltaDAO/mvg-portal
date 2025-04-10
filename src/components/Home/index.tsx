@@ -60,7 +60,7 @@ function HeroSection(): ReactElement {
         </div>
 
         <div className={styles.ecosystem}>
-          <div className={styles.ecosystemDivider}></div>
+          {/* <div className={styles.ecosystemDivider}></div>
           <p className={styles.ecosystemTitle}>
             DECENTRALIZED ECOSYSTEM POWERED BY
           </p>
@@ -80,7 +80,7 @@ function HeroSection(): ReactElement {
             <div className={styles.logoItem}>
               <EuproLogo className={styles.logoImage} />
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
