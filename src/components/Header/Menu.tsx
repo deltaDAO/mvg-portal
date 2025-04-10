@@ -53,11 +53,12 @@ export default function Menu(): ReactElement {
 
   return (
     <nav className={styles.menu}>
-      <Link href="/" className={styles.logo}>
-        <Logo />
-      </Link>
+      <div className={styles.container}>
+        <Link href="/" className={styles.logo}>
+          <Logo />
+        </Link>
 
-      {/* <ul className={styles.navigation}>
+        {/* <ul className={styles.navigation}>
         {siteContent?.menu.map((item: MenuItem) => (
           <li key={item.name}>
             {item?.subItems ? (
@@ -69,12 +70,13 @@ export default function Menu(): ReactElement {
         ))}
       </ul> */}
 
-      <div className={styles.actions}>
-        {/* <SearchButton /> */}
-        {appConfig.chainIdsSupported.length > 1 && <Networks />}
-        <UserPreferences />
-        <Wallet />
-        <SsiWallet />
+        <div className={styles.actions}>
+          {/* <SearchButton /> */}
+          {appConfig.chainIdsSupported.length > 1 && <Networks />}
+          <UserPreferences />
+          <Wallet />
+          <SsiWallet />
+        </div>
       </div>
     </nav>
   )

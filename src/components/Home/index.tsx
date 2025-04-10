@@ -103,6 +103,10 @@ function HeroSection({
     event.preventDefault()
     router.push('/publish/1')
   }
+  const handleCatalogClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    router.push('/search?sort=credentialSubject.nft.created&sortOrder=desc')
+  }
 
   return (
     <section className={styles.hero}>
@@ -143,11 +147,11 @@ function HeroSection({
                   ref={searchBarRef}
                   type="search"
                   name="search"
-                  placeholder={placeholder || 'Search...'}
+                  placeholder={placeholder || 'Search'}
                   value={value}
                   onChange={handleChange}
                   required
-                  size="small"
+                  size="large"
                   className={styles.searchInput}
                   onKeyPress={handleKeyPress}
                 />
@@ -159,11 +163,21 @@ function HeroSection({
                 </button>
               </div>
             </form>
+            <div className={styles.divider}></div>
+
+            <div className={styles.ctaBlock}>
+              <h3 className={styles.ctaTitle}>Go to Catalog</h3>
+              <button className={styles.ctaButton} onClick={handleCatalogClick}>
+                <div className={styles.buttonContent}>
+                  <span className={styles.buttonText}>Catalog</span>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
 
-        <div className={styles.ecosystem}>
-          {/* <div className={styles.ecosystemDivider}></div>
+        {/* <div className={styles.ecosystem}>
+          <div className={styles.ecosystemDivider}></div>
           <p className={styles.ecosystemTitle}>
             DECENTRALIZED ECOSYSTEM POWERED BY
           </p>
@@ -183,8 +197,8 @@ function HeroSection({
             <div className={styles.logoItem}>
               <EuproLogo className={styles.logoImage} />
             </div>
-          </div> */}
-        </div>
+          </div>
+        </div> */}
       </div>
     </section>
   )

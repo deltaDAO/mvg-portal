@@ -4,7 +4,8 @@ import Links from './Links'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import Container from '@components/@shared/atoms/Container'
 import Image from 'next/image'
-import logo from '../../../public/images/ecosystem/ocean_enterprise_logo.png'
+// import logo from '../../../public/images/ecosystem/ocean_enterprise_logo.png'
+import Logo from '@images/logo.svg'
 
 export default function Footer(): ReactElement {
   const { siteContent } = useMarketMetadata()
@@ -15,12 +16,7 @@ export default function Footer(): ReactElement {
     <footer className={styles.footer}>
       <div className={styles.container}>
         <div className={styles.logoSection}>
-          <Image
-            src={logo}
-            alt="Ocean Enterprise Logo"
-            width={120}
-            height={40}
-          />
+          <Logo className={styles.logo} />
           <p className={styles.copyright}>{copyright}</p>
         </div>
         <Links />
