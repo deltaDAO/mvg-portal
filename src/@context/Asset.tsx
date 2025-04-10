@@ -134,7 +134,12 @@ function AssetProvider({
 
         const accessDetails = await Promise.all(
           asset.credentialSubject.services.map((service: Service) =>
-            getAccessDetails(asset.credentialSubject.chainId, service)
+            getAccessDetails(
+              asset.credentialSubject.chainId,
+              service,
+              accountId,
+              token
+            )
           )
         )
         setAsset((prevState) => ({
@@ -167,7 +172,12 @@ function AssetProvider({
 
     const accessDetails: AccessDetails[] = await Promise.all(
       asset.credentialSubject?.services?.map((service: Service) =>
-        getAccessDetails(asset.credentialSubject?.chainId, service)
+        getAccessDetails(
+          asset.credentialSubject?.chainId,
+          service,
+          accountId,
+          newCancelToken()
+        )
       )
     )
 

@@ -16,6 +16,8 @@ import {
   getAvailablePrice,
   getOrderPriceAndFees
 } from '@utils/accessDetailsAndPricing'
+import { useAccount } from 'wagmi'
+import { useCancelToken } from '@hooks/useCancelToken'
 
 export declare type AssetTeaserProps = {
   asset: AssetExtended
@@ -31,6 +33,7 @@ export default function AssetTeaser({
 }: AssetTeaserProps): ReactElement {
   const { name, type, description } = asset.credentialSubject.metadata
   const { datatokens } = asset.credentialSubject
+  const { address: accountId } = useAccount()
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
   const owner = asset.credentialSubject.nft?.owner
@@ -39,7 +42,7 @@ export default function AssetTeaser({
   const [orderPriceAndFees, setOrderPriceAndFees] = useState(null)
   const [isUnsupportedPricing, setIsUnsupportedPricing] = useState(false)
   const [price, setPrice] = useState(null)
-
+  const newCancelToken = useCancelToken()
   const { locale } = useUserPreferences()
 
   useEffect(() => {
@@ -47,7 +50,9 @@ export default function AssetTeaser({
       if (asset.credentialSubject?.services?.length > 0) {
         const details = await getAccessDetails(
           asset.credentialSubject?.chainId,
-          asset.credentialSubject?.services[0]
+          asset.credentialSubject?.services[0],
+          accountId,
+          newCancelToken()
         )
         setAccessDetails(details)
       }

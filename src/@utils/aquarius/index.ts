@@ -572,20 +572,23 @@ export async function getDownloadAssets(
   const query = generateBaseQuery(baseQueryparams)
   try {
     const result = await queryMetadata(query, cancelToken)
-    const downloadedAssets: DownloadedAsset[] = result.results
-      .map((asset) => {
-        const timestamp = new Date(
-          asset?.credentialSubject?.event.datetime
-        ).getTime()
-        return {
-          asset,
-          networkId: asset?.credentialSubject?.chainId,
-          dtSymbol: asset?.credentialSubject?.datatokens[0]?.symbol,
-          timestamp
-        }
-      })
-      .sort((a, b) => b.timestamp - a.timestamp)
-    return { downloadedAssets, totalResults: result.totalResults }
+    let downloadedAssets: DownloadedAsset[] = []
+    if (result) {
+      downloadedAssets = result.results
+        .map((asset) => {
+          const timestamp = new Date(
+            asset?.credentialSubject?.event.datetime
+          ).getTime()
+          return {
+            asset,
+            networkId: asset?.credentialSubject?.chainId,
+            dtSymbol: asset?.credentialSubject?.datatokens[0]?.symbol,
+            timestamp
+          }
+        })
+        .sort((a, b) => b.timestamp - a.timestamp)
+    }
+    return { downloadedAssets, totalResults: result?.totalResults || 0 }
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)

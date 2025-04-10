@@ -153,6 +153,12 @@ export default function Download({
   ])
 
   useEffect(() => {
+    if (isOwned) {
+      setIsFullPriceLoading(false)
+    }
+  }, [isOwned])
+
+  useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
   }, [dtBalance])
 
@@ -358,61 +364,63 @@ export default function Download({
     const { isValid } = useFormikContext()
     return (
       <div style={{ textAlign: 'left', marginTop: '2%' }}>
-        {!isPriceLoading && new Decimal(price.value || 0).greaterThan(0) && (
-          <div className={styles.calculation}>
-            <Row
-              hasDatatoken={hasDatatoken}
-              price={new Decimal(
-                Number(orderPriceAndFees?.price) || price.value || 0
-              )
-                .toDecimalPlaces(MAX_DECIMALS)
-                .toString()}
-              symbol={price.tokenSymbol}
-              type="DATASET"
-            />
-            <Row
-              price={new Decimal(consumeMarketFixedSwapFee)
-                .mul(
-                  new Decimal(
-                    Number(orderPriceAndFees?.price) || price.value || 0
-                  )
-                    .toDecimalPlaces(MAX_DECIMALS)
-                    .div(100)
-                )
-                .toString()} // consume market fixed swap fee amount
-              symbol={price.tokenSymbol}
-              type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
-            />
-            <Row
-              price={orderPriceAndFees?.opcFee || '0'}
-              symbol={price.tokenSymbol}
-              type={`OPC FEE (${(
-                (parseFloat(orderPriceAndFees.opcFee) /
-                  parseFloat(orderPriceAndFees.price)) *
-                100
-              ).toFixed(1)}%)`}
-            />
-            <Row
-              price={new Decimal(
-                new Decimal(
+        {!isPriceLoading &&
+          !isOwned &&
+          new Decimal(price.value || 0).greaterThan(0) && (
+            <div className={styles.calculation}>
+              <Row
+                hasDatatoken={hasDatatoken}
+                price={new Decimal(
                   Number(orderPriceAndFees?.price) || price.value || 0
-                ).toDecimalPlaces(MAX_DECIMALS)
-              )
-                .add(
-                  new Decimal(consumeMarketFixedSwapFee).mul(
+                )
+                  .toDecimalPlaces(MAX_DECIMALS)
+                  .toString()}
+                symbol={price.tokenSymbol}
+                type="DATASET"
+              />
+              <Row
+                price={new Decimal(consumeMarketFixedSwapFee)
+                  .mul(
                     new Decimal(
                       Number(orderPriceAndFees?.price) || price.value || 0
                     )
                       .toDecimalPlaces(MAX_DECIMALS)
                       .div(100)
                   )
+                  .toString()} // consume market fixed swap fee amount
+                symbol={price.tokenSymbol}
+                type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
+              />
+              <Row
+                price={orderPriceAndFees?.opcFee || '0'}
+                symbol={price.tokenSymbol}
+                type={`OPC FEE (${(
+                  (parseFloat(orderPriceAndFees.opcFee) /
+                    parseFloat(orderPriceAndFees.price)) *
+                  100
+                ).toFixed(1)}%)`}
+              />
+              <Row
+                price={new Decimal(
+                  new Decimal(
+                    Number(orderPriceAndFees?.price) || price.value || 0
+                  ).toDecimalPlaces(MAX_DECIMALS)
                 )
-                .add(new Decimal(orderPriceAndFees?.opcFee || 0))
-                .toString()}
-              symbol={price.tokenSymbol}
-            />
-          </div>
-        )}
+                  .add(
+                    new Decimal(consumeMarketFixedSwapFee).mul(
+                      new Decimal(
+                        Number(orderPriceAndFees?.price) || price.value || 0
+                      )
+                        .toDecimalPlaces(MAX_DECIMALS)
+                        .div(100)
+                    )
+                  )
+                  .add(new Decimal(orderPriceAndFees?.opcFee || 0))
+                  .toString()}
+                symbol={price.tokenSymbol}
+              />
+            </div>
+          )}
 
         <div style={{ textAlign: 'center' }}>
           {!isInPurgatory && <PurchaseButton isValid={isValid} />}

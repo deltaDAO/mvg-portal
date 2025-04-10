@@ -20,6 +20,8 @@ import { toast } from 'react-toastify'
 import { getDummySigner } from './wallet'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import { CancelToken } from 'axios'
+import { getUserOrders } from './aquarius'
 
 /**
  * This will be used to get price including fees before ordering
@@ -132,7 +134,9 @@ export async function getOrderPriceAndFees(
  */
 export async function getAccessDetails(
   chainId: number,
-  service: Service
+  service: Service,
+  accountId: string,
+  cancelToken: CancelToken
 ): Promise<AccessDetails> {
   const signer = await getDummySigner(chainId)
   const datatoken = new Datatoken(signer, chainId)
@@ -161,6 +165,28 @@ export async function getAccessDetails(
     validOrderTx: '', // should be possible to get from ocean-node - orders collection in typesense
     isPurchasable: true,
     publisherMarketOrderFee: '0'
+  }
+
+  // Check for past orders
+  try {
+    const orders = await getUserOrders(accountId, cancelToken)
+    const order = orders?.results?.find(
+      (order) =>
+        order.datatokenAddress.toLowerCase() === datatokenAddress.toLowerCase()
+    )
+    if (order) {
+      const orderTimestamp = order.timestamp
+      const timeout = Number(service.timeout)
+      const now = Date.now()
+
+      const isValid =
+        timeout === 0 ||
+        (orderTimestamp && orderTimestamp * 1000 + timeout * 1000 > now)
+      accessDetails.isOwned = isValid
+      accessDetails.validOrderTx = isValid ? order.orderId : ''
+    }
+  } catch (err) {
+    LoggerInstance.error('[getAccessDetails] Failed to fetch user orders', err)
   }
 
   // if there is at least 1 dispenser => service is free and use first dispenser
