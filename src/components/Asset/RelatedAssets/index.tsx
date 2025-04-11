@@ -35,19 +35,33 @@ export default function RelatedAssets(): ReactElement {
 
         // safeguard against faults in the metadata
         if (asset.credentialSubject?.metadata.tags instanceof Array) {
-          const tagQuery = generateBaseQuery(
-            generateQuery(
+          const tagQuery = {
+            ...generateBaseQuery({
               chainIds,
-              asset.credentialSubject.nftAddress,
-              4,
-              asset.credentialSubject?.metadata.tags
-            )
-          )
-
-          tagResults = (await queryMetadata(tagQuery, newCancelToken()))
-            ?.results
+              esPaginationOptions: { from: 0, size: 4 }
+            }),
+            query: {
+              bool: {
+                must: [
+                  {
+                    terms: {
+                      'credentialSubject.metadata.tags.keyword':
+                        asset.credentialSubject.metadata.tags
+                    }
+                  }
+                ],
+                must_not: [
+                  {
+                    term: {
+                      id: asset.id
+                    }
+                  }
+                ]
+              }
+            }
+          }
+          tagResults = (await queryMetadata(tagQuery, newCancelToken())).results
         }
-
         if (tagResults.length === 4) {
           setRelatedAssets(tagResults)
         } else {
