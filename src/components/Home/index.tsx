@@ -166,10 +166,10 @@ function HeroSection({
             <div className={styles.divider}></div>
 
             <div className={styles.ctaBlock}>
-              <h3 className={styles.ctaTitle}>Go to Catalog</h3>
+              <h3 className={styles.ctaTitle}>Go to Catalogue</h3>
               <button className={styles.ctaButton} onClick={handleCatalogClick}>
                 <div className={styles.buttonContent}>
-                  <span className={styles.buttonText}>Catalog</span>
+                  <span className={styles.buttonText}>Catalogue</span>
                 </div>
               </button>
             </div>
