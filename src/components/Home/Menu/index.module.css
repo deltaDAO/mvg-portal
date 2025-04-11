@@ -38,7 +38,7 @@
   gap: calc(var(--spacer) / 3);
   margin-left: auto;
   align-items: center;
-  font-size: 28px;
+  font-size: 23px;
 }
 
 .navigation {
