@@ -18,8 +18,8 @@ export interface FormPublishService {
   usesConsumerParameters?: boolean
   consumerParameters?: FormConsumerParameter[]
   credentials: CredentialForm
-  name: string
-  description: DescriptionForm
+  name?: string
+  description?: DescriptionForm
 }
 
 export interface DescriptionForm {
