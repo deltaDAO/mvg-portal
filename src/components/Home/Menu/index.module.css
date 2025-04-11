@@ -161,12 +161,14 @@ svg.caret {
 }
 @media screen and (min-width: 786px) and (max-width: 1025px) {
   .menu {
+    margin-top: 1rem;
     width: 864px;
   }
 }
 
 @media screen and (min-width: 1550px) and (max-width: 2550px) {
   .menu {
+    margin-top: 1rem;
     width: 1500px;
     /* height: 140px; */
   }

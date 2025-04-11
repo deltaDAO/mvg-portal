@@ -24,6 +24,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  gap: 6px;
 }
 .logo {
   width: 172px;
@@ -44,7 +45,7 @@
 @media screen and (min-width: 55rem) {
   .footer {
     padding: calc(var(--spacer) * 2);
-    padding-bottom: calc(var(--spacer) / 2);
+    /* padding-bottom: calc(var(--spacer) / 2); */
   }
   .container {
     flex-direction: row;
@@ -55,6 +56,7 @@
   .logoSection {
     align-items: flex-start;
     text-align: left;
+    gap: 6px;
   }
 }
 @media screen and (min-width: 250px) and (max-width: 900px) {
