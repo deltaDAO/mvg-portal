@@ -323,6 +323,38 @@
         "type": "checkbox",
         "options": ["This asset uses user defined parameters"],
         "required": false
+      },
+      {
+        "name": "name",
+        "label": "Service Name",
+        "type": "name",
+        "help": "Please enter the service name",
+        "placeholder": "e.g. My Service",
+        "required": true
+      },
+      {
+        "name": "description",
+        "label": "Service description",
+        "type": "textarea",
+        "help": "Please enter the service description",
+        "placeholder": "{ ... }",
+        "required": false
+      },
+      {
+        "name": "direction",
+        "label": "Service direction",
+        "type": "serviceDirection",
+        "help": "Please enter the service direction",
+        "placeholder": "e.g. direction",
+        "required": false
+      },
+      {
+        "name": "language",
+        "label": "Service language",
+        "type": "serviceLanguage",
+        "help": "Please enter the service language",
+        "placeholder": "e.g. Italian",
+        "required": false
       }
     ]
   },

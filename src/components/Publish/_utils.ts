@@ -69,6 +69,7 @@ import {
   signMessage
 } from '@utils/wallet/ssiWallet'
 import { isCredentialPolicyBased } from '@utils/credentials'
+import { State } from 'src/@types/ddo/State'
 
 function makeDid(nftAddress: string, chainId: string): string {
   return (
@@ -543,7 +544,6 @@ export async function transformPublishFormToDdo(
     (await getEncryptedFiles(file, chainId, providerUrl.url))
 
   const newServiceCredentials = generateCredentials(credentials)
-
   const newService: Service = {
     id: getHash(datatokenAddress + filesEncrypted),
     type: access,
@@ -557,8 +557,13 @@ export async function transformPublishFormToDdo(
     consumerParameters: values.services[0].usesConsumerParameters
       ? transformConsumerParameters(values.services[0].consumerParameters)
       : undefined,
-    name: '',
-    state: asset.credentialSubject.stats[0],
+    name: values.services[0].name,
+    description: {
+      '@value': values.services[0].description?.value || '',
+      '@direction': values.services[0].description?.direction || '',
+      '@language': values.services[0].description?.language || ''
+    },
+    state: State.Active,
     credentials: newServiceCredentials
   }
 
