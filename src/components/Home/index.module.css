@@ -433,7 +433,7 @@
   }
 }
 
-@media screen and (min-width: 1024px) and (max-width: 1460px) {
+@media screen and (min-width: 1224px) and (max-width: 1460px) {
   .contentContainer {
     height: 580px;
   }
