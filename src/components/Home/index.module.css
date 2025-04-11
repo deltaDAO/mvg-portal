@@ -433,6 +433,12 @@
   }
 }
 
+@media screen and (min-width: 1024px) and (max-width: 1460px) {
+  .contentContainer {
+    height: 580px;
+  }
+}
+
 /* Large desktop screens */
 @media screen and (min-width: 1550px) and (max-width: 2549px) {
   .contentContainer {
