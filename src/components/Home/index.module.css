@@ -457,17 +457,18 @@
 /* 4K and larger displays */
 @media (min-width: 2550px) {
   .contentContainer {
-    max-width: 1600px;
+    width: 1900px;
     gap: 60px;
-    height: 560px;
+    height: 592px;
   }
 
   .title {
-    font-size: 3.5rem;
+    font-size: 70px;
   }
 
   .subtitle p {
-    font-size: 1.6rem;
+    font-size: 30px;
+    display: contents;
   }
 
   .ctaContainer {
@@ -475,11 +476,22 @@
   }
 
   .ctaTitle {
-    font-size: 1.6rem;
+    font-size: 25px;
   }
 
   .buttonText {
-    font-size: 1.3rem;
+    font-size: 22px;
+  }
+  .textContent {
+    width: 1650px;
+    height: 560px;
+  }
+  .ctaContainer {
+    width: 1650px;
+    height: 204px;
+  }
+  .ctaBlock {
+    width: 224px;
   }
 
   .logoImage {

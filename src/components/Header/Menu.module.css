@@ -204,3 +204,10 @@ svg.caret {
     /* height: 140px; */
   }
 }
+
+@media screen and (min-width: 2550px) {
+  .container {
+    width: 1900px;
+    /* height: 140px; */
+  }
+}

@@ -81,9 +81,20 @@
   }
 }
 
-@media screen and (min-width: 1550px) and (max-width: 2050px) {
+@media screen and (min-width: 1550px) and (max-width: 2550px) {
   .container {
     width: 1500px;
+    height: 136px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: calc(var(--spacer) / 2);
+  }
+}
+
+@media screen and (min-width: 2550px) {
+  .container {
+    width: 1900px;
     height: 136px;
     flex-direction: row;
     justify-content: space-between;

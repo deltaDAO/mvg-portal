@@ -129,3 +129,25 @@
     padding-top: 4rem;
   }
 }
+
+@media screen and (min-width: 2550px) {
+  .container {
+    width: 1900px;
+    height: 140px;
+  }
+  .featureDescription {
+    line-height: 2rem;
+    font-size: 22px;
+  }
+  .featureTitle {
+    font-size: 22px;
+  }
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    margin-left: 1.1rem;
+  }
+  .featuresSection {
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+}
