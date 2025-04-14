@@ -36,6 +36,12 @@
         "placeholder": "e.g. logistics"
       },
       {
+        "name": "author",
+        "label": "Author",
+        "type": "author",
+        "placeholder": "e.g. John SRL"
+      },
+      {
         "name": "license",
         "label": "License",
         "prominentHelp": false,

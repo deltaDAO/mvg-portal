@@ -28,7 +28,6 @@ export default function TabsFile({
     const index = items.findIndex((tab: any) => {
       // fallback for edit mode (starts at index 0 with hidden element)
       if (!values?.services) return 0
-
       return tab.field.value === values.services[0].files[0].type
     })
 

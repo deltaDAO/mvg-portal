@@ -169,6 +169,11 @@ export default function MetadataFields(): ReactElement {
         component={Input}
         name="metadata.tags"
       />
+      <Field
+        {...getFieldContent('author', content.metadata.fields)}
+        component={Input}
+        name="metadata.author"
+      />
 
       {values.metadata.type === 'algorithm' && (
         <>

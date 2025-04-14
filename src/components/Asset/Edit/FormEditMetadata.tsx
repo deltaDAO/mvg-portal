@@ -189,6 +189,11 @@ export default function FormEditMetadata(): ReactElement {
         name="links"
       />
       <Field {...getFieldContent('tags', data)} component={Input} name="tags" />
+      <Field
+        {...getFieldContent('author', data)}
+        component={Input}
+        name="author"
+      />
       {asset.credentialSubject?.metadata?.type === 'algorithm' && (
         <>
           <Field
