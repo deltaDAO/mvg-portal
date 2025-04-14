@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import AddToken from '@components/@shared/AddToken'
 import EUROeLogo from '@images/EUROe_Symbol_Black.svg'
-import OceanLogo from '@images/logo.svg'
+import OceanLogo from '@images/ocean-token-logo.svg'
 import { useMarketMetadata } from '@context/MarketMetadata'
 
 const tokenLogos = {

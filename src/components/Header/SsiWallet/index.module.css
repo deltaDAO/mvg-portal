@@ -21,22 +21,54 @@
 }
 
 .ssiPanel {
-  padding: 0.5em 1em;
-  color: white;
-  font-size: 0.9em;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 137%;
+  text-align: center;
+  color: #fff;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 20px;
+}
+.text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  border: var(--menu-border-size) solid var(--menu-border-color);
+  max-width: 100%;
+}
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
 }
 @media screen and (max-width: 480px) {
   .ssiPanel {
-    padding: 0.3em 0.6em;
+    padding: 0.1em 0.2em;
     font-size: 0.8em;
   }
 
   .marginRight2 {
-    margin-right: 1em;
+    margin-right: 0em;
+  }
+  .icon {
+    width: 12px;
+    height: 12px;
+  }
+  .text {
+    max-width: 40px;
   }
 }
 
@@ -44,25 +76,34 @@
   .ssiPanel {
     padding: 0.4em 0.8em;
   }
+  .text {
+    max-width: 80px;
+  }
 }
 
 .connected {
-  background-color: #0a4b70;
+  color: #cbdce6;
+  background-color: transparent;
 }
 
 .connected:hover {
-  background-color: #1f2c50;
-  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.connected:hover .icon {
+  transform: scale(1.2);
 }
 
 .disconnected {
-  background-color: #e2e2e1;
-  color: #1f2c50;
+  background-color: transparent;
 }
 
 .disconnected:hover {
-  background-color: #8c98a9;
-  cursor: pointer;
+  transform: scale(1.05);
+}
+
+.disconnected:hover .icon {
+  transform: scale(1.2);
 }
 
 .marginBottom7px {

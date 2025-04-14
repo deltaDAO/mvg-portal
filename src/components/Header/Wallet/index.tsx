@@ -11,7 +11,7 @@ export default function Wallet(): ReactElement {
 
   return (
     <div className={styles.wallet}>
-      <Network />
+      {/* <Network /> */}
       <Tooltip
         content={<Details />}
         trigger="click focus mouseenter"

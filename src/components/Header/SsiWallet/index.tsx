@@ -14,6 +14,8 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import { useAccount, useSigner } from 'wagmi'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
+import ConnectedIcon from '@images/connected.svg'
+import DisconnectedIcon from '@images/disconnected.svg'
 
 export function SsiWallet(): ReactElement {
   const {
@@ -229,24 +231,28 @@ export function SsiWallet(): ReactElement {
           </dialog>
 
           {sessionToken ? (
-            <>
-              <div
-                className={`${styles.ssiPanel} ${styles.connected}`}
-                onClick={handleOpenDialog}
-              >
-                SSI Wallet connected
-              </div>
-            </>
+            <div
+              className={`${styles.ssiPanel} ${styles.connected}`}
+              onClick={handleOpenDialog}
+            >
+              <span className={styles.text}>SSI Wallet</span>
+
+              <span className={styles.iconWrapper}>
+                <ConnectedIcon className={styles.icon} />
+              </span>
+            </div>
           ) : (
             <button
               className={`${styles.ssiPanel} ${styles.disconnected}`}
               onClick={handleReconnection}
             >
-              {isConnected && signer ? (
-                <>Connect SSI Wallet</>
-              ) : (
-                <>SSI Wallet</>
-              )}
+              {' '}
+              <span className={styles.text}>
+                {isConnected && signer ? 'Connect SSI' : 'SSI Wallet'}
+              </span>
+              <span className={styles.iconWrapper}>
+                <DisconnectedIcon className={styles.icon} />
+              </span>
             </button>
           )}
         </>

@@ -4,6 +4,28 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  background: linear-gradient(
+    135deg,
+    #1f2c50 0%,
+    rgb(13 76 113) 27.47%,
+    rgb(10 81 121) 43.49%,
+    rgb(6 68 103 / 94%) 55.43%,
+    #1e2e52 100%
+  );
+  justify-content: center;
+  /* padding: 0; */
+  /* margin: 0; */
+  color: white;
+}
+.container {
+  width: 1160px;
+  height: 70px;
+  padding: calc(var(--spacer) / 2);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  background: transparent;
+  margin-bottom: 2rem;
 }
 
 .logo {
@@ -35,6 +57,7 @@
   gap: calc(var(--spacer) / 3);
   margin-left: auto;
   align-items: center;
+  font-size: 23px;
 }
 
 @media screen and (min-width: 75rem) {
@@ -56,6 +79,12 @@
     padding: calc(var(--spacer) / 1.5);
   }
 }
+/* @media screen and (max-width: 75rem) {
+  .actions{
+    gap: calc(var(--spacer) / 3);
+
+  }
+} */
 
 .navigation {
   white-space: nowrap;
@@ -80,7 +109,7 @@
 .link {
   composes: text from '../@shared/atoms/Button/index.module.css';
 
-  color: var(--menu-font-color);
+  color: white;
   font-weight: var(--menu-link-font-weight);
   font-size: var(--menu-link-font-size);
 }
@@ -166,5 +195,19 @@ svg.caret {
 
   .navigation {
     margin-left: calc(var(--spacer) / 2);
+  }
+}
+
+@media screen and (min-width: 1550px) and (max-width: 2550px) {
+  .container {
+    width: 1500px;
+    /* height: 140px; */
+  }
+}
+
+@media screen and (min-width: 2550px) {
+  .container {
+    width: 1900px;
+    /* height: 140px; */
   }
 }

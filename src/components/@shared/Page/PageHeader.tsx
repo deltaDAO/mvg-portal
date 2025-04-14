@@ -15,7 +15,7 @@ export default function PageHeader({
   isHome,
   showSearch
 }: {
-  title: string | ReactElement
+  title?: string | ReactElement
   center?: boolean
   description?: string
   isHome?: boolean

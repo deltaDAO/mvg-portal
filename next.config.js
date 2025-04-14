@@ -2,7 +2,7 @@ import { createRequire } from 'module'
 const require = createRequire(import.meta.url)
 import withTM from 'next-transpile-modules'
 
-const nextConfig = (phase, { defaultConfig }) => {
+const nextConfig = () => {
   /**
    * @type {import('next').NextConfig}
    */
