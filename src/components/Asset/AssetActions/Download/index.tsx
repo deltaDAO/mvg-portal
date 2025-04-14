@@ -88,6 +88,7 @@ export default function Download({
     accessDetails.type !== 'free'
   )
   const [isOwned, setIsOwned] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')
   const [isOrderDisabled, setIsOrderDisabled] = useState(false)
   const [orderPriceAndFees, setOrderPriceAndFees] =
@@ -104,6 +105,13 @@ export default function Download({
   useEffect(() => {
     Number(asset.credentialSubject.nft.state) === 4 && setIsOrderDisabled(true)
   }, [asset.credentialSubject.nft.state])
+
+  useEffect(() => {
+    if (asset?.credentialSubject?.event?.from === accountId) {
+      console.log('is the owner')
+      setIsOwner(true)
+    }
+  }, [asset, accountId])
 
   useEffect(() => {
     if (isUnsupportedPricing) return
@@ -321,43 +329,45 @@ export default function Download({
 
   const AssetAction = ({ asset }: { asset: AssetExtended }) => {
     const { isValid } = useFormikContext()
-
-    return (
-      <div>
-        {isOrderDisabled ? (
-          <Alert
-            className={styles.fieldWarning}
-            state="info"
-            text={`The publisher temporarily disabled ordering for this asset`}
-          />
-        ) : (
-          <>
-            {isUnsupportedPricing ? (
-              <Alert
-                className={styles.fieldWarning}
-                state="info"
-                text={`No pricing schema available for this asset.`}
-              />
-            ) : (
-              <div className={styles.priceWrapper}>
-                {isPriceLoading ? (
-                  <Loader message="Calculating asset price" />
-                ) : (
-                  <Price
-                    price={price}
-                    orderPriceAndFees={orderPriceAndFees}
-                    size="large"
-                  />
-                )}
-                {!isInPurgatory && isFullPriceLoading && (
-                  <CalculateButton isValid={isValid} />
-                )}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    )
+    if (isOwner) {
+      return <div> You are the publisher</div>
+    } else
+      return (
+        <div>
+          {isOrderDisabled ? (
+            <Alert
+              className={styles.fieldWarning}
+              state="info"
+              text={`The publisher temporarily disabled ordering for this asset`}
+            />
+          ) : (
+            <>
+              {isUnsupportedPricing ? (
+                <Alert
+                  className={styles.fieldWarning}
+                  state="info"
+                  text={`No pricing schema available for this asset.`}
+                />
+              ) : (
+                <div className={styles.priceWrapper}>
+                  {isPriceLoading ? (
+                    <Loader message="Calculating asset price" />
+                  ) : (
+                    <Price
+                      price={price}
+                      orderPriceAndFees={orderPriceAndFees}
+                      size="large"
+                    />
+                  )}
+                  {!isInPurgatory && isFullPriceLoading && !isOwner && (
+                    <CalculateButton isValid={isValid} />
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )
   }
 
   const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
@@ -531,7 +541,7 @@ export default function Download({
               accessDetails={accessDetails}
             />
           )}
-          {accountId && (
+          {accountId && !isOwner && (
             <WhitelistIndicator
               accountId={accountId}
               isAccountIdWhitelisted={isAccountIdWhitelisted}
