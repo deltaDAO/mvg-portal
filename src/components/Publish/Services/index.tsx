@@ -100,26 +100,6 @@ export default function ServicesFields(): ReactElement {
         </>
       )}
       <Field
-        {...getFieldContent('providerUrl', content.services.fields)}
-        component={Input}
-        name="services[0].providerUrl"
-      />
-      <Field
-        {...getFieldContent('files', content.services.fields)}
-        component={Input}
-        name="services[0].files"
-      />
-      <Field
-        {...getFieldContent('links', content.services.fields)}
-        component={Input}
-        name="services[0].links"
-      />
-      <Field
-        {...getFieldContent('timeout', content.services.fields)}
-        component={Input}
-        name="services[0].timeout"
-      />
-      <Field
         {...getFieldContent('name', content.services.fields)}
         component={Input}
         name="services[0].name"
@@ -138,6 +118,26 @@ export default function ServicesFields(): ReactElement {
         {...getFieldContent('language', content.services.fields)}
         component={Input}
         name="services[0].description.language"
+      />
+      <Field
+        {...getFieldContent('providerUrl', content.services.fields)}
+        component={Input}
+        name="services[0].providerUrl"
+      />
+      <Field
+        {...getFieldContent('files', content.services.fields)}
+        component={Input}
+        name="services[0].files"
+      />
+      <Field
+        {...getFieldContent('links', content.services.fields)}
+        component={Input}
+        name="services[0].links"
+      />
+      <Field
+        {...getFieldContent('timeout', content.services.fields)}
+        component={Input}
+        name="services[0].timeout"
       />
       <Field
         {...getFieldContent('allow', content.credentials.fields)}

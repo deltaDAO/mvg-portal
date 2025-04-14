@@ -63,12 +63,26 @@ function VpField(props: VpFieldProps): ReactElement {
       <div
         className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginBottom3}`}
       >
+        <React.Fragment key={'ID'}>
+          <div>Id</div>
+          <div>
+            <DataView
+              data={credential?.parsedDocument?.id}
+              maxLength={maxLength}
+            />
+          </div>
+        </React.Fragment>
         {Object.keys(credential?.parsedDocument?.credentialSubject || {})
           .sort((key1, key2) => key1.localeCompare(key2))
           .map((key) => {
+            console.log(
+              'credential?.parsedDocument?.credentialSubject?.[key]',
+              credential?.parsedDocument?.credentialSubject?.[key],
+              key
+            )
             return (
               <React.Fragment key={key}>
-                <div>{key}</div>
+                <div>CredentialSubject.{key}</div>
                 <div>
                   <DataView
                     data={credential?.parsedDocument?.credentialSubject?.[key]}

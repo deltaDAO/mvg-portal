@@ -166,7 +166,7 @@
     ]
   },
   "services": {
-    "title": "Access",
+    "title": "Service Metadata and Credentials",
     "fields": [
       {
         "name": "dataTokenOptions",
@@ -400,7 +400,7 @@
     ]
   },
   "pricing": {
-    "title": "Pricing",
+    "title": "Service Pricing",
     "fields": [
       {
         "name": "dummy content, actual content is defined under 'create' key in ../price.json"
