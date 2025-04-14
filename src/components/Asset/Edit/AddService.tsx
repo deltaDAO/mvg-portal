@@ -176,8 +176,8 @@ export default function AddService({
         name: values.name,
         description: {
           '@value': values.description,
-          '@direction': '',
-          '@language': ''
+          '@direction': values.direction,
+          '@language': values.language
         },
         files: newFiles || '',
         datatokenAddress,

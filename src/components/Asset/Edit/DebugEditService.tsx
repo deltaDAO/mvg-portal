@@ -17,6 +17,7 @@ import {
 import { Service } from 'src/@types/ddo/Service'
 import { Asset } from 'src/@types/Asset'
 import { Credential } from 'src/@types/ddo/Credentials'
+import { State } from 'src/@types/ddo/State'
 
 export default function DebugEditService({
   values,
@@ -66,11 +67,14 @@ export default function DebugEditService({
         name: values.name,
         description: {
           '@value': values.description,
-          '@language': '',
-          '@direction': ''
+          '@language': values.language,
+          '@direction': values.direction
         },
         type: values.access,
         timeout: mapTimeoutStringToSeconds(values.timeout),
+        state: isNaN(values.state)
+          ? State[values.state as unknown as keyof typeof State]
+          : values.state,
         files: updatedFiles, // TODO: check if this works,
         credentials,
         ...(values.access === 'compute' && {

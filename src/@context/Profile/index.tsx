@@ -138,7 +138,7 @@ function ProfileProvider({
       setDownloadsTotal(totalResults)
       LoggerInstance.log(
         `[profile] Fetched ${downloadedAssets.length} download orders.`,
-        downloads
+        downloadedAssets
       )
     },
     [accountId, chainIds, ownAccount]

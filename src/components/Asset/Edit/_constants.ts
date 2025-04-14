@@ -18,6 +18,7 @@ import {
 } from '@components/@shared/PolicyEditor/types'
 import { convertToPolicyType } from '@components/@shared/PolicyEditor/utils'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
+import { State } from 'src/@types/ddo/State'
 
 export const defaultServiceComputeOptions: Compute = {
   allowRawAlgorithm: false,
@@ -37,14 +38,16 @@ function generateCredentials(credentials: Credential): CredentialForm {
       if (isCredentialPolicyBased(policyCredential)) {
         policyCredential.values.forEach((value) => {
           value.request_credentials.forEach((requestCredential) => {
-            let policyTypes = requestCredential.policies.map((policy) => {
-              try {
-                return convertToPolicyType(policy)
-              } catch (error) {
-                LoggerInstance.error(error)
-                return undefined
+            let policyTypes = (requestCredential?.policies ?? []).map(
+              (policy) => {
+                try {
+                  return convertToPolicyType(policy)
+                } catch (error) {
+                  LoggerInstance.error(error)
+                  return undefined
+                }
               }
-            })
+            )
             policyTypes = policyTypes.filter((item) => !!item)
 
             const newRequestCredential: RequestCredentialForm = {
@@ -74,7 +77,10 @@ function generateCredentials(credentials: Credential): CredentialForm {
             }
           )
 
-          vcPolicies = [...vcPolicies, ...value.vc_policies]
+          vcPolicies = [
+            ...vcPolicies,
+            ...(Array.isArray(value.vc_policies) ? value.vc_policies : [])
+          ]
           vpPolicies = [...vpPolicies, ...newVpPolicies]
         })
       }
@@ -183,7 +189,9 @@ export const getNewServiceInitialValues = (
   )
   return {
     name: 'New Service',
-    description: '',
+    description: 'New description',
+    language: '',
+    direction: '',
     access: 'access',
     price: 1,
     paymentCollector: accountId,
@@ -193,6 +201,7 @@ export const getNewServiceInitialValues = (
       custom: false
     },
     files: [{ url: '', type: 'hidden' }],
+    state: State.Active,
     timeout: '1 day',
     usesConsumerParameters: false,
     consumerParameters: [],
@@ -220,6 +229,8 @@ export const getServiceInitialValues = (
   return {
     name: service.name,
     description: service.description?.['@value'],
+    direction: service.description?.['@direction'],
+    language: service.description?.['@language'],
     access: service.type as 'access' | 'compute',
     price: parseFloat(accessDetails.price),
     paymentCollector: accessDetails.paymentCollector,
@@ -229,6 +240,7 @@ export const getServiceInitialValues = (
       custom: false
     },
     files: [{ url: '', type: 'hidden' }],
+    state: service.state,
     timeout: secondsToString(service.timeout),
     usesConsumerParameters: service.consumerParameters
       ? Object.assign(service.consumerParameters).length > 0

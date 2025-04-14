@@ -119,10 +119,11 @@ export default function EditService({
         name: values.name,
         description: {
           '@value': values.description,
-          '@language': '',
-          '@direction': ''
+          '@language': values.language,
+          '@direction': values.direction
         },
         timeout: mapTimeoutStringToSeconds(values.timeout),
+        state: values.state,
         files: updatedFiles, // TODO: check if this works,
         credentials: updatedCredentials,
         ...(values.access === 'compute' && {
