@@ -35,6 +35,7 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
 import { ethers } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
+import { State } from 'src/@types/ddo/State'
 
 export default function EditService({
   asset,
@@ -123,7 +124,9 @@ export default function EditService({
           '@direction': values.direction
         },
         timeout: mapTimeoutStringToSeconds(values.timeout),
-        state: values.state,
+        state: isNaN(values.state)
+          ? State[values.state as unknown as keyof typeof State]
+          : values.state,
         files: updatedFiles, // TODO: check if this works,
         credentials: updatedCredentials,
         ...(values.access === 'compute' && {
