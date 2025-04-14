@@ -629,21 +629,11 @@ export async function getTagsList(
     }
     const tagsSet: Set<string> = new Set()
     response.data.forEach((items) => {
-      if (items.hits) {
-        items.hits?.hits.forEach((item) => {
-          if (item._source?.credentialSubject.metadata?.tags) {
-            item._source.credentialSubject.metadata.tags
-              .filter((tag: string) => tag !== '')
-              .forEach((tag: string) => tagsSet.add(tag))
-          }
-        })
-      } else {
-        items.forEach((item) => {
-          item.credentialSubject.metadata.tags
-            .filter((tag: string) => tag !== '')
-            .forEach((tag: string) => tagsSet.add(tag))
-        })
-      }
+      items.results?.forEach((item) => {
+        item.credentialSubject.metadata.tags
+          .filter((tag: string) => tag !== '')
+          .forEach((tag: string) => tagsSet.add(tag))
+      })
     })
     const uniqueTagsList = Array.from(tagsSet).sort()
     return uniqueTagsList

@@ -119,7 +119,26 @@ export default function ServicesFields(): ReactElement {
         component={Input}
         name="services[0].timeout"
       />
-
+      <Field
+        {...getFieldContent('name', content.services.fields)}
+        component={Input}
+        name="services[0].name"
+      />
+      <Field
+        {...getFieldContent('description', content.services.fields)}
+        component={Input}
+        name="services[0].description.value"
+      />
+      <Field
+        {...getFieldContent('direction', content.services.fields)}
+        component={Input}
+        name="services[0].description.direction"
+      />
+      <Field
+        {...getFieldContent('language', content.services.fields)}
+        component={Input}
+        name="services[0].description.language"
+      />
       <Field
         {...getFieldContent('allow', content.credentials.fields)}
         component={Input}
