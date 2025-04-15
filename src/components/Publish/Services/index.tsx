@@ -78,10 +78,32 @@ export default function ServicesFields(): ReactElement {
 
   return (
     <>
+      <div style={{ display: 'none' }}>
+        <Field
+          {...getFieldContent('dataTokenOptions', content.services.fields)}
+          component={Input}
+          name="services[0].dataTokenOptions"
+        />
+      </div>
       <Field
-        {...getFieldContent('dataTokenOptions', content.services.fields)}
+        {...getFieldContent('name', content.services.fields)}
         component={Input}
-        name="services[0].dataTokenOptions"
+        name="services[0].name"
+      />
+      <Field
+        {...getFieldContent('description', content.services.fields)}
+        component={Input}
+        name="services[0].description.value"
+      />
+      <Field
+        {...getFieldContent('direction', content.services.fields)}
+        component={Input}
+        name="services[0].description.direction"
+      />
+      <Field
+        {...getFieldContent('language', content.services.fields)}
+        component={Input}
+        name="services[0].description.language"
       />
       {values.metadata.type === 'algorithm' ? (
         <Field
@@ -119,7 +141,6 @@ export default function ServicesFields(): ReactElement {
         component={Input}
         name="services[0].timeout"
       />
-
       <Field
         {...getFieldContent('allow', content.credentials.fields)}
         component={Input}

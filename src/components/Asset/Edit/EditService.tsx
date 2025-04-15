@@ -35,6 +35,8 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
 import { ethers } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
+import { State } from 'src/@types/ddo/State'
+import { assetStateToNumber } from '@utils/assetState'
 
 export default function EditService({
   asset,
@@ -119,10 +121,14 @@ export default function EditService({
         name: values.name,
         description: {
           '@value': values.description,
-          '@language': '',
-          '@direction': ''
+          '@language': values.language,
+          '@direction': values.direction
         },
         timeout: mapTimeoutStringToSeconds(values.timeout),
+        state:
+          values.state === undefined
+            ? State.Active
+            : assetStateToNumber(values.state),
         files: updatedFiles, // TODO: check if this works,
         credentials: updatedCredentials,
         ...(values.access === 'compute' && {

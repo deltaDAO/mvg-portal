@@ -19,6 +19,20 @@
         "required": false
       },
       {
+        "name": "direction",
+        "label": "Service direction",
+        "type": "serviceDirection",
+        "help": "Please enter the service direction",
+        "required": false
+      },
+      {
+        "name": "language",
+        "label": "Service language",
+        "type": "serviceLanguage",
+        "help": "Please enter the service language",
+        "required": false
+      },
+      {
         "name": "access",
         "label": "Access Type",
         "help": "Choose how you want your files to be accessible for the specified price.",
@@ -52,28 +66,6 @@
         "type": "tabs",
         "fields": [
           {
-            "value": "ipfs",
-            "title": "IPFS",
-            "label": "CID",
-            "placeholder": "e.g. bafkreidgvpkjawlxz6sffxzwgooowe5yt7i6wsyg236mfoks77nywkptdq",
-            "help": "This CID will be stored encrypted after publishing.",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": true
-          },
-          {
-            "value": "arweave",
-            "title": "Arweave",
-            "label": "Transaction ID",
-            "placeholder": "e.g. DBRCL94j3QqdPaUtt4VWRen8rZfJZBb7Ey40iMpXfhtd",
-            "help": "This Transaction ID will be stored encrypted after publishing.",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": true
-          },
-          {
             "value": "url",
             "title": "URL",
             "label": "File",
@@ -94,6 +86,28 @@
                 "required": true
               }
             ]
+          },
+          {
+            "value": "ipfs",
+            "title": "IPFS",
+            "label": "CID",
+            "placeholder": "e.g. bafkreidgvpkjawlxz6sffxzwgooowe5yt7i6wsyg236mfoks77nywkptdq",
+            "help": "This CID will be stored encrypted after publishing.",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true
+          },
+          {
+            "value": "arweave",
+            "title": "Arweave",
+            "label": "Transaction ID",
+            "placeholder": "e.g. DBRCL94j3QqdPaUtt4VWRen8rZfJZBb7Ey40iMpXfhtd",
+            "help": "This Transaction ID will be stored encrypted after publishing.",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true
           },
           {
             "value": "graphql",
@@ -139,6 +153,22 @@
         "options": ["Forever", "1 day", "1 week", "1 month", "1 year"],
         "sortOptions": false,
         "required": true
+      },
+      {
+        "name": "state",
+        "label": "Asset Service Status",
+        "help": "This asset service will no longer be visible to other users and it won't be possible to purchase it.  More info available in our [docs](https://docs.oceanprotocol.com/core-concepts/did-ddo#state).",
+        "type": "select",
+        "options": [
+          "Active",
+          "EndOfLife",
+          "Deprecated",
+          "RevokedByPublisher",
+          "OrderingIsTemporaryDisabled",
+          "Unlisted"
+        ],
+        "sortOptions": false,
+        "required": false
       },
       {
         "name": "usesConsumerParameters",

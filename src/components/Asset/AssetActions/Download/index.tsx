@@ -88,6 +88,7 @@ export default function Download({
     accessDetails.type !== 'free'
   )
   const [isOwned, setIsOwned] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')
   const [isOrderDisabled, setIsOrderDisabled] = useState(false)
   const [orderPriceAndFees, setOrderPriceAndFees] =
@@ -104,6 +105,12 @@ export default function Download({
   useEffect(() => {
     Number(asset.credentialSubject.nft.state) === 4 && setIsOrderDisabled(true)
   }, [asset.credentialSubject.nft.state])
+
+  useEffect(() => {
+    if (asset?.credentialSubject?.event?.from === accountId) {
+      setIsOwner(true)
+    }
+  }, [asset, accountId])
 
   useEffect(() => {
     if (isUnsupportedPricing) return
@@ -151,6 +158,12 @@ export default function Download({
     orderPriceAndFees,
     service
   ])
+
+  useEffect(() => {
+    if (isOwned) {
+      setIsFullPriceLoading(false)
+    }
+  }, [isOwned])
 
   useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
@@ -315,104 +328,108 @@ export default function Download({
 
   const AssetAction = ({ asset }: { asset: AssetExtended }) => {
     const { isValid } = useFormikContext()
-
-    return (
-      <div>
-        {isOrderDisabled ? (
-          <Alert
-            className={styles.fieldWarning}
-            state="info"
-            text={`The publisher temporarily disabled ordering for this asset`}
-          />
-        ) : (
-          <>
-            {isUnsupportedPricing ? (
-              <Alert
-                className={styles.fieldWarning}
-                state="info"
-                text={`No pricing schema available for this asset.`}
-              />
-            ) : (
-              <div className={styles.priceWrapper}>
-                {isPriceLoading ? (
-                  <Loader message="Calculating asset price" />
-                ) : (
-                  <Price
-                    price={price}
-                    orderPriceAndFees={orderPriceAndFees}
-                    size="large"
-                  />
-                )}
-                {!isInPurgatory && isFullPriceLoading && (
-                  <CalculateButton isValid={isValid} />
-                )}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    )
+    if (isOwner) {
+      return <div> You are the publisher</div>
+    } else
+      return (
+        <div>
+          {isOrderDisabled ? (
+            <Alert
+              className={styles.fieldWarning}
+              state="info"
+              text={`The publisher temporarily disabled ordering for this asset`}
+            />
+          ) : (
+            <>
+              {isUnsupportedPricing ? (
+                <Alert
+                  className={styles.fieldWarning}
+                  state="info"
+                  text={`No pricing schema available for this asset.`}
+                />
+              ) : (
+                <div className={styles.priceWrapper}>
+                  {isPriceLoading ? (
+                    <Loader message="Calculating asset price" />
+                  ) : (
+                    <Price
+                      price={price}
+                      orderPriceAndFees={orderPriceAndFees}
+                      size="large"
+                    />
+                  )}
+                  {!isInPurgatory && isFullPriceLoading && !isOwner && (
+                    <CalculateButton isValid={isValid} />
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )
   }
 
   const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
     const { isValid } = useFormikContext()
     return (
       <div style={{ textAlign: 'left', marginTop: '2%' }}>
-        {!isPriceLoading && new Decimal(price.value || 0).greaterThan(0) && (
-          <div className={styles.calculation}>
-            <Row
-              hasDatatoken={hasDatatoken}
-              price={new Decimal(
-                Number(orderPriceAndFees?.price) || price.value || 0
-              )
-                .toDecimalPlaces(MAX_DECIMALS)
-                .toString()}
-              symbol={price.tokenSymbol}
-              type="DATASET"
-            />
-            <Row
-              price={new Decimal(consumeMarketFixedSwapFee)
-                .mul(
-                  new Decimal(
-                    Number(orderPriceAndFees?.price) || price.value || 0
-                  )
-                    .toDecimalPlaces(MAX_DECIMALS)
-                    .div(100)
-                )
-                .toString()} // consume market fixed swap fee amount
-              symbol={price.tokenSymbol}
-              type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
-            />
-            <Row
-              price={orderPriceAndFees?.opcFee || '0'}
-              symbol={price.tokenSymbol}
-              type={`OPC FEE (${(
-                (parseFloat(orderPriceAndFees.opcFee) /
-                  parseFloat(orderPriceAndFees.price)) *
-                100
-              ).toFixed(1)}%)`}
-            />
-            <Row
-              price={new Decimal(
-                new Decimal(
+        {!isPriceLoading &&
+          !isOwned &&
+          new Decimal(price.value || 0).greaterThan(0) && (
+            <div className={styles.calculation}>
+              <Row
+                hasDatatoken={hasDatatoken}
+                price={new Decimal(
                   Number(orderPriceAndFees?.price) || price.value || 0
-                ).toDecimalPlaces(MAX_DECIMALS)
-              )
-                .add(
-                  new Decimal(consumeMarketFixedSwapFee).mul(
+                )
+                  .toDecimalPlaces(MAX_DECIMALS)
+                  .toString()}
+                symbol={price.tokenSymbol}
+                type="DATASET"
+              />
+              <Row
+                price={new Decimal(consumeMarketFixedSwapFee)
+                  .mul(
                     new Decimal(
                       Number(orderPriceAndFees?.price) || price.value || 0
                     )
                       .toDecimalPlaces(MAX_DECIMALS)
                       .div(100)
                   )
+                  .toString()} // consume market fixed swap fee amount
+                symbol={price.tokenSymbol}
+                type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
+              />
+              <Row
+                price={orderPriceAndFees?.opcFee || '0'}
+                symbol={price.tokenSymbol}
+                type={`OPC FEE (${(
+                  (parseFloat(orderPriceAndFees.opcFee) /
+                    parseFloat(orderPriceAndFees.price)) *
+                  100
+                ).toFixed(1)}%)`}
+              />
+              <Row
+                price={new Decimal(
+                  new Decimal(
+                    Number(orderPriceAndFees?.price) || price.value || 0
+                  ).toDecimalPlaces(MAX_DECIMALS)
                 )
-                .add(new Decimal(orderPriceAndFees?.opcFee || 0))
-                .toString()}
-              symbol={price.tokenSymbol}
-            />
-          </div>
-        )}
+                  .add(
+                    new Decimal(consumeMarketFixedSwapFee).mul(
+                      new Decimal(
+                        Number(orderPriceAndFees?.price) || price.value || 0
+                      )
+                        .toDecimalPlaces(MAX_DECIMALS)
+                        .div(100)
+                    )
+                  )
+                  .add(new Decimal(orderPriceAndFees?.opcFee || 0))
+                  .toString()}
+                symbol={price.tokenSymbol}
+              />
+            </div>
+          )}
 
         <div style={{ textAlign: 'center' }}>
           {!isInPurgatory && <PurchaseButton isValid={isValid} />}
@@ -523,7 +540,7 @@ export default function Download({
               accessDetails={accessDetails}
             />
           )}
-          {accountId && (
+          {accountId && !isOwner && (
             <WhitelistIndicator
               accountId={accountId}
               isAccountIdWhitelisted={isAccountIdWhitelisted}

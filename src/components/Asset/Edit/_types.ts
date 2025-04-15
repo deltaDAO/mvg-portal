@@ -5,6 +5,7 @@ import {
 import { FileInfo } from '@oceanprotocol/lib'
 import { License } from '../../../@types/ddo/License'
 import { CredentialForm } from '@components/@shared/PolicyEditor/types'
+import { State } from 'src/@types/ddo/State'
 
 export interface MetadataEditForm {
   name: string
@@ -25,17 +26,20 @@ export interface MetadataEditForm {
 }
 
 export interface ServiceEditForm {
-  name: string
-  description: string
-  access: 'access' | 'compute'
-  providerUrl: { url: string; valid: boolean; custom: boolean }
-  price: number
-  paymentCollector: string
-  files: FileInfo[]
-  timeout: string
-  usesConsumerParameters: boolean
-  consumerParameters: FormConsumerParameter[]
-  credentials: CredentialForm
+  name?: string
+  description?: string
+  language?: string
+  direction?: string
+  access?: 'access' | 'compute'
+  providerUrl?: { url: string; valid: boolean; custom: boolean }
+  price?: number
+  paymentCollector?: string
+  files?: FileInfo[]
+  timeout?: string
+  usesConsumerParameters?: boolean
+  consumerParameters?: FormConsumerParameter[]
+  credentials?: CredentialForm
+  state?: string
   // compute
   allowAllPublishedAlgorithms: boolean
   publisherTrustedAlgorithms: string[]

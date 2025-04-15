@@ -130,7 +130,9 @@ export default function HistoryData({
           result.results.map(async (item) => {
             const accessDetails = await getAccessDetails(
               item.credentialSubject.chainId,
-              item.credentialSubject.services[0]
+              item.credentialSubject.services[0],
+              accountId,
+              newCancelToken()
             )
 
             return {

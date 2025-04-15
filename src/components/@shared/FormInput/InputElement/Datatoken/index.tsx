@@ -15,7 +15,7 @@ export default function Datatoken({
   async function generateName() {
     const datatokenOptions = randomize
       ? generateDtName()
-      : { name: 'Access Token', symbol: 'GXAT' }
+      : { name: 'Access Token', symbol: 'OEAT' }
     helpers.setValue({ ...datatokenOptions })
   }
 

@@ -14,6 +14,7 @@ interface FormFieldContent {
   disclaimer?: string
   disclaimerValues?: string[]
   advanced?: boolean
+  author?: string
 }
 
 interface FormStepContent {

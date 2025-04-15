@@ -24,6 +24,7 @@ import { Row } from '../Row'
 import { Service } from 'src/@types/ddo/Service'
 import { Asset } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import { useCancelToken } from '@hooks/useCancelToken'
 
 export default function FormStartCompute({
   asset,
@@ -98,6 +99,7 @@ export default function FormStartCompute({
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
+  const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const {
     isValid,
@@ -158,7 +160,12 @@ export default function FormStartCompute({
       const algorithmAsset: AssetExtended = getAlgorithmAsset(values.algorithm)
       const algoAccessDetails = await Promise.all(
         algorithmAsset.credentialSubject?.services.map((service) =>
-          getAccessDetails(algorithmAsset.credentialSubject?.chainId, service)
+          getAccessDetails(
+            algorithmAsset.credentialSubject?.chainId,
+            service,
+            accountId,
+            newCancelToken()
+          )
         )
       )
 

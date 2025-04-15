@@ -36,6 +36,12 @@
         "placeholder": "e.g. logistics"
       },
       {
+        "name": "author",
+        "label": "Author",
+        "type": "author",
+        "placeholder": "e.g. John SRL"
+      },
+      {
         "name": "license",
         "label": "License",
         "prominentHelp": false,
@@ -166,7 +172,7 @@
     ]
   },
   "services": {
-    "title": "Access",
+    "title": "Service Metadata and Credentials",
     "fields": [
       {
         "name": "dataTokenOptions",
@@ -190,28 +196,6 @@
         "type": "tabs",
         "fields": [
           {
-            "value": "ipfs",
-            "title": "IPFS",
-            "label": "CID",
-            "placeholder": "e.g. bafkreidgvpkjawlxz6sffxzwgooowe5yt7i6wsyg236mfoks77nywkptdq",
-            "help": "This CID will be stored encrypted after publishing.",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": true
-          },
-          {
-            "value": "arweave",
-            "title": "Arweave",
-            "label": "Transaction ID",
-            "placeholder": "e.g. DBRCL94j3QqdPaUtt4VWRen8rZfJZBb7Ey40iMpXfhtd",
-            "help": "This Transaction ID will be stored encrypted after publishing.",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": true
-          },
-          {
             "value": "url",
             "title": "URL",
             "label": "File",
@@ -233,6 +217,28 @@
                 "required": false
               }
             ]
+          },
+          {
+            "value": "ipfs",
+            "title": "IPFS",
+            "label": "CID",
+            "placeholder": "e.g. bafkreidgvpkjawlxz6sffxzwgooowe5yt7i6wsyg236mfoks77nywkptdq",
+            "help": "This CID will be stored encrypted after publishing.",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true
+          },
+          {
+            "value": "arweave",
+            "title": "Arweave",
+            "label": "Transaction ID",
+            "placeholder": "e.g. DBRCL94j3QqdPaUtt4VWRen8rZfJZBb7Ey40iMpXfhtd",
+            "help": "This Transaction ID will be stored encrypted after publishing.",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true
           },
           {
             "value": "graphql",
@@ -323,6 +329,38 @@
         "type": "checkbox",
         "options": ["This asset uses user defined parameters"],
         "required": false
+      },
+      {
+        "name": "name",
+        "label": "Service Name",
+        "type": "name",
+        "help": "Please enter the service name",
+        "placeholder": "e.g. My Service",
+        "required": true
+      },
+      {
+        "name": "description",
+        "label": "Service description",
+        "type": "textarea",
+        "help": "Please enter the service description",
+        "placeholder": "{ ... }",
+        "required": false
+      },
+      {
+        "name": "direction",
+        "label": "Service direction",
+        "type": "serviceDirection",
+        "help": "Please enter the service direction",
+        "placeholder": "e.g. direction",
+        "required": false
+      },
+      {
+        "name": "language",
+        "label": "Service language",
+        "type": "serviceLanguage",
+        "help": "Please enter the service language",
+        "placeholder": "e.g. Italian",
+        "required": false
       }
     ]
   },
@@ -356,7 +394,7 @@
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
         "help": "Enter an ETH address and click the ADD button to append to the list. Only ETH addresses in the allow list can consume this asset.If the list is empty, no one can download or compute this asset.",
         "type": "credentials",
-        "required": true
+        "required": false
       },
       {
         "name": "deny",
@@ -368,7 +406,7 @@
     ]
   },
   "pricing": {
-    "title": "Pricing",
+    "title": "Service Pricing",
     "fields": [
       {
         "name": "dummy content, actual content is defined under 'create' key in ../price.json"
