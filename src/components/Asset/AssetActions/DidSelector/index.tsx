@@ -88,7 +88,7 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
             className={`${styles.width100p} ${styles.acceptButton} ${styles.marginRight2}`}
             onClick={handleAcceptSelection}
           >
-            Accept
+            Confirm
           </Button>
           <Button
             style="primary"
