@@ -124,9 +124,12 @@ export default function EditService({
           '@direction': values.direction
         },
         timeout: mapTimeoutStringToSeconds(values.timeout),
-        state: isNaN(values.state)
-          ? State[values.state as unknown as keyof typeof State]
-          : values.state,
+        state:
+          values.state === undefined
+            ? 0
+            : isNaN(values.state)
+            ? State[values.state as unknown as keyof typeof State]
+            : values.state,
         files: updatedFiles, // TODO: check if this works,
         credentials: updatedCredentials,
         ...(values.access === 'compute' && {
