@@ -22,7 +22,7 @@ import {
   stringifyCredentialPolicies
 } from '@components/Publish/_utils'
 import { Metadata } from 'src/@types/ddo/Metadata'
-import { Asset } from 'src/@types/Asset'
+import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from '../../../../app.config.cjs'
 import { ethers } from 'ethers'
@@ -30,6 +30,7 @@ import { convertLinks } from '@utils/links'
 import { License } from 'src/@types/ddo/License'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
+import { State } from 'src/@types/ddo/State'
 
 export default function Edit({
   asset
@@ -97,13 +98,18 @@ export default function Edit({
       }
 
       const updatedCredentials = generateCredentials(values?.credentials)
+      const updatedNft: AssetNft = {
+        ...asset.credentialSubject.nft,
+        state: State[values.assetState as unknown as keyof typeof State]
+      }
 
       const updatedAsset: Asset = {
         ...(asset as Asset),
         credentialSubject: {
           ...(asset as Asset).credentialSubject,
           metadata: updatedMetadata,
-          credentials: updatedCredentials
+          credentials: updatedCredentials,
+          nft: updatedNft
         },
         additionalDdos:
           (values?.additionalDdos as AdditionalVerifiableCredentials[]) || []
@@ -135,7 +141,7 @@ export default function Edit({
         await nft.setMetadata(
           updatedAsset.credentialSubject.nftAddress,
           await signer.getAddress(),
-          0,
+          updatedNft.state,
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',

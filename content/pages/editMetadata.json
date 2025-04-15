@@ -100,9 +100,11 @@
         "type": "select",
         "options": [
           "Active",
-          "Revoked by publisher",
-          "Ordering is temporary disabled",
-          "Asset unlisted"
+          "EndOfLife",
+          "Deprecated",
+          "RevokedByPublisher",
+          "OrderingIsTemporaryDisabled",
+          "Unlisted"
         ],
         "sortOptions": false,
         "required": false

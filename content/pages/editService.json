@@ -165,7 +165,7 @@
           "Deprecated",
           "RevokedByPublisher",
           "OrderingIsTemporaryDisabled",
-          "AssetUnlisted"
+          "Unlisted"
         ],
         "sortOptions": false,
         "required": false

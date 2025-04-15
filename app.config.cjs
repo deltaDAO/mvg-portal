@@ -96,9 +96,6 @@ module.exports = {
   ssiDefaultPolicyUrl:
     process.env.NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL ||
     'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
-  ssiPolicyServer:
-    process.env.NEXT_PUBLIC_SSI_POLICY_SERVER ||
-    'http://ocean-node-vm2.oceanenterprise.io:8100',
 
   ipfsApiKey: process.env.NEXT_PUBLIC_IPFS_API_KEY,
   ipfsSecretApiKey: process.env.NEXT_PUBLIC_IPFS_SECRET_API_KEY,

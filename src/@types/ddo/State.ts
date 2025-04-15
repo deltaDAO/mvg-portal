@@ -5,5 +5,5 @@ export enum State {
   Deprecated = 2,
   RevokedByPublisher = 3,
   OrderingIsTemporaryDisabled = 4,
-  AssetUnlisted = 5
+  Unlisted = 5
 }

@@ -39,6 +39,11 @@ export default function AssetContent({
   const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
   const [jsonInvoice, setJsonInvoice] = useState(null)
 
+  const availableServices =
+    asset.credentialSubject?.services?.filter(
+      (service) => service.state === 0
+    ) || []
+
   async function handleGeneratePdf(id: string, tx: string) {
     try {
       setLoadingInvoice(true)
@@ -154,19 +159,23 @@ export default function AssetContent({
               {selectedService === undefined ? (
                 <>
                   <h3>Available services:</h3>
-                  <h4>Please select one of the following:</h4>
-                  <div className={styles.servicesGrid}>
-                    {asset.credentialSubject?.services?.map(
-                      (service, index) => (
-                        <ServiceCard
-                          key={service.id}
-                          service={service}
-                          accessDetails={asset.accessDetails[index]}
-                          onClick={() => setSelectedService(index)}
-                        />
-                      )
-                    )}
-                  </div>
+                  {availableServices.length > 0 ? (
+                    <>
+                      <h4>Please select one of the following:</h4>
+                      <div className={styles.servicesGrid}>
+                        {availableServices.map((service, index) => (
+                          <ServiceCard
+                            key={service.id}
+                            service={service}
+                            accessDetails={asset.accessDetails[index]}
+                            onClick={() => setSelectedService(index)}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <h4>No services are currently available.</h4>
+                  )}
                 </>
               ) : (
                 <AssetActions
