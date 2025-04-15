@@ -260,7 +260,8 @@ export function findCredential(
  */
 export function checkCredentials(
   credentials: Credential,
-  consumerAddress: string
+  consumerAddress: string,
+  type?: string
 ) {
   const consumerCredentials: CredentialAddressBased = {
     type: 'address',
@@ -278,7 +279,7 @@ export function checkCredentials(
     const accessAllow = findCredential(
       credentials.allow,
       consumerCredentials,
-      'service'
+      type
     )
     if (!accessAllow) {
       return false
@@ -308,6 +309,10 @@ export function isAddressWhitelisted(
     ddo.credentialSubject.credentials,
     accountId
   )
-  const serviceAccessGranted = checkCredentials(service.credentials, accountId)
+  const serviceAccessGranted = checkCredentials(
+    service.credentials,
+    accountId,
+    'service'
+  )
   return assetAccessGranted && serviceAccessGranted
 }
