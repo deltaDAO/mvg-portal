@@ -234,6 +234,7 @@ export function findCredential(
 ) {
   return credentials.find((credential) => {
     if (!isCredentialAddressBased(credential)) {
+      if (type === 'service') return true
       return false
     }
 
