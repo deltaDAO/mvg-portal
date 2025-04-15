@@ -56,12 +56,13 @@ export default function DebugEditMetadata({
       const updatedCredentials: Credential = generateCredentials(
         values.credentials
       )
-
       const updatedNft: AssetNft = {
         ...asset.credentialSubject.nft,
-        state: State[values.assetState as unknown as keyof typeof State]
+        state:
+          values.assetState !== undefined
+            ? State[values.assetState as unknown as keyof typeof State]
+            : asset.credentialSubject.nft.state
       }
-
       const tmpAsset: Asset = {
         ...asset,
         credentialSubject: {

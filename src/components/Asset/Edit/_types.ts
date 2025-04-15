@@ -39,7 +39,7 @@ export interface ServiceEditForm {
   usesConsumerParameters?: boolean
   consumerParameters?: FormConsumerParameter[]
   credentials?: CredentialForm
-  state?: State
+  state?: string
   // compute
   allowAllPublishedAlgorithms: boolean
   publisherTrustedAlgorithms: string[]

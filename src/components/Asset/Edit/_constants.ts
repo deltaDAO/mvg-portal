@@ -1,3 +1,4 @@
+import { assetStateToString } from '@utils/assetState'
 import { FileInfo, LoggerInstance } from '@oceanprotocol/lib'
 import { parseConsumerParameters, secondsToString } from '@utils/ddo'
 import { ComputeEditForm, MetadataEditForm, ServiceEditForm } from './_types'
@@ -201,7 +202,7 @@ export const getNewServiceInitialValues = (
       custom: false
     },
     files: [{ url: '', type: 'hidden' }],
-    state: State.Active,
+    state: assetStateToString(State.Active),
     timeout: '1 day',
     usesConsumerParameters: false,
     consumerParameters: [],
@@ -225,7 +226,6 @@ export const getServiceInitialValues = (
   )
 
   const credentialForm = generateCredentials(service.credentials)
-
   return {
     name: service.name,
     description: service.description?.['@value'],
@@ -240,7 +240,7 @@ export const getServiceInitialValues = (
       custom: false
     },
     files: [{ url: '', type: 'hidden' }],
-    state: service.state,
+    state: assetStateToString(service.state),
     timeout: secondsToString(service.timeout),
     usesConsumerParameters: service.consumerParameters
       ? Object.assign(service.consumerParameters).length > 0

@@ -36,6 +36,7 @@ import { customProviderUrl } from 'app.config.cjs'
 import { ethers } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
 import { State } from 'src/@types/ddo/State'
+import { assetStateToNumber } from '@utils/assetState'
 
 export default function EditService({
   asset,
@@ -126,10 +127,8 @@ export default function EditService({
         timeout: mapTimeoutStringToSeconds(values.timeout),
         state:
           values.state === undefined
-            ? 0
-            : isNaN(values.state)
-            ? State[values.state as unknown as keyof typeof State]
-            : values.state,
+            ? State.Active
+            : assetStateToNumber(values.state),
         files: updatedFiles, // TODO: check if this works,
         credentials: updatedCredentials,
         ...(values.access === 'compute' && {
