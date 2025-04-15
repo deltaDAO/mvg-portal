@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import type { MouseEvent } from 'react'
 import Link from 'next/link'
 import loadable from '@loadable/component'
 import Logo from '@shared/atoms/Logo'
@@ -12,6 +13,7 @@ import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
 import { SsiWallet } from '@components/Header/SsiWallet'
+import Upload from '@images/publish.svg'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -50,6 +52,15 @@ export function MenuLink({ name, link, className }: MenuItem) {
 
 export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
+  const router = useRouter()
+  const handlePublishClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    router.push('/publish/1')
+  }
+  const handleCatalogClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    router.push('/search?sort=credentialSubject.nft.created&sortOrder=desc')
+  }
 
   return (
     <nav className={styles.menu}>
@@ -76,6 +87,19 @@ export default function Menu(): ReactElement {
           <UserPreferences />
           <Wallet />
           <SsiWallet />
+          <div className={styles.ctaContent}>
+            <button className={styles.ctaButton} onClick={handlePublishClick}>
+              <div className={styles.buttonContent}>
+                <Upload className={styles.uploadIcon} />
+                <span className={styles.buttonText}>Publish</span>
+              </div>
+            </button>
+            <button className={styles.ctaButton} onClick={handleCatalogClick}>
+              <div className={styles.buttonContent}>
+                <span className={styles.buttonText}>Catalogue</span>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </nav>

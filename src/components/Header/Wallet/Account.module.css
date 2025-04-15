@@ -73,7 +73,7 @@ svg.caret {
   display: none;
 }
 
-@media screen and (min-width: 15rem) and (max-width: 30rem) {
+@media screen and (min-width: 15rem) and (max-width: 47rem) {
   .button.initial span {
     display: inline;
   }
@@ -85,6 +85,12 @@ svg.caret {
   .button.initial {
     font-size: 12px;
     max-width: 80px;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1150px) {
+  .button {
+    font-size: 16px;
   }
 }
 

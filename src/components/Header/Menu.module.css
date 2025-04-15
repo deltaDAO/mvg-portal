@@ -187,6 +187,48 @@ svg.caret {
   transform: rotate(180deg);
 }
 
+.ctaContent {
+  display: flex;
+  gap: 1rem;
+}
+
+.ctaButton {
+  background: white;
+  border-radius: 50px;
+  border: none;
+  box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.2s;
+  border-radius: 20px;
+  padding: 3px 8px;
+  width: 135px;
+  height: 40px;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+}
+.buttonContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.buttonText {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 92%;
+  text-align: center;
+  color: #0a4b70;
+}
+.uploadIcon {
+  width: 24px;
+  height: 24px;
+}
+
 @media screen and (min-width: 75rem) {
   .caret,
   svg.caret {
@@ -202,6 +244,24 @@ svg.caret {
   .container {
     width: 1500px;
     /* height: 140px; */
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1150px) {
+  .container {
+    width: 100%;
+  }
+  .ctaButton {
+    border-radius: 20px;
+    width: 100px;
+    height: 30px;
+  }
+  .buttonText {
+    font-size: 16px;
+  }
+  .actions {
+    font-size: 16px;
+    font-weight: 700;
   }
 }
 
