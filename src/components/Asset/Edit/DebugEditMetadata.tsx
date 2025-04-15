@@ -7,11 +7,12 @@ import {
   generateCredentials,
   transformConsumerParameters
 } from '@components/Publish/_utils'
-import { Asset } from 'src/@types/Asset'
+import { Asset, AssetNft } from 'src/@types/Asset'
 import { Metadata } from 'src/@types/ddo/Metadata'
 import { Credential } from 'src/@types/ddo/Credentials'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { convertLinks } from '@utils/links'
+import { State } from 'src/@types/ddo/State'
 
 export default function DebugEditMetadata({
   values,
@@ -55,13 +56,20 @@ export default function DebugEditMetadata({
       const updatedCredentials: Credential = generateCredentials(
         values.credentials
       )
-
+      const updatedNft: AssetNft = {
+        ...asset.credentialSubject.nft,
+        state:
+          values.assetState !== undefined
+            ? State[values.assetState as unknown as keyof typeof State]
+            : asset.credentialSubject.nft.state
+      }
       const tmpAsset: Asset = {
         ...asset,
         credentialSubject: {
           ...asset.credentialSubject,
           metadata: newMetadata,
-          credentials: updatedCredentials
+          credentials: updatedCredentials,
+          nft: updatedNft
         }
       }
 

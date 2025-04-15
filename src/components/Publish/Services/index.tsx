@@ -78,27 +78,13 @@ export default function ServicesFields(): ReactElement {
 
   return (
     <>
-      <Field
-        {...getFieldContent('dataTokenOptions', content.services.fields)}
-        component={Input}
-        name="services[0].dataTokenOptions"
-      />
-      {values.metadata.type === 'algorithm' ? (
+      <div style={{ display: 'none' }}>
         <Field
-          {...getFieldContent('algorithmPrivacy', content.services.fields)}
+          {...getFieldContent('dataTokenOptions', content.services.fields)}
           component={Input}
-          name="services[0].algorithmPrivacy"
+          name="services[0].dataTokenOptions"
         />
-      ) : (
-        <>
-          <Field
-            {...getFieldContent('access', content.services.fields)}
-            component={Input}
-            name="services[0].access"
-            options={accessTypeOptions}
-          />
-        </>
-      )}
+      </div>
       <Field
         {...getFieldContent('name', content.services.fields)}
         component={Input}
@@ -119,6 +105,22 @@ export default function ServicesFields(): ReactElement {
         component={Input}
         name="services[0].description.language"
       />
+      {values.metadata.type === 'algorithm' ? (
+        <Field
+          {...getFieldContent('algorithmPrivacy', content.services.fields)}
+          component={Input}
+          name="services[0].algorithmPrivacy"
+        />
+      ) : (
+        <>
+          <Field
+            {...getFieldContent('access', content.services.fields)}
+            component={Input}
+            name="services[0].access"
+            options={accessTypeOptions}
+          />
+        </>
+      )}
       <Field
         {...getFieldContent('providerUrl', content.services.fields)}
         component={Input}

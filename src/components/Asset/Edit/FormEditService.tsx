@@ -73,11 +73,20 @@ export default function FormEditService({
   return (
     <Form className={styles.form}>
       <Field {...getFieldContent('name', data)} component={Input} name="name" />
-
       <Field
         {...getFieldContent('description', data)}
         component={Input}
         name="description"
+      />
+      <Field
+        {...getFieldContent('direction', data)}
+        component={Input}
+        name="direction"
+      />
+      <Field
+        {...getFieldContent('language', data)}
+        component={Input}
+        name="language"
       />
 
       <Field
@@ -126,6 +135,12 @@ export default function FormEditService({
         {...getFieldContent('timeout', data)}
         component={Input}
         name="timeout"
+      />
+
+      <Field
+        {...getFieldContent('state', data)}
+        component={Input}
+        name="state"
       />
 
       <Field

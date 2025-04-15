@@ -17,6 +17,8 @@ import {
 import { Service } from 'src/@types/ddo/Service'
 import { Asset } from 'src/@types/Asset'
 import { Credential } from 'src/@types/ddo/Credentials'
+import { State } from 'src/@types/ddo/State'
+import { assetStateToNumber } from '@utils/assetState'
 
 export default function DebugEditService({
   values,
@@ -60,17 +62,20 @@ export default function DebugEditService({
       }
 
       const credentials: Credential = generateCredentials(values.credentials)
-
       const updatedService: Service = {
         ...service,
         name: values.name,
         description: {
           '@value': values.description,
-          '@language': '',
-          '@direction': ''
+          '@language': values.language,
+          '@direction': values.direction
         },
         type: values.access,
         timeout: mapTimeoutStringToSeconds(values.timeout),
+        state:
+          values.state === undefined
+            ? State.Active
+            : assetStateToNumber(values.state),
         files: updatedFiles, // TODO: check if this works,
         credentials,
         ...(values.access === 'compute' && {

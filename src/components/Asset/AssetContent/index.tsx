@@ -39,6 +39,11 @@ export default function AssetContent({
   const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
   const [jsonInvoice, setJsonInvoice] = useState(null)
 
+  const availableServices =
+    asset.credentialSubject?.services?.filter(
+      (service) => service.state === 0
+    ) || []
+
   async function handleGeneratePdf(id: string, tx: string) {
     try {
       setLoadingInvoice(true)
@@ -151,31 +156,43 @@ export default function AssetContent({
             <p>Loading access details...</p>
           ) : (
             <>
-              {selectedService === undefined ? (
-                <>
-                  <h3>Available services:</h3>
-                  <h4>Please select one of the following:</h4>
-                  <div className={styles.servicesGrid}>
-                    {asset.credentialSubject?.services?.map(
-                      (service, index) => (
-                        <ServiceCard
-                          key={service.id}
-                          service={service}
-                          accessDetails={asset.accessDetails[index]}
-                          onClick={() => setSelectedService(index)}
-                        />
-                      )
+              {asset?.credentialSubject?.nft?.state === 0 ? (
+                selectedService === undefined ? (
+                  <>
+                    <h3>Available services:</h3>
+                    {availableServices.length > 0 ? (
+                      <>
+                        <h4>Please select one of the following:</h4>
+                        <div className={styles.servicesGrid}>
+                          {availableServices.map((service, index) => (
+                            <ServiceCard
+                              key={service.id}
+                              service={service}
+                              accessDetails={asset.accessDetails[index]}
+                              onClick={() => setSelectedService(index)}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <h4>No services are currently available.</h4>
                     )}
-                  </div>
-                </>
+                  </>
+                ) : (
+                  <AssetActions
+                    asset={asset}
+                    service={asset.credentialSubject?.services[selectedService]}
+                    accessDetails={asset.accessDetails[selectedService]}
+                    serviceIndex={selectedService}
+                    handleBack={() => setSelectedService(undefined)}
+                  />
+                )
               ) : (
-                <AssetActions
-                  asset={asset}
-                  service={asset.credentialSubject?.services[selectedService]}
-                  accessDetails={asset.accessDetails[selectedService]}
-                  serviceIndex={selectedService}
-                  handleBack={() => setSelectedService(undefined)}
-                />
+                <h4>
+                  {asset?.credentialSubject?.nft?.owner === accountId
+                    ? 'You are the asset owner.'
+                    : 'Services cannot be ordered.'}
+                </h4>
               )}
             </>
           )}

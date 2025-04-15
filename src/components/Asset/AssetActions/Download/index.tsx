@@ -108,7 +108,6 @@ export default function Download({
 
   useEffect(() => {
     if (asset?.credentialSubject?.event?.from === accountId) {
-      console.log('is the owner')
       setIsOwner(true)
     }
   }, [asset, accountId])

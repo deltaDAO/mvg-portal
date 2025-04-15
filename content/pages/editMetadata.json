@@ -54,6 +54,12 @@
         "required": false
       },
       {
+        "name": "author",
+        "label": "New Author",
+        "type": "author",
+        "placeholder": "e.g. John SRL"
+      },
+      {
         "name": "usesConsumerParameters",
         "label": "Algorithm custom parameters",
         "help": "Algorithm custom parameters are used to define required consumer input before running the algorithm in a Compute-to-Data environment.",
@@ -94,9 +100,11 @@
         "type": "select",
         "options": [
           "Active",
-          "Revoked by publisher",
-          "Ordering is temporary disabled",
-          "Asset unlisted"
+          "EndOfLife",
+          "Deprecated",
+          "RevokedByPublisher",
+          "OrderingIsTemporaryDisabled",
+          "Unlisted"
         ],
         "sortOptions": false,
         "required": false
