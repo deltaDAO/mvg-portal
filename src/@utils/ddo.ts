@@ -232,12 +232,15 @@ export function findCredential(
   consumerCredentials: CredentialAddressBased,
   type?: string
 ) {
+  const hasAddressType = credentials.some((credential) => {
+    const type = String(credential.type ?? '').toLowerCase()
+    return type === 'address'
+  })
+  if (type === 'service' && !hasAddressType) return true
   return credentials.find((credential) => {
     if (!isCredentialAddressBased(credential)) {
-      if (type === 'service') return true
       return false
     }
-
     if (Array.isArray(credential?.values)) {
       if (credential.values.length > 0) {
         const credentialType = String(credential?.type)?.toLowerCase()
