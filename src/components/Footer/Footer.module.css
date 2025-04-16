@@ -70,7 +70,7 @@
 }
 
 /* Optional: Different colors for different platforms */
-.socialLinks a[href*='twitter.com']:hover .socialIcon {
+.socialLinks a[href*='x.com']:hover .socialIcon {
   fill: #fdd655; /* Twitter/X blue */
 }
 
