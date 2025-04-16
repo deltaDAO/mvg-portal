@@ -82,6 +82,8 @@ export default function Details(): ReactElement {
                 size="small"
                 onClick={async () => {
                   disconnect()
+                  // eslint-disable-next-line promise/param-names
+                  await new Promise((r) => setTimeout(r, 500))
                   await disconnectSsiWallet()
                 }}
               >
