@@ -25,7 +25,7 @@
 .button.initial {
   font-family: var(--font-family);
   font-weight: 700;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 137%;
   text-align: center;
   color: #fff;
@@ -90,6 +90,9 @@ svg.caret {
 
 @media screen and (min-width: 768px) and (max-width: 1150px) {
   .button {
+    font-size: 16px;
+  }
+  .button.initial {
     font-size: 16px;
   }
 }

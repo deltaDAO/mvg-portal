@@ -36,7 +36,7 @@
 }
 
 .link:hover {
-  color: var(--footer-font-color-highlight);
+  color: #fdd655;
   text-decoration: underline;
 }
 

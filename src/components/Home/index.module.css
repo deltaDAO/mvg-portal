@@ -19,7 +19,7 @@
 
 .contentContainer {
   width: 1160px;
-  height: 560px;
+  height: 565px;
   display: flex;
   flex-direction: column;
   gap: 80px;
@@ -449,9 +449,9 @@
   }
 }
 
-@media screen and (min-width: 1224px) and (max-width: 1460px) {
+@media screen and (min-width: 1224px) and (max-width: 1549px) {
   .contentContainer {
-    height: 580px;
+    height: 590px;
   }
 }
 
