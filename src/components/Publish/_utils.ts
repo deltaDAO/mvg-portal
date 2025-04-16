@@ -572,7 +572,7 @@ export async function transformPublishFormToDdo(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newDdo: any = {
     '@context': ['https://www.w3.org/ns/credentials/v2'],
-    id: '',
+    id: 'Generated when published',
     version: DDOVersion.V5_0_0,
     credentialSubject: {
       chainId,
