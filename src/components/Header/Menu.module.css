@@ -360,6 +360,12 @@ svg.caret {
   }
 }
 
+@media screen and (min-width: 50px) and (max-width: 469px) {
+  .container {
+    height: 85px;
+  }
+}
+
 @media screen and (min-width: 769px) {
   .mobileMenu {
     display: none !important;

@@ -40,7 +40,7 @@
   font-weight: 700;
   text-decoration: underline;
   text-decoration-skip-ink: none;
-  margin-top: 1rem;
+  margin-top: 5rem;
 }
 
 .socialLinks {
@@ -85,6 +85,7 @@
 @media screen and (min-width: 55rem) {
   .footer {
     padding: calc(var(--spacer) * 2);
+    padding-bottom: 1rem;
     /* padding-bottom: calc(var(--spacer) / 2); */
   }
   .container {
@@ -96,7 +97,7 @@
   .logoSection {
     align-items: flex-start;
     text-align: left;
-    gap: 6px;
+    gap: 18px;
   }
 }
 @media screen and (min-width: 250px) and (max-width: 900px) {
