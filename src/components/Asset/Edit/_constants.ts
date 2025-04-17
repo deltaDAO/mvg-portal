@@ -28,7 +28,10 @@ export const defaultServiceComputeOptions: Compute = {
   publisherTrustedAlgorithms: []
 }
 
-function generateCredentials(credentials: Credential): CredentialForm {
+function generateCredentials(
+  credentials: Credential,
+  type?: string
+): CredentialForm {
   const credentialForm: CredentialForm = {}
 
   if (appConfig.ssiEnabled) {
@@ -42,7 +45,8 @@ function generateCredentials(credentials: Credential): CredentialForm {
             let policyTypes = (requestCredential?.policies ?? []).map(
               (policy) => {
                 try {
-                  return convertToPolicyType(policy)
+                  const newPolicy = convertToPolicyType(policy, type)
+                  return newPolicy
                 } catch (error) {
                   LoggerInstance.error(error)
                   return undefined
@@ -86,7 +90,6 @@ function generateCredentials(credentials: Credential): CredentialForm {
         })
       }
     })
-
     credentialForm.requestCredentials = requestCredentials
     credentialForm.vcPolicies = vcPolicies
     credentialForm.vpPolicies = vpPolicies
@@ -141,7 +144,7 @@ export function getInitialValues(
     }
   }
 
-  const credentialForm = generateCredentials(credentials)
+  const credentialForm = generateCredentials(credentials, 'edit')
 
   return {
     name: metadata?.name,
@@ -224,8 +227,7 @@ export const getServiceInitialValues = (
   const computeSettings = getComputeSettingsInitialValues(
     service.compute || defaultServiceComputeOptions
   )
-
-  const credentialForm = generateCredentials(service.credentials)
+  const credentialForm = generateCredentials(service.credentials, 'edit')
   return {
     name: service.name,
     description: service.description?.['@value'],

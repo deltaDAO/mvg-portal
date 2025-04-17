@@ -57,6 +57,29 @@ function readRules(policy: string): PolicyRule[] {
   return rules
 }
 
+function generateRules(arg: any, policy: string): PolicyRule[] {
+  const parsedRules = readRules(policy)
+
+  const rules: PolicyRule[] = []
+
+  for (const key of Object.keys(arg)) {
+    const value = arg[key]
+    const matchingRule = parsedRules.find(
+      (rule) => rule.rightValue === `input.parameter.${key}`
+    )
+
+    if (matchingRule) {
+      rules.push({
+        leftValue: key,
+        operator: matchingRule.operator,
+        rightValue: value
+      })
+    }
+  }
+
+  return rules
+}
+
 function isDynamicPolicy(data: any): boolean {
   return (
     'policy' in data &&
@@ -87,7 +110,7 @@ function hasArguments(args: any) {
   return 'argument' in args && typeof args.argument === 'object'
 }
 
-export function convertToPolicyType(data: any): PolicyType {
+export function convertToPolicyType(data: any, type?: string): PolicyType {
   if (!data) {
     return
   }
@@ -128,7 +151,10 @@ export function convertToPolicyType(data: any): PolicyType {
     return {
       type: 'customPolicy',
       name: data.args.policy_name,
-      rules: readRules(data.args.rules.rego),
+      rules:
+        type === 'edit'
+          ? generateRules(data.args.argument, data.args.rules.rego)
+          : readRules(data.args.rules.rego),
       arguments: readProperties(data.args.argument)
     } as CustomPolicy
   }
