@@ -255,7 +255,7 @@
     height: auto;
     flex-direction: column;
     align-items: center;
-    padding: 2rem 1rem;
+    padding: 2rem 0rem;
     gap: 40px;
     text-align: center;
   }

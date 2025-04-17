@@ -25,7 +25,7 @@
   align-items: center;
   flex-wrap: wrap;
   background: transparent;
-  margin-bottom: 2rem;
+  margin-bottom: 40px;
 }
 
 .logo {
@@ -240,6 +240,12 @@ svg.caret {
   }
 }
 
+@media screen and (min-width: 256px) and (max-width: 768px) {
+  .actions {
+    font-size: 18px;
+    margin-top: 1rem;
+  }
+}
 @media screen and (min-width: 1550px) and (max-width: 2550px) {
   .container {
     width: 1500px;
@@ -341,7 +347,6 @@ svg.caret {
 }
 
 .mobileWallet {
-  width: 100%;
   max-width: 200px;
 }
 

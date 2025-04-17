@@ -158,6 +158,10 @@ svg.caret {
   .menu {
     width: 100%;
   }
+  .actions {
+    font-size: 18px;
+    margin-top: 1rem;
+  }
 }
 @media screen and (min-width: 786px) and (max-width: 1025px) {
   .menu {

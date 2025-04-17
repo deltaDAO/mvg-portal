@@ -56,7 +56,7 @@
 @media screen and (max-width: 480px) {
   .ssiPanel {
     padding: 0.1em 0.2em;
-    font-size: 0.8em;
+    font-size: 14px;
   }
 
   .marginRight2 {

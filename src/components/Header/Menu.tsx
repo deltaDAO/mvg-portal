@@ -71,13 +71,18 @@ export default function Menu(): ReactElement {
   const handlePublishClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     router.push('/publish/1')
+    setIsMobileMenuOpen(false)
   }
   const handleCatalogClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     router.push('/search?sort=credentialSubject.nft.created&sortOrder=desc')
+    setIsMobileMenuOpen(false)
   }
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
+  const handleWalletClick = () => {
+    setIsMobileMenuOpen(false)
   }
 
   return (
@@ -155,7 +160,7 @@ export default function Menu(): ReactElement {
             <CloseIcon className={styles.closeIcon} />
           </button>
           <div className={styles.mobileMenuContent}>
-            <div className={styles.mobileWallet}>
+            <div className={styles.mobileWallet} onClick={handleWalletClick}>
               <SsiWallet />
             </div>
             {showPublishButton && (

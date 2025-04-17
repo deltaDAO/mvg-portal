@@ -52,7 +52,7 @@ const Account = forwardRef((props, ref: any) => {
       onClick={(e) => handleActivation(e)}
       ref={ref}
     >
-      ConnectWallet
+      <span>Connect Wallet</span>
     </button>
   )
 })
