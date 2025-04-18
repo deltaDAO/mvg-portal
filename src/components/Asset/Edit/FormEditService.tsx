@@ -16,6 +16,28 @@ import appConfig from 'app.config.cjs'
 import { PolicyEditor } from '@components/@shared/PolicyEditor'
 import { LoggerInstance } from '@oceanprotocol/lib'
 
+interface Language {
+  code: string
+  name: string
+  direction: 'ltr' | 'rtl'
+}
+
+const supportedLanguages: Language[] = [
+  { code: 'en', name: 'English', direction: 'ltr' },
+  { code: 'es', name: 'Spanish', direction: 'ltr' },
+  { code: 'fr', name: 'French', direction: 'ltr' },
+  { code: 'de', name: 'German', direction: 'ltr' },
+  { code: 'zh', name: 'Chinese', direction: 'ltr' },
+  { code: 'ja', name: 'Japanese', direction: 'ltr' },
+  { code: 'ru', name: 'Russian', direction: 'ltr' },
+  { code: 'pt', name: 'Portuguese', direction: 'ltr' },
+  { code: 'ar', name: 'Arabic', direction: 'rtl' },
+  { code: 'he', name: 'Hebrew', direction: 'rtl' },
+  { code: 'fa', name: 'Persian', direction: 'rtl' },
+  { code: 'ur', name: 'Urdu', direction: 'rtl' },
+  { code: 'hi', name: 'Hindi', direction: 'ltr' }
+]
+
 export default function FormEditService({
   data,
   chainId,
@@ -51,6 +73,20 @@ export default function FormEditService({
       checked: values.access === 'compute'
     }
   ]
+  const languageOptions = supportedLanguages
+    .map((lang) => lang.name)
+    .sort((a, b) => a.localeCompare(b))
+  useEffect(() => {
+    const languageName = values.language
+    if (!languageName) return
+
+    const selectedLanguage = supportedLanguages.find(
+      (lang) => lang.name === languageName
+    )
+    if (selectedLanguage) {
+      setFieldValue('direction', selectedLanguage.direction)
+    }
+  }, [values?.language, setFieldValue])
 
   useEffect(() => {
     if (appConfig.ssiEnabled) {
@@ -87,6 +123,8 @@ export default function FormEditService({
         {...getFieldContent('language', data)}
         component={Input}
         name="language"
+        type="select"
+        options={languageOptions}
       />
 
       <Field
