@@ -267,6 +267,9 @@
     text-align: center;
     margin-top: 3rem;
   }
+  .buttonText {
+    font-size: 18px;
+  }
 
   .title {
     font-size: 32px;
@@ -285,6 +288,7 @@
     line-height: 1.5;
     margin: 0 auto;
     text-align: center;
+    padding: 20px;
   }
 
   .logoImage {
@@ -320,6 +324,9 @@
     max-width: 100%;
     font-size: 18px;
     padding: 12px 20px;
+  }
+  .ctaTitle {
+    font-size: 18px;
   }
 
   .divider {
