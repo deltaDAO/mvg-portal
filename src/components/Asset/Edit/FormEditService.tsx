@@ -80,13 +80,6 @@ export default function FormEditService({
     }
   ]
 
-  useEffect(() => {
-    console.log('Current form values:', {
-      language: values.language,
-      direction: values.direction
-    })
-  }, [values.language, values.direction])
-
   const languageOptions = useMemo(() => {
     return supportedLanguages
       .map((lang) => lang.name)
@@ -95,23 +88,17 @@ export default function FormEditService({
 
   useEffect(() => {
     if (!values.language || values.language === '') {
-      console.log('Setting default language to English (en)')
       setFieldValue('language', 'en')
       setFieldValue('direction', 'ltr')
     }
   }, [setFieldValue, values.language])
 
   const handleLanguageChange = (languageName: string) => {
-    console.log('Language selected:', languageName)
     const selectedLanguage = supportedLanguages.find(
       (lang) => lang.name === languageName
     )
 
     if (selectedLanguage) {
-      console.log('Updating to:', {
-        code: selectedLanguage.code,
-        direction: selectedLanguage.direction
-      })
       setFieldValue('language', selectedLanguage.code)
       setFieldValue('direction', selectedLanguage.direction)
     }

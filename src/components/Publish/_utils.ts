@@ -178,7 +178,6 @@ function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
         ? `lower(${PolicyRuleLeftValuePrefix}.${updatedValue})`
         : `${PolicyRuleLeftValuePrefix}.${updatedValue}`
 
-    console.log('right:', right)
     rulesStrings.push(`${left} ${rule.operator} ${right}`)
   })
 
