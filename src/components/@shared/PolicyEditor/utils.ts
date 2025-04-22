@@ -65,7 +65,9 @@ function generateRules(arg: any, policy: string): PolicyRule[] {
   for (const key of Object.keys(arg)) {
     const value = arg[key]
     const matchingRule = parsedRules.find(
-      (rule) => rule.rightValue === `input.parameter.${key}`
+      (rule) =>
+        rule.rightValue === `lower(input.parameter.${key})` ||
+        rule.rightValue === `input.parameter.${key}`
     )
 
     if (matchingRule) {
