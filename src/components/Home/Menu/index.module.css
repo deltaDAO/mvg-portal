@@ -38,7 +38,7 @@
   gap: calc(var(--spacer) / 3);
   margin-left: auto;
   align-items: center;
-  font-size: 23px;
+  font-size: 22px;
 }
 
 .navigation {
@@ -158,11 +158,22 @@ svg.caret {
   .menu {
     width: 100%;
   }
+  .actions {
+    font-size: 18px;
+    margin-top: 1rem;
+  }
 }
 @media screen and (min-width: 786px) and (max-width: 1025px) {
   .menu {
     margin-top: 1rem;
-    width: 864px;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1026px) and (max-width: 1250px) {
+  .menu {
+    margin-top: 1rem;
+    width: 100%;
   }
 }
 

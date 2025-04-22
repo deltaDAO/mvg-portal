@@ -75,3 +75,12 @@
   margin-top: calc(var(--spacer) / 2);
   max-width: 30rem;
 }
+
+@media screen and (max-width: 480px) {
+  .title {
+    font-size: 1.3rem;
+  }
+  .description {
+    font-size: 1.3rem;
+  }
+}

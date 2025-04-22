@@ -72,15 +72,14 @@ export default function FormAddService({
       />
 
       <Field
-        {...getFieldContent('direction', data)}
-        component={Input}
-        name="direction"
-      />
-
-      <Field
         {...getFieldContent('language', data)}
         component={Input}
         name="language"
+      />
+      <Field
+        {...getFieldContent('direction', data)}
+        component={Input}
+        name="direction"
       />
 
       <Field

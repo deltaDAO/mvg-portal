@@ -1,6 +1,6 @@
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState, useMemo } from 'react'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import content from '../../../../content/publish/form.json'
@@ -17,12 +17,78 @@ const accessTypeOptionsTitles = getFieldContent(
   content.services.fields
 ).options
 
+interface Language {
+  code: string
+  name: string
+  direction: 'ltr' | 'rtl'
+}
+
+const supportedLanguages: Language[] = [
+  { code: 'en', name: 'English', direction: 'ltr' },
+  { code: 'es', name: 'Spanish', direction: 'ltr' },
+  { code: 'fr', name: 'French', direction: 'ltr' },
+  { code: 'de', name: 'German', direction: 'ltr' },
+  { code: 'zh', name: 'Chinese', direction: 'ltr' },
+  { code: 'ja', name: 'Japanese', direction: 'ltr' },
+  { code: 'ru', name: 'Russian', direction: 'ltr' },
+  { code: 'pt', name: 'Portuguese', direction: 'ltr' },
+  { code: 'ar', name: 'Arabic', direction: 'rtl' },
+  { code: 'he', name: 'Hebrew', direction: 'rtl' },
+  { code: 'fa', name: 'Persian', direction: 'rtl' },
+  { code: 'ur', name: 'Urdu', direction: 'rtl' },
+  { code: 'hi', name: 'Hindi', direction: 'ltr' },
+  { code: 'ro', name: 'Romanian', direction: 'ltr' },
+  { code: 'it', name: 'Italian', direction: 'ltr' },
+  { code: 'nl', name: 'Dutch', direction: 'ltr' },
+  { code: 'tr', name: 'Turkish', direction: 'ltr' },
+  { code: 'ko', name: 'Korean', direction: 'ltr' },
+  { code: 'pl', name: 'Polish', direction: 'ltr' }
+]
+
 export default function ServicesFields(): ReactElement {
   const { appConfig } = useMarketMetadata()
   const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
+
+  // 1. Create display options (names) and maintain code mapping
+  const languageOptions = useMemo(() => {
+    return supportedLanguages
+      .map((lang) => lang.name)
+      .sort((a, b) => a.localeCompare(b))
+  }, [])
+
+  // 2. Set default language (English code 'en')
+  useEffect(() => {
+    if (!values.services?.[0]?.description?.language) {
+      setFieldValue('services[0].description.language', 'en')
+      setFieldValue('services[0].description.direction', 'ltr')
+    }
+  }, [setFieldValue, values.services])
+
+  const handleLanguageChange = (languageName: string) => {
+    const selectedLanguage = supportedLanguages.find(
+      (lang) => lang.name === languageName
+    )
+
+    if (selectedLanguage) {
+      setFieldValue('services[0].description.language', selectedLanguage.code)
+      setFieldValue(
+        'services[0].description.direction',
+        selectedLanguage.direction
+      )
+    }
+  }
+  const getCurrentLanguageName = () => {
+    const currentCode = values.services?.[0]?.description?.language
+    if (!currentCode) return ''
+
+    const language = supportedLanguages.find(
+      (lang) => lang.code === currentCode
+    )
+    return language?.name || ''
+  }
 
   // name and title should be download, but option value should be access, probably the best way would be to change the component so that option is an object like {name,value}
   const accessTypeOptions = [
@@ -96,14 +162,19 @@ export default function ServicesFields(): ReactElement {
         name="services[0].description.value"
       />
       <Field
-        {...getFieldContent('direction', content.services.fields)}
-        component={Input}
-        name="services[0].description.direction"
-      />
-      <Field
         {...getFieldContent('language', content.services.fields)}
         component={Input}
         name="services[0].description.language"
+        type="select"
+        options={languageOptions}
+        value={getCurrentLanguageName()}
+        onChange={(e) => handleLanguageChange(e.target.value)}
+      />
+      <Field
+        {...getFieldContent('direction', content.services.fields)}
+        component={Input}
+        name="services[0].description.direction"
+        readOnly
       />
       {values.metadata.type === 'algorithm' ? (
         <Field

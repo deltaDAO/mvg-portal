@@ -47,7 +47,7 @@ export default function Features(): ReactElement {
                   >
                     <path
                       d="M20 6L9 17L4 12"
-                      stroke="white"
+                      stroke="black"
                       strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"

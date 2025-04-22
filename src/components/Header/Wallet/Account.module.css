@@ -25,7 +25,7 @@
 .button.initial {
   font-family: var(--font-family);
   font-weight: 700;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 137%;
   text-align: center;
   color: #fff;
@@ -73,7 +73,7 @@ svg.caret {
   display: none;
 }
 
-@media screen and (min-width: 15rem) and (max-width: 30rem) {
+@media screen and (min-width: 15rem) and (max-width: 47rem) {
   .button.initial span {
     display: inline;
   }
@@ -82,9 +82,37 @@ svg.caret {
     display: inline-block;
     fill: var(--menu-icon-fill-color);
   }
+}
+@media screen and (min-width: 47rem) {
+  .button.initial span {
+    display: inline;
+  }
+  /* ... */
+}
+
+@media screen and (min-width: 481px) and (max-width: 1150px) {
+  .button {
+    font-size: 16px;
+  }
   .button.initial {
-    font-size: 12px;
-    max-width: 80px;
+    font-size: 16px;
+  }
+}
+
+@media screen and (min-width: 150px) and (max-width: 480px) {
+  .button.initial {
+    font-size: 14px;
+    /* max-width: 50%; */
+  }
+  .button {
+    font-size: 14px;
+  }
+  .button.initial::after {
+    content: 'Connect...';
+  }
+
+  .button.initial span {
+    display: none;
   }
 }
 

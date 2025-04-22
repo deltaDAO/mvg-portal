@@ -27,7 +27,6 @@
   padding: 8px 16px;
   font-family: var(--font-family);
   font-weight: 700;
-  font-size: 16px;
   line-height: 137%;
   text-align: center;
   color: #fff;
@@ -57,7 +56,7 @@
 @media screen and (max-width: 480px) {
   .ssiPanel {
     padding: 0.1em 0.2em;
-    font-size: 0.8em;
+    font-size: 14px;
   }
 
   .marginRight2 {
@@ -78,6 +77,12 @@
   }
   .text {
     max-width: 80px;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1150px) {
+  .text {
+    font-size: 16px;
   }
 }
 
