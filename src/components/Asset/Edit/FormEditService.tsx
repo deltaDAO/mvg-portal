@@ -91,7 +91,11 @@ export default function FormEditService({
     }
   }, [values?.language, setFieldValue])
   useEffect(() => {
-    if (!values.language || values.language === '') {
+    if (
+      !values.language ||
+      values.language === '' ||
+      values.language === undefined
+    ) {
       setFieldValue('language', 'English')
       setFieldValue('direction', 'ltr')
     }
@@ -124,16 +128,17 @@ export default function FormEditService({
         name="description"
       />
       <Field
-        {...getFieldContent('direction', data)}
-        component={Input}
-        name="direction"
-      />
-      <Field
         {...getFieldContent('language', data)}
         component={Input}
         name="language"
         type="select"
         options={languageOptions}
+      />
+      <Field
+        {...getFieldContent('direction', data)}
+        component={Input}
+        name="direction"
+        readOnly
       />
 
       <Field

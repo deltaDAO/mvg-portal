@@ -144,16 +144,17 @@ export default function ServicesFields(): ReactElement {
         name="services[0].description.value"
       />
       <Field
-        {...getFieldContent('direction', content.services.fields)}
-        component={Input}
-        name="services[0].description.direction"
-      />
-      <Field
         {...getFieldContent('language', content.services.fields)}
         component={Input}
         name="services[0].description.language"
         type="select"
         options={languageOptions}
+      />
+      <Field
+        {...getFieldContent('direction', content.services.fields)}
+        component={Input}
+        name="services[0].description.direction"
+        readOnly
       />
       {values.metadata.type === 'algorithm' ? (
         <Field

@@ -348,9 +348,9 @@
       },
       {
         "name": "direction",
-        "label": "Service direction",
+        "label": "Service language direction",
         "type": "serviceDirection",
-        "help": "Please enter the service direction",
+        "help": "Please enter the service language direction",
         "placeholder": "e.g. direction",
         "required": false
       },
