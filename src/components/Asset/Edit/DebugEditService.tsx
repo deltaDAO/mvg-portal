@@ -97,7 +97,6 @@ export default function DebugEditService({
     }
 
     transformValues()
-    console.log('VALUES HERE<: ', values)
     setValuePreview(previewDebugPatch(values))
   }, [values, asset, newCancelToken, service])
 
