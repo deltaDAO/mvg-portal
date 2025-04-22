@@ -36,7 +36,12 @@ const supportedLanguages: Language[] = [
   { code: 'fa', name: 'Persian', direction: 'rtl' },
   { code: 'ur', name: 'Urdu', direction: 'rtl' },
   { code: 'hi', name: 'Hindi', direction: 'ltr' },
-  { code: 'ro', name: 'Romanian', direction: 'ltr' }
+  { code: 'ro', name: 'Romanian', direction: 'ltr' },
+  { code: 'it', name: 'Italian', direction: 'ltr' },
+  { code: 'nl', name: 'Dutch', direction: 'ltr' },
+  { code: 'tr', name: 'Turkish', direction: 'ltr' },
+  { code: 'ko', name: 'Korean', direction: 'ltr' },
+  { code: 'pl', name: 'Polish', direction: 'ltr' }
 ]
 
 export default function FormEditService({
