@@ -21,12 +21,12 @@ export default function ServiceCard({
       <span className={styles.title}>Description: </span>
       <span>{service.description?.['@value']}</span>
       <br />
-      <span className={styles.title}>Direction: </span>
+      {/* <span className={styles.title}>Direction: </span>
       <span>{service.description?.['@direction']}</span>
       <br />
       <span className={styles.title}>Language: </span>
       <span>{service.description?.['@language']}</span>
-      <br />
+      <br /> */}
       <span className={styles.title}>Type: </span>
       {service.type}
       <br />

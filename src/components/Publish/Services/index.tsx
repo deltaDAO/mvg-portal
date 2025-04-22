@@ -1,6 +1,6 @@
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState, useMemo } from 'react'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import content from '../../../../content/publish/form.json'
@@ -51,31 +51,57 @@ export default function ServicesFields(): ReactElement {
 
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
+  // Debug logs
+  useEffect(() => {
+    console.log('Current form values:', {
+      language: values.services?.[0]?.description?.language,
+      direction: values.services?.[0]?.description?.direction
+    })
+  }, [values.services?.[0]?.description])
+
+  // 1. Create display options (names) and maintain code mapping
+  const languageOptions = useMemo(() => {
+    return supportedLanguages
+      .map((lang) => lang.name)
+      .sort((a, b) => a.localeCompare(b))
+  }, [])
+
+  // 2. Set default language (English code 'en')
   useEffect(() => {
     if (!values.services?.[0]?.description?.language) {
-      const defaultLanguage = 'English'
-      setFieldValue('services[0].description.language', defaultLanguage)
+      console.log('Setting default language to English (en)')
+      setFieldValue('services[0].description.language', 'en')
       setFieldValue('services[0].description.direction', 'ltr')
     }
   }, [setFieldValue, values.services])
 
-  const languageOptions = supportedLanguages
-    .map((lang) => lang.name)
-    .sort((a, b) => a.localeCompare(b))
-  useEffect(() => {
-    const languageName = values.services?.[0]?.description?.language
-    if (!languageName) return
-
+  const handleLanguageChange = (languageName: string) => {
+    console.log('Language selected:', languageName)
     const selectedLanguage = supportedLanguages.find(
       (lang) => lang.name === languageName
     )
+
     if (selectedLanguage) {
+      console.log('Updating to:', {
+        code: selectedLanguage.code,
+        direction: selectedLanguage.direction
+      })
+      setFieldValue('services[0].description.language', selectedLanguage.code)
       setFieldValue(
         'services[0].description.direction',
         selectedLanguage.direction
       )
     }
-  }, [values.services?.[0]?.description?.language, setFieldValue])
+  }
+  const getCurrentLanguageName = () => {
+    const currentCode = values.services?.[0]?.description?.language
+    if (!currentCode) return ''
+
+    const language = supportedLanguages.find(
+      (lang) => lang.code === currentCode
+    )
+    return language?.name || ''
+  }
 
   // name and title should be download, but option value should be access, probably the best way would be to change the component so that option is an object like {name,value}
   const accessTypeOptions = [
@@ -154,6 +180,8 @@ export default function ServicesFields(): ReactElement {
         name="services[0].description.language"
         type="select"
         options={languageOptions}
+        value={getCurrentLanguageName()}
+        onChange={(e) => handleLanguageChange(e.target.value)}
       />
       <Field
         {...getFieldContent('direction', content.services.fields)}

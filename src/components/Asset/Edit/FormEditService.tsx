@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useState, useMemo } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
@@ -80,31 +80,51 @@ export default function FormEditService({
     }
   ]
 
-  const languageOptions = supportedLanguages
-    .map((lang) => lang.name)
-    .sort((a, b) => a.localeCompare(b))
+  useEffect(() => {
+    console.log('Current form values:', {
+      language: values.language,
+      direction: values.direction
+    })
+  }, [values.language, values.direction])
+
+  const languageOptions = useMemo(() => {
+    return supportedLanguages
+      .map((lang) => lang.name)
+      .sort((a, b) => a.localeCompare(b))
+  }, [])
 
   useEffect(() => {
-    const languageName = values.language
-    if (!languageName) return
+    if (!values.language || values.language === '') {
+      console.log('Setting default language to English (en)')
+      setFieldValue('language', 'en')
+      setFieldValue('direction', 'ltr')
+    }
+  }, [setFieldValue, values.language])
 
+  const handleLanguageChange = (languageName: string) => {
+    console.log('Language selected:', languageName)
     const selectedLanguage = supportedLanguages.find(
       (lang) => lang.name === languageName
     )
+
     if (selectedLanguage) {
+      console.log('Updating to:', {
+        code: selectedLanguage.code,
+        direction: selectedLanguage.direction
+      })
+      setFieldValue('language', selectedLanguage.code)
       setFieldValue('direction', selectedLanguage.direction)
     }
-  }, [values?.language, setFieldValue])
-  useEffect(() => {
-    if (
-      !values.language ||
-      values.language === '' ||
-      values.language === undefined
-    ) {
-      setFieldValue('language', 'English')
-      setFieldValue('direction', 'ltr')
-    }
-  }, [values.language, setFieldValue])
+  }
+
+  const getCurrentLanguageName = () => {
+    if (!values.language) return ''
+
+    const language = supportedLanguages.find(
+      (lang) => lang.code === values.language
+    )
+    return language?.name || ''
+  }
 
   useEffect(() => {
     if (appConfig.ssiEnabled) {
@@ -138,6 +158,8 @@ export default function FormEditService({
         name="language"
         type="select"
         options={languageOptions}
+        value={getCurrentLanguageName()}
+        onChange={(e) => handleLanguageChange(e.target.value)}
       />
       <Field
         {...getFieldContent('direction', data)}
