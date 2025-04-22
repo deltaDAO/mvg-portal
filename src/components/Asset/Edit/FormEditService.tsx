@@ -74,9 +74,11 @@ export default function FormEditService({
       checked: values.access === 'compute'
     }
   ]
+
   const languageOptions = supportedLanguages
     .map((lang) => lang.name)
     .sort((a, b) => a.localeCompare(b))
+
   useEffect(() => {
     const languageName = values.language
     if (!languageName) return
@@ -88,6 +90,12 @@ export default function FormEditService({
       setFieldValue('direction', selectedLanguage.direction)
     }
   }, [values?.language, setFieldValue])
+  useEffect(() => {
+    if (!values.language || values.language === '') {
+      setFieldValue('language', 'English')
+      setFieldValue('direction', 'ltr')
+    }
+  }, [values.language, setFieldValue])
 
   useEffect(() => {
     if (appConfig.ssiEnabled) {

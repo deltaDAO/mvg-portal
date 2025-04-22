@@ -46,6 +46,13 @@ export default function ServicesFields(): ReactElement {
 
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
+  useEffect(() => {
+    if (!values.services?.[0]?.description?.language) {
+      const defaultLanguage = 'English'
+      setFieldValue('services[0].description.language', defaultLanguage)
+      setFieldValue('services[0].description.direction', 'ltr')
+    }
+  }, [setFieldValue, values.services])
 
   const languageOptions = supportedLanguages
     .map((lang) => lang.name)
