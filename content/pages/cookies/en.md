@@ -27,15 +27,15 @@ On our portal demonstrator we are using local storage enabling you to use our po
 | `wagmi.wallet`                  | wagmi.sh           | Contains information about the last connected wallet (MetaMask or Coinbase).           | First party local storage, persistent data |
 | `wagmi.store`                   | wagmi.sh           | Saves the state of the Wagmi session in a JSON format.                                 | First party local storage, persistent data |
 
-For reach analysis we use an aggregated statistics tool which does not use cookies, does not track individual visitors and does not create persistent identifiers. Further information about the aggregated statistics can be found in our [privacy policy](/privacy/en).
+For reach analysis we use an aggregated statistics tool which does not use cookies, does not track individual visitors and does not create persistent identifiers. Further information about the aggregated statistics can be found in our [**privacy policy**](/privacy/en).
 
 ## 3. How to block or delete cookies
 
-### Removing cookies from your device
+**Removing cookies from your device**
 
 You can delete all cookies or site-specific cookies from your computer's hard disk at any time in your browser settings. For more details, please check the privacy or cookie settings in your preferred browser.
 
-### Blocking cookies
+**Blocking cookies**
 
 Most browsers have settings you can use to prevent cookies from being placed on your device. For more details, please check the privacy or cookie settings in your preferred browser. These settings may result in some websites not displaying content or functioning correctly.
 
