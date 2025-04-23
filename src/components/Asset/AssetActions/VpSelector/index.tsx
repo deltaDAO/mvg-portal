@@ -75,11 +75,6 @@ function VpField(props: VpFieldProps): ReactElement {
         {Object.keys(credential?.parsedDocument?.credentialSubject || {})
           .sort((key1, key2) => key1.localeCompare(key2))
           .map((key) => {
-            console.log(
-              'credential?.parsedDocument?.credentialSubject?.[key]',
-              credential?.parsedDocument?.credentialSubject?.[key],
-              key
-            )
             return (
               <React.Fragment key={key}>
                 <div>CredentialSubject.{key}</div>

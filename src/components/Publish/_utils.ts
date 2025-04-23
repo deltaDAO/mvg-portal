@@ -191,7 +191,7 @@ function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
   return result
 }
 
-function generateSsiPolicy(policy: PolicyType): any {
+function generateSsiPolicy(policy: PolicyType, type?: string): any {
   let result
   switch (policy?.type) {
     case 'staticPolicy':
@@ -326,7 +326,8 @@ export function stringifyCredentialPolicies(credentials: Credential) {
 }
 
 export function generateCredentials(
-  updatedCredentials: CredentialForm
+  updatedCredentials: CredentialForm,
+  type?: string
 ): Credential {
   const newCredentials: Credential = {
     allow: [],
