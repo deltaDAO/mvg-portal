@@ -20,7 +20,7 @@ export default function PrivacyLanguages({
       <div className={styles.langOptions}>
         {policies.map((policy, i) => {
           const slug = isCookie
-            ? `/cookie/${policy.policy}`
+            ? `/cookies/${policy.policy}`
             : `/privacy/${policy.policy}`
           return (
             <Fragment key={policy.policy}>

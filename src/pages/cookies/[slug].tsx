@@ -21,7 +21,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
       headerCenter
     >
       <Container narrow>
-        <PrivacyPolicyHeader policy={slug.replace('/cookie/', '')} isCookie />
+        <PrivacyPolicyHeader policy={slug.replace('/cookies/', '')} isCookie />
         <div
           className={styles.content}
           dangerouslySetInnerHTML={{ __html: content }}
@@ -36,7 +36,7 @@ export async function getStaticProps({
 }: {
   params: { slug: string }
 }): Promise<{ props: PageData }> {
-  const page = getPageBySlug(params.slug, 'cookie')
+  const page = getPageBySlug(params.slug, 'cookies')
   const content = markdownToHtmlWithToc(page?.content || '')
 
   return {
@@ -52,7 +52,7 @@ export async function getStaticPaths(): Promise<{
   }[]
   fallback: boolean
 }> {
-  const pages = getAllPages('cookie')
+  const pages = getAllPages('cookies')
 
   return {
     paths: pages.map((page) => {

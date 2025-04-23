@@ -1,5 +1,5 @@
 import privacyContent from '../../content/pages/privacy/policies.json'
-import cookieContent from '../../content/pages/cookie/policies.json'
+import cookieContent from '../../content/pages/cookies/policies.json'
 
 export interface UsePrivacyMetadata {
   policies: {

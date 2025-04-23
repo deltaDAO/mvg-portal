@@ -41,7 +41,7 @@ export default function Links(): ReactElement {
           <Button to={privacyPolicySlug} className={styles.link}>
             Privacy Policy
           </Button>
-          <Button to="/cookie/en" className={styles.link}>
+          <Button to="/cookies/en" className={styles.link}>
             Cookie Policy
           </Button>
           {appConfig.privacyPreferenceCenter === 'true' && (
