@@ -23,7 +23,7 @@
   border-color: rgb(13, 75, 120) !important;
   border-radius: 2px;
   background: rgb(13, 75, 120) !important;
-  box-shadow: 0 0 0 1px yellow !important;
+  box-shadow: 0 0 0 1px rgb(13, 75, 120) !important;
 }
 
 .radioLabel {
