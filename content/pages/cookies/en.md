@@ -2,6 +2,8 @@
 title: Cookie Policy
 ---
 
+### Table of contents
+
 ## 1. What are cookies?
 
 A cookie is a small file that stores information on your device. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either:
