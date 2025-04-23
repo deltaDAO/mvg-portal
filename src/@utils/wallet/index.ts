@@ -1,12 +1,13 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { createClient, erc20ABI } from 'wagmi'
+import { configureChains, createClient, erc20ABI } from 'wagmi'
 import { ethers, Contract, Signer } from 'ethers'
 import { formatEther } from 'ethers/lib/utils'
-import { getDefaultClient } from 'connectkit'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
 import { chainIdsSupported } from '../../../app.config'
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc'
 
 export async function getDummySigner(chainId: number): Promise<Signer> {
   if (typeof chainId !== 'number') {
@@ -24,17 +25,31 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
     throw new Error(`Failed to create dummy signer: ${error.message}`)
   }
 }
+function getProvider() {
+  return jsonRpcProvider({
+    rpc: (chain) => {
+      const config = getOceanConfig(chain.id)
+      return { http: config.nodeUri }
+    }
+  })
+}
+const supportedChains = getSupportedChains(chainIdsSupported)
+const { chains, provider, webSocketProvider } = configureChains(
+  supportedChains,
+  [getProvider()]
+)
 
 // Wagmi client
-export const wagmiClient = createClient(
-  getDefaultClient({
-    appName: 'Pontus-X',
-    infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
-    // TODO: mapping between appConfig.chainIdsSupported and wagmi chainId
-    chains: getSupportedChains(chainIdsSupported),
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
-  })
-)
+export const wagmiClient = createClient({
+  autoConnect: true,
+  connectors: [
+    new MetaMaskConnector({
+      chains
+    })
+  ],
+  provider,
+  webSocketProvider
+})
 
 // ConnectKit CSS overrides
 // https://docs.family.co/connectkit/theming#theme-variables
