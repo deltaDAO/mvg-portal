@@ -1,0 +1,15 @@
+{
+  "policies": [
+    {
+      "policy": "en",
+      "language": "English",
+      "date": "2025-04-23",
+      "params": {
+        "languageLabel": "Language",
+        "languageHelp": "Language of the cookie policy",
+        "updated": "Last updated on",
+        "dateFormat": "MMMM dd, yyyy."
+      }
+    }
+  ]
+}

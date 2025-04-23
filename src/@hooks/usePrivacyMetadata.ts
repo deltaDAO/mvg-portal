@@ -1,4 +1,5 @@
 import privacyContent from '../../content/pages/privacy/policies.json'
+import cookieContent from '../../content/pages/cookie/policies.json'
 
 export interface UsePrivacyMetadata {
   policies: {
@@ -13,6 +14,9 @@ export interface UsePrivacyMetadata {
   }[]
 }
 
-export function usePrivacyMetadata(): UsePrivacyMetadata {
+export function usePrivacyMetadata(isCookie: boolean): UsePrivacyMetadata {
+  if (isCookie) {
+    return { ...cookieContent }
+  }
   return { ...privacyContent }
 }

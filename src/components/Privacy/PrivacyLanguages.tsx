@@ -5,11 +5,13 @@ import { useUserPreferences } from '@context/UserPreferences'
 import Link from 'next/link'
 
 export default function PrivacyLanguages({
-  label
+  label,
+  isCookie = false
 }: {
   label?: string
+  isCookie?: boolean
 }): ReactElement {
-  const { policies } = usePrivacyMetadata()
+  const { policies } = usePrivacyMetadata(isCookie)
   const { setPrivacyPolicySlug } = useUserPreferences()
 
   return (
@@ -17,7 +19,9 @@ export default function PrivacyLanguages({
       <span className={styles.langLabel}>{label || 'Language'}</span>
       <div className={styles.langOptions}>
         {policies.map((policy, i) => {
-          const slug = `/privacy/${policy.policy}`
+          const slug = isCookie
+            ? `/cookie/${policy.policy}`
+            : `/privacy/${policy.policy}`
           return (
             <Fragment key={policy.policy}>
               {i > 0 && ' — '}
