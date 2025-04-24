@@ -33,7 +33,6 @@ function generateCredentials(
   type?: string
 ): CredentialForm {
   const credentialForm: CredentialForm = {}
-
   if (appConfig.ssiEnabled) {
     const requestCredentials: RequestCredentialForm[] = []
     let vcPolicies: string[] = []

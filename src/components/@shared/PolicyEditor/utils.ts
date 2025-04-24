@@ -57,17 +57,32 @@ function readRules(policy: string): PolicyRule[] {
   return rules
 }
 
+function convertToBracketNotation(key: string): string {
+  // eslint-disable-next-line no-useless-escape
+  const regex = /^([^\[]+)\["(.+)"\]$/
+  const match = key.match(regex)
+
+  if (match) {
+    const outer = match[1]
+    const inner = match[2]
+    return `input.parameter["${outer}"]["${inner}"]`
+  }
+
+  return `input.parameter["${key}"]` // fallback if only 1 level
+}
+
 function generateRules(arg: any, policy: string): PolicyRule[] {
   const parsedRules = readRules(policy)
-
+  console.log(parsedRules)
   const rules: PolicyRule[] = []
 
   for (const key of Object.keys(arg)) {
     const value = arg[key]
+    const bracketNotation = convertToBracketNotation(key)
     const matchingRule = parsedRules.find(
       (rule) =>
-        rule.rightValue === `lower(input.parameter.${key})` ||
-        rule.rightValue === `input.parameter.${key}`
+        rule.rightValue === `lower(${bracketNotation})` ||
+        rule.rightValue === bracketNotation
     )
 
     if (matchingRule) {

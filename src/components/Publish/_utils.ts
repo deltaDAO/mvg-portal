@@ -158,7 +158,11 @@ function generatePolicyArgumentFromRule(
 ): Record<string, string> {
   const argument = {}
   rules?.forEach((rule) => {
-    const updatedValue = rule.leftValue.replace(/\./g, '')
+    const parts = rule.leftValue.split('.')
+    const updatedValue =
+      parts.length > 1
+        ? `${parts[0]}["${parts.slice(1).join('.')}"]`
+        : rule.leftValue
     argument[updatedValue] = rule.rightValue
   })
   return argument
@@ -166,28 +170,42 @@ function generatePolicyArgumentFromRule(
 
 function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
   const rulesStrings = []
+
+  const formatValue = (value: string) => {
+    return value
+      .split('.')
+      .map((part) => `["${part}"]`)
+      .join('')
+  }
+
   rules?.forEach((rule) => {
+    const leftValueExpression = `${PolicyRuleRightValuePrefix}${formatValue(
+      rule.leftValue
+    )}`
+    const rightValueExpression = `${PolicyRuleLeftValuePrefix}${formatValue(
+      rule.leftValue
+    )}`
+
     const left =
       rule.operator === '==' || rule.operator === '!='
-        ? `lower(${PolicyRuleRightValuePrefix}.${rule.leftValue})`
-        : `${PolicyRuleRightValuePrefix}.${rule.leftValue}`
+        ? `lower(${leftValueExpression})`
+        : leftValueExpression
 
-    const updatedValue = rule.leftValue.replace(/\./g, '')
     const right =
       rule.operator === '==' || rule.operator === '!='
-        ? `lower(${PolicyRuleLeftValuePrefix}.${updatedValue})`
-        : `${PolicyRuleLeftValuePrefix}.${updatedValue}`
+        ? `lower(${rightValueExpression})`
+        : rightValueExpression
 
     rulesStrings.push(`${left} ${rule.operator} ${right}`)
   })
 
   const result = String.raw`package data.${name}
 
-  default allow := false
-  
-  allow if {
-    ${rulesStrings.join('\n')}
-  }`
+    default allow := false
+
+    allow if {
+      ${rulesStrings.join('\n  ')}
+    }`
   return result
 }
 
