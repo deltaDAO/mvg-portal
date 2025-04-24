@@ -4,6 +4,7 @@ import Head from 'next/head'
 import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { DatasetSchema } from './DatasetSchema'
+import Script from 'next/script'
 
 export default function Seo({
   title,
@@ -74,11 +75,11 @@ export default function Seo({
           {JSON.stringify(datasetSchema).replace(/</g, '\\u003c')}
         </script>
       )}
-      <script
+      <Script
         defer
         data-domain="portal.pontus-x.eu"
         src="https://plausible.io/js/script.js"
-      ></script>
+      ></Script>
     </Head>
   )
 }
