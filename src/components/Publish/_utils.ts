@@ -326,8 +326,7 @@ export function stringifyCredentialPolicies(credentials: Credential) {
 }
 
 export function generateCredentials(
-  updatedCredentials: CredentialForm,
-  type?: string
+  updatedCredentials: CredentialForm
 ): Credential {
   const newCredentials: Credential = {
     allow: [],
@@ -354,6 +353,7 @@ export function generateCredentials(
     const vpPolicies: VP[] = updatedCredentials?.vpPolicies?.map(
       (credential: VpPolicyType) => {
         let policy: VP
+        console.log('type here:', credential.type)
         switch (credential.type) {
           case 'staticVpPolicy':
             policy = credential.name
@@ -368,7 +368,6 @@ export function generateCredentials(
         return policy
       }
     )
-
     const newAllowList: CredentialPolicyBased = {
       type: 'SSIpolicy',
       values: [
@@ -380,7 +379,9 @@ export function generateCredentials(
       ]
     }
 
-    newCredentials.allow.push(newAllowList)
+    if (newAllowList.values[0].request_credentials?.length > 0) {
+      newCredentials.allow.push(newAllowList)
+    }
   }
 
   if (updatedCredentials?.allow?.length > 0) {

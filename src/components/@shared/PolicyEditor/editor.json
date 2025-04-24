@@ -143,15 +143,21 @@
   {
     "name": "format",
     "label": "Format",
-    "type": "text",
-    "placeholder": "Example: jwt_vc_json",
+    "type": "select",
+    "options": ["jwt_vc_json", "vc+sd-jwt", "mso_mdoc"],
     "required": true
   },
   {
     "name": "type",
     "label": "Type",
-    "type": "text",
-    "placeholder": "Example: VerifiableId",
+    "type": "select",
+    "options": [
+      "VerifiableId",
+      "UniversityDegree",
+      "LegalPerson",
+      "LegalRegistrationNumber",
+      "GaiaXTermsAndConditions"
+    ],
     "required": true
   }
 ]

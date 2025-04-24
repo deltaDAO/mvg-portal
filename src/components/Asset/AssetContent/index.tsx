@@ -112,6 +112,7 @@ export default function AssetContent({
         <div>
           <div className={styles.content}>
             <MetaMain asset={asset} nftPublisher={nftPublisher} />
+            <h3>{asset.credentialSubject?.metadata?.name || ''}</h3>
             <Bookmark did={asset.id} />
             {isInPurgatory === true ? (
               <Alert

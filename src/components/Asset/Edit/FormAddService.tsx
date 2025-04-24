@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
@@ -14,6 +14,7 @@ import { getDefaultPolicies } from '@components/Publish/_utils'
 import appConfig from 'app.config.cjs'
 import { PolicyEditor } from '@components/@shared/PolicyEditor'
 import { LoggerInstance } from '@oceanprotocol/lib'
+import { supportedLanguages } from '../languageType'
 
 export default function FormAddService({
   data,
@@ -26,6 +27,39 @@ export default function FormAddService({
   const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
   const accessTypeOptionsTitles = getFieldContent('access', data).options
+
+  useEffect(() => {
+    if (!values.language || values.language === '') {
+      setFieldValue('language', 'en')
+      setFieldValue('direction', 'ltr')
+    }
+  }, [setFieldValue, values.language])
+
+  const languageOptions = useMemo(() => {
+    return supportedLanguages
+      .map((lang) => lang.name)
+      .sort((a, b) => a.localeCompare(b))
+  }, [])
+
+  const handleLanguageChange = (languageName: string) => {
+    const selectedLanguage = supportedLanguages.find(
+      (lang) => lang.name === languageName
+    )
+
+    if (selectedLanguage) {
+      setFieldValue('language', selectedLanguage.code)
+      setFieldValue('direction', selectedLanguage.direction)
+    }
+  }
+
+  const getCurrentLanguageName = () => {
+    if (!values.language) return ''
+
+    const language = supportedLanguages.find(
+      (lang) => lang.code === values.language
+    )
+    return language?.name || ''
+  }
 
   const accessTypeOptions = [
     {
@@ -75,11 +109,16 @@ export default function FormAddService({
         {...getFieldContent('language', data)}
         component={Input}
         name="language"
+        type="select"
+        options={languageOptions}
+        value={getCurrentLanguageName()}
+        onChange={(e) => handleLanguageChange(e.target.value)}
       />
       <Field
         {...getFieldContent('direction', data)}
         component={Input}
         name="direction"
+        readOnly
       />
 
       <Field
