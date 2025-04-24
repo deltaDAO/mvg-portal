@@ -14,12 +14,17 @@ import { ConnectKitProvider } from 'connectkit'
 import { connectKitTheme, wagmiClient } from '@utils/wallet'
 import AutomationProvider from '../@context/Automation/AutomationProvider'
 import { FilterProvider } from '@context/Filter'
+import Script from 'next/script'
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
 
   return (
     <>
+      <Script
+        data-domain="portal.pontus-x.eu"
+        src="https://plausible.io/js/script.js"
+      />
       <WagmiConfig client={wagmiClient}>
         <ConnectKitProvider
           options={{ initialChainId: 0 }}

@@ -75,11 +75,6 @@ export default function Seo({
           {JSON.stringify(datasetSchema).replace(/</g, '\\u003c')}
         </script>
       )}
-      <Script
-        defer
-        data-domain="portal.pontus-x.eu"
-        src="https://plausible.io/js/script.js"
-      ></Script>
     </Head>
   )
 }
