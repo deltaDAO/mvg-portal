@@ -21,18 +21,23 @@ function readProperties(data: any): PolicyArgument[] {
   return args
 }
 
-function parseLine(line: string): PolicyRule {
-  let elements = line.split(' ')
-  elements = elements.filter((element) => element?.length > 0)
+function normalizeNestedBrackets(value: string): string {
+  return value.replace(
+    // eslint-disable-next-line no-useless-escape
+    /\["([^"\[\]]+)\["([^"\[\]]+)"\]\"]/g,
+    (_, outer, inner) => `["${outer}"]["${inner}"]`
+  )
+}
 
-  if (elements.length !== 3) {
-    return
-  }
+function parseLine(line: string): PolicyRule | undefined {
+  const elements = line.split(' ').filter((element) => element?.length > 0)
+
+  if (elements.length !== 3) return
 
   return {
-    leftValue: elements[0].replace(PolicyRuleLeftValuePrefix, ''),
+    leftValue: normalizeNestedBrackets(elements[0]),
     operator: elements[1],
-    rightValue: elements[2].replace(PolicyRuleRightValuePrefix, '')
+    rightValue: normalizeNestedBrackets(elements[2])
   }
 }
 
@@ -53,7 +58,6 @@ function readRules(policy: string): PolicyRule[] {
       rules.push(parseLine(line))
     }
   }
-
   return rules
 }
 
@@ -73,7 +77,6 @@ function convertToBracketNotation(key: string): string {
 
 function generateRules(arg: any, policy: string): PolicyRule[] {
   const parsedRules = readRules(policy)
-  console.log(parsedRules)
   const rules: PolicyRule[] = []
 
   for (const key of Object.keys(arg)) {

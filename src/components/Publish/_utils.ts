@@ -171,11 +171,38 @@ function generatePolicyArgumentFromRule(
 function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
   const rulesStrings = []
 
-  const formatValue = (value: string) => {
-    return value
-      .split('.')
-      .map((part) => `["${part}"]`)
-      .join('')
+  function formatValue(value: string): string {
+    const result: string[] = []
+
+    // First, extract parts in brackets and keep them
+    const bracketPattern = /\["([^"]+)"\]/g
+    let remaining = value
+    let match
+
+    while ((match = bracketPattern.exec(value))) {
+      const before = remaining.slice(0, match.index)
+      if (before) {
+        result.push(
+          ...before
+            .split('.')
+            .filter(Boolean)
+            .map((part) => `["${part}"]`)
+        )
+      }
+      result.push(`["${match[1]}"]`)
+      remaining = remaining.slice(match.index + match[0].length)
+    }
+
+    if (remaining) {
+      result.push(
+        ...remaining
+          .split('.')
+          .filter(Boolean)
+          .map((part) => `["${part}"]`)
+      )
+    }
+
+    return result.join('')
   }
 
   rules?.forEach((rule) => {
@@ -206,6 +233,7 @@ function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
     allow if {
       ${rulesStrings.join('\n  ')}
     }`
+
   return result
 }
 
