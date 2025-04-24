@@ -151,7 +151,13 @@
     "name": "type",
     "label": "Type",
     "type": "select",
-    "options": ["VerifiableId", "UniversityDegree", "LegalPerson"],
+    "options": [
+      "VerifiableId",
+      "UniversityDegree",
+      "LegalPerson",
+      "LegalRegistrationNumber",
+      "GaiaXTermsAndConditions"
+    ],
     "required": true
   }
 ]
