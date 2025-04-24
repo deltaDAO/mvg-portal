@@ -1,6 +1,6 @@
 import { getFieldContent } from '@utils/form'
 import { Field } from 'formik'
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import styles from './index.module.css'
 import Input from '../FormInput'
 import Button from '../atoms/Button'
@@ -454,6 +454,8 @@ export function PolicyEditor(props): ReactElement {
     defaultPolicies = []
   }: PolicyEditorProps = props
 
+  const [selectedPolicyType, setSelectedPolicyType] = useState('staticPolicy')
+
   const filteredDefaultPolicies = defaultPolicies.filter(
     (policy) => policy.length > 0
   )
@@ -570,61 +572,6 @@ export function PolicyEditor(props): ReactElement {
     <>
       <label className={styles.editorLabel}>{label}</label>
       <div className={`${styles.editorPanel} ${styles.marginBottom4em}`}>
-        <div
-          className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
-        >
-          <Button
-            type="button"
-            style="primary"
-            className={`${styles.marginBottom1em}`}
-            onClick={handleNewStaticPolicy}
-          >
-            New {{ ...getFieldContent('staticPolicy', fields) }.label}
-          </Button>
-
-          {credentials?.vcPolicies?.map((rule, index) => (
-            <div
-              key={index}
-              className={`${styles.panelColumn} ${styles.width100}`}
-            >
-              <div
-                className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-              >
-                <div className={`${styles.flexGrow}`}>
-                  <Field
-                    key={index}
-                    {...staticPolicyLabel(index)}
-                    component={Input}
-                    name={`${name}.vcPolicies[${index}]`}
-                    readOnly={
-                      index < filteredDefaultPolicies?.length &&
-                      filteredDefaultPolicies.includes(
-                        credentials?.vcPolicies[index]
-                      ) &&
-                      credentials?.vcPolicies[index]?.length > 0
-                    }
-                  />
-                </div>
-                <Button
-                  type="button"
-                  style="primary"
-                  disabled={
-                    index < filteredDefaultPolicies?.length &&
-                    filteredDefaultPolicies.includes(
-                      credentials?.vcPolicies[index]
-                    ) &&
-                    credentials?.vcPolicies[index]?.length > 0
-                  }
-                  onClick={() => handleDeleteStaticPolicy(index)}
-                  className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-
         <div className={`${styles.panelColumn} ${styles.marginBottom2em}`}>
           <Button
             type="button"
@@ -675,66 +622,125 @@ export function PolicyEditor(props): ReactElement {
                     <label>
                       {{ ...getFieldContent('newPolicy', fields) }.label}
                     </label>
+
+                    <select
+                      value={selectedPolicyType}
+                      onChange={(e) => setSelectedPolicyType(e.target.value)}
+                      className={styles.selectDropdown}
+                    >
+                      <option value="staticPolicy">
+                        {{ ...getFieldContent('static', fields) }.label}
+                      </option>
+                      <option value="parameterizedPolicy">
+                        {{ ...getFieldContent('parameterized', fields) }.label}
+                      </option>
+                      <option value="customUrlPolicy">
+                        {{ ...getFieldContent('customUrl', fields) }.label}
+                      </option>
+                      <option value="customPolicy">
+                        {{ ...getFieldContent('custom', fields) }.label}
+                      </option>
+                    </select>
+
                     <Button
                       type="button"
                       style="primary"
-                      className={`${styles.marginBottom1em} ${styles.space}`}
-                      onClick={() => handleNewStaticCustomPolicy(credential)}
+                      className={styles.space}
+                      onClick={() => {
+                        if (selectedPolicyType === 'staticPolicy')
+                          handleNewStaticCustomPolicy(credential)
+                        else if (selectedPolicyType === 'parameterizedPolicy')
+                          handleNewParameterizedCustomPolicy(credential)
+                        else if (selectedPolicyType === 'customUrlPolicy')
+                          handleNewCustomUrlPolicy(credential)
+                        else if (selectedPolicyType === 'customPolicy')
+                          handleNewCustomPolicy(credential)
+                      }}
                     >
-                      {{ ...getFieldContent('static', fields) }.label}
-                    </Button>
-                    <Button
-                      type="button"
-                      style="primary"
-                      className={`${styles.marginBottom1em} ${styles.space}`}
-                      onClick={() =>
-                        handleNewParameterizedCustomPolicy(credential)
-                      }
-                    >
-                      {{ ...getFieldContent('parameterized', fields) }.label}
-                    </Button>
-                    <Button
-                      type="button"
-                      style="primary"
-                      className={`${styles.marginBottom1em} ${styles.space}`}
-                      onClick={() => handleNewCustomUrlPolicy(credential)}
-                    >
-                      {{ ...getFieldContent('customUrl', fields) }.label}
-                    </Button>
-                    <Button
-                      type="button"
-                      style="primary"
-                      className={`${styles.marginBottom1em} ${styles.space}`}
-                      onClick={() => handleNewCustomPolicy(credential)}
-                    >
-                      {{ ...getFieldContent('custom', fields) }.label}
+                      Add Policy
                     </Button>
                   </div>
                 </div>
+              </div>
 
-                <div className={styles.paddingLeft3em}>
-                  {credential?.policies?.map((policy, innerIndex) => (
-                    <div key={innerIndex} className={styles.panelColumn}>
-                      <PolicyView
-                        index={index}
-                        innerIndex={innerIndex}
-                        name={name}
-                        policy={policy}
-                        onDeletePolicy={() =>
-                          handleDeleteCustomPolicy(credential, innerIndex)
-                        }
-                        onValueChange={() => {
-                          setCredentials(credentials)
-                        }}
-                      />
-                    </div>
-                  ))}
-                </div>
+              <div className={styles.paddingLeft3em}>
+                {credential?.policies?.map((policy, innerIndex) => (
+                  <div key={innerIndex} className={styles.panelColumn}>
+                    <PolicyView
+                      index={index}
+                      innerIndex={innerIndex}
+                      name={name}
+                      policy={policy}
+                      onDeletePolicy={() =>
+                        handleDeleteCustomPolicy(credential, innerIndex)
+                      }
+                      onValueChange={() => {
+                        setCredentials(credentials)
+                      }}
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           ))}
         </div>
+        <div
+          className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
+        >
+          {credentials?.requestCredentials.length > 0 && (
+            <Button
+              type="button"
+              style="primary"
+              className={`${styles.marginBottom1em}`}
+              onClick={handleNewStaticPolicy}
+            >
+              New {{ ...getFieldContent('staticPolicy', fields) }.label}
+            </Button>
+          )}
 
+          {credentials?.requestCredentials.length > 0 &&
+            credentials?.vcPolicies?.map((rule, index) => (
+              <div
+                key={index}
+                className={`${styles.panelColumn} ${styles.width100}`}
+              >
+                <div
+                  className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
+                >
+                  <div className={`${styles.flexGrow}`}>
+                    <Field
+                      key={index}
+                      {...staticPolicyLabel(index)}
+                      component={Input}
+                      name={`${name}.vcPolicies[${index}]`}
+                      readOnly={
+                        index < filteredDefaultPolicies?.length &&
+                        filteredDefaultPolicies.includes(
+                          credentials?.vcPolicies[index]
+                        ) &&
+                        credentials?.vcPolicies[index]?.length > 0
+                      }
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    style="primary"
+                    disabled={
+                      index < filteredDefaultPolicies?.length &&
+                      filteredDefaultPolicies.includes(
+                        credentials?.vcPolicies[index]
+                      ) &&
+                      credentials?.vcPolicies[index]?.length > 0
+                    }
+                    onClick={() => handleDeleteStaticPolicy(index)}
+                    className={`${styles.deleteButton} ${styles.marginBottomButton}`}
+                  >
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))}
+        </div>
         <div
           className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
         >
