@@ -1,0 +1,37 @@
+.infoText {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.italic {
+  font-style: italic;
+}
+
+@media (min-width: 640px) {
+  .infoContainer {
+    padding: 20px;
+    margin-left: 16px;
+    margin-right: 16px;
+    width: calc(100% - 32px);
+  }
+  .infoText {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .infoContainer {
+    padding: 24px;
+    margin-left: 24px;
+    margin-right: 24px;
+    width: calc(100% - 48px);
+  }
+  .infoText {
+    font-size: 18px;
+  }
+}
