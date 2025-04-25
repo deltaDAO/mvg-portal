@@ -61,18 +61,17 @@ function readRules(policy: string): PolicyRule[] {
   return rules
 }
 
-function convertToBracketNotation(key: string): string {
-  // eslint-disable-next-line no-useless-escape
-  const regex = /^([^\[]+)\["(.+)"\]$/
-  const match = key.match(regex)
+function extractLeftValueFromRule(rule: any): string {
+  const raw = rule.leftValue
 
-  if (match) {
-    const outer = match[1]
-    const inner = match[2]
-    return `input.parameter["${outer}"]["${inner}"]`
-  }
+  const cleaned =
+    raw.startsWith('lower(') && raw.endsWith(')') ? raw.slice(6, -1) : raw
 
-  return `input.parameter["${key}"]` // fallback if only 1 level
+  const matches = cleaned.match(/\["([^"]+)"\]/g)
+
+  if (!matches) return ''
+
+  return matches.map((m) => m.replace(/\["|"|\]/g, '')).join('.')
 }
 
 function generateRules(arg: any, policy: string): PolicyRule[] {
@@ -81,22 +80,20 @@ function generateRules(arg: any, policy: string): PolicyRule[] {
 
   for (const key of Object.keys(arg)) {
     const value = arg[key]
-    const bracketNotation = convertToBracketNotation(key)
     const matchingRule = parsedRules.find(
       (rule) =>
-        rule.rightValue === `lower(${bracketNotation})` ||
-        rule.rightValue === bracketNotation
+        rule.rightValue === `lower(${PolicyRuleLeftValuePrefix}.${key})` ||
+        rule.rightValue === `${PolicyRuleLeftValuePrefix}.${key}`
     )
-
+    const extractedLeftValue = extractLeftValueFromRule(matchingRule)
     if (matchingRule) {
       rules.push({
-        leftValue: key,
+        leftValue: extractedLeftValue,
         operator: matchingRule.operator,
         rightValue: value
       })
     }
   }
-
   return rules
 }
 

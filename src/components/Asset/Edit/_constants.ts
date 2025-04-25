@@ -144,7 +144,6 @@ export function getInitialValues(
   }
 
   const credentialForm = generateCredentials(credentials, 'edit')
-
   return {
     name: metadata?.name,
     description: metadata?.description?.['@value'],

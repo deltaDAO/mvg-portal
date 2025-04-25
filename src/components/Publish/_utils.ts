@@ -156,25 +156,21 @@ function generatePolicyArgument(
 function generatePolicyArgumentFromRule(
   rules: PolicyRule[]
 ): Record<string, string> {
-  const argument = {}
-  rules?.forEach((rule) => {
-    const parts = rule.leftValue.split('.')
-    const updatedValue =
-      parts.length > 1
-        ? `${parts[0]}["${parts.slice(1).join('.')}"]`
-        : rule.leftValue
-    argument[updatedValue] = rule.rightValue
+  const argument: Record<string, string> = {}
+
+  rules?.forEach((rule, index) => {
+    const paramName = `param${index + 1}`
+    argument[paramName] = rule.rightValue
   })
+
   return argument
 }
 
 function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
-  const rulesStrings = []
+  const rulesStrings: string[] = []
 
   function formatValue(value: string): string {
     const result: string[] = []
-
-    // First, extract parts in brackets and keep them
     const bracketPattern = /\["([^"]+)"\]/g
     let remaining = value
     let match
@@ -205,13 +201,12 @@ function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
     return result.join('')
   }
 
-  rules?.forEach((rule) => {
-    const leftValueExpression = `${PolicyRuleRightValuePrefix}${formatValue(
+  rules?.forEach((rule, index) => {
+    const paramKey = `param${index + 1}`
+    const leftValueExpression = `input.credentialData.credentialSubject${formatValue(
       rule.leftValue
     )}`
-    const rightValueExpression = `${PolicyRuleLeftValuePrefix}${formatValue(
-      rule.leftValue
-    )}`
+    const rightValueExpression = `input.parameter.${paramKey}`
 
     const left =
       rule.operator === '==' || rule.operator === '!='
@@ -228,16 +223,15 @@ function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
 
   const result = String.raw`package data.${name}
 
-    default allow := false
+default allow := false
 
-    allow if {
-      ${rulesStrings.join('\n  ')}
-    }`
-
+allow if {
+  ${rulesStrings.join('\n  ')}
+}`
   return result
 }
 
-function generateSsiPolicy(policy: PolicyType, type?: string): any {
+function generateSsiPolicy(policy: PolicyType): any {
   let result
   switch (policy?.type) {
     case 'staticPolicy':
