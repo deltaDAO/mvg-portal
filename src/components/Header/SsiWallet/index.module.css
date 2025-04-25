@@ -203,6 +203,10 @@
     height: 35px;
     font-size: var(--font-size-small);
   }
+  .icon {
+    background: #71ff7b;
+    border-radius: 20px;
+  }
 }
 
 @media screen and (min-width: 481px) and (max-width: 768px) and (height: 893px) {
@@ -254,6 +258,10 @@
     vertical-align: middle;
     margin-top: auto;
     margin-bottom: auto;
+  }
+  .icon {
+    background: #71ff7b;
+    border-radius: 20px;
   }
 }
 
