@@ -33,7 +33,6 @@ function generateCredentials(
   type?: string
 ): CredentialForm {
   const credentialForm: CredentialForm = {}
-
   if (appConfig.ssiEnabled) {
     const requestCredentials: RequestCredentialForm[] = []
     let vcPolicies: string[] = []
@@ -145,7 +144,6 @@ export function getInitialValues(
   }
 
   const credentialForm = generateCredentials(credentials, 'edit')
-
   return {
     name: metadata?.name,
     description: metadata?.description?.['@value'],

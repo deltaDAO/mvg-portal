@@ -156,42 +156,82 @@ function generatePolicyArgument(
 function generatePolicyArgumentFromRule(
   rules: PolicyRule[]
 ): Record<string, string> {
-  const argument = {}
-  rules?.forEach((rule) => {
-    const updatedValue = rule.leftValue.replace(/\./g, '')
-    argument[updatedValue] = rule.rightValue
+  const argument: Record<string, string> = {}
+
+  rules?.forEach((rule, index) => {
+    const paramName = `param${index + 1}`
+    argument[paramName] = rule.rightValue
   })
+
   return argument
 }
 
 function generateCustomPolicyScript(name: string, rules: PolicyRule[]): string {
-  const rulesStrings = []
-  rules?.forEach((rule) => {
+  const rulesStrings: string[] = []
+
+  function formatValue(value: string): string {
+    const result: string[] = []
+    const bracketPattern = /\["([^"]+)"\]/g
+    let remaining = value
+    let match
+
+    while ((match = bracketPattern.exec(value))) {
+      const before = remaining.slice(0, match.index)
+      if (before) {
+        result.push(
+          ...before
+            .split('.')
+            .filter(Boolean)
+            .map((part) => `["${part}"]`)
+        )
+      }
+      result.push(`["${match[1]}"]`)
+      remaining = remaining.slice(match.index + match[0].length)
+    }
+
+    if (remaining) {
+      result.push(
+        ...remaining
+          .split('.')
+          .filter(Boolean)
+          .map((part) => `["${part}"]`)
+      )
+    }
+
+    return result.join('')
+  }
+
+  rules?.forEach((rule, index) => {
+    const paramKey = `param${index + 1}`
+    const leftValueExpression = `input.credentialData.credentialSubject${formatValue(
+      rule.leftValue
+    )}`
+    const rightValueExpression = `input.parameter.${paramKey}`
+
     const left =
       rule.operator === '==' || rule.operator === '!='
-        ? `lower(${PolicyRuleRightValuePrefix}.${rule.leftValue})`
-        : `${PolicyRuleRightValuePrefix}.${rule.leftValue}`
+        ? `lower(${leftValueExpression})`
+        : leftValueExpression
 
-    const updatedValue = rule.leftValue.replace(/\./g, '')
     const right =
       rule.operator === '==' || rule.operator === '!='
-        ? `lower(${PolicyRuleLeftValuePrefix}.${updatedValue})`
-        : `${PolicyRuleLeftValuePrefix}.${updatedValue}`
+        ? `lower(${rightValueExpression})`
+        : rightValueExpression
 
     rulesStrings.push(`${left} ${rule.operator} ${right}`)
   })
 
   const result = String.raw`package data.${name}
 
-  default allow := false
-  
-  allow if {
-    ${rulesStrings.join('\n')}
-  }`
+default allow := false
+
+allow if {
+  ${rulesStrings.join('\n  ')}
+}`
   return result
 }
 
-function generateSsiPolicy(policy: PolicyType, type?: string): any {
+function generateSsiPolicy(policy: PolicyType): any {
   let result
   switch (policy?.type) {
     case 'staticPolicy':
