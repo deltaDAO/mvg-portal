@@ -8,7 +8,6 @@ import appConfig from 'app.config.cjs'
 import { getDefaultPolicies } from '../_utils'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import content from '../../../../content/publish/form.json'
-import { WalletAccessInfo, SSIPolicyInfo } from '@shared/AssetLevelDescription'
 
 export function AccessPolicies(): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
@@ -36,7 +35,6 @@ export function AccessPolicies(): ReactElement {
 
   return (
     <>
-      <WalletAccessInfo />
       <Field
         {...getFieldContent('allow', content.credentials.fields)}
         component={Input}
@@ -47,7 +45,6 @@ export function AccessPolicies(): ReactElement {
         component={Input}
         name="credentials.deny"
       />
-      <SSIPolicyInfo />
       {appConfig.ssiEnabled ? (
         <PolicyEditor
           label="SSI Policies"
@@ -57,6 +54,7 @@ export function AccessPolicies(): ReactElement {
           }
           name="credentials"
           defaultPolicies={defaultPolicies}
+          help="Self-sovereign identity (SSI) is used verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
         />
       ) : (
         <></>
