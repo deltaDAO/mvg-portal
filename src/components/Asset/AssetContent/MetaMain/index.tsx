@@ -22,7 +22,7 @@ export default function MetaMain({
     <aside className={styles.meta}>
       <header className={styles.asset}>
         <Nft isBlockscoutExplorer={isBlockscoutExplorer} />
-        <MetaAsset asset={asset} isBlockscoutExplorer={isBlockscoutExplorer} />
+        <MetaAsset asset={asset} />
       </header>
       <div className={styles.publisherInfo}>
         <MetaInfo asset={asset} nftPublisher={nftPublisher} />

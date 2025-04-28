@@ -88,8 +88,8 @@ export default function AddService({
         config.oceanTokenAddress,
         publisherMarketFixedSwapFee,
         defaultDatatokenCap,
-        'DataToken',
-        'DT',
+        'Access Token',
+        'OEAT',
         defaultDatatokenTemplateIndex
       )
 
