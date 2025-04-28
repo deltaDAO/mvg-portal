@@ -9,7 +9,8 @@
         "languageHelp": "Language of the cookie policy",
         "updated": "Last updated on",
         "dateFormat": "MMMM dd, yyyy."
-      }
+      },
+      "slug": "/cookies"
     }
   ]
 }
