@@ -4,7 +4,6 @@ import Head from 'next/head'
 import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { DatasetSchema } from './DatasetSchema'
-import Script from 'next/script'
 
 export default function Seo({
   title,
