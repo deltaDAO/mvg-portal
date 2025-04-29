@@ -5,18 +5,18 @@ import Link from 'next/link'
 
 export default function PolicyLanguages({
   label,
-  metadata
+  policiesMetadata
 }: {
   label?: string
-  metadata: UsePolicyMetadata
+  policiesMetadata: UsePolicyMetadata
 }): ReactElement {
-  const { policies } = metadata
+  const { policies } = policiesMetadata
   return (
     <div className={styles.langSelect}>
       <span className={styles.langLabel}>{label || 'Language'}</span>
       <div className={styles.langOptions}>
         {policies.map((policy, i) => {
-          const slug = `${metadata.slug}/${policy.policyLangTag}`
+          const slug = `${policiesMetadata.slug}/${policy.policyLangTag}`
           return (
             <Fragment key={policy.policyLangTag}>
               {i > 0 && ' — '}

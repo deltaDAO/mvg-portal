@@ -5,12 +5,12 @@ import PolicyLanguages from './PolicyLanguages'
 
 export default function PolicyHeader({
   lang,
-  metadata
+  policiesMetadata
 }: {
   lang: string
-  metadata: UsePolicyMetadata
+  policiesMetadata: UsePolicyMetadata
 }): ReactElement {
-  const { policies } = metadata
+  const { policies } = policiesMetadata
   const policyMetadata = policies.find(
     (policy) => policy.policyLangTag === lang
   )
@@ -18,7 +18,10 @@ export default function PolicyHeader({
 
   return (
     <div>
-      <PolicyLanguages label={params.languageLabel} metadata={metadata} />
+      <PolicyLanguages
+        label={params.languageLabel}
+        policiesMetadata={policiesMetadata}
+      />
       <p>
         <em>
           {params?.updated || 'Last updated on'}{' '}

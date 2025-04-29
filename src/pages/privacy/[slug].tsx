@@ -10,7 +10,7 @@ import { usePrivacyMetadata } from '@hooks/usePolicyMetadata'
 
 export default function PageMarkdown(page: PageData): ReactElement {
   const router = useRouter()
-  const metadata = usePrivacyMetadata()
+  const privacyPoliciesMetadata = usePrivacyMetadata()
   if (!page || page.content === '') return null
   const { title, description } = page.frontmatter
   const { slug, content } = page
@@ -25,7 +25,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
       <Container narrow>
         <PolicyHeader
           lang={slug.replace('/privacy/', '')}
-          metadata={metadata}
+          policiesMetadata={privacyPoliciesMetadata}
         />
         <div
           className={styles.content}

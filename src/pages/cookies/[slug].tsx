@@ -10,7 +10,7 @@ import { useCookieMetadata } from '@hooks/usePolicyMetadata'
 
 export default function PageMarkdown(page: PageData): ReactElement {
   const router = useRouter()
-  const metadata = useCookieMetadata()
+  const cookiePoliciesMetadata = useCookieMetadata()
   if (!page || page.content === '') return null
   const { title, description } = page.frontmatter
   const { slug, content } = page
@@ -25,7 +25,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
       <Container narrow>
         <PolicyHeader
           lang={slug.replace('/cookies/', '')}
-          metadata={metadata}
+          policiesMetadata={cookiePoliciesMetadata}
         />
         <div
           className={styles.content}
