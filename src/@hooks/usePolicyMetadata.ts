@@ -3,7 +3,7 @@ import cookieContent from '../../content/pages/cookies/policies.json'
 
 export interface UsePolicyMetadata {
   policies: {
-    policy: string
+    policyLangTag: string
     language: string
     date: string
     params: {
@@ -11,8 +11,8 @@ export interface UsePolicyMetadata {
       updated: string
       dateFormat: string
     }
-    slug: string
   }[]
+  slug: string
 }
 
 export function usePrivacyMetadata(): UsePolicyMetadata {
