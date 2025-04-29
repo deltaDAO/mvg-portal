@@ -630,6 +630,7 @@ export default function Compute({
             providerFeeAmount={providerFeeAmount}
             validUntil={computeValidUntil}
             retry={retry}
+            license={asset?.metadata?.license}
           />
         </Formik>
       )}
