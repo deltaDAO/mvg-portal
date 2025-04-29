@@ -48,7 +48,7 @@ function encodeSvg(svgString: string): string {
 const nftMetadataTemplate = {
   name: 'Data NFT',
   symbol: 'OEC-NFT',
-  description: `This NFT represents an asset in Ocean Protocol v4 ecosystems.`,
+  description: `This NFT represents an asset in Ocean Enterprise ecosystems.`,
   external_url: 'https://enterprise.oceanprotocol.com'
 }
 
