@@ -6,11 +6,11 @@ import styles from '@shared/Page/PageMarkdown.module.css'
 import Container from '@shared/atoms/Container'
 import PolicyHeader from '../../components/Privacy/PolicyHeader'
 import { useRouter } from 'next/router'
-import { usePrivacyMetadata } from '@hooks/usePolicyMetadata'
+import { useCookieMetadata } from '@hooks/usePolicyMetadata'
 
 export default function PageMarkdown(page: PageData): ReactElement {
   const router = useRouter()
-  const privacyPoliciesMetadata = usePrivacyMetadata()
+  const cookiePoliciesMetadata = useCookieMetadata()
   if (!page || page.content === '') return null
   const { title, description } = page.frontmatter
   const { slug, content } = page
@@ -24,8 +24,8 @@ export default function PageMarkdown(page: PageData): ReactElement {
     >
       <Container narrow>
         <PolicyHeader
-          lang={slug.replace('/privacy/', '')}
-          policiesMetadata={privacyPoliciesMetadata}
+          lang={slug.replace('/cookies/', '')}
+          policiesMetadata={cookiePoliciesMetadata}
         />
         <div
           className={styles.content}
@@ -41,7 +41,7 @@ export async function getStaticProps({
 }: {
   params: { slug: string }
 }): Promise<{ props: PageData }> {
-  const page = getPageBySlug(params.slug, 'privacy')
+  const page = getPageBySlug(params.slug, 'cookies')
   const content = markdownToHtmlWithToc(page?.content || '')
 
   return {
@@ -57,7 +57,7 @@ export async function getStaticPaths(): Promise<{
   }[]
   fallback: boolean
 }> {
-  const pages = getAllPages('privacy')
+  const pages = getAllPages('cookies')
 
   return {
     paths: pages.map((page) => {
