@@ -25,7 +25,7 @@ export default function TermsAndConditionsCheckbox({
       type="checkbox"
       options={
         options ||
-        licenses.map((option) =>
+        licenses?.map((option) =>
           option.includes('http') ? 'a custom' : `the ${option}`
         )
       }
