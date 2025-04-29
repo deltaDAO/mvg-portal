@@ -9,7 +9,7 @@ import { useMarketMetadata } from '@context/MarketMetadata'
 import classNames from 'classnames/bind'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from '../../Header/UserPreferences'
-import { SsiWallet } from '@components/Header/SsiWallet'
+import { SsiWallet } from './SsiWallet'
 const Wallet = loadable(() => import('../../Header/Wallet'))
 
 const cx = classNames.bind(styles)

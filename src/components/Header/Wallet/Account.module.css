@@ -49,8 +49,8 @@
 }
 
 .button svg {
-  width: 1em;
-  height: 1em;
+  width: var(--menu-caret-size);
+  height: var(--menu-caret-size);
   fill: var(--menu-icon-color-fill);
   display: inline-block;
   vertical-align: middle;
@@ -70,7 +70,7 @@
 
 .caret,
 svg.caret {
-  display: none;
+  display: inline;
 }
 
 @media screen and (min-width: 15rem) and (max-width: 47rem) {

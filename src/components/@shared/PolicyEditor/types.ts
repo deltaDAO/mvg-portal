@@ -76,5 +76,6 @@ export interface PolicyEditorProps {
   setCredentials: (CredentialForm) => void
   label: string
   name: string
+  help: string
   defaultPolicies?: string[]
 }

@@ -17,6 +17,8 @@ import {
   VpPolicyType
 } from './types'
 import fields from './editor.json'
+import Tooltip from '@shared/atoms/Tooltip'
+import Markdown from '@shared/Markdown'
 
 interface PolicyViewProps {
   policy: PolicyType
@@ -451,6 +453,7 @@ export function PolicyEditor(props): ReactElement {
     setCredentials,
     name,
     label,
+    help,
     defaultPolicies = []
   }: PolicyEditorProps = props
 
@@ -570,7 +573,9 @@ export function PolicyEditor(props): ReactElement {
 
   return (
     <>
-      <label className={styles.editorLabel}>{label}</label>
+      <label className={styles.editorLabel}>
+        {label} {help && <Tooltip content={<Markdown text={help} />} />}
+      </label>
       <div className={`${styles.editorPanel} ${styles.marginBottom4em}`}>
         <div className={`${styles.panelColumn} ${styles.marginBottom2em}`}>
           <Button
@@ -688,6 +693,41 @@ export function PolicyEditor(props): ReactElement {
           className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
         >
           {credentials?.requestCredentials.length > 0 && (
+            <div
+              className={`${styles.panelRow} ${styles.marginBottom2em} ${styles.marginBottom1em}`}
+            >
+              <Button
+                type="button"
+                style="primary"
+                onClick={handleNewStaticVpPolicy}
+              >
+                New {{ ...getFieldContent('staticVpPolicy', fields) }.label}
+              </Button>
+
+              <Button
+                className={`${styles.space}`}
+                type="button"
+                style="primary"
+                onClick={handleNewVpPolicy}
+              >
+                New {{ ...getFieldContent('argumentVpPolicy', fields) }.label}
+              </Button>
+            </div>
+          )}
+          {credentials?.vpPolicies?.map((policy, index) => (
+            <VpPolicyView
+              key={index}
+              index={index}
+              name={name}
+              policy={policy}
+              onDeletePolicy={() => handleDeleteVpPolicy(index)}
+            />
+          ))}
+        </div>
+        <div
+          className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
+        >
+          {credentials?.requestCredentials.length > 0 && (
             <Button
               type="button"
               style="primary"
@@ -740,40 +780,6 @@ export function PolicyEditor(props): ReactElement {
                 </div>
               </div>
             ))}
-        </div>
-        <div
-          className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
-        >
-          <div
-            className={`${styles.panelRow} ${styles.marginBottom2em} ${styles.marginBottom1em}`}
-          >
-            <Button
-              type="button"
-              style="primary"
-              onClick={handleNewStaticVpPolicy}
-            >
-              New {{ ...getFieldContent('staticVpPolicy', fields) }.label}
-            </Button>
-
-            <Button
-              className={`${styles.space}`}
-              type="button"
-              style="primary"
-              onClick={handleNewVpPolicy}
-            >
-              New {{ ...getFieldContent('argumentVpPolicy', fields) }.label}
-            </Button>
-          </div>
-
-          {credentials?.vpPolicies?.map((policy, index) => (
-            <VpPolicyView
-              key={index}
-              index={index}
-              name={name}
-              policy={policy}
-              onDeletePolicy={() => handleDeleteVpPolicy(index)}
-            />
-          ))}
         </div>
       </div>
     </>
