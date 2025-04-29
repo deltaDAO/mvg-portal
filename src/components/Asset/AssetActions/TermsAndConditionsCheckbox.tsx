@@ -25,13 +25,13 @@ export default function TermsAndConditionsCheckbox({
       type="checkbox"
       options={
         options ||
-        licenses.map((option) =>
-          option.includes('http') ? 'a custom' : `the ${option}`
+        licenses?.map((option) =>
+          option?.includes('http') ? 'a custom' : `the ${option}`
         )
       }
       prefixes={prefixes}
       postfixes={postfixes}
-      actions={licenses?.filter((action) => action.includes('http'))}
+      actions={licenses?.filter((action) => action?.includes('http'))}
       component={Input}
       disabled={disabled}
       {...(onChange && { onChange })}
