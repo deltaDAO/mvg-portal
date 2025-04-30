@@ -29,6 +29,12 @@ export interface AppConfig {
   purgatoryUrl: string
   dockerHubProxyUrl: string
   showPreviewAlert: string
+  automationConfig: {
+    enableAutomation: string
+    networkTokenFundDefaultValue: string
+    erc20ApprovalDefaultValue: string
+    roughTxGasEstimate: number
+  }
   ssiEnabled: boolean
   showOnboardingModuleByDefault: boolean
 }

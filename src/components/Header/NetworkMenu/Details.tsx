@@ -2,8 +2,8 @@ import { ReactElement } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 import styles from './Details.module.css'
 import AddTokenList from './AddTokenList'
-import { getCustomChainIds } from 'chains.config'
 import AddNetwork from '@components/@shared/AddNetwork'
+import { getCustomChainIds } from 'chains.config.cjs'
 
 export default function Details(): ReactElement {
   const { connector: activeConnector } = useAccount()
