@@ -1,7 +1,7 @@
 {
   "policies": [
     {
-      "policyLangTag": "en",
+      "policy": "en",
       "language": "English",
       "date": "2025-03-04",
       "params": {
@@ -11,6 +11,5 @@
         "dateFormat": "MMMM dd, yyyy."
       }
     }
-  ],
-  "slug": "/privacy"
+  ]
 }

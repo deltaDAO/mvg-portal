@@ -4,13 +4,11 @@ import { getPageBySlug, getAllPages, PageData } from '@utils/markdownPages'
 import Page from '@shared/Page'
 import styles from '@shared/Page/PageMarkdown.module.css'
 import Container from '@shared/atoms/Container'
-import PolicyHeader from '../../components/Privacy/PolicyHeader'
+import PrivacyPolicyHeader from '../../components/Privacy/PrivacyHeader'
 import { useRouter } from 'next/router'
-import { usePrivacyMetadata } from '@hooks/usePolicyMetadata'
 
 export default function PageMarkdown(page: PageData): ReactElement {
   const router = useRouter()
-  const privacyPoliciesMetadata = usePrivacyMetadata()
   if (!page || page.content === '') return null
   const { title, description } = page.frontmatter
   const { slug, content } = page
@@ -23,10 +21,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
       headerCenter
     >
       <Container narrow>
-        <PolicyHeader
-          lang={slug.replace('/privacy/', '')}
-          policiesMetadata={privacyPoliciesMetadata}
-        />
+        <PrivacyPolicyHeader policy={slug.replace('/privacy/', '')} />
         <div
           className={styles.content}
           dangerouslySetInnerHTML={{ __html: content }}
