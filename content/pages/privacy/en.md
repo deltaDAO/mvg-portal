@@ -189,9 +189,11 @@ Automated decision making including profiling does not take place.
 
 **6.1 Cookies**
 
-A cookie is a small file that stores information in your browser. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content. Some cookies are necessary for making websites work, and others are used for enhancing your experience on the visited website. Cookies can also be used for marketing and analytics purposes. Web storage (local storage and session storage) has similar functionality to cookies.
+A cookie is a small file that stores information on your device. Your web browser downloads it on the first visit to a website. The next time you open this website with the same device, the cookie and the information stored in it are either sent back to the website that created it (first-party cookie) or sent to another website it belongs to (third-party cookie). This enables the website to detect that you have opened it previously with this browser and, in some cases, to vary the displayed content.
 
-Our portal demonstrator uses cookies and your web storage to remember your page preferences, enable functionalities and to enhance your user experience. You have the option of disabling cookies and deleting cookies and web storage from your computer's hard disk at any time in your browser settings.
+Web storage (local storage and session storage) has similar functionality to cookies.
+
+On our portal demonstrator we are using local storage enabling you to use our portal demonstrator features. You can find more information about our use of cookie and web storage in our [**Cookie Policy**](/cookies/en).
 
 **6.2 Analytics**
 

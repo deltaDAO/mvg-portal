@@ -3,14 +3,14 @@
     {
       "policyLangTag": "en",
       "language": "English",
-      "date": "2025-03-04",
+      "date": "2025-04-29",
       "params": {
         "languageLabel": "Language",
-        "languageHelp": "Language of the privacy policy",
+        "languageHelp": "Language of the cookie policy",
         "updated": "Last updated on",
         "dateFormat": "MMMM dd, yyyy."
       }
     }
   ],
-  "slug": "/privacy"
+  "slug": "/cookies"
 }
