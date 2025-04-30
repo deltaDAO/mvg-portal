@@ -1,37 +1,21 @@
 import { ReactElement } from 'react'
-import styles from './Footer.module.css'
-import Markdown from '@shared/Markdown'
 import Links from './Links'
-import { useMarketMetadata } from '@context/MarketMetadata'
-import DeltaDaoLogo from '@images/deltaDAO_Logo_small_RGB_white.svg'
 import Container from '@components/@shared/atoms/Container'
+import styles from './Footer.module.css'
 
 export default function Footer(): ReactElement {
-  const { siteContent } = useMarketMetadata()
-  const { siteTitle, footer } = siteContent
-  const { copyright, subtitle } = footer
+  const currentYear = new Date().getFullYear()
 
   return (
     <footer className={styles.footer}>
-      <Container className={styles.container}>
-        <div>
-          <p className={styles.siteTitle}>{siteTitle}</p>
-          <a
-            href="https://delta-dao.com"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <div className={styles.main}>
-              <DeltaDaoLogo />
-              <p className={styles.subtitle}>{subtitle}</p>
-            </div>
-          </a>
-        </div>
+      <Container className="mx-auto px-4">
         <Links />
+        <div className="border-t border-gray-800 mt-12 pt-6 text-center md:text-left">
+          <p className={`${styles.subtitle} text-xs`}>
+            © {currentYear} ClioX. All rights reserved.
+          </p>
+        </div>
       </Container>
-      <div className={styles.copyright}>
-        <Markdown text={copyright} />
-      </div>
     </footer>
   )
 }

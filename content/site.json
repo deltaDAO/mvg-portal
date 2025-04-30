@@ -18,16 +18,7 @@
       "link": "/verify"
     },
     {
-      "name": "Faucet",
-      "link": "/faucet"
-    },
-
-    {
-      "name": "Log",
-      "link": "https://explorer.pontus-x.eu/"
-    },
-    {
-      "name": "Ecosystem",
+      "name": "Partners",
       "subItems": [
         {
           "name": "EuProGigant",
@@ -165,14 +156,6 @@
         {
           "name": "Documentation",
           "link": "https://docs.pontus-x.eu/"
-        },
-        {
-          "name": "Landing Page",
-          "link": "https://www.pontus-x.eu/"
-        },
-        {
-          "name": "nautilus",
-          "link": "https://nautilus.delta-dao.com/"
         }
       ]
     }

@@ -1,0 +1,5 @@
+/* Override default SVG styles in the Home component */
+.home svg {
+  margin: 0;
+  display: inline-block;
+}

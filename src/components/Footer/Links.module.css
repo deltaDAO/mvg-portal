@@ -1,50 +1,47 @@
-.container {
+/* Links specific styles */
+.mainTitle {
+  color: white;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: calc(var(--spacer) * 2);
-  width: 100%;
+  align-items: center;
 }
 
-.section {
-  text-align: left;
-}
-
-.title {
-  margin-bottom: calc(var(--spacer) / 2);
+.betaBadge {
+  background-color: #2563eb;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  margin-left: 0.5rem;
   text-transform: uppercase;
-  font-weight: var(--font-weight-bold);
-  color: var(--footer-link-category-font-color);
 }
 
-.links {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: calc(var(--spacer) / 4);
-  text-transform: capitalize;
+.sectionTitle {
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
 }
 
 .link {
-  composes: text from '../@shared/atoms/Button/index.module.css';
-}
-
-.link,
-.link:focus,
-.link:active {
-  text-transform: none;
-  color: var(--footer-font-color);
-  font-weight: var(--font-weight-normal);
-  transform: none;
+  color: white;
+  font-weight: 400;
+  font-size: 0.75rem;
+  text-align: left;
+  transition: color 0.2s;
+  padding: 0;
+  text-transform: uppercase;
 }
 
 .link:hover {
-  color: var(--footer-font-color-highlight);
-  transform: none;
+  color: #cbd5e0;
 }
 
-@media screen and (min-width: 55rem) {
-  .container {
-    width: auto;
-  }
+.subtitle {
+  color: white;
+  opacity: 0.8;
 }

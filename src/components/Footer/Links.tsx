@@ -2,56 +2,92 @@ import { ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useGdprMetadata } from '@hooks/useGdprMetadata'
 import Button from '@shared/atoms/Button'
-import styles from './Links.module.css'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import styles from './Links.module.css'
 
 export default function Links(): ReactElement {
-  const { appConfig, siteContent } = useMarketMetadata()
+  const { appConfig } = useMarketMetadata()
   const { setShowPPC, privacyPolicySlug } = useUserPreferences()
   const cookies = useGdprMetadata()
 
-  const { content, privacyTitle } = siteContent.footer
-
   return (
-    <div className={styles.container}>
-      {content?.map((section, i) => (
-        <div key={i} className={styles.section}>
-          <p className={styles.title}>{section.title}</p>
-          <div className={styles.links}>
-            {section.links.map((e, i) => (
-              <Button
-                key={i}
-                className={styles.link}
-                {...(e.link.startsWith('/')
-                  ? { to: e.link }
-                  : { href: e.link })}
-              >
-                {e.name}
-              </Button>
-            ))}
+    <div>
+      {/* ClioX Title with BETA */}
+      <div className="mb-10 md:hidden">
+        <h2 className={styles.mainTitle}>
+          Clio-X
+          <span className={styles.betaBadge}>BETA</span>
+        </h2>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-y-8 gap-x-12 w-full">
+        {/* Column 1: Clio-X */}
+        <div>
+          {/* ClioX Title with BETA for desktop */}
+          <div className="hidden md:block mb-6">
+            <h2 className={styles.mainTitle}>
+              Clio-X
+              <span className={styles.betaBadge}>BETA</span>
+            </h2>
           </div>
+
+          {/* <h3 className={styles.sectionTitle}>Resources</h3> */}
+          <ul className="space-y-3">
+            <li>
+              <Button to="/docs" className={styles.link} style="text">
+                DOCUMENTATION
+              </Button>
+            </li>
+            <li>
+              <Button to="/newsletter" className={styles.link} style="text">
+                NEWSLETTER
+              </Button>
+            </li>
+          </ul>
         </div>
-      ))}
-      <div className={styles.section}>
-        <p className={styles.title}>{privacyTitle}</p>
-        <div className={styles.links}>
-          <Button to="/imprint" className={styles.link}>
-            Imprint
-          </Button>
-          <Button to={privacyPolicySlug} className={styles.link}>
-            Privacy Policy
-          </Button>
-          {appConfig.privacyPreferenceCenter === 'true' && (
-            <Button
-              className={styles.link}
-              style="text"
-              onClick={() => {
-                setShowPPC(true)
-              }}
-            >
-              {cookies.optionalCookies ? 'Cookie Settings' : 'Cookies'}
-            </Button>
-          )}
+
+        {/* Column 2: Legal */}
+        <div>
+          <h3 className={styles.sectionTitle}>Legal</h3>
+          <ul className="space-y-3">
+            <li>
+              <Button
+                to={privacyPolicySlug || '/privacy'}
+                className={styles.link}
+                style="text"
+              >
+                PRIVACY POLICY
+              </Button>
+            </li>
+            <li>
+              <Button to="/imprint" className={styles.link} style="text">
+                IMPRINT
+              </Button>
+            </li>
+            {appConfig?.privacyPreferenceCenter === 'true' && (
+              <li>
+                <Button
+                  style="text"
+                  onClick={() => setShowPPC(true)}
+                  className={styles.link}
+                >
+                  COOKIE SETTINGS
+                </Button>
+              </li>
+            )}
+          </ul>
+        </div>
+
+        {/* Column 3: Join the community */}
+        <div>
+          <h3 className={styles.sectionTitle}>Join the community</h3>
+          <p className={`${styles.subtitle} text-sm max-w-xs mb-6`}>
+            Our newsletter provides you with latest data economy happenings on a
+            monthly basis.
+          </p>
+          <button className="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded transition-colors">
+            Subscribe
+          </button>
         </div>
       </div>
     </div>

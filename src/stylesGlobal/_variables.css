@@ -1,5 +1,5 @@
-@import url('./_colors.css');
-@import url('../../public/static/fonts/fonts.css');
+@import './_colors.css';
+@import '../../public/static/fonts/fonts.css';
 
 :root {
   --color-primary: var(--brand-blue);

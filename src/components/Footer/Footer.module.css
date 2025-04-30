@@ -1,72 +1,32 @@
+/* Footer specific styles */
 .footer {
-  padding: var(--spacer);
-  padding-bottom: calc(var(--spacer) / 2);
-  text-align: center;
-  color: var(--footer-font-color);
-  background: var(--footer-background-color);
-  font-size: var(--font-size-small);
+  background-color: #091521;
+  color: white;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: flex-start;
-  gap: var(--spacer);
-  margin: auto;
-  margin-bottom: var(--spacer);
+.title {
+  color: white;
+  font-weight: 600;
 }
 
-.siteTitle {
-  text-align: left;
-  margin-bottom: 0;
+.link {
+  color: white;
+  font-weight: 500;
+  transition: color 0.2s;
 }
 
-.main {
-  margin-top: auto;
-  position: relative;
-  text-align: left;
-  color: var(--footer-font-color);
-  margin-bottom: var(--spacer);
-}
-
-.main svg {
-  width: 15rem;
-  height: 6rem !important;
-  margin-left: -0.7rem;
-  margin-top: auto;
+.link:hover {
+  color: #cbd5e0;
 }
 
 .subtitle {
-  position: absolute;
-  top: 4rem;
-  left: 5rem;
-  max-width: 100%;
+  color: white;
+  opacity: 0.8;
 }
 
-@media screen and (min-width: 60rem) {
-  .subtitle {
-    max-width: unset;
-    width: max-content;
-  }
-
-  .main {
-    margin-bottom: unset;
-  }
-}
-
-.copyright a {
-  color: var(--footer-font-color-highlight);
-}
-
-@media screen and (min-width: 55rem) {
-  .footer {
-    padding: calc(var(--spacer) * 2);
-    padding-bottom: calc(var(--spacer) / 2);
-  }
-  .container {
-    flex-direction: row;
-    justify-content: space-between;
-    gap: calc(var(--spacer) / 2);
-  }
+.beta {
+  background-color: #2563eb;
+  color: white;
 }

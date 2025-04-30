@@ -13,6 +13,7 @@ export default function PageHome(): ReactElement {
       title={siteContent?.siteTitle}
       description={siteContent?.siteTagline}
       uri={router.route}
+      noContainer
       headerCenter
     >
       <Home />

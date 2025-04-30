@@ -13,6 +13,7 @@ export interface PageProps {
   description?: string
   noPageHeader?: boolean
   headerCenter?: boolean
+  noContainer?: boolean
 }
 
 export default function Page({
@@ -21,7 +22,8 @@ export default function Page({
   uri,
   description,
   noPageHeader,
-  headerCenter
+  headerCenter,
+  noContainer
 }: PageProps): ReactElement {
   const { allowExternalContent } = useUserPreferences()
 
@@ -29,25 +31,29 @@ export default function Page({
   const isSearchPage = uri.startsWith('/search')
   const isAssetPage = uri.startsWith('/asset')
 
+  const content = (
+    <>
+      <SearchBar
+        placeholder="Search for service offerings"
+        isSearchPage={isSearchPage}
+      />
+      {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
+      {/* {title && !noPageHeader && (
+        <PageHeader
+          title={isHome ? title : <>{title.slice(0, 400)}</>}
+          center={headerCenter}
+          description={description}
+          isHome={isHome}
+        />
+      )} */}
+      {children}
+    </>
+  )
+
   return (
     <>
       <Seo title={title} description={description} uri={uri} />
-      <Container>
-        <SearchBar
-          placeholder="Search for service offerings"
-          isSearchPage={isSearchPage}
-        />
-        {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
-        {title && !noPageHeader && (
-          <PageHeader
-            title={isHome ? title : <>{title.slice(0, 400)}</>}
-            center={headerCenter}
-            description={description}
-            isHome={isHome}
-          />
-        )}
-        {children}
-      </Container>
+      {noContainer ? content : <Container>{content}</Container>}
     </>
   )
 }
