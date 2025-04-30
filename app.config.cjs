@@ -119,5 +119,5 @@ module.exports = {
 
   opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL,
   showOnboardingModuleByDefault:
-    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'true'
+    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'false'
 }
