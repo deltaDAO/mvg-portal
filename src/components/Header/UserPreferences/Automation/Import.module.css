@@ -1,0 +1,11 @@
+.wrapper > div[class*='FormInput'] {
+  margin: 0;
+}
+
+.button {
+  width: 100%;
+}
+
+.cancel {
+  margin-top: calc(var(--spacer) / 4);
+}

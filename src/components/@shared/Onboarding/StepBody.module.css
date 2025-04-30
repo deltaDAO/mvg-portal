@@ -1,0 +1,62 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.cardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardContainer,
+.image {
+  width: 100%;
+}
+
+.image {
+  object-fit: contain;
+  max-height: 25rem;
+}
+
+.card {
+  composes: box from '../atoms/Box.module.css';
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 20rem;
+  min-height: 20rem;
+  height: 100%;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
+  width: 100%;
+}
+
+.refresh button,
+.refresh button:hover,
+.refresh button:focus {
+  display: flex;
+  gap: 1rem;
+}
+
+.refresh svg {
+  fill: var(--button-text-font-color);
+}
+
+@media screen and (min-width: 60rem) {
+  .content {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .cardContainer,
+  .image {
+    width: 50%;
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "title": "Activate Automation",
+  "subtitle": "Activate the assets consumption automation",
+  "body": "Click on the button to import the wallet you want to use for the automation, you will be asked to provide the encrypted json file and the password to unlock it.",
+  "image": "/images/onboarding/automation_wallet_import.png",
+  "buttonLabel": "Import Wallet Json",
+  "buttonSuccess": "Wallet Imported Successfully"
+}

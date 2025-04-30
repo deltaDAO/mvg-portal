@@ -43,6 +43,10 @@ module.exports = {
 
   marketCommunityFee: process.env.NEXT_PUBLIC_MARKET_COMMUNITY_FEE || '0.3',
 
+  faucet: {
+    baseUri: 'https://faucet.api.pontus-x.eu'
+  },
+
   // Config for https://github.com/oceanprotocol/use-dark-mode
   darkModeConfig: {
     classNameDark: 'dark',
@@ -106,5 +110,7 @@ module.exports = {
 
   oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
 
-  opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL
+  opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL,
+  showOnboardingModuleByDefault:
+    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'true'
 }

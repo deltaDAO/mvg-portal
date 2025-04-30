@@ -1,0 +1,19 @@
+.delete > svg {
+  fill: var(--brand-alert-red);
+}
+
+.address {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-base);
+  width: 100%;
+  padding-bottom: calc(var(--spacer) / 4);
+}
+
+.address strong {
+  color: var(--color-highlight);
+}
+
+.address button {
+  margin-left: calc(var(--spacer) / 4);
+}
