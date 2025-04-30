@@ -62,6 +62,14 @@
           "isLive": true
         },
         {
+          "name": "Flex4Res",
+          "link": "https://flex4res.pontus-x.eu/",
+          "description": "The Flex4Res lighthouse stands for Data spaces for FLEXible production lines and supply chains FOR RESilient manufacturing. Flex4Res develops an open platform for secure and sovereign data exchange",
+          "image": "flex4res-logo.webp",
+          "category": "manufacturing",
+          "isLive": true
+        },
+        {
           "name": "Airbus",
           "link": "https://airbus.pontus-x.eu/",
           "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
@@ -70,51 +78,11 @@
           "isLive": true
         },
         {
-          "name": "beebucket",
-          "link": "https://daseen.pontus-x.eu/",
-          "description": "The beebucket portal features access to the Extended Dataset Profile Service (EDPS) and Dataset Search Engine (daseen).",
-          "image": "beebucket.webp",
-          "category": "AI",
-          "isLive": true
-        },
-        {
-          "name": "FIWARE",
-          "link": "https://fiware-marketplace-a4eqd.ondigitalocean.app/",
-          "description": "A curated framework of Open Source Platform components to accelerate the development of Smart Solutions.",
-          "image": "logo-fiware-full.webp",
-          "category": "smart city",
-          "isLive": true
-        },
-        {
-          "name": "Berlin State Library",
-          "link": "https://sbb.pontus-x.eu/",
-          "description": "Explore the Open Science Ecosystem, a collaboration of libraries, universities, and science pioneers under Gaia-X principles for limitless shared knowledge.",
-          "image": "sbb-logo.webp",
-          "category": "language models",
-          "isLive": true
-        },
-        {
-          "name": "Car Repair 4.0",
-          "link": "https://portal.autowerkstatt40.org/",
-          "description": "Car Repair 4.0 develops a hub infrastructure that connects car workshops to Gaia-X ecosystems and enables AI-supported fault tracking.",
-          "image": "carrepair40.webp",
-          "category": "AI",
-          "isLive": true
-        },
-        {
-          "name": "Flex4Res",
-          "link": "https://flex4res.pontus-x.eu/",
-          "description": "Flex4Res stands for Data spaces for FLEXible production lines and supply chains FOR RESilient manufacturing. Flex4Res develops an open platform for secure and sovereign data exchange",
-          "image": "flex4res-logo.webp",
-          "category": "manufacturing",
-          "isLive": true
-        },
-        {
-          "name": "Future Mobility Marketplace",
-          "link": "https://marketplace.future-mobility-alliance.org/",
-          "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
-          "image": "fmdm-logo.webp",
-          "category": "mobility",
+          "name": "Pontus-X Main Portal",
+          "link": "https://portal.main.pontus-x.eu/",
+          "description": "With deltaDAO's data and AI Marketplace, you have the freedom to decide how your data and AI services are offered.",
+          "image": "pontusx_deltadao.webp",
+          "category": "general",
           "isLive": true
         },
         {
@@ -126,11 +94,59 @@
           "isLive": true
         },
         {
+          "name": "beebucket",
+          "link": "https://daseen.pontus-x.eu/",
+          "description": "The beebucket portal features access to the Extended Dataset Profile Service (EDPS) and Dataset Search Engine (daseen).",
+          "image": "beebucket.webp",
+          "category": "AI",
+          "isLive": true
+        },
+        {
+          "name": "Future Engineering Network (FEN)",
+          "link": "https://fen.pontus-x.eu/",
+          "description": "The Future Engineering Network, a project of Fraunhofer IAO, will focus on the data economy. To help companies explore data-driven business models.",
+          "image": "FEN_logo.webp",
+          "category": "industry 4.0",
+          "isLive": true
+        },
+        {
+          "name": "Berlin State Library",
+          "link": "https://sbb.pontus-x.eu/",
+          "description": "Explore the Open Science Ecosystem, a collaboration of libraries, universities, and science pioneers under Gaia-X principles for limitless shared knowledge.",
+          "image": "sbb-logo.webp",
+          "category": "language models",
+          "isLive": true
+        },
+        {
+          "name": "FIWARE",
+          "link": "https://fiware-marketplace-a4eqd.ondigitalocean.app/",
+          "description": "A curated framework of Open Source Platform components to accelerate the development of Smart Solutions.",
+          "image": "logo-fiware-full.webp",
+          "category": "smart city",
+          "isLive": true
+        },
+        {
           "name": "Polish Agriculture Data Space",
           "link": "https://dataspaces.psnc.pl/",
           "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
           "image": "PSNC.webp",
           "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "Open Dataspace Lab",
+          "link": "https://www.opendataspacelab.eu/",
+          "description": "Open Dataspace Lab connects supply and demand for all types of data and AI algorithms.",
+          "image": "odl-logo.webp",
+          "category": "general",
+          "isLive": true
+        },
+        {
+          "name": "Car Repair 4.0",
+          "link": "https://portal.autowerkstatt40.org/",
+          "description": "Car Repair 4.0 develops a hub infrastructure that connects car workshops to Gaia-X ecosystems and enables AI-supported fault tracking.",
+          "image": "carrepair40.webp",
+          "category": "AI",
           "isLive": true
         },
         {
@@ -140,14 +156,6 @@
           "image": "service-meister-logo.webp",
           "category": "AI",
           "isLive": true
-        },
-        {
-          "name": "deltaDAO AI marketplace",
-          "link": "https://market.delta-dao.com/",
-          "description": "With deltaDAO's AI Marketplace, you have the freedom to decide how your AI service is offered. By keeping your AI private, you retain full control and do not disclose your valuable IP.",
-          "image": "deltadao-logo.webp",
-          "category": "AI",
-          "isLive": false
         }
       ]
     },

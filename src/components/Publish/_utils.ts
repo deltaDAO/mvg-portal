@@ -477,7 +477,7 @@ export async function storeRawServiceSD(signedSD: {
 
 export async function verifyRawServiceCredential(
   rawServiceCredential: string,
-  did?: string
+  assetDid?: string
 ): Promise<{
   verified: boolean
   complianceApiVersion?: string
@@ -517,27 +517,27 @@ export async function verifyRawServiceCredential(
         const credentialSubject = serviceOfferings[0]?.credentialSubject
         return {
           ...verifiedAndComplianceApiVersion,
-          idMatch:
-            did && did?.toLowerCase() === credentialSubject?.id?.toLowerCase()
+          idMatch: assetDid
+            ? assetDid?.toLowerCase() === credentialSubject?.id?.toLowerCase()
+            : false
         }
       } else {
         const dependsOnIds = serviceOfferings
           .filter((service) => service?.credentialSubject?.['gx:dependsOn'])
           .flatMap((service) => service?.credentialSubject?.['gx:dependsOn'])
           .map((dependsOn) => dependsOn?.id)
-
         const rootService = serviceOfferings
           .filter(
             (service) => !dependsOnIds.includes(service?.credentialSubject?.id)
           )
           .map((service) => service?.credentialSubject?.id)
-
         if (rootService.length > 1) {
           return {
             ...verifiedAndComplianceApiVersion,
-            idMatch:
-              rootService?.includes(did) ||
-              rootService?.includes(did.toLowerCase()),
+            idMatch: assetDid
+              ? rootService?.includes(assetDid) ||
+                rootService?.includes(assetDid?.toLowerCase())
+              : false,
             isIdMatchVerifiable: 'Too many root services'
           }
         } else if (rootService.length < 1) {
@@ -549,9 +549,10 @@ export async function verifyRawServiceCredential(
         } else {
           return {
             ...verifiedAndComplianceApiVersion,
-            idMatch:
-              rootService?.includes(did) ||
-              rootService?.includes(did.toLowerCase())
+            idMatch: assetDid
+              ? rootService?.includes(assetDid) ||
+                rootService?.includes(assetDid?.toLowerCase())
+              : false
           }
         }
       }

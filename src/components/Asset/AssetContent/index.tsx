@@ -46,7 +46,7 @@ export default function AssetContent({
     if (!receipts.length) return
 
     const publisher = receipts?.find((e) => e.type === 'METADATA_CREATED')?.nft
-      ?.owner
+      ?.owner?.id
     setNftPublisher(publisher)
   }, [receipts])
 
