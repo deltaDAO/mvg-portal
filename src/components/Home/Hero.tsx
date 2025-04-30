@@ -1,6 +1,13 @@
-import Button from '../Home/common/Button'
 import Container from '@components/@shared/atoms/Container'
 import Link from 'next/link'
+import Button from '../Home/common/Button'
+
+const scrollToElement = (e: React.MouseEvent, selector: string): void => {
+  e.preventDefault()
+  document.querySelector(selector)?.scrollIntoView({
+    behavior: 'smooth'
+  })
+}
 
 export default function Hero() {
   return (
@@ -30,7 +37,10 @@ export default function Hero() {
           </p>
 
           <div className="flex gap-10">
-            <Link href="#choose-role">
+            <Link
+              href="#choose-role"
+              onClick={(e) => scrollToElement(e, '#choose-role')}
+            >
               <Button
                 variant="primary"
                 size="lg"
@@ -39,7 +49,10 @@ export default function Hero() {
                 Get Started
               </Button>
             </Link>
-            <Link href="#what-we-do">
+            <Link
+              href="#what-we-do"
+              onClick={(e) => scrollToElement(e, '#what-we-do')}
+            >
               <Button
                 variant="secondary"
                 size="lg"
