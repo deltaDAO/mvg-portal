@@ -24,6 +24,7 @@ import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
 import VerifiedPatch from '@images/patch_check.svg'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
+import { useAccount } from 'wagmi'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -75,6 +76,8 @@ export function AssetActionCheckCredentials({
   asset: Asset
   service: Service
 }) {
+  const { address: accountId } = useAccount()
+
   const [checkCredentialState, setCheckCredentialState] =
     useState<CheckCredentialState>(CheckCredentialState.Stop)
   const [requiredCredentials, setRequiredCredentials] = useState<string[]>([])
@@ -108,7 +111,9 @@ export function AssetActionCheckCredentials({
         switch (checkCredentialState) {
           case CheckCredentialState.StartCredentialExchange: {
             const presentationResult = await requestCredentialPresentation(
-              asset
+              asset,
+              accountId,
+              service.id
             )
             exchangeStateData.openid4vp = presentationResult.openid4vc
             exchangeStateData.poliyServerData =
