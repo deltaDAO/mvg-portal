@@ -108,7 +108,7 @@ export default function Faucet(): ReactElement {
     {
       buttonLabel: 'Request Test OCEAN Tokens',
       buttonAction: async () => {
-        window.open('https://oceanfaucet.com', '_blank')
+        window.open('https://faucet.sepolia.oceanprotocol.com', '_blank')
       },
       successMessage: 'Successfully requested test tokens.',
       loading,
