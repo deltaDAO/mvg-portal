@@ -4,20 +4,25 @@ import StepAction, { IStepAction } from './StepAction'
 import Button from '../atoms/Button'
 import Refresh from '@images/refresh.svg'
 import Markdown from '../Markdown'
-
+import AddTokenList from '@components/Header/Wallet/AddTokenList'
+import { useAccount } from 'wagmi'
+type StepPage = 'TOKENPAGE' | 'FAUCET'
 export default function StepBody({
   body,
   image,
   actions,
   refreshOption,
-  children
+  children,
+  stepPage
 }: {
   body: string
   image?: string
+  stepPage?: StepPage
   actions?: IStepAction[]
   refreshOption?: boolean
   children?: ReactElement
 }): ReactElement {
+  const { connector: activeConnector } = useAccount()
   return (
     <div className={styles.content}>
       <div className={styles.cardContainer}>
@@ -34,6 +39,17 @@ export default function StepBody({
             </div>
           )}
           <Markdown text={body} className={styles.paragraph} />
+          {stepPage === 'TOKENPAGE' && activeConnector?.name === 'MetaMask' && (
+            <div className={styles.tokenList}>
+              <AddTokenList />
+            </div>
+          )}
+          {/* {stepPage === 'FAUCET' && (
+            <div className={styles.tokenList}>
+              <AddTokenList />
+            </div>
+          )} */}
+
           <div className={styles.actions}>
             {actions?.map((action) => (
               <StepAction key={action.buttonLabel} {...action} />

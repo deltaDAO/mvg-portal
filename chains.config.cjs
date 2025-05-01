@@ -3,7 +3,7 @@
 
 const chains = [
   {
-    chainId: 32456,
+    chainId: 11155111,
     isDefault: false,
     isCustom: true,
     network: 'pontusx-devnet',
@@ -26,7 +26,7 @@ const chains = [
     explorerUri: 'https://explorer.pontus-x.eu/devnet/pontusx'
   },
   {
-    chainId: 32457,
+    chainId: 8996,
     isDefault: true,
     isCustom: true,
     network: 'pontusx-testnet',

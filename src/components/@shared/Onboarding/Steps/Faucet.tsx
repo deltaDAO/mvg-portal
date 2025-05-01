@@ -88,16 +88,29 @@ export default function Faucet(): ReactElement {
     signMessageSuccess,
     signMessageData,
     signMessageError,
-    signMessageLoading
+    signMessageLoading,
+    faucetTokenRequest
   ])
 
   const actions = [
     {
-      buttonLabel: `Request Test EUROe Tokens`,
+      buttonLabel: 'Request Test Sepolia Tokens',
       buttonAction: async () => {
-        await prepareMessage()
+        window.open(
+          'https://cloud.google.com/application/web3/faucet/ethereum/sepolia',
+          '_blank'
+        )
       },
-      successMessage: `Successfully requested test tokens.`,
+      successMessage: 'Successfully requested test tokens.',
+      loading,
+      completed
+    },
+    {
+      buttonLabel: 'Request Test OCEAN Tokens',
+      buttonAction: async () => {
+        window.open('https://oceanfaucet.com', '_blank')
+      },
+      successMessage: 'Successfully requested test tokens.',
       loading,
       completed
     }

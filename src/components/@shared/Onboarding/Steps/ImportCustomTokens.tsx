@@ -77,7 +77,12 @@ export default function ImportCustomTokens(): ReactElement {
   return (
     <div>
       <StepHeader title={title} subtitle={subtitle} />
-      <StepBody body={body} image={image} actions={actions} />
+      <StepBody
+        body={body}
+        image={image}
+        actions={actions}
+        stepPage="TOKENPAGE"
+      />
     </div>
   )
 }

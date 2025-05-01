@@ -30,8 +30,8 @@ const steps = [
   { shortLabel: 'MetaMask', component: <DownloadMetamask /> },
   { shortLabel: 'Connect', component: <ConnectAccount /> },
   { shortLabel: 'Tokens', component: <ImportCustomTokens /> },
-  { shortLabel: 'Import', component: <ImportWallet /> },
-  { shortLabel: 'Automation', component: <AutomationWalletState /> },
+  // { shortLabel: 'Import', component: <ImportWallet /> },
+  // { shortLabel: 'Automation', component: <AutomationWalletState /> },
   { shortLabel: 'Faucet', component: <Faucet /> },
   { shortLabel: 'Ready', component: <Ready /> }
 ]
