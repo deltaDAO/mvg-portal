@@ -1,5 +1,4 @@
 @import './_variables.css';
-@import 'tailwindcss';
 
 /* Custom base styles that should be applied before Tailwind */
 @layer base {
@@ -180,3 +179,8 @@
 .ReactModal__Body--open {
   overflow: hidden;
 }
+
+@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

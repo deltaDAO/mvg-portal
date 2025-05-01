@@ -22,7 +22,7 @@
 .sectionTitle {
   color: white;
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin-bottom: 1.25rem;
   text-transform: uppercase;
 }
@@ -30,7 +30,7 @@
 .link {
   color: white;
   font-weight: 400;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   text-align: left;
   transition: color 0.2s;
   padding: 0;
@@ -44,4 +44,5 @@
 .subtitle {
   color: white;
   opacity: 0.8;
+  font-size: 0.95rem;
 }

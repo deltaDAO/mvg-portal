@@ -1,13 +1,25 @@
 import { ReactElement } from 'react'
-import LogoAsset from '@images/pontusx_logo_horizontal.svg'
-import LogoAssetSmall from '@images/pontusx_logo.svg'
 import styles from './index.module.css'
 
-export default function Logo(): ReactElement {
+interface LogoProps {
+  darkMode?: boolean
+}
+
+export default function Logo({ darkMode = false }: LogoProps): ReactElement {
   return (
     <div className={styles.logoWrapper}>
-      <LogoAsset className={styles.logo} />
-      <LogoAssetSmall className={styles.logoSmall} />
+      {/* Temporary ClioX text logo */}
+      <div className="text-4xl font-bold tracking-tight">
+        <span className={darkMode ? 'text-blue-100' : 'text-blue-900'}>
+          Clio
+        </span>
+        <span className={darkMode ? 'text-blue-300' : 'text-blue-700'}>X</span>
+      </div>
+      {/* Mobile version */}
+      <div className={`${styles.logoSmall} text-3xl font-bold`}>
+        <span className={darkMode ? 'text-blue-100' : 'text-blue-900'}>C</span>
+        <span className={darkMode ? 'text-blue-300' : 'text-blue-700'}>X</span>
+      </div>
     </div>
   )
 }
