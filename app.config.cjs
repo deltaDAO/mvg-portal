@@ -43,10 +43,6 @@ module.exports = {
 
   marketCommunityFee: process.env.NEXT_PUBLIC_MARKET_COMMUNITY_FEE || '0.3',
 
-  faucet: {
-    baseUri: 'https://faucet.api.pontus-x.eu'
-  },
-
   // Config for https://github.com/oceanprotocol/use-dark-mode
   darkModeConfig: {
     classNameDark: 'dark',

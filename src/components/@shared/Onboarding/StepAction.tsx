@@ -8,8 +8,8 @@ import styles from './StepAction.module.css'
 export interface IStepAction {
   buttonLabel: string
   buttonAction: (e: FormEvent) => void
-  loading: boolean
-  completed: boolean
+  loading?: boolean
+  completed?: boolean
   loadingMessage?: string
   successMessage?: string
 }
