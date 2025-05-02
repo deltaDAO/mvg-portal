@@ -12,8 +12,6 @@ import Ready from './Steps/Ready'
 import { useAccount, useNetwork, useProvider } from 'wagmi'
 import { useUserPreferences } from '@context/UserPreferences'
 import useBalance from '@hooks/useBalance'
-import ImportWallet from './Steps/ImportWallet'
-import AutomationWalletState from './Steps/AutomationWalletState'
 import Faucet from './Steps/Faucet'
 import { getSupportedChainIds } from 'chains.config.cjs'
 
@@ -30,8 +28,6 @@ const steps = [
   { shortLabel: 'MetaMask', component: <DownloadMetamask /> },
   { shortLabel: 'Connect', component: <ConnectAccount /> },
   { shortLabel: 'Tokens', component: <ImportCustomTokens /> },
-  // { shortLabel: 'Import', component: <ImportWallet /> },
-  // { shortLabel: 'Automation', component: <AutomationWalletState /> },
   { shortLabel: 'Faucet', component: <Faucet /> },
   { shortLabel: 'Ready', component: <Ready /> }
 ]

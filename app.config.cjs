@@ -43,13 +43,6 @@ module.exports = {
 
   marketCommunityFee: process.env.NEXT_PUBLIC_MARKET_COMMUNITY_FEE || '0.3',
 
-  automationConfig: {
-    enableAutomation: process.env.NEXT_PUBLIC_ENABLE_AUTOMATION || 'true',
-    networkTokenFundDefaultValue: '2',
-    erc20ApprovalDefaultValue: '50',
-    roughTxGasEstimate: 0.02
-  },
-
   faucet: {
     baseUri: 'https://faucet.api.pontus-x.eu'
   },
