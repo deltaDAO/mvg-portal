@@ -11,6 +11,7 @@ import { getTokenBalance } from '@utils/wallet'
 
 interface BalanceProviderValue {
   balance: UserBalance
+  getApprovedTokenBalances: (address: string) => Promise<TokenBalances>
 }
 
 function useBalance(): BalanceProviderValue {
@@ -21,26 +22,18 @@ function useBalance(): BalanceProviderValue {
   const { chain } = useNetwork()
 
   const [balance, setBalance] = useState<UserBalance>({
-    eth: '0'
+    native: {
+      symbol: 'eth',
+      balance: '0'
+    }
   })
 
-  // -----------------------------------
-  // Helper: Get user balance
-  // -----------------------------------
-  const getUserBalance = useCallback(async () => {
-    if (
-      !balanceNativeToken?.formatted ||
-      !address ||
-      !chain?.id ||
-      !web3provider
-    )
-      return
-    try {
-      const userBalance = balanceNativeToken?.formatted
-      const key = balanceNativeToken?.symbol.toLowerCase()
-      const newBalance: UserBalance = { [key]: userBalance }
+  const getApprovedTokenBalances = useCallback(
+    async (address: string): Promise<TokenBalances> => {
+      const newBalance: TokenBalances = {}
+
       if (approvedBaseTokens?.length > 0) {
-        await Promise.all(
+        await Promise.allSettled(
           approvedBaseTokens.map(async (token) => {
             const { address: tokenAddress, decimals, symbol } = token
             const tokenBalance = await getTokenBalance(
@@ -54,18 +47,53 @@ function useBalance(): BalanceProviderValue {
         )
       }
 
+      return newBalance
+    },
+    [approvedBaseTokens, web3provider]
+  )
+
+  // -----------------------------------
+  // Helper: Get user balance
+  // -----------------------------------
+  const getUserBalance = useCallback(async () => {
+    if (
+      !balanceNativeToken?.formatted ||
+      !address ||
+      !chain?.id ||
+      !web3provider
+    )
+      return
+
+    try {
+      const userBalance = balanceNativeToken?.formatted
+      const key = balanceNativeToken?.symbol.toLowerCase()
+
+      const newBalance: UserBalance = {
+        native: {
+          symbol: key,
+          balance: userBalance
+        },
+        approved: await getApprovedTokenBalances(address)
+      }
+
       setBalance(newBalance)
       LoggerInstance.log('[useBalance] Balance: ', newBalance)
     } catch (error) {
       LoggerInstance.error('[useBalance] Error: ', error.message)
     }
-  }, [address, approvedBaseTokens, chain?.id, web3provider, balanceNativeToken])
+  }, [
+    address,
+    chain?.id,
+    web3provider,
+    balanceNativeToken,
+    getApprovedTokenBalances
+  ])
 
   useEffect(() => {
     getUserBalance()
   }, [getUserBalance])
 
-  return { balance }
+  return { balance, getApprovedTokenBalances }
 }
 
 export default useBalance

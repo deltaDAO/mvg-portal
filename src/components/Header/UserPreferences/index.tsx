@@ -4,6 +4,7 @@ import Cog from '@images/cog.svg'
 import styles from './index.module.css'
 import Debug from './Debug'
 import Caret from '@images/caret.svg'
+import Onboarding from './Onboarding'
 import ExternalContent from './ExternalContent'
 
 export default function UserPreferences(): ReactElement {
@@ -13,6 +14,9 @@ export default function UserPreferences(): ReactElement {
         <ul className={styles.preferencesDetails}>
           <li>
             <ExternalContent />
+          </li>
+          <li>
+            <Onboarding />
           </li>
           <li>
             <Debug />

@@ -9,7 +9,6 @@ import {
 import { LoggerInstance, LogLevel } from '@oceanprotocol/lib'
 import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from './MarketMetadata'
-
 interface UserPreferencesValue {
   debug: boolean
   setDebug: (value: boolean) => void
@@ -27,6 +26,10 @@ interface UserPreferencesValue {
   allowExternalContent: boolean
   setAllowExternalContent: (value: boolean) => void
   locale: string
+  showOnboardingModule: boolean
+  setShowOnboardingModule: (value: boolean) => void
+  onboardingStep: number
+  setOnboardingStep: (step: number) => void
 }
 
 const UserPreferencesContext = createContext(null)
@@ -63,7 +66,13 @@ function UserPreferencesProvider({
   const [chainIds, setChainIds] = useState(
     localStorage?.chainIds || appConfig.chainIds
   )
-  const { defaultPrivacyPolicySlug } = appConfig
+  const { defaultPrivacyPolicySlug, showOnboardingModuleByDefault } = appConfig
+  const [showOnboardingModule, setShowOnboardingModule] = useState<boolean>(
+    localStorage?.showOnboardingModule ?? showOnboardingModuleByDefault
+  )
+  const [onboardingStep, setOnboardingStep] = useState<number>(
+    localStorage?.onboardingStep || 0
+  )
 
   const [privacyPolicySlug, setPrivacyPolicySlug] = useState<string>(
     localStorage?.privacyPolicySlug || defaultPrivacyPolicySlug
@@ -86,6 +95,7 @@ function UserPreferencesProvider({
       bookmarks,
       privacyPolicySlug,
       showPPC,
+      showOnboardingModule,
       allowExternalContent
     })
   }, [
@@ -95,7 +105,9 @@ function UserPreferencesProvider({
     bookmarks,
     privacyPolicySlug,
     showPPC,
-    allowExternalContent
+    allowExternalContent,
+    showOnboardingModule,
+    onboardingStep
   ])
 
   // Set ocean.js log levels, default: Error
@@ -160,7 +172,11 @@ function UserPreferencesProvider({
           setPrivacyPolicySlug,
           setShowPPC,
           allowExternalContent,
-          setAllowExternalContent
+          setAllowExternalContent,
+          showOnboardingModule,
+          setShowOnboardingModule,
+          onboardingStep,
+          setOnboardingStep
         } as UserPreferencesValue
       }
     >

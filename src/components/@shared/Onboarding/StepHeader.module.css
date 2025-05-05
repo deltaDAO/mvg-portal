@@ -1,0 +1,11 @@
+.header {
+  max-width: var(--break-point--small);
+  margin: 0 auto;
+  margin-bottom: var(--spacer);
+}
+
+.title,
+.subtitle {
+  text-align: center;
+  color: var(--color-primary);
+}

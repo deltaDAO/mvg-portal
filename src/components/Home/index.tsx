@@ -8,23 +8,19 @@ import {
   useRef
 } from 'react'
 import type { MouseEvent } from 'react'
-import Image from 'next/image'
-import { useMarketMetadata } from '@context/MarketMetadata'
 import styles from './index.module.css'
 import InputElement from '@shared/FormInput/InputElement'
 
 import Features from './Features/Features'
 import Upload from '@images/publish.svg'
-import MercedesLogo from '@images/Mercedes-Logo.svg'
-import DeltaDaoLogo from '@images/deltaDAO.svg'
-import TvlLogo from '@images/Tvl.svg'
-import EuproLogo from '@images/eupro.svg'
-import OceanHeroLogo from '@images/ocean-hero.svg'
 import SearchLogo from '@images/search.svg'
 import Menu from './Menu/Menu'
 import { addExistingParamsToUrl } from '../Search/utils'
 import { useRouter } from 'next/router'
 import { useSearchBarStatus } from '@context/SearchBarStatus'
+import { useUserPreferences } from '@context/UserPreferences'
+import Container from '@components/@shared/atoms/Container'
+import OnboardingSection from '@components/@shared/Onboarding'
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window?.location.href)
@@ -175,39 +171,25 @@ function HeroSection({
             </div>
           </div>
         </div>
-
-        {/* <div className={styles.ecosystem}>
-          <div className={styles.ecosystemDivider}></div>
-          <p className={styles.ecosystemTitle}>
-            DECENTRALIZED ECOSYSTEM POWERED BY
-          </p>
-          <div className={styles.logos}>
-            <div className={styles.logoItem}>
-              <TvlLogo className={styles.logoImage} />
-            </div>
-            <div className={styles.logoItem}>
-              <MercedesLogo className={styles.logoImage} />
-            </div>
-            <div className={styles.logoItem}>
-              <DeltaDaoLogo className={styles.logoImage} />
-            </div>
-            <div className={styles.logoItem}>
-              <OceanHeroLogo className={styles.logoImage} />
-            </div>
-            <div className={styles.logoItem}>
-              <EuproLogo className={styles.logoImage} />
-            </div>
-          </div>
-        </div> */}
       </div>
     </section>
   )
 }
 
 export default function HomePage(): ReactElement {
+  const { showOnboardingModule } = useUserPreferences()
+
   return (
     <>
       <HeroSection />
+      {showOnboardingModule && (
+        <>
+          <div className={styles.divider}></div>
+          <Container>
+            <OnboardingSection />
+          </Container>
+        </>
+      )}
       <Features />
     </>
   )
