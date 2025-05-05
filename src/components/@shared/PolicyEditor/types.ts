@@ -2,6 +2,7 @@ export interface RequestCredentialForm {
   type: string
   format: string
   policies?: PolicyType[]
+  newPolicyType?: string
 }
 
 export type PolicyType =
