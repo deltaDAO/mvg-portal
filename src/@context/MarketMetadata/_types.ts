@@ -30,6 +30,7 @@ export interface AppConfig {
   dockerHubProxyUrl: string
   showPreviewAlert: string
   ssiEnabled: boolean
+  showOnboardingModuleByDefault: boolean
 }
 export interface SiteContent {
   siteTitle: string

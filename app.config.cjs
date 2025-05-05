@@ -106,5 +106,7 @@ module.exports = {
 
   oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
 
-  opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL
+  opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL,
+  showOnboardingModuleByDefault:
+    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'false'
 }

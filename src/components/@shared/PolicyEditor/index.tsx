@@ -457,8 +457,6 @@ export function PolicyEditor(props): ReactElement {
     defaultPolicies = []
   }: PolicyEditorProps = props
 
-  const [selectedPolicyType, setSelectedPolicyType] = useState('staticPolicy')
-
   const filteredDefaultPolicies = defaultPolicies.filter(
     (policy) => policy.length > 0
   )
@@ -467,7 +465,8 @@ export function PolicyEditor(props): ReactElement {
     const newRequestCredential: RequestCredentialForm = {
       format: '',
       type: '',
-      policies: []
+      policies: [],
+      newPolicyType: 'staticPolicy'
     }
     credentials?.requestCredentials?.push(newRequestCredential)
     setCredentials(credentials)
@@ -629,8 +628,11 @@ export function PolicyEditor(props): ReactElement {
                     </label>
 
                     <select
-                      value={selectedPolicyType}
-                      onChange={(e) => setSelectedPolicyType(e.target.value)}
+                      value={credential.newPolicyType || 'staticPolicy'}
+                      onChange={(e) => {
+                        credential.newPolicyType = e.target.value
+                        setCredentials({ ...credentials })
+                      }}
                       className={styles.selectDropdown}
                     >
                       <option value="staticPolicy">
@@ -652,13 +654,15 @@ export function PolicyEditor(props): ReactElement {
                       style="primary"
                       className={styles.space}
                       onClick={() => {
-                        if (selectedPolicyType === 'staticPolicy')
+                        if (credential.newPolicyType === 'staticPolicy')
                           handleNewStaticCustomPolicy(credential)
-                        else if (selectedPolicyType === 'parameterizedPolicy')
+                        else if (
+                          credential.newPolicyType === 'parameterizedPolicy'
+                        )
                           handleNewParameterizedCustomPolicy(credential)
-                        else if (selectedPolicyType === 'customUrlPolicy')
+                        else if (credential.newPolicyType === 'customUrlPolicy')
                           handleNewCustomUrlPolicy(credential)
-                        else if (selectedPolicyType === 'customPolicy')
+                        else if (credential.newPolicyType === 'customPolicy')
                           handleNewCustomPolicy(credential)
                       }}
                     >

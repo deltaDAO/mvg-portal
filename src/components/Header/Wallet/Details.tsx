@@ -19,10 +19,18 @@ export default function Details(): ReactElement {
   const { connect } = useConnect()
   const { disconnect } = useDisconnect()
 
-  const { setSessionToken } = useSsiWallet()
+  const {
+    setSessionToken,
+    ssiWalletCache,
+    setCachedCredentials,
+    clearVerifierSessionCache
+  } = useSsiWallet()
 
   async function disconnectSsiWallet() {
     try {
+      ssiWalletCache.clearCredentials()
+      setCachedCredentials(undefined)
+      clearVerifierSessionCache()
       disconnectFromWallet()
       setSessionToken(undefined)
     } catch (error) {
