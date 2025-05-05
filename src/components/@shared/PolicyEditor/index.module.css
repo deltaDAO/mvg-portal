@@ -163,3 +163,22 @@
   border-radius: 4px;
   border: 1px solid #ccc;
 }
+
+.enablePolicyToggle {
+  margin-bottom: 1em;
+  display: flex;
+  align-items: center;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 0.95rem;
+  gap: 0.5em;
+}
+
+.checkboxLabel input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+}
