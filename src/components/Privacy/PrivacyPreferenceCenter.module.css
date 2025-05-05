@@ -13,6 +13,11 @@
   margin: 0;
 }
 
+.banner a {
+  color: var(--brand-blue);
+  text-decoration: underline;
+}
+
 .buttons {
   width: 100%;
   display: flex;
@@ -20,6 +25,10 @@
   align-items: center;
   padding: var(--spacer) 0;
   border-bottom: 1px solid var(--brand-grey-lighter);
+}
+.banner button {
+  background: #fad14d;
+  color: var(--brand-blue);
 }
 
 .configureButton {
