@@ -532,7 +532,7 @@ export async function getUserOrders(
     ignorePurgatory: true,
     esPaginationOptions: {
       from: page || 0,
-      size: 9
+      size: 1000
     }
   } as BaseQueryParams
   const query = generateBaseQuery(baseQueryparams, 'order')

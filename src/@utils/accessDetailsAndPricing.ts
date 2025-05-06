@@ -166,14 +166,26 @@ export async function getAccessDetails(
     isPurchasable: true,
     publisherMarketOrderFee: '0'
   }
-
-  // Check for past orders
   try {
-    const orders = await getUserOrders(accountId, cancelToken)
-    const order = orders?.results?.find(
+    // Check for past orders
+    let allOrders: any[] = []
+    let page = 1
+    let totalPages = 1
+
+    // Fetch all orders across all pages
+    while (page <= totalPages) {
+      const res = await getUserOrders(accountId, cancelToken, page)
+      allOrders = allOrders.concat(res?.results || [])
+      const orderTotal = res.totalPages
+      totalPages = orderTotal
+      page++
+    }
+
+    const order = allOrders.find(
       (order) =>
         order.datatokenAddress.toLowerCase() === datatokenAddress.toLowerCase()
     )
+
     if (order) {
       const orderTimestamp = order.timestamp
       const timeout = Number(service.timeout)

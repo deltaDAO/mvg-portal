@@ -122,20 +122,35 @@ function ProfileProvider({
   const fetchDownloads = useCallback(
     async (cancelToken: CancelToken, page = 1) => {
       if (!accountId || !chainIds) return
+
       const dtList: string[] = []
-      const orders = await getUserOrders(accountId, cancelToken)
-      for (let i = 0; i < orders?.results?.length; i++) {
-        dtList.push(orders.results[i].datatokenAddress)
+      let currentPage = 1
+      let totalPages = 1
+
+      // Fetch all pages of user orders
+      while (currentPage <= totalPages) {
+        const orders = await getUserOrders(accountId, cancelToken, currentPage)
+
+        orders?.results?.forEach((order) => {
+          if (order.datatokenAddress) dtList.push(order.datatokenAddress)
+        })
+        // eslint-disable-next-line prefer-destructuring
+        totalPages = orders.totalPages
+        currentPage++
       }
+
+      // Paginate only the download assets
       const { downloadedAssets, totalResults } = await getDownloadAssets(
         dtList,
         chainIds,
         cancelToken,
         ownAccount,
-        page
+        page // Only paginate here
       )
+
       setDownloads(downloadedAssets)
       setDownloadsTotal(totalResults)
+
       LoggerInstance.log(
         `[profile] Fetched ${downloadedAssets.length} download orders.`,
         downloadedAssets
