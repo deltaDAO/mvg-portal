@@ -11,7 +11,7 @@ interface OnboardingHeaderData {
   subtitle: string
   body: string
 }
-
+// on boarding done
 export default function Header(): ReactElement {
   const { title, subtitle, body }: OnboardingHeaderData = content
 
