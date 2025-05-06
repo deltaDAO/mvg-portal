@@ -177,6 +177,10 @@ export function getTokenBalanceFromSymbol(
   symbol: string
 ): string {
   if (!symbol) return
-  const baseTokenBalance = balance?.approved?.[symbol.toLocaleLowerCase()]
-  return baseTokenBalance || '0'
+
+  return (
+    balance?.[symbol.toLocaleLowerCase()] ||
+    balance?.approved?.[symbol.toLocaleLowerCase()] ||
+    '0'
+  )
 }
