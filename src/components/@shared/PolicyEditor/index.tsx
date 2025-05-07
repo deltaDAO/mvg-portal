@@ -12,8 +12,6 @@ import {
   PolicyType,
   RequestCredentialForm,
   StaticPolicy,
-  StaticVpPolicy,
-  ArgumentVpPolicy,
   VpPolicyType
 } from './types'
 import fields from './editor.json'
@@ -462,7 +460,10 @@ export function PolicyEditor(props): ReactElement {
   const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(false)
   const [holderBinding, setHolderBinding] = useState(true)
   const [requireAllTypes, setRequireAllTypes] = useState(true)
-  const [minimumCredentials, setMinimumCredentials] = useState('0')
+  const [maximumCredentials, setMaximumCredentials] = useState('1')
+  const [limitMaxCredentials, setLimitMaxCredentials] = useState(false)
+  const [minimumCredentials, setMinimumCredentials] = useState('1')
+  const [limitMinCredentials, setLimitMinCredentials] = useState(false)
 
   const filteredDefaultPolicies = defaultPolicies.filter(
     (policy) => policy.length > 0
@@ -800,16 +801,14 @@ export function PolicyEditor(props): ReactElement {
                 checked={editAdvancedFeatures}
                 onChange={() => setEditAdvancedFeatures(!editAdvancedFeatures)}
               />
-              Edit Advanced SSI Policy Features{' '}
-              {help && (
-                <Tooltip
-                  content={
-                    <Markdown
-                      text={`The requested Verifiable Credentials are grouped in a Verifiable Presentation before being submitted for verification. This screen allows the user to set the policies applicable to the Verifiable Presentation.`}
-                    />
-                  }
-                />
-              )}
+              Edit Advanced SSI Policy Features
+              <Tooltip
+                content={
+                  <Markdown
+                    text={`The requested Verifiable Credentials are grouped in a Verifiable Presentation before being submitted for verification. This screen allows the user to set the policies applicable to the Verifiable Presentation.`}
+                  />
+                }
+              />
             </label>
           </div>
 
@@ -824,6 +823,7 @@ export function PolicyEditor(props): ReactElement {
                   onChange={() => setHolderBinding(!holderBinding)}
                 />
                 Credential(s) presenter same as credential(s) owner
+                <Tooltip content={<Markdown text={`TO EDIT`} />} />
               </label>
 
               <label className={styles.checkboxLabel}>
@@ -833,24 +833,85 @@ export function PolicyEditor(props): ReactElement {
                   onChange={() => setRequireAllTypes(!requireAllTypes)}
                 />
                 All requested credential types are necessary for verification
+                <Tooltip content={<Markdown text={`TO EDIT`} />} />
               </label>
 
-              <div className={`${styles.panelRow}  ${styles.marginTop1em}`}>
-                <label
-                  htmlFor="minCreds"
-                  className={styles.label}
-                  style={{ marginRight: '1em' }}
-                >
+              <div
+                className={`${styles.panelRow} ${styles.alignItemsCenter} ${styles.marginTop1em} ${styles.marginTop1em}`}
+              >
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={limitMinCredentials}
+                    onChange={() =>
+                      setLimitMinCredentials(!limitMinCredentials)
+                    }
+                  />
                   Minimum number of credentials required
+                  <Tooltip
+                    content={
+                      <Markdown
+                        text={`Enable to limit min credentials required for verification.`}
+                      />
+                    }
+                  />
                 </label>
-                <input
-                  id="minCreds"
-                  type="number"
-                  min={0}
-                  value={minimumCredentials}
-                  onChange={(e) => setMinimumCredentials(e.target.value)}
-                  className={`${styles.input} ${styles.numberInput}`}
-                />
+
+                {limitMinCredentials && (
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={minimumCredentials}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value)
+                      if (!isNaN(value)) {
+                        const clamped = Math.max(1, Math.min(100, value))
+                        setMinimumCredentials(clamped.toString())
+                      }
+                    }}
+                    className={`${styles.input} ${styles.numberInput}`}
+                  />
+                )}
+              </div>
+
+              <div
+                className={`${styles.panelRow} ${styles.alignItemsCenter} ${styles.marginTop05em} ${styles.marginBottom2em}`}
+              >
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={limitMaxCredentials}
+                    onChange={() =>
+                      setLimitMaxCredentials(!limitMaxCredentials)
+                    }
+                  />
+                  Maximum number of credentials required
+                  <Tooltip
+                    content={
+                      <Markdown
+                        text={`Enable to limit max credentials required for verification.`}
+                      />
+                    }
+                  />
+                </label>
+
+                {limitMaxCredentials && (
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={maximumCredentials}
+                    onChange={(e) => {
+                      const value = parseInt(e.target.value)
+                      if (!isNaN(value)) {
+                        const clamped = Math.max(1, Math.min(100, value))
+                        setMaximumCredentials(clamped.toString())
+                      }
+                    }}
+                    className={`${styles.input} ${styles.numberInput}`}
+                  />
+                )}
               </div>
             </div>
           )}
