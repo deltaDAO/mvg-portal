@@ -472,11 +472,9 @@ export function PolicyEditor(props): ReactElement {
         vcPolicies: [],
         vpPolicies: []
       }
-      console.log('updateCredentials:', updatedCredentials)
       setCredentials(updatedCredentials)
     }
     setEnabled(value)
-    console.log('credentials here', credentials)
   }
 
   function handleNewRequestCredential() {
