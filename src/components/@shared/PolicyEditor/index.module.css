@@ -182,3 +182,10 @@
   width: 16px;
   height: 16px;
 }
+
+.numberInput {
+  width: 80px;
+  padding: 0.4em 0.6em;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
