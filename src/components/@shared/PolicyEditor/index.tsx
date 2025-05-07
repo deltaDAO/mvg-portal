@@ -464,6 +464,22 @@ export function PolicyEditor(props): ReactElement {
     (policy) => policy.length > 0
   )
 
+  function handlePolicyEditorToggle(value: boolean) {
+    console.log('value:', value)
+    if (!value) {
+      const updatedCredentials = {
+        ...credentials,
+        requestCredentials: [],
+        vcPolicies: [],
+        vpPolicies: []
+      }
+      console.log('updateCredentials:', updatedCredentials)
+      setCredentials(updatedCredentials)
+    }
+    setEnabled(value)
+    console.log('credentials here', credentials)
+  }
+
   function handleNewRequestCredential() {
     const newRequestCredential: RequestCredentialForm = {
       format: '',
@@ -580,9 +596,9 @@ export function PolicyEditor(props): ReactElement {
           <input
             type="checkbox"
             checked={enabled}
-            onChange={() => setEnabled(!enabled)}
+            onChange={() => handlePolicyEditorToggle(!enabled)}
           />
-          Enable Policy Editor
+          Enable SSI Policy Editor
         </label>
       </div>
       {enabled && (
