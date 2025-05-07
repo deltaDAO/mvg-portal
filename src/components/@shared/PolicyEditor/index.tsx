@@ -465,7 +465,6 @@ export function PolicyEditor(props): ReactElement {
   )
 
   function handlePolicyEditorToggle(value: boolean) {
-    console.log('value:', value)
     if (!value) {
       const updatedCredentials = {
         ...credentials,
