@@ -67,11 +67,10 @@ function extractLeftValueFromRule(rule: any): string {
   const cleaned =
     raw.startsWith('lower(') && raw.endsWith(')') ? raw.slice(6, -1) : raw
 
-  const matches = cleaned.match(/\["([^"]+)"\]/g)
+  const normalized = cleaned.replace(/\["([^"]+)"\]/g, '.$1')
 
-  if (!matches) return ''
-
-  return matches.map((m) => m.replace(/\["|"|\]/g, '')).join('.')
+  const parts = normalized.split('.')
+  return parts[parts.length - 1] || ''
 }
 
 function generateRules(arg: any, policy: string): PolicyRule[] {
