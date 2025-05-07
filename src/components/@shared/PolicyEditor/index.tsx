@@ -453,7 +453,8 @@ export function PolicyEditor(props): ReactElement {
     label,
     help,
     defaultPolicies = [],
-    enabledView = false
+    enabledView = false,
+    isAsset = false
   }: PolicyEditorProps = props
 
   const [enabled, setEnabled] = useState(enabledView)
@@ -732,85 +733,90 @@ export function PolicyEditor(props): ReactElement {
                     />
                   ))}
                 </div>
-
-                <div
-                  className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
-                >
-                  {credentials?.requestCredentials.length > 0 && (
-                    <Button
-                      type="button"
-                      style="primary"
-                      className={`${styles.marginBottom1em}`}
-                      onClick={handleNewStaticPolicy}
-                    >
-                      New {{ ...getFieldContent('staticPolicy', fields) }.label}
-                    </Button>
-                  )}
-
-                  {credentials?.requestCredentials.length > 0 &&
-                    credentials?.vcPolicies?.map((rule, index) => (
-                      <div
-                        key={index}
-                        className={`${styles.panelColumn} ${styles.width100}`}
+                {isAsset && (
+                  <div
+                    className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
+                  >
+                    {credentials?.requestCredentials.length > 0 && (
+                      <Button
+                        type="button"
+                        style="primary"
+                        className={`${styles.marginBottom1em}`}
+                        onClick={handleNewStaticPolicy}
                       >
+                        New{' '}
+                        {{ ...getFieldContent('staticPolicy', fields) }.label}
+                      </Button>
+                    )}
+
+                    {credentials?.requestCredentials.length > 0 &&
+                      credentials?.vcPolicies?.map((rule, index) => (
                         <div
-                          className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
+                          key={index}
+                          className={`${styles.panelColumn} ${styles.width100}`}
                         >
-                          <div className={`${styles.flexGrow}`}>
-                            <Field
-                              key={index}
-                              {...staticPolicyLabel(index)}
-                              component={Input}
-                              name={`${name}.vcPolicies[${index}]`}
-                              readOnly={
+                          <div
+                            className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
+                          >
+                            <div className={`${styles.flexGrow}`}>
+                              <Field
+                                key={index}
+                                {...staticPolicyLabel(index)}
+                                component={Input}
+                                name={`${name}.vcPolicies[${index}]`}
+                                readOnly={
+                                  index < filteredDefaultPolicies?.length &&
+                                  filteredDefaultPolicies.includes(
+                                    credentials?.vcPolicies[index]
+                                  ) &&
+                                  credentials?.vcPolicies[index]?.length > 0
+                                }
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              style="primary"
+                              disabled={
                                 index < filteredDefaultPolicies?.length &&
                                 filteredDefaultPolicies.includes(
                                   credentials?.vcPolicies[index]
                                 ) &&
                                 credentials?.vcPolicies[index]?.length > 0
                               }
-                            />
+                              onClick={() => handleDeleteStaticPolicy(index)}
+                              className={`${styles.deleteButton} ${styles.marginBottomButton}`}
+                            >
+                              Delete
+                            </Button>
                           </div>
-                          <Button
-                            type="button"
-                            style="primary"
-                            disabled={
-                              index < filteredDefaultPolicies?.length &&
-                              filteredDefaultPolicies.includes(
-                                credentials?.vcPolicies[index]
-                              ) &&
-                              credentials?.vcPolicies[index]?.length > 0
-                            }
-                            onClick={() => handleDeleteStaticPolicy(index)}
-                            className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-                          >
-                            Delete
-                          </Button>
                         </div>
-                      </div>
-                    ))}
-                </div>
+                      ))}
+                  </div>
+                )}
               </>
             )}
           </div>
-
-          <div className={styles.panelColumn}>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={editAdvancedFeatures}
-                onChange={() => setEditAdvancedFeatures(!editAdvancedFeatures)}
-              />
-              Edit Advanced SSI Policy Features
-              <Tooltip
-                content={
-                  <Markdown
-                    text={`The requested Verifiable Credentials are grouped in a Verifiable Presentation before being submitted for verification. This screen allows the user to set the policies applicable to the Verifiable Presentation.`}
-                  />
-                }
-              />
-            </label>
-          </div>
+          {isAsset && (
+            <div className={`${styles.panelColumn} ${styles.marginBottom1em}`}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={editAdvancedFeatures}
+                  onChange={() =>
+                    setEditAdvancedFeatures(!editAdvancedFeatures)
+                  }
+                />
+                Edit Advanced SSI Policy Features
+                <Tooltip
+                  content={
+                    <Markdown
+                      text={`The requested Verifiable Credentials are grouped in a Verifiable Presentation before being submitted for verification. This screen allows the user to set the policies applicable to the Verifiable Presentation.`}
+                    />
+                  }
+                />
+              </label>
+            </div>
+          )}
 
           {editAdvancedFeatures && (
             <div

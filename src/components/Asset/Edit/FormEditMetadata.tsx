@@ -236,6 +236,7 @@ export default function FormEditMetadata(): ReactElement {
           name="credentials"
           help="Self-sovereign identity (SSI) is used verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
           enabledView={true}
+          isAsset={true}
         />
       ) : (
         <></>
