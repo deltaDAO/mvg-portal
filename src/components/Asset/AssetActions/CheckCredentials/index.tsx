@@ -115,6 +115,20 @@ export function AssetActionCheckCredentials({
               accountId,
               service.id
             )
+            if (
+              presentationResult.openid4vc &&
+              typeof presentationResult.openid4vc === 'object' &&
+              (presentationResult.openid4vc as any).redirectUri &&
+              (presentationResult.openid4vc as any).redirectUri.includes(
+                'success'
+              )
+            ) {
+              const { id } = extractURLSearchParams(
+                (presentationResult.openid4vc as any).redirectUri
+              )
+              cacheVerifierSessionId(asset.id, service.id, id)
+              break
+            }
             exchangeStateData.openid4vp = presentationResult.openid4vc
             exchangeStateData.poliyServerData =
               presentationResult.policyServerData
