@@ -1,6 +1,6 @@
 import { getFieldContent } from '@utils/form'
 import { Field } from 'formik'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import Input from '../FormInput'
 import Button from '../atoms/Button'
@@ -470,6 +470,41 @@ export function PolicyEditor(props): ReactElement {
     (policy) => policy.length > 0
   )
 
+  useEffect(() => {
+    if (!enabled || !editAdvancedFeatures) return
+
+    const updatedVpPolicies = [...(credentials.vpPolicies || [])]
+    let changed = false
+
+    if (
+      holderBinding &&
+      !updatedVpPolicies.some(
+        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+      )
+    ) {
+      updatedVpPolicies.push({ type: 'staticVpPolicy', name: 'holder-binding' })
+      changed = true
+    }
+
+    if (
+      requireAllTypes &&
+      !updatedVpPolicies.some(
+        (p) =>
+          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+      )
+    ) {
+      updatedVpPolicies.push({
+        type: 'staticVpPolicy',
+        name: 'presentation-definition'
+      })
+      changed = true
+    }
+
+    if (changed) {
+      setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
+    }
+  }, [enabled, editAdvancedFeatures])
+
   function handlePolicyEditorToggle(value: boolean) {
     if (!value) {
       const updatedCredentials = {
@@ -571,6 +606,66 @@ export function PolicyEditor(props): ReactElement {
   function handleDeleteVpPolicy(index: number) {
     credentials.vpPolicies.splice(index, 1)
     setCredentials(credentials)
+  }
+
+  function handleHolderBindingToggle() {
+    const newValue = !holderBinding
+
+    setHolderBinding(newValue)
+
+    const updatedVpPolicies = [...credentials.vpPolicies]
+
+    if (newValue) {
+      const exists = updatedVpPolicies.some(
+        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'holder-binding'
+        })
+      }
+    } else {
+      const filteredVpPolicies = updatedVpPolicies.filter(
+        (p) => !(p?.type === 'staticVpPolicy' && p?.name === 'holder-binding')
+      )
+      setCredentials({ ...credentials, vpPolicies: filteredVpPolicies })
+      return
+    }
+
+    setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
+  }
+
+  function handlePresentationDefinitionToggle() {
+    const newValue = !requireAllTypes
+    setRequireAllTypes(newValue)
+
+    const updatedVpPolicies = [...credentials.vpPolicies]
+
+    if (newValue) {
+      const exists = updatedVpPolicies.some(
+        (p) =>
+          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'presentation-definition'
+        })
+      }
+    } else {
+      const filteredVpPolicies = updatedVpPolicies.filter(
+        (p) =>
+          !(
+            p?.type === 'staticVpPolicy' &&
+            p?.name === 'presentation-definition'
+          )
+      )
+      setCredentials({ ...credentials, vpPolicies: filteredVpPolicies })
+      return
+    }
+
+    setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
   }
 
   return (
@@ -837,7 +932,7 @@ export function PolicyEditor(props): ReactElement {
                   <input
                     type="checkbox"
                     checked={holderBinding}
-                    onChange={() => setHolderBinding(!holderBinding)}
+                    onChange={handleHolderBindingToggle}
                   />
                   Credential(s) presenter same as credential(s) owner
                   <Tooltip content={<Markdown text={`TO EDIT`} />} />
@@ -847,7 +942,7 @@ export function PolicyEditor(props): ReactElement {
                   <input
                     type="checkbox"
                     checked={requireAllTypes}
-                    onChange={() => setRequireAllTypes(!requireAllTypes)}
+                    onChange={handlePresentationDefinitionToggle}
                   />
                   All requested credential types are necessary for verification
                   <Tooltip content={<Markdown text={`TO EDIT`} />} />
