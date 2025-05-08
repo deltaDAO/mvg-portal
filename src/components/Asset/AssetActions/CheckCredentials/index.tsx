@@ -126,7 +126,7 @@ export function AssetActionCheckCredentials({
               const { id } = extractURLSearchParams(
                 (presentationResult.openid4vc as any).redirectUri
               )
-              cacheVerifierSessionId(asset.id, service.id, id)
+              cacheVerifierSessionId(asset.id, service.id, id, true)
               break
             }
             exchangeStateData.openid4vp = presentationResult.openid4vc
