@@ -475,7 +475,7 @@ export function PolicyEditor(props): ReactElement {
       const updatedCredentials = {
         ...credentials,
         requestCredentials: [],
-        vcPolicies: [],
+        vcPolicies: credentials.vcPolicies?.slice(0, 3) || [],
         vpPolicies: []
       }
       setCredentials(updatedCredentials)
