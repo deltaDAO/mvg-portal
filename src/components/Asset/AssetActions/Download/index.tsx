@@ -114,7 +114,6 @@ export default function Download({
 
   useEffect(() => {
     if (isUnsupportedPricing) return
-
     setIsOwned(accessDetails.isOwned || false)
     setValidOrderTx(accessDetails.validOrderTx || '')
 
