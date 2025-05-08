@@ -60,7 +60,7 @@ export async function initializeProviderForCompute(
     if (message.includes('algorithm_file_checksum_mismatch')) {
       const checksumMismatch = 'Algorithm checksum changed since allow listing'
       LoggerInstance.error('[Initialize Provider] Error:', checksumMismatch)
-      toast.warning(checksumMismatch, { theme: 'colored' })
+      toast.warning(checksumMismatch)
     } else {
       LoggerInstance.error('[Initialize Provider] Error:', message)
       toast.error(message)

@@ -28,5 +28,13 @@ div.Toastify__toast--info {
 
 div.Toastify__toast--warning {
   background: var(--brand-alert-yellow);
-  color: var(--brand-white);
+  color: var(--brand-grey);
+}
+
+.Toastify__toast--warning .Toastify__toast-icon > svg {
+  fill: var(--brand-grey);
+}
+
+.Toastify__toast--warning .Toastify__progress-bar {
+  background: var(--brand-grey);
 }
