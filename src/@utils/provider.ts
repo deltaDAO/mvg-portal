@@ -56,9 +56,15 @@ export async function initializeProviderForCompute(
       accountId
     )
   } catch (error) {
-    const message = getErrorMessage(error.message)
-    LoggerInstance.error('[Initialize Provider] Error:', message)
-    toast.error(message)
+    const { message } = error
+    if (message.includes('algorithm_file_checksum_mismatch')) {
+      const checksumMismatch = 'Algorithm checksum changed since allow listing'
+      LoggerInstance.error('[Initialize Provider] Error:', checksumMismatch)
+      toast.warning(checksumMismatch, { theme: 'colored' })
+    } else {
+      LoggerInstance.error('[Initialize Provider] Error:', message)
+      toast.error(message)
+    }
     return null
   }
 }
