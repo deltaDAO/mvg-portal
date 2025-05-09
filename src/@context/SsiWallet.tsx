@@ -23,10 +23,12 @@ export interface SsiWalletContext {
   selectedKey: SsiKeyDesc
   setSelectedKey: (key: SsiKeyDesc) => void
   lookupVerifierSessionId: (did: string, serviceId: string) => string
+  lookupVerifierSessionIdSkip: (did: string, serviceId: string) => string
   cacheVerifierSessionId: (
     did: string,
     serviceId: string,
-    sessionId: string
+    sessionId: string,
+    skipCheck?: boolean
   ) => void
   clearVerifierSessionCache: () => void
   verifierSessionCache: Record<string, string>
@@ -92,10 +94,15 @@ export function SsiWalletProvider({
     return verifierSessionCache?.[`${did}_${serviceId}`]
   }
 
+  function lookupVerifierSessionIdSkip(did: string, serviceId: string): string {
+    return verifierSessionCache?.[`${did}_${serviceId}_skip`]
+  }
+
   function cacheVerifierSessionId(
     did: string,
     serviceId: string,
-    sessionId: string
+    sessionId: string,
+    skipCheck?: boolean
   ) {
     let storageString = localStorage.getItem(VerifierSessionIdStorage)
     let sessions
@@ -108,6 +115,7 @@ export function SsiWalletProvider({
       sessions = {}
     }
     sessions[`${did}_${serviceId}`] = sessionId
+    sessions[`${did}_${serviceId}_skip`] = skipCheck
     storageString = JSON.stringify(sessions)
     localStorage.setItem(VerifierSessionIdStorage, storageString)
     setVerifierSessionCache(sessions)
@@ -129,6 +137,7 @@ export function SsiWalletProvider({
           selectedKey,
           setSelectedKey,
           lookupVerifierSessionId,
+          lookupVerifierSessionIdSkip,
           cacheVerifierSessionId,
           clearVerifierSessionCache,
           verifierSessionCache,
