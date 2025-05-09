@@ -77,10 +77,15 @@ export async function order(
     accountId,
     providerFees
   )
-
+  const serviceIndex = asset.credentialSubject?.services.findIndex(
+    (s: Service) => s.id === service.id
+  )
+  if (serviceIndex === -1) {
+    throw new Error(`Service with id ${service.id} not found in the DDO.`)
+  }
   const orderParams = {
     consumer: computeConsumerAddress || accountId,
-    serviceIndex: 0,
+    serviceIndex,
     _providerFee: providerFees || initializeData.providerFee,
     _consumeMarketFee: {
       consumeMarketFeeAddress: marketFeeAddress,

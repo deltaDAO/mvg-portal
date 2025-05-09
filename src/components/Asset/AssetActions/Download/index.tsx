@@ -95,7 +95,11 @@ export default function Download({
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
 
-  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
+  const {
+    verifierSessionCache,
+    lookupVerifierSessionId,
+    lookupVerifierSessionIdSkip
+  } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
@@ -114,7 +118,6 @@ export default function Download({
 
   useEffect(() => {
     if (isUnsupportedPricing) return
-
     setIsOwned(accessDetails.isOwned || false)
     setValidOrderTx(accessDetails.validOrderTx || '')
 
@@ -265,7 +268,8 @@ export default function Download({
 
   async function handleFormSubmit(values: any) {
     try {
-      if (appConfig.ssiEnabled) {
+      const skip = lookupVerifierSessionIdSkip(asset.id, service.id)
+      if (appConfig.ssiEnabled && !skip) {
         const result = await checkVerifierSessionId(
           lookupVerifierSessionId(asset.id, service.id)
         )

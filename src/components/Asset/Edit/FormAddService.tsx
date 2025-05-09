@@ -160,7 +160,6 @@ export default function FormAddService({
         {...getFieldContent('files', data)}
         component={Input}
         name="files"
-        disabled={true} // TODO tied with providerUrl - not editable now
       />
 
       <Field

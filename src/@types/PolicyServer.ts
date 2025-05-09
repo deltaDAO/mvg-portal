@@ -25,6 +25,8 @@ export interface PolicyServerInitiateAction {
   sessionId?: string
   ddo: any
   policyServer: PolicyServerInitiateActionData
+  serviceId: string
+  consumerAddress: string
 }
 
 export interface PolicyServerGetPdAction {
