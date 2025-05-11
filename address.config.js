@@ -7,6 +7,16 @@ module.exports = {
   },
   featured: [
     {
+      title:
+        'Processing soil analysis reports using Generative AI for data extraction and integration',
+      assets: [
+        // GenAI Soil Analysis PDF Report Data Extractor
+        'did:op:d1349e0239c432b1fb598abc082b9484859ba04618f4b28a34c16fc3e3012685',
+        // Soil test report in PDF format
+        'did:op:ee7047510645b71055f092572073eb7ad34895a698cf737b9bf8af8fea84ef58'
+      ]
+    },
+    {
       title: 'AI-based Animal Well-being Assessment without Images Leakage',
       assets: [
         // Mask R-CNN segmentation & Tracking
