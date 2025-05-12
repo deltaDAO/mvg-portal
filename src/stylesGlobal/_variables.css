@@ -2,9 +2,9 @@
 @import '../../public/static/fonts/fonts.css';
 
 :root {
-  --color-primary: var(--brand-blue);
-  --color-secondary: var(--brand-grey-light);
-  --color-highlight: var(--brand-blue);
+  --color-primary: var(--brand-clay);
+  --color-secondary: var(--brand-clay-light);
+  --color-highlight: var(--brand-clay-dark);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
@@ -31,25 +31,36 @@
   --menu-logo-size-height-sm: 3.5rem;
   --menu-logo-size-width-lg: 15rem;
   --menu-logo-size-height-lg: 3.5rem;
-  --menu-font-color: var(--color-primary);
-  --menu-font-color-active: var(--font-color-heading);
-  --menu-font-color-hover: var(--color-primary);
-  --menu-active-indicator-color: var(--brand-blue);
+  --menu-font-color: var(--brand-black);
+  --menu-font-color-active: var(--brand-clay-dark);
+  --menu-font-color-hover: var(--brand-clay-dark);
+  --menu-active-indicator-color: var(--brand-clay-dark);
   --menu-mobile-navigation-border-size: var(--border-size-sm);
   --menu-mobile-navigation-border-color: var(--brand-grey-lighter);
-  --menu-border-color: var(--color-primary);
-  --menu-border-radius: var(--border-radius-sm);
-  --menu-border-size: var(--border-size);
-  --menu-icon-fill-color: var(--color-primary);
-  --menu-icon-fill-color-hover: var(--color-primary);
+  --menu-border-color: #fcfcfc;
+  --menu-border-radius: 6px;
+  --menu-border-size: 1px;
+  --menu-icon-fill-color: var(--brand-black);
+  --menu-icon-fill-color-hover: var(--brand-clay-dark);
   --menu-title-font-size: var(--font-size-h4);
-  --menu-link-font-size: var(--font-size-base);
-  --menu-link-font-weight: var(--font-weight-bold);
-  --menu-link-font-weight-active: var(--font-weight-bold);
+  --menu-link-font-size: 1rem;
+  --menu-link-font-weight: 600;
+  --menu-link-font-weight-active: 600;
+  --menu-link-letter-spacing: 0.3px;
   --menu-caret-size: var(--font-size-small);
-  --menu-caret-fill-color: var(--color-primary);
-  --menu-caret-active-fill-color: var(--color-primary);
+  --menu-caret-fill-color: var(--brand-black);
+  --menu-caret-active-fill-color: var(--brand-clay-dark);
   --menu-network-badge-font-color: var(--brand-white);
+  --menu-padding-vertical: 24px;
+  --menu-padding-horizontal: 64px;
+  --menu-background-color: #ffffff;
+  --menu-sticky-top: 0;
+  --menu-z-index: 1000;
+  --menu-link-padding: 8px 12px;
+  --menu-gap: 24px;
+  --menu-logo-height: 30px;
+  --menu-logo-max-height: 110px;
+  --menu-transition: all 0.3s ease;
 
   /* Footer */
   --footer-background-color: var(--brand-grey);
@@ -141,9 +152,8 @@
   --confetti-color-four: var(--brand-grey-light);
   --confetti-color-five: var(--brand-grey-lighter);
 
-  --font-family-base: 'Titillium Web', -apple-system, BlinkMacSystemFont,
-    'Segoe UI', Helvetica, Arial, sans-serif;
-  --font-family-heading: 'Titillium Web', -apple-system, BlinkMacSystemFont,
+  --font-family-base: 'Libre Baskerville', serif;
+  --font-family-heading: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
   --font-family-monospace: 'Fira Code', 'Fira Mono', Menlo, Monaco, Consolas,
     'Courier New', monospace;
@@ -151,7 +161,7 @@
   --font-size-root: 15px;
   --font-size-base: 1rem;
   --font-size-large: 1.2rem;
-  --font-size-small: 0.85rem;
+  --font-size-small: 0.8125rem;
   --font-size-mini: 0.65rem;
   --font-size-text: 1rem;
   --font-size-label: 1rem;

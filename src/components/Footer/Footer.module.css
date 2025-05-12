@@ -1,28 +1,27 @@
 /* Footer specific styles */
 .footer {
-  background-color: #091521;
-  color: white;
-  padding-top: 3rem;
-  padding-bottom: 3rem;
+  background-color: #fff;
+  color: #000;
+  border-top: 1px solid #eaeaea;
 }
 
 .title {
-  color: white;
+  color: #000;
   font-weight: 600;
 }
 
 .link {
-  color: white;
+  color: #000;
   font-weight: 500;
   transition: color 0.2s;
 }
 
 .link:hover {
-  color: #cbd5e0;
+  color: #666;
 }
 
 .subtitle {
-  color: white;
+  color: #000;
   opacity: 0.8;
 }
 

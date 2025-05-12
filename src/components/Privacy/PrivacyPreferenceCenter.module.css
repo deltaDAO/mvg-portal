@@ -80,6 +80,7 @@
   flex-direction: column;
   border: none;
   padding: calc(var(--spacer) / 6);
+  background-color: black;
 }
 
 .small .buttons button {
@@ -97,6 +98,7 @@
 
 .small .closeButton {
   margin: calc(var(--spacer) / 4) auto 0;
+  background-color: black;
 }
 
 /* Hide and show the Cookie Banner */
