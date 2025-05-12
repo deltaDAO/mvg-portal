@@ -186,11 +186,8 @@ export async function getResults(
     accessType,
     filterSet
   )
-  console.log('searchQuery', searchQuery)
   const queryResult = await queryMetadata(searchQuery, cancelToken)
-  console.log('queryResult', queryResult)
 
-  // update queryResult to workaround the wrong return datatype of totalPages and totalResults
   return queryResult?.results?.length === 0
     ? {
         ...queryResult,
