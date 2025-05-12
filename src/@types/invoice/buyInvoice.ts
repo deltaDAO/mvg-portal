@@ -708,7 +708,6 @@ async function getContractCreationBlock(
     })
 
     if (logs.length > 0) {
-      // Now scan forward inside this range to get the first block
       for (const log of logs) {
         if (log.blockNumber) return log.blockNumber
       }
