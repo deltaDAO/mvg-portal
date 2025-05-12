@@ -3,7 +3,9 @@
   flex-direction: column;
   gap: calc(var(--spacer) / 2);
 }
-
+.searchContainer {
+  margin-bottom: 20px;
+}
 .filterContainer {
   display: flex;
   flex-direction: row;
