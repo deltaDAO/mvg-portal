@@ -13,6 +13,7 @@ import {
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
 import { filterSets, getInitialFilters } from './Filter'
+import { State } from 'src/@types/ddo/State'
 
 export function updateQueryStringParameter(
   uri: string,
@@ -45,6 +46,11 @@ export function getSearchQuery(
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
+  filters.push({
+    term: {
+      'credentialSubject.nft.state': State.Active
+    }
+  })
   let searchTerm = text || ''
   let nestedQuery
   if (tags) {
@@ -180,7 +186,9 @@ export async function getResults(
     accessType,
     filterSet
   )
+  console.log('searchQuery', searchQuery)
   const queryResult = await queryMetadata(searchQuery, cancelToken)
+  console.log('queryResult', queryResult)
 
   // update queryResult to workaround the wrong return datatype of totalPages and totalResults
   return queryResult?.results?.length === 0

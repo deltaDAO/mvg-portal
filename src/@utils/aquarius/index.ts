@@ -353,7 +353,6 @@ export async function getPublishedAssets(
 ): Promise<PagedAssets> {
   if (!accountId) return
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('credentialSubject.nft.state', [0, 4, 5]))
   filters.push(
     getFilterTerm('credentialSubject.nft.owner', accountId.toLowerCase())
   )

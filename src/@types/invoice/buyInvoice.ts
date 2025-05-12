@@ -690,6 +690,36 @@ export async function decodeBuy(
   }
 }
 
+async function getContractCreationBlock(
+  provider: ethers.providers.Provider,
+  contractAddress: string
+): Promise<number> {
+  const latest = await provider.getBlockNumber()
+  const step = 2000
+
+  for (let from = latest; from >= 0; from -= step) {
+    const to = from
+    const fromBlock = Math.max(0, from - step + 1)
+
+    const logs = await provider.getLogs({
+      address: contractAddress,
+      fromBlock,
+      toBlock: to
+    })
+
+    if (logs.length > 0) {
+      // Now scan forward inside this range to get the first block
+      for (const log of logs) {
+        if (log.blockNumber) return log.blockNumber
+      }
+    }
+
+    if (fromBlock === 0) break
+  }
+
+  throw new Error('Could not determine contract creation block.')
+}
+
 export async function decodeBuyDataSet(
   id: string,
   dataTokenAddress: string,
@@ -697,7 +727,8 @@ export async function decodeBuyDataSet(
   tokenSymbol: string,
   tokenAddress: string,
   price: number,
-  fromAddress: string
+  fromAddress: string,
+  chunkSize: number = 2000
 ): Promise<InvoiceData[]> {
   try {
     const { nodeUri } = getOceanConfig(chainId)
@@ -707,21 +738,45 @@ export async function decodeBuyDataSet(
       ERC20TemplateEnterprise.abi,
       provider
     )
-    const events = await contract.queryFilter('OrderStarted')
-    const filteredEvents = events.filter(
-      (event) => event.args[1] === fromAddress
-    )
-    return decodeBuy(
+
+    const startBlock = await getContractCreationBlock(
       provider,
-      filteredEvents[0].transactionHash,
-      chainId,
-      id,
-      tokenSymbol,
-      tokenAddress,
-      price
+      contract.address
+    )
+    const latestBlock = await provider.getBlockNumber()
+    let fromBlock = startBlock
+
+    while (fromBlock <= latestBlock) {
+      const toBlock = Math.min(fromBlock + chunkSize, latestBlock)
+      const events = await contract.queryFilter(
+        'OrderStarted',
+        fromBlock,
+        toBlock
+      )
+      const match = events.find(
+        (event) => event.args?.[1]?.toLowerCase() === fromAddress.toLowerCase()
+      )
+
+      if (match) {
+        return decodeBuy(
+          provider,
+          match.transactionHash,
+          chainId,
+          id,
+          tokenSymbol,
+          tokenAddress,
+          price
+        )
+      }
+
+      fromBlock += chunkSize + 1
+    }
+
+    throw new Error(
+      `No OrderStarted event found for this address: ${dataTokenAddress}.`
     )
   } catch (error) {
-    console.error('Error in decode C2D', error)
+    console.error('Error in decodeBuyDataSet:', error)
     throw error
   }
 }
