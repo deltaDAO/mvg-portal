@@ -668,6 +668,79 @@ export function PolicyEditor(props): ReactElement {
     setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
   }
 
+  useEffect(() => {
+    if (!enabled || !editAdvancedFeatures) return
+
+    const updatedVpPolicies = [...(credentials.vpPolicies || [])]
+
+    function upsertPolicy(policyName: string, argValue: string | number) {
+      const index = updatedVpPolicies.findIndex(
+        (p) => typeof p === 'object' && 'policy' in p && p.policy === policyName
+      )
+
+      if (index !== -1) {
+        updatedVpPolicies[index] = {
+          type: 'argumentVpPolicy',
+          policy: policyName,
+          args: argValue.toString()
+        }
+      } else {
+        updatedVpPolicies.push({
+          type: 'argumentVpPolicy',
+          policy: policyName,
+          args: argValue.toString()
+        })
+      }
+    }
+
+    function removePolicy(policyName: string) {
+      const filtered = updatedVpPolicies.filter(
+        (p) =>
+          !(typeof p === 'object' && 'policy' in p && p.policy === policyName)
+      )
+      return filtered
+    }
+
+    let changed = false
+
+    // Handle minimum
+    if (limitMinCredentials) {
+      upsertPolicy('minimum-credentials', minimumCredentials)
+      changed = true
+    } else {
+      const filtered = removePolicy('minimum-credentials')
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
+    // Handle maximum
+    if (limitMaxCredentials) {
+      upsertPolicy('maximum-credentials', maximumCredentials)
+      changed = true
+    } else {
+      const filtered = removePolicy('maximum-credentials')
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
+    if (changed) {
+      setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
+    }
+  }, [
+    enabled,
+    editAdvancedFeatures,
+    limitMinCredentials,
+    limitMaxCredentials,
+    minimumCredentials,
+    maximumCredentials
+  ])
+
   return (
     <>
       <div className={styles.enablePolicyToggle}>
@@ -818,16 +891,28 @@ export function PolicyEditor(props): ReactElement {
                 <div
                   className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
                 >
-                  {credentials?.vpPolicies?.map((policy, index) => (
-                    <VpPolicyView
-                      key={index}
-                      index={index}
-                      name={name}
-                      policy={policy}
-                      onDeletePolicy={() => handleDeleteVpPolicy(index)}
-                    />
-                  ))}
+                  {credentials?.vpPolicies?.map((policy, index) => {
+                    // Only render if it's not a static policy with excluded names
+                    if (
+                      policy?.type === 'staticVpPolicy' &&
+                      (policy.name === 'presentation-definition' ||
+                        policy.name === 'holder-binding')
+                    ) {
+                      return null
+                    }
+
+                    return (
+                      <VpPolicyView
+                        key={index}
+                        index={index}
+                        name={name}
+                        policy={policy}
+                        onDeletePolicy={() => handleDeleteVpPolicy(index)}
+                      />
+                    )
+                  })}
                 </div>
+
                 {isAsset && (
                   <div
                     className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}

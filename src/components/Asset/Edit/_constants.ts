@@ -202,7 +202,7 @@ export const getNewServiceInitialValues = (
       valid: false,
       custom: false
     },
-    files: [{ url: '', type: 'ipfs' }],
+    files: [{ url: '', type: 'url' }],
     state: assetStateToString(State.Active),
     timeout: '1 day',
     usesConsumerParameters: false,
