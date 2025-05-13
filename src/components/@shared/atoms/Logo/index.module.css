@@ -5,7 +5,14 @@
   display: block;
   width: var(--menu-logo-size-width-sm);
   height: var(--menu-logo-size-height-sm);
-  margin: 0;
+  margin: 0 !important;
+}
+
+@media screen and (max-width: 420px) {
+  .logoSmall {
+    width: var(--menu-logo-size-width-xs);
+    height: var(--menu-logo-size-height-xs);
+  }
 }
 
 @media screen and (min-width: 55rem) {

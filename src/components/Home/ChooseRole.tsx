@@ -55,15 +55,15 @@ export default function ChooseRole() {
           </h2>
         </div>
 
-        <div className="flex justify-center gap-16 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
           {roles.map((role, index) => (
             <div
               key={index}
-              className="flex flex-col h-[600px] w-[340px] relative"
+              className="flex flex-col w-full mx-auto max-w-[340px] mb-10 md:mb-0"
             >
               <div
-                className={`flex flex-col items-center text-center h-[450px] w-full
-                  cursor-pointer transition-all duration-300 p-8
+                className={`flex flex-col items-center text-center h-auto min-h-[400px] w-full
+                  cursor-pointer transition-all duration-300 p-6
                   border border-gray-200 shadow-sm rounded-2xl
                   ${
                     selectedRole === index
@@ -73,7 +73,7 @@ export default function ChooseRole() {
                 onClick={() => handleRoleClick(index)}
               >
                 <div className="flex flex-col h-full items-center">
-                  <div className="h-[200px] flex items-center justify-center">
+                  <div className="h-[160px] flex items-center justify-center">
                     <div className="relative w-[96px] h-[96px]">
                       <Image
                         src={role.imageSrc}
@@ -90,7 +90,7 @@ export default function ChooseRole() {
                     </h3>
                   </div>
 
-                  <div className="h-[100px] flex items-start justify-center pt-2">
+                  <div className="flex items-start justify-center pt-2">
                     <p className="text-base text-black/80 font-body">
                       {role.description}
                     </p>
@@ -98,7 +98,7 @@ export default function ChooseRole() {
                 </div>
               </div>
 
-              <div className="mt-4 w-[360px] mx-auto">
+              <div className="mt-4 w-full mx-auto">
                 <div
                   className={`space-y-3 transition-all duration-300 ease-out flex flex-col items-center
                     ${
@@ -110,7 +110,7 @@ export default function ChooseRole() {
                   <Button
                     variant="primary"
                     size="lg"
-                    className={`w-[280px] bg-[#a47e5a] hover:bg-[#8e6c4c] border-0 rounded-xl font-medium text-white transform transition-all duration-200 ${
+                    className={`w-full max-w-[280px] bg-[#a47e5a] hover:bg-[#8e6c4c] border-0 rounded-xl font-medium text-white transform transition-all duration-200 ${
                       selectedRole === index
                         ? 'cursor-pointer'
                         : 'cursor-default pointer-events-none'
@@ -121,7 +121,7 @@ export default function ChooseRole() {
                   <Button
                     variant="secondary"
                     size="lg"
-                    className={`w-[280px] bg-[#efe6d5] hover:bg-[#e6dcc8] border-0 rounded-xl font-medium text-black transform transition-all duration-200 ${
+                    className={`w-full max-w-[280px] bg-[#efe6d5] hover:bg-[#e6dcc8] border-0 rounded-xl font-medium text-black transform transition-all duration-200 ${
                       selectedRole === index
                         ? 'cursor-pointer'
                         : 'cursor-default pointer-events-none'

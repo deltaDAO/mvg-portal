@@ -27,8 +27,10 @@
   /* Menubar */
   --menu-logo-color: var(--brand-gaia-x-blue);
   --menu-logo-color-hover: var(--brand-gaia-x-blue);
-  --menu-logo-size-width-sm: 3.5rem;
-  --menu-logo-size-height-sm: 3.5rem;
+  --menu-logo-size-width-sm: 3rem;
+  --menu-logo-size-height-sm: 3rem;
+  --menu-logo-size-width-xs: 2.3rem;
+  --menu-logo-size-height-xs: 2.3rem;
   --menu-logo-size-width-lg: 3.5rem;
   --menu-logo-size-height-lg: 3.5rem;
   --menu-font-color: var(--brand-black);
