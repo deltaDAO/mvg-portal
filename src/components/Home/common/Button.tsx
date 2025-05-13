@@ -18,9 +18,9 @@ export default function Button({
 
   const variantClasses = {
     primary:
-      'bg-[#a66e4e] text-white border-2 border-[#a66e4e] hover:bg-[#a66963] hover:scale-[1.03]',
+      'bg-[#a66e4e] text-white border-2 border-[#a66e4e] hover:bg-[#a66e4e] hover:scale-[1.01]',
     secondary:
-      'bg-[#f2e5d5] text-black border border-[#f2e5d5] hover:bg-[#f2e5d5]',
+      'bg-[#f2e5d5] text-black border-2 border-[#f2e5d5] hover:bg-[#f2e5d5]  hover:scale-[1.01]',
     outline: 'border border-[#282939] text-[#282939]'
   }
 
