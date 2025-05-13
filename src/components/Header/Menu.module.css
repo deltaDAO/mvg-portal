@@ -6,6 +6,50 @@
   flex-wrap: wrap;
 }
 
+@media screen and (max-width: 767px) {
+  .menu {
+    padding: calc(var(--spacer) / 2);
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .menu {
+    padding: calc(var(--spacer) / 3);
+  }
+
+  .actions {
+    gap: calc(var(--spacer) / 6);
+  }
+
+  .logo svg {
+    width: var(--menu-logo-size-width-sm);
+    height: var(--menu-logo-size-height-sm);
+  }
+
+  .actions button {
+    transform: scale(0.9);
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .menu {
+    padding: calc(var(--spacer) / 4);
+  }
+
+  .actions {
+    gap: calc(var(--spacer) / 8);
+  }
+
+  .actions button {
+    transform: scale(0.85);
+  }
+
+  .logo svg {
+    width: var(--menu-logo-size-width-xs);
+    height: var(--menu-logo-size-height-xs);
+  }
+}
+
 .logo {
   white-space: nowrap;
   display: flex;
