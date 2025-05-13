@@ -68,7 +68,8 @@ export function parseFilters(
     accessType: 'credentialSubject.services.type',
     serviceType: 'credentialSubject.metadata.type',
     filterSet: 'credentialSubject.metadata.tags.keyword',
-    filterTime: 'credentialSubject.metadata.created'
+    filterTime: 'credentialSubject.metadata.created',
+    assetState: 'credentialSubject.nft.state'
   }
   if (filtersList) {
     const filterTerms = Object.keys(filtersList)?.map((key) => {
@@ -477,13 +478,15 @@ export async function getTopAssetsPublishers(
 
 export async function getUserSalesAndRevenue(
   accountId: string,
-  chainIds: number[]
-): Promise<{ totalOrders: number; totalRevenue: number }> {
+  chainIds: number[],
+  filter?: Filters
+): Promise<{ totalOrders: number; totalRevenue: number; results: Asset[] }> {
   try {
     let page = 1
     let totalOrders = 0
     let totalRevenue = 0
     let assets: PagedAssets
+    const allResults: Asset[] = []
 
     do {
       assets = await getPublishedAssets(
@@ -492,7 +495,7 @@ export async function getUserSalesAndRevenue(
         null,
         false,
         false,
-        undefined,
+        filter,
         page
       )
       // TODO stats is not in ddo
@@ -503,6 +506,7 @@ export async function getUserSalesAndRevenue(
           totalOrders += orders
           totalRevenue += orders * price
         })
+        allResults.push(...assets.results)
       }
       page++
     } while (
@@ -512,10 +516,10 @@ export async function getUserSalesAndRevenue(
       page <= assets.totalPages
     )
 
-    return { totalOrders, totalRevenue }
+    return { totalOrders, totalRevenue, results: allResults }
   } catch (error) {
     LoggerInstance.error('Error in getUserSales', error.message)
-    return { totalOrders: 0, totalRevenue: 0 }
+    return { totalOrders: 0, totalRevenue: 0, results: [] }
   }
 }
 

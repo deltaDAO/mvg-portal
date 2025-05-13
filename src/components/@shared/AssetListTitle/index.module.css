@@ -1,12 +1,25 @@
 .title {
-  line-height: var(--line-height);
-  margin: 0;
   display: inline;
+}
+
+.titleWrapper {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  font-weight: bold;
 }
 
 .title a {
   font-size: var(--font-size-base);
   color: var(--font-color-heading);
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .title a:hover,

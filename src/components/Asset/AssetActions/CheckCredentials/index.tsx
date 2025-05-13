@@ -321,6 +321,7 @@ export function AssetActionCheckCredentials({
           setCheckCredentialState(CheckCredentialState.AbortSelection)
         }
         ssiVerifiableCredentials={exchangeStateData.verifiableCredentials}
+        assetAllowCredentials={asset.credentialSubject?.credentials?.allow}
       />
       <DidSelector
         setShowDialog={setShowDidDialog}

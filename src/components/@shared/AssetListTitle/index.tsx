@@ -40,8 +40,12 @@ export default function AssetListTitle({
   }, [assetTitle, appConfig.metadataCacheUri, asset, did, title])
 
   return (
-    <h3 className={styles.title}>
-      <Link href={`/asset/${did || asset?.id}`}>{assetTitle}</Link>
-    </h3>
+    <span className={styles.title}>
+      <Link href={`/asset/${did || asset?.id}`}>
+        <span className={styles.titleWrapper} title={assetTitle}>
+          {assetTitle}
+        </span>
+      </Link>
+    </span>
   )
 }

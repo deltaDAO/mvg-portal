@@ -3,6 +3,10 @@ import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import styles from './index.module.css'
 import { SsiVerifiableCredential } from 'src/@types/SsiWallet'
 import { getSsiVerifiableCredentialType } from '@utils/wallet/ssiWallet'
+import {
+  CredentialAddressBased,
+  CredentialPolicyBased
+} from 'src/@types/ddo/Credentials'
 
 export interface VpSelectorProps {
   showDialog: boolean
@@ -10,6 +14,7 @@ export interface VpSelectorProps {
   acceptSelection: (selectedCredential: string[]) => void
   abortSelection: () => void
   ssiVerifiableCredentials: SsiVerifiableCredential[]
+  assetAllowCredentials: (CredentialAddressBased | CredentialPolicyBased)[]
 }
 
 interface VpFieldProps {
@@ -98,7 +103,8 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
     setShowDialog,
     acceptSelection,
     abortSelection,
-    ssiVerifiableCredentials
+    ssiVerifiableCredentials,
+    assetAllowCredentials
   } = props
 
   const selectorDialog = useRef<HTMLDialogElement>(null)
@@ -154,8 +160,30 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         <h3>Verifiable Credentials to present</h3>
 
         <label htmlFor="verifiableCredentials" className={styles.marginBottom2}>
-          Choose your Wallet VPs:
+          Choose your Wallet VPs, you can select multiple:
         </label>
+
+        {(() => {
+          const minCreds = assetAllowCredentials
+            ?.find((c) => c.type === 'SSIpolicy')
+            ?.values?.[0]?.vp_policies?.find(
+              (policy) =>
+                (typeof policy === 'object' &&
+                  policy.policy === 'minimum-credentials') ||
+                (typeof policy === 'string' && policy === 'minimum-credentials')
+            )
+
+          const minCount =
+            typeof minCreds === 'object' && 'args' in minCreds
+              ? minCreds.args
+              : null
+
+          return minCount ? (
+            <span className={styles.marginBottom2}>
+              <strong>Minimum credentials required:</strong> {minCount}
+            </span>
+          ) : null
+        })()}
 
         <div
           className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStrech} ${styles.marginBottom2}`}

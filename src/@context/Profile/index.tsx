@@ -135,7 +135,7 @@ function ProfileProvider({
           if (order.datatokenAddress) dtList.push(order.datatokenAddress)
         })
         // eslint-disable-next-line prefer-destructuring
-        totalPages = orders.totalPages
+        totalPages = orders?.totalPages || 0
         currentPage++
       }
 
