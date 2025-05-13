@@ -2,6 +2,7 @@ import Container from '@components/@shared/atoms/Container'
 import Link from 'next/link'
 import Button from '../Home/common/Button'
 import SearchBar from '../Header/SearchBar'
+import styles from '../Header/SearchBar.module.css'
 
 const scrollToElement = (e: React.MouseEvent, selector: string): void => {
   e.preventDefault()
@@ -39,7 +40,9 @@ export default function Hero() {
       {/* Search Bar for home page - positioned at the top */}
       <div className="absolute top-0 left-0 right-0 z-20 py-5 flex justify-center">
         <div className="max-w-xl w-full px-4">
-          <SearchBar placeholder="Search for archival materials..." />
+          <div className={styles.searchHome}>
+            <SearchBar placeholder="Search for archival materials..." />
+          </div>
         </div>
       </div>
 
@@ -65,7 +68,7 @@ export default function Hero() {
               <Button
                 variant="primary"
                 size="lg"
-                className="bg-[var(--brand-clay)] text-white border-2 border-[var(--brand-clay)] hover:bg-[var(--brand-clay)] hover:scale-[1.01] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
+                className="text-white border-2 hover:scale-[1.01] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
                 Get Started
               </Button>
@@ -77,7 +80,7 @@ export default function Hero() {
               <Button
                 variant="secondary"
                 size="lg"
-                className="bg-[var(--brand-clay-light)] text-black border-2 border-[var(--brand-clay-light)] hover:bg-[var(--brand-clay-light)] hover:scale-[1.01] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
+                className="text-black border-2 hover:scale-[1.01] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
                 Learn More
               </Button>

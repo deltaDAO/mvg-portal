@@ -1,5 +1,7 @@
 .search {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button {
@@ -14,7 +16,10 @@
   left: 1px;
   top: 1px;
   bottom: 1px;
-  z-index: -1;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .button:hover,
@@ -27,4 +32,6 @@
   transition: 0.2s ease-out;
   width: var(--font-size-base);
   height: var(--font-size-base);
+  display: block;
+  line-height: 1;
 }
