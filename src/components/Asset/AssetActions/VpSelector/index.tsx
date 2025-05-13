@@ -164,7 +164,7 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         </label>
 
         {(() => {
-          const minCreds = assetAllowCredentials
+          const minCreds = (assetAllowCredentials as any)
             ?.find((c) => c.type === 'SSIpolicy')
             ?.values?.[0]?.vp_policies?.find(
               (policy) =>

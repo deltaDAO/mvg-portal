@@ -24,7 +24,7 @@ interface FilterStructure {
   type: string
   options: {
     label: string
-    value: string
+    value: any
   }[]
 }
 
