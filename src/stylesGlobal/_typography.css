@@ -1,0 +1,25 @@
+body {
+  line-height: 1.6;
+}
+
+h1 {
+  line-height: 1.2;
+}
+
+p {
+  line-height: 1.65;
+}
+
+.partner-text p {
+  line-height: 1.75;
+}
+
+.pillar-card p {
+  line-height: 1.6;
+}
+
+footer p,
+footer a,
+footer span {
+  line-height: 1.5;
+}

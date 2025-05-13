@@ -1,6 +1,6 @@
 .menu {
   width: 100%;
-  padding: calc(var(--spacer) / 2);
+  padding: calc(var(--spacer) / 2) calc(var(--spacer) * 2);
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -52,7 +52,7 @@
 
 @media screen and (min-width: 94rem) {
   .menu {
-    padding: calc(var(--spacer) / 1.5);
+    padding: calc(var(--spacer) / 1.5) calc(var(--spacer) * 2);
   }
 }
 
@@ -82,6 +82,9 @@
   color: var(--menu-font-color);
   font-weight: var(--menu-link-font-weight);
   font-size: var(--menu-link-font-size);
+  font-family: var(--font-family-heading);
+  letter-spacing: var(--menu-link-letter-spacing);
+  transition: var(--menu-transition);
 }
 
 .link,
@@ -91,12 +94,16 @@
 .active {
   display: block;
   padding: calc(var(--spacer) / 8) 0;
-  text-transform: uppercase;
+  text-transform: none;
   transform: none;
   position: relative;
   z-index: 1;
+  font-weight: var(--menu-link-font-weight);
+  font-size: var(--menu-link-font-size);
 }
 
+/* Remove the underline effect by commenting out or removing these styles */
+/*
 .link:after {
   content: '';
   position: absolute;
@@ -113,7 +120,7 @@
 .link:hover:after,
 .active:after {
   transform: scaleX(1);
-}
+} */
 
 .link:hover {
   color: var(--menu-font-color-hover);

@@ -97,7 +97,7 @@ export const initialValues: FormPublishData = {
       files: [{ url: '', type: 'url' }],
       links: [{ url: '', type: 'url' }],
       dataTokenOptions: { name: '', symbol: '' },
-      access: 'access',
+      access: 'compute',
       providerUrl: {
         url: customProviderUrl,
         valid: true,

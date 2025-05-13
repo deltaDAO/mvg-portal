@@ -1,15 +1,31 @@
 @font-face {
-  font-family: 'Titillium Web';
+  font-family: 'IBM Plex Sans';
   font-weight: 400;
   font-display: swap;
   font-style: normal;
-  src: url('./TitilliumWeb-Regular.ttf') format('truetype');
+  src: url('/static/fonts/IBMPlexSans-Regular.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: 'Titillium Web';
+  font-family: 'IBM Plex Sans';
   font-weight: 600;
   font-display: swap;
   font-style: normal;
-  src: url('./TitilliumWeb-SemiBold.ttf') format('truetype');
+  src: url('/static/fonts/IBMPlexSans-SemiBold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Libre Baskerville';
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+  src: url('/static/fonts/LibreBaskerville-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Libre Baskerville';
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+  src: url('/static/fonts/LibreBaskerville-Bold.ttf') format('truetype');
 }

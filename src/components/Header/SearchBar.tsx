@@ -19,7 +19,7 @@ async function emptySearch() {
   const searchParams = new URLSearchParams(window?.location.href)
   const text = searchParams.get('text')
 
-  if (text !== ('' || undefined || null)) {
+  if (text !== '' && text !== null && text !== undefined) {
     await addExistingParamsToUrl(location, ['text', 'owner', 'tags'])
   }
 }

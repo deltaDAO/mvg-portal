@@ -1,170 +1,206 @@
-@import '_variables.css';
+@import './_variables.css';
 
-*,
-*:before,
-*:after {
-  box-sizing: border-box;
-}
+/* Custom base styles that should be applied before Tailwind */
+@layer base {
+  *,
+  *:before,
+  *:after {
+    box-sizing: border-box;
+  }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-}
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
 
-html {
-  font-size: var(--font-size-root);
-  scroll-behavior: smooth;
-}
-
-@media screen and (prefers-reduced-motion: reduce) {
   html {
-    scroll-behavior: auto;
+    font-size: var(--font-size-root);
+    scroll-behavior: smooth;
   }
-}
 
-body {
-  color: var(--font-color-text);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-base);
-  line-height: var(--line-height);
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  position: relative;
-  background: var(--background-body);
-}
+  @media screen and (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
 
-a {
-  text-decoration: none;
-  color: var(--link-font-color);
-  transition: 0.2s ease-out;
-}
+  body {
+    color: var(--font-color-text);
+    font-size: var(--font-size-base);
+    font-family: var(--font-family-base);
+    font-weight: var(--font-weight-base);
+    line-height: var(--line-height);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    background: var(--background-body);
+  }
 
-p {
-  margin: 0;
-  margin-bottom: calc(var(--spacer) / var(--line-height));
-}
+  /* Apply Libre Baskerville to specific content text elements */
+  .markdown p,
+  article p,
+  .body-text,
+  .description,
+  blockquote,
+  .content p,
+  .font-serif,
+  p.text-lg {
+    font-family: var(--font-family-body);
+  }
 
-strong {
-  font-weight: var(--font-weight-bold);
-}
+  a {
+    text-decoration: none;
+    color: var(--link-font-color);
+    transition: 0.2s ease-out;
+  }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  font-family: var(--font-family-heading);
-  color: var(--font-color-heading);
-  line-height: 1.2;
-  font-weight: var(--font-weight-bold);
-  margin-top: 0;
-  margin-bottom: var(--spacer);
-}
+  p {
+    margin: 0;
+  }
 
-h1 {
-  font-size: var(--font-size-h2);
-}
+  strong {
+    font-weight: var(--font-weight-bold);
+  }
 
-h2 {
-  font-size: var(--font-size-h3);
-}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-family: var(--font-family-heading);
+    color: var(--font-color-heading);
+    line-height: 1.2;
+    font-weight: var(--font-weight-bold);
+  }
 
-h3 {
-  font-size: var(--font-size-h4);
-}
-
-@media (min-width: 30rem) {
   h1 {
-    font-size: var(--font-size-h1);
-  }
-
-  h2 {
     font-size: var(--font-size-h2);
   }
 
-  h3 {
+  h2 {
     font-size: var(--font-size-h3);
+  }
+
+  h3 {
+    font-size: var(--font-size-h4);
+  }
+
+  @media (min-width: 30rem) {
+    h1 {
+      font-size: var(--font-size-h1);
+    }
+
+    h2 {
+      font-size: var(--font-size-h2);
+    }
+
+    h3 {
+      font-size: var(--font-size-h3);
+    }
+  }
+
+  h4 {
+    font-size: var(--font-size-h4);
+  }
+
+  h5 {
+    font-size: var(--font-size-h5);
+  }
+
+  figure,
+  img,
+  svg,
+  video,
+  audio,
+  embed,
+  canvas,
+  picture {
+    max-width: 100%;
+    height: auto;
+    margin: 0 auto;
+    display: block;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  ul li {
+    display: block;
+  }
+
+  ::selection {
+    background: var(--font-color-heading);
+    color: var(--background-body);
+  }
+
+  /* fix required for codemirror */
+  .cm-scroller ::selection {
+    color: var(--font-color-heading);
+  }
+
+  form,
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    display: block;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table th,
+  table td {
+    border: 0;
+    margin: 0;
+    padding: calc(var(--spacer) / 2);
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+    font-size: 90%;
+  }
+
+  table th {
+    font-weight: var(--font-weight-bold);
   }
 }
 
-h4 {
-  font-size: var(--font-size-h4);
+/* Custom components */
+@layer components {
+  /* Add your custom component classes here */
 }
 
-h5 {
-  font-size: var(--font-size-h5);
+/* Custom utilities */
+@layer utilities {
+  /* Add your custom utility classes here */
+  .font-heading {
+    font-family: var(--font-family-heading) !important;
+  }
+
+  .font-body {
+    font-family: var(--font-family-body) !important;
+  }
 }
 
-figure,
-img,
-svg,
-video,
-audio,
-embed,
-canvas,
-picture {
-  max-width: 100%;
-  height: auto;
-  margin: 0 auto;
-  display: block;
-}
-
-ul {
-  margin: 0;
-  padding: 0;
-}
-
-ul li {
-  display: block;
-}
-
-::selection {
-  background: var(--font-color-heading);
-  color: var(--background-body);
-}
-
-/* fix required for codemirror */
-.cm-scroller ::selection {
-  color: var(--font-color-heading);
-}
-
-form,
-fieldset {
-  border: 0;
-  padding: 0;
-  margin: 0;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  display: block;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-table th,
-table td {
-  border: 0;
-  margin: 0;
-  padding: calc(var(--spacer) / 2);
-  border-bottom: 1px solid var(--border-color);
-  text-align: left;
-  font-size: 90%;
-}
-
-table th {
-  font-weight: var(--font-weight-bold);
-}
-
-@import '_code.css';
-@import '_toast.css';
-@import '_emojipicker.css';
+/* Import other custom styles */
+@import './_code.css';
+@import './_toast.css';
+@import './_emojipicker.css';
+@import './_typography.css';
 
 /* prevent background scrolling */
 .ReactModal__Body--open {
   overflow: hidden;
 }
+
+@import 'tailwindcss';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
