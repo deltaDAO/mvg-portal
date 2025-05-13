@@ -15,7 +15,7 @@ export default function Links(): ReactElement {
     <div>
       {/* ClioX Logo with BETA */}
       <div className="mb-10 md:hidden flex items-center gap-2">
-        <Logo darkMode={true} />
+        <Logo />
         <span className={styles.betaBadge}>BETA</span>
       </div>
 
@@ -24,7 +24,7 @@ export default function Links(): ReactElement {
         <div>
           {/* ClioX Logo with BETA for desktop */}
           <div className="hidden md:flex items-center gap-2 mb-6">
-            <Logo darkMode={true} />
+            <Logo />
             <span className={styles.betaBadge}>BETA</span>
           </div>
 
