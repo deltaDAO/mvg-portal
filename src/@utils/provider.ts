@@ -22,7 +22,7 @@ import { KeyValuePair } from '@shared/FormInput/InputElement/KeyValueInput'
 import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
 import { toast } from 'react-toastify'
-import { oceanErrorStates } from 'src/@constants/errors'
+import { oceanErrorStates } from '../@constants/errors'
 
 export async function initializeProviderForCompute(
   dataset: AssetExtended,
