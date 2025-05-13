@@ -328,7 +328,7 @@ export default function ContactAndOnboarding() {
               <Button
                 variant="primary"
                 type="submit"
-                className="w-full"
+                className="w-full bg-[var(--brand-clay)] text-white border-2 border-[var(--brand-clay)] hover:bg-[var(--brand-clay)] hover:scale-[1.01] transform transition-all duration-200 ease-in-out"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Sending...' : 'Send Message'}

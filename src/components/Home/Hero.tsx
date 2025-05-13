@@ -65,7 +65,7 @@ export default function Hero() {
               <Button
                 variant="primary"
                 size="lg"
-                className="bg-[var(--brand-clay)] text-white border-2 border-[var(--brand-clay)] hover:bg-[var(--brand-clay-dark)] hover:scale-[1.03] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
+                className="bg-[var(--brand-clay)] text-white border-2 border-[var(--brand-clay)] hover:bg-[var(--brand-clay)] hover:scale-[1.01] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
                 Get Started
               </Button>
@@ -77,7 +77,7 @@ export default function Hero() {
               <Button
                 variant="secondary"
                 size="lg"
-                className="bg-[var(--brand-clay-light)] text-black border border-[var(--brand-clay-light)] hover:bg-[var(--brand-clay-light)] min-w-[140px] px-7 py-3 font-semibold"
+                className="bg-[var(--brand-clay-light)] text-black border-2 border-[var(--brand-clay-light)] hover:bg-[var(--brand-clay-light)] hover:scale-[1.01] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
                 Learn More
               </Button>
