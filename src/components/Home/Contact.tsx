@@ -59,9 +59,11 @@ export default function ContactAndOnboarding() {
                 Let&apos;s stay in touch.
               </h2>
               <p className="text-lg font-serif text-black/80 max-w-3xl">
-                Have questions about ClioX? We&apos;d love to hear from you.
+                {/* Have questions about ClioX? We&apos;d love to hear from you.
                 Send us a message or reach out through any of the channels
-                below.
+                below. */}
+                We&apos;d love to hear from you. Reach out if you&apos;re
+                curious or want to get involved.
               </p>
             </div>
 
@@ -326,7 +328,7 @@ export default function ContactAndOnboarding() {
               <Button
                 variant="primary"
                 type="submit"
-                className="w-full"
+                className="w-full bg-[var(--brand-clay)] text-white border-2 border-[var(--brand-clay)] hover:bg-[var(--brand-clay)] hover:scale-[1.01] transform transition-all duration-200 ease-in-out"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? 'Sending...' : 'Send Message'}

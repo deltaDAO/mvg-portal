@@ -23,15 +23,19 @@ export default function Page404(): ReactElement {
         headerCenter
       >
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
-          <h1 className="text-6xl font-bold text-[#4169E1] mb-4">404</h1>
-          <h2 className="text-3xl font-semibold mb-6">Page Not Found</h2>
-          <p className="text-lg text-gray-600 max-w-md mb-8">
+          <h1 className="text-6xl font-bold text-[var(--brand-clay)] mb-4">
+            404
+          </h1>
+          <h2 className="text-3xl font-semibold text-[var(--font-color-heading)] mb-6">
+            Page Not Found
+          </h2>
+          <p className="text-lg text-[var(--font-color-text)] max-w-md mb-8">
             The page you are looking for might have been removed, had its name
             changed, or is temporarily unavailable.
           </p>
           <Link
             href="/"
-            className="bg-[#4169E1] text-white px-6 py-3 rounded-md hover:bg-[#3451b2] transition-colors"
+            className="bg-[var(--brand-clay)] text-white px-6 py-3 rounded-md hover:bg-[var(--brand-clay)] transition-all duration-200 ease-in-out hover:scale-[1.01]"
           >
             Return to Homepage
           </Link>

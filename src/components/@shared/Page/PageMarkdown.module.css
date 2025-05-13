@@ -12,27 +12,33 @@
   word-break: break-word;
 }
 
-.content table {
-  overflow-wrap: normal;
-  word-wrap: normal;
-  word-break: normal;
+.content p {
+  margin-bottom: 1.2rem; /* Increase paragraph spacing */
 }
 
 .content h1,
 .content h2 {
   font-size: var(--font-size-h3);
+  font-weight: 700;
+  margin-top: 2.5rem; /* More space above headings */
+  margin-bottom: 1.2rem; /* Space below headings */
 }
 
 .content h3 {
   font-size: var(--font-size-h4);
+  font-weight: 700;
+  margin-top: 2.5rem; /* More space above headings */
+  margin-bottom: 1.2rem; /* Space below headings */
 }
 
 .content h4 {
   font-size: var(--font-size-h5);
+  font-weight: 600;
 }
 
 .content h5 {
   font-size: var(--font-size-base);
+  font-weight: 600;
 }
 
 .content ul,
@@ -49,6 +55,11 @@
 .content ul li {
   position: relative;
   display: block;
+  margin-bottom: 0.8rem;
+}
+
+.content ol li {
+  margin-bottom: 0.8rem;
 }
 
 .content ul li:before {
@@ -118,4 +129,14 @@
 
 .content :global([id]:hover .anchor) {
   opacity: 1;
+}
+
+.content section {
+  margin-bottom: 2.5rem; /* Space between major sections */
+}
+
+.content table {
+  overflow-wrap: normal;
+  word-wrap: normal;
+  word-break: normal;
 }

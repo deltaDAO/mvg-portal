@@ -36,10 +36,10 @@ export default function Pillars() {
           <h2 className="text-4xl font-bold mb-4 font-sans">
             Our Core Pillars
           </h2>
-          <p className="text-lg font-serif text-gray-700 font-normal mb-16">
+          {/* <p className="text-lg font-serif text-gray-700 font-normal mb-16">
             Building a sustainable and ethical future for digital archives and
             cultural heritage
-          </p>
+          </p> */}
         </div>
 
         <div className="grid md:grid-cols-3 gap-12 lg:gap-20">
