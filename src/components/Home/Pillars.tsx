@@ -8,7 +8,7 @@ export default function Pillars() {
       title: 'Ethical Humanities Computing Framework',
       content:
         'We are developing a digital Web3 ecosystem designed to ensure that all participants can contribute equitably and benefit fairly.',
-      imageSrc: '/images/ethical-framework-icon.svg',
+      imageSrc: '/images/home/ethics.png',
       imageAlt: 'Ethical Humanities Computing Framework'
     },
     {
@@ -16,7 +16,7 @@ export default function Pillars() {
       title: 'Cultural Heritage First Approach',
       content:
         'Our goal is to have a platform that is collectively owned, operated, and developed for the direct benefit of archives and other cultural heritage institutions - prioritizing their sustainability and growth.',
-      imageSrc: '/images/heritage-first-icon.svg',
+      imageSrc: '/images/home/approach.png',
       imageAlt: 'Cultural Heritage First Approach'
     },
     {
@@ -24,7 +24,7 @@ export default function Pillars() {
       title: 'Rethinking Traditional Business Models',
       content:
         'Conventional business models have monetized archival and cultural heritage data, generating billion-dollar corporations, often without reinvesting in the archival and cultural heritage community. We seek to shift this dynamic by centering the needs and growth of archives and cultural heritage institutions.',
-      imageSrc: '/images/sustainable-model-icon.svg',
+      imageSrc: '/images/home/business.png',
       imageAlt: 'Rethinking Traditional Business Models'
     }
   ]
@@ -53,9 +53,9 @@ export default function Pillars() {
                 <Image
                   src={pillar.imageSrc}
                   alt={pillar.imageAlt}
-                  width={200}
-                  height={200}
-                  className="object-contain"
+                  width={96}
+                  height={96}
+                  className="object-contain m-[3.125rem]"
                 />
               </div>
 

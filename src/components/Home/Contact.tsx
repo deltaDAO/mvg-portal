@@ -74,7 +74,8 @@ export default function ContactAndOnboarding() {
                 </h3>
                 <div className="flex items-center gap-3">
                   <svg
-                    className="w-6 h-6 text-blue-600"
+                    className="w-6 h-6"
+                    style={{ color: '#734B3D' }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -88,7 +89,8 @@ export default function ContactAndOnboarding() {
                   </svg>
                   <a
                     href="mailto:contact@cliox.org"
-                    className="text-lg text-blue-600 hover:text-blue-800 transition-colors"
+                    style={{ color: '#734B3D' }}
+                    className="text-lg hover:opacity-80 transition-colors"
                   >
                     contact@cliox.org
                   </a>
@@ -98,7 +100,8 @@ export default function ContactAndOnboarding() {
                 </div>
                 <div className="flex items-center gap-3">
                   <svg
-                    className="w-6 h-6 text-blue-600"
+                    className="w-6 h-6"
+                    style={{ color: '#734B3D' }}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -112,7 +115,8 @@ export default function ContactAndOnboarding() {
                   </svg>
                   <a
                     href="mailto:support@cliox.org"
-                    className="text-lg text-blue-600 hover:text-blue-800 transition-colors"
+                    style={{ color: '#734B3D' }}
+                    className="text-lg hover:opacity-80 transition-colors"
                   >
                     support@cliox.org
                   </a>
@@ -133,7 +137,8 @@ export default function ContactAndOnboarding() {
                   {/* Telegram */}
                   <div className="flex items-center gap-3">
                     <svg
-                      className="w-6 h-6 text-blue-600"
+                      className="w-6 h-6"
+                      style={{ color: '#734B3D' }}
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -143,7 +148,8 @@ export default function ContactAndOnboarding() {
                       href="https://t.me/cliox"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-lg text-blue-600 hover:text-blue-800 transition-colors"
+                      style={{ color: '#734B3D' }}
+                      className="text-lg hover:opacity-80 transition-colors"
                     >
                       Join our Telegram
                     </a>
@@ -152,7 +158,8 @@ export default function ContactAndOnboarding() {
                   {/* Discord */}
                   <div className="flex items-center gap-3">
                     <svg
-                      className="w-6 h-6 text-blue-600"
+                      className="w-6 h-6"
+                      style={{ color: '#734B3D' }}
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -162,7 +169,8 @@ export default function ContactAndOnboarding() {
                       href="https://discord.gg/cliox"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-lg text-blue-600 hover:text-blue-800 transition-colors"
+                      style={{ color: '#734B3D' }}
+                      className="text-lg hover:opacity-80 transition-colors"
                     >
                       Join our Discord
                     </a>
@@ -171,7 +179,8 @@ export default function ContactAndOnboarding() {
                   {/* WhatsApp */}
                   <div className="flex items-center gap-3">
                     <svg
-                      className="w-6 h-6 text-blue-600"
+                      className="w-6 h-6"
+                      style={{ color: '#734B3D' }}
                       fill="currentColor"
                       viewBox="0 0 24 24"
                     >
@@ -181,7 +190,8 @@ export default function ContactAndOnboarding() {
                       href="https://wa.me/1234567890"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-lg text-blue-600 hover:text-blue-800 transition-colors"
+                      style={{ color: '#734B3D' }}
+                      className="text-lg hover:opacity-80 transition-colors"
                     >
                       Chat on WhatsApp
                     </a>
@@ -196,7 +206,8 @@ export default function ContactAndOnboarding() {
                 </h3>
                 <div className="flex items-center gap-3">
                   <svg
-                    className="w-6 h-6 text-blue-600"
+                    className="w-6 h-6"
+                    style={{ color: '#734B3D' }}
                     fill="currentColor"
                     viewBox="0 0 24 24"
                   >
@@ -209,7 +220,8 @@ export default function ContactAndOnboarding() {
                     href="https://github.com/ciferresearch/ClioX"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-lg text-blue-600 hover:text-blue-800 transition-colors flex items-center gap-2"
+                    style={{ color: '#734B3D' }}
+                    className="text-lg hover:opacity-80 transition-colors flex items-center gap-2"
                   >
                     Follow us on GitHub
                     <svg
@@ -246,7 +258,7 @@ export default function ContactAndOnboarding() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, name: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#734B3D] focus:border-[#734B3D]"
                   placeholder="Your name"
                   required
                 />
@@ -267,7 +279,7 @@ export default function ContactAndOnboarding() {
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, email: e.target.value }))
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#734B3D] focus:border-[#734B3D]"
                   placeholder="your@email.com"
                   required
                 />
@@ -291,7 +303,7 @@ export default function ContactAndOnboarding() {
                       message: e.target.value
                     }))
                   }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#734B3D] focus:border-[#734B3D]"
                   placeholder="How can we help?"
                   required
                 ></textarea>

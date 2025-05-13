@@ -45,7 +45,7 @@ const FAQ = () => {
                 onClick={() => toggleExpand(index)}
                 className="w-full flex justify-between items-center text-left focus:outline-none group cursor-pointer"
               >
-                <h3 className="text-2xl font-bold font-sans group-hover:text-blue-600 text-black/80">
+                <h3 className="text-2xl font-bold font-sans group-hover:text-[#a66e4e] text-black/80">
                   {item.question}
                 </h3>
                 <svg
