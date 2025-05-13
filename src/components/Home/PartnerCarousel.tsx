@@ -11,9 +11,15 @@ interface Partner {
 
 interface PartnerCarouselProps {
   partners: Partner[]
+  maxWidth?: string | number
+  className?: string
 }
 
-export default function PartnerCarousel({ partners }: PartnerCarouselProps) {
+export default function PartnerCarousel({
+  partners,
+  maxWidth = '100%',
+  className = ''
+}: PartnerCarouselProps) {
   const settings = {
     dots: true,
     infinite: true,
@@ -49,8 +55,14 @@ export default function PartnerCarousel({ partners }: PartnerCarouselProps) {
     ]
   }
 
+  // Handle maxWidth styling
+  const containerStyle = {
+    maxWidth: typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth,
+    margin: '3rem auto'
+  }
+
   return (
-    <div className="mb-24 px-4">
+    <div className={`mb-24 px-4 ${className}`} style={containerStyle}>
       <Slider {...settings}>
         {partners.map((partner) => (
           <div key={partner.id} className="px-2">

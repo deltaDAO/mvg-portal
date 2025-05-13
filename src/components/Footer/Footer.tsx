@@ -21,7 +21,7 @@ export default function Footer(): ReactElement {
       url: 'https://www.nserc-crsng.gc.ca/'
     },
     {
-      src: '/images/logos/sshrc.jpg',
+      src: '/images/logos/sshrc.webp',
       alt: 'SSHRC',
       url: 'https://www.sshrc-crsh.gc.ca/'
     },

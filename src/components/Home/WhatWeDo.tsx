@@ -20,17 +20,17 @@ export default function WhatWeDo() {
     <section id="what-we-do" className="py-16 bg-white">
       <Container>
         {/* Top Section */}
-        <div className="w-full mb-12">
+        <div className="w-full mb-12 text-center">
           <h2 className="text-4xl font-bold mb-4 font-sans">
             Welcoming Values-Aligned Partners
           </h2>
         </div>
 
         {/* Partner logos carousel */}
-        <PartnerCarousel partners={partners} />
+        <PartnerCarousel partners={partners} className="w-5xl" />
 
         {/* Bottom Content Section */}
-        <div className="w-full mx-auto">
+        <div className="w-5xl mx-auto">
           <div className="space-y-8 text-lg">
             <p className="text-lg font-serif text-black/80">
               This platform was designed to be built together. From memory
