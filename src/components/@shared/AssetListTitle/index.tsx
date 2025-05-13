@@ -17,11 +17,18 @@ export default function AssetListTitle({
 }): ReactElement {
   const { appConfig } = useMarketMetadata()
   const [assetTitle, setAssetTitle] = useState<string>(title)
-
+  const [assetTitleTrimmed, setAssetTitleTrimmed] = useState('')
   useEffect(() => {
     if (title || !appConfig.metadataCacheUri) return
     if (asset) {
-      setAssetTitle(asset.credentialSubject?.metadata.name)
+      const name = asset.credentialSubject?.metadata.name
+      setAssetTitle(name)
+
+      if (name.length > 16) {
+        setAssetTitleTrimmed(name.slice(0, 13) + '...')
+        return
+      }
+      setAssetTitleTrimmed(name)
       return
     }
 
@@ -30,8 +37,13 @@ export default function AssetListTitle({
     async function getAssetName() {
       const title = await getAssetsNames([did], source.token)
       setAssetTitle(title[did])
-    }
 
+      if (title[did].length > 16) {
+        setAssetTitleTrimmed(title[did].slice(0, 13) + '...')
+      } else {
+        setAssetTitleTrimmed(title[did])
+      }
+    }
     !asset && did && getAssetName()
 
     return () => {
@@ -43,7 +55,7 @@ export default function AssetListTitle({
     <span className={styles.title}>
       <Link href={`/asset/${did || asset?.id}`}>
         <span className={styles.titleWrapper} title={assetTitle}>
-          {assetTitle}
+          {assetTitleTrimmed}
         </span>
       </Link>
     </span>
