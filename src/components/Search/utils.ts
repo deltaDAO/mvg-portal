@@ -2,6 +2,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import {
   escapeEsReservedCharacters,
   generateBaseQuery,
+  getFilter,
   getFilterTerm,
   parseFilters,
   queryMetadata
@@ -9,6 +10,7 @@ import {
 import queryString from 'query-string'
 import { CancelToken } from 'axios'
 import {
+  FILTER_VALUES,
   FilterByAccessOptions,
   FilterByTypeOptions,
   SortDirectionOptions,
@@ -43,16 +45,42 @@ export function getSearchQuery(
   serviceType?: string | string[],
   accessType?: string | string[],
   filterSet?: string | string[],
-  showSaas?: boolean
+  showSaas?: boolean,
+  gaiax?: string | string[],
+  custom?: string | string[]
 ): SearchQuery {
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
-  let searchTerm = text || ''
+  const boolFilter: BoolFilter<string>[] = []
+  const filterList = [filterSet, gaiax, custom, accessType, serviceType]
+  const checkMustExists = () => {
+    return filterList.some((filter) => {
+      let isValueMustExist =
+        filter?.includes(FILTER_VALUES.MUST_EXIST) ||
+        filter?.includes(FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY)
+      const isArray = typeof filter !== 'string'
+      if (isArray) {
+        isValueMustExist = filter?.some((term) => {
+          console.log(term)
+          return (
+            term.includes(FILTER_VALUES.MUST_EXIST) ||
+            term.includes(FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY)
+          )
+        })
+      }
+
+      if (isValueMustExist) {
+        console.log(filter, 'true')
+        return true
+      }
+      console.log(filter, 'false')
+      return false
+    })
+  }
+  const searchTerm = text || ''
   let nestedQuery
-  if (tags) {
-    filters.push(getFilterTerm('metadata.tags.keyword', tags))
-  } else {
+  const getSearchTerm = (searchTerm: string) => {
     searchTerm = searchTerm.trim()
     const modifiedSearchTerm = searchTerm.split(' ').join(' OR ').trim()
     const noSpaceSearchTerm = searchTerm.split(' ').join('').trim()
@@ -118,10 +146,46 @@ export function getSearchQuery(
       ]
     }
   }
+  const getMustExistFilter = (filter: string) => {
+    if (
+      filter.includes(FILTER_VALUES.MUST_EXIST) ||
+      filter.includes(FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY)
+    ) {
+      const filters = getFilter(filter)
+      filters.forEach((term) => {
+        const query = {
+          bool: {
+            ...term
+          }
+        }
+        boolFilter.push(query)
+      })
+    } else {
+      getSearchTerm(searchTerm)
+    }
+  }
+  if (tags) {
+    filters.push(getFilterTerm('metadata.tags.keyword', tags))
+  } else if (!checkMustExists()) {
+    getSearchTerm(searchTerm)
+  } else {
+    for (const filters of filterList) {
+      if (typeof filters !== 'undefined') {
+        const isArray = typeof filters !== 'string'
+        if (isArray) {
+          for (const filter of filters) {
+            getMustExistFilter(filter)
+          }
+        } else {
+          getMustExistFilter(filters)
+        }
+      }
+    }
+  }
 
   const filtersList = getInitialFilters(
-    { accessType, serviceType, filterSet },
-    ['accessType', 'serviceType', 'filterSet']
+    { accessType, serviceType, filterSet, gaiax, custom },
+    ['accessType', 'serviceType', 'filterSet', 'gaiax', 'custom']
   )
   parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
 
@@ -134,6 +198,7 @@ export function getSearchQuery(
     },
     sortOptions: { sortBy: sort, sortDirection },
     filters,
+    boolFilter,
     showSaas
   } as BaseQueryParams
 
@@ -154,6 +219,8 @@ export async function getResults(
     serviceType?: string | string[]
     accessType?: string | string[]
     filterSet?: string[]
+    gaiax?: string | string[]
+    custom?: string | string[]
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -168,22 +235,24 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    filterSet
+    filterSet,
+    gaiax
   } = params
 
   const showSaas =
     serviceType === undefined
       ? undefined
-      : serviceType === FilterByTypeOptions.Saas ||
+      : serviceType === 'metadata.type=' + FilterByTypeOptions.Saas ||
         (typeof serviceType !== 'string' &&
-          serviceType.includes(FilterByTypeOptions.Saas))
-
+          serviceType.includes('metadata.type=' + FilterByTypeOptions.Saas))
   // we make sure to query only for service types that are expected
   // by Aqua ("dataset" or "algorithm") by removing "saas"
   const sanitizedServiceType =
     serviceType !== undefined && typeof serviceType !== 'string'
-      ? serviceType.filter((type) => type !== FilterByTypeOptions.Saas)
-      : serviceType === FilterByTypeOptions.Saas
+      ? serviceType.filter(
+          (type) => type !== 'metadata.type=' + FilterByTypeOptions.Saas
+        )
+      : serviceType === 'metadata.type=' + FilterByTypeOptions.Saas
       ? undefined
       : serviceType
 
@@ -199,7 +268,8 @@ export async function getResults(
     sanitizedServiceType,
     accessType,
     filterSet,
-    showSaas
+    showSaas,
+    gaiax
   )
 
   const queryResult = await queryMetadata(searchQuery, cancelToken)
