@@ -1,6 +1,7 @@
 import Container from '@components/@shared/atoms/Container'
 import Link from 'next/link'
 import Button from '../Home/common/Button'
+import SearchBar from '../Header/SearchBar'
 
 const scrollToElement = (e: React.MouseEvent, selector: string): void => {
   e.preventDefault()
@@ -11,24 +12,44 @@ const scrollToElement = (e: React.MouseEvent, selector: string): void => {
 
 export default function Hero() {
   return (
-    <section className="py-36 relative overflow-hidden">
+    <section
+      className="relative overflow-hidden min-h-[80vh] flex items-center"
+      style={{
+        padding: '128px 48px'
+      }}
+    >
       {/* Hero background image */}
       <div
-        className="absolute inset-0 opacity-[0.02]"
+        className="absolute inset-0 z-0"
         style={{
-          backgroundImage: `url('/images/hero-background.png')`,
-          backgroundRepeat: 'repeat',
-          backgroundPosition: 'center'
+          backgroundImage: `url('/images/hero-background.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'scroll'
         }}
       />
 
-      <Container>
-        <div className="flex flex-col relative z-10">
-          <h1 className="font-sans text-4xl md:text-5xl leading-normal tracking-[-0.019em] font-bold mb-6">
-            Explore archival data securely. Build knowledge collectively.
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black opacity-52 z-1"></div>
+
+      {/* Glass overlay */}
+      <div className="glass-overlay absolute inset-0 z-1"></div>
+
+      {/* Search Bar for home page - positioned at the top */}
+      <div className="absolute top-0 left-0 right-0 z-20 py-5 flex justify-center">
+        <div className="max-w-xl w-full px-4">
+          <SearchBar placeholder="Search for archival materials..." />
+        </div>
+      </div>
+
+      <Container className="relative z-10 mt-12">
+        <div className="flex flex-col max-w-[800px]">
+          <h1 className="font-sans text-4xl md:text-5xl leading-normal tracking-[-0.019em] font-bold mb-6 text-white">
+            Explore archival data securely. <br /> Build knowledge collectively.
           </h1>
 
-          <p className="font-serif text-lg md:text-xl text-body leading-normal tracking-[-0.019em] font-normal text-left max-w-3xl mb-16 opacity-90">
+          <p className="font-serif text-lg md:text-xl leading-normal tracking-[-0.019em] font-normal text-left max-w-3xl mb-16 text-white">
             ClioX is a new kind of privacy-first platform—built by and for
             researchers, archivists, and cultural institutions. It&apos;s
             designed to help you explore, share, and collaborate on sensitive
@@ -36,7 +57,7 @@ export default function Hero() {
             ownership.
           </p>
 
-          <div className="flex gap-10">
+          <div className="flex gap-4 flex-wrap">
             <Link
               href="#choose-role"
               onClick={(e) => scrollToElement(e, '#choose-role')}
@@ -44,7 +65,7 @@ export default function Hero() {
               <Button
                 variant="primary"
                 size="lg"
-                className="cursor-pointer hover:bg-blue-700 hover:scale-[1.02] transform transition-all duration-200 ease-in-out"
+                className="bg-[var(--brand-clay)] text-white border-2 border-[var(--brand-clay)] hover:bg-[var(--brand-clay-dark)] hover:scale-[1.03] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
                 Get Started
               </Button>
@@ -56,7 +77,7 @@ export default function Hero() {
               <Button
                 variant="secondary"
                 size="lg"
-                className="cursor-pointer hover:bg-gray-100 hover:scale-[1.02] transform transition-all duration-200 ease-in-out"
+                className="bg-[var(--brand-clay-light)] text-black border border-[var(--brand-clay-light)] hover:bg-[var(--brand-clay-light)] min-w-[140px] px-7 py-3 font-semibold"
               >
                 Learn More
               </Button>

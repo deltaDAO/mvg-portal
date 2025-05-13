@@ -3,8 +3,8 @@
 
 :root {
   --color-primary: var(--brand-clay);
-  --color-secondary: var(--brand-clay-light);
-  --color-highlight: var(--brand-clay-dark);
+  --color-secondary: var(--brand-clay);
+  --color-highlight: var(--brand-clay-light);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
@@ -29,7 +29,7 @@
   --menu-logo-color-hover: var(--brand-gaia-x-blue);
   --menu-logo-size-width-sm: 3.5rem;
   --menu-logo-size-height-sm: 3.5rem;
-  --menu-logo-size-width-lg: 15rem;
+  --menu-logo-size-width-lg: 3.5rem;
   --menu-logo-size-height-lg: 3.5rem;
   --menu-font-color: var(--brand-black);
   --menu-font-color-active: var(--brand-clay-dark);
@@ -37,9 +37,9 @@
   --menu-active-indicator-color: var(--brand-clay-dark);
   --menu-mobile-navigation-border-size: var(--border-size-sm);
   --menu-mobile-navigation-border-color: var(--brand-grey-lighter);
-  --menu-border-color: #fcfcfc;
-  --menu-border-radius: 6px;
-  --menu-border-size: 1px;
+  --menu-border-color: var(--color-primary);
+  --menu-border-radius: var(--border-radius-sm);
+  --menu-border-size: var(--border-size);
   --menu-icon-fill-color: var(--brand-black);
   --menu-icon-fill-color-hover: var(--brand-clay-dark);
   --menu-title-font-size: var(--font-size-h4);
@@ -152,13 +152,15 @@
   --confetti-color-four: var(--brand-grey-light);
   --confetti-color-five: var(--brand-grey-lighter);
 
-  --font-family-base: 'Libre Baskerville', serif;
+  --font-family-body: 'Libre Baskerville', serif;
+  --font-family-base: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Helvetica, Arial, sans-serif;
   --font-family-heading: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,
     'Segoe UI', Helvetica, Arial, sans-serif;
   --font-family-monospace: 'Fira Code', 'Fira Mono', Menlo, Monaco, Consolas,
     'Courier New', monospace;
 
-  --font-size-root: 15px;
+  --font-size-root: 16px;
   --font-size-base: 1rem;
   --font-size-large: 1.2rem;
   --font-size-small: 0.8125rem;
@@ -173,7 +175,7 @@
   --font-size-h5: 1.1rem;
   --font-weight-base: 500;
   --font-weight-bold: 600;
-  --line-height: 1.6;
+  --line-height: 1.5;
 
   --spacer: 2rem;
   --border-radius-sm: 2px;

@@ -33,10 +33,13 @@ export default function Page({
 
   const content = (
     <>
-      <SearchBar
-        placeholder="Search for service offerings"
-        isSearchPage={isSearchPage}
-      />
+      {/* SearchBar is only shown on non-home pages */}
+      {!isHome && (
+        <SearchBar
+          placeholder="Search for service offerings"
+          isSearchPage={isSearchPage}
+        />
+      )}
       {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
       {/* {title && !noPageHeader && (
         <PageHeader

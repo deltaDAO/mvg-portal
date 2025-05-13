@@ -38,6 +38,18 @@
     background: var(--background-body);
   }
 
+  /* Apply Libre Baskerville to specific content text elements */
+  .markdown p,
+  article p,
+  .body-text,
+  .description,
+  blockquote,
+  .content p,
+  .font-serif,
+  p.text-lg {
+    font-family: var(--font-family-body);
+  }
+
   a {
     text-decoration: none;
     color: var(--link-font-color);
@@ -168,12 +180,20 @@
 /* Custom utilities */
 @layer utilities {
   /* Add your custom utility classes here */
+  .font-heading {
+    font-family: var(--font-family-heading) !important;
+  }
+
+  .font-body {
+    font-family: var(--font-family-body) !important;
+  }
 }
 
 /* Import other custom styles */
 @import './_code.css';
 @import './_toast.css';
 @import './_emojipicker.css';
+@import './_typography.css';
 
 /* prevent background scrolling */
 .ReactModal__Body--open {
