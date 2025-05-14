@@ -24,4 +24,9 @@
   .logoSmall {
     display: none;
   }
+  .logoHorizontal {
+    display: block;
+    width: var(--menu-logo-size-width-lg);
+    height: auto;
+  }
 }

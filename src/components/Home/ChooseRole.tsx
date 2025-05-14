@@ -24,7 +24,7 @@ const roles: Role[] = [
   },
   {
     imageSrc: '/images/home/researcher.png',
-    title: 'Researcher',
+    title: 'The Researcher',
     description:
       'Explore archival datasets with AI to gain data-driven insights.',
     primaryAction: 'Sign Up',
@@ -50,12 +50,15 @@ export default function ChooseRole() {
     <section id="choose-role" className="py-16 bg-white">
       <Container className="px-4">
         <div className="w-full mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-16 font-sans">
+          <h2 className="text-4xl font-bold mb-5 font-sans">
             Choose Your Role
           </h2>
+          <p className="text-gray-600 text-lg mb-10 font-serif">
+            Select the path that best describes you to see your next steps.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mx-auto">
           {roles.map((role, index) => (
             <div
               key={index}

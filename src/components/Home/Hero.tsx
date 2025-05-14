@@ -32,7 +32,7 @@ export default function Hero() {
       />
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black opacity-52 z-1"></div>
+      <div className="absolute inset-0 bg-black opacity-60 z-1"></div>
 
       {/* Glass overlay */}
       <div className="glass-overlay absolute inset-0 z-1"></div>
