@@ -13,31 +13,51 @@ export default function Links(): ReactElement {
 
   return (
     <div>
-      {/* ClioX Logo with BETA */}
+      {/* ClioX Logo with BETA - Mobile Only */}
       <div className="mb-10 md:hidden flex items-center gap-2">
-        <Logo />
-        <span className={styles.betaBadge}>BETA</span>
+        <div className={styles.footerLogo}>
+          <Logo variant="horizontal" />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-y-8 gap-x-12 w-full">
         {/* Column 1: Clio-X */}
         <div>
-          {/* ClioX Logo with BETA for desktop */}
-          <div className="hidden md:flex items-center gap-2 mb-6">
-            <Logo />
-            <span className={styles.betaBadge}>BETA</span>
+          {/* Logo as title */}
+          <div className={styles.titleContainer}>
+            <div className="hidden md:flex items-center">
+              <div className={styles.footerLogo}>
+                <Logo variant="horizontal" />
+              </div>
+            </div>
           </div>
 
-          {/* <h3 className={styles.sectionTitle}>Resources</h3> */}
-          <ul className="space-y-3">
+          <ul className="space-y-4 mt-0">
             <li>
-              <Button to="/docs" className={styles.link} style="text">
-                DOCUMENTATION
+              <Button
+                to="/docs"
+                className={`${styles.link} ${styles.footerLink}`}
+                style="text"
+              >
+                Documentation
               </Button>
             </li>
             <li>
-              <Button to="/newsletter" className={styles.link} style="text">
-                NEWSLETTER
+              <Button
+                to="/newsletter"
+                className={`${styles.link} ${styles.footerLink}`}
+                style="text"
+              >
+                Newsletter
+              </Button>
+            </li>
+            <li>
+              <Button
+                to="/bookmarks"
+                className={`${styles.link} ${styles.footerLink}`}
+                style="text"
+              >
+                Bookmarks
               </Button>
             </li>
           </ul>
@@ -45,20 +65,27 @@ export default function Links(): ReactElement {
 
         {/* Column 2: Legal */}
         <div>
-          <h3 className={styles.sectionTitle}>Legal</h3>
-          <ul className="space-y-3">
+          <div className={styles.titleContainer}>
+            <h3 className={styles.sectionTitle}>Legal</h3>
+          </div>
+
+          <ul className="space-y-4 mt-0">
             <li>
               <Button
                 to={privacyPolicySlug || '/privacy'}
-                className={styles.link}
+                className={`${styles.link} ${styles.footerLink}`}
                 style="text"
               >
-                PRIVACY POLICY
+                Privacy Policy
               </Button>
             </li>
             <li>
-              <Button to="/imprint" className={styles.link} style="text">
-                IMPRINT
+              <Button
+                to="/imprint"
+                className={`${styles.link} ${styles.footerLink}`}
+                style="text"
+              >
+                Imprint
               </Button>
             </li>
             {appConfig?.privacyPreferenceCenter === 'true' && (
@@ -66,9 +93,9 @@ export default function Links(): ReactElement {
                 <Button
                   style="text"
                   onClick={() => setShowPPC(true)}
-                  className={styles.link}
+                  className={`${styles.link} ${styles.footerLink}`}
                 >
-                  COOKIE SETTINGS
+                  Cookie Settings
                 </Button>
               </li>
             )}
@@ -77,12 +104,15 @@ export default function Links(): ReactElement {
 
         {/* Column 3: Join the community */}
         <div>
-          <h3 className={styles.sectionTitle}>Join the community</h3>
+          <div className={styles.titleContainer}>
+            <h3 className={styles.sectionTitle}>Join the community</h3>
+          </div>
+
           <p className={`${styles.subtitle} text-sm max-w-xs mb-6`}>
             Our newsletter provides you with latest data economy happenings on a
             monthly basis.
           </p>
-          <button className="bg-slate-700 hover:bg-slate-600 text-white py-2 px-6 rounded transition-colors">
+          <button className="bg-[var(--color-primary)] hover:bg-[var(--color-highlight)] text-white font-bold py-2 px-6 rounded transition-colors">
             Subscribe
           </button>
         </div>
