@@ -18,7 +18,7 @@
 @media screen and (min-width: 65rem) {
   .container {
     flex-direction: row;
-    gap: calc(var(--spacer) / 1.2);
+    gap: calc(var(--spacer) / 0.5);
   }
   .filterContainer {
     flex-direction: column;

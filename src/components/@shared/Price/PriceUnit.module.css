@@ -11,6 +11,10 @@
 .price > div:first-child {
   white-space: nowrap;
 }
+.free {
+  color: #00adb2; /* Green color for "Free" */
+  font-weight: 700;
+}
 
 .symbol {
   font-size: 14px;
