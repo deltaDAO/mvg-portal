@@ -27,10 +27,10 @@ export default function WhatWeDo() {
         </div>
 
         {/* Partner logos carousel */}
-        <PartnerCarousel partners={partners} className="w-5xl" />
+        <PartnerCarousel partners={partners} className="w-full" />
 
         {/* Bottom Content Section */}
-        <div className="w-5xl mx-auto">
+        <div className="w-full mx-auto">
           <div className="space-y-8 text-lg">
             <p className="text-lg font-serif text-black/80">
               This platform was designed to be built together. From memory
