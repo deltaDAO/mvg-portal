@@ -48,7 +48,7 @@ export default function ContactAndOnboarding() {
   }
 
   return (
-    <section className="pb-24">
+    <section className="pb-6">
       <Container>
         <div className={`grid md:grid-cols-3 gap-12 items-start`}>
           {/* Contact Section - Left Side */}
