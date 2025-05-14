@@ -12,7 +12,11 @@ import {
   PolicyServerPresentationDefinition
 } from 'src/@types/PolicyServer'
 
-export async function requestCredentialPresentation(asset: Asset): Promise<{
+export async function requestCredentialPresentation(
+  asset: Asset,
+  consumerAddress: string,
+  serviceId: string
+): Promise<{
   success: boolean
   openid4vc: string
   policyServerData: PolicyServerInitiateActionData
@@ -31,7 +35,9 @@ export async function requestCredentialPresentation(asset: Asset): Promise<{
       action: PolicyServerActions.INITIATE,
       sessionId,
       ddo: asset,
-      policyServer
+      policyServer,
+      serviceId,
+      consumerAddress
     }
     const response = await axios.post(
       `${customProviderUrl}/api/services/PolicyServerPassthrough`,

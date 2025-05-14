@@ -21,12 +21,6 @@ export default function ServiceCard({
       <span className={styles.title}>Description: </span>
       <span>{service.description?.['@value']}</span>
       <br />
-      {/* <span className={styles.title}>Direction: </span>
-      <span>{service.description?.['@direction']}</span>
-      <br />
-      <span className={styles.title}>Language: </span>
-      <span>{service.description?.['@language']}</span>
-      <br /> */}
       <span className={styles.title}>Type: </span>
       {service.type}
       <br />
@@ -34,6 +28,13 @@ export default function ServiceCard({
       {accessDetails.type === 'fixed'
         ? `${accessDetails.price} ${accessDetails.baseToken.symbol}`
         : 'free'}
+      <br />
+      <span className={styles.title}>Access Duration: </span>
+      {service.timeout === 0
+        ? 'Forever'
+        : service.timeout >= 86400
+        ? `${service.timeout / 86400} day(s)`
+        : `${service.timeout / 3600} hour(s)`}
     </div>
   )
 }

@@ -1,6 +1,6 @@
 import { getFieldContent } from '@utils/form'
 import { Field } from 'formik'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import Input from '../FormInput'
 import Button from '../atoms/Button'
@@ -12,8 +12,6 @@ import {
   PolicyType,
   RequestCredentialForm,
   StaticPolicy,
-  StaticVpPolicy,
-  ArgumentVpPolicy,
   VpPolicyType
 } from './types'
 import fields from './editor.json'
@@ -455,21 +453,64 @@ export function PolicyEditor(props): ReactElement {
     label,
     help,
     defaultPolicies = [],
-    enabledView = false
+    enabledView = false,
+    isAsset = false
   }: PolicyEditorProps = props
 
   const [enabled, setEnabled] = useState(enabledView)
+  const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(false)
+  const [holderBinding, setHolderBinding] = useState(true)
+  const [requireAllTypes, setRequireAllTypes] = useState(true)
+  const [maximumCredentials, setMaximumCredentials] = useState('1')
+  const [limitMaxCredentials, setLimitMaxCredentials] = useState(false)
+  const [minimumCredentials, setMinimumCredentials] = useState('1')
+  const [limitMinCredentials, setLimitMinCredentials] = useState(false)
 
   const filteredDefaultPolicies = defaultPolicies.filter(
     (policy) => policy.length > 0
   )
+
+  useEffect(() => {
+    if (!enabled || !editAdvancedFeatures) return
+
+    const updatedVpPolicies = [...(credentials.vpPolicies || [])]
+    let changed = false
+
+    if (
+      holderBinding &&
+      !updatedVpPolicies.some(
+        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+      )
+    ) {
+      updatedVpPolicies.push({ type: 'staticVpPolicy', name: 'holder-binding' })
+      changed = true
+    }
+
+    if (
+      requireAllTypes &&
+      !updatedVpPolicies.some(
+        (p) =>
+          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+      )
+    ) {
+      updatedVpPolicies.push({
+        type: 'staticVpPolicy',
+        name: 'presentation-definition'
+      })
+      changed = true
+    }
+
+    if (changed) {
+      setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
+    }
+  }, [enabled, editAdvancedFeatures])
 
   function handlePolicyEditorToggle(value: boolean) {
     if (!value) {
       const updatedCredentials = {
         ...credentials,
         requestCredentials: [],
-        vcPolicies: [],
+        vcPolicies: credentials.vcPolicies?.slice(0, 3) || [],
         vpPolicies: []
       }
       setCredentials(updatedCredentials)
@@ -562,29 +603,143 @@ export function PolicyEditor(props): ReactElement {
     return field
   }
 
-  function handleNewStaticVpPolicy() {
-    const policy: StaticVpPolicy = {
-      type: 'staticVpPolicy',
-      name: ''
-    }
-    credentials?.vpPolicies?.push(policy)
-    setCredentials(credentials)
-  }
-
-  function handleNewVpPolicy() {
-    const policy: ArgumentVpPolicy = {
-      type: 'argumentVpPolicy',
-      policy: '',
-      args: ''
-    }
-    credentials?.vpPolicies?.push(policy)
-    setCredentials(credentials)
-  }
-
   function handleDeleteVpPolicy(index: number) {
     credentials.vpPolicies.splice(index, 1)
     setCredentials(credentials)
   }
+
+  function handleHolderBindingToggle() {
+    const newValue = !holderBinding
+
+    setHolderBinding(newValue)
+
+    const updatedVpPolicies = [...credentials.vpPolicies]
+
+    if (newValue) {
+      const exists = updatedVpPolicies.some(
+        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'holder-binding'
+        })
+      }
+    } else {
+      const filteredVpPolicies = updatedVpPolicies.filter(
+        (p) => !(p?.type === 'staticVpPolicy' && p?.name === 'holder-binding')
+      )
+      setCredentials({ ...credentials, vpPolicies: filteredVpPolicies })
+      return
+    }
+
+    setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
+  }
+
+  function handlePresentationDefinitionToggle() {
+    const newValue = !requireAllTypes
+    setRequireAllTypes(newValue)
+
+    const updatedVpPolicies = [...credentials.vpPolicies]
+
+    if (newValue) {
+      const exists = updatedVpPolicies.some(
+        (p) =>
+          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'presentation-definition'
+        })
+      }
+    } else {
+      const filteredVpPolicies = updatedVpPolicies.filter(
+        (p) =>
+          !(
+            p?.type === 'staticVpPolicy' &&
+            p?.name === 'presentation-definition'
+          )
+      )
+      setCredentials({ ...credentials, vpPolicies: filteredVpPolicies })
+      return
+    }
+
+    setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
+  }
+
+  useEffect(() => {
+    if (!enabled || !editAdvancedFeatures) return
+
+    const updatedVpPolicies = [...(credentials.vpPolicies || [])]
+
+    function upsertPolicy(policyName: string, argValue: string | number) {
+      const index = updatedVpPolicies.findIndex(
+        (p) => typeof p === 'object' && 'policy' in p && p.policy === policyName
+      )
+
+      if (index !== -1) {
+        updatedVpPolicies[index] = {
+          type: 'argumentVpPolicy',
+          policy: policyName,
+          args: argValue.toString()
+        }
+      } else {
+        updatedVpPolicies.push({
+          type: 'argumentVpPolicy',
+          policy: policyName,
+          args: argValue.toString()
+        })
+      }
+    }
+
+    function removePolicy(policyName: string) {
+      const filtered = updatedVpPolicies.filter(
+        (p) =>
+          !(typeof p === 'object' && 'policy' in p && p.policy === policyName)
+      )
+      return filtered
+    }
+
+    let changed = false
+
+    // Handle minimum
+    if (limitMinCredentials) {
+      upsertPolicy('minimum-credentials', minimumCredentials)
+      changed = true
+    } else {
+      const filtered = removePolicy('minimum-credentials')
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
+    // Handle maximum
+    if (limitMaxCredentials) {
+      upsertPolicy('maximum-credentials', maximumCredentials)
+      changed = true
+    } else {
+      const filtered = removePolicy('maximum-credentials')
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
+    if (changed) {
+      setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
+    }
+  }, [
+    enabled,
+    editAdvancedFeatures,
+    limitMinCredentials,
+    limitMaxCredentials,
+    minimumCredentials,
+    maximumCredentials
+  ])
 
   return (
     <>
@@ -731,100 +886,233 @@ export function PolicyEditor(props): ReactElement {
                 </div>
               ))}
             </div>
-            <div
-              className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
-            >
-              {credentials?.requestCredentials.length > 0 && (
+            {credentials?.requestCredentials.length > 0 && (
+              <>
                 <div
-                  className={`${styles.panelRow} ${styles.marginBottom2em} ${styles.marginBottom1em}`}
+                  className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
                 >
-                  <Button
-                    type="button"
-                    style="primary"
-                    onClick={handleNewStaticVpPolicy}
-                  >
-                    New {{ ...getFieldContent('staticVpPolicy', fields) }.label}
-                  </Button>
+                  {credentials?.vpPolicies?.map((policy, index) => {
+                    // Only render if it's not a static policy with excluded names
+                    if (
+                      policy?.type === 'staticVpPolicy' &&
+                      (policy.name === 'presentation-definition' ||
+                        policy.name === 'holder-binding')
+                    ) {
+                      return null
+                    }
 
-                  <Button
-                    className={`${styles.space}`}
-                    type="button"
-                    style="primary"
-                    onClick={handleNewVpPolicy}
-                  >
-                    New{' '}
-                    {{ ...getFieldContent('argumentVpPolicy', fields) }.label}
-                  </Button>
+                    return (
+                      <VpPolicyView
+                        key={index}
+                        index={index}
+                        name={name}
+                        policy={policy}
+                        onDeletePolicy={() => handleDeleteVpPolicy(index)}
+                      />
+                    )
+                  })}
                 </div>
-              )}
-              {credentials?.vpPolicies?.map((policy, index) => (
-                <VpPolicyView
-                  key={index}
-                  index={index}
-                  name={name}
-                  policy={policy}
-                  onDeletePolicy={() => handleDeleteVpPolicy(index)}
-                />
-              ))}
-            </div>
-            <div
-              className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
-            >
-              {credentials?.requestCredentials.length > 0 && (
-                <Button
-                  type="button"
-                  style="primary"
-                  className={`${styles.marginBottom1em}`}
-                  onClick={handleNewStaticPolicy}
-                >
-                  New {{ ...getFieldContent('staticPolicy', fields) }.label}
-                </Button>
-              )}
 
-              {credentials?.requestCredentials.length > 0 &&
-                credentials?.vcPolicies?.map((rule, index) => (
+                {isAsset && (
                   <div
-                    key={index}
-                    className={`${styles.panelColumn} ${styles.width100}`}
+                    className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
                   >
-                    <div
-                      className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-                    >
-                      <div className={`${styles.flexGrow}`}>
-                        <Field
-                          key={index}
-                          {...staticPolicyLabel(index)}
-                          component={Input}
-                          name={`${name}.vcPolicies[${index}]`}
-                          readOnly={
-                            index < filteredDefaultPolicies?.length &&
-                            filteredDefaultPolicies.includes(
-                              credentials?.vcPolicies[index]
-                            ) &&
-                            credentials?.vcPolicies[index]?.length > 0
-                          }
-                        />
-                      </div>
+                    {credentials?.requestCredentials.length > 0 && (
                       <Button
                         type="button"
                         style="primary"
-                        disabled={
-                          index < filteredDefaultPolicies?.length &&
-                          filteredDefaultPolicies.includes(
-                            credentials?.vcPolicies[index]
-                          ) &&
-                          credentials?.vcPolicies[index]?.length > 0
-                        }
-                        onClick={() => handleDeleteStaticPolicy(index)}
-                        className={`${styles.deleteButton} ${styles.marginBottomButton}`}
+                        className={`${styles.marginBottom1em}`}
+                        onClick={handleNewStaticPolicy}
                       >
-                        Delete
+                        New{' '}
+                        {{ ...getFieldContent('staticPolicy', fields) }.label}
                       </Button>
-                    </div>
+                    )}
+
+                    {credentials?.requestCredentials.length > 0 &&
+                      credentials?.vcPolicies?.map((rule, index) => (
+                        <div
+                          key={index}
+                          className={`${styles.panelColumn} ${styles.width100}`}
+                        >
+                          <div
+                            className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
+                          >
+                            <div className={`${styles.flexGrow}`}>
+                              <Field
+                                key={index}
+                                {...staticPolicyLabel(index)}
+                                component={Input}
+                                name={`${name}.vcPolicies[${index}]`}
+                                readOnly={
+                                  index < filteredDefaultPolicies?.length &&
+                                  filteredDefaultPolicies.includes(
+                                    credentials?.vcPolicies[index]
+                                  ) &&
+                                  credentials?.vcPolicies[index]?.length > 0
+                                }
+                              />
+                            </div>
+                            <Button
+                              type="button"
+                              style="primary"
+                              disabled={
+                                index < filteredDefaultPolicies?.length &&
+                                filteredDefaultPolicies.includes(
+                                  credentials?.vcPolicies[index]
+                                ) &&
+                                credentials?.vcPolicies[index]?.length > 0
+                              }
+                              onClick={() => handleDeleteStaticPolicy(index)}
+                              className={`${styles.deleteButton} ${styles.marginBottomButton}`}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
                   </div>
-                ))}
-            </div>
+                )}
+              </>
+            )}
           </div>
+          {isAsset && (
+            <div className={`${styles.panelColumn} ${styles.marginBottom1em}`}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={editAdvancedFeatures}
+                  onChange={() =>
+                    setEditAdvancedFeatures(!editAdvancedFeatures)
+                  }
+                />
+                Edit Advanced SSI Policy Features
+                <Tooltip
+                  content={
+                    <Markdown
+                      text={`Enable to edit advanced SSI policy features.`}
+                    />
+                  }
+                />
+              </label>
+            </div>
+          )}
+
+          {editAdvancedFeatures && (
+            <>
+              <label className={styles.editorLabel}>
+                Advanced SSI Policy Features
+                <Tooltip
+                  content={
+                    <Markdown
+                      text={`The requested Verifiable Credentials are grouped in a Verifiable Presentation before being submitted for verification. This screen allows the user to set the policies applicable to the Verifiable Presentation.`}
+                    />
+                  }
+                />
+              </label>
+              <div
+                className={`${styles.editorPanel} ${styles.marginBottom2em}`}
+              >
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={holderBinding}
+                    onChange={handleHolderBindingToggle}
+                  />
+                  Credential(s) presenter same as credential(s) owner
+                  <Tooltip content={<Markdown text={`TO EDIT`} />} />
+                </label>
+
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={requireAllTypes}
+                    onChange={handlePresentationDefinitionToggle}
+                  />
+                  All requested credential types are necessary for verification
+                  <Tooltip content={<Markdown text={`TO EDIT`} />} />
+                </label>
+
+                <div
+                  className={`${styles.panelRow} ${styles.alignItemsCenter} ${styles.marginTop1em} ${styles.marginTop1em}`}
+                >
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={limitMinCredentials}
+                      onChange={() =>
+                        setLimitMinCredentials(!limitMinCredentials)
+                      }
+                    />
+                    Minimum number of credentials required
+                    <Tooltip
+                      content={
+                        <Markdown
+                          text={`Enable to limit min credentials required for verification.`}
+                        />
+                      }
+                    />
+                  </label>
+
+                  {limitMinCredentials && (
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={minimumCredentials}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value)
+                        if (!isNaN(value)) {
+                          const clamped = Math.max(1, Math.min(100, value))
+                          setMinimumCredentials(clamped.toString())
+                        }
+                      }}
+                      className={`${styles.input} ${styles.numberInput}`}
+                    />
+                  )}
+                </div>
+
+                <div
+                  className={`${styles.panelRow} ${styles.alignItemsCenter} ${styles.marginTop05em} ${styles.marginBottom2em}`}
+                >
+                  <label className={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      checked={limitMaxCredentials}
+                      onChange={() =>
+                        setLimitMaxCredentials(!limitMaxCredentials)
+                      }
+                    />
+                    Maximum number of credentials required
+                    <Tooltip
+                      content={
+                        <Markdown
+                          text={`Enable to limit max credentials required for verification.`}
+                        />
+                      }
+                    />
+                  </label>
+
+                  {limitMaxCredentials && (
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={maximumCredentials}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value)
+                        if (!isNaN(value)) {
+                          const clamped = Math.max(1, Math.min(100, value))
+                          setMaximumCredentials(clamped.toString())
+                        }
+                      }}
+                      className={`${styles.input} ${styles.numberInput}`}
+                    />
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </>
       )}
     </>

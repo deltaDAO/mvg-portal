@@ -176,16 +176,17 @@ export async function getAccessDetails(
     while (page <= totalPages) {
       const res = await getUserOrders(accountId, cancelToken, page)
       allOrders = allOrders.concat(res?.results || [])
-      const orderTotal = res.totalPages
+      const orderTotal = res?.totalPages || 0
       totalPages = orderTotal
       page++
     }
 
     const order = allOrders.find(
       (order) =>
-        order.datatokenAddress.toLowerCase() === datatokenAddress.toLowerCase()
+        order.datatokenAddress.toLowerCase() ===
+          datatokenAddress.toLowerCase() ||
+        order.payer.toLowerCase() === datatokenAddress.toLowerCase()
     )
-
     if (order) {
       const orderTimestamp = order.timestamp
       const timeout = Number(service.timeout)

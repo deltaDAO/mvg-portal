@@ -80,4 +80,5 @@ export interface PolicyEditorProps {
   help: string
   defaultPolicies?: string[]
   enabledView?: boolean
+  isAsset?: boolean
 }

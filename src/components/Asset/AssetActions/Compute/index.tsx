@@ -141,7 +141,11 @@ export default function Compute({
   const [retry, setRetry] = useState<boolean>(false)
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isAssetNetwork } = useAsset()
-  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
+  const {
+    verifierSessionCache,
+    lookupVerifierSessionId,
+    lookupVerifierSessionIdSkip
+  } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
 
@@ -517,7 +521,8 @@ export default function Compute({
 
   const onSubmit = async (values: ComputeDatasetForm) => {
     try {
-      if (appConfig.ssiEnabled) {
+      const skip = lookupVerifierSessionIdSkip(asset.id, service.id)
+      if (appConfig.ssiEnabled && !skip) {
         const result = await checkVerifierSessionId(
           lookupVerifierSessionId(asset.id, service.id)
         )
