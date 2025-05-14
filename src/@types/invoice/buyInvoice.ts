@@ -752,14 +752,12 @@ export async function decodeBuyDataSet(
         fromBlock,
         toBlock
       )
-      const match = events.find(
-        (event) => event.args?.[1]?.toLowerCase() === fromAddress.toLowerCase()
-      )
+      console.log('events', events)
 
-      if (match) {
+      if (events) {
         return decodeBuy(
           provider,
-          match.transactionHash,
+          events[0].transactionHash,
           chainId,
           id,
           tokenSymbol,
