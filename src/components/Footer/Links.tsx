@@ -6,6 +6,7 @@ import Logo from '@shared/atoms/Logo'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import styles from './Links.module.css'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default function Links(): ReactElement {
   const { appConfig } = useMarketMetadata()
@@ -129,20 +130,23 @@ export default function Links(): ReactElement {
         </div>
 
         {/* Right side content - Contains all links and community section */}
-        <div className="col-span-2 md:col-span-2">
-          <div className="grid grid-cols-2 gap-y-8 gap-x-4">
+        <div className="col-span-2 md:col-span-2 md:pl-8 md:flex md:justify-end">
+          <div className="grid grid-cols-2 gap-y-6 gap-x-10 w-full max-w-lg">
             {/* Column 1: Clio-X */}
             <div className="col-span-1">
               {/* Logo as title */}
               <div className={styles.titleContainer}>
                 <div className="flex items-center">
-                  <div className={styles.footerLogo}>
+                  <Link
+                    href="/"
+                    className={`${styles.footerLogo} transition-opacity hover:opacity-80`}
+                  >
                     <Logo variant="horizontal" />
-                  </div>
+                  </Link>
                 </div>
               </div>
 
-              <ul className="space-y-4 mt-0">
+              <ul className="space-y-3 mt-0">
                 <li>
                   <Button
                     to="/docs"
@@ -179,7 +183,7 @@ export default function Links(): ReactElement {
                 <h3 className={styles.sectionTitle}>Legal</h3>
               </div>
 
-              <ul className="space-y-4 mt-0">
+              <ul className="space-y-3 mt-0">
                 <li>
                   <Button
                     to={privacyPolicySlug || '/privacy'}
@@ -213,11 +217,11 @@ export default function Links(): ReactElement {
             </div>
 
             {/* Join the community - Full width of right side */}
-            <div className="col-span-2">
-              <h3 className={`${styles.sectionTitle} mb-3`}>
+            <div className="col-span-2 mt-2">
+              <h3 className={`${styles.sectionTitle} mb-2`}>
                 Join the community
               </h3>
-              <p className={`${styles.subtitle} text-sm max-w-xs mb-4`}>
+              <p className={`${styles.subtitle} text-sm mb-3`}>
                 Our newsletter provides you with latest data economy happenings
                 on a monthly basis.
               </p>

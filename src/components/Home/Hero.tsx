@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Button from '../Home/common/Button'
 import SearchBar from '../Header/SearchBar'
 import styles from '../Header/SearchBar.module.css'
+import { useEffect, useState } from 'react'
 
 const scrollToElement = (e: React.MouseEvent, selector: string): void => {
   e.preventDefault()
@@ -12,11 +13,32 @@ const scrollToElement = (e: React.MouseEvent, selector: string): void => {
 }
 
 export default function Hero() {
+  const [headerHeight, setHeaderHeight] = useState(0)
+
+  // Measure header height and update on window resize
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const headerElement = document.querySelector('header')
+      if (headerElement) {
+        setHeaderHeight(headerElement.offsetHeight)
+      }
+    }
+
+    // Initial measurement
+    updateHeaderHeight()
+
+    // Update on window resize
+    window.addEventListener('resize', updateHeaderHeight)
+    return () => window.removeEventListener('resize', updateHeaderHeight)
+  }, [])
+
   return (
     <section
-      className="relative overflow-hidden min-h-[80vh] flex items-center"
+      className="relative overflow-hidden flex items-center"
       style={{
-        padding: '128px 48px'
+        padding: '48px',
+        height: `calc(100vh - ${headerHeight}px)`,
+        minHeight: '600px' // Set minimum height to ensure content is visible on smaller screens
       }}
     >
       {/* Hero background image */}
@@ -27,7 +49,7 @@ export default function Hero() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'scroll'
+          backgroundAttachment: 'fixed'
         }}
       />
 
@@ -46,7 +68,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <Container className="relative z-10 mt-12">
+      <Container className="relative z-10 flex flex-col justify-center h-full">
         <div className="flex flex-col max-w-[800px]">
           <h1 className="font-sans text-4xl md:text-5xl leading-normal tracking-[-0.019em] font-bold mb-6 text-white">
             Explore archival data securely. <br /> Build knowledge collectively.
