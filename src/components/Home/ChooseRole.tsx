@@ -47,7 +47,7 @@ export default function ChooseRole() {
   }
 
   return (
-    <section id="choose-role" className="py-16 bg-white">
+    <section id="choose-role" className="pt-16 bg-white">
       <Container className="px-4">
         <div className="w-full mx-auto text-center">
           <h2 className="text-4xl font-bold mb-5 font-sans">
