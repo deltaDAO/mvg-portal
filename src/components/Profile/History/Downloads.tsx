@@ -9,6 +9,7 @@ import Button from '@components/@shared/atoms/Button'
 import { getPdf } from '@utils/invoice/createInvoice'
 import { decodeBuyDataSet } from '../../../@types/invoice/buyInvoice'
 import { getOceanConfig } from '@utils/ocean'
+import { InvoiceData } from 'src/@types/invoice/InvoiceData'
 
 export default function ComputeDownloads({
   accountId
@@ -31,17 +32,34 @@ export default function ComputeDownloads({
       let pdfUrlsResponse: Blob[]
       if (!jsonInvoices[row.asset.id]) {
         const config = getOceanConfig(row.asset?.chainId)
-        const response = await decodeBuyDataSet(
-          row.asset.id,
-          row.asset.datatokens[0].address,
-          row.asset.chainId,
-          row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
-          row.asset.credentialSubject.stats.price.tokenAddress ||
-            config.oceanTokenAddress,
-          row.asset.credentialSubject.stats.price.value,
-          accountId
-        )
-        pdfUrlsResponse = await getPdf(response)
+        const invoiceData: InvoiceData[] = []
+
+        for (const dt of row.asset.credentialSubject.datatokens) {
+          try {
+            const result = await decodeBuyDataSet(
+              row.asset.id,
+              dt.address,
+              row.asset.credentialSubject.chainId,
+              row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
+              row.asset.credentialSubject.stats.price.tokenAddress ||
+                config.oceanTokenAddress,
+              row.asset.credentialSubject.stats.price.value,
+              accountId
+            )
+            invoiceData.push(...result)
+          } catch (err) {
+            console.warn(
+              `No matching OrderStarted event for datatoken ${dt.address}`
+            )
+          }
+        }
+
+        if (invoiceData.length === 0) {
+          throw new Error(
+            'No matching OrderStarted events found for any datatoken.'
+          )
+        }
+        pdfUrlsResponse = await getPdf(invoiceData)
       } else {
         pdfUrlsResponse = await getPdf(jsonInvoices[row.asset.id])
       }
@@ -57,22 +75,40 @@ export default function ComputeDownloads({
   async function handleGenerateJson(row: DownloadedAsset) {
     try {
       setLoadingInvoiceJson(row.asset.id)
+
       if (!jsonInvoices[row.asset.id]) {
         const config = getOceanConfig(row.asset?.chainId)
-        const response = await decodeBuyDataSet(
-          row.asset.id,
-          row.asset.datatokens[0].address,
-          row.asset.chainId,
-          row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
-          row.asset.credentialSubject.stats.price.tokenAddress ||
-            config.oceanTokenAddress,
-          row.asset.credentialSubject.stats.price.value,
-          accountId
-        )
-        setJsonInvoices({ ...jsonInvoices, [row.asset.id]: response })
+        const invoiceData: InvoiceData[] = []
+
+        for (const dt of row.asset.credentialSubject.datatokens) {
+          try {
+            const result = await decodeBuyDataSet(
+              row.asset.id,
+              dt.address,
+              row.asset.credentialSubject.chainId,
+              row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
+              row.asset.credentialSubject.stats.price.tokenAddress ||
+                config.oceanTokenAddress,
+              row.asset.credentialSubject.stats.price.value,
+              accountId
+            )
+            invoiceData.push(...result)
+          } catch (err) {
+            console.warn(
+              `No matching OrderStarted event for datatoken ${dt.address}`
+            )
+          }
+        }
+
+        if (invoiceData.length === 0) {
+          throw new Error(
+            'No matching OrderStarted events found for any datatoken.'
+          )
+        }
+
+        setJsonInvoices({ ...jsonInvoices, [row.asset.id]: invoiceData })
       }
     } catch (error) {
-      // Handle error
       console.error('Error:', error)
     } finally {
       setLoadingInvoiceJson(null)
