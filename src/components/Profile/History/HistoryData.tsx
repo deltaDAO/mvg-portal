@@ -1,6 +1,6 @@
-import { Asset, LoggerInstance } from '@oceanprotocol/lib'
+import { LoggerInstance } from '@oceanprotocol/lib'
 import { ReactElement, useEffect, useState } from 'react'
-import { getPublishedAssets } from '@utils/aquarius'
+import { getPublishedAssets, getUserSalesAndRevenue } from '@utils/aquarius'
 import { useUserPreferences } from '@context/UserPreferences'
 import styles from './HistoryData.module.css'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -17,6 +17,7 @@ import NetworkName from '@shared/NetworkName'
 import HistoryTable from '@components/@shared/atoms/Table/HistoryTable'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import { Asset } from 'src/@types/Asset'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
@@ -83,24 +84,60 @@ export default function HistoryData({
   const [page, setPage] = useState<number>(1)
   const [revenue, setRevenue] = useState(0)
   const [sales, setSales] = useState(0)
+  const [allAssets, setAllAssets] = useState<Asset[]>([])
+
   const newCancelToken = useCancelToken()
 
-  function calculateSalesAndRevenue(results: Asset[]): {
-    totalOrders: number
-    totalRevenue: number
-  } {
-    let totalOrders = 0
-    let totalRevenue = 0
+  useEffect(() => {
+    if (!accountId) return
 
-    results.forEach((asset) => {
-      const orders = asset?.stats?.orders || 0
-      const price = asset?.stats?.price?.value || 0
-      totalOrders += orders
-      totalRevenue += orders * price
-    })
+    async function fetchSalesAndRevenue() {
+      try {
+        setIsLoading(true)
 
-    return { totalOrders, totalRevenue }
-  }
+        const { totalOrders, totalRevenue, results } =
+          await getUserSalesAndRevenue(accountId, chainIds, filters)
+
+        const enrichedResults = await Promise.all(
+          results.map(async (item) => {
+            try {
+              const accessDetails = await getAccessDetails(
+                item.credentialSubject.chainId,
+                item.credentialSubject.services[0],
+                accountId,
+                newCancelToken()
+              )
+
+              return {
+                ...item,
+                accessDetails
+              }
+            } catch (err) {
+              LoggerInstance.warn(
+                `Failed to fetch access details for ${item.id}`,
+                err.message
+              )
+              return { ...item, accessDetails: [] }
+            }
+          })
+        )
+
+        setSales(totalOrders)
+        setRevenue(totalRevenue)
+        setAllAssets(enrichedResults)
+      } catch (error) {
+        LoggerInstance.error(
+          'Failed to fetch user sales/revenue',
+          error.message
+        )
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchSalesAndRevenue()
+  }, [accountId, chainIds, filters])
+
   const getPublished = useDebouncedCallback(
     async (
       accountId: string,
@@ -121,11 +158,6 @@ export default function HistoryData({
           filters,
           page
         )
-        const { totalOrders, totalRevenue } = calculateSalesAndRevenue(
-          result.results
-        )
-        setSales(totalOrders)
-        setRevenue(totalRevenue)
         const updatedResults = await Promise.all(
           result.results.map(async (item) => {
             const accessDetails = await getAccessDetails(
@@ -191,7 +223,7 @@ export default function HistoryData({
             <HistoryTable
               columns={columns}
               data={queryResult.results}
-              paginationPerPage={10}
+              paginationPerPage={9}
               isLoading={isLoading}
               emptyMessage={
                 chainIds.length === 0 ? 'No network selected' : null
@@ -201,11 +233,12 @@ export default function HistoryData({
                 setPage(newPage)
               }}
               showPagination
-              page={queryResult?.page}
+              page={queryResult?.page > 0 ? queryResult?.page - 1 : 1}
               totalPages={queryResult?.totalPages}
               revenue={revenue}
               sales={sales}
               items={queryResult?.totalResults}
+              allResults={allAssets}
             />
           ) : (
             <div className={styles.empty}>No results found</div>
