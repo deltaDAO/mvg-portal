@@ -225,9 +225,11 @@ export default function Links(): ReactElement {
                 Our newsletter provides you with latest data economy happenings
                 on a monthly basis.
               </p>
-              <button className="bg-[var(--color-primary)] hover:bg-[var(--color-highlight)] text-white font-bold py-2 px-6 rounded transition-colors cursor-pointer">
-                Subscribe
-              </button>
+              <Link href="/coming-soon">
+                <button className="bg-[var(--color-primary)] hover:bg-[var(--color-highlight)] text-white font-bold py-2 px-6 rounded transition-colors cursor-pointer">
+                  Subscribe
+                </button>
+              </Link>
             </div>
           </div>
         </div>

@@ -33,7 +33,7 @@ const FAQ = () => {
   }
 
   return (
-    <section className="py-24 bg-white">
+    <section className="pb-24 bg-white">
       <Container>
         <h2 className="text-4xl font-bold mb-4 font-sans">FAQ</h2>
 

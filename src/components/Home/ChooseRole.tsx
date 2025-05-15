@@ -2,15 +2,26 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import Button from '../Home/common/Button'
 import Container from '@components/@shared/atoms/Container'
+
+// Add scroll helper function
+const scrollToElement = (e: React.MouseEvent, selector: string): void => {
+  e.preventDefault()
+  document.querySelector(selector)?.scrollIntoView({
+    behavior: 'smooth'
+  })
+}
 
 type Role = {
   imageSrc: string
   title: string
   description: string
   primaryAction: string
+  primaryActionLink: string
   secondaryAction: string
+  secondaryActionLink: string
 }
 
 const roles: Role[] = [
@@ -20,7 +31,9 @@ const roles: Role[] = [
     description:
       'Publish and protect your holdings with tools built for ethical AI stewardship and collaboration.',
     primaryAction: 'Sign Up',
-    secondaryAction: 'Publish Dataset'
+    primaryActionLink: '/signup',
+    secondaryAction: 'Publish Dataset',
+    secondaryActionLink: '/publish/1'
   },
   {
     imageSrc: '/images/home/researcher.png',
@@ -28,14 +41,18 @@ const roles: Role[] = [
     description:
       'Explore archival datasets with AI to gain data-driven insights.',
     primaryAction: 'Sign Up',
-    secondaryAction: 'Browse Catalogue'
+    primaryActionLink: '/signup',
+    secondaryAction: 'Browse Catalogue',
+    secondaryActionLink: '/search?sort=nft.created&sortOrder=desc'
   },
   {
     imageSrc: '/images/home/partner.png',
     title: 'Ecosystem Partner',
     description: 'Ready to join a global values-aligned Web3 community?',
     primaryAction: 'Become a Partner',
-    secondaryAction: 'Learn More'
+    primaryActionLink: '/partner-signup',
+    secondaryAction: 'Learn More',
+    secondaryActionLink: '#what-we-do'
   }
 ]
 
@@ -47,7 +64,7 @@ export default function ChooseRole() {
   }
 
   return (
-    <section id="choose-role" className="py-16 bg-white">
+    <section id="choose-role" className="pt-16 bg-white">
       <Container className="px-4">
         <div className="w-full mx-auto text-center">
           <h2 className="text-4xl font-bold mb-5 font-sans">
@@ -110,28 +127,43 @@ export default function ChooseRole() {
                         : 'opacity-0 scale-95'
                     }`}
                 >
-                  <Button
-                    variant="primary"
-                    size="lg"
-                    className={`w-full max-w-[280px] bg-[#a47e5a] hover:bg-[#8e6c4c] border-0 rounded-xl font-medium text-white transform transition-all duration-200 ${
-                      selectedRole === index
-                        ? 'cursor-pointer'
-                        : 'cursor-default pointer-events-none'
-                    }`}
+                  <Link
+                    href={role.primaryActionLink}
+                    className="w-full flex justify-center"
                   >
-                    {role.primaryAction}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="lg"
-                    className={`w-full max-w-[280px] bg-[#efe6d5] hover:bg-[#e6dcc8] border-0 rounded-xl font-medium text-black transform transition-all duration-200 ${
-                      selectedRole === index
-                        ? 'cursor-pointer'
-                        : 'cursor-default pointer-events-none'
-                    }`}
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className={`w-full max-w-[280px] bg-[#a47e5a] hover:bg-[#8e6c4c] border-0 rounded-xl font-medium text-white transform transition-all duration-200 ${
+                        selectedRole === index
+                          ? 'cursor-pointer'
+                          : 'cursor-default pointer-events-none'
+                      }`}
+                    >
+                      {role.primaryAction}
+                    </Button>
+                  </Link>
+                  <Link
+                    href={role.secondaryActionLink}
+                    className="w-full flex justify-center"
+                    onClick={
+                      role.secondaryActionLink.startsWith('#')
+                        ? (e) => scrollToElement(e, role.secondaryActionLink)
+                        : undefined
+                    }
                   >
-                    {role.secondaryAction}
-                  </Button>
+                    <Button
+                      variant="secondary"
+                      size="lg"
+                      className={`w-full max-w-[280px] bg-[#efe6d5] hover:bg-[#e6dcc8] border-0 rounded-xl font-medium text-black transform transition-all duration-200 ${
+                        selectedRole === index
+                          ? 'cursor-pointer'
+                          : 'cursor-default pointer-events-none'
+                      }`}
+                    >
+                      {role.secondaryAction}
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>

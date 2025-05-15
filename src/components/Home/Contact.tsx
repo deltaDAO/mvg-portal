@@ -48,7 +48,7 @@ export default function ContactAndOnboarding() {
   }
 
   return (
-    <section className="pb-6">
+    <section>
       <Container>
         <div className={`grid md:grid-cols-3 gap-12 items-start`}>
           {/* Contact Section - Left Side */}
@@ -297,7 +297,7 @@ export default function ContactAndOnboarding() {
                 <textarea
                   id="message"
                   name="message"
-                  rows={8}
+                  rows={5}
                   value={formData.message}
                   onChange={(e) =>
                     setFormData((prev) => ({

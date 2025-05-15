@@ -58,6 +58,26 @@ module.exports = (phase, { defaultConfig }) => {
           source: '/publish',
           destination: '/publish/1',
           permanent: true
+        },
+        {
+          source: '/signup',
+          destination: '/coming-soon',
+          permanent: false
+        },
+        {
+          source: '/documentation',
+          destination: '/coming-soon',
+          permanent: false
+        },
+        {
+          source: '/docs',
+          destination: '/coming-soon',
+          permanent: false
+        },
+        {
+          source: '/newsletter',
+          destination: '/coming-soon',
+          permanent: false
         }
       ]
     }
