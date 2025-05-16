@@ -90,11 +90,11 @@ export default function ContactAndOnboarding() {
                     />
                   </svg>
                   <a
-                    href="mailto:contact@cliox.org"
+                    href="mailto:info@cliox.org"
                     style={{ color: '#734B3D' }}
                     className="text-lg hover:opacity-80 transition-colors"
                   >
-                    contact@cliox.org
+                    info@cliox.org
                   </a>
                   <span className="text-gray-500 text-sm">
                     (General Inquiries)

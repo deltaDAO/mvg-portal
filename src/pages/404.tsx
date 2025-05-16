@@ -21,6 +21,7 @@ export default function Page404(): ReactElement {
         description="The page you are looking for might have been removed, had its name changed, or is temporarily unavailable."
         uri={router.route}
         headerCenter
+        noPageHeader
       >
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
           <h1 className="text-6xl font-bold text-[var(--brand-clay)] mb-4">
