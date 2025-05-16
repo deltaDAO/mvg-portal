@@ -3,12 +3,12 @@
 
 :root {
   --color-primary: var(--brand-clay);
-  --color-secondary: var(--brand-clay);
+  --color-secondary: var(--brand-grey-muted);
   --color-highlight: var(--brand-clay-light);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
-  --font-color-heading: var(--brand-black);
+  --font-color-heading: var(--brand-clay-dark);
   --font-color-light: var(--color-secondary);
   --background-body: var(--brand-white);
   --background-body-transparent: rgba(255, 255, 255, 0.8);
@@ -25,8 +25,8 @@
   --nft-placeholder-background: var(--brand-gradient);
 
   /* Menubar */
-  --menu-logo-color: var(--brand-gaia-x-blue);
-  --menu-logo-color-hover: var(--brand-gaia-x-blue);
+  --menu-logo-color: var(--color-primary);
+  --menu-logo-color-hover: var(--color-primary);
   --menu-logo-size-width-sm: 3rem;
   --menu-logo-size-height-sm: 3rem;
   --menu-logo-size-width-xs: 2.3rem;
@@ -34,25 +34,25 @@
   --menu-logo-size-width-lg: 3.5rem;
   --menu-logo-size-height-lg: 3.5rem;
   --menu-font-color: var(--brand-black);
-  --menu-font-color-active: var(--brand-clay-dark);
-  --menu-font-color-hover: var(--brand-clay-dark);
-  --menu-active-indicator-color: var(--brand-clay-dark);
+  --menu-font-color-active: var(--color-primary);
+  --menu-font-color-hover: var(--color-primary);
+  --menu-active-indicator-color: var(--color-primary);
   --menu-mobile-navigation-border-size: var(--border-size-sm);
   --menu-mobile-navigation-border-color: var(--brand-grey-lighter);
   --menu-border-color: var(--color-primary);
   --menu-border-radius: var(--border-radius-sm);
   --menu-border-size: var(--border-size);
-  --menu-icon-fill-color: var(--brand-black);
-  --menu-icon-fill-color-hover: var(--brand-clay-dark);
+  --menu-icon-fill-color: var(--color-primary);
+  --menu-icon-fill-color-hover: var(--color-primary);
   --menu-title-font-size: var(--font-size-h4);
-  --menu-link-font-size: 1rem;
-  --menu-link-font-weight: 600;
-  --menu-link-font-weight-active: 600;
-  --menu-link-letter-spacing: 0.3px;
+  --menu-link-font-size: var(--font-size-base);
+  --menu-link-font-weight: var(--font-weight-bold);
+  --menu-link-font-weight-active: var(--font-weight-bold);
   --menu-caret-size: var(--font-size-small);
-  --menu-caret-fill-color: var(--brand-black);
-  --menu-caret-active-fill-color: var(--brand-clay-dark);
+  --menu-caret-fill-color: var(--color-primary);
+  --menu-caret-active-fill-color: var(--color-primary);
   --menu-network-badge-font-color: var(--brand-white);
+
   --menu-padding-vertical: 24px;
   --menu-padding-horizontal: 64px;
   --menu-background-color: #ffffff;
@@ -99,9 +99,9 @@
   --button-active-font-color: var(--brand-white);
   --button-active-background: var(--font-color-light);
   --button-primary-font-color: var(--brand-white);
-  --button-primary-background: var(--brand-gradient);
-  --button-primary-border-color: var(--brand-black);
-  --button-primary-hover-background: var(--color-primary);
+  --button-primary-background: var(--color-primary);
+  --button-primary-border-color: var(--color-primary);
+  --button-primary-hover-background: var(--color-highlight);
   --button-primary-hover-border-color: var(--color-primary);
   --button-ghost-font-color: var(--color-primary);
   --button-ghost-background: var(--brand-white);
@@ -162,7 +162,7 @@
   --font-family-monospace: 'Fira Code', 'Fira Mono', Menlo, Monaco, Consolas,
     'Courier New', monospace;
 
-  --font-size-root: 16px;
+  --font-size-root: 15px;
   --font-size-base: 1rem;
   --font-size-large: 1.2rem;
   --font-size-small: 0.8125rem;

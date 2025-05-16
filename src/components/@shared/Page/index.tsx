@@ -41,14 +41,6 @@ export default function Page({
         />
       )}
       {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
-      {/* {title && !noPageHeader && (
-        <PageHeader
-          title={isHome ? title : <>{title.slice(0, 400)}</>}
-          center={headerCenter}
-          description={description}
-          isHome={isHome}
-        />
-      )} */}
       {children}
     </>
   )

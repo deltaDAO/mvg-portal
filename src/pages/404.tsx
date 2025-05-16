@@ -35,7 +35,7 @@ export default function Page404(): ReactElement {
           </p>
           <Link
             href="/"
-            className="bg-[var(--brand-clay)] text-white px-6 py-3 rounded-md hover:bg-[var(--brand-clay-dark)] transition-all duration-200 ease-in-out hover:scale-[1.01] font-bold"
+            className="bg-[var(--brand-clay)] text-white px-6 py-3 rounded-md hover:bg-[var(--color-highlight)] transition-all duration-200 ease-in-out hover:scale-[1.01] font-bold"
           >
             Return to Homepage
           </Link>
