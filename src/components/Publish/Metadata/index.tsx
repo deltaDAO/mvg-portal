@@ -52,7 +52,10 @@ export default function MetadataFields(): ReactElement {
     }))
 
   useEffect(() => {
-    setFieldValue('services[0].access', 'compute')
+    setFieldValue(
+      'services[0].access',
+      values.metadata.type === 'algorithm' ? 'compute' : 'access'
+    )
     setFieldValue(
       'services[0].algorithmPrivacy',
       values.metadata.type === 'algorithm'
