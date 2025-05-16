@@ -50,7 +50,7 @@ export default function Links(): ReactElement {
     <div>
       {/* Partner logos section - Shows at top on mobile, left side on desktop */}
       <div className="block md:hidden">
-        <div className="w-sm flex flex-wrap gap-4 justify-start">
+        <div className="w-full flex flex-wrap gap-4 justify-center">
           {partnerLogos.map((logo, index) => (
             <a
               key={index}
@@ -77,7 +77,7 @@ export default function Links(): ReactElement {
           ))}
         </div>
 
-        <p className="text-[13px] mt-4 max-w-3xl text-gray-600">
+        <p className="text-[13px] mt-4 max-w-3xl text-gray-600 text-center">
           Clio-X draws on research supported by InterPARES Trust AI, The Social
           Sciences and Humanities Research Council of Canada (SSHRC), The
           University of British Columbia (UBC), Universidad Nacional de
