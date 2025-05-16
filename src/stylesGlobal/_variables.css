@@ -3,12 +3,12 @@
 
 :root {
   --color-primary: var(--brand-clay);
-  --color-secondary: var(--brand-grey-muted);
+  --color-secondary: var(--brand-walnut);
   --color-highlight: var(--brand-clay-light);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
-  --font-color-heading: var(--brand-clay-dark);
+  --font-color-heading: var(--color-primary);
   --font-color-light: var(--color-secondary);
   --background-body: var(--brand-white);
   --background-body-transparent: rgba(255, 255, 255, 0.8);
@@ -16,7 +16,7 @@
   --background-highlight: var(--brand-grey-dimmed);
   --border-color: var(--brand-grey-lighter);
   --box-shadow-color: rgba(0, 0, 0, 0.05);
-  --checkbox-selected-background: var(--brand-blue);
+  --checkbox-selected-background: var(--color-primary);
   --bookmark-icon-fill-color: var(--brand-grey-lighter);
   --bookmark-icon-selected-fill-color: var(--brand-grey);
   --link-font-color: var(--color-highlight);
@@ -75,6 +75,7 @@
   --home-brand-logo-size-height: 6rem;
   --home-gaia-x-logo-size-width: 9rem;
   --home-gaia-x-logo-size-height: 5rem;
+  --home-font-color-heading: var(--brand-black);
 
   /* Input elements */
   --input-font-color: var(--font-color-heading);
@@ -103,6 +104,16 @@
   --button-primary-border-color: var(--color-primary);
   --button-primary-hover-background: var(--color-highlight);
   --button-primary-hover-border-color: var(--color-primary);
+  --button-secondary-font-color: var(--brand-black);
+  --button-secondary-background: var(--brand-clay-lightest);
+  --button-secondary-border-color: var(--brand-clay-lightest);
+  --button-secondary-hover-background: var(--brand-clay-lightest);
+  --button-secondary-hover-border-color: var(--brand-clay-lightest);
+  --button-outline-font-color: var(--brand-grey);
+  --button-outline-background: transparent;
+  --button-outline-border-color: var(--brand-grey);
+  --button-outline-hover-font-color: var(--color-primary);
+  --button-outline-hover-border-color: var(--color-primary);
   --button-ghost-font-color: var(--color-primary);
   --button-ghost-background: var(--brand-white);
   --button-ghost-hover-background: var(--brand-red-dark);

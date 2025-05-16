@@ -26,7 +26,14 @@
 }
 
 .button.initial {
-  color: var(--menu-font-color);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.button.initial:hover,
+.button.initial:focus {
+  color: var(--color-highlight);
+  border-color: var(--color-highlight);
 }
 
 .button.initial span {
