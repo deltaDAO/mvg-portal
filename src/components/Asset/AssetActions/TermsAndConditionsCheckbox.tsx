@@ -4,7 +4,7 @@ import styles from './index.module.css'
 
 export default function TermsAndConditionsCheckbox({
   name,
-  licenses,
+  licenses = [],
   onChange,
   disabled,
   options,
@@ -12,7 +12,7 @@ export default function TermsAndConditionsCheckbox({
   postfixes
 }: {
   name: string
-  licenses: string[]
+  licenses?: string[]
   onChange?: (termsAndConditions: boolean) => void
   disabled: boolean
   options?: string[]
@@ -26,12 +26,12 @@ export default function TermsAndConditionsCheckbox({
       options={
         options ||
         licenses.map((option) =>
-          option.includes('http') ? 'a custom' : `the ${option}`
+          option?.includes('http') ? 'a custom' : `the ${option}`
         )
       }
       prefixes={prefixes}
       postfixes={postfixes}
-      actions={licenses?.filter((action) => action.includes('http'))}
+      actions={licenses?.filter((action) => action?.includes('http'))}
       component={Input}
       disabled={disabled}
       {...(onChange && { onChange })}

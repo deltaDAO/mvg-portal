@@ -19,6 +19,11 @@ const faqData: FAQItem[] = [
     question: 'What is Compute-to-Data?',
     answer:
       "Compute-to-Data is a privacy-first approach where computing tasks go to the data—not the other way around. Instead of moving sensitive data across systems, algorithms are sent to the data's location to run computations securely."
+  },
+  {
+    question: 'Who is ClioX?',
+    answer:
+      'In Greek mythology, Clio was the Muse of history, one of nine daughters of Zeus and Mnemosyne. She is reflected as having a role in preserving and making famous historical events and is often depicted with objects like scrolls, stone tablets or a lyre symbolizing her connection to history and storytelling.'
   }
   // Add more FAQ items here
 ]
