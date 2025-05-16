@@ -53,15 +53,34 @@ const nftMetadataTemplate = {
   external_url: 'https://portal.pontus-x.eu'
 }
 
+// Array of available logo options for rotation
+const logoOptions = [
+  '/images/cliox.svg',
+  '/images/cliox_text.svg',
+  '/images/cliox_icon.svg',
+  '/images/cliox_horizontal.svg'
+]
+
+// Keep track of the last used logo to avoid repeating
+let lastUsedLogoUrl = ''
+
 export function generateNftMetadata(): NftMetadata {
-  const waves = new SvgWaves()
-  const svg = waves.generateSvg()
-  const imageData = `data:image/svg+xml,${encodeSvg(svg.outerHTML)}`
+  // Get available options excluding the last used logo
+  const availableOptions = logoOptions.filter(
+    (logo) => logo !== lastUsedLogoUrl
+  )
+
+  // Pick a random logo from the filtered options
+  const randomIndex = Math.floor(Math.random() * availableOptions.length)
+  const logoUrl = availableOptions[randomIndex]
+
+  // Update the last used logo
+  lastUsedLogoUrl = logoUrl
 
   const newNft: NftMetadata = {
     ...nftMetadataTemplate,
-    background_color: '141414', // dark background
-    image_data: imageData
+    background_color: 'ffffff', // white background
+    image: logoUrl // Use image property with direct URL instead of image_data with encoded SVG
   }
 
   return newNft

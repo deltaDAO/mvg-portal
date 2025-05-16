@@ -4,6 +4,12 @@
 
 .button {
   width: 100%;
+  background-color: var(--button-primary-background);
+  color: var(--button-primary-font-color);
+}
+
+.button:hover {
+  background-color: var(--button-primary-hover-background);
 }
 
 .cancel {
