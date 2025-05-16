@@ -20,9 +20,11 @@
   font-size: var(--font-size-small);
   text-transform: uppercase;
   color: var(--color-secondary);
+  opacity: 0.85;
   background-color: var(--background-body);
-  border: 1px solid var(--border-color);
-  margin-right: 0px;
+  border: 2px solid var(--border-color);
+  margin-right: -2px;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 .tab,
@@ -45,7 +47,11 @@
 .tab[aria-selected='true'] {
   background-color: var(--color-white);
   color: var(--color-primary);
+  opacity: 1;
   border-color: var(--color-primary);
+  position: relative;
+  z-index: 1;
+  font-weight: var(--font-weight-bold);
 }
 
 .tab[aria-disabled='true'] {
