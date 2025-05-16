@@ -17,7 +17,7 @@
   font-size: var(--font-size-h2);
   font-weight: var(--font-weight-bold);
   margin-bottom: calc(var(--spacer));
-  color: var(--font-color-heading);
+  color: var(--search-results-font-color);
 }
 
 @media screen and (min-width: 65rem) {

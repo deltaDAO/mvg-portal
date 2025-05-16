@@ -3,12 +3,12 @@
 
 :root {
   --color-primary: var(--brand-clay);
-  --color-secondary: var(--brand-clay-dark);
+  --color-secondary: var(--brand-clay-darker);
   --color-highlight: var(--brand-clay-light);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
-  --font-color-heading: var(--color-primary);
+  --font-color-heading: var(--brand-black);
   --font-color-light: var(--color-secondary);
   --background-body: var(--brand-white);
   --background-body-transparent: rgba(255, 255, 255, 0.8);
@@ -18,7 +18,7 @@
   --box-shadow-color: rgba(0, 0, 0, 0.05);
   --checkbox-selected-background: var(--color-primary);
   --bookmark-icon-fill-color: var(--brand-grey-lighter);
-  --bookmark-icon-selected-fill-color: var(--brand-grey);
+  --bookmark-icon-selected-fill-color: var(--color-primary);
   --link-font-color: var(--color-highlight);
   --nft-refresh-icon-fill: var(--brand-white);
   --badge-background-color: var(--color-primary);
@@ -117,7 +117,7 @@
   --button-ghost-font-color: var(--color-primary);
   --button-ghost-background: var(--brand-white);
   --button-ghost-hover-background: var(--brand-red-dark);
-  --button-text-font-color: var(--color-highlight);
+  --button-text-font-color: var(--color-secondary);
 
   /* Loading spinner */
   --loader-border-color: var(--brand-blue);
@@ -135,7 +135,7 @@
 
   /* Asset teaser */
   --teaser-font-color: var(--brand-grey);
-  --teaser-title-font-color: var(--font-color-heading);
+  --teaser-title-font-color: var(--brand-black);
   --teaser-background: var(--background-content);
   --teaser-border-radius: var(--border-radius);
   --teaser-border-size: var(--border-size-sm);
@@ -149,7 +149,7 @@
   --pagination-hover-font-color: var(--color-highlight);
 
   /* Filter and sort */
-  --filter-title-color: var(--font-color-heading);
+  --filter-title-color: var(--brand-black);
   --filter-title-font-size: var(--font-size-title);
   --filter-type-color: var(--font-color-text);
   --filter-type-font-size: var(--font-size-large);
@@ -158,12 +158,22 @@
   --filter-clear-color: var(--color-primary);
   --filter-clear-hover-color: var(--color-highlight);
 
+  /* Search Results */
+  --search-results-font-color: var(--brand-black);
+
   /* Confetti */
   --confetti-color-one: var(--brand-blue-light);
   --confetti-color-two: var(--brand-cyan);
   --confetti-color-three: var(--brand-violet);
   --confetti-color-four: var(--brand-grey-light);
   --confetti-color-five: var(--brand-grey-lighter);
+
+  --box-template-font-color: var(--brand-black);
+
+  --metadata-history-color: var(--brand-black);
+  --file-icon-color: var(--color-primary);
+  --credential-button-background: var(--color-primary);
+  --credential-button-border: var(--color-primary);
 
   --font-family-body: 'Libre Baskerville', serif;
   --font-family-base: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont,

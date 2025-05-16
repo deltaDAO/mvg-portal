@@ -38,7 +38,8 @@
     background: var(--background-body);
   }
 
-  /* Apply Libre Baskerville to specific content text elements */
+  /* Apply Libre Baskerville only to the home page content */
+  /* For all other pages, use the base font */
   .markdown p,
   article p,
   .body-text,
@@ -47,6 +48,17 @@
   .content p,
   .font-serif,
   p.text-lg {
+    font-family: var(--font-family-base);
+  }
+
+  /* Special class to apply Libre Baskerville only on home page */
+  .home .markdown p,
+  .home article p,
+  .home .body-text,
+  .home .description,
+  .home blockquote,
+  .home .content p,
+  .home p.text-lg {
     font-family: var(--font-family-body);
   }
 
@@ -132,10 +144,7 @@
     display: block;
   }
 
-  ::selection {
-    background: var(--font-color-heading);
-    color: var(--background-body);
-  }
+  /* ::selection styling removed as requested */
 
   /* fix required for codemirror */
   .cm-scroller ::selection {

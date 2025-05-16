@@ -31,6 +31,9 @@ export default function Page({
   const isSearchPage = uri.startsWith('/search')
   const isAssetPage = uri.startsWith('/asset')
 
+  // Only hide page header on home page or if explicitly specified
+  const shouldHidePageHeader = noPageHeader || isHome
+
   const content = (
     <>
       {/* SearchBar is only shown on non-home pages */}
@@ -41,6 +44,15 @@ export default function Page({
         />
       )}
       {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
+      {/* Display PageHeader when not hidden */}
+      {!shouldHidePageHeader && title && (
+        <PageHeader
+          title={title}
+          center={headerCenter}
+          description={description}
+          isHome={isHome}
+        />
+      )}
       {children}
     </>
   )

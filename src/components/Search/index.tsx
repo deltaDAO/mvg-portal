@@ -75,31 +75,22 @@ export default function SearchPage({
   }, [parsed, chainIds, fetchAssets])
 
   return (
-    <>
-      <h1 className={styles.resultsCount}>
-        {loading
-          ? 'Searching...'
-          : queryResult?.totalResults !== undefined
-          ? `${queryResult.totalResults} results`
-          : ''}
-      </h1>
-      <div className={styles.container}>
-        <div className={styles.filterContainer}>
-          <Filter addFiltersToUrl expanded />
-          <Sort expanded />
-        </div>
-        <div className={styles.results}>
-          <AssetList
-            assets={queryResult?.results}
-            showPagination
-            isLoading={loading}
-            page={queryResult?.page}
-            totalPages={queryResult?.totalPages}
-            onPageChange={updatePage}
-            showAssetViewSelector
-          />
-        </div>
+    <div className={styles.container}>
+      <div className={styles.filterContainer}>
+        <Filter addFiltersToUrl expanded />
+        <Sort expanded />
       </div>
-    </>
+      <div className={styles.results}>
+        <AssetList
+          assets={queryResult?.results}
+          showPagination
+          isLoading={loading}
+          page={queryResult?.page}
+          totalPages={queryResult?.totalPages}
+          onPageChange={updatePage}
+          showAssetViewSelector
+        />
+      </div>
+    </div>
   )
 }
