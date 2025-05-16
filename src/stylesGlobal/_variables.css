@@ -3,7 +3,7 @@
 
 :root {
   --color-primary: var(--brand-clay);
-  --color-secondary: var(--brand-walnut);
+  --color-secondary: var(--brand-clay-dark);
   --color-highlight: var(--brand-clay-light);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
@@ -134,7 +134,7 @@
   --box-template-hover-box-shadow: 0 10px 25px 0 var(--box-shadow-color);
 
   /* Asset teaser */
-  --teaser-font-color: var(--color-secondary);
+  --teaser-font-color: var(--brand-grey);
   --teaser-title-font-color: var(--font-color-heading);
   --teaser-background: var(--background-content);
   --teaser-border-radius: var(--border-radius);
