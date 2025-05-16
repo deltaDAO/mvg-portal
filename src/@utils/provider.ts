@@ -22,6 +22,7 @@ import { KeyValuePair } from '@shared/FormInput/InputElement/KeyValueInput'
 import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
 import { toast } from 'react-toastify'
+import { OCEAN_ERROR_STATES } from '../@constants/errors'
 
 export async function initializeProviderForCompute(
   dataset: AssetExtended,
@@ -56,9 +57,15 @@ export async function initializeProviderForCompute(
       accountId
     )
   } catch (error) {
-    const message = getErrorMessage(error.message)
-    LoggerInstance.error('[Initialize Provider] Error:', message)
-    toast.error(message)
+    const { message } = error
+    if (message.includes(OCEAN_ERROR_STATES.algorithmChecksumMismatch)) {
+      const checksumMismatch = 'Algorithm checksum changed since allow listing'
+      LoggerInstance.error('[Initialize Provider] Error:', checksumMismatch)
+      toast.warning(checksumMismatch)
+    } else {
+      LoggerInstance.error('[Initialize Provider] Error:', message)
+      toast.error(message)
+    }
     return null
   }
 }
