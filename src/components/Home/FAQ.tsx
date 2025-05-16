@@ -24,8 +24,7 @@ const faqData: FAQItem[] = [
     question: 'Who is ClioX?',
     answer:
       'In Greek mythology, Clio was the Muse of history, one of nine daughters of Zeus and Mnemosyne. She is reflected as having a role in preserving and making famous historical events and is often depicted with objects like scrolls, stone tablets or a lyre symbolizing her connection to history and storytelling.'
-  },
-  
+  }
   // Add more FAQ items here
 ]
 
