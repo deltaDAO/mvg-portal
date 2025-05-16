@@ -1,44 +1,47 @@
 ---
 title: Privacy Policy
-description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO) processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
+description: This privacy policy informs you about how ClioX processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
 ---
 
 ### Table of contents
 
-## 1. Contact details of the controller and Data Protection Officer
+## 1. Privacy Contact details 
 
-The controller pursuant to the EU General Data Protection Regulation ("GDPR") for the processing of your personal data is:
+**For questions related to privacy contact**:
 
-deltaDAO AG  
-Katharinenstraße 30a  
-20457 Hamburg  
-Germany  
-E-mail: contact@delta-dao.com
+**ClioX**:
 
-If you have any questions about the protection of your personal data at deltaDAO, please contact our Data Protection Officer:
+2366 Main Mall
 
-Data Protection Officer  
-deltaDAO AG  
-Katharinenstraße 30a  
-20457 Hamburg  
-Germany  
-E-mail: <privacy@delta-dao.com>
+Vancouver, BC Canada V6T 1Z4
+
+E-mail: info@cliox.org 
+
+If you have any questions about the protection of your personal data at ClioX, please contact our Privacy Officer:
+
+Victoria Lemieux
+
+ClioX
+
+2366 Main Mall
+
+Vancouver, BC Canada V6T 1Z4
+
+E-mail: info@cliox.org
 
 ## 2. What's personal data?
 
-Personal data is any information that can be (directly or indirectly) related to you. deltaDAO processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
-
-- **IP address:** Your IP address is processed when visiting and using our portal demonstrator.
-- **E-mail:** If you contact deltaDAO via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
-
+Personal data is any information that can be (directly or indirectly) related to you. ClioX processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
+•	IP address: Your IP address is processed when visiting and using our portal demonstrator.
+•	E-mail: If you contact ClioX via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
 For detailed information about the processing operations, lawfulness, purposes, and how your personal data serves to reach these purposes, please take a look at the chapter "Processing operations according to Article 13 GDPR".
 
 ## 3. Recipients and cross-border data transfer
 
 **Vercel**  
-When visiting and using our portal demonstrator, your IP address is processed by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, **USA**. Vercel is a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Vercel using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely (but not guaranteed) be processed on a Vercel server within the EEA. Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
+When visiting and using our portal demonstrator, your IP address is processed by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, **USA**. Vercel is a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Vercel using a Content Delivery Network, a geographically distributed network, with servers located in different geographic and legal jurisdictions. This means, if you are located within the EEA, your IP address will most likely (but not guaranteed) be processed on a Vercel server within the EEA. Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
 
-There is no adequacy decision for the USA from the European Commission. Our cooperation with Vercel is based on a Data Processing Agreement (DPA) including Standard Contractual Clauses (SCC). You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
+There is no adequacy decision for the USA from the European Commission. Our cooperation with Vercel is based on a Data Processing Agreement (DPA) including Standard Contractual Clauses (SCC). You have the right to receive a copy of these SCC. To exercise your right, please contact us at <info@cliox.org>.
 
 - Here you can find Vercel&#39;s current [**DPA including SCC** &#8599;](https://vercel.com/legal/dpa).
 - Here you can find Vercel&#39;s [**privacy policy** &#8599;](https://vercel.com/legal/privacy-policy).
@@ -49,7 +52,7 @@ When using our portal demonstrator functionalities, your IP address is processed
 - **Exoscale** servers located in Frankfurt, Germany. Akenes SAE (hereafter Exoscale) is headquartered in Boulevard de Grancy 19A, 1006 – Lausanne, Switzerland.
 - **OVH Cloud** servers located in Germany, France and Poland. OVH GmbH is headquartered in Oskar-Jäger-Str. 173/K6, 50825 Cologne.
 
-Our cooperation with Exoscale and OVH GmbH is based on a Data Processing Agreement (DPA).
+DeltaDAO's cooperation with Exoscale and OVH GmbH is based on a Data Processing Agreement (DPA).
 
 - Here you can find Exoscale&#39;s current [**DPA** &#8599;](https://www.exoscale.com/dpa/).
 - Here you can find OVH GmbH&#39;s current [**DPA** &#8599;](https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/231417d-OVH_Data_Protection_Agreement-DE-7.3.pdf).
@@ -57,7 +60,7 @@ Our cooperation with Exoscale and OVH GmbH is based on a Data Processing Agreeme
 Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
 
 **Microsoft Corporation**  
-When you contact us via e-mail, our (mail) service provider Microsoft Corporation (located at 1 Microsoft Way, Redmond, Washington 98052-8300, **USA**) supports us in processing your personal data so we can communicate with you. There is no adequacy decision for the USA from the European Commission. We have **restricted storage on the EEA** and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at privacy@delta-dao.com.
+When you contact us via e-mail, our (mail) service provider Microsoft Corporation (located at 1 Microsoft Way, Redmond, Washington 98052-8300, **USA**) supports us in processing your personal data so we can communicate with you. There is no adequacy decision for the USA from the European Commission. We have **restricted storage on the EEA** and signed SCC with our provider. You have the right to receive a copy of these SCC. To exercise your right, please contact us at info@cliox.org.
 
 - Here you can find Microsoft&#39;s current [**DPA including SCC** &#8599;](https://www.microsoft.com/licensing/docs/view/Microsoft-Products-and-Services-Data-Protection-Addendum-DPA).
 - Here you can find Microsoft&#39;s [**privacy policy** &#8599;](https://privacy.microsoft.com/de-de/privacystatement).
@@ -73,13 +76,13 @@ Reown, Inc. (WalletConnect protocol) and Coinbase Global, Inc. (WalletLink proto
 Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
 
 **Plausible**  
-deltaDAO uses [**Plausible Analytics**](https://plausible.io/) (by Plausible Insights OÜ, Västriku tn 2, 50403, Tartu, **Estonia**, Registration number 14709274), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. deltaDAO signed a DPA with Plausible Analytics. Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
+ClioX relies on deltaDAO's use of [**Plausible Analytics**](https://plausible.io/) (by Plausible Insights OÜ, Västriku tn 2, 50403, Tartu, **Estonia**, Registration number 14709274), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. deltaDAO signed a DPA with Plausible Analytics. Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
 
 - Here you can find Plausible Analytic&#39;s current [**DPA** &#8599;](https://plausible.io/dpa).
 - Here you can find Plausible Analytic&#39;s [**privacy policy** &#8599;](https://plausible.io/privacy).
 - Here you can find more information about Plausible Analytic&#39;s [**privacy practices** &#8599;](https://plausible.io/data-policy), [**security practices** &#8599;](https://plausible.io/security) and a [**legal assessment on GDPR compliance** &#8599;](https://plausible.io/blog/legal-assessment-gdpr-eprivacy).
 
-## 4. Processing operations according to Article 13 GDPR
+## 4. Processing operations 
 
 We process your personal data for the following purposes.
 
@@ -90,7 +93,7 @@ Your IP address is collected, used, and stored when visiting our portal demonstr
 Collecting and using your IP address is necessary for providing our portal demonstrator because it is a technical requirement for ensuring communication between your device and our portal demonstrator. Your IP address and other log file data are also processed for security, fraud-prevention, abuse-prevention, and troubleshooting purposes.
 
 **Legal basis:**  
-The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR.
+The legal basis for this processing is our legitimate interest.
 
 **Legitimate interests:**  
 Our legitimate interest is to provide the portal demonstrator and to enable security, a technically error-free presentation, and the optimization of the portal demonstrator.
@@ -109,8 +112,8 @@ Collecting and using your IP address is necessary for providing our portal demon
 
 **Legal basis:**
 
-- **Processing of IP addresses when viewing services:** The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR. Our **Legitimate interest** is to display services on the portal demonstrator to you.
-- **Processing of IP addresses when publishing, editing and consuming services, and requesting tokens:** The legal basis for this processing is the performance of a contract, pursuant to Art. 6(1)(b) GDPR.
+- **Processing of IP addresses when viewing services:** The legal basis for this processing is our legitimate interest. Our **Legitimate interest** is to display services on the portal demonstrator to you.
+- **Processing of IP addresses when publishing, editing and consuming services, and requesting tokens:** The legal basis for this processing is the performance of a contract.
 
 **Retention period:**  
 IP addresses received by the backend components are only retained for the minimum time necessary to process the transaction. They are erased automatically, usually within a few minutes.
@@ -119,13 +122,13 @@ IP addresses received by the backend components are only retained for the minimu
 You have the right to object to the processing of your personal data where we based the processing on legitimate interests (see also chapter 8.6).
 
 **4.3 Contact via e-mail**  
-If you contact us via e-mail, deltaDAO collects, uses, and stores your e-mail address, and any other information you provide us in your message, such as your name. When you send us an e-mail, our (mail) service provider Microsoft Corporation (see also chapter 3) supports us in processing your personal data so we can communicate with you.
+If you contact us via e-mail, ClioX collects, uses, and stores your e-mail address, and any other information you provide us in your message, such as your name. When you send us an e-mail, our (mail) service provider Microsoft Corporation (see also chapter 3) supports us in processing your personal data so we can communicate with you.
 
 **Purpose:**  
 We collect, use and store this personal data to respond to your inquiries.
 
 **Legal basis:**  
-The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR.
+The legal basis for this processing is our legitimate interest.
 
 **Legitimate interests:**  
 Our legitimate interest is to answer your inquiries.
@@ -137,7 +140,7 @@ We store your personal data as long as we need it to process your inquires. We s
 
 **4.4 Aggregated statistics**
 
-deltaDAO uses [**Plausible Analytics**](https://plausible.io/) (see also chapter 3), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. Plausible Analytics **does not use cookies or similar technologies** that require information to be stored on your device. Instead, the tool focuses on analyzing **aggregated data without the need to access your end device or store information there**. Plausible Analytics **does not track individual visitors** and **does not create persistent identifiers**. It **does not use cross-platform or cross-device tracking** and **does not pass on data** to third parties. Plausible Analytics primarily uses data that is recorded by default in server logs, such as requested URLs, access times, HTTP status codes and transferred data volumes. This information is used to analyze website traffic. Data processing at Plausible Analytics takes place in two steps:
+ClioX relies on deltaDAO's use of [**Plausible Analytics**](https://plausible.io/) (see also chapter 3), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. Plausible Analytics **does not use cookies or similar technologies** that require information to be stored on your device. Instead, the tool focuses on analyzing **aggregated data without the need to access your end device or store information there**. Plausible Analytics **does not track individual visitors** and **does not create persistent identifiers**. It **does not use cross-platform or cross-device tracking** and **does not pass on data** to third parties. Plausible Analytics primarily uses data that is recorded by default in server logs, such as requested URLs, access times, HTTP status codes and transferred data volumes. This information is used to analyze website traffic. Data processing at Plausible Analytics takes place in two steps:
 
 - **Pseudonymization**: When the data is received, it is pseudonymized using a hash function and a regularly changing key (“salt”). This process aims to change personal data in such a way that data subjects are no longer directly identifiable, but a distinction between sessions is made possible.
 
@@ -170,7 +173,7 @@ When visiting and using our portal demonstrator, your IP address is processed by
 Your IP address is transmitted to Reown and Coinbase servers and used for protecting your security by assessing the legitimacy of the Data Space’s domain and providing warnings about detected issues, e.g., if an address is flagged as malicious.
 
 **Legal basis:**  
-The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR.
+The legal basis for this processing is our legitimate interest.
 
 **Legitimate interests:**  
 Our legitimate interest is to protect your security.
@@ -181,7 +184,7 @@ Reown retains IP addresses for the minimum time necessary to process the transac
 **Right to object:**  
 You have the right to object to the processing of your personal data (see also chapter 8.6).
 
-## 5. Automated decision making including profiling according to Article 13(2)(f) GDPR
+## 5. Automated decision making including profiling 
 
 Automated decision making including profiling does not take place.
 
@@ -195,36 +198,36 @@ Our portal demonstrator uses cookies and your web storage to remember your page 
 
 **6.2 Analytics**
 
-deltaDAO uses [**Plausible Analytics**](https://plausible.io/), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. Plausible Analytics **does not use cookies or similar technologies** that require information to be stored on your device. Plausible Analytics **does not track individual visitors** and **does not create persistent identifiers**. It does not use cross-platform or cross-device tracking and does not pass on data to third parties. You can find further information in chapter 3 and 4.
+ClioX relies on deltaDAO's use of [**Plausible Analytics**](https://plausible.io/), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. Plausible Analytics **does not use cookies or similar technologies** that require information to be stored on your device. Plausible Analytics **does not track individual visitors** and **does not create persistent identifiers**. It does not use cross-platform or cross-device tracking and does not pass on data to third parties. You can find further information in chapter 3 and 4.
 
 ## 7. External links
 
-Our portal demonstrator contains links to external websites that are beyond the control and responsibility of deltaDAO.
+Our portal demonstrator contains links to external websites that are beyond the control and responsibility of ClioX.
 
 ## 8. Your rights
 
 If you want to make use of your rights described below, do not hesitate to contact us.
 
-**8.1 Right of access (Art. 15 GDPR)**  
-You have the right to obtain confirmation as to whether deltaDAO processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information defined in Art. 15 GDPR.
+**8.1 Right of access **  
+You have the right to obtain confirmation as to whether deltaDAO processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information.
 
-**8.2 Right to rectification (Art. 16 GDPR)**  
+**8.2 Right to rectification **  
 You have the right to obtain without undue delay the rectification of inaccurate personal data about you. Additionally, you have the right that incomplete personal data about you are completed.
 
-**8.3 Right to erasure (Art. 17 GDPR)**  
-You have the right to obtain without undue delay the erasure of personal data about you, where the defined legal grounds in Art. 17 GDPR apply.
+**8.3 Right to erasure **  
+You have the right to obtain without undue delay the erasure of personal data about you, where the defined legal grounds apply.
 
-**8.4 Right to restriction (Art. 18 GDPR)**  
-Moreover, you have the right to obtain the restriction of processing your personal data where the defined legal grounds in Art. 18 GDPR apply.
+**8.4 Right to restriction **  
+Moreover, you have the right to obtain the restriction of processing your personal data where the defined legal grounds apply.
 
-**8.5 Right to data portability (Art. 20 GDPR)**  
-You have the right to receive your personal data in a structured, commonly used, and machine-readable format. Additionally, you have the right to transmit those data to another controller without hindrance, where the defined legal grounds in Art. 20 GDPR apply. You can make use of your right to data portability by contacting us.
+**8.5 Right to data portability )**  
+You have the right to receive your personal data in a structured, commonly used, and machine-readable format. Additionally, you have the right to transmit those data to another controller without hindrance, where the defined legal grounds apply. You can make use of your right to data portability by contacting us.
 
-**8.6 Right to object (Art. 21 GDPR)**  
-On grounds relating to your particular situation, you have the right to object to the processing of your personal data where we based the processing on legitimate interests (Art. 6(1)(f) GDPR). If you object, deltaDAO will no longer process your personal data unless we can demonstrate compelling legitimate grounds for the processing, overriding your rights, freedoms, and interests, or if the processing is required to establish, exercise, or defend legal claims.
+**8.6 Right to object **  
+On grounds relating to your particular situation, you have the right to object to the processing of your personal data where we based the processing on legitimate interests. If you object, ClioX will no longer process your personal data unless we can demonstrate compelling legitimate grounds for the processing, overriding your rights, freedoms, and interests, or if the processing is required to establish, exercise, or defend legal claims.
 
-**8.7 Right to lodge a complaint (Art. 77 GDPR)**  
-You have the right to lodge a complaint with a supervisory authority if you consider the processing of your personal data by deltaDAO to infringe the GDPR. You can lodge a complaint in particular
+**8.7 Right to lodge a complaint **  
+You have the right to lodge a complaint with a supervisory authority if you consider the processing of your personal data by ClioX to infringe the law in your jurisdiction. You can lodge a complaint in particular
 
 - in the Member State of your habitual residence,
 - in the Member State of your place of work, and
@@ -232,7 +235,7 @@ You have the right to lodge a complaint with a supervisory authority if you cons
 
 ## 9. Questions
 
-For any requests regarding our privacy policy, please send us an e-mail to <privacy@delta-dao.com>.
+For any requests regarding our privacy policy, please send us an e-mail to <info@cliox.org>.
 
 ## 10. Changes to the Privacy Policy
 
