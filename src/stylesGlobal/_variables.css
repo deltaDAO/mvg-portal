@@ -94,9 +94,9 @@
   /* Buttons */
   --button-border-radius: var(--border-radius);
   --button-font-color: var(--brand-white);
-  --button-background: var(--font-color-light);
+  --button-background: var(--color-primary);
   --button-hover-font-color: var(--brand-white);
-  --button-hover-background: var(--font-color-light);
+  --button-hover-background: var(--color-highlight);
   --button-active-font-color: var(--brand-white);
   --button-active-background: var(--font-color-light);
   --button-primary-font-color: var(--brand-white);
