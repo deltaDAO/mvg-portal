@@ -54,7 +54,7 @@ export default function ContactAndOnboarding() {
           {/* Contact Section - Left Side */}
           <div className="flex flex-col md:col-span-2 justify-self-start">
             {/* Contact Header */}
-            <div className="mb-12">
+            <div className="mb-6">
               <h2 className="text-4xl font-bold mb-4 font-sans">
                 Let&apos;s stay in touch.
               </h2>
