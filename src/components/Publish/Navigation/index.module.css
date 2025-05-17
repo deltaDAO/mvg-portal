@@ -81,7 +81,7 @@
 
 .current:before {
   color: var(--background-content);
-  background: var(--font-color-heading);
+  background: var(--color-primary);
   border-color: transparent;
 }
 

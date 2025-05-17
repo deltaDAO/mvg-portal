@@ -54,7 +54,7 @@ export default function ContactAndOnboarding() {
           {/* Contact Section - Left Side */}
           <div className="flex flex-col md:col-span-2 justify-self-start">
             {/* Contact Header */}
-            <div className="mb-12">
+            <div className="mb-6">
               <h2 className="text-4xl font-bold mb-4 font-sans">
                 Let&apos;s stay in touch.
               </h2>
@@ -90,11 +90,11 @@ export default function ContactAndOnboarding() {
                     />
                   </svg>
                   <a
-                    href="mailto:contact@cliox.org"
+                    href="mailto:info@cliox.org"
                     style={{ color: '#734B3D' }}
                     className="text-lg hover:opacity-80 transition-colors"
                   >
-                    contact@cliox.org
+                    info@cliox.org
                   </a>
                   <span className="text-gray-500 text-sm">
                     (General Inquiries)

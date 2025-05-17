@@ -80,7 +80,7 @@
   flex-direction: column;
   border: none;
   padding: calc(var(--spacer) / 6);
-  background-color: black;
+  background-color: var(--color-primary);
 }
 
 .small .buttons button {
@@ -98,7 +98,11 @@
 
 .small .closeButton {
   margin: calc(var(--spacer) / 4) auto 0;
-  background-color: black;
+  background-color: var(--color-primary);
+}
+
+.small .closeButton:hover {
+  background-color: var(--color-highlight);
 }
 
 /* Hide and show the Cookie Banner */

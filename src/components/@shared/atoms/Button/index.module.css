@@ -11,7 +11,7 @@
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
   text-transform: None;
-  border-radius: var(--button-border-radius);
+  border-radius: 6px;
   transition: 0.2s ease-out;
   color: var(--button-font-color);
   background: var(--button-background);
@@ -26,7 +26,7 @@
   background: var(--button-hover-background);
   text-decoration: none;
   box-shadow: 0 12px 30px 0 rgba(0, 0, 0, 0.1);
-  transform: translate3d(0, -0.05rem, 0);
+  transform: scale(1.01);
 }
 
 .button:active {
@@ -45,15 +45,49 @@
 .primary,
 .primary:focus,
 .primary:active {
-  border: var(--border-size-md) solid var(--button-primary-border-color);
+  border: 2px solid var(--button-primary-border-color);
   background: var(--button-primary-background);
+  color: var(--button-primary-font-color);
   transform: none;
 }
 
 .primary:hover {
   background: var(--button-primary-hover-background);
-  border-color: var(--button-primary-hover-border-color);
+  border-color: var(--button-primary-hover-background);
+  color: var(--button-primary-font-color);
+  transform: scale(1.01);
+}
+
+.secondary,
+.secondary:focus,
+.secondary:active {
+  border: 2px solid var(--button-secondary-border-color);
+  background: var(--button-secondary-background);
+  color: var(--button-secondary-font-color);
   transform: none;
+}
+
+.secondary:hover {
+  background: var(--button-secondary-hover-background);
+  border-color: var(--button-secondary-hover-background);
+  color: var(--button-secondary-font-color);
+  transform: scale(1.01);
+}
+
+.outline,
+.outline:focus,
+.outline:active {
+  border: 1px solid var(--button-outline-border-color);
+  background: var(--button-outline-background);
+  color: var(--button-outline-font-color);
+  transform: none;
+  box-shadow: none;
+}
+
+.outline:hover {
+  color: var(--button-outline-hover-font-color);
+  border-color: var(--button-outline-hover-border-color);
+  transform: scale(1.01);
 }
 
 .ghost,
@@ -94,4 +128,23 @@
 
 .text.small {
   padding: 0;
+}
+
+/* Additional Size Modifiers */
+.sm {
+  font-size: var(--font-size-small);
+  padding: 0.375rem 0.75rem; /* 6px 12px */
+}
+
+.md {
+  font-size: var(--font-size-base);
+  padding: 0.5rem 1rem; /* 8px 16px */
+}
+
+.lg {
+  font-size: var(--font-size-large);
+  padding: 0.75rem 1.75rem; /* 12px 28px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

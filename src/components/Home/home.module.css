@@ -3,3 +3,11 @@
   margin: 0;
   display: inline-block;
 }
+
+.home h2,
+.home h3,
+.home h4,
+.home h5,
+.home h6 {
+  color: var(--home-font-color-heading);
+}

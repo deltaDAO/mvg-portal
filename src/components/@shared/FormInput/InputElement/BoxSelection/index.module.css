@@ -39,7 +39,7 @@
 .boxSelectionsWrapper input[type='radio']:checked + label {
   color: var(--background-body);
   border-color: var(--background-body);
-  background: var(--font-color-heading);
+  background: var(--color-primary);
 }
 
 .boxSelection svg {

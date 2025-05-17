@@ -39,10 +39,12 @@ a.link:focus {
 
 .content p {
   margin-bottom: calc(var(--spacer) / 3);
+  font-family: var(--font-family-heading);
 }
 
 .title {
   font-size: var(--font-size-large);
+  font-weight: var(--font-weight-bold);
   color: var(--teaser-title-font-color);
   margin: 0;
   padding-bottom: calc(var(--spacer) / 6);

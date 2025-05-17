@@ -57,6 +57,7 @@
 
 .title {
   font-size: var(--font-size-large);
+  font-weight: var(--font-weight-bold);
   display: inline-block;
   margin-bottom: 0;
 }
@@ -71,7 +72,7 @@
 
 .description {
   margin-left: var(--spacer);
-  color: var(--color-secondary);
+  color: var(--brand-black);
   margin-bottom: 0;
 }
 

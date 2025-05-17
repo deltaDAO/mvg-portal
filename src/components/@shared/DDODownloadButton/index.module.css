@@ -15,4 +15,12 @@
 
 .button {
   max-height: 70px;
+  background-color: var(--credential-button-background) !important;
+  border-color: var(--credential-button-border) !important;
+  color: var(--brand-white) !important;
+}
+
+.button:hover {
+  background-color: var(--color-highlight) !important;
+  border-color: var(--credential-button-border) !important;
 }

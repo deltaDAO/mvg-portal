@@ -18,10 +18,11 @@ export default function Button({
 
   const variantClasses = {
     primary:
-      'bg-[#a66e4e] text-white border-2 border-[#a66e4e] hover:bg-[#a66e4e] hover:scale-[1.01]',
+      'bg-[#a66e4e] text-white border-2 border-[#a66e4e] hover:bg-[#d9955a] hover:border-[#d9955a] hover:scale-[1.01]',
     secondary:
-      'bg-[#f2e5d5] text-black border-2 border-[#f2e5d5] hover:bg-[#f2e5d5]  hover:scale-[1.01]',
-    outline: 'border border-[#282939] text-[#282939]'
+      'bg-[#f2e5d5] text-black border-2 border-[#f2e5d5] hover:bg-[#f2e5d5] hover:scale-[1.01]',
+    outline:
+      'border border-[#282939] text-[#282939] hover:text-[#a66e4e] hover:border-[#a66e4e] hover:scale-[1.01]'
   }
 
   const sizeClasses = {

@@ -50,7 +50,7 @@ export default function Links(): ReactElement {
     <div>
       {/* Partner logos section - Shows at top on mobile, left side on desktop */}
       <div className="block md:hidden">
-        <div className="w-sm flex flex-wrap gap-4 justify-start">
+        <div className="w-full flex flex-wrap gap-4 justify-center">
           {partnerLogos.map((logo, index) => (
             <a
               key={index}
@@ -77,7 +77,7 @@ export default function Links(): ReactElement {
           ))}
         </div>
 
-        <p className="text-[13px] mt-4 max-w-3xl text-gray-600">
+        <p className="text-[13px] mt-4 max-w-3xl text-gray-600 text-center">
           Clio-X draws on research supported by InterPARES Trust AI, The Social
           Sciences and Humanities Research Council of Canada (SSHRC), The
           University of British Columbia (UBC), Universidad Nacional de
@@ -89,10 +89,10 @@ export default function Links(): ReactElement {
       </div>
 
       {/* Main grid layout - Desktop layout is side by side, Mobile has links below logos */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-y-8 gap-x-4 w-full">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-4 w-full">
         {/* Partner logos - Only shown in desktop view as left panel */}
-        <div className="hidden md:block md:col-span-2 md:mt-6">
-          <div className="w-sm flex flex-wrap gap-4 justify-start">
+        <div className="hidden md:block md:col-span-2 md:mt-4">
+          <div className="w-sm flex flex-wrap gap-3 justify-start">
             {partnerLogos.map((logo, index) => (
               <a
                 key={index}
@@ -101,25 +101,25 @@ export default function Links(): ReactElement {
                 rel="noopener noreferrer"
                 className="flex items-center justify-center bg-white rounded p-2 transition-transform hover:scale-105"
                 style={{
-                  width: index % 3 === 1 ? '120px' : '110px',
-                  height: '75px',
-                  marginBottom: index < 3 ? '15px' : '0'
+                  width: index % 3 === 1 ? '115px' : '105px',
+                  height: '70px',
+                  marginBottom: index < 3 ? '12px' : '0'
                 }}
               >
                 <Image
                   src={logo.src}
                   alt={logo.alt}
-                  width={100}
-                  height={60}
+                  width={95}
+                  height={55}
                   className="w-auto h-auto"
-                  style={{ maxHeight: '50px', objectFit: 'contain' }}
+                  style={{ maxHeight: '48px', objectFit: 'contain' }}
                   unoptimized={true}
                 />
               </a>
             ))}
           </div>
 
-          <p className="text-[13px] mt-6 max-w-md text-gray-600">
+          <p className="text-[13px] mt-5 max-w-md text-gray-600">
             Clio-X draws on research supported by InterPARES Trust AI, The
             Social Sciences and Humanities Research Council of Canada (SSHRC),
             The University of British Columbia (UBC), Universidad Nacional de
@@ -130,8 +130,8 @@ export default function Links(): ReactElement {
         </div>
 
         {/* Right side content - Contains all links and community section */}
-        <div className="col-span-2 md:col-span-2 md:pl-8 md:flex md:justify-end">
-          <div className="grid grid-cols-2 gap-y-6 gap-x-10 w-full max-w-lg">
+        <div className="col-span-2 md:col-span-2 md:pl-6 md:flex md:justify-end">
+          <div className="grid grid-cols-2 gap-y-5 gap-x-8 w-full max-w-lg">
             {/* Column 1: Clio-X */}
             <div className="col-span-1">
               {/* Logo as title */}
@@ -146,7 +146,7 @@ export default function Links(): ReactElement {
                 </div>
               </div>
 
-              <ul className="space-y-3 mt-0">
+              <ul className="space-y-2.5 mt-0">
                 <li>
                   <Button
                     to="/docs"
@@ -183,7 +183,7 @@ export default function Links(): ReactElement {
                 <h3 className={styles.sectionTitle}>Legal</h3>
               </div>
 
-              <ul className="space-y-3 mt-0">
+              <ul className="space-y-2.5 mt-0">
                 <li>
                   <Button
                     to={privacyPolicySlug || '/privacy'}
@@ -217,16 +217,16 @@ export default function Links(): ReactElement {
             </div>
 
             {/* Join the community - Full width of right side */}
-            <div className="col-span-2 mt-2">
-              <h3 className={`${styles.sectionTitle} mb-2`}>
+            <div className="col-span-2 mt-1">
+              <h3 className={`${styles.sectionTitle} mb-1.5`}>
                 Join the community
               </h3>
-              <p className={`${styles.subtitle} text-sm mb-3`}>
+              <p className={`${styles.subtitle} text-sm mb-2.5`}>
                 Our newsletter provides you with latest data economy happenings
                 on a monthly basis.
               </p>
               <Link href="/coming-soon">
-                <button className="bg-[var(--color-primary)] hover:bg-[var(--color-highlight)] text-white font-bold py-2 px-6 rounded transition-colors cursor-pointer">
+                <button className="bg-[var(--color-primary)] hover:bg-[var(--color-highlight)] text-white font-bold py-2 px-5 rounded transition-colors cursor-pointer">
                   Subscribe
                 </button>
               </Link>

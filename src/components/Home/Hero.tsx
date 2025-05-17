@@ -90,7 +90,7 @@ export default function Hero() {
               <Button
                 variant="primary"
                 size="lg"
-                className="text-white border-2 hover:scale-[1.01] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
+                className="text-white border-2 transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
                 Get Started
               </Button>
@@ -102,7 +102,7 @@ export default function Hero() {
               <Button
                 variant="secondary"
                 size="lg"
-                className="text-black border-2 hover:scale-[1.01] transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
+                className="text-black border-2 transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
                 Learn More
               </Button>

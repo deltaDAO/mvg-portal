@@ -17,12 +17,14 @@
 .sidePositioning h3 {
   color: var(--filter-title-color);
   font-size: var(--filter-title-font-size);
+  font-weight: var(--font-weight-bold);
 }
 
 .sidePositioning h5,
 .topPositioning h3 {
   color: var(--filter-type-color);
   font-size: var(--filter-type-font-size);
+  font-weight: var(--font-weight-bold);
 }
 
 .filterList label {

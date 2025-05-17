@@ -20,16 +20,16 @@
 }
 
 .titleContainer {
-  height: 2.5rem;
+  height: 2.2rem;
   display: flex;
   align-items: flex-end;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .sectionTitle {
   color: var(--brand-black);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   text-transform: none;
   margin-top: 0;
   line-height: 1.4;
@@ -38,7 +38,7 @@
 .link {
   color: var(--brand-black);
   font-weight: 400;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   text-align: left;
   transition: color 0.2s;
   padding: 0;
@@ -53,7 +53,7 @@
 .subtitle {
   color: var(--brand-black);
   opacity: 0.8;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
 }
 
 /* Override Button component's text style for footer links */
@@ -61,7 +61,7 @@
 .footerLink:hover,
 .footerLink:focus,
 .footerLink:active {
-  font-size: 0.9rem !important;
+  font-size: 0.85rem !important;
   text-transform: none !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -73,7 +73,7 @@
 }
 
 .footerLogo svg {
-  width: 8rem;
+  width: 7.5rem;
   height: auto;
   max-width: 100%;
   aspect-ratio: 653.36 / 167; /* Preserve original aspect ratio */
@@ -81,6 +81,6 @@
 
 @media screen and (max-width: 480px) {
   .footerLogo svg {
-    width: 6rem;
+    width: 5.5rem;
   }
 }
