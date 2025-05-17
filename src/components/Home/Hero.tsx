@@ -73,7 +73,12 @@ export default function Hero() {
       <Container className="relative z-10 flex flex-col justify-center h-full">
         <div className="flex flex-col max-w-[800px]">
           <h1 className="font-sans text-4xl md:text-5xl leading-normal tracking-[-0.019em] font-bold mb-6 text-white">
-            {content.hero.title}
+            {content.hero.title.split('|').map((part, index) => (
+              <span key={index}>
+                {part}
+                {index < content.hero.title.split('|').length - 1 && <br />}
+              </span>
+            ))}
           </h1>
 
           <p className="font-serif text-lg md:text-xl leading-normal tracking-[-0.019em] font-normal text-left max-w-3xl mb-16 text-white">
