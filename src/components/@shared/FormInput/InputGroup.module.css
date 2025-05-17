@@ -10,11 +10,16 @@
   width: 100%;
 }
 
+/* 
+ * Modify hover styles to respect primary/secondary button hover states
+ * while keeping the specific input group form styles
+ */
 .inputGroup button:hover,
 .inputGroup button:focus,
 .inputGroup input:focus + button:hover,
 .inputGroup input:focus + button:focus {
-  background: var(--button-primary-background);
+  /* Allow shared button styles to control background color */
+  /* background: var(--button-primary-background); */
   transform: none;
   box-shadow: none;
 }

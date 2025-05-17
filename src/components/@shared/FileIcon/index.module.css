@@ -1,6 +1,6 @@
 .file {
   font-size: var(--font-size-small);
-  background: var(--color-secondary);
+  background: var(--file-icon-color);
   background-size: 100%;
   padding: var(--spacer) calc(var(--spacer) / 2);
   margin-right: calc(var(--spacer) / 1.5);
@@ -16,7 +16,7 @@
 
 .file li.empty {
   font-size: var(--font-size-mini);
-  opacity: 0.75;
+  opacity: 1;
 }
 
 .file.small {

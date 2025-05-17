@@ -13,8 +13,8 @@ export interface ButtonProps {
   disabled?: boolean
   to?: string
   name?: string
-  size?: 'small'
-  style?: 'primary' | 'ghost' | 'text'
+  size?: 'small' | 'sm' | 'md' | 'lg'
+  style?: 'primary' | 'ghost' | 'text' | 'secondary' | 'outline'
   type?: 'submit' | 'button'
   download?: boolean
   target?: string
@@ -38,7 +38,12 @@ export default function Button({
     primary: style === 'primary',
     ghost: style === 'ghost',
     text: style === 'text',
+    secondary: style === 'secondary',
+    outline: style === 'outline',
     small: size === 'small',
+    sm: size === 'sm',
+    md: size === 'md',
+    lg: size === 'lg',
     [className]: className
   })
 
