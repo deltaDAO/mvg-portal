@@ -50,7 +50,7 @@ const nftMetadataTemplate = {
   name: 'PX Data NFT',
   symbol: 'PX-NFT',
   description: `Data NFTs are unique digital assets that represent the intellectual property of your digital services.`,
-  external_url: 'https://portal.pontus-x.eu'
+  external_url: 'https://cliox.org'
 }
 
 // Array of available logo options for rotation

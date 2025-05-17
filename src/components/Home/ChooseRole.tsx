@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import Button from '../Home/common/Button'
 import Container from '@components/@shared/atoms/Container'
+import { getLandingPageContent } from '@utils/landingPageContent'
 
 // Add scroll helper function
 const scrollToElement = (e: React.MouseEvent, selector: string): void => {
@@ -24,40 +25,10 @@ type Role = {
   secondaryActionLink: string
 }
 
-const roles: Role[] = [
-  {
-    imageSrc: '/images/home/archivist.png',
-    title: 'The Archivist',
-    description:
-      'Publish and protect your holdings with tools built for ethical AI stewardship and collaboration.',
-    primaryAction: 'Sign Up',
-    primaryActionLink: '/signup',
-    secondaryAction: 'Publish Dataset',
-    secondaryActionLink: '/publish/1'
-  },
-  {
-    imageSrc: '/images/home/researcher.png',
-    title: 'The Researcher',
-    description:
-      'Explore archival datasets with AI to gain data-driven insights.',
-    primaryAction: 'Sign Up',
-    primaryActionLink: '/signup',
-    secondaryAction: 'Browse Catalogue',
-    secondaryActionLink: '/search?sort=nft.created&sortOrder=desc'
-  },
-  {
-    imageSrc: '/images/home/partner.png',
-    title: 'Ecosystem Partner',
-    description: 'Ready to join a global values-aligned Web3 community?',
-    primaryAction: 'Become a Partner',
-    primaryActionLink: '/partner-signup',
-    secondaryAction: 'Learn More',
-    secondaryActionLink: '#what-we-do'
-  }
-]
-
 export default function ChooseRole() {
   const [selectedRole, setSelectedRole] = useState<number | null>(null)
+  const content = getLandingPageContent()
+  const { chooseRole } = content
 
   const handleRoleClick = (index: number) => {
     setSelectedRole(selectedRole === index ? null : index)
@@ -68,15 +39,15 @@ export default function ChooseRole() {
       <Container className="px-4">
         <div className="w-full mx-auto text-center">
           <h2 className="text-4xl font-bold mb-5 font-sans">
-            Choose Your Role
+            {chooseRole.title}
           </h2>
           <p className="text-gray-600 text-lg mb-10 font-serif">
-            Select the path that best describes you to see your next steps.
+            {chooseRole.description}
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full mx-auto">
-          {roles.map((role, index) => (
+          {chooseRole.roles.map((role, index) => (
             <div
               key={index}
               className="flex flex-col w-full mx-auto max-w-[340px] mb-10 md:mb-0"
