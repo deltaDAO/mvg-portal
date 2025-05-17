@@ -34,7 +34,7 @@ export default function Seo({
 
       <title>{pageTitle}</title>
 
-      {isBrowser && window?.location?.hostname !== 'portal.pontus-x.eu' && (
+      {isBrowser && window?.location?.hostname !== 'cliox.org' && (
         <meta name="robots" content="noindex,nofollow" />
       )}
 
@@ -64,8 +64,8 @@ export default function Seo({
       />
 
       <meta property="og:site_name" content={siteContent?.siteTitle} />
-      {isBrowser && window?.location?.hostname === 'portal.pontus-x.eu' && (
-        <meta name="twitter:creator" content="@deltaDAO" />
+      {isBrowser && window?.location?.hostname === 'cliox.org' && (
+        <meta name="twitter:creator" content="@ClioX" />
       )}
       <meta name="twitter:card" content="summary_large_image" />
 
@@ -76,7 +76,7 @@ export default function Seo({
       )}
       <script
         defer
-        data-domain="portal.pontus-x.eu"
+        data-domain="cliox.org"
         src="https://plausible.io/js/script.js"
       ></script>
     </Head>

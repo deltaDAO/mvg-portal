@@ -21,6 +21,7 @@ export default function ComingSoon(): ReactElement {
         description="This feature is currently under development and will be available soon."
         uri={router.route}
         headerCenter
+        noPageHeader
       >
         <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
           <h1 className="text-5xl font-bold text-[var(--brand-clay)] mb-4">

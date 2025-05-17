@@ -1,41 +1,16 @@
 import Image from 'next/image'
 import Container from '@components/@shared/atoms/Container'
+import { getLandingPageContent } from '@utils/landingPageContent'
 
 export default function Pillars() {
-  const pillars = [
-    {
-      id: 1,
-      title: 'Ethical Humanities Computing Framework',
-      content:
-        'We are developing a digital Web3 ecosystem designed to ensure that all participants can contribute equitably and benefit fairly.',
-      imageSrc: '/images/home/ethics.png',
-      imageAlt: 'Ethical Humanities Computing Framework'
-    },
-    {
-      id: 2,
-      title: 'Cultural Heritage First Approach',
-      content:
-        'Our goal is to have a platform that is collectively owned, operated, and developed for the direct benefit of archives and other cultural heritage institutions - prioritizing their sustainability and growth.',
-      imageSrc: '/images/home/approach.png',
-      imageAlt: 'Cultural Heritage First Approach'
-    },
-    {
-      id: 3,
-      title: 'Rethinking Traditional Business Models',
-      content:
-        'Conventional business models have monetized archival and cultural heritage data, generating billion-dollar corporations, often without reinvesting in the archival and cultural heritage community. We seek to shift this dynamic by centering the needs and growth of archives and cultural heritage institutions.',
-      imageSrc: '/images/home/business.png',
-      imageAlt: 'Rethinking Traditional Business Models'
-    }
-  ]
+  const content = getLandingPageContent()
+  const { pillars } = content
 
   return (
     <section className="py-24 bg-white">
       <Container>
         <div className="flex flex-col items-center text-center">
-          <h2 className="text-4xl font-bold mb-4 font-sans">
-            Our Core Pillars
-          </h2>
+          <h2 className="text-4xl font-bold mb-4 font-sans">{pillars.title}</h2>
           {/* <p className="text-lg font-serif text-gray-700 font-normal mb-16">
             Building a sustainable and ethical future for digital archives and
             cultural heritage
@@ -43,9 +18,9 @@ export default function Pillars() {
         </div>
 
         <div className="grid md:grid-cols-3 gap-12 lg:gap-20">
-          {pillars.map((pillar, index) => (
+          {pillars.items.map((pillar, index) => (
             <div
-              key={pillar.id}
+              key={pillar.title}
               className={`flex flex-col ${index === 1 ? 'px-4' : ''}`}
             >
               {/* Image */}

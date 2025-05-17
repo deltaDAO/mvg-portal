@@ -1,8 +1,12 @@
 import Image from 'next/image'
 import Container from '@components/@shared/atoms/Container'
 import PartnerCarousel from './PartnerCarousel'
+import { getLandingPageContent } from '@utils/landingPageContent'
 
 export default function WhatWeDo() {
+  const content = getLandingPageContent()
+  const { whatWeDo } = content
+
   const partners = [
     { id: 1, name: 'Partner 1' },
     { id: 2, name: 'Partner 2' },
@@ -22,7 +26,7 @@ export default function WhatWeDo() {
         {/* Top Section */}
         <div className="w-full mb-12 text-center">
           <h2 className="text-4xl font-bold mb-4 font-sans">
-            Welcoming Values-Aligned Partners
+            {whatWeDo.title}
           </h2>
         </div>
 
@@ -32,32 +36,11 @@ export default function WhatWeDo() {
         {/* Bottom Content Section */}
         <div className="w-full mx-auto">
           <div className="space-y-8 text-lg">
-            <p className="text-lg font-serif text-black/80">
-              This platform was designed to be built together. From memory
-              institutions to research labs, our partners are shaping a shared
-              Web3 ecosystem grounded in community, care, and transparency.
-            </p>
-
-            <p className="text-lg font-serif text-black/80">
-              As public institutions increasingly digitize and share records
-              online, and as more digital-born records become accessible, the
-              risk of using AI, including exposing sensitive personal data, has
-              grown significantly.
-            </p>
-
-            <p className="text-lg font-serif text-black/80">
-              ClioX addresses these risks by allowing archives to manage consent
-              and usage rights for their data while ensuring that computations
-              are performed where the data is stored. This means that the raw
-              data is never moved or exposed; only the results or insights from
-              the computations are shared.
-            </p>
-
-            <p className="text-lg font-serif text-black/80">
-              The platform also provides AI + visual analytic tools to help
-              researchers analyze large volumes of archival data and discover
-              new insights among them.
-            </p>
+            {whatWeDo.partnerText.map((paragraph, index) => (
+              <p key={index} className="text-lg font-serif text-black/80">
+                {paragraph}
+              </p>
+            ))}
           </div>
         </div>
       </Container>

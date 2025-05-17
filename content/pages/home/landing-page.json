@@ -1,0 +1,146 @@
+{
+  "hero": {
+    "title": "Explore archival data securely.|Build knowledge collectively.",
+    "description": "ClioX is a new kind of privacy-first platform—built by and for researchers, archivists, and cultural institutions. It's designed to help you explore, share, and collaborate on sensitive archival material with AI without compromising on privacy or ownership.",
+    "primaryCta": "Get Started",
+    "secondaryCta": "Learn More",
+    "searchPlaceholder": "Search for archival materials..."
+  },
+  "whatWeDo": {
+    "title": "Welcoming Values-Aligned Partners",
+    "partnerText": [
+      "This platform was designed to be built together. From memory institutions to research labs, our partners are shaping a shared Web3 ecosystem grounded in community, care, and transparency.",
+      "As public institutions increasingly digitize and share records online, and as more digital-born records become accessible, the risk of using AI, including exposing sensitive personal data, has grown significantly.",
+      "ClioX addresses these risks by allowing archives to manage consent and usage rights for their data while ensuring that computations are performed where the data is stored. This means that the raw data is never moved or exposed; only the results or insights from the computations are shared.",
+      "The platform also provides AI + visual analytic tools to help researchers analyze large volumes of archival data and discover new insights among them."
+    ]
+  },
+  "pillars": {
+    "title": "Our Core Pillars",
+    "items": [
+      {
+        "title": "Ethical Humanities Computing Framework",
+        "content": "We are developing a digital Web3 ecosystem designed to ensure that all participants can contribute equitably and benefit fairly.",
+        "imageSrc": "/images/home/ethics.png",
+        "imageAlt": "Ethical Humanities Computing Framework"
+      },
+      {
+        "title": "Cultural Heritage First Approach",
+        "content": "Our goal is to have a platform that is collectively owned, operated, and developed for the direct benefit of archives and other cultural heritage institutions - prioritizing their sustainability and growth.",
+        "imageSrc": "/images/home/approach.png",
+        "imageAlt": "Cultural Heritage First Approach"
+      },
+      {
+        "title": "Rethinking Traditional Business Models",
+        "content": "Conventional business models have monetized archival and cultural heritage data, generating billion-dollar corporations, often without reinvesting in the archival and cultural heritage community. We seek to shift this dynamic by centering the needs and growth of archives and cultural heritage institutions.",
+        "imageSrc": "/images/home/business.png",
+        "imageAlt": "Rethinking Traditional Business Models"
+      }
+    ]
+  },
+  "chooseRole": {
+    "title": "Choose Your Role",
+    "description": "Select the path that best describes you to see your next steps.",
+    "roles": [
+      {
+        "imageSrc": "/images/home/archivist.png",
+        "title": "The Archivist",
+        "description": "Publish and protect your holdings with tools built for ethical AI stewardship and collaboration.",
+        "primaryAction": "Sign Up",
+        "primaryActionLink": "/signup",
+        "secondaryAction": "Publish Dataset",
+        "secondaryActionLink": "/publish/1"
+      },
+      {
+        "imageSrc": "/images/home/researcher.png",
+        "title": "The Researcher",
+        "description": "Explore archival datasets with AI to gain data-driven insights.",
+        "primaryAction": "Sign Up",
+        "primaryActionLink": "/signup",
+        "secondaryAction": "Browse Catalogue",
+        "secondaryActionLink": "/search?sort=nft.created&sortOrder=desc"
+      },
+      {
+        "imageSrc": "/images/home/partner.png",
+        "title": "Ecosystem Partner",
+        "description": "Ready to join a global values-aligned Web3 community?",
+        "primaryAction": "Become a Partner",
+        "primaryActionLink": "/partner-signup",
+        "secondaryAction": "Learn More",
+        "secondaryActionLink": "#what-we-do"
+      }
+    ]
+  },
+  "faq": {
+    "title": "FAQ",
+    "items": [
+      {
+        "question": "What is Web3?",
+        "answer": "Web3 is the next generation of the internet, built on blockchain technology, where users have control over their data and content. Think of it like the difference between renting a house (Web2) and owning it (Web3). While Web2 platforms control your data and content, Web3 gives you the keys to your digital life—offering more privacy, transparency, and autonomy online."
+      },
+      {
+        "question": "What is Compute-to-Data?",
+        "answer": "Compute-to-Data is a privacy-first approach where computing tasks go to the data—not the other way around. Instead of moving sensitive data across systems, algorithms are sent to the data's location to run computations securely."
+      },
+      {
+        "question": "Who is ClioX?",
+        "answer": "In Greek mythology, Clio was the Muse of history, one of nine daughters of Zeus and Mnemosyne. She is reflected as having a role in preserving and making famous historical events and is often depicted with objects like scrolls, stone tablets or a lyre symbolizing her connection to history and storytelling."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Let's stay in touch.",
+    "description": "We'd love to hear from you. Reach out if you're curious or want to get involved.",
+    "emailSection": {
+      "title": "Email Us",
+      "contacts": [
+        {
+          "email": "info@cliox.org",
+          "description": "(General Inquiries)"
+        },
+        {
+          "email": "support@cliox.org",
+          "description": "(Technical Support)"
+        }
+      ]
+    },
+    "socialSection": {
+      "title": "Find Us",
+      "contacts": [
+        {
+          "platform": "Telegram",
+          "link": "https://t.me/cliox",
+          "text": "Join our Telegram"
+        },
+        {
+          "platform": "Discord",
+          "link": "https://discord.gg/cliox",
+          "text": "Join our Discord"
+        },
+        {
+          "platform": "WhatsApp",
+          "link": "https://wa.me/1234567890",
+          "text": "Chat on WhatsApp"
+        }
+      ]
+    },
+    "buildWithUs": {
+      "title": "Build with Us",
+      "github": {
+        "link": "https://github.com/ciferresearch/ClioX",
+        "text": "Follow us on GitHub"
+      }
+    },
+    "form": {
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "message": "Message"
+      },
+      "submitButton": "Send Message",
+      "loadingText": "Sending...",
+      "successMessage": "Thank you! Your message has been sent successfully.",
+      "errorMessage": "There was an error sending your message. Please try again."
+    }
+  }
+}

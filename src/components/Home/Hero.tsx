@@ -4,6 +4,7 @@ import Button from '../Home/common/Button'
 import SearchBar from '../Header/SearchBar'
 import styles from '../Header/SearchBar.module.css'
 import { useEffect, useState } from 'react'
+import { getLandingPageContent } from '@utils/landingPageContent'
 
 const scrollToElement = (e: React.MouseEvent, selector: string): void => {
   e.preventDefault()
@@ -14,6 +15,7 @@ const scrollToElement = (e: React.MouseEvent, selector: string): void => {
 
 export default function Hero() {
   const [headerHeight, setHeaderHeight] = useState(0)
+  const content = getLandingPageContent()
 
   // Measure header height and update on window resize
   useEffect(() => {
@@ -63,7 +65,7 @@ export default function Hero() {
       <div className="absolute top-0 left-0 right-0 z-20 py-5 flex justify-center">
         <div className="max-w-xl w-full px-4">
           <div className={styles.searchHome}>
-            <SearchBar placeholder="Search for archival materials..." />
+            <SearchBar placeholder={content.hero.searchPlaceholder} />
           </div>
         </div>
       </div>
@@ -71,15 +73,16 @@ export default function Hero() {
       <Container className="relative z-10 flex flex-col justify-center h-full">
         <div className="flex flex-col max-w-[800px]">
           <h1 className="font-sans text-4xl md:text-5xl leading-normal tracking-[-0.019em] font-bold mb-6 text-white">
-            Explore archival data securely. <br /> Build knowledge collectively.
+            {content.hero.title.split('|').map((part, index) => (
+              <span key={index}>
+                {part}
+                {index < content.hero.title.split('|').length - 1 && <br />}
+              </span>
+            ))}
           </h1>
 
           <p className="font-serif text-lg md:text-xl leading-normal tracking-[-0.019em] font-normal text-left max-w-3xl mb-16 text-white">
-            ClioX is a new kind of privacy-first platform—built by and for
-            researchers, archivists, and cultural institutions. It&apos;s
-            designed to help you explore, share, and collaborate on sensitive
-            archival material with AI without compromising on privacy or
-            ownership.
+            {content.hero.description}
           </p>
 
           <div className="flex gap-4 flex-wrap">
@@ -92,7 +95,7 @@ export default function Hero() {
                 size="lg"
                 className="text-white border-2 transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
-                Get Started
+                {content.hero.primaryCta}
               </Button>
             </Link>
             <Link
@@ -104,7 +107,7 @@ export default function Hero() {
                 size="lg"
                 className="text-black border-2 transform transition-all duration-200 ease-in-out min-w-[140px] px-7 py-3 font-semibold"
               >
-                Learn More
+                {content.hero.secondaryCta}
               </Button>
             </Link>
           </div>
