@@ -58,7 +58,7 @@ export default function ChooseRole() {
                   border border-gray-200 shadow-sm rounded-2xl
                   ${
                     selectedRole === index
-                      ? 'ring-1 ring-[#a66e4e]'
+                      ? 'ring-1 ring-[#c8794d]'
                       : 'hover:shadow-md'
                   }`}
                 onClick={() => handleRoleClick(index)}
