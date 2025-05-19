@@ -209,7 +209,7 @@ Our portal demonstrator contains links to external websites that are beyond the 
 If you want to make use of your rights described below, do not hesitate to contact us.
 
 **8.1 Right of access **  
-You have the right to obtain confirmation as to whether deltaDAO processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information.
+You have the right to obtain confirmation as to whether ClioX processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information.
 
 **8.2 Right to rectification **  
 You have the right to obtain without undue delay the rectification of inaccurate personal data about you. Additionally, you have the right that incomplete personal data about you are completed.
