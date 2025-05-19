@@ -102,6 +102,14 @@
           "isLive": true
         },
         {
+          "name": "Clio-X",
+          "link": "https://www.cliox.org/",
+          "description": "ClioX is a new kind of privacy-first platform—built by and for researchers, archivists, and cultural institutions.",
+          "image": "cliox.webp",
+          "category": "Research",
+          "isLive": true
+        },
+        {
           "name": "Future Engineering Network (FEN)",
           "link": "https://fen.pontus-x.eu/",
           "description": "The Future Engineering Network, a project of Fraunhofer IAO, will focus on the data economy. To help companies explore data-driven business models.",
@@ -146,14 +154,6 @@
           "link": "https://portal.autowerkstatt40.org/",
           "description": "Car Repair 4.0 develops a hub infrastructure that connects car workshops to Gaia-X ecosystems and enables AI-supported fault tracking.",
           "image": "carrepair40.webp",
-          "category": "AI",
-          "isLive": true
-        },
-        {
-          "name": "Service-Meister",
-          "link": "https://servicemeister.pontus-x.eu/",
-          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
-          "image": "service-meister-logo.webp",
           "category": "AI",
           "isLive": true
         }
