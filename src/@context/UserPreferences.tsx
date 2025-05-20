@@ -36,23 +36,45 @@ interface UserPreferencesValue {
   setShowOnboardingModule: (value: boolean) => void
   onboardingStep: number
   setOnboardingStep: (step: number) => void
+  allowOptionalCookies: boolean
+  setAllowOptionalCookies: (value: boolean) => void
 }
 
 const UserPreferencesContext = createContext(null)
 
-const localStorageKey = 'ocean-user-preferences-v4'
+const LOCAL_STORAGE_KEYS = {
+  core: 'ocean-user-preferences-v4',
+  optional: 'ocean-user-preferences-optional-v4'
+} as const
 
 function getLocalStorage(): UserPreferencesValue {
-  const storageParsed =
-    isBrowser && JSON.parse(window.localStorage.getItem(localStorageKey))
+  let storageParsed =
+    isBrowser &&
+    JSON.parse(window.localStorage.getItem(LOCAL_STORAGE_KEYS.core))
+  storageParsed = {
+    ...storageParsed,
+    ...(isBrowser &&
+      JSON.parse(
+        window.localStorage.getItem(LOCAL_STORAGE_KEYS.optional) || '{}'
+      ))
+  }
   return storageParsed
 }
 
-function setLocalStorage(values: Partial<UserPreferencesValue>) {
+function setLocalStorage(
+  localStorageKey: (typeof LOCAL_STORAGE_KEYS)[keyof typeof LOCAL_STORAGE_KEYS],
+  values: Partial<UserPreferencesValue>
+) {
   return (
     isBrowser &&
     window.localStorage.setItem(localStorageKey, JSON.stringify(values))
   )
+}
+
+function clearLocalStorage(
+  localStorageKey: (typeof LOCAL_STORAGE_KEYS)[keyof typeof LOCAL_STORAGE_KEYS]
+) {
+  return isBrowser && window.localStorage.removeItem(localStorageKey)
 }
 
 function UserPreferencesProvider({
@@ -62,6 +84,9 @@ function UserPreferencesProvider({
 }): ReactElement {
   const { appConfig } = useMarketMetadata()
   const localStorage = getLocalStorage()
+  const [allowOptionalCookies, setAllowOptionalCookies] = useState<boolean>(
+    localStorage?.allowOptionalCookies || false
+  )
   // Set default values from localStorage
   const [debug, setDebug] = useState<boolean>(localStorage?.debug || false)
   const [currency, setCurrency] = useState<string>(
@@ -105,19 +130,26 @@ function UserPreferencesProvider({
 
   // Write values to localStorage on change
   useEffect(() => {
-    setLocalStorage({
+    setLocalStorage(LOCAL_STORAGE_KEYS.core, {
       chainIds,
-      debug,
       currency,
-      bookmarks,
-      privacyPolicySlug,
       showPPC,
-      allowExternalContent,
-      automationWalletJSON: automationWallet,
-      automationWalletMode,
-      showOnboardingModule,
-      onboardingStep
+      allowOptionalCookies
     })
+    if (allowOptionalCookies) {
+      setLocalStorage(LOCAL_STORAGE_KEYS.optional, {
+        debug,
+        bookmarks,
+        privacyPolicySlug,
+        allowExternalContent,
+        automationWalletJSON: automationWallet,
+        automationWalletMode,
+        showOnboardingModule,
+        onboardingStep
+      })
+    } else {
+      clearLocalStorage(LOCAL_STORAGE_KEYS.optional)
+    }
   }, [
     chainIds,
     debug,
@@ -129,7 +161,8 @@ function UserPreferencesProvider({
     automationWallet,
     automationWalletMode,
     showOnboardingModule,
-    onboardingStep
+    onboardingStep,
+    allowOptionalCookies
   ])
 
   // Set ocean.js log levels, default: Error
@@ -202,7 +235,9 @@ function UserPreferencesProvider({
           showOnboardingModule,
           setShowOnboardingModule,
           onboardingStep,
-          setOnboardingStep
+          setOnboardingStep,
+          allowOptionalCookies,
+          setAllowOptionalCookies
         } as UserPreferencesValue
       }
     >

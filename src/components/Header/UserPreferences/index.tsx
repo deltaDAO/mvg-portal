@@ -8,17 +8,27 @@ import ExternalContent from './ExternalContent'
 import AutomationWalletMode from './AutomationWalletMode'
 import Onboarding from './Onboarding'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import { useUserPreferences } from '@context/UserPreferences'
+import OptionalCookies from './OptionalCookies'
 
 export default function UserPreferences(): ReactElement {
   const { appConfig } = useMarketMetadata()
+  const { allowOptionalCookies } = useUserPreferences()
 
   return (
     <Tooltip
       content={
         <ul className={styles.preferencesDetails}>
           <li>
-            <ExternalContent />
+            <OptionalCookies />
           </li>
+          {allowOptionalCookies && (
+            <>
+              <li>
+                <ExternalContent />
+              </li>
+            </>
+          )}
           {appConfig.automationConfig.enableAutomation === 'true' && (
             <li>
               <AutomationWalletMode />
