@@ -89,7 +89,7 @@
   --input-background-highlight: var(--background-highlight);
   --input-selected-background: var(--checkbox-selected-background);
   --input-selected-border-size: var(--border-size);
-  --input-selected-border-color: var(--font-color-heading);
+  --input-selected-border-color: var(--brand-grey-lighter);
 
   /* Buttons */
   --button-border-radius: var(--border-radius);

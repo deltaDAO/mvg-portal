@@ -9,3 +9,15 @@
   text-align: center;
   color: var(--color-primary);
 }
+
+.title {
+  font-size: var(--font-size-h3);
+  font-weight: 700;
+  margin-bottom: 0.25em;
+}
+
+.subtitle {
+  font-size: var(--font-size-h5);
+  font-weight: 500;
+  margin-bottom: 0.5em;
+}
