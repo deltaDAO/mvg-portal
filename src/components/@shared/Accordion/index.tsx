@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode, useState } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
-import ArrowIcon from './arrowIcon'
+import ArrowIcon from './ArrowIcon'
 import classNames from 'classnames/bind'
 import Badge from '@shared/atoms/Badge'
 
