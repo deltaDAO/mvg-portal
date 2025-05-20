@@ -275,6 +275,7 @@ export default function AssetContent({
           )}
         </div>
       </article>
+      {/* has to update this */}
       {debug === true && <DebugOutput title="DDO" output={asset} />}
       <RelatedAssets />
     </>
