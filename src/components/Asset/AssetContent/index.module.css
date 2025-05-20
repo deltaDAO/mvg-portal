@@ -11,7 +11,8 @@
 }
 
 .grid > div {
-  overflow: hidden;
+  /* overflow: hidden; */
+  margin-top: var(--spacer);
 }
 
 .content {
@@ -19,11 +20,36 @@
   padding-top: 0;
   margin-top: var(--spacer);
   position: relative;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: #fff;
+  border: 1px solid rgba(48, 48, 49, 0.1);
+  border-radius: 20px;
+  /* padding: 25px; */
+}
+
+.metaMenu {
+  position: relative;
+  border: 1px solid rgba(48, 48, 49, 0.1);
+  border-radius: 10px;
+  /* width: 714px; */
+  height: 60px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: #fff;
 }
 
 @media (min-width: 60rem) {
   .grid {
     grid-template-columns: 1.5fr 1fr;
+  }
+
+  .actions {
+    margin-top: var(--spacer);
+  }
+}
+@media (min-width: 1500px) {
+  .grid {
+    grid-template-columns: 1.5fr 1fr;
+    width: 1420px;
   }
 
   .actions {
@@ -47,4 +73,14 @@
 
 .accessTaC {
   display: flex;
+}
+
+.serviceDisplay {
+  margin-top: 3rem;
+}
+
+.grid h4 {
+  font-weight: 700;
+  font-size: 22px;
+  color: #303031;
 }

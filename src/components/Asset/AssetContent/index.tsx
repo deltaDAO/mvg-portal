@@ -21,6 +21,7 @@ import ServiceCard from './ServiceCard'
 import { getPdf } from '@utils/invoice/createInvoice'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
+import MetaInfo from './MetaMain/MetaInfo'
 
 export default function AssetContent({
   asset
@@ -101,19 +102,18 @@ export default function AssetContent({
     typeof asset.credentialSubject?.metadata?.description === 'string'
   return (
     <>
-      <div className={styles.networkWrap}>
-        <NetworkName
-          networkId={asset.credentialSubject?.chainId}
-          className={styles.network}
-        />
-      </div>
-
       <article className={styles.grid}>
         <div>
-          <div className={styles.content}>
+          <div className={styles.metaMenu}>
+            {' '}
             <MetaMain asset={asset} nftPublisher={nftPublisher} />
-            <h3>{asset.credentialSubject?.metadata?.name || ''}</h3>
             <Bookmark did={asset.id} />
+          </div>
+          <div className={styles.content}>
+            <div className={styles.publisherInfo}>
+              <MetaInfo asset={asset} nftPublisher={nftPublisher} />
+            </div>
+            <h3>{asset.credentialSubject?.metadata?.name || ''}</h3>
             {isInPurgatory === true ? (
               <Alert
                 title={content.asset.title}
@@ -148,11 +148,20 @@ export default function AssetContent({
               </>
             )}
             <MetaFull ddo={asset} />
-            {debug === true && <DebugOutput title="DDO" output={asset} />}
+            {/* {debug === true && <DebugOutput title="DDO" output={asset} />} */}
           </div>
         </div>
 
         <div className={styles.actions}>
+          <NetworkName
+            networkId={asset.credentialSubject?.chainId}
+            className={styles.network}
+          />
+          <Web3Feedback
+            networkId={asset.credentialSubject?.chainId}
+            accountId={accountId}
+            isAssetNetwork={isAssetNetwork}
+          />
           {!asset.accessDetails ? (
             <p>Loading access details...</p>
           ) : (
@@ -160,10 +169,10 @@ export default function AssetContent({
               {asset?.credentialSubject?.nft?.state === 0 ? (
                 selectedService === undefined ? (
                   <>
-                    <h3>Available services:</h3>
+                    {/* <h3> Available Assets:</h3> */}
                     {availableServices.length > 0 ? (
-                      <>
-                        <h4>Please select one of the following:</h4>
+                      <div className={styles.serviceDisplay}>
+                        <h4>Choose service to see Price:</h4>
                         <div className={styles.servicesGrid}>
                           {availableServices.map((service, index) => (
                             <ServiceCard
@@ -174,7 +183,7 @@ export default function AssetContent({
                             />
                           ))}
                         </div>
-                      </>
+                      </div>
                     ) : (
                       <h4>No services are currently available.</h4>
                     )}
@@ -264,15 +273,10 @@ export default function AssetContent({
               )}
             </div>
           )}
-
-          <Web3Feedback
-            networkId={asset.credentialSubject?.chainId}
-            accountId={accountId}
-            isAssetNetwork={isAssetNetwork}
-          />
-          <RelatedAssets />
         </div>
       </article>
+      {debug === true && <DebugOutput title="DDO" output={asset} />}
+      <RelatedAssets />
     </>
   )
 }

@@ -13,6 +13,12 @@
     padding-right: calc(var(--spacer) / 1.2);
   }
 }
+@media (min-width: 1500px) {
+  .container {
+    padding-left: calc(var(--spacer) / 3.2);
+    padding-right: calc(var(--spacer) / 3.2);
+  }
+}
 
 .container.narrow {
   max-width: 62rem;

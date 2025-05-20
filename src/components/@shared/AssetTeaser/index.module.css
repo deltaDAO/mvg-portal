@@ -11,7 +11,7 @@
   background: var(--teaser-background);
   border-radius: 20px;
   /* border-radius: var(--teaser-border-radius); */
-  border: var(--teaser-border-size) solid var(--teaser-border-color);
+  border: var(--teaser-border-size) solid #eeeeee99;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   /* box-shadow: var(--teaser-box-shadow); */
   position: relative;
@@ -25,6 +25,7 @@
 a.link:hover,
 a.link:focus {
   box-shadow: var(--teaser-hover-box-shadow);
+  border: var(--teaser-border-size) solid #e0e0e0;
 }
 
 .detailLine {

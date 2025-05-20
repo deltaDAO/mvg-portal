@@ -2,6 +2,7 @@ import { ReactElement, useEffect, useState } from 'react'
 import Status from '@shared/atoms/Status'
 import styles from './index.module.css'
 import WalletNetworkSwitcher from '../WalletNetworkSwitcher'
+import Warning from '@images/warning.svg'
 
 export declare type Web3Error = {
   status: 'error' | 'warning' | 'success'
@@ -44,6 +45,9 @@ export default function Web3Feedback({
   return showFeedback ? (
     <section className={styles.feedback}>
       <Status state={state} aria-hidden />
+      <div className={styles.warningImage}>
+        <Warning />
+      </div>
       <h3 className={styles.title}>{title}</h3>
       {isAssetNetwork === false ? (
         <WalletNetworkSwitcher />

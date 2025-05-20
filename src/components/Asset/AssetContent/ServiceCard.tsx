@@ -25,9 +25,15 @@ export default function ServiceCard({
       {service.type}
       <br />
       <span className={styles.title}>Price: </span>
-      {accessDetails.type === 'fixed'
-        ? `${accessDetails.price} ${accessDetails.baseToken.symbol}`
-        : 'free'}
+      {accessDetails.type === 'fixed' ? (
+        `${accessDetails.price} ${(
+          <span className={styles.tokenSymbol}>
+            {accessDetails.baseToken.symbol}
+          </span>
+        )}`
+      ) : (
+        <span className={styles.free}>free</span>
+      )}
       <br />
       <span className={styles.title}>Access Duration: </span>
       {service.timeout === 0
