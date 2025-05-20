@@ -20,6 +20,13 @@ export default function Account({
   const { autoWalletAddress } = useAutomation()
   const { verifiedAddresses } = useAddressConfig()
 
+  function getAddressKey(): string {
+    const addressKey = Object.keys(verifiedAddresses).find(
+      (key) => key.toLowerCase() === accountId?.toLowerCase()
+    )
+    return addressKey || ''
+  }
+
   return (
     <div className={styles.account}>
       <figure className={styles.imageWrap}>
@@ -31,7 +38,7 @@ export default function Account({
       </figure>
       <div>
         <h3 className={styles.name}>
-          {verifiedAddresses?.[accountId] || accountTruncate(accountId)}{' '}
+          {verifiedAddresses?.[getAddressKey()] || accountTruncate(accountId)}{' '}
           {autoWalletAddress === accountId && (
             <span className={styles.automation} title="Automation">
               <Transaction />
