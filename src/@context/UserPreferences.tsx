@@ -7,9 +7,14 @@ import {
   useEffect
 } from 'react'
 import { LoggerInstance, LogLevel } from '@oceanprotocol/lib'
-import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from './MarketMetadata'
 import { AUTOMATION_MODES } from './Automation/AutomationProvider'
+import {
+  deleteCookie,
+  getCookieValue,
+  SAME_SITE_OPTIONS,
+  setCookie
+} from '@utils/cookies'
 
 interface UserPreferencesValue {
   debug: boolean
@@ -40,97 +45,161 @@ interface UserPreferencesValue {
 
 const UserPreferencesContext = createContext(null)
 
-const localStorageKey = 'ocean-user-preferences-v4'
-
-function getLocalStorage(): UserPreferencesValue {
-  const storageParsed =
-    isBrowser && JSON.parse(window.localStorage.getItem(localStorageKey))
-  return storageParsed
-}
-
-function setLocalStorage(values: Partial<UserPreferencesValue>) {
-  return (
-    isBrowser &&
-    window.localStorage.setItem(localStorageKey, JSON.stringify(values))
-  )
-}
-
 function UserPreferencesProvider({
   children
 }: {
   children: ReactNode
 }): ReactElement {
   const { appConfig } = useMarketMetadata()
-  const localStorage = getLocalStorage()
   // Set default values from localStorage
-  const [debug, setDebug] = useState<boolean>(localStorage?.debug || false)
+  const [debug, setDebug] = useState<boolean>(
+    getCookieValue('debug') === 'true'
+  )
   const [currency, setCurrency] = useState<string>(
     localStorage?.currency || 'EUR'
   )
   const [locale, setLocale] = useState<string>()
-  const [bookmarks, setBookmarks] = useState(localStorage?.bookmarks || [])
+  const [bookmarks, setBookmarks] = useState(
+    getCookieValue('bookmarks')?.split(',') || []
+  )
   const [chainIds, setChainIds] = useState(
-    localStorage?.chainIds || appConfig.chainIds
+    getCookieValue('chainIds')?.split(',').map(Number) || appConfig.chainIds
   )
   const { defaultPrivacyPolicySlug, showOnboardingModuleByDefault } = appConfig
 
   const [privacyPolicySlug, setPrivacyPolicySlug] = useState<string>(
-    localStorage?.privacyPolicySlug || defaultPrivacyPolicySlug
+    getCookieValue('privacyPolicySlug') || defaultPrivacyPolicySlug
   )
 
   const [showPPC, setShowPPC] = useState<boolean>(
-    localStorage?.showPPC !== false
+    getCookieValue('showPPC') !== 'false'
   )
 
   const [allowExternalContent, setAllowExternalContent] = useState<boolean>(
-    localStorage?.allowExternalContent || false
+    getCookieValue('allowExternalContent') === 'true'
   )
 
   const [automationWallet, setAutomationWallet] = useState<string>(
-    localStorage?.automationWalletJSON || ''
+    typeof getCookieValue('automationWallet') !== 'undefined'
+      ? JSON.parse(getCookieValue('automationWallet'))?.automationWalletJSON
+      : ''
   )
 
   const [automationWalletMode, setAutomationWalletMode] =
     useState<AUTOMATION_MODES>(
-      localStorage?.automationWalletMode || AUTOMATION_MODES.SIMPLE
+      typeof getCookieValue('automationWallet') !== 'undefined'
+        ? JSON.parse(getCookieValue('automationWallet'))?.automationWalletMode
+        : AUTOMATION_MODES.SIMPLE
     )
 
   const [showOnboardingModule, setShowOnboardingModule] = useState<boolean>(
-    localStorage?.showOnboardingModule ?? showOnboardingModuleByDefault
+    (typeof getCookieValue('onboardingModule') !== 'undefined' &&
+      JSON.parse(getCookieValue('onboardingModule'))?.showOnboardingModule ===
+        'true') ??
+      showOnboardingModuleByDefault
   )
 
   const [onboardingStep, setOnboardingStep] = useState<number>(
-    localStorage?.onboardingStep || 0
+    typeof getCookieValue('onboardingModule') !== 'undefined'
+      ? ~~JSON.parse(getCookieValue('onboardingModule'))?.onboardingStep
+      : 0
   )
+  const twoMonthsFromNow = new Date()
+  twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2)
 
   // Write values to localStorage on change
   useEffect(() => {
-    setLocalStorage({
-      chainIds,
-      debug,
-      currency,
-      bookmarks,
-      privacyPolicySlug,
-      showPPC,
-      allowExternalContent,
-      automationWalletJSON: automationWallet,
-      automationWalletMode,
-      showOnboardingModule,
-      onboardingStep
-    })
-  }, [
-    chainIds,
-    debug,
-    currency,
-    bookmarks,
-    privacyPolicySlug,
-    showPPC,
-    allowExternalContent,
-    automationWallet,
-    automationWalletMode,
-    showOnboardingModule,
-    onboardingStep
-  ])
+    if (debug) {
+      setCookie('debug', debug, {
+        expires: twoMonthsFromNow,
+        sameSite: SAME_SITE_OPTIONS.STRICT
+      })
+    } else {
+      deleteCookie('debug')
+    }
+  }, [debug])
+
+  useEffect(() => {
+    if (bookmarks.length > 0) {
+      setCookie('bookmarks', bookmarks.toString())
+    } else {
+      deleteCookie('bookmarks')
+    }
+  }, [bookmarks])
+
+  useEffect(() => {
+    if (chainIds.toString() !== appConfig.chainIds.toString()) {
+      setCookie('chainIds', chainIds.toString())
+    } else {
+      deleteCookie('chainIds')
+    }
+  }, [chainIds])
+
+  useEffect(() => {
+    if (privacyPolicySlug !== defaultPrivacyPolicySlug) {
+      setCookie('privacyPolicySlug', privacyPolicySlug, {
+        expires: twoMonthsFromNow,
+        sameSite: SAME_SITE_OPTIONS.STRICT
+      })
+    } else {
+      deleteCookie('privacyPolicySlug')
+    }
+  }, [privacyPolicySlug])
+
+  useEffect(() => {
+    if (showPPC === false) {
+      setCookie('showPPC', showPPC)
+    } else {
+      deleteCookie('showPPC')
+    }
+  }, [showPPC])
+
+  useEffect(() => {
+    if (allowExternalContent) {
+      setCookie('allowExternalContent', allowExternalContent, {
+        expires: twoMonthsFromNow,
+        sameSite: SAME_SITE_OPTIONS.STRICT
+      })
+    } else {
+      deleteCookie('allowExternalContent')
+    }
+  }, [allowExternalContent])
+
+  useEffect(() => {
+    if (
+      automationWallet !== '' ||
+      automationWalletMode !== AUTOMATION_MODES.SIMPLE
+    ) {
+      const automationWalletCookie = {
+        automationWalletJSON: automationWallet,
+        automationWalletMode
+      }
+      setCookie('automationWallet', JSON.stringify(automationWalletCookie), {
+        expires: null,
+        sameSite: SAME_SITE_OPTIONS.STRICT
+      })
+    } else {
+      deleteCookie('automationWallet')
+    }
+  }, [automationWallet, automationWalletMode])
+
+  useEffect(() => {
+    if (
+      showOnboardingModule !== showOnboardingModuleByDefault ||
+      onboardingStep !== 0
+    ) {
+      const onboardingModuleCookie = {
+        showOnboardingModule,
+        onboardingStep
+      }
+      setCookie('onboardingModule', JSON.stringify(onboardingModuleCookie), {
+        expires: twoMonthsFromNow,
+        sameSite: SAME_SITE_OPTIONS.STRICT
+      })
+    } else {
+      deleteCookie('onboardingModule')
+    }
+  }, [showOnboardingModule, onboardingStep])
 
   // Set ocean.js log levels, default: Error
   useEffect(() => {

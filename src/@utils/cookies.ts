@@ -6,7 +6,10 @@ export enum SAME_SITE_OPTIONS {
   NONE = 'none'
 }
 
-export const DEFAULT_COOKIE_OPTIONS = {
+export const DEFAULT_COOKIE_OPTIONS: {
+  expires: number | Date
+  sameSite: SAME_SITE_OPTIONS
+} = {
   expires: 365,
   sameSite: SAME_SITE_OPTIONS.STRICT
 }
