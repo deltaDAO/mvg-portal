@@ -47,7 +47,7 @@
         "title": "The Archivist",
         "description": "Publish and protect your holdings with tools built for ethical AI stewardship and collaboration.",
         "primaryAction": "Sign Up",
-        "primaryActionLink": "/signup",
+        "primaryActionLink": "/onboarding",
         "secondaryAction": "Publish Dataset",
         "secondaryActionLink": "/publish/1"
       },
@@ -56,7 +56,7 @@
         "title": "The Researcher",
         "description": "Explore archival datasets with AI to gain data-driven insights.",
         "primaryAction": "Sign Up",
-        "primaryActionLink": "/signup",
+        "primaryActionLink": "/onboarding",
         "secondaryAction": "Browse Catalogue",
         "secondaryActionLink": "/search?sort=nft.created&sortOrder=desc"
       },
