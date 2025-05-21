@@ -3,7 +3,7 @@
   justify-content: flex-start;
   align-items: center;
   padding-left: 0;
-  background-color: var(--color-primary);
+  background-color: var(--brand-grey-darker);
   color: var(--brand-white);
   border-radius: var(--border-radius) var(--border-radius) 0 0;
   box-shadow: var(--box-template-box-shadow);
