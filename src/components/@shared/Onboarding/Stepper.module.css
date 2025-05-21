@@ -27,7 +27,9 @@
   display: none;
   width: 100%;
   text-transform: capitalize;
-  font-size: var(--font-size-h4);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .step .title {
@@ -46,18 +48,20 @@
   display: block;
   width: var(--circle-size);
   height: var(--circle-size);
-  border-radius: var(--border-radius);
+  border-radius: 50%;
   background: var(--background-gradient);
-  /* 202% used to fix a Firefox specific behavior not moving the background as expected */
   background-size: 202% 100%;
   background-position: bottom right;
   transition: all 0.3s ease-out;
   margin: 0 auto 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 2px solid var(--brand-grey-lighter);
 }
 
 .active:before {
   background-position: bottom left;
   transition-delay: 0.5s;
+  border-color: var(--color-primary);
 }
 
 .step:after {
@@ -87,5 +91,6 @@
 @media screen and (min-width: 40rem) {
   .title {
     display: block;
+    font-size: 1.5rem;
   }
 }

@@ -3,7 +3,7 @@
   justify-content: flex-start;
   align-items: center;
   padding-left: 0;
-  background-color: var(--color-primary);
+  background-color: var(--brand-grey-darker);
   color: var(--brand-white);
   border-radius: var(--border-radius) var(--border-radius) 0 0;
   box-shadow: var(--box-template-box-shadow);
@@ -16,19 +16,29 @@
 
 .subtitle {
   display: inline-block;
-  padding: calc(var(--spacer) / 8) calc(var(--spacer) / 4) 0;
-  background-color: var(--brand-yellow);
-  margin-bottom: 0;
+  padding: 0.25em 0.75em;
+  background-color: var(--brand-white);
   color: var(--color-primary);
+  font-size: var(--font-size-h4);
+  font-weight: 600;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .title {
   color: var(--brand-white);
+  font-size: var(--font-size-h2);
+  font-weight: 800;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: 0.01em;
 }
 
 .paragraph p {
   margin-bottom: 0;
   color: var(--brand-white);
+  font-size: var(--font-size-base);
+  font-weight: 400;
 }
 
 .container > svg {
