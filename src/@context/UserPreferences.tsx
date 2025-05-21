@@ -12,8 +12,9 @@ import { AUTOMATION_MODES } from './Automation/AutomationProvider'
 import {
   deleteCookie,
   getCookieValue,
-  SAME_SITE_OPTIONS,
-  setCookie
+  SESSION_COOKIE_OPTIONS,
+  setCookie,
+  TWO_MONTHS_COOKIE_OPTIONS
 } from '@utils/cookies'
 
 interface UserPreferencesValue {
@@ -65,7 +66,11 @@ function UserPreferencesProvider({
   const [chainIds, setChainIds] = useState(
     getCookieValue('chainIds')?.split(',').map(Number) || appConfig.chainIds
   )
-  const { defaultPrivacyPolicySlug, showOnboardingModuleByDefault } = appConfig
+  const {
+    defaultPrivacyPolicySlug,
+    showOnboardingModuleByDefault,
+    automationConfig
+  } = appConfig
 
   const [privacyPolicySlug, setPrivacyPolicySlug] = useState<string>(
     getCookieValue('privacyPolicySlug') || defaultPrivacyPolicySlug
@@ -89,7 +94,7 @@ function UserPreferencesProvider({
     useState<AUTOMATION_MODES>(
       typeof getCookieValue('automationWallet') !== 'undefined'
         ? JSON.parse(getCookieValue('automationWallet'))?.automationWalletMode
-        : AUTOMATION_MODES.SIMPLE
+        : automationConfig.defaultMode
     )
 
   const [showOnboardingModule, setShowOnboardingModule] = useState<boolean>(
@@ -101,19 +106,14 @@ function UserPreferencesProvider({
 
   const [onboardingStep, setOnboardingStep] = useState<number>(
     typeof getCookieValue('onboardingModule') !== 'undefined'
-      ? ~~JSON.parse(getCookieValue('onboardingModule'))?.onboardingStep
+      ? Number(JSON.parse(getCookieValue('onboardingModule'))?.onboardingStep)
       : 0
   )
-  const twoMonthsFromNow = new Date()
-  twoMonthsFromNow.setMonth(twoMonthsFromNow.getMonth() + 2)
 
   // Write values to localStorage on change
   useEffect(() => {
     if (debug) {
-      setCookie('debug', debug, {
-        expires: twoMonthsFromNow,
-        sameSite: SAME_SITE_OPTIONS.STRICT
-      })
+      setCookie('debug', debug, TWO_MONTHS_COOKIE_OPTIONS)
     } else {
       deleteCookie('debug')
     }
@@ -137,10 +137,11 @@ function UserPreferencesProvider({
 
   useEffect(() => {
     if (privacyPolicySlug !== defaultPrivacyPolicySlug) {
-      setCookie('privacyPolicySlug', privacyPolicySlug, {
-        expires: twoMonthsFromNow,
-        sameSite: SAME_SITE_OPTIONS.STRICT
-      })
+      setCookie(
+        'privacyPolicySlug',
+        privacyPolicySlug,
+        TWO_MONTHS_COOKIE_OPTIONS
+      )
     } else {
       deleteCookie('privacyPolicySlug')
     }
@@ -156,10 +157,11 @@ function UserPreferencesProvider({
 
   useEffect(() => {
     if (allowExternalContent) {
-      setCookie('allowExternalContent', allowExternalContent, {
-        expires: twoMonthsFromNow,
-        sameSite: SAME_SITE_OPTIONS.STRICT
-      })
+      setCookie(
+        'allowExternalContent',
+        allowExternalContent,
+        TWO_MONTHS_COOKIE_OPTIONS
+      )
     } else {
       deleteCookie('allowExternalContent')
     }
@@ -168,16 +170,17 @@ function UserPreferencesProvider({
   useEffect(() => {
     if (
       automationWallet !== '' ||
-      automationWalletMode !== AUTOMATION_MODES.SIMPLE
+      automationWalletMode !== automationConfig.defaultMode
     ) {
       const automationWalletCookie = {
         automationWalletJSON: automationWallet,
         automationWalletMode
       }
-      setCookie('automationWallet', JSON.stringify(automationWalletCookie), {
-        expires: null,
-        sameSite: SAME_SITE_OPTIONS.STRICT
-      })
+      setCookie(
+        'automationWallet',
+        JSON.stringify(automationWalletCookie),
+        SESSION_COOKIE_OPTIONS
+      )
     } else {
       deleteCookie('automationWallet')
     }
@@ -192,10 +195,11 @@ function UserPreferencesProvider({
         showOnboardingModule,
         onboardingStep
       }
-      setCookie('onboardingModule', JSON.stringify(onboardingModuleCookie), {
-        expires: twoMonthsFromNow,
-        sameSite: SAME_SITE_OPTIONS.STRICT
-      })
+      setCookie(
+        'onboardingModule',
+        JSON.stringify(onboardingModuleCookie),
+        TWO_MONTHS_COOKIE_OPTIONS
+      )
     } else {
       deleteCookie('onboardingModule')
     }
