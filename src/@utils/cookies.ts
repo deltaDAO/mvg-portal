@@ -17,7 +17,7 @@ export const DEFAULT_COOKIE_OPTIONS: CookieOptions = {
 }
 
 export const SESSION_COOKIE_OPTIONS: CookieOptions = {
-  expires: undefined,
+  expires: undefined, // undefined means session cookie
   sameSite: SAME_SITE_OPTIONS.STRICT
 }
 
