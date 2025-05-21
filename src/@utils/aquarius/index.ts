@@ -332,7 +332,6 @@ export async function getAlgorithmDatasetsForCompute(
 
   const query = generateBaseQuery(baseQueryParams)
   const computeDatasets = await queryMetadata(query, cancelToken)
-  console.log('computeDatasets', computeDatasets)
   if (computeDatasets?.results?.length === 0 || !computeDatasets) return []
 
   const datasets = await transformAssetToAssetSelection(
