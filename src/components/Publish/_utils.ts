@@ -355,9 +355,8 @@ export function stringifyCredentialPolicies(credentials: Credential) {
           }
         )
 
-        value.vp_policies = value.vp_policies.map((policy) =>
-          JSON.stringify(policy)
-        )
+        value.vp_policies =
+          value.vp_policies?.map((policy) => JSON.stringify(policy)) ?? []
         return value
       })
     }
@@ -407,25 +406,37 @@ export function generateCredentials(
         return policy
       }
     )
-    const newAllowList: CredentialPolicyBased = {
-      type: 'SSIpolicy',
-      values: []
-    }
+    const hasAny =
+      (requestCredentials?.length ?? 0) > 0 ||
+      (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
+      (vpPolicies?.length ?? 0) > 0
 
-    if (requestCredentials?.length > 0) {
-      newAllowList.values.push({
-        request_credentials: requestCredentials,
-        vc_policies: updatedCredentials?.vcPolicies,
-        vp_policies: vpPolicies
-      })
-    } else {
-      newAllowList.values.push({
-        request_credentials: [],
-        vc_policies: [],
-        vp_policies: vpPolicies
-      })
+    if (hasAny) {
+      const newAllowList: CredentialPolicyBased = {
+        type: 'SSIpolicy',
+        values: []
+      }
+
+      const entry: Record<string, any> = {}
+
+      if (requestCredentials?.length > 0) {
+        entry.request_credentials = requestCredentials
+      }
+      if (
+        updatedCredentials?.vcPolicies?.length > 0 &&
+        requestCredentials?.length > 0
+      ) {
+        entry.vc_policies = updatedCredentials.vcPolicies
+      }
+      if (vpPolicies?.length > 0) {
+        entry.vp_policies = vpPolicies
+      }
+
+      if (Object.keys(entry).length > 0) {
+        newAllowList.values.push(entry as any)
+        newCredentials.allow.push(newAllowList)
+      }
     }
-    newCredentials.allow.push(newAllowList)
   }
 
   if (updatedCredentials?.allow?.length > 0) {
