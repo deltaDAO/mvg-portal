@@ -11,6 +11,12 @@ interface CookieOptions {
   sameSite?: SAME_SITE_OPTIONS
 }
 
+function addTwoMonths(date: Date): Date {
+  const newDate = new Date(date)
+  newDate.setMonth(newDate.getMonth() + 2)
+  return newDate
+}
+
 export const DEFAULT_COOKIE_OPTIONS: CookieOptions = {
   expires: 365,
   sameSite: SAME_SITE_OPTIONS.STRICT
@@ -22,7 +28,7 @@ export const SESSION_COOKIE_OPTIONS: CookieOptions = {
 }
 
 export const TWO_MONTHS_COOKIE_OPTIONS: CookieOptions = {
-  expires: new Date().setMonth(new Date().getMonth() + 2),
+  expires: addTwoMonths(new Date()),
   sameSite: SAME_SITE_OPTIONS.STRICT
 }
 
