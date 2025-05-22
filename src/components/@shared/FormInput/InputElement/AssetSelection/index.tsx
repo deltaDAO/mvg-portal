@@ -15,12 +15,21 @@ const cx = classNames.bind(styles)
 
 export interface AssetSelectionAsset {
   did: string
+  serviceId: string
+  serviceName: string
   name: string
   price: number
   tokenSymbol: string
   checked: boolean
   symbol: string
   isAccountIdWhitelisted: boolean
+}
+
+export interface PublisherTrustedAlgorithmService {
+  did: string
+  filesChecksum: string
+  containerSectionChecksum: string
+  serviceId: string
 }
 
 export function Empty({ message }: { message: string }) {
@@ -88,7 +97,7 @@ export default function AssetSelection({
                   id={slugify(asset.did)}
                   className={styleClassesInput}
                   {...props}
-                  checked={selected && asset.did === selected}
+                  checked={selected && asset.serviceId === selected}
                   defaultChecked={asset.checked}
                   disabled={disabled || !asset.isAccountIdWhitelisted}
                   type={multiple ? 'checkbox' : 'radio'}
@@ -107,7 +116,7 @@ export default function AssetSelection({
                         disabled: !asset.isAccountIdWhitelisted
                       })}
                     >
-                      {asset.name}
+                      {asset.name} - {asset.serviceName}
                     </Dotdotdot>
                     <a
                       className={styles.link}

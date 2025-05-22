@@ -10,7 +10,7 @@
 }
 
 .priceWrapper > div {
-  justify-content: flex-start;
+  justify-content: first baseline;
 }
 
 .priceWrapper > div:last-of-type {

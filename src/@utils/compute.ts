@@ -291,6 +291,7 @@ export async function createTrustedAlgorithmList(
   assetChainId: number,
   cancelToken: CancelToken
 ): Promise<PublisherTrustedAlgorithms[]> {
+  console.log('selectedAlgorithms', selectedAlgorithms)
   const trustedAlgorithms: PublisherTrustedAlgorithms[] = []
 
   // Condition to prevent app from hitting Aquarius with empty DID list
@@ -320,7 +321,7 @@ export async function createTrustedAlgorithmList(
       did: selectedAlgorithm.id,
       containerSectionChecksum: getHash(containerChecksum),
       filesChecksum: filesChecksum?.[0]?.checksum,
-      serviceId: ''
+      serviceId: selectedAlgorithm?.credentialSubject?.services?.[0].id
     }
     trustedAlgorithms.push(trustedAlgorithm)
   }

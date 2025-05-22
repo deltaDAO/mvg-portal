@@ -54,7 +54,6 @@ export default function SearchPage({
       setLoading(true)
       setTotalResults(undefined)
       const queryResult = await getResults(parsed, chainIds, newCancelToken())
-      console.log('queryResult', queryResult)
       setQueryResult(queryResult)
 
       setTotalResults(queryResult?.totalResults || 0)

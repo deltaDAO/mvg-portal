@@ -53,3 +53,13 @@
 .fillGreen {
   fill: var(--color-primary);
 }
+
+.buttonWrapper {
+  position: relative;
+  top: -10px;
+  width: 100%;
+  height: 10px;
+  display: flex;
+  justify-content: left;
+  align-items: first baseline;
+}

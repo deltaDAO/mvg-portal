@@ -39,7 +39,7 @@ export default function FormEditComputeService({
       const baseParams = {
         chainIds: [chainId],
         sort: { sortBy: SortTermOptions.Created },
-        filters: [getFilterTerm('metadata.type', 'algorithm')]
+        filters: [getFilterTerm('credentialSubject.metadata.type', 'algorithm')]
       } as BaseQueryParams
 
       const query = generateBaseQuery(baseParams)
