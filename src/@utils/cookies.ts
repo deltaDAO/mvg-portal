@@ -6,8 +6,29 @@ export enum SAME_SITE_OPTIONS {
   NONE = 'none'
 }
 
-export const DEFAULT_COOKIE_OPTIONS = {
+interface CookieOptions {
+  expires?: number | Date
+  sameSite?: SAME_SITE_OPTIONS
+}
+
+function addTwoMonths(date: Date): Date {
+  const newDate = new Date(date)
+  newDate.setMonth(newDate.getMonth() + 2)
+  return newDate
+}
+
+export const DEFAULT_COOKIE_OPTIONS: CookieOptions = {
   expires: 365,
+  sameSite: SAME_SITE_OPTIONS.STRICT
+}
+
+export const SESSION_COOKIE_OPTIONS: CookieOptions = {
+  expires: undefined, // undefined means session cookie
+  sameSite: SAME_SITE_OPTIONS.STRICT
+}
+
+export const TWO_MONTHS_COOKIE_OPTIONS: CookieOptions = {
+  expires: addTwoMonths(new Date()),
   sameSite: SAME_SITE_OPTIONS.STRICT
 }
 
