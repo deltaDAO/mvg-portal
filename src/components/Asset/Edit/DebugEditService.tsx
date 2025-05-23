@@ -35,7 +35,6 @@ export default function DebugEditService({
 
   useEffect(() => {
     async function transformValues() {
-      console.log(' debug here', values, service.compute)
       let updatedFiles = service.files
       try {
         if (values.files[0]?.url) {
@@ -93,12 +92,10 @@ export default function DebugEditService({
           values.consumerParameters
         )
       }
-      console.log('updatedService:', updatedService)
       setUpdatedService(updatedService)
     }
 
     transformValues()
-    console.log('values heree', values)
     setValuePreview(previewDebugPatch(values))
   }, [values, asset, newCancelToken, service])
 

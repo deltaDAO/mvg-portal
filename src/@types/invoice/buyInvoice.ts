@@ -752,7 +752,6 @@ export async function decodeBuyDataSet(
         fromBlock,
         toBlock
       )
-      console.log('events', events)
 
       if (events) {
         return decodeBuy(

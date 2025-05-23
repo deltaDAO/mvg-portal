@@ -45,7 +45,7 @@ export default function AssetSelection({
   ...props
 }: {
   assets: AssetSelectionAsset[]
-  selected?: string
+  selected?: string[]
   multiple?: boolean
   disabled?: boolean
   accountId?: string
@@ -92,20 +92,23 @@ export default function AssetSelection({
                 : asset
             )
             .map((asset: AssetSelectionAsset) => (
-              <div className={styles.row} key={asset.did}>
+              <div className={styles.row} key={asset.serviceId}>
                 <input
-                  id={slugify(asset.did)}
+                  id={slugify(asset.serviceId)}
                   className={styleClassesInput}
                   {...props}
-                  checked={selected && asset.serviceId === selected}
+                  checked={selected && selected.includes(asset.serviceId)}
                   defaultChecked={asset.checked}
                   disabled={disabled || !asset.isAccountIdWhitelisted}
                   type={multiple ? 'checkbox' : 'radio'}
-                  value={asset.did}
+                  value={JSON.stringify({
+                    algoDid: asset.did,
+                    serviceId: asset.serviceId
+                  })}
                 />
                 <label
                   className={styles.label}
-                  htmlFor={slugify(asset.did)}
+                  htmlFor={slugify(asset.serviceId)}
                   title={asset.name}
                 >
                   <h3 className={styles.title}>
