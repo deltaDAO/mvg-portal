@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import Dotdotdot from 'react-dotdotdot'
 import slugify from 'slugify'
 import PriceUnit from '@shared/Price/PriceUnit'
@@ -10,6 +10,7 @@ import WhitelistIndicator from '@components/Asset/AssetActions/Compute/Whitelist
 import { Badge } from '@components/@shared/VerifiedBadge'
 import styles from './index.module.css'
 import classNames from 'classnames/bind'
+import Pagination from '@components/@shared/Pagination'
 
 const cx = classNames.bind(styles)
 
@@ -51,6 +52,41 @@ export default function AssetSelection({
   accountId?: string
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
+  const [filteredAssets, setFilteredAssets] = useState<AssetSelectionAsset[]>(
+    []
+  )
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const assetsPerPage = 5
+
+  const handlePageOnChange = (page: number) => {
+    const pageNumber = page + 1
+    setCurrentPage(pageNumber)
+  }
+
+  useEffect(() => {
+    if (!assets || !Array.isArray(assets)) {
+      setFilteredAssets([])
+      return
+    }
+
+    const result = assets.filter((asset) =>
+      searchValue !== ''
+        ? asset.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+          asset.did.toLowerCase().includes(searchValue.toLowerCase()) ||
+          asset.symbol.toLowerCase().includes(searchValue.toLowerCase())
+        : true
+    )
+
+    setFilteredAssets(result)
+    setCurrentPage(1)
+  }, [assets, searchValue])
+
+  const totalPages = Math.ceil(filteredAssets.length / assetsPerPage)
+  const paginatedAssets = filteredAssets.slice(
+    (currentPage - 1) * assetsPerPage,
+    currentPage * assetsPerPage
+  )
 
   const styleClassesWrapper = `${styles.selection} ${
     disabled ? styles.disabled : ''
@@ -61,6 +97,7 @@ export default function AssetSelection({
 
   function handleSearchInput(e: ChangeEvent<HTMLInputElement>) {
     setSearchValue(e.target.value)
+    setCurrentPage(1)
   }
 
   return (
@@ -81,17 +118,8 @@ export default function AssetSelection({
         ) : assets && !assets.length ? (
           <Empty message="No assets found." />
         ) : (
-          assets
-            .filter((asset: AssetSelectionAsset) =>
-              searchValue !== ''
-                ? asset.name
-                    .toLowerCase()
-                    .includes(searchValue.toLowerCase()) ||
-                  asset.did.toLowerCase().includes(searchValue.toLowerCase()) ||
-                  asset.symbol.toLowerCase().includes(searchValue.toLowerCase())
-                : asset
-            )
-            .map((asset: AssetSelectionAsset) => (
+          <>
+            {paginatedAssets.map((asset: AssetSelectionAsset) => (
               <div className={styles.row} key={asset.serviceId}>
                 <input
                   id={slugify(asset.serviceId)}
@@ -165,7 +193,15 @@ export default function AssetSelection({
                   )}
                 </label>
               </div>
-            ))
+            ))}
+            {totalPages > 1 && (
+              <Pagination
+                totalPages={totalPages}
+                currentPage={currentPage}
+                onChangePage={handlePageOnChange}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

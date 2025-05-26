@@ -640,7 +640,6 @@ export async function transformPublishFormToDdo(
       )
     })
   }
-  console.log('newService:', newService)
   const newCredentials = generateCredentials(values.credentials)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
