@@ -26,15 +26,13 @@ export default function Nft() {
     ? nftMetadata.image
     : formikState?.values?.metadata?.nft?.image_data
     ? formikState.values.metadata.nft.image_data
-    : null
+    : formikState?.values?.metadata?.nft?.image
+    ? formikState.values.metadata.nft.image
+    : '/images/cliox.svg' // Default ClioX logo when no NFT image is available
 
   return (
     <div className={styles.nftImage}>
-      {nftImage ? (
-        <img src={nftImage} alt={asset?.nft?.name} />
-      ) : (
-        <div className={styles.placeholder} />
-      )}
+      <img src={nftImage} alt={asset?.nft?.name || 'ClioX Logo'} />
 
       {(nftMetadata || asset?.nftAddress) && (
         <Tooltip
