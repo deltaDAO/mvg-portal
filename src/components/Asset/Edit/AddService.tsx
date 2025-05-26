@@ -184,14 +184,15 @@ export default function AddService({
         serviceEndpoint: values.providerUrl.url,
         timeout: mapTimeoutStringToSeconds(values.timeout),
         credentials,
-        ...(values.access === 'compute' && {
-          compute: await transformComputeFormToServiceComputeOptions(
-            values,
-            defaultServiceComputeOptions,
-            asset.credentialSubject?.chainId,
-            newCancelToken()
-          )
-        }),
+        ...(values.access === 'compute' &&
+          asset.credentialSubject?.metadata?.type === 'dataset' && {
+            compute: await transformComputeFormToServiceComputeOptions(
+              values,
+              defaultServiceComputeOptions,
+              asset.credentialSubject?.chainId,
+              newCancelToken()
+            )
+          }),
         consumerParameters: transformConsumerParameters(
           values.consumerParameters
         ),
@@ -284,6 +285,7 @@ export default function AddService({
             <FormAddService
               data={content.form.data}
               chainId={asset.credentialSubject?.chainId}
+              assetType={asset.credentialSubject?.metadata?.type}
             />
 
             <Web3Feedback

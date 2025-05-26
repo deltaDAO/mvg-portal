@@ -21,12 +21,14 @@ export default function FormEditService({
   data,
   chainId,
   service,
-  accessDetails
+  accessDetails,
+  assetType
 }: {
   data: FormFieldContent[]
   chainId: number
   service: Service
   accessDetails: AccessDetails
+  assetType: string
 }): ReactElement {
   const formUniqueId = service.id // because BoxSelection component is not a Formik component
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
@@ -136,7 +138,7 @@ export default function FormEditService({
         disabled={true}
       />
 
-      {values.access === 'compute' && (
+      {values.access === 'compute' && assetType === 'dataset' && (
         <FormEditComputeService
           chainId={chainId}
           serviceEndpoint={service.serviceEndpoint} // if we allow editing serviceEndpoint, we need to update it here

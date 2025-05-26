@@ -6,15 +6,22 @@ import { transformPublishFormToDdo } from '../_utils'
 import styles from './index.module.css'
 import { previewDebugPatch } from '@utils/ddo'
 import { Asset } from 'src/@types/Asset'
+import { useCancelToken } from '@hooks/useCancelToken'
 
 export default function Debug(): ReactElement {
   const { values } = useFormikContext<FormPublishData>()
   const [valuePreview, setValuePreview] = useState({})
   const [ddo, setDdo] = useState<Asset>()
+  const newCancelToken = useCancelToken()
 
   useEffect(() => {
     async function makeDdo() {
-      const ddo = await transformPublishFormToDdo(values)
+      const ddo = await transformPublishFormToDdo(
+        values,
+        null,
+        null,
+        newCancelToken()
+      )
       setValuePreview(previewDebugPatch(values))
       setDdo(ddo)
     }

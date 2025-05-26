@@ -70,6 +70,9 @@ import {
 } from '@utils/wallet/ssiWallet'
 import { isCredentialPolicyBased } from '@utils/credentials'
 import { State } from 'src/@types/ddo/State'
+import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
+import { CancelToken } from 'axios'
+import { ComputeEditForm } from '@components/Asset/Edit/_types'
 
 function makeDid(nftAddress: string, chainId: string): string {
   return (
@@ -475,7 +478,8 @@ export async function transformPublishFormToDdo(
   // Those 2 are only passed during actual publishing process
   // so we can always assume if they are not passed, we are on preview.
   datatokenAddress?: string,
-  nftAddress?: string
+  nftAddress?: string,
+  cancelToken?: CancelToken
 ): Promise<Asset> {
   const { metadata, services, user } = values
   const { chainId, accountId } = user
@@ -600,6 +604,12 @@ export async function transformPublishFormToDdo(
     (await getEncryptedFiles(file, chainId, providerUrl.url))
 
   const newServiceCredentials = generateCredentials(credentials)
+  const valuesCompute: ComputeEditForm = {
+    allowAllPublishedAlgorithms: values.allowAllPublishedAlgorithms,
+    publisherTrustedAlgorithms: values.publisherTrustedAlgorithms,
+    publisherTrustedAlgorithmPublishers:
+      values.publisherTrustedAlgorithmPublishers
+  }
   const newService: Service = {
     id: getHash(datatokenAddress + filesEncrypted),
     type: access,
@@ -620,9 +630,17 @@ export async function transformPublishFormToDdo(
       '@language': values.services[0].description?.language || ''
     },
     state: State.Active,
-    credentials: newServiceCredentials
+    credentials: newServiceCredentials,
+    ...(values.services[0].access === 'compute' && {
+      compute: await transformComputeFormToServiceComputeOptions(
+        valuesCompute,
+        values.services[0].computeOptions,
+        values.user?.chainId,
+        cancelToken
+      )
+    })
   }
-
+  console.log('newService:', newService)
   const newCredentials = generateCredentials(values.credentials)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

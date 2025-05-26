@@ -311,7 +311,6 @@ export async function createTrustedAlgorithmList(
     [assetChainId],
     cancelToken
   )
-
   if (!selectedAssets || selectedAssets.length === 0) return []
 
   for (const { algoDid, serviceId } of parsed) {
@@ -351,11 +350,10 @@ export async function transformComputeFormToServiceComputeOptions(
         assetChainId,
         cancelToken
       )
-
-  // TODO: add support for selecting trusted publishers and transforming here.
-  // This only deals with basics so we don't accidentially allow all accounts
-  // to be trusted.
-  const publisherTrustedAlgorithmPublishers: string[] = []
+  const publisherTrustedAlgorithmPublishers: string[] =
+    values.publisherTrustedAlgorithmPublishers?.length > 0
+      ? values.publisherTrustedAlgorithmPublishers
+      : []
 
   const privacy: Compute = {
     ...currentOptions,

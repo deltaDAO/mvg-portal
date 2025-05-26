@@ -89,6 +89,21 @@ export default function FormEditComputeService({
             .options
         }
       />
+
+      <Field
+        {...getFieldContent(
+          'publisherTrustedAlgorithmPublishers',
+          content.form.data
+        )}
+        component={Input}
+        name="publisherTrustedAlgorithmPublishers"
+        options={
+          getFieldContent(
+            'publisherTrustedAlgorithmPublishers',
+            content.form.data
+          ).options
+        }
+      />
     </>
   )
 }
