@@ -134,7 +134,7 @@ export function getQueryString(
   const baseParams = {
     chainIds: [chainId],
     sort: { sortBy: SortTermOptions.Created },
-    filters: [getFilterTerm('metadata.type', 'algorithm')],
+    filters: [getFilterTerm('credentialSubject.metadata.type', 'algorithm')],
     esPaginationOptions: {
       size: 3000
     }
@@ -174,6 +174,7 @@ export async function getAlgorithmsForAsset(
     ),
     token
   )
+  console.log('queryResults', gueryResults)
   const algorithms: Asset[] = gueryResults?.results
   return algorithms
 }
@@ -287,7 +288,7 @@ export async function getComputeJobs(
 }
 
 export async function createTrustedAlgorithmList(
-  selectedAlgorithms: string[], // list of DIDs,
+  selectedAlgorithms: string[],
   assetChainId: number,
   cancelToken: CancelToken
 ): Promise<PublisherTrustedAlgorithms[]> {
@@ -298,29 +299,39 @@ export async function createTrustedAlgorithmList(
   if (!selectedAlgorithms || selectedAlgorithms.length === 0)
     return trustedAlgorithms
 
+  const parsed = selectedAlgorithms.map(
+    (s) =>
+      JSON.parse(s) as {
+        algoDid: string
+        serviceId: string
+      }
+  )
+  const didList = parsed.map((algo) => algo.algoDid)
   const selectedAssets = await getAssetsFromDids(
-    selectedAlgorithms,
+    didList,
     [assetChainId],
     cancelToken
   )
-
   if (!selectedAssets || selectedAssets.length === 0) return []
 
-  for (const selectedAlgorithm of selectedAssets) {
+  for (const { algoDid, serviceId } of parsed) {
+    const asset = selectedAssets.find((a) => a.id === algoDid)
+    if (!asset) continue
+    const svc = asset.credentialSubject.services.find((s) => s.id === serviceId)
+    if (!svc) continue
     const filesChecksum = await getFileDidInfo(
-      selectedAlgorithm?.id,
-      selectedAlgorithm?.credentialSubject?.services?.[0].id,
-      selectedAlgorithm?.credentialSubject?.services?.[0]?.serviceEndpoint,
+      asset.id,
+      svc.id,
+      svc.serviceEndpoint,
       true
     )
     const containerChecksum =
-      selectedAlgorithm.credentialSubject?.metadata.algorithm.container
-        .entrypoint
+      asset.credentialSubject?.metadata.algorithm.container.entrypoint
     const trustedAlgorithm: PublisherTrustedAlgorithms = {
-      did: selectedAlgorithm.id,
+      did: asset.id,
       containerSectionChecksum: getHash(containerChecksum),
       filesChecksum: filesChecksum?.[0]?.checksum,
-      serviceId: ''
+      serviceId: svc.id
     }
     trustedAlgorithms.push(trustedAlgorithm)
   }
@@ -340,11 +351,10 @@ export async function transformComputeFormToServiceComputeOptions(
         assetChainId,
         cancelToken
       )
-
-  // TODO: add support for selecting trusted publishers and transforming here.
-  // This only deals with basics so we don't accidentially allow all accounts
-  // to be trusted.
-  const publisherTrustedAlgorithmPublishers: string[] = []
+  const publisherTrustedAlgorithmPublishers: string[] =
+    values.publisherTrustedAlgorithmPublishers?.length > 0
+      ? values.publisherTrustedAlgorithmPublishers
+      : []
 
   const privacy: Compute = {
     ...currentOptions,

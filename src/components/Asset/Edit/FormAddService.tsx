@@ -18,10 +18,12 @@ import { supportedLanguages } from '../languageType'
 
 export default function FormAddService({
   data,
-  chainId
+  chainId,
+  assetType
 }: {
   data: FormFieldContent[]
   chainId: number
+  assetType: string
 }): ReactElement {
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
   const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
@@ -128,7 +130,7 @@ export default function FormAddService({
         options={accessTypeOptions}
       />
 
-      {values.access === 'compute' && (
+      {values.access === 'compute' && assetType === 'dataset' && (
         <FormEditComputeService
           chainId={chainId}
           serviceEndpoint={values.providerUrl.url}

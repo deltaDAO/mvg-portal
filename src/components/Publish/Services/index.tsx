@@ -12,6 +12,7 @@ import { PolicyEditor } from '@components/@shared/PolicyEditor'
 import { getDefaultPolicies } from '../_utils'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { supportedLanguages } from '@components/Asset/languageType'
+import FormEditComputeService from '@components/Asset/Edit/FormEditComputeService'
 
 const accessTypeOptionsTitles = getFieldContent(
   'access',
@@ -163,6 +164,13 @@ export default function ServicesFields(): ReactElement {
             name="services[0].access"
             options={accessTypeOptions}
           />
+          {values.services[0]?.access === 'compute' && (
+            <FormEditComputeService
+              chainId={values?.user?.chainId}
+              serviceEndpoint={values.services[0].providerUrl.url}
+              serviceCompute={values.services[0]?.computeOptions}
+            />
+          )}
         </>
       )}
       <Field

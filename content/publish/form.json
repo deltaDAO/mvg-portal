@@ -314,6 +314,29 @@
         "disclaimerValues": ["Download"]
       },
       {
+        "name": "publisherTrustedAlgorithms",
+        "label": "Selected Algorithms",
+        "help": "Choose one or multiple algorithms you trust to allow them to run on this dataset.",
+        "type": "assetSelectionMultiple",
+        "multiple": true,
+        "options": [],
+        "sortOptions": false
+      },
+      {
+        "name": "allowAllPublishedAlgorithms",
+        "label": "All Algorithms",
+        "help": "Allow any published algorithm to run on this dataset.",
+        "type": "checkbox",
+        "options": ["Allow any published algorithm"]
+      },
+      {
+        "name": "publisherTrustedAlgorithmPublishers",
+        "label": "Trusted Algorithm Publishers",
+        "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
+        "help": "You can optionally specify the wallet addresses of trusted publishers. Only algorithms published by these addresses will be allowed to run.",
+        "type": "credentials"
+      },
+      {
         "name": "timeout",
         "label": "Timeout",
         "help": "Define how long buyers should be able to download the dataset again after the initial purchase.",

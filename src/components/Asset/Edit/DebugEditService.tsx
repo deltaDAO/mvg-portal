@@ -60,7 +60,6 @@ export default function DebugEditService({
       } catch (error) {
         LoggerInstance.error('Error encrypting files:', error.message)
       }
-
       const credentials: Credential = generateCredentials(values.credentials)
       const updatedService: Service = {
         ...service,
@@ -78,21 +77,21 @@ export default function DebugEditService({
             : assetStateToNumber(values.state),
         files: updatedFiles, // TODO: check if this works,
         credentials,
-        ...(values.access === 'compute' && {
-          compute: await transformComputeFormToServiceComputeOptions(
-            values,
-            service.compute,
-            asset.credentialSubject?.chainId,
-            newCancelToken()
-          )
-        })
+        ...(values.access === 'compute' &&
+          asset.credentialSubject?.metadata?.type === 'dataset' && {
+            compute: await transformComputeFormToServiceComputeOptions(
+              values,
+              service.compute,
+              asset.credentialSubject?.chainId,
+              newCancelToken()
+            )
+          })
       }
       if (values.consumerParameters) {
         updatedService.consumerParameters = transformConsumerParameters(
           values.consumerParameters
         )
       }
-
       setUpdatedService(updatedService)
     }
 
