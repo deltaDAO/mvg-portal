@@ -134,7 +134,7 @@ export function getQueryString(
   const baseParams = {
     chainIds: [chainId],
     sort: { sortBy: SortTermOptions.Created },
-    filters: [getFilterTerm('metadata.type', 'algorithm')],
+    filters: [getFilterTerm('credentialSubject.metadata.type', 'algorithm')],
     esPaginationOptions: {
       size: 3000
     }
@@ -174,6 +174,7 @@ export async function getAlgorithmsForAsset(
     ),
     token
   )
+  console.log('queryResults', gueryResults)
   const algorithms: Asset[] = gueryResults?.results
   return algorithms
 }

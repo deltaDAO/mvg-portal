@@ -45,7 +45,6 @@ export default function ConsumerParameters({
 }): ReactElement {
   const [tabs, setTabs] = useState<TabsItem[]>([])
   const [tabIndex, setTabIndex] = useState(0)
-
   const updateTabs = useCallback(() => {
     const tabs = []
     if (service.consumerParameters?.length > 0) {
@@ -63,7 +62,7 @@ export default function ConsumerParameters({
     // TODO -
     if (
       selectedAlgorithmAsset?.credentialSubject?.services[0]?.consumerParameters
-        .length > 0
+        ?.length > 0
     ) {
       tabs.push({
         title: 'Algo Service',

@@ -121,7 +121,8 @@ export default function FormStartCompute({
     accessDetails.type !== 'free'
   )
 
-  function getAlgorithmAsset(algorithmId: string): Asset {
+  function getAlgorithmAsset(algo: string): Asset {
+    const algorithmId = JSON.parse(algo).algoDid || algo
     let assetDdo = null
     ddoListAlgorithms.forEach((ddo: Asset) => {
       if (ddo.id === algorithmId) assetDdo = ddo
@@ -198,12 +199,9 @@ export default function FormStartCompute({
       !datasetOrderPrice || hasPreviousOrder || hasDatatoken
         ? new Decimal(0)
         : new Decimal(datasetOrderPrice).toDecimalPlaces(MAX_DECIMALS)
-    const priceAlgo =
-      !algoOrderPrice ||
-      hasPreviousOrderSelectedComputeAsset ||
-      hasDatatokenSelectedComputeAsset
-        ? new Decimal(0)
-        : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
+    const priceAlgo = new Decimal(
+      selectedAlgorithmAsset?.accessDetails[0]?.price
+    ).toDecimalPlaces(MAX_DECIMALS)
     const providerFees = providerFeeAmount
       ? new Decimal(providerFeeAmount).toDecimalPlaces(MAX_DECIMALS)
       : new Decimal(0)
