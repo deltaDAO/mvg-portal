@@ -24,7 +24,7 @@ export default function Automation(): ReactElement {
     balance?.approved &&
       setHasZeroERC20TokenBalances(
         Object.keys(balance?.approved)?.filter(
-          (token) => Number(balance?.approved[token]) <= 0
+          (token) => Number(balance.approved[token]) <= 0
         ).length > 0
       )
     setHasZeroNetworkTokenBalance(Number(balance?.native.balance) <= 0)
