@@ -6,6 +6,8 @@ import Debug from './Debug'
 import Caret from '@images/caret.svg'
 import Onboarding from './Onboarding'
 import ExternalContent from './ExternalContent'
+import SsiWalletApiOption from './SsiWalletApiOption'
+import appConfig from 'app.config.cjs'
 
 export default function UserPreferences(): ReactElement {
   return (
@@ -18,6 +20,11 @@ export default function UserPreferences(): ReactElement {
           <li>
             <Onboarding />
           </li>
+          {appConfig.ssiEnabled && (
+            <li>
+              <SsiWalletApiOption />
+            </li>
+          )}
           <li>
             <Debug />
           </li>

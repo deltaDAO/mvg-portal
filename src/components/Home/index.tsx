@@ -21,6 +21,16 @@ import { useSearchBarStatus } from '@context/SearchBarStatus'
 import { useUserPreferences } from '@context/UserPreferences'
 import Container from '@components/@shared/atoms/Container'
 import OnboardingSection from '@components/@shared/Onboarding'
+import SsiApiModal from '@components/Header/Wallet/SsiApiModal'
+import {
+  connectToWallet,
+  setSsiWalletApiOverride,
+  STORAGE_KEY
+} from '@utils/wallet/ssiWallet'
+import appConfig from 'app.config.cjs'
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { useAccount, useSigner } from 'wagmi'
+import { useSsiWallet } from '@context/SsiWallet'
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window?.location.href)
@@ -177,10 +187,53 @@ function HeroSection({
 }
 
 export default function HomePage(): ReactElement {
-  const { showOnboardingModule } = useUserPreferences()
+  const { showOnboardingModule, showSsiWalletModule, setShowSsiWalletModule } =
+    useUserPreferences()
+  const { isConnected } = useAccount()
+  const { data: signer } = useSigner()
+  const { sessionToken, setSessionToken } = useSsiWallet()
+
+  const [overrideApi, setOverrideApi] = useState(() => {
+    return sessionStorage.getItem(STORAGE_KEY) || appConfig.ssiWalletApi
+  })
+
+  useEffect(() => {
+    const storedApi = sessionStorage.getItem(STORAGE_KEY)
+
+    if (isConnected && signer && appConfig.ssiEnabled && !sessionToken) {
+      if (storedApi) {
+        connectToWallet(signer)
+          .then((session) => {
+            setSessionToken(session)
+          })
+          .catch((error) => LoggerInstance.error(error))
+      } else {
+        setShowSsiWalletModule(false)
+      }
+    }
+  }, [isConnected, signer, sessionToken])
+
+  async function handleSsiConnect() {
+    try {
+      setSsiWalletApiOverride(overrideApi)
+      const session = await connectToWallet(signer!)
+      setSessionToken(session)
+      setShowSsiWalletModule(false)
+    } catch (error) {
+      LoggerInstance.error(error)
+    }
+  }
 
   return (
     <>
+      {showSsiWalletModule && (
+        <SsiApiModal
+          apiValue={overrideApi}
+          onChange={setOverrideApi}
+          onConnect={handleSsiConnect}
+          onClose={() => setShowSsiWalletModule(false)}
+        />
+      )}
       <HeroSection />
       {showOnboardingModule && (
         <>

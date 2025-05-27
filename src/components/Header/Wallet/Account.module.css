@@ -124,3 +124,41 @@ svg.caret {
     margin-right: calc(var(--spacer) / 6);
   }
 }
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  z-index: 9999;
+  position: relative;
+  max-width: 400px;
+  width: max-content;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.inputWrapper label {
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.inputWrapper input {
+  width: 100%;
+  min-width: 200px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
