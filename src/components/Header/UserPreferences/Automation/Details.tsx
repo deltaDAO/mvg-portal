@@ -86,9 +86,9 @@ export default function Details({
   useEffect(() => {
     if (!automationConfig.roughTxGasEstimate) return
     setRoughTxCountEstimate(
-      Number(balance.native.balance) / automationConfig.roughTxGasEstimate
+      Number(balance?.native?.balance) / automationConfig?.roughTxGasEstimate
     )
-  }, [balance.native, automationConfig?.roughTxGasEstimate])
+  }, [balance?.native, automationConfig?.roughTxGasEstimate])
 
   return (
     <div className={styles.details}>
