@@ -8,10 +8,10 @@ export default function SsiWalletApiOption(): ReactElement {
   return (
     <Input
       label="Ssi Wallet API"
-      help="Show the onboarding tutorial module on the homepage."
+      help="Set a new SSI wallet API."
       name="ssiWalletApi"
       type="checkbox"
-      options={['Update Ssi Wallet API']}
+      options={['Update SSI Wallet API']}
       checked={showSsiWalletModule}
       onChange={() => setShowSsiWalletModule(!showSsiWalletModule)}
     />

@@ -8,8 +8,10 @@ import Onboarding from './Onboarding'
 import ExternalContent from './ExternalContent'
 import SsiWalletApiOption from './SsiWalletApiOption'
 import appConfig from 'app.config.cjs'
+import { useAccount } from 'wagmi'
 
 export default function UserPreferences(): ReactElement {
+  const { isConnected } = useAccount()
   return (
     <Tooltip
       content={
@@ -20,7 +22,7 @@ export default function UserPreferences(): ReactElement {
           <li>
             <Onboarding />
           </li>
-          {appConfig.ssiEnabled && (
+          {appConfig.ssiEnabled && isConnected && (
             <li>
               <SsiWalletApiOption />
             </li>
