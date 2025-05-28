@@ -6,6 +6,7 @@ import { SsiKeyDesc, SsiWalletDesc } from 'src/@types/SsiWallet'
 import {
   connectToWallet,
   getSsiVerifiableCredentialType,
+  getSsiWalletApi,
   getWalletKeys,
   getWallets,
   isSessionValid
@@ -154,6 +155,11 @@ export function SsiWallet(): ReactElement {
           >
             <div className={styles.panelColumn}>
               <h3>SSI Wallets & Keys</h3>
+
+              <div className={`${styles.marginBottom1}`}>
+                <label>SSI Wallet URL:</label>
+                <div className={styles.inputField}>{getSsiWalletApi()}</div>
+              </div>
 
               <label htmlFor="ssiWallets" className={styles.marginBottom7px}>
                 Choose your wallet:

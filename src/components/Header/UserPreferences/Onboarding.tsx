@@ -2,7 +2,7 @@ import { ReactElement } from 'react'
 import { useUserPreferences } from '@context/UserPreferences'
 import Input from '@shared/FormInput'
 
-export default function ExternalContent(): ReactElement {
+export default function Onboarding(): ReactElement {
   const { showOnboardingModule, setShowOnboardingModule } = useUserPreferences()
 
   return (
