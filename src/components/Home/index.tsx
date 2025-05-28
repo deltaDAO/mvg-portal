@@ -21,17 +21,6 @@ import { useSearchBarStatus } from '@context/SearchBarStatus'
 import { useUserPreferences } from '@context/UserPreferences'
 import Container from '@components/@shared/atoms/Container'
 import OnboardingSection from '@components/@shared/Onboarding'
-import SsiApiModal from '@components/Header/Wallet/SsiApiModal'
-import {
-  connectToWallet,
-  setSsiWalletApiOverride,
-  STORAGE_KEY
-} from '@utils/wallet/ssiWallet'
-import appConfig from 'app.config.cjs'
-import { LoggerInstance } from '@oceanprotocol/lib'
-import { useAccount, useSigner } from 'wagmi'
-import { useSsiWallet } from '@context/SsiWallet'
-import SsiWalletManager from '@components/Header/SsiWallet/SsiWalletManager'
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window?.location.href)
@@ -192,7 +181,6 @@ export default function HomePage(): ReactElement {
 
   return (
     <>
-      <SsiWalletManager />
       <HeroSection />
       {showOnboardingModule && (
         <>

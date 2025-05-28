@@ -4,7 +4,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.3); /* semi-transparent backdrop */
+  background: rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,7 +12,7 @@
 }
 
 .modal {
-  position: relative; /* ✅ this is required for .closeButton to be positioned inside */
+  position: relative;
   background: white;
   padding: 2rem;
   border-radius: 10px;
@@ -28,6 +28,8 @@
   flex-direction: column;
   gap: 0.25rem;
   font-size: 0.9rem;
+  color: black;
+  font-weight: bold;
 }
 
 .modal input {
@@ -65,7 +67,7 @@
   font-weight: bold;
   cursor: pointer;
   color: #666;
-  z-index: 1; /* just in case it's behind something */
+  z-index: 1;
 }
 
 .closeButton:hover {
