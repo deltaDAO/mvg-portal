@@ -1,0 +1,42 @@
+.wrapper {
+  margin: var(--spacer) auto;
+  display: flex;
+  gap: var(--spacer);
+  flex-direction: column;
+}
+
+.wrapper > * {
+  flex-grow: 1;
+}
+
+.image {
+  margin: auto;
+  max-width: 500px;
+  flex-shrink: 0;
+  height: auto;
+}
+
+.detail {
+  margin: calc(var(--spacer) / 2) auto;
+  padding: calc(var(--spacer) / 2);
+  border: 1px solid var(--border-color);
+}
+
+.title {
+  text-transform: capitalize;
+  margin-bottom: 0;
+}
+
+.info {
+  margin-top: calc(var(--spacer) / 4);
+}
+
+@media screen and (min-width: 60rem) {
+  .wrapper {
+    flex-direction: row;
+    max-width: 1100px;
+  }
+  .image {
+    max-width: 50%;
+  }
+}

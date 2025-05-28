@@ -18,6 +18,15 @@
       "link": "/verify"
     },
     {
+      "name": "Use Cases",
+      "subItems": [
+        {
+          "name": "Road Damage Detection",
+          "link": "/usecases/roaddamage"
+        }
+      ]
+    },
+    {
       "name": "Partners",
       "subItems": [
         {

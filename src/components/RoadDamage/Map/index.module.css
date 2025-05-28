@@ -1,0 +1,15 @@
+.mapContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tooltip {
+  padding: calc(var(--spacer) / 4);
+}
+
+.types {
+  display: flex;
+  flex-direction: column;
+}
