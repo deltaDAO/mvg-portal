@@ -29,14 +29,13 @@ const Account = forwardRef((props, ref: any) => {
 
     if (isConnected && signer && appConfig.ssiEnabled && !sessionToken) {
       if (storedApi) {
-        // ✅ Auto-connect directly using stored API
+        console.log('here')
         connectToWallet(signer)
           .then((session) => {
             setSessionToken(session)
           })
           .catch((error) => LoggerInstance.error(error))
       } else {
-        // 🔁 Ask user for input if no stored API
         setShowInput(true)
       }
     }
