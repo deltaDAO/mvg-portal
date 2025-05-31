@@ -1,7 +1,7 @@
 {
   "hero": {
     "title": "Explore archival data securely.|Build knowledge collectively.",
-    "description": "ClioX is a new kind of privacy-first platform—built by and for researchers, archivists, and cultural institutions. It's designed to help you explore, share, and collaborate on archival material with AI without compromising on privacy or ownership.",
+    "description": "Clio-X is a new kind of privacy-first platform—built by and for researchers, archivists, and cultural institutions. It's designed to help you explore, share, and collaborate on archival material with AI without compromising on privacy or ownership.",
     "primaryCta": "Get Started",
     "secondaryCta": "Learn More",
     "searchPlaceholder": "Search for archival materials..."
@@ -11,7 +11,7 @@
     "partnerText": [
       "This platform was designed to be built together. From memory institutions to research labs, our partners are shaping a shared Web3 ecosystem grounded in community, care, and transparency.",
       "As public institutions increasingly digitize and share records online, and as more digital-born records become accessible, the risk of using AI, including exposing sensitive personal data, has grown significantly.",
-      "ClioX addresses these risks by allowing archives to manage consent and usage rights for their data while ensuring that computations are performed where the data is stored. This means that the raw data is never moved or exposed; only the results or insights from the computations are shared.",
+      "Clio-X addresses these risks by allowing archives to manage consent and usage rights for their data while ensuring that computations are performed where the data is stored. This means that the raw data is never moved or exposed; only the results or insights from the computations are shared.",
       "The platform also provides AI + visual analytic tools to help researchers analyze large volumes of archival data and discover new insights among them."
     ]
   },
@@ -83,7 +83,7 @@
         "answer": "Compute-to-Data is a privacy-first approach where computing tasks go to the data—not the other way around. Instead of moving sensitive data across systems, algorithms are sent to the data's location to run computations securely."
       },
       {
-        "question": "Who is ClioX?",
+        "question": "Who is the Muse Clio?",
         "answer": "In Greek mythology, Clio was the Muse of history, one of nine daughters of Zeus and Mnemosyne. She is reflected as having a role in preserving and making famous historical events and is often depicted with objects like scrolls, stone tablets or a lyre symbolizing her connection to history and storytelling."
       }
     ]
