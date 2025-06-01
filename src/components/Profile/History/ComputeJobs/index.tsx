@@ -1,14 +1,14 @@
-import { ReactElement, useState } from 'react'
-import Time from '@shared/atoms/Time'
-import Table, { TableOceanColumn } from '@shared/atoms/Table'
-import Button from '@shared/atoms/Button'
-import Details from './Details'
-import Refresh from '@images/refresh.svg'
 import { useUserPreferences } from '@context/UserPreferences'
-import NetworkName from '@shared/NetworkName'
-import styles from './index.module.css'
+import Refresh from '@images/refresh.svg'
 import AssetListTitle from '@shared/AssetListTitle'
+import NetworkName from '@shared/NetworkName'
+import Button from '@shared/atoms/Button'
+import Table, { TableOceanColumn } from '@shared/atoms/Table'
+import Time from '@shared/atoms/Time'
+import { ReactElement, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
+import Details from './Details'
+import styles from './index.module.css'
 
 export function Status({ children }: { children: string }): ReactElement {
   return <div className={styles.status}>{children}</div>
@@ -41,27 +41,65 @@ const columns: TableOceanColumn<ComputeJobMetaData>[] = [
   {
     name: 'Status',
     selector: (row) => <Status>{row.statusText}</Status>
-  },
-  {
-    name: 'Actions',
-    selector: (row) => <Details job={row} />
   }
 ]
+
+const defaultActionsColumn: TableOceanColumn<ComputeJobMetaData> = {
+  name: 'Actions',
+  selector: (row) => <Details job={row} />
+}
+
+export type GetCustomActions = (job: ComputeJobMetaData) => {
+  label: ReactElement
+  onClick: (job: ComputeJobMetaData) => void
+}[]
 
 export default function ComputeJobs({
   minimal,
   jobs,
   isLoading,
-  refetchJobs
+  refetchJobs,
+  getActions,
+  hideDetails
 }: {
   minimal?: boolean
   jobs?: ComputeJobMetaData[]
   isLoading?: boolean
   refetchJobs?: any
+  getActions?: (job: ComputeJobMetaData) => {
+    label: ReactElement
+    onClick: (job: ComputeJobMetaData) => void
+  }[]
+  hideDetails?: boolean
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chainIds } = useUserPreferences()
-  const [columnsMinimal] = useState([columns[5], columns[6], columns[4]])
+
+  const [actionsColumn, setActionsColumn] =
+    useState<TableOceanColumn<ComputeJobMetaData>>(defaultActionsColumn)
+
+  useEffect(() => {
+    if (!getActions) return
+    setActionsColumn({
+      name: defaultActionsColumn.name,
+      selector: (row) => (
+        <div className={styles.customActios}>
+          {getActions(row).map((action, i) => (
+            <Button
+              key={`compute-job-action-${action.label}-${i}`}
+              size="small"
+              style="text"
+              onClick={() => action.onClick(row)}
+              className={styles.customActionButton}
+            >
+              {action.label}
+            </Button>
+          ))}
+          {!hideDetails && <Details job={row} />}
+        </div>
+      )
+    })
+  }, [getActions])
 
   return accountId ? (
     <>
@@ -79,7 +117,12 @@ export default function ComputeJobs({
         </Button>
       )}
       <Table
-        columns={minimal ? columnsMinimal : columns}
+        columns={
+          minimal
+            ? // for minimal view, we only want 'Status', actions and 'Finished'
+              [columns[5], actionsColumn, columns[4]]
+            : [...columns, actionsColumn]
+        }
         data={jobs}
         isLoading={isLoading}
         defaultSortFieldId="row.dateCreated"

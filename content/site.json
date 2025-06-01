@@ -21,8 +21,8 @@
       "name": "Use Cases",
       "subItems": [
         {
-          "name": "Road Damage Detection",
-          "link": "/usecases/roaddamage"
+          "name": "Text Analysis Visualization",
+          "link": "/usecases/textAnalysis"
         }
       ]
     },

@@ -10,7 +10,7 @@ import { toast } from 'react-toastify'
 import { useAccount, useSigner } from 'wagmi'
 import { useAutomation } from '../../@context/Automation/AutomationProvider'
 import { useUseCases } from '../../@context/UseCases'
-import { RoadDamageUseCaseData } from '../../@context/UseCases/models/RoadDamage.model'
+import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
 import { useUserPreferences } from '../../@context/UserPreferences'
 import { useCancelToken } from '../../@hooks/useCancelToken'
 import { getAsset } from '../../@utils/aquarius'
@@ -19,50 +19,60 @@ import Accordion from '../@shared/Accordion'
 import Button from '../@shared/atoms/Button'
 import ComputeJobs, { GetCustomActions } from '../Profile/History/ComputeJobs'
 import styles from './JobList.module.css'
-import { ROAD_DAMAGE_ALGO_DIDS, ROAD_DAMAGE_RESULT_ZIP } from './_constants'
-import {
-  getMapColor,
-  getResultBinaryData,
-  transformBinaryToRoadDamageResult
-} from './_utils'
+import { TEXT_ANALYSIS_ALGO_DIDS, TEXT_ANALYSIS_RESULT_ZIP } from './_constants'
+// import {
+//   getMapColor,
+//   getResultBinaryData,
+//   transformBinaryToRoadDamageResult
+// } from './_utils'
 
-export default function JobList(props: {
-  setMapData: (mapData: RoadDamageUseCaseData[]) => void
-  scrollToMapRef: MutableRefObject<HTMLDivElement>
-}): ReactElement {
+import { TextAnalysisResult } from './_types'
+
+export default function JobList(): ReactElement {
   const { chainIds } = useUserPreferences()
-  const roadDamageAlgoDids: string[] = Object.values(ROAD_DAMAGE_ALGO_DIDS)
+  const textAnalysisAlgoDids: string[] = Object.values(TEXT_ANALYSIS_ALGO_DIDS)
 
   const { address: accountId } = useAccount()
   const { data: signer } = useSigner()
   const { autoWallet } = useAutomation()
 
-  const { fileName: resultFileName } = ROAD_DAMAGE_RESULT_ZIP
+  const { fileName: resultFileName } = TEXT_ANALYSIS_RESULT_ZIP
+
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [refetchJobs, setRefetchJobs] = useState(false)
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const newCancelToken = useCancelToken()
 
-  const { setMapData, scrollToMapRef } = props
+  // TESTLOG
+  console.log('JobList component rendering')
 
   const {
-    roadDamageList,
-    clearRoadDamages,
-    createOrUpdateRoadDamage,
-    deleteRoadDamage
+    textAnalysisList,
+    clearTextAnalysis,
+    createOrUpdateTextAnalysis,
+    deleteTextAnalysis
   } = useUseCases()
 
-  useEffect(() => {
-    if (!roadDamageList) {
-      setMapData([])
-      return
-    }
+  // TESTLOG
+  console.log('useUseCases hook result:', {
+    hasTextAnalysisList: !!textAnalysisList,
+    textAnalysisListLength: textAnalysisList?.length
+  })
 
-    setMapData(roadDamageList)
-  }, [roadDamageList, setMapData])
+  // useEffect(() => {
+  //   if (!roadDamageList) {
+  //     setMapData([])
+  //     return
+  //   }
+
+  //   setMapData(roadDamageList)
+  // }, [roadDamageList, setMapData])
 
   const fetchJobs = useCallback(async () => {
     if (!accountId) {
+      // TESTLOG
+      console.log('No account ID found')
+
       return
     }
 
@@ -91,10 +101,11 @@ export default function JobList(props: {
         // Filter computeJobs for dids configured in _constants
         computeJobs.computeJobs.filter(
           (job) =>
-            roadDamageAlgoDids.includes(job.algoDID) &&
-            job.status === 70 &&
-            job.results.filter((result) => result.filename === resultFileName)
-              .length > 0
+            textAnalysisAlgoDids.includes(job.algoDID) && job.status === 70
+
+          // TODO: Uncomment this when the resultFileName is available
+          // job.results.filter((result) => result.filename === resultFileName)
+          // .length > 0
         )
       )
       setIsLoadingJobs(!computeJobs.isLoaded)
@@ -104,7 +115,7 @@ export default function JobList(props: {
     }
   }, [
     chainIds,
-    roadDamageAlgoDids,
+    textAnalysisAlgoDids,
     accountId,
     autoWallet,
     resultFileName,
@@ -116,13 +127,16 @@ export default function JobList(props: {
   }, [refetchJobs, chainIds])
 
   const addComputeResultToUseCaseDB = async (job: ComputeJobMetaData) => {
-    if (roadDamageList.find((row) => row.job.jobId === job.jobId)) {
+    // TESTLOG
+    console.log('Adding compute result to DB:', job)
+
+    if (textAnalysisList.find((row) => row.job.jobId === job.jobId)) {
       toast.info('This compute job result already is part of the map view.')
       return
     }
 
     const dataForSameInputExists =
-      roadDamageList.filter(
+      textAnalysisList.filter(
         (row) =>
           job.inputDID?.filter((did) => row.job.inputDID?.includes(did))
             .length === job.inputDID?.length
@@ -151,17 +165,16 @@ export default function JobList(props: {
         job.results.findIndex((result) => result.filename === resultFileName)
       )
 
-      const binary = await getResultBinaryData(jobResult)
-      const resultData = await transformBinaryToRoadDamageResult(binary)
+      const resultData = JSON.parse(jobResult) as TextAnalysisResult[]
 
       if (!resultData) return
 
-      const newuseCaseData: RoadDamageUseCaseData = {
+      const newuseCaseData: TextAnalysisUseCaseData = {
         job,
         result: resultData
       }
 
-      await createOrUpdateRoadDamage(newuseCaseData)
+      await createOrUpdateTextAnalysis(newuseCaseData)
       toast.success('Added a new compute result')
     } catch (error) {
       LoggerInstance.error(error)
@@ -173,20 +186,20 @@ export default function JobList(props: {
     if (!confirm(`Are you sure you want to delete the result from map view?`))
       return
 
-    const rowToDelete = roadDamageList.find(
+    const rowToDelete = textAnalysisList.find(
       (row) => row.job.jobId === job.jobId
     )
     if (!rowToDelete) return
 
-    await deleteRoadDamage(rowToDelete.id)
-    toast.success(`Removed compute job result from map view.`)
+    await deleteTextAnalysis(rowToDelete.id)
+    toast.success(`Removed compute job result from visualization.`)
   }
 
   const clearData = async () => {
     if (!confirm('All data will be removed from your cache. Proceed?')) return
 
-    await clearRoadDamages()
-    toast.success('Road Damage data was cleared.')
+    await clearTextAnalysis()
+    toast.success('Text Analysis data was cleared.')
   }
 
   const getCustomActionsPerComputeJob: GetCustomActions = (
@@ -204,19 +217,19 @@ export default function JobList(props: {
         deleteJobResultFromDB(job)
       }
     }
-    const colorLegend = {
-      label: (
-        <span
-          className={styles.legend}
-          style={{ backgroundColor: getMapColor(job.inputDID) }}
-        />
-      ),
-      onClick: () => {
-        if (scrollToMapRef?.current) scrollToMapRef.current.scrollIntoView()
-      }
-    }
+    // const colorLegend = {
+    //   label: (
+    //     <span
+    //       className={styles.legend}
+    //       style={{ backgroundColor: getMapColor(job.inputDID) }}
+    //     />
+    //   ),
+    //   onClick: () => {
+    //     if (scrollToMapRef?.current) scrollToMapRef.current.scrollIntoView()
+    //   }
+    // }
 
-    const viewContainsResult = roadDamageList.find(
+    const viewContainsResult = textAnalysisList.find(
       (row) => row.job.jobId === job.jobId
     )
 
@@ -224,7 +237,7 @@ export default function JobList(props: {
 
     if (viewContainsResult) {
       actionArray.push(deleteAction)
-      actionArray.push(colorLegend)
+      // actionArray.push(colorLegend)
     } else actionArray.push(addAction)
 
     return actionArray

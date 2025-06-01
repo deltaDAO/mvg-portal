@@ -1,8 +1,8 @@
 import { ReactElement } from 'react'
 import Page from '@shared/Page'
 import { useRouter } from 'next/router'
-import content from '../../../content/pages/roaddamage.json'
-import RoadDamage from '../../components/RoadDamage'
+import content from '../../../content/pages/textAnalysis.json'
+import TextAnalysis from '../../components/TextAnalysis'
 
 export default function PageRoadDamage(): ReactElement {
   const router = useRouter()
@@ -11,7 +11,7 @@ export default function PageRoadDamage(): ReactElement {
 
   return (
     <Page title={title} description={description} uri={router.route}>
-      <RoadDamage />
+      <TextAnalysis />
     </Page>
   )
 }

@@ -3,17 +3,17 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { ReactElement, ReactNode, createContext, useContext } from 'react'
 import { DATABASE_NAME, DATABASE_VERSION } from './_contants'
 import {
-  ROAD_DAMAGE_TABLE,
-  RoadDamageUseCaseData
-} from './models/RoadDamage.model'
+  TEXT_ANALYSIS_TABLE,
+  TextAnalysisUseCaseData
+} from './models/TextAnalysis.model'
 import { LoggerInstance } from '@oceanprotocol/lib'
 
 export class UseCaseDB extends Dexie {
-  roadDamages!: Table<RoadDamageUseCaseData>
+  textAnalysises!: Table<TextAnalysisUseCaseData>
   constructor() {
     super(DATABASE_NAME)
     this.version(DATABASE_VERSION).stores({
-      ...ROAD_DAMAGE_TABLE
+      ...TEXT_ANALYSIS_TABLE
     })
   }
 }
@@ -21,30 +21,30 @@ export class UseCaseDB extends Dexie {
 export const database = new UseCaseDB()
 
 interface UseCasesValue {
-  createOrUpdateRoadDamage: (
-    roadDamage: RoadDamageUseCaseData
+  createOrUpdateTextAnalysis: (
+    textAnalysis: TextAnalysisUseCaseData
   ) => Promise<IndexableType>
-  roadDamageList: RoadDamageUseCaseData[]
-  updateRoadDamages: (
-    roadDamages: RoadDamageUseCaseData[]
+  textAnalysisList: TextAnalysisUseCaseData[]
+  updateTextAnalysis: (
+    textAnalysiseses: TextAnalysisUseCaseData[]
   ) => Promise<IndexableType>
-  deleteRoadDamage: (id: number) => Promise<void>
-  clearRoadDamages: () => Promise<void>
+  deleteTextAnalysis: (id: number) => Promise<void>
+  clearTextAnalysis: () => Promise<void>
 }
 
 const UseCasesContext = createContext(null)
 
 function UseCasesProvider({ children }: { children: ReactNode }): ReactElement {
-  const roadDamageList = useLiveQuery(() => database.roadDamages.toArray())
+  const textAnalysisList = useLiveQuery(() => database.textAnalysises.toArray())
 
-  const createOrUpdateRoadDamage = async (
-    roadDamage: RoadDamageUseCaseData
+  const createOrUpdateTextAnalysis = async (
+    textAnalysis: TextAnalysisUseCaseData
   ) => {
     if (
-      !roadDamage.job ||
-      !roadDamage.job.jobId ||
-      !roadDamage.result ||
-      roadDamage.result.length < 1
+      !textAnalysis.job ||
+      !textAnalysis.job.jobId ||
+      !textAnalysis.result ||
+      textAnalysis.result.length < 1
     ) {
       LoggerInstance.error(
         `[UseCases] cannot insert without job or result data!`
@@ -52,59 +52,59 @@ function UseCasesProvider({ children }: { children: ReactNode }): ReactElement {
       return
     }
 
-    const exists = roadDamageList.find(
-      (row) => roadDamage.job.jobId === row.job.jobId
+    const exists = textAnalysisList.find(
+      (row) => textAnalysis.job.jobId === row.job.jobId
     )
 
-    const updated = await database.roadDamages.put(
+    const updated = await database.textAnalysises.put(
       {
-        ...roadDamage
+        ...textAnalysis
       },
       exists?.id
     )
 
-    LoggerInstance.log(`[UseCases]: create or update roadDamages table`, {
-      roadDamage,
+    LoggerInstance.log(`[UseCases]: create or update textAnalysis table`, {
+      textAnalysis,
       updated
     })
 
     return updated
   }
 
-  const updateRoadDamages = async (
-    roadDamages: RoadDamageUseCaseData[]
+  const updateTextAnalysis = async (
+    textAnalysises: TextAnalysisUseCaseData[]
   ): Promise<IndexableType> => {
-    const updated = await database.roadDamages.bulkPut(roadDamages)
+    const updated = await database.textAnalysises.bulkPut(textAnalysises)
 
-    LoggerInstance.log(`[UseCases]: update roadDamages table`, {
-      roadDamages,
+    LoggerInstance.log(`[UseCases]: update textAnalysis table`, {
+      textAnalysises,
       updated
     })
 
     return updated
   }
 
-  const deleteRoadDamage = async (id: number) => {
-    await database.roadDamages.delete(id)
+  const deleteTextAnalysis = async (id: number) => {
+    await database.textAnalysises.delete(id)
 
-    LoggerInstance.log(`[UseCases]: deleted #${id} from roadDamages table`)
+    LoggerInstance.log(`[UseCases]: deleted #${id} from textAnalysis table`)
   }
 
-  const clearRoadDamages = async () => {
-    await database.roadDamages.clear()
+  const clearTextAnalysis = async () => {
+    await database.textAnalysises.clear()
 
-    LoggerInstance.log(`[UseCases]: cleared roadDamages table`)
+    LoggerInstance.log(`[UseCases]: cleared textAnalysis table`)
   }
 
   return (
     <UseCasesContext.Provider
       value={
         {
-          createOrUpdateRoadDamage,
-          roadDamageList,
-          updateRoadDamages,
-          deleteRoadDamage,
-          clearRoadDamages
+          createOrUpdateTextAnalysis,
+          textAnalysisList,
+          updateTextAnalysis,
+          deleteTextAnalysis,
+          clearTextAnalysis
         } satisfies UseCasesValue
       }
     >
