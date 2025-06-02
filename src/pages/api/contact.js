@@ -17,7 +17,6 @@ export default async function handler(req, res) {
     // Map our fields to the exact WordPress field names
     formData.append('your-name', req.body.your_name || '')
     formData.append('your-email', req.body.your_email || '')
-    formData.append('your-subject', req.body.your_subject || '')
     formData.append('your-message', req.body.your_message || '')
 
     // Contact Form 7 required fields (updated with correct values from WordPress)

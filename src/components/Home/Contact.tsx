@@ -8,7 +8,6 @@ import { submitContactForm } from '../../utils/submitContactForm'
 interface FormData {
   name: string
   email: string
-  subject: string
   message: string
 }
 
@@ -19,7 +18,6 @@ export default function ContactAndOnboarding() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
-    subject: '',
     message: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -41,7 +39,7 @@ export default function ContactAndOnboarding() {
       if (result.status === 'mail_sent') {
         setSubmitStatus('success')
         setSubmitMessage(result.message || 'Message sent successfully!')
-        setFormData({ name: '', email: '', subject: '', message: '' }) // Reset form
+        setFormData({ name: '', email: '', message: '' }) // Reset form
       } else {
         setSubmitStatus('error')
         setSubmitMessage(
@@ -248,30 +246,6 @@ export default function ContactAndOnboarding() {
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#734B3D] focus:border-[#734B3D]"
                   placeholder="your@email.com"
-                  required
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="subject"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Subject
-                </label>
-                <input
-                  type="text"
-                  id="subject"
-                  name="subject"
-                  value={formData.subject}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      subject: e.target.value
-                    }))
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#734B3D] focus:border-[#734B3D]"
-                  placeholder="Subject of your message"
                   required
                 />
               </div>

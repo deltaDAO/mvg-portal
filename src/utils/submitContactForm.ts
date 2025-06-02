@@ -13,7 +13,6 @@ interface ContactForm7Response {
 interface ContactFormData {
   name: string
   email: string
-  subject: string
   message: string
 }
 
@@ -30,7 +29,6 @@ export async function submitContactForm(
         // These keys must match the "name" attributes in the WordPress form
         your_name: data.name,
         your_email: data.email,
-        your_subject: data.subject,
         your_message: data.message
       })
     })
