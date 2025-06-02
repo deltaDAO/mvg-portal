@@ -88,7 +88,8 @@
     "urql": "^3.0.3",
     "use-debounce": "^9.0.4",
     "wagmi": "^0.12.12",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^6.5.13",
@@ -99,6 +100,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
     "@types/d3": "^7.4.3",
+    "@types/d3-cloud": "^1.2.9",
     "@types/jest": "^29.5.3",
     "@types/js-cookie": "^3.0.3",
     "@types/loadable__component": "^5.13.4",

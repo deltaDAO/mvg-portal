@@ -899,7 +899,7 @@ export const useWordCloudStore = create<WordCloudStore>((set, get) => ({
 
     try {
       // Import the dataStore
-      const { fetchWordCloudData } = await import('@/store/dataStore').then(
+      const { fetchWordCloudData } = await import('../../store/dataStore').then(
         (module) => module.useDataStore.getState()
       )
 

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { WordData } from './types'
-import { useDataStore } from '@/store/dataStore'
+import { useWordCloudStore } from './store'
+import { useDataStore } from '../../store/dataStore'
 
 export const useWordCloudData = () => {
   const [words, setWords] = useState<WordData[]>([])
