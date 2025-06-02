@@ -170,25 +170,8 @@ export default function JobList(): ReactElement {
         )
       )
 
-      const resultFiles = job.results.slice(0, 5) // only first 5 file are compute results
-      const resultUrls = await Promise.all(
-        resultFiles.map(async (file, index) => {
-          const url = await ProviderInstance.getComputeResultUrl(
-            datasetDDO.services[0].serviceEndpoint,
-            signerToUse,
-            job.jobId,
-            index
-          )
-          return {
-            filename: file.filename,
-            url: url
-          }
-        })
-      )
-
       const newuseCaseData: TextAnalysisUseCaseData = {
-        job,
-        result: resultUrls
+        job
       }
 
       await createOrUpdateTextAnalysis(newuseCaseData)
