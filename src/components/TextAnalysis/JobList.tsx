@@ -20,14 +20,11 @@ import Button from '../@shared/atoms/Button'
 import ComputeJobs, { GetCustomActions } from '../Profile/History/ComputeJobs'
 import styles from './JobList.module.css'
 import { TEXT_ANALYSIS_ALGO_DIDS, TEXT_ANALYSIS_RESULT_ZIP } from './_constants'
-import {
-  getResultBinaryData,
-  transformBinaryToRoadDamageResult
-} from './_utils'
-
 import { TextAnalysisResult } from './_types'
 
-export default function JobList(): ReactElement {
+export default function JobList(props: {
+  setTextAnalysisData: (textAnalysisData: TextAnalysisUseCaseData[]) => void
+}): ReactElement {
   const { chainIds } = useUserPreferences()
   const textAnalysisAlgoDids: string[] = Object.values(TEXT_ANALYSIS_ALGO_DIDS)
 
@@ -35,12 +32,14 @@ export default function JobList(): ReactElement {
   const { data: signer } = useSigner()
   const { autoWallet } = useAutomation()
 
-  const { fileName: resultFileName } = TEXT_ANALYSIS_RESULT_ZIP
+  // const { fileName: resultFileName } = TEXT_ANALYSIS_RESULT_ZIP
 
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [refetchJobs, setRefetchJobs] = useState(false)
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const newCancelToken = useCancelToken()
+
+  const { setTextAnalysisData } = props
 
   // TESTLOG
   console.log('JobList component rendering')
@@ -58,14 +57,14 @@ export default function JobList(): ReactElement {
     textAnalysisListLength: textAnalysisList?.length
   })
 
-  // useEffect(() => {
-  //   if (!roadDamageList) {
-  //     setMapData([])
-  //     return
-  //   }
+  useEffect(() => {
+    if (!textAnalysisList) {
+      setTextAnalysisData([])
+      return
+    }
 
-  //   setMapData(roadDamageList)
-  // }, [roadDamageList, setMapData])
+    setTextAnalysisData(textAnalysisList)
+  }, [textAnalysisList, setTextAnalysisData])
 
   const fetchJobs = useCallback(async () => {
     if (!accountId) {
@@ -117,7 +116,7 @@ export default function JobList(): ReactElement {
     textAnalysisAlgoDids,
     accountId,
     autoWallet,
-    resultFileName,
+    // resultFileName,
     newCancelToken
   ])
 
@@ -126,52 +125,69 @@ export default function JobList(): ReactElement {
   }, [refetchJobs, chainIds])
 
   const addComputeResultToUseCaseDB = async (job: ComputeJobMetaData) => {
-    // TESTLOG
-    console.log('Adding compute result to DB:', job)
-
     if (textAnalysisList.find((row) => row.job.jobId === job.jobId)) {
       toast.info('This compute job result already is part of the map view.')
       return
     }
 
-    const dataForSameInputExists =
-      textAnalysisList.filter(
-        (row) =>
-          job.inputDID?.filter((did) => row.job.inputDID?.includes(did))
-            .length === job.inputDID?.length
-      ).length > 0
-
-    if (dataForSameInputExists)
-      if (
-        !confirm(
-          'Compute job results for a job with the same dataset inputs already exists. Add anyways?'
-        )
-      )
-        return
-
     try {
       const datasetDDO = await getAsset(job.inputDID[0], newCancelToken())
-
       const signerToUse =
         job.owner.toLowerCase() === autoWallet?.address.toLowerCase()
           ? autoWallet
           : signer
 
-      const jobResult = await ProviderInstance.getComputeResultUrl(
-        datasetDDO.services[0].serviceEndpoint,
-        signerToUse,
-        job.jobId,
-        // TODO: Uncomment this when the resultFileName is available
-        // job.results.findIndex((result) => result.filename === resultFileName)
-        job.results.findIndex(
-          (result) =>
-            result.filename?.toLowerCase().endsWith('.json') ||
-            result.filename?.toLowerCase().endsWith('.csv')
+      const resultFiles = job.results.slice(0, 5)
+      const results = []
+
+      for (let i = 0; i < resultFiles.length; i++) {
+        const url = await ProviderInstance.getComputeResultUrl(
+          datasetDDO.services[0].serviceEndpoint,
+          signerToUse,
+          job.jobId,
+          i
         )
-      )
+
+        const response = await fetch(url)
+        const content = await response.text()
+
+        results.push({
+          filename: resultFiles[i].filename,
+          url: url,
+          content: content
+        })
+
+        // add time delay to avoid nonce collision
+        if (i < resultFiles.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 200)) // time delay
+        }
+      }
+
+      const textAnalysisResults: TextAnalysisResult[] = results.map((file) => {
+        const filename = file.filename.toLowerCase()
+        let content = file.content
+
+        if (filename.endsWith('.json')) {
+          content = JSON.parse(file.content)
+        }
+
+        if (filename.includes('wordcloud') || filename.includes('word_cloud')) {
+          return { wordcloud: content }
+        } else if (filename.includes('sentiment')) {
+          return { sentiment: content }
+        } else if (filename.includes('date_distribution')) {
+          return { dataDistribution: content }
+        } else if (filename.includes('email_distribution')) {
+          return { emailDistribution: content }
+        } else if (filename.includes('document_summary')) {
+          return { documentSummary: content }
+        }
+        return {}
+      })
 
       const newuseCaseData: TextAnalysisUseCaseData = {
-        job
+        job,
+        result: textAnalysisResults
       }
 
       await createOrUpdateTextAnalysis(newuseCaseData)
@@ -219,17 +235,6 @@ export default function JobList(): ReactElement {
         deleteJobResultFromDB(job)
       }
     }
-    // const colorLegend = {
-    //   label: (
-    //     <span
-    //       className={styles.legend}
-    //       style={{ backgroundColor: getMapColor(job.inputDID) }}
-    //     />
-    //   ),
-    //   onClick: () => {
-    //     if (scrollToMapRef?.current) scrollToMapRef.current.scrollIntoView()
-    //   }
-    // }
 
     const viewContainsResult = textAnalysisList.find(
       (row) => row.job.jobId === job.jobId

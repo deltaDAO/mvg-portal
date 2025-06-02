@@ -1,51 +1,50 @@
-// export interface RoadDamageMetadata {
-//   containedTypes: RoadDamageType[]
-//   amountOfRecords: number
-//   inputDataFormat: string
-//   outputDataFormat: 'json' | 'yaml'
-//   usedDataOntology: string
+// export interface DateDistribution {
+//   time: string
+//   count: number
 // }
 
-// export interface RoadDamage {
-//   type: RoadDamageType
-//   damageClass: string
-//   lastObservation: string
-//   heading: string
-//   gpsCoordinates: GPSCoordinate
-//   confidence: number
+// export interface EmailDistribution {
+//   emails_per_day: number
 // }
 
-// export interface RoadDamageResult {
-//   resultName: string
-//   roadDamages: RoadDamage[]
+// export interface FrequentWord {
+//   word: string
+//   count: number
 // }
 
-// export interface GPSCoordinate {
-//   lat: number
-//   lng: number
+// export interface DocumentSummary {
+//   totalDocuments: number
+//   totalWords: number
+//   uniqueWords: number
+//   vocabularyDensity: number
+//   readabilityIndex: number
+//   wordsPerSentence: number
+//   frequentWords: FrequentWord[]
+//   created: string
 // }
 
-// export type RoadDamageType = string
-
-// export interface RoadDamageImage {
+// export interface Sentiment {
 //   name: string
-//   path: string
-//   data: string
-//   type: string
+//   values: number[][]
 // }
 
-// /**
-//  * Used to display data in map view
-//  */
-// export interface RoadDamageResultWithImage {
-//   image: RoadDamageImage
-//   roadDamages: RoadDamage[]
+// export interface WordCloud {
+//   value: string
+//   count: number
+// }
+
+// export interface TextAnalysisResult {
+//   dataDistribution?: DateDistribution[]
+//   emailDistribution?: EmailDistribution[]
+//   documentSummary?: DocumentSummary
+//   sentiment?: Sentiment
+//   wordcloud?: { wordCloudData: WordCloud[]}
 // }
 
 export interface TextAnalysisResult {
-  dataDistribution?: any
-  documentSummary?: any
-  emailDistribution?: any
-  sentiment?: any
-  wordcloud?: any
+  dataDistribution?: string | object
+  emailDistribution?: string | object
+  documentSummary?: string | object
+  sentiment?: string | object
+  wordcloud?: string | object
 }

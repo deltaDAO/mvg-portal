@@ -8,16 +8,87 @@ import DocumentSummary from '../components/DocumentSummary'
 import Logo from '../components/Logo'
 import { TextAnalysisUseCaseData } from '@/@context/UseCases/models/TextAnalysis.model'
 
+// define interfaces
+interface WordCloudData {
+  wordCloudData: Array<{ value: string; count: number }>
+}
+
+interface SentimentData {
+  name: string
+  values: [string, number][]
+}
+
+interface DocumentSummaryData {
+  totalDocuments: number
+  totalWords: number
+  uniqueWords: number
+  vocabularyDensity: number
+  readabilityIndex: number
+  wordsPerSentence: number
+  frequentWords: Array<{ word: string; count: number }>
+  created: string
+}
+
+interface DistributionData {
+  time: string
+  count: number
+}
+
 export interface TextAnalysisProps {
   data: TextAnalysisUseCaseData[]
 }
 
 export default function Home({ data }: TextAnalysisProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const [wordCloudData, setWordCloudData] = useState<WordCloudData | null>(null)
+  const [sentimentData, setSentimentData] = useState<SentimentData | null>(null)
+  const [dateDistributionData, setDateDistributionData] = useState<
+    DistributionData[] | null
+  >(null)
+  const [emailDistributionData, setEmailDistributionData] = useState<
+    DistributionData[] | null
+  >(null)
+  const [documentSummaryData, setDocumentSummaryData] =
+    useState<DocumentSummaryData | null>(null)
 
   useEffect(() => {
+    if (data && data.length > 0) {
+      // Process each file from the data
+      data.forEach((item) => {
+        const filename = item.job.results[0].filename.toLowerCase()
+        const content = item.job.results[0].content
+
+        try {
+          if (
+            filename.includes('wordcloud') ||
+            filename.includes('word_cloud')
+          ) {
+            setWordCloudData(JSON.parse(content) as WordCloudData)
+          } else if (filename.includes('sentiment')) {
+            setSentimentData(JSON.parse(content) as SentimentData)
+          } else if (
+            filename.includes('date_distribution') ||
+            filename.includes('date')
+          ) {
+            setDateDistributionData(JSON.parse(content) as DistributionData[])
+          } else if (
+            filename.includes('email_distribution') ||
+            filename.includes('email')
+          ) {
+            setEmailDistributionData(JSON.parse(content) as DistributionData[])
+          } else if (
+            filename.includes('document_summary') ||
+            filename.includes('summary')
+          ) {
+            setDocumentSummaryData(JSON.parse(content) as DocumentSummaryData)
+          }
+        } catch (error) {
+          console.error(`Error parsing ${filename}:`, error)
+        }
+      })
+    }
     setIsLoading(false)
-  }, [])
+  }, [data])
 
   if (isLoading) {
     return (
