@@ -123,24 +123,26 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
     >
       <div
         ref={modalRef}
-        className="bg-white rounded-xl shadow-lg max-w-md w-full overflow-hidden"
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg max-w-md w-full overflow-hidden"
         onClick={handleContentClick}
       >
-        <div className="px-8 py-3 bg-gray-50 flex justify-between items-center">
-          <h3 className="text-lg font-medium text-gray-800">{title}</h3>
+        <div className="px-8 py-3 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+          <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200">
+            {title}
+          </h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl transition-colors cursor-pointer"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-xl transition-colors cursor-pointer"
             aria-label="Close modal"
           >
             ×
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 dark:bg-gray-800">
           {isStoplist && (
             <div className="flex items-start mb-4">
-              <div className="mr-2 flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mt-0.5">
+              <div className="mr-2 flex-shrink-0 w-8 h-8 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-500 dark:text-blue-300 mt-0.5">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -157,11 +159,11 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
                 </svg>
               </div>
               <div>
-                <p className="text-gray-700 text-sm mb-1">
+                <p className="text-gray-700 dark:text-gray-200 text-sm mb-1">
                   Enter one word per line that you want to exclude from the
                   visualization.
                 </p>
-                <p className="text-gray-500 text-xs">
+                <p className="text-gray-500 dark:text-gray-400 text-xs">
                   {`Currently using ${language} stopwords. Changes will be saved to your custom stoplist.`}
                 </p>
               </div>
@@ -169,7 +171,7 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
           )}
           {!isStoplist && (
             <div className="flex items-start mb-4">
-              <div className="mr-2 flex-shrink-0 w-8 h-8 rounded-full bg-green-50 flex items-center justify-center text-green-500 mt-0.5">
+              <div className="mr-2 flex-shrink-0 w-8 h-8 rounded-full bg-green-50 dark:bg-green-900/30 flex items-center justify-center text-green-500 dark:text-green-300 mt-0.5">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -186,11 +188,11 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
                 </svg>
               </div>
               <div>
-                <p className="text-gray-700 text-sm mb-1">
+                <p className="text-gray-700 dark:text-gray-200 text-sm mb-1">
                   Enter one word per line that you want to include in the
                   visualization.
                 </p>
-                <p className="text-gray-500 text-xs">
+                <p className="text-gray-500 dark:text-gray-400 text-xs">
                   Only words in this list will be shown if whitelist is enabled.
                 </p>
               </div>
@@ -209,13 +211,15 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
                   ? 'Enter words to exclude...'
                   : 'Enter words to include...'
               }
-              className="w-full h-64 border border-gray-300 rounded-md p-3 font-mono text-sm resize-none focus:ring-blue-500 focus:border-blue-500"
+              className="w-full h-64 border border-gray-300 dark:border-gray-600 rounded-md p-3 font-mono text-sm resize-none focus:ring-indigo-500 dark:focus:ring-indigo-600 focus:border-indigo-500 dark:focus:border-indigo-700 focus:outline-none dark:bg-gray-700 dark:text-gray-200"
               aria-label={isStoplist ? 'Stopwords list' : 'Whitelist'}
             />
-            <div className="flex justify-between text-xs text-gray-500 mt-1.5">
+            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1.5">
               <div>
                 {hasDuplicates && (
-                  <span className="text-amber-600">⚠️ Contains duplicates</span>
+                  <span className="text-amber-600 dark:text-amber-500">
+                    ⚠️ Contains duplicates
+                  </span>
                 )}
               </div>
               <div>
@@ -224,8 +228,8 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
             </div>
           </div>
 
-          <div className="bg-gray-50 rounded p-2.5 mb-2">
-            <p className="text-xs text-gray-600">
+          <div className="bg-gray-50 dark:bg-gray-700 rounded p-2.5 mb-2">
+            <p className="text-xs text-gray-600 dark:text-gray-300">
               <strong>Tips:</strong> Words are case-insensitive. Empty lines and
               duplicates will be removed automatically.
               {isStoplist &&
@@ -235,10 +239,10 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 px-8 py-4 bg-gray-50 border-t border-gray-100">
+        <div className="flex justify-end gap-3 px-8 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm cursor-pointer"
+            className="px-4 py-2 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
           >
             Cancel
           </button>
@@ -249,7 +253,7 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
               ${
                 isDirty
                   ? 'bg-blue-500 hover:bg-blue-600 text-white'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
               }`}
           >
             Save Changes

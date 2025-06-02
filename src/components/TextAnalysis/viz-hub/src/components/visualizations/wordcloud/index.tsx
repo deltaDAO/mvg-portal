@@ -5,56 +5,89 @@ import { useWordCloudVisualization } from './useWordCloudVisualization'
 import OptionsModal from './modals/OptionsModal'
 import ListEditModal from './modals/ListEditModal'
 import WordDetailPanel from './WordDetailPanel'
-import ChartError from '../ChartError'
+import ChartError from '@/components/ui/common/ChartError'
 import debounce from 'lodash/debounce'
-import { WordCloudOptions, ColorScheme } from './types'
-import { Language } from './useStoplistManager'
-
-interface WordCloudData {
-  wordCloudData: Array<{ value: string; count: number }>
-}
+import { useWordCloudStore } from './store'
+import { useTheme } from '@/store/themeStore'
 
 interface WordCloudProps {
   skipLoading?: boolean
-  data: WordCloudData
 }
 
-const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
-  // Local state
-  const [words, setWords] = useState<Array<{ value: string; count: number }>>(
-    []
-  )
-  const [filteredWords, setFilteredWords] = useState<
-    Array<{ value: string; count: number }>
-  >([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [minFrequency, setMinFrequency] = useState(1)
-  const [maxWords, setMaxWords] = useState(100)
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-  const [selectedWord, setSelectedWord] = useState<{
-    value: string
-    count: number
-  } | null>(null)
-  const [isPanelVisible, setIsPanelVisible] = useState(false)
-  const [isWordSelectionAction, setIsWordSelectionAction] = useState(false)
-  const [options, setOptions] = useState<WordCloudOptions>({
-    fontFamily: 'Palatino',
-    colorSelection: 'random',
-    applyGlobally: true
-  })
-  const [tempOptions, setTempOptions] = useState<WordCloudOptions>(options)
-  const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
-  const [isStopwordsModalOpen, setIsStopwordsModalOpen] = useState(false)
-  const [isWhitelistModalOpen, setIsWhitelistModalOpen] = useState(false)
-  const [stopwordsEditText, setStopwordsEditText] = useState('')
-  const [whitelistEditText, setWhitelistEditText] = useState('')
-  const [selectedLanguage, setSelectedLanguage] = useState<Language>('english')
-  const [stoplistActive, setStoplistActive] = useState(false)
-  const [whitelistActive, setWhitelistActive] = useState(false)
-  const [shouldUpdateLayout, setShouldUpdateLayout] = useState(false)
-  const [isUpdating, setIsUpdating] = useState(false)
+const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
+  // Get theme from context
+  const { theme } = useTheme()
+
+  // Get state and actions from store
+  const {
+    // Data states
+    words,
+    filteredWords,
+    isLoading,
+    error,
+
+    // UI states
+    searchTerm,
+    minFrequency,
+    maxWords,
+    dimensions,
+    selectedWord,
+    isPanelVisible,
+    isWordSelectionAction,
+
+    // Options and modal states
+    options,
+    tempOptions,
+    isOptionsModalOpen,
+    isStopwordsModalOpen,
+    isWhitelistModalOpen,
+
+    // List edit states
+    stopwordsEditText,
+    whitelistEditText,
+
+    // Stoplist/Whitelist states
+    selectedLanguage,
+    stoplistActive,
+    whitelistActive,
+
+    // Flags
+    shouldUpdateLayout,
+    isUpdating,
+
+    // Actions
+    setSearchTerm,
+    setMinFrequency,
+    setMaxWords,
+    setDimensions,
+    setSelectedWord,
+    setShouldUpdateLayout,
+    setIsUpdating,
+
+    // Modal actions
+    openOptionsModal,
+    closeOptionsModal,
+    saveOptions,
+    openStopwordsModal,
+    closeStopwordsModal,
+    saveStopwords,
+    openWhitelistModal,
+    closeWhitelistModal,
+    saveWhitelist,
+
+    // Stoplist/Whitelist actions
+    setLanguage,
+    toggleStoplist,
+    toggleWhitelist,
+
+    // Option actions
+    updateTempOptions,
+    setStopwordsEditText,
+    setWhitelistEditText,
+
+    // Data actions
+    fetchData
+  } = useWordCloudStore()
 
   // References for controlling the wordcloud visualization
   const svgRef = useRef<SVGSVGElement>(null)
@@ -71,7 +104,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
   const lastRenderTimestampRef = useRef<number>(0)
   const RENDER_DEBOUNCE_MS = 500
 
-  // Keep refs in sync with state
+  // Keep refs in sync with store state
   useEffect(() => {
     shouldUpdateLayoutRef.current = shouldUpdateLayout
   }, [shouldUpdateLayout])
@@ -93,69 +126,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
     isWordSelectionActionRef.current = isWordSelectionAction
   }, [isWordSelectionAction])
 
-  // Process data when it changes
-  useEffect(() => {
-    if (data && data.wordCloudData) {
-      const validData = data.wordCloudData.filter(
-        (word) =>
-          word &&
-          typeof word.value === 'string' &&
-          typeof word.count === 'number'
-      )
-
-      if (validData.length === 0) {
-        setError('No valid word data available')
-        setIsLoading(false)
-        return
-      }
-
-      setWords(validData)
-      setFilteredWords(validData)
-      setIsLoading(false)
-    } else {
-      setError('No data available')
-      setIsLoading(false)
-    }
-  }, [data])
-
-  // Filter words based on search term and frequency
-  useEffect(() => {
-    if (!words || words.length === 0) {
-      setFilteredWords([])
-      return
-    }
-
-    try {
-      const filtered = words
-        .filter((word) => {
-          // Type guard to ensure word has required properties
-          if (
-            !word ||
-            typeof word.value !== 'string' ||
-            typeof word.count !== 'number'
-          ) {
-            console.warn('Invalid word data:', word)
-            return false
-          }
-
-          const matchesSearch =
-            !searchTerm ||
-            word.value.toLowerCase().includes(searchTerm.toLowerCase())
-          const matchesFrequency = word.count >= minFrequency
-
-          return matchesSearch && matchesFrequency
-        })
-        .sort((a, b) => b.count - a.count)
-        .slice(0, maxWords)
-
-      setFilteredWords(filtered)
-    } catch (error) {
-      console.error('Error filtering words:', error)
-      setError('Error processing word data')
-    }
-  }, [words, searchTerm, minFrequency, maxWords])
-
-  // Word cloud visualization hook
+  // Word cloud visualization hook (using our store state through refs)
   const { resetZoom, debouncedUpdate } = useWordCloudVisualization({
     svgRef,
     words: filteredWords,
@@ -240,9 +211,9 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
   useEffect(() => {
     // If skipLoading is true, do not execute fetchData
     if (!skipLoading) {
-      // Placeholder for fetchData function
+      fetchData()
     }
-  }, [skipLoading])
+  }, [fetchData, skipLoading])
 
   // Single unified effect to handle all word cloud updates
   useEffect(() => {
@@ -382,12 +353,14 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
   }, [isWordSelectionAction])
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 w-full overflow-hidden">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-800 pb-2">Word Cloud</h2>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 w-full overflow-hidden">
+      <div className="flex items-center justify-between mb-2 border-b border-gray-200 dark:border-gray-700 pb-2">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+          Word Cloud
+        </h2>
         <button
-          onClick={() => setIsOptionsModalOpen(true)}
-          className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium cursor-pointer"
+          onClick={openOptionsModal}
+          className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium cursor-pointer"
         >
           Options
         </button>
@@ -395,7 +368,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Search terms
           </label>
           <input
@@ -409,12 +382,12 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
               }
             }}
             placeholder="Filter words..."
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-gray-400 focus:border-gray-400 h-10 text-sm transition-colors"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-600 focus:border-indigo-500 dark:focus:border-indigo-700 dark:bg-gray-700 dark:text-gray-200 h-10 text-sm transition-colors"
           />
         </div>
 
         <div className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Minimum frequency:{' '}
             {typeof window !== 'undefined' ? minFrequency : ''}
           </label>
@@ -429,14 +402,14 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
                   const newValue = Number(e.target.value)
                   setMinFrequency(newValue)
                 }}
-                className="w-full cursor-pointer"
+                className="w-full cursor-pointer accent-blue-500 dark:accent-blue-300"
               />
             )}
           </div>
         </div>
 
         <div className="flex flex-col">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Max words to display:{' '}
             {typeof window !== 'undefined' ? maxWords : ''}
           </label>
@@ -445,15 +418,12 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
               <input
                 type="range"
                 min={10}
-                // Calculate a reasonable maximum: either 500 or double the total words count, whichever is smaller
                 max={words.length}
                 value={maxWords}
                 onChange={(e) => {
-                  // Update max words in store when slider changes
-                  // This will automatically save to localStorage via the store action
                   setMaxWords(Number(e.target.value))
                 }}
-                className="w-full cursor-pointer"
+                className="w-full cursor-pointer accent-blue-500 dark:accent-blue-300"
               />
             )}
           </div>
@@ -461,41 +431,43 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
-        {/* Main container - using CSS Grid for smoother transitions */}
         <div
           className={`grid transition-all duration-300 ease-in-out gap-4 ${
             isPanelVisible ? 'grid-cols-[1fr_auto]' : 'grid-cols-[1fr]'
           }`}
           style={{ width: '100%' }}
         >
-          {/* Word cloud visualization - will automatically adjust with CSS Grid */}
-          <div className="h-[550px] bg-gray-50 rounded flex items-center justify-center p-4 overflow-hidden relative wordcloud-container">
+          <div className="h-[550px] bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 shadow-md flex items-center justify-center p-4 overflow-hidden relative wordcloud-container">
             {isLoading && (
-              <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+              <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 flex items-center justify-center z-10">
                 <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                  <span className="text-gray-500">Loading...</span>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 dark:border-blue-400"></div>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Loading...
+                  </span>
                 </div>
               </div>
             )}
 
             {error ? (
-              <ChartError message={error} onRetry={() => {}} />
+              <ChartError message={error} onRetry={fetchData} />
             ) : isUpdating ? (
-              <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
+              <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 flex items-center justify-center z-10">
                 <div className="flex items-center space-x-2">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-                  <span className="text-gray-500">Updating...</span>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 dark:border-blue-400"></div>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    Updating...
+                  </span>
                 </div>
               </div>
             ) : (
               <>
                 {!isLoading && filteredWords.length === 0 && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center z-5 bg-white shadow-inner rounded">
-                    <div className="text-gray-600 text-center p-6 max-w-md bg-gray-50 rounded-lg border border-gray-100 shadow-sm">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center z-5 bg-white dark:bg-gray-800 shadow-inner rounded">
+                    <div className="text-gray-600 dark:text-gray-300 text-center p-6 max-w-md bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-100 dark:border-gray-600 shadow-sm">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-14 w-14 mx-auto mb-3 text-gray-400"
+                        className="h-14 w-14 mx-auto mb-3 text-gray-400 dark:text-gray-500"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -507,16 +479,16 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
                           d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                         />
                       </svg>
-                      <h3 className="text-xl font-semibold mb-2">
+                      <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">
                         No Words to Display
                       </h3>
-                      <p className="mb-4 text-gray-500">
+                      <p className="mb-4 text-gray-500 dark:text-gray-400">
                         Your current filters don't match any words.
                       </p>
 
                       <div className="space-y-3 text-left">
                         {searchTerm && (
-                          <div className="p-3 bg-purple-50 rounded-md text-purple-700 text-sm">
+                          <div className="p-3 bg-purple-50 dark:bg-purple-900/30 rounded-md text-purple-700 dark:text-purple-300 text-sm">
                             <span className="font-semibold block mb-1">
                               Search term has no matches
                             </span>
@@ -526,7 +498,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
                         )}
 
                         {minFrequency > minCount && (
-                          <div className="p-3 bg-amber-50 rounded-md text-amber-700 text-sm">
+                          <div className="p-3 bg-amber-50 dark:bg-amber-900/30 rounded-md text-amber-700 dark:text-amber-300 text-sm">
                             <span className="font-semibold block mb-1">
                               Frequency threshold too high
                             </span>
@@ -562,7 +534,6 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
             `}</style>
           </div>
 
-          {/* Word details panel - conditional rendering with CSS Grid */}
           {selectedWord && (
             <WordDetailPanel
               selectedWord={selectedWord}
@@ -576,7 +547,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
       </div>
 
       {/* Word frequency summary */}
-      <div className="mt-4 p-3 bg-gray-50 rounded text-sm text-gray-600">
+      <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded text-sm text-gray-600 dark:text-gray-300">
         <div className="flex flex-wrap gap-2 justify-between items-center">
           <div>
             {typeof window !== 'undefined' ? (
@@ -603,7 +574,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
 
           <div className="flex items-center gap-4 text-xs">
             {stoplistActive ? (
-              <span className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-full">
+              <span className="px-2 py-1 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 rounded-full">
                 {selectedLanguage === 'custom'
                   ? 'Custom Stopwords'
                   : `${selectedLanguage} Stopwords`}
@@ -611,7 +582,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
             ) : null}
 
             {whitelistActive ? (
-              <span className="px-2 py-1 bg-green-50 text-green-700 rounded-full">
+              <span className="px-2 py-1 bg-green-50 dark:bg-green-900/40 text-green-700 dark:text-green-300 rounded-full">
                 Whitelist Active
               </span>
             ) : null}
@@ -624,39 +595,41 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
         isOpen={isOptionsModalOpen}
         tempOptions={tempOptions}
         setTempOptions={(newOptions) => {
-          setTempOptions(newOptions)
+          Object.entries(newOptions).forEach(([key, value]) => {
+            updateTempOptions(key as keyof typeof options, value)
+          })
         }}
-        onClose={() => setIsOptionsModalOpen(false)}
-        onSave={() => {}}
+        onClose={closeOptionsModal}
+        onSave={saveOptions}
         selectedLanguage={selectedLanguage}
         stoplistActive={stoplistActive}
         whitelistActive={whitelistActive}
-        setLanguage={(language: Language) => setSelectedLanguage(language)}
-        toggleStoplist={() => setStoplistActive(!stoplistActive)}
-        toggleWhitelist={() => setWhitelistActive(!whitelistActive)}
-        onOpenStopwordsModal={() => setIsStopwordsModalOpen(true)}
-        onOpenWhitelistModal={() => setIsWhitelistModalOpen(true)}
+        setLanguage={setLanguage}
+        toggleStoplist={toggleStoplist}
+        toggleWhitelist={toggleWhitelist}
+        onOpenStopwordsModal={openStopwordsModal}
+        onOpenWhitelistModal={openWhitelistModal}
       />
 
       {/* Stopwords Edit Modal */}
       <ListEditModal
         isOpen={isStopwordsModalOpen}
-        onClose={() => setIsStopwordsModalOpen(false)}
+        onClose={closeStopwordsModal}
         title="Edit Stoplist"
         value={stopwordsEditText}
-        onChange={(value) => setStopwordsEditText(value)}
-        onSave={() => {}}
+        onChange={setStopwordsEditText}
+        onSave={saveStopwords}
         language={selectedLanguage}
       />
 
       {/* Whitelist Edit Modal */}
       <ListEditModal
         isOpen={isWhitelistModalOpen}
-        onClose={() => setIsWhitelistModalOpen(false)}
+        onClose={closeWhitelistModal}
         title="Edit Whitelist"
         value={whitelistEditText}
-        onChange={(value) => setWhitelistEditText(value)}
-        onSave={() => {}}
+        onChange={setWhitelistEditText}
+        onSave={saveWhitelist}
       />
     </div>
   )

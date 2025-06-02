@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import * as d3 from 'd3'
-import { SentimentCategory } from '../../../_types'
+import { useDataStore } from '@/store/dataStore'
+import { useTheme } from '@/store/themeStore'
 
 interface SentimentData {
   name: string
@@ -72,17 +73,13 @@ const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(
 
 interface SentimentChartProps {
   skipLoading?: boolean
-  data: SentimentCategory[]
 }
 
-const SentimentChartV2 = ({
-  skipLoading = false,
-  data
-}: SentimentChartProps) => {
+const SentimentChart = ({ skipLoading = false }: SentimentChartProps) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const brushRef = useRef<HTMLDivElement>(null)
   const [chartWidth, setChartWidth] = useState(0)
-  const [sentimentData, setSentimentData] = useState<SentimentCategory[]>([])
+  const [sentimentData, setSentimentData] = useState<SentimentData[]>([])
   const [dateRange, setDateRange] = useState<DateRange | null>(null)
   const [loading, setLoading] = useState(true)
   const tooltipRef = useRef<d3.Selection<
@@ -97,84 +94,51 @@ const SentimentChartV2 = ({
     null,
     undefined
   > | null>(null)
+  const { theme } = useTheme()
 
-  const parseTime = d3.timeParse('%Y-%m-%dT%H:%M:%SZ')
-  const formatDate = d3.timeFormat('%b %d, %Y')
+  const { fetchSentimentData } = useDataStore()
+
+  const parseTime = useCallback(
+    () => d3.timeParse('%Y-%m-%dT%H:%M:%SZ') as (date: string) => Date | null,
+    []
+  )
+  const formatDate = useCallback(
+    () => d3.timeFormat('%b %d, %Y') as (date: Date) => string,
+    []
+  )
 
   useEffect(() => {
-    if (data && data.length > 0) {
-      // Validate and process data
-      const validData = data.filter((item) => {
-        // Check if item is a valid sentiment category
-        const isValid =
-          item &&
-          typeof item === 'object' &&
-          'name' in item &&
-          'values' in item &&
-          Array.isArray(item.values) &&
-          item.values.length > 0 &&
-          item.values.every((value) => {
-            const isValidValue =
-              Array.isArray(value) &&
-              value.length === 2 &&
-              typeof value[0] === 'string' &&
-              typeof value[1] === 'number' &&
-              !isNaN(value[1])
-            if (!isValidValue) {
-              console.log('Invalid value found:', value)
-            }
-            return isValidValue
-          })
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        const data: SentimentData[] = await fetchSentimentData()
 
-        if (!isValid) {
-          console.log('Item failed validation:', {
-            hasItem: !!item,
-            isObject: typeof item === 'object',
-            hasName: 'name' in item,
-            hasValues: 'values' in item,
-            isValuesArray: Array.isArray(item?.values),
-            valuesLength: item?.values?.length
-          })
+        data.sort((a, b) => {
+          const aNum = parseInt(a.name.replace('+', ''))
+          const bNum = parseInt(b.name.replace('+', ''))
+          return aNum - bNum
+        })
+
+        setSentimentData(data)
+
+        const allDates = data
+          .flatMap((d) => d.values.map((v) => parseTime()(v[0])))
+          .filter((d): d is Date => d !== null)
+
+        if (allDates.length > 0) {
+          const extent = d3.extent(allDates) as [Date, Date]
+          setDateRange({ start: extent[0], end: extent[1] })
         }
 
-        return isValid
-      })
-
-      if (validData.length === 0) {
-        console.warn('No valid sentiment data found')
         setLoading(false)
-        return
+      } catch (error) {
+        console.error('Error loading sentiment data:', error)
+        setLoading(false)
       }
-
-      // Sort data by sentiment value
-      const sortedData = [...validData].sort((a, b) => {
-        const aNum = parseInt(a.name.replace('+', ''))
-        const bNum = parseInt(b.name.replace('+', ''))
-        return aNum - bNum
-      })
-
-      setSentimentData(sortedData)
-
-      // Safely process dates
-      const allDates = sortedData
-        .flatMap((d) => {
-          if (!Array.isArray(d.values)) return []
-          return d.values
-            .filter((v) => Array.isArray(v) && v.length >= 1)
-            .map((v) => parseTime(v[0]))
-        })
-        .filter((d): d is Date => d !== null)
-
-      if (allDates.length > 0) {
-        const extent = d3.extent(allDates) as [Date, Date]
-        setDateRange({ start: extent[0], end: extent[1] })
-      }
-
-      setLoading(false)
-    } else {
-      setLoading(false)
     }
-  }, [data])
+
+    fetchData()
+  }, [parseTime, fetchSentimentData])
 
   useEffect(() => {
     if (!chartRef.current) return
@@ -198,21 +162,48 @@ const SentimentChartV2 = ({
 
     const container = d3.select(chartRef.current)
 
+    // Set theme-aware colors
+    const textColor = theme === 'dark' ? '#e5e7eb' : '#4b5563' // gray-200 : gray-600
+    const mutedTextColor = theme === 'dark' ? '#9ca3af' : '#6b7280' // gray-400 : gray-500
+    const axisColor = theme === 'dark' ? '#4b5563' : '#d1d5db' // gray-600 : gray-300
+    const gridColor = theme === 'dark' ? '#374151' : '#e5e7eb' // gray-700 : gray-200
+    const tooltipBg =
+      theme === 'dark' ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)' // gray-800 : white
+    const tooltipBorder = theme === 'dark' ? '#4b5563' : '#d1d5db' // gray-600 : gray-300
+    const tooltipTextColor = theme === 'dark' ? '#e5e7eb' : '#4b5563' // gray-200 : gray-600
+
     if (!tooltipRef.current) {
       tooltipRef.current = container
         .append('div')
         .attr('class', 'tooltip')
         .style('position', 'absolute')
         .style('visibility', 'hidden')
-        .style('background-color', 'rgba(255, 255, 255, 0.9)')
-        .style('border', '1px solid #ddd')
+        .style('background-color', tooltipBg)
+        .style('border', `1px solid ${tooltipBorder}`)
         .style('border-radius', '4px')
         .style('padding', '8px')
-        .style('box-shadow', '2px 2px 6px rgba(0, 0, 0, 0.2)')
+        .style(
+          'box-shadow',
+          `2px 2px 6px ${
+            theme === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)'
+          }`
+        )
         .style('pointer-events', 'none')
         .style('font-size', '12px')
         .style('z-index', '10')
+        .style('color', tooltipTextColor)
         .style('transition', 'left 0.15s ease-out, top 0.15s ease-out')
+    } else {
+      tooltipRef.current
+        .style('background-color', tooltipBg)
+        .style('border', `1px solid ${tooltipBorder}`)
+        .style(
+          'box-shadow',
+          `2px 2px 6px ${
+            theme === 'dark' ? 'rgba(0, 0, 0, 0.4)' : 'rgba(0, 0, 0, 0.2)'
+          }`
+        )
+        .style('color', tooltipTextColor)
     }
 
     container.selectAll('svg').remove()
@@ -241,7 +232,7 @@ const SentimentChartV2 = ({
       name: d.name,
       values: d.values
         .map((v) => {
-          const date = parseTime(v[0])
+          const date = parseTime()(v[0])
           return {
             date: date!,
             value: v[1]
@@ -271,6 +262,7 @@ const SentimentChartV2 = ({
         .attr('x', width / 2)
         .attr('y', totalHeight / 2)
         .attr('text-anchor', 'middle')
+        .style('fill', textColor)
         .text('No data points in the selected date range')
       return
     }
@@ -311,7 +303,7 @@ const SentimentChartV2 = ({
         .attr('width', width)
         .attr('height', chartHeight)
         .style('fill', 'none')
-        .style('stroke', '#eaeaea')
+        .style('stroke', gridColor)
         .style('stroke-width', 0.25)
 
       svg
@@ -321,7 +313,7 @@ const SentimentChartV2 = ({
         .attr('text-anchor', 'end')
         .attr('dominant-baseline', 'middle')
         .attr('class', 'text-xs font-medium')
-        .style('fill', getSentimentColor(String(series.name)))
+        .style('fill', getSentimentColor(String(series.name), theme))
         .text(series.name)
 
       const sentimentLabel = () => {
@@ -349,7 +341,7 @@ const SentimentChartV2 = ({
         .attr('y', yPos + 15)
         .attr('class', 'text-xs')
         .style('opacity', 0.7)
-        .style('fill', getSentimentColor(String(series.name)))
+        .style('fill', getSentimentColor(String(series.name), theme))
         .text(sentimentLabel())
 
       const gradientId = `gradient-${i}`
@@ -365,13 +357,13 @@ const SentimentChartV2 = ({
       gradient
         .append('stop')
         .attr('offset', '0%')
-        .attr('stop-color', getSentimentColor(String(series.name)))
+        .attr('stop-color', getSentimentColor(String(series.name), theme))
         .attr('stop-opacity', 0.95)
 
       gradient
         .append('stop')
         .attr('offset', '100%')
-        .attr('stop-color', getSentimentColor(String(series.name)))
+        .attr('stop-color', getSentimentColor(String(series.name), theme))
         .attr('stop-opacity', 0.6)
 
       const area = d3
@@ -397,7 +389,7 @@ const SentimentChartV2 = ({
         .attr('x2', width)
         .attr('y1', chartHeight)
         .attr('y2', chartHeight)
-        .style('stroke', '#ddd')
+        .style('stroke', gridColor)
         .style('stroke-width', 0.5)
     })
 
@@ -420,8 +412,16 @@ const SentimentChartV2 = ({
           })
       )
       .attr('class', 'text-xs')
-      .call((g) => g.select('.domain').attr('stroke-width', 0.5))
-      .call((g) => g.selectAll('.tick line').attr('stroke-width', 0.5))
+      .call((g) =>
+        g.select('.domain').attr('stroke-width', 0.5).attr('stroke', axisColor)
+      )
+      .call((g) =>
+        g
+          .selectAll('.tick line')
+          .attr('stroke-width', 0.5)
+          .attr('stroke', axisColor)
+      )
+      .call((g) => g.selectAll('.tick text').attr('fill', textColor))
 
     const monthsPerYear = width > 800 ? 4 : width > 600 ? 3 : 2
     const startYear = dateRange.start.getFullYear()
@@ -444,14 +444,15 @@ const SentimentChartV2 = ({
         .attr('x', x(date))
         .attr('y', chartCount * (chartHeight + spacing) - spacing + 25)
         .attr('text-anchor', 'middle')
-        .attr('class', 'text-xs text-gray-500')
+        .attr('class', 'text-xs')
+        .style('fill', mutedTextColor)
         .text(d3.timeFormat('%b')(date))
     })
 
     const verticalLine = svg
       .append('line')
       .attr('class', 'vertical-line')
-      .style('stroke', '#999')
+      .style('stroke', theme === 'dark' ? '#9ca3af' : '#999')
       .style('stroke-width', '1px')
       .style('stroke-dasharray', '3,3')
       .style('opacity', 0)
@@ -466,7 +467,6 @@ const SentimentChartV2 = ({
       .attr('height', chartCount * (chartHeight + spacing) - spacing)
       .style('fill', 'none')
       .style('pointer-events', 'all')
-      .style('cursor', 'crosshair')
 
     const dateValues = new Map<number, Map<string, number>>()
 
@@ -476,6 +476,7 @@ const SentimentChartV2 = ({
         if (!dateValues.has(timestamp)) {
           dateValues.set(timestamp, new Map<string, number>())
         }
+
         dateValues.get(timestamp)?.set(series.name, point.value)
       })
     })
@@ -487,12 +488,9 @@ const SentimentChartV2 = ({
 
     mouseArea
       .on('mouseover', () => {
-        if (tooltipRef.current) {
+        if (tooltipRef.current)
           tooltipRef.current.style('visibility', 'visible')
-        }
-        if (verticalLineRef.current) {
-          verticalLineRef.current.style('opacity', 1)
-        }
+        verticalLine.style('opacity', 1)
       })
       .on('mousemove', (event) => {
         const now = Date.now()
@@ -527,13 +525,10 @@ const SentimentChartV2 = ({
         const selectedTimestamp = sortedTimestamps[closestIndex]
         const selectedDate = new Date(selectedTimestamp)
 
-        if (verticalLineRef.current) {
-          verticalLineRef.current
-            .attr('x1', x(selectedDate))
-            .attr('x2', x(selectedDate))
-        }
+        verticalLine.attr('x1', x(selectedDate)).attr('x2', x(selectedDate))
 
-        let tooltipContent = `<div class="font-medium text-xs mb-1" style="color:#555;">${formatDate(
+        const tooltipHeaderColor = theme === 'dark' ? '#d1d5db' : '#555' // gray-300 : dark gray
+        let tooltipContent = `<div class="font-medium text-xs mb-1" style="color:${tooltipHeaderColor};">${formatDate()(
           selectedDate
         )}</div>`
 
@@ -546,9 +541,12 @@ const SentimentChartV2 = ({
           tooltipContent += `
             <div class="flex items-center">
               <span class="inline-block w-2 h-2 mr-1" style="background-color: ${getSentimentColor(
-                String(series.name)
+                String(series.name),
+                theme
               )};"></span>
-              <span style="color:#555;">Sentiment ${series.name}</span>
+              <span style="color:${tooltipHeaderColor};">Sentiment ${
+            series.name
+          }</span>
             </div>
             <div class="font-medium text-right">${value}</div>
           `
@@ -581,20 +579,23 @@ const SentimentChartV2 = ({
         }
       })
       .on('mouseout', () => {
-        if (tooltipRef.current) {
-          tooltipRef.current.style('visibility', 'hidden')
-        }
-        if (verticalLineRef.current) {
-          verticalLineRef.current.style('opacity', 0)
-        }
+        if (tooltipRef.current) tooltipRef.current.style('visibility', 'hidden')
+        verticalLine.style('opacity', 0)
       })
-  }, [chartRef, dateRange, sentimentData, formatDate])
+  }, [chartRef, dateRange, sentimentData, formatDate, theme])
 
   const renderBrush = useCallback(() => {
     if (!brushRef.current || !dateRange) return
 
     const container = d3.select(brushRef.current)
     container.selectAll('svg').remove()
+
+    // Set theme-aware colors
+    const textColor = theme === 'dark' ? '#e5e7eb' : '#4b5563' // gray-200 : gray-600
+    const axisColor = theme === 'dark' ? '#4b5563' : '#ccc' // gray-600 : light gray
+    const brushHandleColor = theme === 'dark' ? '#6b7280' : '#69b3a2' // gray-500 : teal
+    const brushFillColor =
+      theme === 'dark' ? 'rgba(107, 114, 128, 0.3)' : 'rgba(105, 179, 162, 0.3)' // gray-500 : teal with opacity
 
     const margin = { top: 10, right: 40, bottom: 20, left: 50 }
     const width = brushRef.current.clientWidth - margin.left - margin.right
@@ -608,7 +609,7 @@ const SentimentChartV2 = ({
       .attr('transform', `translate(${margin.left},${margin.top})`)
 
     const allDates = sentimentData
-      .flatMap((d) => d.values.map((v) => parseTime(v[0])))
+      .flatMap((d) => d.values.map((v) => parseTime()(v[0])))
       .filter((d): d is Date => d !== null)
 
     const fullDateRange = d3.extent(allDates) as [Date, Date]
@@ -616,7 +617,7 @@ const SentimentChartV2 = ({
     const overviewData = sentimentData.map((series) => {
       const values = series.values
         .map((v) => ({
-          date: parseTime(v[0]),
+          date: parseTime()(v[0]),
           value: v[1]
         }))
         .filter((d): d is { date: Date; value: number } => d.date !== null)
@@ -658,9 +659,9 @@ const SentimentChartV2 = ({
           .datum(series.values)
           .attr('class', 'mini-area')
           .attr('d', area as any)
-          .style('fill', getSentimentColor(String(series.name)))
+          .style('fill', getSentimentColor(String(series.name), theme))
           .style('fill-opacity', 0.3)
-          .style('stroke', getSentimentColor(String(series.name)))
+          .style('stroke', getSentimentColor(String(series.name), theme))
           .style('stroke-width', 0.75)
           .style('stroke-opacity', 0.8)
       }
@@ -685,7 +686,7 @@ const SentimentChartV2 = ({
       .call((g) =>
         g
           .selectAll('.tick line')
-          .attr('stroke', '#ccc')
+          .attr('stroke', axisColor)
           .attr('stroke-dasharray', '2,2')
       )
       .call((g) =>
@@ -693,6 +694,7 @@ const SentimentChartV2 = ({
           .selectAll('.tick text')
           .style('text-anchor', 'middle')
           .attr('dy', '1em')
+          .attr('fill', textColor)
       )
 
     const brush = d3
@@ -723,71 +725,94 @@ const SentimentChartV2 = ({
 
     svg
       .selectAll('.selection')
-      .attr('fill', '#69b3a2')
-      .attr('fill-opacity', 0.3)
-      .attr('stroke', '#69b3a2')
+      .attr('fill', brushFillColor)
+      .attr('stroke', brushHandleColor)
 
     svg
       .selectAll('.handle')
-      .attr('fill', '#69b3a2')
-      .attr('stroke', '#69b3a2')
+      .attr('fill', brushHandleColor)
+      .attr('stroke', brushHandleColor)
       .attr('stroke-width', 0.5)
 
-    const _resetButton = container
+    const resetButton = container
       .append('button')
       .attr('class', 'reset-button')
       .style('position', 'absolute')
       .style('top', '10px')
       .style('right', '40px')
-      .style('background-color', '#f3f4f6')
-      .style('border', '1px solid #d1d5db')
+      .style('background-color', theme === 'dark' ? '#374151' : '#f3f4f6') // gray-700 : gray-100
+      .style('border', `1px solid ${theme === 'dark' ? '#4b5563' : '#d1d5db'}`) // gray-600 : gray-300
       .style('border-radius', '4px')
       .style('padding', '2px 8px')
       .style('font-size', '10px')
       .style('cursor', 'pointer')
+      .style('color', theme === 'dark' ? '#e5e7eb' : 'inherit') // gray-200 : default
       .text('Reset Zoom')
       .on('click', () => {
         setDateRange({ start: fullDateRange[0], end: fullDateRange[1] })
       })
-  }, [brushRef, dateRange])
+  }, [brushRef, dateRange, theme])
 
   useEffect(() => {
     renderChart()
     renderBrush()
   }, [renderChart, renderBrush])
 
-  const getSentimentColor = (sentiment: string): string => {
-    switch (sentiment) {
-      case '-2':
-        return '#4fc3f7'
-      case '-1':
-        return '#9575cd'
-      case '0':
-        return '#e0e0e0'
-      case '+1':
-        return '#ffb74d'
-      case '+2':
-        return '#ff8a65'
-      default:
-        return '#e0e0e0'
+  const getSentimentColor = (
+    sentiment: string,
+    currentTheme: string = 'light'
+  ): string => {
+    // Slightly adjust colors for dark mode to ensure visibility
+    if (currentTheme === 'dark') {
+      switch (sentiment) {
+        case '-2':
+          return '#63ccfa' // Brighter blue
+        case '-1':
+          return '#af8fe0' // Brighter purple
+        case '0':
+          return '#f3f4f6' // Light gray
+        case '+1':
+          return '#ffc069' // Brighter orange
+        case '+2':
+          return '#ff9f7b' // Brighter coral
+        default:
+          return '#f3f4f6' // Light gray
+      }
+    } else {
+      switch (sentiment) {
+        case '-2':
+          return '#4fc3f7'
+        case '-1':
+          return '#9575cd'
+        case '0':
+          return '#e0e0e0'
+        case '+1':
+          return '#ffb74d'
+        case '+2':
+          return '#ff8a65'
+        default:
+          return '#e0e0e0'
+      }
     }
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 w-full">
-      <h2 className="text-xl font-semibold mb-2 text-gray-800 border-b border-gray-200 pb-2">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 w-full">
+      <h2 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200 border-b border-gray-200 dark:border-gray-700 pb-2">
         Sentiment Analysis by Category
       </h2>
 
       {loading && !skipLoading ? (
         <div className="flex items-center justify-center h-[400px]">
-          <p className="text-gray-500">Loading sentiment data...</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            Loading sentiment data...
+          </p>
         </div>
       ) : (
         <>
           <div ref={chartRef} className="w-full relative"></div>
 
-          <div className="text-xs text-gray-500 mt-4 mb-1 ml-1">
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-4 mb-1 ml-1">
             Drag to select date range:
           </div>
 
@@ -798,4 +823,4 @@ const SentimentChartV2 = ({
   )
 }
 
-export default SentimentChartV2
+export default SentimentChart

@@ -21,13 +21,17 @@ interface OptionsModalProps {
   onOpenWhitelistModal: () => void
 }
 
-const languageOptions: { value: Language; label: string }[] = [
+const languageOptions: {
+  value: Language
+  label: string
+  disabled?: boolean
+}[] = [
   { value: 'english', label: 'English' },
-  { value: 'spanish', label: 'Spanish' },
-  { value: 'french', label: 'French' },
-  { value: 'german', label: 'German' },
-  { value: 'custom', label: 'Custom' },
-  { value: 'auto-detect', label: 'Auto-detect' }
+  { value: 'spanish', label: 'Spanish', disabled: true },
+  { value: 'french', label: 'French', disabled: true },
+  { value: 'german', label: 'German', disabled: true },
+  { value: 'custom', label: 'Custom', disabled: true },
+  { value: 'auto-detect', label: 'Auto-detect', disabled: true }
 ]
 
 const OptionsModal: React.FC<OptionsModalProps> = ({
@@ -84,9 +88,9 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-lg w-full max-w-[550px] transition-all duration-200 overflow-hidden">
-        <div className="px-8 py-3 bg-gray-50 flex justify-between items-center">
-          <h3 className="text-lg font-medium text-gray-800">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-[550px] transition-all duration-200 overflow-hidden">
+        <div className="px-8 py-3 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+          <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200">
             Word Cloud Options
           </h3>
           <button
@@ -101,7 +105,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
         <div className="p-6 space-y-6">
           {/* Word Filtering Section */}
           <div>
-            <h4 className="text-md font-semibold mb-4 text-gray-800">
+            <h4 className="text-md font-semibold mb-4 text-gray-800 dark:text-gray-200">
               Word Filtering
             </h4>
 
@@ -109,16 +113,33 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                  <input
-                    id="stoplist-toggle"
-                    type="checkbox"
-                    checked={stoplistActive}
-                    onChange={toggleStoplist}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
+                  <div className="relative flex items-center">
+                    <input
+                      id="stoplist-toggle"
+                      type="checkbox"
+                      checked={stoplistActive}
+                      onChange={toggleStoplist}
+                      className="appearance-none h-4 w-4 rounded border border-gray-300 dark:border-gray-700 checked:bg-blue-600 dark:checked:bg-blue-500 focus:focus-visible:outline-none focus:focus-visible:ring-2 focus:focus-visible:ring-blue-500 dark:focus:focus-visible:ring-blue-600 cursor-pointer"
+                    />
+                    {stoplistActive && (
+                      <svg
+                        className="absolute w-4 h-4 pointer-events-none text-white"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                  </div>
                   <label
                     htmlFor="stoplist-toggle"
-                    className="ml-2 block text-sm font-medium text-gray-700"
+                    className="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Enable Stopwords
                   </label>
@@ -129,8 +150,8 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                   className={`px-2 py-1 text-xs font-medium rounded transition-colors
                             ${
                               stoplistActive
-                                ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
-                                : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-75'
+                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800/60'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-75'
                             }`}
                   title={
                     !stoplistActive
@@ -149,11 +170,12 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                 <select
                   value={selectedLanguage}
                   onChange={(e) => setLanguage(e.target.value as Language)}
-                  className={`form-select block w-full rounded-md border-gray-300 shadow-sm 
-                            focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm
+                  className={`form-select block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm 
+                            focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 sm:text-sm
+                            dark:bg-gray-700 dark:text-gray-200
                             ${
                               !stoplistActive
-                                ? 'bg-gray-100 text-gray-500 cursor-not-allowed opacity-75'
+                                ? 'bg-gray-100 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed opacity-75'
                                 : ''
                             }`}
                   disabled={!stoplistActive}
@@ -164,7 +186,11 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                   }
                 >
                   {languageOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      disabled={option.disabled}
+                    >
                       {option.label}
                     </option>
                   ))}
@@ -173,18 +199,18 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
 
               <p className="mt-2 text-xs text-gray-500">
                 {stoplistActive
-                  ? 'Stopwords are common words (like &quot;the&quot;, &quot;and&quot;, &quot;to&quot;) that will be filtered out of the visualization.'
+                  ? 'Stopwords are common words (like "the", "and", "to") that will be filtered out of the visualization.'
                   : 'Stopwords filtering is disabled.'}
               </p>
 
               {selectedLanguage === 'custom' && stoplistActive && (
-                <div className="mt-2 text-xs text-blue-600">
+                <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">
                   Using custom stoplist. Click "Edit List" to modify.
                 </div>
               )}
 
               {selectedLanguage === 'auto-detect' && stoplistActive && (
-                <div className="mt-2 text-xs text-blue-600">
+                <div className="mt-2 text-xs text-blue-600 dark:text-blue-400">
                   Auto-detecting stopwords based on word frequency patterns.
                 </div>
               )}
@@ -194,16 +220,33 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                  <input
-                    id="whitelist-toggle"
-                    type="checkbox"
-                    checked={whitelistActive}
-                    onChange={toggleWhitelist}
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                  />
+                  <div className="relative flex items-center">
+                    <input
+                      id="whitelist-toggle"
+                      type="checkbox"
+                      checked={whitelistActive}
+                      onChange={toggleWhitelist}
+                      className="appearance-none h-4 w-4 rounded border border-gray-300 dark:border-gray-700 checked:bg-blue-600 dark:checked:bg-blue-500 focus:focus-visible:outline-none focus:focus-visible:ring-2 focus:focus-visible:ring-blue-500 dark:focus:focus-visible:ring-blue-600 cursor-pointer"
+                    />
+                    {whitelistActive && (
+                      <svg
+                        className="absolute w-4 h-4 pointer-events-none text-white"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                  </div>
                   <label
                     htmlFor="whitelist-toggle"
-                    className="ml-2 block text-sm font-medium text-gray-700"
+                    className="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
                   >
                     Enable Whitelist
                   </label>
@@ -214,8 +257,8 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                   className={`px-2 py-1 text-xs font-medium rounded transition-colors
                             ${
                               whitelistActive
-                                ? 'bg-indigo-100 text-indigo-700 hover:bg-indigo-200'
-                                : 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-75'
+                                ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800/60'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-75'
                             }`}
                   title={
                     !whitelistActive
@@ -227,14 +270,14 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                 </button>
               </div>
 
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                 {whitelistActive
                   ? 'Whitelist will only show words explicitly included in your list.'
                   : 'Whitelist filtering is disabled.'}
               </p>
 
               {whitelistActive && (
-                <div className="mt-2 text-xs text-green-600">
+                <div className="mt-2 text-xs text-green-600 dark:text-green-400">
                   Click "Edit List" to specify exactly which words should be
                   shown.
                 </div>
@@ -244,20 +287,20 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
 
           {/* Visualization Section */}
           <div>
-            <h4 className="text-md font-semibold mb-4 text-gray-800">
+            <h4 className="text-md font-semibold mb-4 text-gray-800 dark:text-gray-200">
               Visualization
             </h4>
 
             {/* Font Family */}
             <div className="flex items-center mb-4">
-              <label className="text-sm font-medium text-gray-700 w-36">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 w-36">
                 Font Family:
               </label>
               <div className="flex-1">
                 <select
                   value={tempOptions.fontFamily}
                   onChange={(e) => updateOption('fontFamily', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm shadow-sm focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:bg-gray-700 dark:text-gray-200"
                 >
                   {FONT_FAMILIES.map((font) => (
                     <option key={font} value={font}>
@@ -270,7 +313,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
 
             {/* Color Scheme */}
             <div className="flex items-center mb-4">
-              <label className="text-sm font-medium text-gray-700 w-36">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300 w-36">
                 Color Scheme:
               </label>
               <div className="flex-1">
@@ -282,7 +325,7 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
                       e.target.value as 'random' | 'monochrome' | 'category'
                     )
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm shadow-sm focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:bg-gray-700 dark:text-gray-200"
                 >
                   <option value="random">Colorful (Random)</option>
                   <option value="monochrome">Monochrome (Blue)</option>
@@ -293,18 +336,35 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
 
             {/* Apply Globally */}
             <div className="flex items-center mt-4">
-              <input
-                type="checkbox"
-                id="applyGlobally"
-                checked={tempOptions.applyGlobally}
-                onChange={(e) =>
-                  updateOption('applyGlobally', e.target.checked)
-                }
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              />
+              <div className="relative flex items-center">
+                <input
+                  type="checkbox"
+                  id="applyGlobally"
+                  checked={tempOptions.applyGlobally}
+                  onChange={(e) =>
+                    updateOption('applyGlobally', e.target.checked)
+                  }
+                  className="appearance-none h-4 w-4 rounded border border-gray-300 dark:border-gray-700 checked:bg-blue-600 dark:checked:bg-blue-500 focus:focus-visible:outline-none focus:focus-visible:ring-2 focus:focus-visible:ring-blue-500 dark:focus:focus-visible:ring-blue-600 cursor-pointer"
+                />
+                {tempOptions.applyGlobally && (
+                  <svg
+                    className="absolute w-4 h-4 pointer-events-none text-white"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                )}
+              </div>
               <label
                 htmlFor="applyGlobally"
-                className="ml-2 block text-sm font-medium text-gray-700"
+                className="ml-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
               >
                 Apply settings globally to all word clouds
               </label>
@@ -312,16 +372,16 @@ const OptionsModal: React.FC<OptionsModalProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 px-8 py-4 bg-gray-50 border-t border-gray-100">
+        <div className="flex justify-end gap-3 px-8 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-100 dark:border-gray-600">
           <button
             onClick={resetDefaults}
-            className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm cursor-pointer"
+            className="px-4 py-2 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
           >
             Reset
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm cursor-pointer"
+            className="px-4 py-2 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
           >
             Cancel
           </button>

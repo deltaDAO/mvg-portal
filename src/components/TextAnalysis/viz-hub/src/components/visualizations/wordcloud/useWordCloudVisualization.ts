@@ -10,6 +10,7 @@ import cloud from 'd3-cloud'
 import debounce from 'lodash/debounce'
 import { WordData, CloudWord, Word, Dimensions, ColorScheme } from './types'
 import { TRANSITION_DURATION, DEBOUNCE_DELAY, CUSTOM_COLORS } from './constants'
+import { useTheme } from '@/store/themeStore'
 
 interface UseWordCloudVisualizationProps {
   svgRef: MutableRefObject<SVGSVGElement | null>
@@ -50,6 +51,9 @@ export const useWordCloudVisualization = ({
     height: dimensions.height,
     lastUpdate: 0
   })
+
+  // Get theme information
+  const { theme } = useTheme()
 
   // Add a ref to track the last update time to prevent duplicate renders
   const lastUpdateTimeRef = useRef<number>(0)
@@ -473,6 +477,19 @@ export const useWordCloudVisualization = ({
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
 
+    // Theme-aware colors
+    const bgColorStart = theme === 'dark' ? '#1f2937' : '#f8f9fa' // gray-800 : gray-100
+    const bgColorEnd = theme === 'dark' ? '#111827' : '#e9ecef' // gray-900 : gray-200
+    const textColor = theme === 'dark' ? '#e5e7eb' : '#555' // gray-200 : dark gray
+    const controlsBgColor =
+      theme === 'dark' ? 'rgba(31, 41, 55, 0.7)' : 'rgba(255, 255, 255, 0.7)' // gray-800 : white with opacity
+    const controlsBorderColor = theme === 'dark' ? '#4b5563' : '#ccc' // gray-600 : light gray
+    const buttonFillColor = theme === 'dark' ? '#374151' : '#ffffff80' // gray-700 : white with opacity
+    const buttonStrokeColor = theme === 'dark' ? '#6b7280' : '#aaa' // gray-500 : light gray
+    const buttonHoverFill = theme === 'dark' ? '#4b5563' : '#f8f8f8' // gray-600 : near white
+    const buttonHoverStroke = theme === 'dark' ? '#9ca3af' : '#666' // gray-400 : dark gray
+    const buttonActiveColor = theme === 'dark' ? '#374151' : '#e8e8e8' // gray-700 : light gray
+
     // Add gradient background
     const defs = svg.append('defs')
     const gradient = defs
@@ -480,8 +497,14 @@ export const useWordCloudVisualization = ({
       .attr('id', 'cloud-background')
       .attr('gradientTransform', 'rotate(45)')
 
-    gradient.append('stop').attr('offset', '0%').attr('stop-color', '#f8f9fa')
-    gradient.append('stop').attr('offset', '100%').attr('stop-color', '#e9ecef')
+    gradient
+      .append('stop')
+      .attr('offset', '0%')
+      .attr('stop-color', bgColorStart)
+    gradient
+      .append('stop')
+      .attr('offset', '100%')
+      .attr('stop-color', bgColorEnd)
 
     // Add background rect
     svg
@@ -552,8 +575,8 @@ export const useWordCloudVisualization = ({
         .attr('width', 40)
         .attr('height', 120)
         .attr('rx', 6)
-        .attr('fill', 'rgba(255, 255, 255, 0.7)')
-        .attr('stroke', '#ccc')
+        .attr('fill', controlsBgColor)
+        .attr('stroke', controlsBorderColor)
         .attr('stroke-width', 1)
         .attr('filter', 'drop-shadow(0px 2px 3px rgba(0,0,0,0.15))')
 
@@ -566,21 +589,21 @@ export const useWordCloudVisualization = ({
             d3.select(this)
               .transition()
               .duration(150)
-              .attr('stroke', '#666')
-              .attr('fill', '#f8f8f8')
+              .attr('stroke', buttonHoverStroke)
+              .attr('fill', buttonHoverFill)
           })
           .on('mouseout', function () {
             d3.select(this)
               .transition()
               .duration(200)
-              .attr('stroke', '#aaa')
-              .attr('fill', '#ffffff80')
+              .attr('stroke', buttonStrokeColor)
+              .attr('fill', buttonFillColor)
           })
           .on('mousedown', function () {
-            d3.select(this).attr('fill', '#e8e8e8')
+            d3.select(this).attr('fill', buttonActiveColor)
           })
           .on('mouseup', function () {
-            d3.select(this).attr('fill', '#f8f8f8')
+            d3.select(this).attr('fill', buttonHoverFill)
           })
       }
 
@@ -594,8 +617,8 @@ export const useWordCloudVisualization = ({
         .attr('cx', 20)
         .attr('cy', topPadding)
         .attr('r', 14)
-        .attr('fill', '#ffffff80')
-        .attr('stroke', '#aaa')
+        .attr('fill', buttonFillColor)
+        .attr('stroke', buttonStrokeColor)
         .attr('stroke-width', 1)
         .attr('cursor', 'pointer')
         .attr('title', 'Zoom In')
@@ -619,7 +642,8 @@ export const useWordCloudVisualization = ({
         .attr('dominant-baseline', 'central')
         .attr('font-size', '20px')
         .attr('font-weight', 'bold')
-        .attr('fill', '#555')
+        .attr('fill', textColor)
+        .attr('dy', '-0.07em')
         .text('+')
 
       // Zoom out button
@@ -628,8 +652,8 @@ export const useWordCloudVisualization = ({
         .attr('cx', 20)
         .attr('cy', topPadding + buttonSpacing)
         .attr('r', 14)
-        .attr('fill', '#ffffff80')
-        .attr('stroke', '#aaa')
+        .attr('fill', buttonFillColor)
+        .attr('stroke', buttonStrokeColor)
         .attr('stroke-width', 1)
         .attr('cursor', 'pointer')
         .attr('title', 'Zoom Out')
@@ -653,7 +677,8 @@ export const useWordCloudVisualization = ({
         .attr('dominant-baseline', 'central')
         .attr('font-size', '24px')
         .attr('font-weight', 'bold')
-        .attr('fill', '#555')
+        .attr('fill', textColor)
+        .attr('dy', '-0.07em')
         .text('−')
 
       // Reset zoom button
@@ -662,8 +687,8 @@ export const useWordCloudVisualization = ({
         .attr('cx', 20)
         .attr('cy', topPadding + buttonSpacing * 2)
         .attr('r', 14)
-        .attr('fill', '#ffffff80')
-        .attr('stroke', '#aaa')
+        .attr('fill', buttonFillColor)
+        .attr('stroke', buttonStrokeColor)
         .attr('stroke-width', 1)
         .attr('cursor', 'pointer')
         .attr('title', 'Reset View')
@@ -686,19 +711,24 @@ export const useWordCloudVisualization = ({
 
       setupButtonHover(resetButton)
 
-      // Home icon for reset
+      // Home icon for reset - using a more precise SVG path
       const resetIcon = zoomControls
         .append('g')
-        .attr('transform', `translate(20, ${topPadding + buttonSpacing * 2})`)
+        .attr(
+          'transform',
+          `translate(20, ${topPadding + buttonSpacing * 2 + 0.5})`
+        )
         .attr('pointer-events', 'none')
 
-      // Draw a simple house shape
+      // Draw a simple house shape with better centering
       resetIcon
         .append('path')
-        .attr('d', 'M-6,-4 L0,-8 L6,-4 L6,4 L2,4 L2,0 L-2,0 L-2,4 L-6,4 Z')
-        .attr('fill', '#555')
-        .attr('stroke', '#555')
-        .attr('stroke-width', 0.5)
+        .attr(
+          'd',
+          'M-5.5,-3 L0,-7 L5.5,-3 L5.5,4 L2,4 L2,0 L-2,0 L-2,4 L-5.5,4 Z'
+        )
+        .attr('fill', textColor)
+        .attr('stroke', 'none')
     }
 
     // Add resize observer for responsive centering
@@ -734,7 +764,7 @@ export const useWordCloudVisualization = ({
     return () => {
       resizeObserver.disconnect()
     }
-  }, [dimensions])
+  }, [dimensions, theme])
 
   // Reset zoom when search/filter changes
   const resetZoom = useCallback(() => {

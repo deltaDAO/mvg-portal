@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
+import { useTheme } from '@/store/themeStore'
 
 // Data types
 type TimeDataPoint = {
@@ -46,6 +47,7 @@ const ChartModal = ({
   const zoomRef = useRef<D3ZoomBehavior | null>(null)
   const marginRef = useRef<MarginType | null>(null)
   const [zoomLevel, setZoomLevel] = useState(1)
+  const { theme } = useTheme()
 
   useEffect(() => {
     if (
@@ -60,6 +62,11 @@ const ChartModal = ({
     const margin = { top: 40, right: 60, bottom: 80, left: 70 }
     const width = container.clientWidth - margin.left - margin.right
     const height = container.clientHeight - margin.top - margin.bottom
+    const isDarkMode = theme === 'dark'
+
+    // Text colors based on theme
+    const textColor = isDarkMode ? '#e5e7eb' : '#4b5563' // gray-200 : gray-600
+    const axisColor = isDarkMode ? '#9ca3af' : '#6b7280' // gray-400 : gray-500
 
     // Clear any existing chart
     d3.select(container).selectAll('*').remove()
@@ -154,9 +161,19 @@ const ChartModal = ({
         .style('text-anchor', 'end')
         .attr('dx', '-.8em')
         .attr('dy', '1em')
+        .style('fill', axisColor)
+
+      // Style the axis paths and lines based on theme
+      xAxis.select('.domain').style('stroke', axisColor)
+      xAxis.selectAll('.tick line').style('stroke', axisColor)
 
       // Add Y axis
-      chartGroup.append('g').call(d3.axisLeft(y))
+      const yAxis = chartGroup.append('g').call(d3.axisLeft(y))
+
+      // Style the axis paths and lines based on theme
+      yAxis.selectAll('text').style('fill', axisColor)
+      yAxis.select('.domain').style('stroke', axisColor)
+      yAxis.selectAll('.tick line').style('stroke', axisColor)
 
       // Sort data by date for smoother line
       formattedData.sort((a, b) => a.time!.getTime() - b.time!.getTime())
@@ -306,7 +323,8 @@ const ChartModal = ({
         .attr('x', width / 2)
         .attr('y', height + margin.bottom - 10)
         .text('Date')
-        .attr('class', 'text-sm text-gray-600')
+        .attr('class', 'text-sm')
+        .style('fill', textColor)
 
       chartGroup
         .append('text')
@@ -315,7 +333,8 @@ const ChartModal = ({
         .attr('y', -margin.left + 20)
         .attr('x', -height / 2)
         .text('Count')
-        .attr('class', 'text-sm text-gray-600')
+        .attr('class', 'text-sm')
+        .style('fill', textColor)
     } else if (chartType === 'email') {
       // Emails per day histogram
       const getEmailValue = (d: EmailDataPoint): number => {
@@ -357,7 +376,7 @@ const ChartModal = ({
         .range([height, 0])
 
       // Add X axis with more space for labels
-      chartGroup
+      const xAxis = chartGroup
         .append('g')
         .attr('transform', `translate(0,${height})`)
         .call(
@@ -366,12 +385,24 @@ const ChartModal = ({
             .ticks(Math.min(maxValue + 1, 15))
             .tickFormat(d3.format('d'))
         )
+
+      xAxis
         .selectAll('text')
         .style('text-anchor', 'middle')
         .attr('dy', '1em')
+        .style('fill', axisColor)
+
+      // Style the axis paths and lines based on theme
+      xAxis.select('.domain').style('stroke', axisColor)
+      xAxis.selectAll('.tick line').style('stroke', axisColor)
 
       // Add Y axis
-      chartGroup.append('g').call(d3.axisLeft(y).ticks(5))
+      const yAxis = chartGroup.append('g').call(d3.axisLeft(y).ticks(5))
+
+      // Style the axis paths and lines based on theme
+      yAxis.selectAll('text').style('fill', axisColor)
+      yAxis.select('.domain').style('stroke', axisColor)
+      yAxis.selectAll('.tick line').style('stroke', axisColor)
 
       // Add gradient for bars
       const barGradient = chartGroup
@@ -464,7 +495,8 @@ const ChartModal = ({
         .attr('x', width / 2)
         .attr('y', height + margin.bottom - 10)
         .text('Emails per Day')
-        .attr('class', 'text-sm text-gray-600')
+        .attr('class', 'text-sm')
+        .style('fill', textColor)
 
       chartGroup
         .append('text')
@@ -473,9 +505,10 @@ const ChartModal = ({
         .attr('y', -margin.left + 20)
         .attr('x', -height / 2)
         .text('Frequency')
-        .attr('class', 'text-sm text-gray-600')
+        .attr('class', 'text-sm')
+        .style('fill', textColor)
     }
-  }, [isOpen, chartData, chartType, title])
+  }, [isOpen, chartData, chartType, title, theme])
 
   // Handle zoom in
   const handleZoomIn = () => {
@@ -484,17 +517,13 @@ const ChartModal = ({
         .select(modalChartRef.current)
         .select('svg') as D3Selection
       const currentTransform = d3.zoomTransform(baseSvg.node() as SVGSVGElement)
-      const newTransform = d3.zoomIdentity
-        .translate(currentTransform.x, currentTransform.y)
-        .scale(currentTransform.k * 1.2)
       baseSvg.call(
         zoomRef.current.transform as unknown as (
           selection: D3Selection,
           transform: d3.ZoomTransform
         ) => void,
-        newTransform
+        currentTransform.scale(currentTransform.k * 1.2)
       )
-      setZoomLevel(newTransform.k)
     }
   }
 
@@ -505,17 +534,13 @@ const ChartModal = ({
         .select(modalChartRef.current)
         .select('svg') as D3Selection
       const currentTransform = d3.zoomTransform(baseSvg.node() as SVGSVGElement)
-      const newTransform = d3.zoomIdentity
-        .translate(currentTransform.x, currentTransform.y)
-        .scale(currentTransform.k * 0.8)
       baseSvg.call(
         zoomRef.current.transform as unknown as (
           selection: D3Selection,
           transform: d3.ZoomTransform
         ) => void,
-        newTransform
+        currentTransform.scale(currentTransform.k * 0.8)
       )
-      setZoomLevel(newTransform.k)
     }
   }
 
@@ -526,17 +551,13 @@ const ChartModal = ({
         .select(modalChartRef.current)
         .select('svg') as D3Selection
       const margin = marginRef.current
-      const newTransform = d3.zoomIdentity
-        .translate(margin.left, margin.top - 20)
-        .scale(0.85)
       baseSvg.call(
         zoomRef.current.transform as unknown as (
           selection: D3Selection,
           transform: d3.ZoomTransform
         ) => void,
-        newTransform
+        d3.zoomIdentity.translate(margin.left, margin.top - 20).scale(0.85)
       )
-      setZoomLevel(newTransform.k)
     }
   }
 
@@ -562,18 +583,20 @@ const ChartModal = ({
     <>
       {isOpen && (
         <div className="fixed inset-0 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-[1400px] h-[700px] flex flex-col overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg w-full max-w-[1400px] h-[700px] flex flex-col overflow-hidden">
             {/* Header - Made more compact */}
-            <div className="flex justify-between items-center px-8 py-3 bg-gray-50">
+            <div className="flex justify-between items-center px-8 py-3 bg-gray-50 dark:bg-gray-700">
               <div className="flex items-center gap-4">
-                <h2 className="text-lg font-medium text-gray-800">{title}</h2>
+                <h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                  {title}
+                </h2>
                 <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded">
                   Zoom: {Math.round(zoomLevel * 100)}%
                 </span>
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 transition-colors cursor-pointer flex items-center justify-center"
+                className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 transition-colors cursor-pointer flex items-center justify-center"
                 title="Close"
               >
                 <svg
@@ -595,7 +618,7 @@ const ChartModal = ({
             <div className="relative flex-grow overflow-hidden">
               <div
                 ref={modalChartRef}
-                className="absolute inset-0 bg-white px-8 py-6"
+                className="absolute inset-0 bg-white dark:bg-gray-800 px-8 py-6"
               >
                 {/* Chart will be rendered here */}
               </div>
@@ -604,7 +627,7 @@ const ChartModal = ({
               <div className="absolute top-4 right-8 flex items-center gap-2 z-10">
                 <button
                   onClick={handleZoomIn}
-                  className="p-1.5 hover:bg-gray-50 rounded-md transition-colors text-gray-600 hover:text-gray-800 cursor-pointer"
+                  className="p-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 cursor-pointer"
                   title="Zoom In"
                 >
                   <svg
@@ -622,7 +645,7 @@ const ChartModal = ({
                 </button>
                 <button
                   onClick={handleZoomOut}
-                  className="p-1.5 hover:bg-gray-50 rounded-md transition-colors text-gray-600 hover:text-gray-800 cursor-pointer"
+                  className="p-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 cursor-pointer"
                   title="Zoom Out"
                 >
                   <svg
@@ -640,7 +663,7 @@ const ChartModal = ({
                 </button>
                 <button
                   onClick={handleResetZoom}
-                  className="p-1.5 hover:bg-gray-50 rounded-md transition-colors text-gray-600 hover:text-gray-800 cursor-pointer"
+                  className="p-1.5 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition-colors text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 cursor-pointer"
                   title="Reset Zoom"
                 >
                   <svg
@@ -660,8 +683,8 @@ const ChartModal = ({
             </div>
 
             {/* Footer with Tips */}
-            <div className="px-8 py-3 bg-gray-50 flex justify-between items-center">
-              <div className="text-sm font-medium text-gray-700 flex items-center relative">
+            <div className="px-8 py-3 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
+              <div className="text-sm font-medium text-gray-700 dark:text-gray-300 flex items-center relative">
                 <svg
                   className="w-4 h-4 mr-1"
                   fill="none"
@@ -680,15 +703,15 @@ const ChartModal = ({
                 {/* Popup Tips */}
                 <div
                   id="chart-tip"
-                  className="hidden absolute bottom-8 left-0 text-xs text-gray-700 bg-white p-4 rounded-lg shadow-lg border border-gray-200 w-64 z-50"
+                  className="hidden absolute bottom-8 left-0 text-xs text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 w-64 z-50"
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <div className="font-medium text-gray-800">
+                    <div className="font-medium text-gray-800 dark:text-gray-200">
                       Chart Navigation Tips
                     </div>
                     <button
                       onClick={toggleTips}
-                      className="text-gray-400 hover:text-gray-600"
+                      className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
                     >
                       <svg
                         className="w-3 h-3"
@@ -711,7 +734,7 @@ const ChartModal = ({
                     <li>Click the home button to reset the view</li>
                     <li>Hover over data points for detailed information</li>
                   </ul>
-                  <div className="absolute -bottom-2 left-4 w-4 h-4 bg-white transform rotate-45 border-r border-b border-gray-200"></div>
+                  <div className="absolute -bottom-2 left-4 w-4 h-4 bg-white dark:bg-gray-800 transform rotate-45 border-r border-b border-gray-200 dark:border-gray-600"></div>
                 </div>
               </div>
 
@@ -719,7 +742,7 @@ const ChartModal = ({
                 <button
                   onClick={toggleTips}
                   data-tip-button
-                  className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 transition-colors text-sm cursor-pointer"
+                  className="px-4 py-1.5 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm cursor-pointer"
                 >
                   Show Tips
                 </button>
