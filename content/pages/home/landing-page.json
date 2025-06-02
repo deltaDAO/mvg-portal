@@ -97,10 +97,6 @@
         {
           "email": "info@cliox.org",
           "description": "(General Inquiries)"
-        },
-        {
-          "email": "support@cliox.org",
-          "description": "(Technical Support)"
         }
       ]
     },
@@ -116,11 +112,6 @@
           "platform": "Discord",
           "link": "https://discord.gg/cliox",
           "text": "Join our Discord"
-        },
-        {
-          "platform": "WhatsApp",
-          "link": "https://wa.me/1234567890",
-          "text": "Chat on WhatsApp"
         }
       ]
     },
