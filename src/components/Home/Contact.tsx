@@ -3,10 +3,12 @@ import { useState, FormEvent } from 'react'
 import Button from '../Home/common/Button'
 import Container from '@components/@shared/atoms/Container'
 import { getLandingPageContent } from '@utils/landingPageContent'
+import { submitContactForm } from '../../utils/submitContactForm'
 
 interface FormData {
   name: string
   email: string
+  subject: string
   message: string
 }
 
@@ -17,34 +19,38 @@ export default function ContactAndOnboarding() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
+    subject: '',
     message: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(
     null
   )
+  const [submitMessage, setSubmitMessage] = useState<string>('')
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     setSubmitStatus(null)
+    setSubmitMessage('')
 
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
+      const result = await submitContactForm(formData)
 
-      if (!response.ok) throw new Error('Failed to send message')
-
-      setSubmitStatus('success')
-      setFormData({ name: '', email: '', message: '' }) // Reset form
+      // Contact Form 7 returns different response formats
+      if (result.status === 'mail_sent') {
+        setSubmitStatus('success')
+        setSubmitMessage(result.message || 'Message sent successfully!')
+        setFormData({ name: '', email: '', subject: '', message: '' }) // Reset form
+      } else {
+        setSubmitStatus('error')
+        setSubmitMessage(
+          result.message || 'Failed to send message. Please try again.'
+        )
+      }
     } catch (error) {
       setSubmitStatus('error')
+      setSubmitMessage('Failed to send message. Please try again.')
       console.error('Failed to send message:', error)
     } finally {
       setIsSubmitting(false)
@@ -248,6 +254,30 @@ export default function ContactAndOnboarding() {
 
               <div>
                 <label
+                  htmlFor="subject"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      subject: e.target.value
+                    }))
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-[#734B3D] focus:border-[#734B3D]"
+                  placeholder="Subject of your message"
+                  required
+                />
+              </div>
+
+              <div>
+                <label
                   htmlFor="message"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
@@ -278,9 +308,7 @@ export default function ContactAndOnboarding() {
                       : 'text-red-600'
                   }`}
                 >
-                  {submitStatus === 'success'
-                    ? 'Message sent successfully!'
-                    : 'Failed to send message. Please try again.'}
+                  {submitMessage}
                 </div>
               )}
 
