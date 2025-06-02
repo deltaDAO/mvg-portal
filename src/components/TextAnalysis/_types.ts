@@ -24,10 +24,12 @@ export interface DocumentSummary {
   created: string
 }
 
-export interface Sentiment {
+export interface SentimentCategory {
   name: string
   values: [string, number][]
 }
+
+export interface Sentiment extends Array<SentimentCategory> {}
 
 export interface WordCloud {
   value: string
@@ -35,9 +37,9 @@ export interface WordCloud {
 }
 
 export interface TextAnalysisResult {
+  wordcloud?: WordCloud
+  sentiment?: Sentiment
   dataDistribution?: string
   emailDistribution?: string
   documentSummary?: DocumentSummary
-  sentiment?: Sentiment
-  wordcloud?: { wordCloudData: WordCloud[] }
 }

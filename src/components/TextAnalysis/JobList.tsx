@@ -181,29 +181,53 @@ export default function JobList(props: {
         if (filename.includes('wordcloud') || filename.includes('word_cloud')) {
           result.wordcloud = content
         } else if (filename.includes('sentiment')) {
-          // Ensure sentiment data is in the correct format
-          if (typeof content === 'object' && content !== null) {
-            // If content is already an object, ensure it has the correct structure
-            if (!content.name || !Array.isArray(content.values)) {
-              console.warn('Invalid sentiment data structure:', content)
+          // Handle sentiment data
+          try {
+            let parsedContent
+            if (typeof content === 'string') {
+              parsedContent = JSON.parse(content)
+            } else if (typeof content === 'object' && content !== null) {
+              parsedContent = content
+            } else {
+              console.warn('Invalid sentiment content type:', typeof content)
               return result
             }
-            result.sentiment = content
-          } else if (typeof content === 'string') {
-            try {
-              const parsedContent = JSON.parse(content)
-              if (!parsedContent.name || !Array.isArray(parsedContent.values)) {
-                console.warn(
-                  'Invalid sentiment data structure after parsing:',
-                  parsedContent
+
+            // Validate the structure
+            if (!Array.isArray(parsedContent)) {
+              console.warn(
+                'Sentiment data should be an array of sentiment categories'
+              )
+              return result
+            }
+
+            // Validate each sentiment category
+            const validSentimentData = parsedContent.every((category) => {
+              return (
+                typeof category === 'object' &&
+                category !== null &&
+                typeof category.name === 'string' &&
+                Array.isArray(category.values) &&
+                category.values.every(
+                  (value) =>
+                    Array.isArray(value) &&
+                    value.length === 2 &&
+                    typeof value[0] === 'string' &&
+                    typeof value[1] === 'number' &&
+                    !isNaN(value[1])
                 )
-                return result
-              }
-              result.sentiment = parsedContent
-            } catch (error) {
-              console.error('Error parsing sentiment content:', error)
+              )
+            })
+
+            if (!validSentimentData) {
+              console.warn('Invalid sentiment data structure:', parsedContent)
               return result
             }
+
+            result.sentiment = parsedContent
+          } catch (error) {
+            console.error('Error processing sentiment data:', error)
+            return result
           }
         } else if (filename.includes('date_distribution')) {
           result.dataDistribution = content
