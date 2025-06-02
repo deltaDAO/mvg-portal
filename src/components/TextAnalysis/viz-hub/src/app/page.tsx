@@ -160,7 +160,7 @@ export default function Home({ data }: TextAnalysisProps) {
           {processedData.sentiment ? (
             <SentimentChartV2
               skipLoading={true}
-              data={[processedData.sentiment]}
+              data={processedData.sentiment}
             />
           ) : (
             <EmptyState title="Sentiment Analysis" />

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import * as d3 from 'd3'
+import { SentimentCategory } from '../../../_types'
 
 interface SentimentData {
   name: string
@@ -71,7 +72,7 @@ const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(
 
 interface SentimentChartProps {
   skipLoading?: boolean
-  data: SentimentData[]
+  data: SentimentCategory[]
 }
 
 const SentimentChartV2 = ({
@@ -81,7 +82,7 @@ const SentimentChartV2 = ({
   const chartRef = useRef<HTMLDivElement>(null)
   const brushRef = useRef<HTMLDivElement>(null)
   const [chartWidth, setChartWidth] = useState(0)
-  const [sentimentData, setSentimentData] = useState<SentimentData[]>([])
+  const [sentimentData, setSentimentData] = useState<SentimentCategory[]>([])
   const [dateRange, setDateRange] = useState<DateRange | null>(null)
   const [loading, setLoading] = useState(true)
   const tooltipRef = useRef<d3.Selection<
@@ -102,16 +103,42 @@ const SentimentChartV2 = ({
 
   useEffect(() => {
     if (data && data.length > 0) {
-      console.log('Received sentiment data:', data)
-
       // Validate and process data
-      const validData = data.filter(
-        (item) =>
+      const validData = data.filter((item) => {
+        // Check if item is a valid sentiment category
+        const isValid =
           item &&
-          item.name &&
+          typeof item === 'object' &&
+          'name' in item &&
+          'values' in item &&
           Array.isArray(item.values) &&
-          item.values.length > 0
-      )
+          item.values.length > 0 &&
+          item.values.every((value) => {
+            const isValidValue =
+              Array.isArray(value) &&
+              value.length === 2 &&
+              typeof value[0] === 'string' &&
+              typeof value[1] === 'number' &&
+              !isNaN(value[1])
+            if (!isValidValue) {
+              console.log('Invalid value found:', value)
+            }
+            return isValidValue
+          })
+
+        if (!isValid) {
+          console.log('Item failed validation:', {
+            hasItem: !!item,
+            isObject: typeof item === 'object',
+            hasName: 'name' in item,
+            hasValues: 'values' in item,
+            isValuesArray: Array.isArray(item?.values),
+            valuesLength: item?.values?.length
+          })
+        }
+
+        return isValid
+      })
 
       if (validData.length === 0) {
         console.warn('No valid sentiment data found')
@@ -439,6 +466,7 @@ const SentimentChartV2 = ({
       .attr('height', chartCount * (chartHeight + spacing) - spacing)
       .style('fill', 'none')
       .style('pointer-events', 'all')
+      .style('cursor', 'crosshair')
 
     const dateValues = new Map<number, Map<string, number>>()
 
@@ -448,7 +476,6 @@ const SentimentChartV2 = ({
         if (!dateValues.has(timestamp)) {
           dateValues.set(timestamp, new Map<string, number>())
         }
-
         dateValues.get(timestamp)?.set(series.name, point.value)
       })
     })
@@ -460,9 +487,12 @@ const SentimentChartV2 = ({
 
     mouseArea
       .on('mouseover', () => {
-        if (tooltipRef.current)
+        if (tooltipRef.current) {
           tooltipRef.current.style('visibility', 'visible')
-        verticalLine.style('opacity', 1)
+        }
+        if (verticalLineRef.current) {
+          verticalLineRef.current.style('opacity', 1)
+        }
       })
       .on('mousemove', (event) => {
         const now = Date.now()
@@ -497,7 +527,11 @@ const SentimentChartV2 = ({
         const selectedTimestamp = sortedTimestamps[closestIndex]
         const selectedDate = new Date(selectedTimestamp)
 
-        verticalLine.attr('x1', x(selectedDate)).attr('x2', x(selectedDate))
+        if (verticalLineRef.current) {
+          verticalLineRef.current
+            .attr('x1', x(selectedDate))
+            .attr('x2', x(selectedDate))
+        }
 
         let tooltipContent = `<div class="font-medium text-xs mb-1" style="color:#555;">${formatDate(
           selectedDate
@@ -547,8 +581,12 @@ const SentimentChartV2 = ({
         }
       })
       .on('mouseout', () => {
-        if (tooltipRef.current) tooltipRef.current.style('visibility', 'hidden')
-        verticalLine.style('opacity', 0)
+        if (tooltipRef.current) {
+          tooltipRef.current.style('visibility', 'hidden')
+        }
+        if (verticalLineRef.current) {
+          verticalLineRef.current.style('opacity', 0)
+        }
       })
   }, [chartRef, dateRange, sentimentData, formatDate])
 
