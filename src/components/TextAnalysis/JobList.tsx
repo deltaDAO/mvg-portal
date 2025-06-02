@@ -20,11 +20,10 @@ import Button from '../@shared/atoms/Button'
 import ComputeJobs, { GetCustomActions } from '../Profile/History/ComputeJobs'
 import styles from './JobList.module.css'
 import { TEXT_ANALYSIS_ALGO_DIDS, TEXT_ANALYSIS_RESULT_ZIP } from './_constants'
-// import {
-//   getMapColor,
-//   getResultBinaryData,
-//   transformBinaryToRoadDamageResult
-// } from './_utils'
+import {
+  getResultBinaryData,
+  transformBinaryToRoadDamageResult
+} from './_utils'
 
 import { TextAnalysisResult } from './_types'
 
@@ -162,16 +161,34 @@ export default function JobList(): ReactElement {
         datasetDDO.services[0].serviceEndpoint,
         signerToUse,
         job.jobId,
-        job.results.findIndex((result) => result.filename === resultFileName)
+        // TODO: Uncomment this when the resultFileName is available
+        // job.results.findIndex((result) => result.filename === resultFileName)
+        job.results.findIndex(
+          (result) =>
+            result.filename?.toLowerCase().endsWith('.json') ||
+            result.filename?.toLowerCase().endsWith('.csv')
+        )
       )
 
-      const resultData = JSON.parse(jobResult) as TextAnalysisResult[]
-
-      if (!resultData) return
+      const resultFiles = job.results.slice(0, 5) // only first 5 file are compute results
+      const resultUrls = await Promise.all(
+        resultFiles.map(async (file, index) => {
+          const url = await ProviderInstance.getComputeResultUrl(
+            datasetDDO.services[0].serviceEndpoint,
+            signerToUse,
+            job.jobId,
+            index
+          )
+          return {
+            filename: file.filename,
+            url: url
+          }
+        })
+      )
 
       const newuseCaseData: TextAnalysisUseCaseData = {
         job,
-        result: resultData
+        result: resultUrls
       }
 
       await createOrUpdateTextAnalysis(newuseCaseData)
@@ -183,7 +200,9 @@ export default function JobList(): ReactElement {
   }
 
   const deleteJobResultFromDB = async (job: ComputeJobMetaData) => {
-    if (!confirm(`Are you sure you want to delete the result from map view?`))
+    if (
+      !confirm(`Are you sure you want to delete the result from visualization?`)
+    )
       return
 
     const rowToDelete = textAnalysisList.find(

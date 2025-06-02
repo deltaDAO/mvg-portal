@@ -1,97 +1,79 @@
-// import JSZipUtils from 'jszip-utils'
-// import JSZip from 'jszip'
+import JSZipUtils from 'jszip-utils'
+import JSZip from 'jszip'
 // import {
 //   RoadDamageImage,
 //   RoadDamageResult,
 //   RoadDamageResultWithImage
 // } from './_types'
-// import { CONFIDENCE_COLOR_MAP, ROAD_DAMAGE_RESULT_ZIP } from './_constants'
-// import { LoggerInstance } from '@oceanprotocol/lib'
-// import { RoadDamageUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
-// import randomColor from 'randomcolor'
-// import { createHash } from 'crypto'
 
-// export function getConfidenceColor(confidence: number) {
-//   // make sure array is sorted correctly for next find call
-//   const sorted = CONFIDENCE_COLOR_MAP.sort((a, b) => b.threshold - a.threshold)
+import { TEXT_ANALYSIS_RESULT_ZIP } from './_constants'
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
 
-//   // return the first color found in sorted array where confidence > threshold
-//   return sorted.find((entry) => confidence > entry.threshold).color
-// }
+export async function getResultBinaryData(url: string) {
+  const resultData = await JSZipUtils.getBinaryContent(url)
 
-// export function getMapColor(inputDids: string[]): string {
-//   const joinedDids = inputDids.join()
+  return resultData
+}
 
-//   const seed = createHash('sha512').update(joinedDids).digest('base64')
+export async function transformBinaryToRoadDamageResult(
+  binary: any
+): Promise<TextAnalysisUseCaseData['result']> {
+  let zip: JSZip
+  let detectionsJSON: string
 
-//   return randomColor({
-//     seed,
-//     luminosity: 'dark'
-//   })
-// }
+  const { detectionsFileName, imagesFolderName } = TEXT_ANALYSIS_RESULT_ZIP
 
-// export async function getResultBinaryData(url: string) {
-//   const resultData = await JSZipUtils.getBinaryContent(url)
+  try {
+    zip = await JSZip.loadAsync(binary)
 
-//   return resultData
-// }
+    LoggerInstance.log(`[TextAnalysis]: unzipped result data:`, { zip })
 
-// export async function transformBinaryToRoadDamageResult(
-//   binary: any
-// ): Promise<RoadDamageUseCaseData['result']> {
-//   let zip: JSZip
-//   let detectionsJSON: string
+    console.log(Object.keys(zip.files))
 
-//   const { detectionsFileName, imagesFolderName } = ROAD_DAMAGE_RESULT_ZIP
+    detectionsJSON = await zip.file(detectionsFileName).async('string')
+  } catch (error) {
+    LoggerInstance.error(
+      `Could not unzip result. Format may mismatch the current configuration.`,
+      error
+    )
+    return
+  }
 
-//   try {
-//     zip = await JSZip.loadAsync(binary)
+  let detections: RoadDamageResult[]
+  try {
+    detections = JSON.parse(detectionsJSON)
+    console.dir(detections, { depth: null })
+  } catch (error) {
+    LoggerInstance.error(`Could parse result. Expected JSON file.`, error)
+    return
+  }
 
-//     LoggerInstance.log(`[RoadDamage]: unzipped result data:`, { zip })
+  const result: RoadDamageResultWithImage[] = []
 
-//     detectionsJSON = await zip.file(detectionsFileName).async('string')
-//   } catch (error) {
-//     LoggerInstance.error(
-//       `Could not unzip result. Format may mismatch the current configuration.`,
-//       error
-//     )
-//     return
-//   }
+  for (const detection of detections) {
+    const { resultName, roadDamages } = detection
+    const path = `${imagesFolderName}/${resultName}`
 
-//   let detections: RoadDamageResult[]
-//   try {
-//     detections = JSON.parse(detectionsJSON)
-//     console.dir(detections, { depth: null })
-//   } catch (error) {
-//     LoggerInstance.error(`Could parse result. Expected JSON file.`, error)
-//     return
-//   }
+    try {
+      const image: RoadDamageImage = {
+        path,
+        name: resultName,
+        data: await zip.file(path).async('base64'),
+        type: path.split('.').pop() // try getting filetype from image path
+      }
 
-//   const result: RoadDamageResultWithImage[] = []
+      result.push({
+        image,
+        roadDamages
+      })
+    } catch (error) {
+      LoggerInstance.error(
+        `[RoadDamage]: could not load image at ${path}`,
+        error
+      )
+    }
+  }
 
-//   for (const detection of detections) {
-//     const { resultName, roadDamages } = detection
-//     const path = `${imagesFolderName}/${resultName}`
-
-//     try {
-//       const image: RoadDamageImage = {
-//         path,
-//         name: resultName,
-//         data: await zip.file(path).async('base64'),
-//         type: path.split('.').pop() // try getting filetype from image path
-//       }
-
-//       result.push({
-//         image,
-//         roadDamages
-//       })
-//     } catch (error) {
-//       LoggerInstance.error(
-//         `[RoadDamage]: could not load image at ${path}`,
-//         error
-//       )
-//     }
-//   }
-
-//   return result
-// }
+  return result
+}

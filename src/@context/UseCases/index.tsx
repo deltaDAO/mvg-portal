@@ -12,9 +12,18 @@ export class UseCaseDB extends Dexie {
   textAnalysises!: Table<TextAnalysisUseCaseData>
   constructor() {
     super(DATABASE_NAME)
+
+    // TESTLOG
+    console.log('Initializing UseCaseDB with name:', DATABASE_NAME)
+    console.log('Current database version:', DATABASE_VERSION)
+
     this.version(DATABASE_VERSION).stores({
       ...TEXT_ANALYSIS_TABLE
     })
+
+    // TESTLOG
+    console.log('Database tables:', this.tables)
+    console.log('TEXT_ANALYSIS_TABLE config:', TEXT_ANALYSIS_TABLE)
   }
 }
 
@@ -37,9 +46,17 @@ const UseCasesContext = createContext(null)
 function UseCasesProvider({ children }: { children: ReactNode }): ReactElement {
   const textAnalysisList = useLiveQuery(() => database.textAnalysises.toArray())
 
+  // TESTLOG
+  console.log('Database instance:', database)
+  console.log('TextAnalysis table:', database.textAnalysises)
+  console.log('TextAnalysisList from useLiveQuery:', textAnalysisList)
+
   const createOrUpdateTextAnalysis = async (
     textAnalysis: TextAnalysisUseCaseData
   ) => {
+    // TESTLOG
+    console.log('Creating/Updating text analysis:', textAnalysis)
+
     if (
       !textAnalysis.job ||
       !textAnalysis.job.jobId ||

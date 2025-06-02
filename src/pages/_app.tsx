@@ -17,9 +17,6 @@ import { FilterProvider } from '@context/Filter'
 import { UseCasesProvider } from '../@context/UseCases'
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
-  // TESTLOG
-  console.log('MyApp component rendering')
-
   Decimal.set({ rounding: 1 })
 
   return (
