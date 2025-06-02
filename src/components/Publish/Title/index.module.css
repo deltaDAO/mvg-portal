@@ -1,6 +1,7 @@
 .network {
-  color: var(--font-color-heading);
+  color: #6b7280;
   margin-left: calc(var(--spacer) / 3);
+  font-size: 0.75em;
 }
 .network svg {
   width: 1em;
