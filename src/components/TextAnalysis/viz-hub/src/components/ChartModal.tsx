@@ -484,13 +484,17 @@ const ChartModal = ({
         .select(modalChartRef.current)
         .select('svg') as D3Selection
       const currentTransform = d3.zoomTransform(baseSvg.node() as SVGSVGElement)
+      const newTransform = d3.zoomIdentity
+        .translate(currentTransform.x, currentTransform.y)
+        .scale(currentTransform.k * 1.2)
       baseSvg.call(
         zoomRef.current.transform as unknown as (
           selection: D3Selection,
           transform: d3.ZoomTransform
         ) => void,
-        currentTransform.scale(currentTransform.k * 1.2)
+        newTransform
       )
+      setZoomLevel(newTransform.k)
     }
   }
 
@@ -501,13 +505,17 @@ const ChartModal = ({
         .select(modalChartRef.current)
         .select('svg') as D3Selection
       const currentTransform = d3.zoomTransform(baseSvg.node() as SVGSVGElement)
+      const newTransform = d3.zoomIdentity
+        .translate(currentTransform.x, currentTransform.y)
+        .scale(currentTransform.k * 0.8)
       baseSvg.call(
         zoomRef.current.transform as unknown as (
           selection: D3Selection,
           transform: d3.ZoomTransform
         ) => void,
-        currentTransform.scale(currentTransform.k * 0.8)
+        newTransform
       )
+      setZoomLevel(newTransform.k)
     }
   }
 
@@ -518,13 +526,17 @@ const ChartModal = ({
         .select(modalChartRef.current)
         .select('svg') as D3Selection
       const margin = marginRef.current
+      const newTransform = d3.zoomIdentity
+        .translate(margin.left, margin.top - 20)
+        .scale(0.85)
       baseSvg.call(
         zoomRef.current.transform as unknown as (
           selection: D3Selection,
           transform: d3.ZoomTransform
         ) => void,
-        d3.zoomIdentity.translate(margin.left, margin.top - 20).scale(0.85)
+        newTransform
       )
+      setZoomLevel(newTransform.k)
     }
   }
 
