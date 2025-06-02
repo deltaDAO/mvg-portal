@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Titillium_Web } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/store/themeStore'
-import Footer from '@/components/layout/Footer'
+import { ThemeProvider } from '../store/themeStore'
+import Footer from '../components/layout/Footer'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',

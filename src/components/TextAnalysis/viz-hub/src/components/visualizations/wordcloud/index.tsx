@@ -5,10 +5,10 @@ import { useWordCloudVisualization } from './useWordCloudVisualization'
 import OptionsModal from './modals/OptionsModal'
 import ListEditModal from './modals/ListEditModal'
 import WordDetailPanel from './WordDetailPanel'
-import ChartError from '@/components/ui/common/ChartError'
+import ChartError from '../../ui/common/ChartError'
 import debounce from 'lodash/debounce'
 import { useWordCloudStore } from './store'
-import { useTheme } from '@/store/themeStore'
+import { useTheme } from '../../../store/themeStore'
 
 interface WordCloudProps {
   skipLoading?: boolean

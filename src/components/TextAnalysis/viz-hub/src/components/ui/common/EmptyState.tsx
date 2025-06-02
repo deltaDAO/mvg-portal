@@ -26,11 +26,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({ title }) => (
     <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-200">
       {title}
     </h3>
-    <p className="text-gray-600 dark:text-gray-300 mb-1">
+    <p className="text-gray-600 dark:text-gray-300">
       No data available to display.
-    </p>
-    <p className="text-gray-500 dark:text-gray-400 text-sm">
-      Click the &quot;Upload Data&quot; button in the header to get started.
     </p>
   </div>
 )

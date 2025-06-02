@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import * as d3 from 'd3'
-import { useDataStore } from '@/store/dataStore'
-import { useTheme } from '@/store/themeStore'
+import { useDataStore } from '../../../store/dataStore'
+import { useTheme } from '../../../store/themeStore'
 
 interface SentimentData {
   name: string

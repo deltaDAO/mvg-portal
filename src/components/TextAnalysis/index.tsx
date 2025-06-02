@@ -24,9 +24,7 @@ export default function TextAnalysisViz(): ReactElement {
     <div className="flex flex-col gap-6">
       <JobList setTextAnalysisData={setTextAnalysisData} />
       {textAnalysisData.length > 0 && (
-        <div className="w-full">
-          <VizHub data={textAnalysisData} />
-        </div>
+        <div className="w-full">{/* <VizHub data={textAnalysisData} /> */}</div>
       )}
     </div>
   )

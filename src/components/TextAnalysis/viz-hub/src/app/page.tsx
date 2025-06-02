@@ -1,21 +1,19 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import SentimentChart from '@/components/visualizations/sentiment/SentimentChart'
-import DataDistribution from '@/components/visualizations/distribution/DataDistribution'
-import WordCloud from '@/components/visualizations/wordcloud'
-import DocumentSummary from '@/components/visualizations/summary/DocumentSummary'
-import Header from '@/components/layout/Header'
-import VisualizationWrapper from '@/components/ui/common/VisualizationWrapper'
-import LoadingIndicator from '@/components/ui/common/LoadingIndicator'
-import FutureFeatures from '@/components/ui/common/FutureFeatures'
-import UploadModal from '@/components/ui/upload/UploadModal'
-import { STORAGE_KEYS, useDataStore } from '@/store/dataStore'
-import { useTheme } from '@/store/themeStore'
+import SentimentChart from '../components/visualizations/sentiment/SentimentChart'
+import DataDistribution from '../components/visualizations/distribution/DataDistribution'
+import WordCloud from '../components/visualizations/wordcloud'
+import DocumentSummary from '../components/visualizations/summary/DocumentSummary'
+import Header from '../components/layout/Header'
+import VisualizationWrapper from '../components/ui/common/VisualizationWrapper'
+import LoadingIndicator from '../components/ui/common/LoadingIndicator'
+import FutureFeatures from '../components/ui/common/FutureFeatures'
+import { STORAGE_KEYS, useDataStore } from '../store/dataStore'
+import { useTheme } from '../store/themeStore'
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
-  const [showUploadModal, setShowUploadModal] = useState(false)
   const { checkDataStatus, dataStatus } = useDataStore()
   const { theme } = useTheme()
 
@@ -30,9 +28,6 @@ export default function Home() {
       if (dataExists) {
         // Update data status in the store if data exists
         checkDataStatus()
-      } else {
-        // Auto-open upload modal when no data is present
-        setShowUploadModal(true)
       }
 
       setIsLoading(false)
@@ -45,26 +40,6 @@ export default function Home() {
     return () => window.removeEventListener('storage', checkData)
   }, [checkDataStatus])
 
-  // Prevent body scrolling when modal is open
-  useEffect(() => {
-    if (showUploadModal) {
-      // Save the current overflow style
-      const originalOverflow = document.body.style.overflow
-      // Lock scrolling
-      document.body.style.overflow = 'hidden'
-
-      // Restore scrolling when modal closes
-      return () => {
-        document.body.style.overflow = originalOverflow
-      }
-    }
-  }, [showUploadModal])
-
-  // Handle successful upload
-  const handleUploadSuccess = () => {
-    setShowUploadModal(false)
-  }
-
   // Show loading state
   if (isLoading) {
     return <LoadingIndicator />
@@ -73,7 +48,7 @@ export default function Home() {
   // Render the dashboard with visualizations or empty states
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header onUploadClick={() => setShowUploadModal(true)} />
+      <Header />
 
       <div className="p-6">
         <div className="max-w-6xl mx-auto">
@@ -131,12 +106,6 @@ export default function Home() {
           </main>
         </div>
       </div>
-
-      <UploadModal
-        isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        onSuccess={handleUploadSuccess}
-      />
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import * as d3 from 'd3'
-import { useTheme } from '@/store/themeStore'
+import { useTheme } from '../../../store/themeStore'
 
 // Data types
 type TimeDataPoint = {

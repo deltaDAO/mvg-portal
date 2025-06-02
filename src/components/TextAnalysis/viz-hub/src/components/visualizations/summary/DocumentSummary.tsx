@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import ChartError from '@/components/ui/common/ChartError'
-import { useDataStore } from '@/store/dataStore'
+import ChartError from '../../ui/common/ChartError'
+import { useDataStore } from '../../../store/dataStore'
 
 interface DocumentSummary {
   totalDocuments: number
