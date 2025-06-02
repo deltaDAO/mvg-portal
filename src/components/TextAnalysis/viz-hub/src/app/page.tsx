@@ -7,6 +7,7 @@ import WordCloud from '../components/WordCloud'
 import DocumentSummary from '../components/DocumentSummary'
 import Logo from '../components/Logo'
 import { TextAnalysisUseCaseData } from '@/@context/UseCases/models/TextAnalysis.model'
+import { SentimentCategory } from '../../../_types'
 
 // Empty state component
 const EmptyState = ({ title }: { title: string }) => (
@@ -33,7 +34,7 @@ export default function Home({ data }: TextAnalysisProps) {
       count: number
       emails_per_day?: number
     }[]
-    sentiment?: { name: string; values: [string, number][] }
+    sentiment?: SentimentCategory[]
     wordCloud?: { wordCloudData: { value: string; count: number }[] }
     documentSummary?: {
       totalDocuments: number
@@ -60,7 +61,10 @@ export default function Home({ data }: TextAnalysisProps) {
               newProcessedData.wordCloud = result.wordcloud
             }
             if (result.sentiment) {
-              newProcessedData.sentiment = result.sentiment
+              // Ensure sentiment data is an array
+              newProcessedData.sentiment = Array.isArray(result.sentiment)
+                ? result.sentiment
+                : [result.sentiment]
             }
             if (result.dataDistribution) {
               // Parse CSV data as a whole
