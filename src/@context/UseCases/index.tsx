@@ -20,10 +20,6 @@ export class UseCaseDB extends Dexie {
     this.version(DATABASE_VERSION).stores({
       ...TEXT_ANALYSIS_TABLE
     })
-
-    // TESTLOG
-    console.log('Database tables:', this.tables)
-    console.log('TEXT_ANALYSIS_TABLE config:', TEXT_ANALYSIS_TABLE)
   }
 }
 
@@ -57,12 +53,7 @@ function UseCasesProvider({ children }: { children: ReactNode }): ReactElement {
     // TESTLOG
     console.log('Creating/Updating text analysis:', textAnalysis)
 
-    if (
-      !textAnalysis.job ||
-      !textAnalysis.job.jobId ||
-      !textAnalysis.result ||
-      textAnalysis.result.length < 1
-    ) {
+    if (!textAnalysis.job || !textAnalysis.job.jobId) {
       LoggerInstance.error(
         `[UseCases] cannot insert without job or result data!`
       )
