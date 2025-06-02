@@ -5,30 +5,14 @@ import styles from './index.module.css'
 
 import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
 
-export default function RoadDamageMap(): ReactElement {
-  // const MapWithNoSSR = dynamic(() => import('./Map'), {
-  //   ssr: false
-  // })
-
-  const scrollToMapRef = useRef<HTMLDivElement>()
-
+export default function TextAnalysisViz(): ReactElement {
   const [textAnalysisData, setTextAnalysisData] = useState<
     TextAnalysisUseCaseData[]
   >([])
 
   return (
     <div>
-      <JobList />
-      {/* <JobList setMapData={setTextAnalysisData} scrollToMapRef={scrollToMapRef} /> */}
-      {/* {mapData && mapData.length > 0 && (
-        <div ref={scrollToMapRef}>
-          <span className={styles.info}>
-            Map info calculated from {mapData.length} compute job result
-            {mapData.length > 1 && 's'}.
-          </span>
-          <MapWithNoSSR data={mapData} />
-        </div>
-      )} */}
+      <JobList setTextAnalysisData={setTextAnalysisData} />
     </div>
   )
 }

@@ -16,6 +16,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "paths": {
+      "@/*": ["./src/*"],
       "@components/*": ["./src/components/*"],
       "@shared/*": ["./src/components/@shared/*"],
       "@hooks/*": ["./src/@hooks/*"],
