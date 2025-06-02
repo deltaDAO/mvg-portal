@@ -5,13 +5,17 @@ import * as d3 from 'd3'
 import ChartModal from './ChartModal'
 import ChartSkeleton from './ChartSkeleton'
 import ChartError from './ChartError'
-import { useDataStore } from '@/store/dataStore'
 
 interface DataDistributionProps {
   title: string
   description?: string
   type: 'email' | 'date'
   skipLoading?: boolean
+  data: Array<{
+    time: string
+    count: number
+    emails_per_day?: number
+  }>
 }
 
 interface DataPoint {
@@ -29,52 +33,25 @@ const DataDistribution = ({
   title,
   description,
   type,
-  skipLoading = false
+  skipLoading = false,
+  data
 }: DataDistributionProps) => {
   const chartRef = useRef<HTMLDivElement>(null)
-  const [data, setData] = useState<DataPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [chartType, setChartType] = useState<'date' | 'email'>(type)
 
-  // Get data fetching functions from store
-  const { fetchEmailDistribution, fetchDateDistribution } = useDataStore()
-
-  // Fetch data with retry functionality
-  const fetchDistributionData = useCallback(async () => {
-    try {
-      setLoading(true)
+  // Process data when it changes
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setLoading(false)
       setError(null)
-
-      let csvText
-      if (type === 'email') {
-        const emailData = await fetchEmailDistribution()
-        csvText = emailData
-        setChartType('email')
-      } else if (type === 'date') {
-        const dateData = await fetchDateDistribution()
-        csvText = dateData
-        setChartType('date')
-      } else {
-        throw new Error('Invalid distribution type specified')
-      }
-
-      // Parse CSV data
-      const parsedData = d3.csvParse(csvText)
-      setData(parsedData as unknown as DataPoint[])
-    } catch (err) {
-      console.error('Error loading data:', err)
-      setError(err instanceof Error ? err.message : 'Unknown error')
-    } finally {
+    } else {
+      setError('No data available')
       setLoading(false)
     }
-  }, [type, fetchEmailDistribution, fetchDateDistribution])
-
-  // Fetch data on component mount
-  useEffect(() => {
-    fetchDistributionData()
-  }, [fetchDistributionData, skipLoading])
+  }, [data])
 
   // Render chart when data is available
   useEffect(() => {
@@ -104,19 +81,10 @@ const DataDistribution = ({
       // Ensure data is properly formatted
       const formattedData: FormattedDatePoint[] = data
         .map((d) => {
-          // Get the key names which might vary depending on how the CSV is parsed
-          const timeKey = 'time' in d ? 'time' : Object.keys(d)[0]
-          const countKey = 'count' in d ? 'count' : Object.keys(d)[1]
-
-          const timeValue = d[timeKey as keyof typeof d] as string
-          const countValue = +(d[countKey as keyof typeof d] as string)
-
-          // Parse the date string
-          const parsedDate = parseTime(timeValue)
-
+          const parsedDate = parseTime(d.time)
           return {
             time: parsedDate,
-            count: countValue
+            count: d.count
           }
         })
         .filter((d) => d.time !== null)
@@ -202,88 +170,82 @@ const DataDistribution = ({
       svg
         .append('path')
         .datum(formattedData)
-        .attr('fill', 'url(#area-gradient-' + container.id + ')')
+        .attr('fill', `url(#area-gradient-${container.id})`)
+        .attr('stroke', '#4F46E5')
+        .attr('stroke-width', 2)
         .attr('d', area)
 
-      // Add line chart with smoother curve
-      const line = d3
-        .line<FormattedDatePoint>()
-        .defined((d) => d.time !== null)
-        .x((d) => x(d.time!))
-        .y((d) => y(d.count))
-        .curve(d3.curveCatmullRom.alpha(0.5)) // Smoother curve
-
-      // Add the line path
+      // Add dots
       svg
-        .append('path')
-        .datum(formattedData)
-        .attr('fill', 'none')
-        .attr('stroke', '#4F46E5') // Indigo color for line
-        .attr('stroke-width', 2.5)
-        .attr('d', line)
-
-      // Add points without hover effects
-      svg
-        .selectAll('.dot')
+        .selectAll('circle')
         .data(formattedData)
         .enter()
         .append('circle')
-        .attr('class', 'dot')
         .attr('cx', (d) => x(d.time!))
         .attr('cy', (d) => y(d.count))
-        .attr('r', 3) // Smaller points
-        .attr('fill', '#F59E0B') // Amber color for points
-        .attr('stroke', '#ffffff')
-        .attr('stroke-width', 1.5)
-        .attr('opacity', 0.8)
+        .attr('r', 4)
+        .attr('fill', '#4F46E5')
+        .attr('stroke', 'white')
+        .attr('stroke-width', 1)
+        .style('opacity', 0.8)
+        .on('mouseover', function (event, d) {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr('r', 6)
+            .style('opacity', 1)
 
-      // Add labels
-      svg
-        .append('text')
-        .attr('text-anchor', 'middle')
-        .attr('x', width / 2)
-        .attr('y', height + margin.bottom - 10)
-        .text('Date')
-        .attr('class', 'text-sm text-gray-600')
+          const tooltip = d3
+            .select(container)
+            .append('div')
+            .attr('class', 'tooltip')
+            .style('position', 'absolute')
+            .style('background-color', 'white')
+            .style('padding', '8px')
+            .style('border-radius', '4px')
+            .style('box-shadow', '0 2px 4px rgba(0,0,0,0.1)')
+            .style('pointer-events', 'none')
+            .style('opacity', 0)
+            .style('transition', 'opacity 0.2s')
 
-      svg
-        .append('text')
-        .attr('text-anchor', 'middle')
-        .attr('transform', 'rotate(-90)')
-        .attr('y', -margin.left + 20)
-        .attr('x', -height / 2)
-        .text('Count')
-        .attr('class', 'text-sm text-gray-600')
+          tooltip
+            .html(
+              `<div class="text-sm">
+                <div class="font-medium">${d3.timeFormat('%B %d, %Y')(
+                  d.time!
+                )}</div>
+                <div class="text-gray-600">Count: ${d.count}</div>
+              </div>`
+            )
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 28 + 'px')
+            .transition()
+            .duration(200)
+            .style('opacity', 1)
+        })
+        .on('mouseout', function () {
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr('r', 4)
+            .style('opacity', 0.8)
 
-      // Add title
-      svg
-        .append('text')
-        .attr('text-anchor', 'middle')
-        .attr('x', width / 2)
-        .attr('y', -5)
-        .text('Email Count Over Time')
-        .attr('class', 'text-xs font-semibold text-gray-700')
-    } else if (chartType === 'email') {
-      // Emails per day histogram
-      const getEmailValue = (d: DataPoint): number => {
-        if ('emails_per_day' in d) {
-          return +(d.emails_per_day ?? 0)
-        }
-        const firstKey = Object.keys(d)[0]
-        return +(d[firstKey as keyof DataPoint] ?? 0)
-      }
-
-      const values = data.map(getEmailValue).filter((v) => !isNaN(v))
+          d3.selectAll('.tooltip').remove()
+        })
+    } else {
+      // Email distribution chart - Histogram
+      // Ensure data is properly formatted
+      const values = data.map((d) => d.emails_per_day || d.count)
 
       if (values.length === 0) {
-        console.error('No valid email count values found')
+        console.error('No valid data found')
         container.innerHTML =
-          '<p class="text-red-500 text-center">Error: Could not parse email count data</p>'
+          '<p class="text-red-500 text-center">Error: No data available</p>'
         return
       }
 
       // Create histogram data
-      const maxValue = d3.max(values) as number
+      const maxValue = d3.max(values) || 10
       const histogram = d3
         .bin()
         .domain([0, maxValue + 1])
@@ -297,20 +259,17 @@ const DataDistribution = ({
 
       const y = d3
         .scaleLinear()
-        .domain([0, d3.max(histogram, (d) => d.length) as number])
+        .domain([0, d3.max(histogram, (d) => d.length) || 0])
         .nice()
         .range([height, 0])
 
       // Add X axis
-      svg
+      const xAxis = svg
         .append('g')
         .attr('transform', `translate(0,${height})`)
-        .call(
-          d3
-            .axisBottom(x)
-            .ticks(Math.min(maxValue + 1, 10))
-            .tickFormat(d3.format('d'))
-        )
+        .call(d3.axisBottom(x).ticks(Math.min(maxValue + 1, 15)))
+
+      xAxis.selectAll('text').style('text-anchor', 'middle').attr('dy', '1em')
 
       // Add Y axis
       svg.append('g').call(d3.axisLeft(y).ticks(5))
@@ -319,7 +278,7 @@ const DataDistribution = ({
       const barGradient = svg
         .append('defs')
         .append('linearGradient')
-        .attr('id', 'bar-gradient-' + container.id)
+        .attr('id', 'bar-gradient')
         .attr('x1', '0%')
         .attr('y1', '0%')
         .attr('x2', '0%')
@@ -337,26 +296,59 @@ const DataDistribution = ({
         .attr('stop-color', '#4F46E5')
         .attr('stop-opacity', 0.6)
 
-      // Add bars without hover effects for small chart
+      // Add bars
       svg
         .selectAll('rect')
         .data(histogram)
         .enter()
         .append('rect')
-        .attr('class', 'dot')
         .attr('x', (d) => x(d.x0 as number))
+        .attr('y', (d) => y(d.length))
         .attr('width', (d) =>
           Math.max(0, x(d.x1 as number) - x(d.x0 as number) - 1)
         )
-        .attr('y', (d) => y(d.length))
         .attr('height', (d) => height - y(d.length))
-        .attr('fill', 'url(#bar-gradient-' + container.id + ')') // Gradient fill
+        .attr('fill', 'url(#bar-gradient)')
+        .attr('stroke', '#ffffff')
+        .attr('stroke-width', 1)
         .attr('rx', 2) // Rounded corners
         .attr('opacity', 0.9)
-        .attr('stroke', '#ffffff')
-        .attr('stroke-width', 0.5)
+        .on('mouseover', function (event, d) {
+          d3.select(this).transition().duration(200).attr('opacity', 1)
 
-      // Add labels
+          const tooltip = d3
+            .select(container)
+            .append('div')
+            .attr('class', 'tooltip')
+            .style('position', 'absolute')
+            .style('background-color', 'white')
+            .style('padding', '8px')
+            .style('border-radius', '4px')
+            .style('box-shadow', '0 2px 4px rgba(0,0,0,0.1)')
+            .style('pointer-events', 'none')
+            .style('opacity', 0)
+            .style('transition', 'opacity 0.2s')
+
+          tooltip
+            .html(
+              `<div class="text-sm">
+                <div class="text-gray-600">Emails: ${d.x0} - ${d.x1}</div>
+                <div class="text-gray-600">Count: ${d.length}</div>
+              </div>`
+            )
+            .style('left', event.pageX + 10 + 'px')
+            .style('top', event.pageY - 28 + 'px')
+            .transition()
+            .duration(200)
+            .style('opacity', 1)
+        })
+        .on('mouseout', function () {
+          d3.select(this).transition().duration(200).attr('opacity', 0.9)
+
+          d3.selectAll('.tooltip').remove()
+        })
+
+      // Add axis labels
       svg
         .append('text')
         .attr('text-anchor', 'middle')
@@ -373,107 +365,74 @@ const DataDistribution = ({
         .attr('x', -height / 2)
         .text('Frequency')
         .attr('class', 'text-sm text-gray-600')
-
-      // Add title
-      svg
-        .append('text')
-        .attr('text-anchor', 'middle')
-        .attr('x', width / 2)
-        .attr('y', -5)
-        .text('Distribution of Emails per Day')
-        .attr('class', 'text-xs font-semibold text-gray-700')
-    } else {
-      console.warn('Could not determine chart type:', { data, type })
-      container.innerHTML =
-        '<p class="text-red-500 text-center">Error: Could not determine chart type</p>'
     }
-  }, [data, chartType, type])
+  }, [data, chartType])
 
-  // Handle opening the modal
   const handleOpenModal = () => {
     setIsModalOpen(true)
   }
 
-  // Handle closing the modal
   const handleCloseModal = () => {
     setIsModalOpen(false)
   }
 
+  if (loading && !skipLoading) {
+    return <ChartSkeleton type="line" height={300} />
+  }
+
+  if (error) {
+    return <ChartError message={error} onRetry={() => {}} />
+  }
+
+  // Convert data for chart modal
+  const chartData =
+    type === 'date'
+      ? data.map((item) => ({
+          time: new Date(item.time),
+          count: item.count
+        }))
+      : data.map((item) => ({
+          emails_per_day: item.emails_per_day || item.count
+        }))
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 w-full">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl font-semibold text-gray-800">{title}</h2>
-        {data.length > 0 && !loading && !error && (
-          <button
-            onClick={handleOpenModal}
-            className="inline-flex items-center justify-center p-1.5 rounded-md text-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer relative group"
-            aria-label="Expand chart"
+    <div className="relative">
+      <div className="flex justify-between items-center mb-4">
+        <div>
+          <h3 className="text-lg font-semibold text-gray-800">{title}</h3>
+          {description && (
+            <p className="text-sm text-gray-600 mt-1">{description}</p>
+          )}
+        </div>
+        <button
+          onClick={handleOpenModal}
+          className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"
-              />
-            </svg>
-            <span className="absolute -bottom-8 right-0 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-              Expand
-            </span>
-          </button>
-        )}
+            <path
+              fillRule="evenodd"
+              d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </button>
       </div>
-      {description && <p className="text-gray-600 mb-4">{description}</p>}
 
       <div
         ref={chartRef}
-        className="w-full h-64 bg-gray-50 rounded flex items-center justify-center cursor-pointer"
-        onClick={
-          data.length > 0 && !loading && !error ? handleOpenModal : undefined
-        }
-      >
-        {loading && !skipLoading ? (
-          <ChartSkeleton
-            type={chartType === 'date' ? 'line' : 'bar'}
-            height={256}
-          />
-        ) : error ? (
-          <ChartError message={error} onRetry={fetchDistributionData} />
-        ) : data.length === 0 ? (
-          <p className="text-gray-500">No data available</p>
-        ) : null}
-      </div>
+        className="w-full h-[300px] bg-white rounded-lg shadow-sm"
+      />
 
-      {/* Modal for zoomed view */}
       <ChartModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
         title={title}
-        chartData={
-          chartType === 'date'
-            ? data
-                .map((d) => {
-                  const timeKey = 'time' in d ? 'time' : Object.keys(d)[0]
-                  const countKey = 'count' in d ? 'count' : Object.keys(d)[1]
-                  const timeValue = d[timeKey as keyof typeof d] as string
-                  const countValue = +(d[countKey as keyof typeof d] as string)
-                  const parsedDate = d3.timeParse('%Y-%m-%d')(timeValue)
-                  return {
-                    time: parsedDate,
-                    count: countValue
-                  }
-                })
-                .filter((d) => d.time !== null)
-            : data.map((d) => ({
-                emails_per_day: d.emails_per_day ?? 0
-              }))
-        }
+        chartData={chartData}
         chartType={chartType}
       />
     </div>

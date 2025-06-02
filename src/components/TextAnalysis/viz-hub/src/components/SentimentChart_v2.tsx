@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import * as d3 from 'd3'
-import { useDataStore } from '@/store/dataStore'
 
 interface SentimentData {
   name: string
@@ -72,9 +71,13 @@ const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(
 
 interface SentimentChartProps {
   skipLoading?: boolean
+  data: SentimentData[]
 }
 
-const SentimentChartV2 = ({ skipLoading = false }: SentimentChartProps) => {
+const SentimentChartV2 = ({
+  skipLoading = false,
+  data
+}: SentimentChartProps) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const brushRef = useRef<HTMLDivElement>(null)
   const [chartWidth, setChartWidth] = useState(0)
@@ -94,49 +97,57 @@ const SentimentChartV2 = ({ skipLoading = false }: SentimentChartProps) => {
     undefined
   > | null>(null)
 
-  const { fetchSentimentData } = useDataStore()
-
-  const parseTime = useCallback(
-    () => d3.timeParse('%Y-%m-%dT%H:%M:%SZ') as (date: string) => Date | null,
-    []
-  )
-  const formatDate = useCallback(
-    () => d3.timeFormat('%b %d, %Y') as (date: Date) => string,
-    []
-  )
+  const parseTime = d3.timeParse('%Y-%m-%dT%H:%M:%SZ')
+  const formatDate = d3.timeFormat('%b %d, %Y')
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true)
-        const data: SentimentData[] = await fetchSentimentData()
+    if (data && data.length > 0) {
+      console.log('Received sentiment data:', data)
 
-        data.sort((a, b) => {
-          const aNum = parseInt(a.name.replace('+', ''))
-          const bNum = parseInt(b.name.replace('+', ''))
-          return aNum - bNum
-        })
+      // Validate and process data
+      const validData = data.filter(
+        (item) =>
+          item &&
+          item.name &&
+          Array.isArray(item.values) &&
+          item.values.length > 0
+      )
 
-        setSentimentData(data)
-
-        const allDates = data
-          .flatMap((d) => d.values.map((v) => parseTime()(v[0])))
-          .filter((d): d is Date => d !== null)
-
-        if (allDates.length > 0) {
-          const extent = d3.extent(allDates) as [Date, Date]
-          setDateRange({ start: extent[0], end: extent[1] })
-        }
-
+      if (validData.length === 0) {
+        console.warn('No valid sentiment data found')
         setLoading(false)
-      } catch (error) {
-        console.error('Error loading sentiment data:', error)
-        setLoading(false)
+        return
       }
-    }
 
-    fetchData()
-  }, [parseTime, fetchSentimentData])
+      // Sort data by sentiment value
+      const sortedData = [...validData].sort((a, b) => {
+        const aNum = parseInt(a.name.replace('+', ''))
+        const bNum = parseInt(b.name.replace('+', ''))
+        return aNum - bNum
+      })
+
+      setSentimentData(sortedData)
+
+      // Safely process dates
+      const allDates = sortedData
+        .flatMap((d) => {
+          if (!Array.isArray(d.values)) return []
+          return d.values
+            .filter((v) => Array.isArray(v) && v.length >= 1)
+            .map((v) => parseTime(v[0]))
+        })
+        .filter((d): d is Date => d !== null)
+
+      if (allDates.length > 0) {
+        const extent = d3.extent(allDates) as [Date, Date]
+        setDateRange({ start: extent[0], end: extent[1] })
+      }
+
+      setLoading(false)
+    } else {
+      setLoading(false)
+    }
+  }, [data])
 
   useEffect(() => {
     if (!chartRef.current) return
@@ -203,7 +214,7 @@ const SentimentChartV2 = ({ skipLoading = false }: SentimentChartProps) => {
       name: d.name,
       values: d.values
         .map((v) => {
-          const date = parseTime()(v[0])
+          const date = parseTime(v[0])
           return {
             date: date!,
             value: v[1]
@@ -488,7 +499,7 @@ const SentimentChartV2 = ({ skipLoading = false }: SentimentChartProps) => {
 
         verticalLine.attr('x1', x(selectedDate)).attr('x2', x(selectedDate))
 
-        let tooltipContent = `<div class="font-medium text-xs mb-1" style="color:#555;">${formatDate()(
+        let tooltipContent = `<div class="font-medium text-xs mb-1" style="color:#555;">${formatDate(
           selectedDate
         )}</div>`
 
@@ -559,7 +570,7 @@ const SentimentChartV2 = ({ skipLoading = false }: SentimentChartProps) => {
       .attr('transform', `translate(${margin.left},${margin.top})`)
 
     const allDates = sentimentData
-      .flatMap((d) => d.values.map((v) => parseTime()(v[0])))
+      .flatMap((d) => d.values.map((v) => parseTime(v[0])))
       .filter((d): d is Date => d !== null)
 
     const fullDateRange = d3.extent(allDates) as [Date, Date]
@@ -567,7 +578,7 @@ const SentimentChartV2 = ({ skipLoading = false }: SentimentChartProps) => {
     const overviewData = sentimentData.map((series) => {
       const values = series.values
         .map((v) => ({
-          date: parseTime()(v[0]),
+          date: parseTime(v[0]),
           value: v[1]
         }))
         .filter((d): d is { date: Date; value: number } => d.date !== null)

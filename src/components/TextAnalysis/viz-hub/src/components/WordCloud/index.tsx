@@ -7,83 +7,54 @@ import ListEditModal from './modals/ListEditModal'
 import WordDetailPanel from './WordDetailPanel'
 import ChartError from '../ChartError'
 import debounce from 'lodash/debounce'
-import { useWordCloudStore } from './store'
+import { WordCloudOptions, ColorScheme } from './types'
+import { Language } from './useStoplistManager'
+
+interface WordCloudData {
+  wordCloudData: Array<{ value: string; count: number }>
+}
 
 interface WordCloudProps {
   skipLoading?: boolean
+  data: WordCloudData
 }
 
-const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
-  // Get state and actions from store
-  const {
-    // Data states
-    words,
-    filteredWords,
-    isLoading,
-    error,
-
-    // UI states
-    searchTerm,
-    minFrequency,
-    maxWords,
-    dimensions,
-    selectedWord,
-    isPanelVisible,
-    isWordSelectionAction,
-
-    // Options and modal states
-    options,
-    tempOptions,
-    isOptionsModalOpen,
-    isStopwordsModalOpen,
-    isWhitelistModalOpen,
-
-    // List edit states
-    stopwordsEditText,
-    whitelistEditText,
-
-    // Stoplist/Whitelist states
-    selectedLanguage,
-    stoplistActive,
-    whitelistActive,
-
-    // Flags
-    shouldUpdateLayout,
-    isUpdating,
-
-    // Actions
-    setSearchTerm,
-    setMinFrequency,
-    setMaxWords,
-    setDimensions,
-    setSelectedWord,
-    setShouldUpdateLayout,
-    setIsUpdating,
-
-    // Modal actions
-    openOptionsModal,
-    closeOptionsModal,
-    saveOptions,
-    openStopwordsModal,
-    closeStopwordsModal,
-    saveStopwords,
-    openWhitelistModal,
-    closeWhitelistModal,
-    saveWhitelist,
-
-    // Stoplist/Whitelist actions
-    setLanguage,
-    toggleStoplist,
-    toggleWhitelist,
-
-    // Option actions
-    updateTempOptions,
-    setStopwordsEditText,
-    setWhitelistEditText,
-
-    // Data actions
-    fetchData
-  } = useWordCloudStore()
+const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
+  // Local state
+  const [words, setWords] = useState<Array<{ value: string; count: number }>>(
+    []
+  )
+  const [filteredWords, setFilteredWords] = useState<
+    Array<{ value: string; count: number }>
+  >([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [minFrequency, setMinFrequency] = useState(1)
+  const [maxWords, setMaxWords] = useState(100)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const [selectedWord, setSelectedWord] = useState<{
+    value: string
+    count: number
+  } | null>(null)
+  const [isPanelVisible, setIsPanelVisible] = useState(false)
+  const [isWordSelectionAction, setIsWordSelectionAction] = useState(false)
+  const [options, setOptions] = useState<WordCloudOptions>({
+    fontFamily: 'Palatino',
+    colorSelection: 'random',
+    applyGlobally: true
+  })
+  const [tempOptions, setTempOptions] = useState<WordCloudOptions>(options)
+  const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false)
+  const [isStopwordsModalOpen, setIsStopwordsModalOpen] = useState(false)
+  const [isWhitelistModalOpen, setIsWhitelistModalOpen] = useState(false)
+  const [stopwordsEditText, setStopwordsEditText] = useState('')
+  const [whitelistEditText, setWhitelistEditText] = useState('')
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>('english')
+  const [stoplistActive, setStoplistActive] = useState(false)
+  const [whitelistActive, setWhitelistActive] = useState(false)
+  const [shouldUpdateLayout, setShouldUpdateLayout] = useState(false)
+  const [isUpdating, setIsUpdating] = useState(false)
 
   // References for controlling the wordcloud visualization
   const svgRef = useRef<SVGSVGElement>(null)
@@ -100,7 +71,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
   const lastRenderTimestampRef = useRef<number>(0)
   const RENDER_DEBOUNCE_MS = 500
 
-  // Keep refs in sync with store state
+  // Keep refs in sync with state
   useEffect(() => {
     shouldUpdateLayoutRef.current = shouldUpdateLayout
   }, [shouldUpdateLayout])
@@ -122,7 +93,69 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
     isWordSelectionActionRef.current = isWordSelectionAction
   }, [isWordSelectionAction])
 
-  // Word cloud visualization hook (using our store state through refs)
+  // Process data when it changes
+  useEffect(() => {
+    if (data && data.wordCloudData) {
+      const validData = data.wordCloudData.filter(
+        (word) =>
+          word &&
+          typeof word.value === 'string' &&
+          typeof word.count === 'number'
+      )
+
+      if (validData.length === 0) {
+        setError('No valid word data available')
+        setIsLoading(false)
+        return
+      }
+
+      setWords(validData)
+      setFilteredWords(validData)
+      setIsLoading(false)
+    } else {
+      setError('No data available')
+      setIsLoading(false)
+    }
+  }, [data])
+
+  // Filter words based on search term and frequency
+  useEffect(() => {
+    if (!words || words.length === 0) {
+      setFilteredWords([])
+      return
+    }
+
+    try {
+      const filtered = words
+        .filter((word) => {
+          // Type guard to ensure word has required properties
+          if (
+            !word ||
+            typeof word.value !== 'string' ||
+            typeof word.count !== 'number'
+          ) {
+            console.warn('Invalid word data:', word)
+            return false
+          }
+
+          const matchesSearch =
+            !searchTerm ||
+            word.value.toLowerCase().includes(searchTerm.toLowerCase())
+          const matchesFrequency = word.count >= minFrequency
+
+          return matchesSearch && matchesFrequency
+        })
+        .sort((a, b) => b.count - a.count)
+        .slice(0, maxWords)
+
+      setFilteredWords(filtered)
+    } catch (error) {
+      console.error('Error filtering words:', error)
+      setError('Error processing word data')
+    }
+  }, [words, searchTerm, minFrequency, maxWords])
+
+  // Word cloud visualization hook
   const { resetZoom, debouncedUpdate } = useWordCloudVisualization({
     svgRef,
     words: filteredWords,
@@ -207,9 +240,9 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
   useEffect(() => {
     // If skipLoading is true, do not execute fetchData
     if (!skipLoading) {
-      fetchData()
+      // Placeholder for fetchData function
     }
-  }, [fetchData, skipLoading])
+  }, [skipLoading])
 
   // Single unified effect to handle all word cloud updates
   useEffect(() => {
@@ -353,7 +386,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800 pb-2">Word Cloud</h2>
         <button
-          onClick={openOptionsModal}
+          onClick={() => setIsOptionsModalOpen(true)}
           className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium cursor-pointer"
         >
           Options
@@ -447,7 +480,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
             )}
 
             {error ? (
-              <ChartError message={error} onRetry={fetchData} />
+              <ChartError message={error} onRetry={() => {}} />
             ) : isUpdating ? (
               <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
                 <div className="flex items-center space-x-2">
@@ -591,41 +624,39 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
         isOpen={isOptionsModalOpen}
         tempOptions={tempOptions}
         setTempOptions={(newOptions) => {
-          Object.entries(newOptions).forEach(([key, value]) => {
-            updateTempOptions(key as keyof typeof options, value)
-          })
+          setTempOptions(newOptions)
         }}
-        onClose={closeOptionsModal}
-        onSave={saveOptions}
+        onClose={() => setIsOptionsModalOpen(false)}
+        onSave={() => {}}
         selectedLanguage={selectedLanguage}
         stoplistActive={stoplistActive}
         whitelistActive={whitelistActive}
-        setLanguage={setLanguage}
-        toggleStoplist={toggleStoplist}
-        toggleWhitelist={toggleWhitelist}
-        onOpenStopwordsModal={openStopwordsModal}
-        onOpenWhitelistModal={openWhitelistModal}
+        setLanguage={(language: Language) => setSelectedLanguage(language)}
+        toggleStoplist={() => setStoplistActive(!stoplistActive)}
+        toggleWhitelist={() => setWhitelistActive(!whitelistActive)}
+        onOpenStopwordsModal={() => setIsStopwordsModalOpen(true)}
+        onOpenWhitelistModal={() => setIsWhitelistModalOpen(true)}
       />
 
       {/* Stopwords Edit Modal */}
       <ListEditModal
         isOpen={isStopwordsModalOpen}
-        onClose={closeStopwordsModal}
+        onClose={() => setIsStopwordsModalOpen(false)}
         title="Edit Stoplist"
         value={stopwordsEditText}
-        onChange={setStopwordsEditText}
-        onSave={saveStopwords}
+        onChange={(value) => setStopwordsEditText(value)}
+        onSave={() => {}}
         language={selectedLanguage}
       />
 
       {/* Whitelist Edit Modal */}
       <ListEditModal
         isOpen={isWhitelistModalOpen}
-        onClose={closeWhitelistModal}
+        onClose={() => setIsWhitelistModalOpen(false)}
         title="Edit Whitelist"
         value={whitelistEditText}
-        onChange={setWhitelistEditText}
-        onSave={saveWhitelist}
+        onChange={(value) => setWhitelistEditText(value)}
+        onSave={() => {}}
       />
     </div>
   )

@@ -21,7 +21,7 @@
       "name": "Use Cases",
       "subItems": [
         {
-          "name": "Text Analysis Visualization",
+          "name": "Email Text Analysis Visualization",
           "link": "/usecases/textAnalysis"
         }
       ]

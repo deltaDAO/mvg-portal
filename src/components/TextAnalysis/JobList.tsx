@@ -168,21 +168,52 @@ export default function JobList(props: {
         let content = file.content
 
         if (filename.endsWith('.json')) {
-          content = JSON.parse(file.content)
+          try {
+            content = JSON.parse(file.content)
+          } catch (error) {
+            console.error('Error parsing JSON content:', error)
+            return {}
+          }
         }
 
+        const result: TextAnalysisResult = {}
+
         if (filename.includes('wordcloud') || filename.includes('word_cloud')) {
-          return { wordcloud: content }
+          result.wordcloud = content
         } else if (filename.includes('sentiment')) {
-          return { sentiment: content }
+          // Ensure sentiment data is in the correct format
+          if (typeof content === 'object' && content !== null) {
+            // If content is already an object, ensure it has the correct structure
+            if (!content.name || !Array.isArray(content.values)) {
+              console.warn('Invalid sentiment data structure:', content)
+              return result
+            }
+            result.sentiment = content
+          } else if (typeof content === 'string') {
+            try {
+              const parsedContent = JSON.parse(content)
+              if (!parsedContent.name || !Array.isArray(parsedContent.values)) {
+                console.warn(
+                  'Invalid sentiment data structure after parsing:',
+                  parsedContent
+                )
+                return result
+              }
+              result.sentiment = parsedContent
+            } catch (error) {
+              console.error('Error parsing sentiment content:', error)
+              return result
+            }
+          }
         } else if (filename.includes('date_distribution')) {
-          return { dataDistribution: content }
+          result.dataDistribution = content
         } else if (filename.includes('email_distribution')) {
-          return { emailDistribution: content }
+          result.emailDistribution = content
         } else if (filename.includes('document_summary')) {
-          return { documentSummary: content }
+          result.documentSummary = content
         }
-        return {}
+
+        return result
       })
 
       const newuseCaseData: TextAnalysisUseCaseData = {
