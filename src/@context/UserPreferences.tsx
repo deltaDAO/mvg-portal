@@ -148,7 +148,7 @@ function UserPreferencesProvider({
   }, [privacyPolicySlug])
 
   useEffect(() => {
-    if (showPPC === false) {
+    if (showPPC === false && appConfig.privacyPreferenceCenter === 'true') {
       setCookie('showPPC', showPPC)
     } else {
       deleteCookie('showPPC')
