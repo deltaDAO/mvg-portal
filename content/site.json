@@ -18,6 +18,15 @@
       "link": "/verify"
     },
     {
+      "name": "Use Cases",
+      "subItems": [
+        {
+          "name": "Email Text Analysis Visualization",
+          "link": "/usecases/textAnalysis"
+        }
+      ]
+    },
+    {
       "name": "Partners",
       "subItems": [
         {
