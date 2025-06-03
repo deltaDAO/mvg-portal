@@ -73,7 +73,7 @@ function VizHubInternal({
       <div className="p-6">
         <div className="max-w-6xl mx-auto">
           <main>
-            {/* Debug info (only in development) */}
+            {/* Debug info (only in development)
             {process.env.NODE_ENV === 'development' && (
               <div className="mb-4 p-2 bg-blue-50 dark:bg-blue-900/20 rounded text-xs text-blue-600 dark:text-blue-400">
                 Data source:{' '}
@@ -81,7 +81,7 @@ function VizHubInternal({
                   ? 'External Props'
                   : 'localStorage'}
               </div>
-            )}
+            )} */}
 
             {/* Distribution Charts Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
