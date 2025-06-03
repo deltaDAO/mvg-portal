@@ -1,0 +1,31 @@
+{
+  "totalDocuments": 995,
+  "totalWords": 55785.0,
+  "uniqueWords": 5741,
+  "vocabularyDensity": 0.10291296943622838,
+  "readabilityIndex": 18.147185173410314,
+  "wordsPerSentence": 8.372354795137326,
+  "frequentWords": [
+    {
+      "word": "ect",
+      "count": 1387
+    },
+    {
+      "word": "enron",
+      "count": 716
+    },
+    {
+      "word": "would",
+      "count": 466
+    },
+    {
+      "word": "subject",
+      "count": 436
+    },
+    {
+      "word": "cc",
+      "count": 419
+    }
+  ],
+  "created": "2025-05-05 21:37:42"
+}
