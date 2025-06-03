@@ -11,11 +11,11 @@ export default function Logo({
   darkMode = false,
   size = 'medium'
 }: LogoProps): ReactElement {
-  // Map size prop to logo dimensions with smaller sizes for vertical logo
+  // Map size prop to logo dimensions with larger sizes
   const dimensions = {
-    small: { width: 0, height: 30 },
-    medium: { width: 0, height: 36 },
-    large: { width: 0, height: 44 }
+    small: { width: 0, height: 45 },
+    medium: { width: 0, height: 55 },
+    large: { width: 0, height: 65 }
   }
 
   const unselectable = 'select-none cursor-pointer'
@@ -38,7 +38,7 @@ export default function Logo({
       {/* Desktop and tablet logo */}
       <div className={`hidden sm:block ${unselectable}`}>
         <Image
-          src="/cliox_vertical.svg"
+          src="/images/cliox.svg"
           alt="ClioX Logo"
           width={dimensions[size].width}
           height={dimensions[size].height}
@@ -51,7 +51,7 @@ export default function Logo({
       {/* Mobile logo */}
       <div className={`block sm:hidden ${unselectable}`}>
         <Image
-          src="/cliox_vertical.svg"
+          src="/images/cliox_icon.svg"
           alt="ClioX Logo"
           width={dimensions.small.width}
           height={dimensions.small.height}

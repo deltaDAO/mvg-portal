@@ -12,7 +12,7 @@ export default function Header() {
       <div className="max-w-6xl mx-auto py-3 flex items-center justify-between">
         {/* Logo and title */}
         <div className="flex items-center gap-3">
-          <Logo darkMode={isDark} />
+          <Logo darkMode={isDark} size="large" />
           <h1 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
             Text Analysis Visualization Hub
           </h1>
