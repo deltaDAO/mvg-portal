@@ -1,8 +1,13 @@
 import { useState, useCallback, useEffect } from 'react'
 import { WordData } from './types'
-import { useDataStore } from '@/store/dataStore'
+import { useDataStore } from '../../../store/dataStore'
+import { TextAnalysisUseCaseData } from '@context/UseCases/models/TextAnalysis.model'
 
-export const useWordCloudData = () => {
+interface UseWordCloudDataProps {
+  data: TextAnalysisUseCaseData[]
+}
+
+export const useWordCloudData = ({ data }: UseWordCloudDataProps) => {
   const [words, setWords] = useState<WordData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -14,8 +19,8 @@ export const useWordCloudData = () => {
       setIsLoading(true)
       setError(null)
 
-      const data = await fetchWordCloudData()
-      setWords(data.wordCloudData)
+      const result = await fetchWordCloudData(data)
+      setWords(result.wordCloudData)
     } catch (error) {
       console.error('Error fetching word cloud data:', error)
       setError(
@@ -24,7 +29,7 @@ export const useWordCloudData = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [fetchWordCloudData])
+  }, [fetchWordCloudData, data])
 
   // Fetch data only once on initial load
   useEffect(() => {

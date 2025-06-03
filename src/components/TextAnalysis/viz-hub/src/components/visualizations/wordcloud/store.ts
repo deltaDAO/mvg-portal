@@ -906,12 +906,12 @@ export const useWordCloudStore = create<WordCloudStore>((set, get) => ({
 
     try {
       // Import the dataStore
-      const { fetchWordCloudData } = await import('@/store/dataStore').then(
-        (module) => module.useDataStore.getState()
-      )
+      const { fetchWordCloudData } = await import(
+        '../../../store/dataStore'
+      ).then((module) => module.useDataStore.getState())
 
       // Fetch data from the API
-      const data = await fetchWordCloudData()
+      const data = await fetchWordCloudData([])
 
       // Calculate the minimum frequency in the dataset
       const minCount = Math.min(

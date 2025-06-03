@@ -1,5 +1,13 @@
 import { create } from 'zustand'
 import { TextAnalysisUseCaseData } from '@/@context/UseCases/models/TextAnalysis.model'
+import {
+  WordCloud,
+  DateDistribution,
+  EmailDistribution,
+  SentimentCategory,
+  SentimentData,
+  DocumentSummary
+} from '@/components/TextAnalysis/_types'
 
 // Storage keys for different data types
 export const STORAGE_KEYS = {
@@ -22,33 +30,12 @@ interface DataStatus {
 export type ProcessingStatus = 'ready' | 'not_ready' | 'error'
 
 // Data types for each visualization
+export interface DateDistributionData extends DateDistribution {}
+export interface EmailDistributionData extends EmailDistribution {}
+export interface SentimentDataArray extends Array<SentimentData> {}
+export interface DocumentSummaryData extends DocumentSummary {}
 export interface WordCloudData {
-  wordCloudData: Array<{ value: string; count: number }>
-}
-
-export interface DateDistributionData {
-  time: string
-  count: number
-}
-
-export interface EmailDistributionData {
-  emails_per_day: number
-}
-
-export interface SentimentData {
-  name: string
-  values: [string, number][]
-}
-
-export interface DocumentSummaryData {
-  totalDocuments: number
-  totalWords: number
-  uniqueWords: number
-  vocabularyDensity: number
-  readabilityIndex: number
-  wordsPerSentence: number
-  frequentWords: Array<{ word: string; count: number }>
-  created: string
+  wordCloudData: WordCloud[]
 }
 
 // Helper functions to check and get data from localStorage
@@ -169,7 +156,7 @@ interface DataStore {
   ) => Promise<DateDistributionData[]>
   fetchSentimentData: (
     data: TextAnalysisUseCaseData[]
-  ) => Promise<SentimentData[]>
+  ) => Promise<SentimentDataArray>
   fetchWordCloudData: (
     data: TextAnalysisUseCaseData[]
   ) => Promise<WordCloudData>
@@ -372,16 +359,22 @@ export const useDataStore = create<DataStore>((set, get) => ({
   },
 
   fetchSentimentData: async (data: TextAnalysisUseCaseData[]) => {
-    const sentimentData: SentimentData[] = []
+    const sentimentData: SentimentDataArray = []
 
     data.forEach((item) => {
       item.result.forEach((result) => {
         if (result.sentiment) {
-          if (Array.isArray(result.sentiment)) {
-            sentimentData.push(...result.sentiment)
-          } else {
-            sentimentData.push(result.sentiment)
-          }
+          const sentimentArray = Array.isArray(result.sentiment)
+            ? result.sentiment
+            : [result.sentiment]
+
+          sentimentArray.forEach((sentiment) => {
+            const category = sentiment as SentimentCategory
+            sentimentData.push({
+              name: category.name,
+              values: category.values
+            })
+          })
         }
       })
     })
@@ -390,17 +383,40 @@ export const useDataStore = create<DataStore>((set, get) => ({
   },
 
   fetchWordCloudData: async (data: TextAnalysisUseCaseData[]) => {
-    // Early return if no data
-    if (!data?.[0]?.result?.[0]?.wordcloud) {
-      console.log('No wordcloud data available')
-      return { wordCloudData: [] }
-    }
+    console.log('Starting fetchWordCloudData with input:', data)
+    let wordCloudData: WordCloudData = { wordCloudData: [] }
 
-    // The wordcloud data is already in the correct format
-    const wordCloudData: WordCloudData = {
-      wordCloudData: data[0].result[0].wordcloud
-    }
-    console.log('Processed wordcloud data:', wordCloudData)
+    data.forEach((item) => {
+      item.result.forEach((result) => {
+        console.log('Checking result:', result)
+        if (result.wordcloud) {
+          console.log('Found wordcloud data:', result.wordcloud)
+          try {
+            // If wordcloud is a string, parse it as JSON
+            if (typeof result.wordcloud === 'string') {
+              console.log('Parsing string wordcloud data')
+              const parsed = JSON.parse(result.wordcloud)
+              console.log('Parsed wordcloud data:', parsed)
+              wordCloudData = {
+                wordCloudData: Array.isArray(parsed) ? parsed : []
+              }
+            } else {
+              // If wordcloud is already an array, use it directly
+              console.log('Using direct wordcloud data:', result.wordcloud)
+              wordCloudData = {
+                wordCloudData: Array.isArray(result.wordcloud)
+                  ? result.wordcloud
+                  : []
+              }
+            }
+            console.log('Final wordCloudData:', wordCloudData)
+          } catch (error) {
+            console.error('Error processing wordcloud data:', error)
+          }
+        }
+      })
+    })
+
     return wordCloudData
   },
 

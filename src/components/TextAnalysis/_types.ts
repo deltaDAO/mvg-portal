@@ -31,6 +31,11 @@ export interface SentimentCategory {
 
 export interface Sentiment extends Array<SentimentCategory> {}
 
+export interface SentimentData {
+  name: string
+  values: [string, number][]
+}
+
 export interface WordCloud {
   value: string
   count: number

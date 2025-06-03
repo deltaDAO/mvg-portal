@@ -5,16 +5,19 @@ import { useWordCloudVisualization } from './useWordCloudVisualization'
 import OptionsModal from './modals/OptionsModal'
 import ListEditModal from './modals/ListEditModal'
 import WordDetailPanel from './WordDetailPanel'
-import ChartError from '@/components/ui/common/ChartError'
+import ChartError from '@components/TextAnalysis/viz-hub/src/components/ui/common/ChartError'
 import debounce from 'lodash/debounce'
 import { useWordCloudStore } from './store'
-import { useTheme } from '@/store/themeStore'
+import { useTheme } from '../../../store/themeStore'
+import { useWordCloudData } from './useWordCloudData'
+import { WordData } from './types'
 
 interface WordCloudProps {
   skipLoading?: boolean
+  data: any[]
 }
 
-const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
+const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false, data }) => {
   // Get theme from context
   const { theme } = useTheme()
 

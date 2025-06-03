@@ -10,7 +10,7 @@ import cloud from 'd3-cloud'
 import debounce from 'lodash/debounce'
 import { WordData, CloudWord, Word, Dimensions, ColorScheme } from './types'
 import { TRANSITION_DURATION, DEBOUNCE_DELAY, CUSTOM_COLORS } from './constants'
-import { useTheme } from '@/store/themeStore'
+import { useTheme } from '../../../store/themeStore'
 
 interface UseWordCloudVisualizationProps {
   svgRef: MutableRefObject<SVGSVGElement | null>
