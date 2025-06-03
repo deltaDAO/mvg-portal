@@ -1,6 +1,5 @@
 .panelColumn {
   width: 500px;
-  height: 265px;
   display: flex;
   flex-direction: column;
 }
@@ -162,7 +161,6 @@
   border-radius: 10px;
   padding: 24px;
   width: 548px;
-  height: 349px;
 }
 
 @media screen and (max-width: 768px) {

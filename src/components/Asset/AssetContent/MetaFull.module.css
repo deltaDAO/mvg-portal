@@ -4,6 +4,16 @@
   gap: var(--spacer);
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
 }
+.metaFull a {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-all;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: normal;
+}
 
 .metaFull code {
   /* magic number cause the code font has a bigger visual weight */
