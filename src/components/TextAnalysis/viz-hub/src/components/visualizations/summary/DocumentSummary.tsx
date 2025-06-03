@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import ChartError from '../../ui/common/ChartError'
 import { useDataStore } from '../../../store/dataStore'
+import { TextAnalysisUseCaseData } from '@/@context/UseCases/models/TextAnalysis.model'
 
 interface DocumentSummary {
   totalDocuments: number
@@ -17,30 +18,32 @@ interface DocumentSummary {
 
 interface DocumentSummaryProps {
   skipLoading?: boolean
+  data: TextAnalysisUseCaseData[]
 }
 
-const DocumentSummary = ({ skipLoading = false }: DocumentSummaryProps) => {
+const DocumentSummary = ({
+  skipLoading = false,
+  data
+}: DocumentSummaryProps) => {
   const [summary, setSummary] = useState<DocumentSummary | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
   const { fetchDocumentSummary } = useDataStore()
 
-  // Define fetchSummary as a component method for reuse with error retry
   const fetchSummary = useCallback(async () => {
     console.log('Fetching document summary data...')
     setIsLoading(true)
     setError(null)
     try {
-      const data = await fetchDocumentSummary()
-      // console.log("Document summary data received:", data);
-      setSummary(data)
+      const summaryData = await fetchDocumentSummary(data)
+      setSummary(summaryData)
     } catch (error) {
       console.error('Error fetching document summary:', error)
       setError(error instanceof Error ? error.message : 'Unknown error')
     } finally {
       setIsLoading(false)
     }
-  }, [fetchDocumentSummary])
+  }, [fetchDocumentSummary, data])
 
   useEffect(() => {
     console.log('DocumentSummary component loaded, skipLoading:', skipLoading)

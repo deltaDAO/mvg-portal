@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic'
 import { ReactElement, useRef, useState } from 'react'
 import JobList from './JobList'
 import styles from './index.module.css'
-
+import { ThemeProvider } from './viz-hub/src/store/themeStore'
 import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
 
 // Dynamically import the VizHub component
@@ -24,7 +24,11 @@ export default function TextAnalysisViz(): ReactElement {
     <div className="flex flex-col gap-6">
       <JobList setTextAnalysisData={setTextAnalysisData} />
       {textAnalysisData.length > 0 && (
-        <div className="w-full">{/* <VizHub data={textAnalysisData} /> */}</div>
+        <div className="w-full">
+          <ThemeProvider>
+            <VizHub data={textAnalysisData} />
+          </ThemeProvider>
+        </div>
       )}
     </div>
   )

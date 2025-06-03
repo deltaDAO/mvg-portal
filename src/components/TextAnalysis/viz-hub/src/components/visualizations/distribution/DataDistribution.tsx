@@ -7,12 +7,14 @@ import ChartSkeleton from '../../ui/common/ChartSkeleton'
 import ChartError from '../../ui/common/ChartError'
 import { useDataStore } from '../../../store/dataStore'
 import { useTheme } from '../../../store/themeStore'
+import { TextAnalysisUseCaseData } from '@/@context/UseCases/models/TextAnalysis.model'
 
 interface DataDistributionProps {
   title: string
   description?: string
   type: 'email' | 'date'
   skipLoading?: boolean
+  data: TextAnalysisUseCaseData[]
 }
 
 interface DataPoint {
@@ -30,10 +32,11 @@ const DataDistribution = ({
   title,
   description,
   type,
-  skipLoading = false
+  skipLoading = false,
+  data
 }: DataDistributionProps) => {
   const chartRef = useRef<HTMLDivElement>(null)
-  const [data, setData] = useState<DataPoint[]>([])
+  const [chartData, setChartData] = useState<DataPoint[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -49,29 +52,27 @@ const DataDistribution = ({
       setLoading(true)
       setError(null)
 
-      let csvText
+      let distributionData
       if (type === 'email') {
-        const emailData = await fetchEmailDistribution()
-        csvText = emailData
+        const emailData = await fetchEmailDistribution(data)
+        distributionData = emailData
         setChartType('email')
       } else if (type === 'date') {
-        const dateData = await fetchDateDistribution()
-        csvText = dateData
+        const dateData = await fetchDateDistribution(data)
+        distributionData = dateData
         setChartType('date')
       } else {
         throw new Error('Invalid distribution type specified')
       }
 
-      // Parse CSV data
-      const parsedData = d3.csvParse(csvText)
-      setData(parsedData as unknown as DataPoint[])
+      setChartData(distributionData as unknown as DataPoint[])
     } catch (err) {
       console.error('Error loading data:', err)
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setLoading(false)
     }
-  }, [type, fetchEmailDistribution, fetchDateDistribution])
+  }, [type, fetchEmailDistribution, fetchDateDistribution, data])
 
   // Fetch data on component mount
   useEffect(() => {
@@ -80,7 +81,7 @@ const DataDistribution = ({
 
   // Render chart when data is available or theme changes
   useEffect(() => {
-    if (!data.length || !chartRef.current) return
+    if (!chartData.length || !chartRef.current) return
 
     // Clear any existing chart
     d3.select(chartRef.current).selectAll('*').remove()
@@ -132,7 +133,7 @@ const DataDistribution = ({
       const parseTime = d3.timeParse('%Y-%m-%d')
 
       // Ensure data is properly formatted
-      const formattedData: FormattedDatePoint[] = data
+      const formattedData: FormattedDatePoint[] = chartData
         .map((d) => {
           // Get the key names which might vary depending on how the CSV is parsed
           const timeKey = 'time' in d ? 'time' : Object.keys(d)[0]
@@ -307,7 +308,7 @@ const DataDistribution = ({
         return +(d[firstKey as keyof DataPoint] ?? 0)
       }
 
-      const values = data.map(getEmailValue).filter((v) => !isNaN(v))
+      const values = chartData.map(getEmailValue).filter((v) => !isNaN(v))
 
       if (values.length === 0) {
         console.error('No valid email count values found')
@@ -430,7 +431,7 @@ const DataDistribution = ({
         document.head.removeChild(style)
       }
     }
-  }, [data, chartType, type, theme])
+  }, [chartData, chartType, type, theme])
 
   // Handle opening the modal
   const handleOpenModal = () => {
@@ -448,7 +449,7 @@ const DataDistribution = ({
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
           {title}
         </h2>
-        {data.length > 0 && !loading && !error && (
+        {chartData.length > 0 && !loading && !error && (
           <button
             onClick={handleOpenModal}
             className="inline-flex items-center justify-center p-1.5 rounded-md text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors cursor-pointer relative group"
@@ -483,7 +484,9 @@ const DataDistribution = ({
         id={`chart-container-${chartType}`}
         className="w-full h-64 bg-gray-50 dark:bg-gray-900 rounded flex items-center justify-center cursor-pointer"
         onClick={
-          data.length > 0 && !loading && !error ? handleOpenModal : undefined
+          chartData.length > 0 && !loading && !error
+            ? handleOpenModal
+            : undefined
         }
       >
         {loading && !skipLoading ? (
@@ -493,7 +496,7 @@ const DataDistribution = ({
           />
         ) : error ? (
           <ChartError message={error} onRetry={fetchDistributionData} />
-        ) : data.length === 0 ? (
+        ) : chartData.length === 0 ? (
           <p className="text-gray-500 dark:text-gray-400">No data available</p>
         ) : null}
       </div>
@@ -505,7 +508,7 @@ const DataDistribution = ({
         title={title}
         chartData={
           chartType === 'date'
-            ? data
+            ? chartData
                 .map((d) => {
                   const timeKey = 'time' in d ? 'time' : Object.keys(d)[0]
                   const countKey = 'count' in d ? 'count' : Object.keys(d)[1]
@@ -518,7 +521,7 @@ const DataDistribution = ({
                   }
                 })
                 .filter((d) => d.time !== null)
-            : data.map((d) => ({
+            : chartData.map((d) => ({
                 emails_per_day: d.emails_per_day ?? 0
               }))
         }

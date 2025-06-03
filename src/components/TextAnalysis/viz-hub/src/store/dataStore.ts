@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { TextAnalysisUseCaseData } from '@/@context/UseCases/models/TextAnalysis.model'
 
 // Storage keys for different data types
 export const STORAGE_KEYS = {
@@ -157,14 +158,24 @@ interface DataStore {
   setStatusMessage: (message: string) => void
 
   // Check data status
-  checkDataStatus: () => void
+  checkDataStatus: (data: TextAnalysisUseCaseData[]) => void
 
   // Data fetching functions for components
-  fetchEmailDistribution: () => Promise<string>
-  fetchDateDistribution: () => Promise<string>
-  fetchSentimentData: () => Promise<SentimentData[]>
-  fetchWordCloudData: () => Promise<WordCloudData>
-  fetchDocumentSummary: () => Promise<DocumentSummaryData>
+  fetchEmailDistribution: (
+    data: TextAnalysisUseCaseData[]
+  ) => Promise<EmailDistributionData[]>
+  fetchDateDistribution: (
+    data: TextAnalysisUseCaseData[]
+  ) => Promise<DateDistributionData[]>
+  fetchSentimentData: (
+    data: TextAnalysisUseCaseData[]
+  ) => Promise<SentimentData[]>
+  fetchWordCloudData: (
+    data: TextAnalysisUseCaseData[]
+  ) => Promise<WordCloudData>
+  fetchDocumentSummary: (
+    data: TextAnalysisUseCaseData[]
+  ) => Promise<DocumentSummaryData>
 
   // Save data functions
   saveData: (
@@ -208,16 +219,45 @@ export const useDataStore = create<DataStore>((set, get) => ({
   setStatusMessage: (message: string) => set({ statusMessage: message }),
 
   // Check data status
-  checkDataStatus: () => {
-    const dataStatus = {
-      wordCloudData: isDataAvailable(STORAGE_KEYS.WORD_CLOUD),
-      dateDistributionData: isDataAvailable(STORAGE_KEYS.DATE_DISTRIBUTION),
-      emailDistributionData: isDataAvailable(STORAGE_KEYS.EMAIL_DISTRIBUTION),
-      sentimentData: isDataAvailable(STORAGE_KEYS.SENTIMENT),
-      documentSummaryData: isDataAvailable(STORAGE_KEYS.DOCUMENT_SUMMARY)
+  checkDataStatus: (data: TextAnalysisUseCaseData[]) => {
+    if (!data || data.length === 0) {
+      set({
+        dataStatus: {
+          wordCloudData: false,
+          dateDistributionData: false,
+          emailDistributionData: false,
+          sentimentData: false,
+          documentSummaryData: false
+        }
+      })
+      return
     }
 
-    set({ dataStatus })
+    const hasWordCloud = data.some((item) =>
+      item.result.some((result) => result.wordcloud)
+    )
+    const hasDateDistribution = data.some((item) =>
+      item.result.some((result) => result.dataDistribution)
+    )
+    const hasEmailDistribution = data.some((item) =>
+      item.result.some((result) => result.emailDistribution)
+    )
+    const hasSentiment = data.some((item) =>
+      item.result.some((result) => result.sentiment)
+    )
+    const hasDocumentSummary = data.some((item) =>
+      item.result.some((result) => result.documentSummary)
+    )
+
+    set({
+      dataStatus: {
+        wordCloudData: hasWordCloud,
+        dateDistributionData: hasDateDistribution,
+        emailDistributionData: hasEmailDistribution,
+        sentimentData: hasSentiment,
+        documentSummaryData: hasDocumentSummary
+      }
+    })
   },
 
   // Save data to localStorage
@@ -245,7 +285,8 @@ export const useDataStore = create<DataStore>((set, get) => ({
 
   // Check if data is available
   hasData: (dataType: string) => {
-    return isDataAvailable(dataType)
+    const state = get()
+    return state.dataStatus[dataType as keyof DataStatus] || false
   },
 
   // Clear all data
@@ -273,83 +314,143 @@ export const useDataStore = create<DataStore>((set, get) => ({
   },
 
   // Data fetching functions for components
-  fetchEmailDistribution: async () => {
-    if (isDataAvailable(STORAGE_KEYS.EMAIL_DISTRIBUTION)) {
-      const data = localStorage.getItem(STORAGE_KEYS.EMAIL_DISTRIBUTION)
-      if (data) return data
-    }
+  fetchEmailDistribution: async (data: TextAnalysisUseCaseData[]) => {
+    const emailDistributionData: EmailDistributionData[] = []
 
-    throw new Error(
-      'No email distribution data available. Please upload data first.'
-    )
-  },
+    data.forEach((item) => {
+      item.result.forEach((result) => {
+        if (result.emailDistribution) {
+          try {
+            const rows = result.emailDistribution.trim().split('\n')
+            const parsedData = rows
+              .slice(1)
+              .map((row) => ({
+                emails_per_day: parseInt(row.trim())
+              }))
+              .filter((item) => !isNaN(item.emails_per_day))
 
-  fetchDateDistribution: async () => {
-    if (isDataAvailable(STORAGE_KEYS.DATE_DISTRIBUTION)) {
-      const data = localStorage.getItem(STORAGE_KEYS.DATE_DISTRIBUTION)
-      if (data) return data
-    }
-
-    throw new Error(
-      'No date distribution data available. Please upload data first.'
-    )
-  },
-
-  fetchSentimentData: async () => {
-    if (isDataAvailable(STORAGE_KEYS.SENTIMENT)) {
-      const data = localStorage.getItem(STORAGE_KEYS.SENTIMENT)
-      if (data) {
-        try {
-          return JSON.parse(data) as SentimentData[]
-        } catch (e) {
-          console.error('Error parsing sentiment data:', e)
-          throw new Error(
-            'Invalid sentiment data format. Please upload data again.'
-          )
+            emailDistributionData.push(...parsedData)
+          } catch (error) {
+            console.error('Error parsing email distribution data:', error)
+          }
         }
-      }
-    }
+      })
+    })
 
-    throw new Error('No sentiment data available. Please upload data first.')
+    return emailDistributionData
   },
 
-  fetchWordCloudData: async () => {
-    if (isDataAvailable(STORAGE_KEYS.WORD_CLOUD)) {
-      const data = localStorage.getItem(STORAGE_KEYS.WORD_CLOUD)
-      if (data) {
-        try {
-          return JSON.parse(data) as WordCloudData
-        } catch (e) {
-          console.error('Error parsing word cloud data:', e)
-          // If data is text, try to generate word cloud from it
-          return generateWordCloudFromText(data)
-        }
-      }
-    }
+  fetchDateDistribution: async (data: TextAnalysisUseCaseData[]) => {
+    const dateDistributionData: DateDistributionData[] = []
 
-    throw new Error('No word cloud data available. Please upload data first.')
+    data.forEach((item) => {
+      item.result.forEach((result) => {
+        if (result.dataDistribution) {
+          try {
+            const rows = result.dataDistribution.trim().split('\n')
+            const headers = rows[0].split(',')
+            const parsedData = rows
+              .slice(1)
+              .map((row) => {
+                const values = row.split(',')
+                return {
+                  time: values[0].trim(),
+                  count: parseInt(values[1])
+                }
+              })
+              .filter((item) => item.time && !isNaN(item.count))
+
+            dateDistributionData.push(...parsedData)
+          } catch (error) {
+            console.error('Error parsing date distribution data:', error)
+          }
+        }
+      })
+    })
+
+    return dateDistributionData
   },
 
-  fetchDocumentSummary: async () => {
-    if (isDataAvailable(STORAGE_KEYS.DOCUMENT_SUMMARY)) {
-      const data = localStorage.getItem(STORAGE_KEYS.DOCUMENT_SUMMARY)
-      const fileName =
-        localStorage.getItem(`${STORAGE_KEYS.DOCUMENT_SUMMARY}FileName`) ||
-        'user_data.txt'
+  fetchSentimentData: async (data: TextAnalysisUseCaseData[]) => {
+    const sentimentData: SentimentData[] = []
 
-      if (data) {
-        try {
-          return JSON.parse(data) as DocumentSummaryData
-        } catch (e) {
-          console.error('Error parsing document summary data:', e)
-          // If data is text, try to generate document summary from it
-          return generateDocumentSummaryFromText(data, fileName)
+    data.forEach((item) => {
+      item.result.forEach((result) => {
+        if (result.sentiment) {
+          if (Array.isArray(result.sentiment)) {
+            sentimentData.push(...result.sentiment)
+          } else {
+            sentimentData.push(result.sentiment)
+          }
         }
-      }
+      })
+    })
+
+    return sentimentData
+  },
+
+  fetchWordCloudData: async (data: TextAnalysisUseCaseData[]) => {
+    console.log('Received data:', data)
+    let wordCloudData: WordCloudData = { wordCloudData: [] }
+
+    // Handle null/undefined case
+    if (!data) {
+      console.warn('No data provided to fetchWordCloudData')
+      return wordCloudData
     }
 
-    throw new Error(
-      'No document summary data available. Please upload data first.'
-    )
+    // Handle single object case
+    if (!Array.isArray(data)) {
+      console.log('Converting single object to array')
+      data = [data]
+    }
+
+    try {
+      data.forEach((item) => {
+        if (!item || !item.result) {
+          console.warn('Invalid item structure:', item)
+          return
+        }
+
+        // Handle both array and single result cases
+        const results = Array.isArray(item.result) ? item.result : [item.result]
+
+        results.forEach((result) => {
+          if (result && result.wordcloud) {
+            const wordcloudData = Array.isArray(result.wordcloud)
+              ? result.wordcloud
+              : Object.entries(result.wordcloud).map(([value, count]) => ({
+                  value,
+                  count
+                }))
+
+            wordCloudData = { wordCloudData: wordcloudData }
+          }
+        })
+      })
+    } catch (error) {
+      console.error('Error processing wordcloud data:', error)
+    }
+
+    console.log('Processed wordcloud data:', wordCloudData)
+    return wordCloudData
+  },
+
+  fetchDocumentSummary: async (data: TextAnalysisUseCaseData[]) => {
+    let documentSummary: DocumentSummaryData | null = null
+
+    data.forEach((item) => {
+      item.result.forEach((result) => {
+        if (result.documentSummary) {
+          documentSummary = result.documentSummary
+        }
+      })
+    })
+
+    if (!documentSummary) {
+      throw new Error('No document summary data found')
+    }
+
+    return documentSummary
   }
 }))

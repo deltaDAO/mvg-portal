@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import * as d3 from 'd3'
 import { useDataStore } from '../../../store/dataStore'
 import { useTheme } from '../../../store/themeStore'
+import { TextAnalysisUseCaseData } from '@/@context/UseCases/models/TextAnalysis.model'
 
 interface SentimentData {
   name: string
@@ -73,9 +74,10 @@ const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(
 
 interface SentimentChartProps {
   skipLoading?: boolean
+  data: TextAnalysisUseCaseData[]
 }
 
-const SentimentChart = ({ skipLoading = false }: SentimentChartProps) => {
+const SentimentChart = ({ skipLoading = false, data }: SentimentChartProps) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const brushRef = useRef<HTMLDivElement>(null)
   const [chartWidth, setChartWidth] = useState(0)
@@ -111,17 +113,17 @@ const SentimentChart = ({ skipLoading = false }: SentimentChartProps) => {
     const fetchData = async () => {
       try {
         setLoading(true)
-        const data: SentimentData[] = await fetchSentimentData()
+        const sentimentData: SentimentData[] = await fetchSentimentData(data)
 
-        data.sort((a, b) => {
+        sentimentData.sort((a, b) => {
           const aNum = parseInt(a.name.replace('+', ''))
           const bNum = parseInt(b.name.replace('+', ''))
           return aNum - bNum
         })
 
-        setSentimentData(data)
+        setSentimentData(sentimentData)
 
-        const allDates = data
+        const allDates = sentimentData
           .flatMap((d) => d.values.map((v) => parseTime()(v[0])))
           .filter((d): d is Date => d !== null)
 
