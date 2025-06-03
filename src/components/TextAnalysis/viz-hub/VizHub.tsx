@@ -60,8 +60,7 @@ function VizHubInternal({
         <div className="text-center py-12">
           <div className="text-gray-500 text-lg mb-2">No Data Available</div>
           <div className="text-gray-400 text-sm">
-            Please provide data through the data prop or upload data to
-            localStorage.
+            Please provide data through the data prop or upload data
           </div>
         </div>
       </div>
@@ -71,7 +70,7 @@ function VizHubInternal({
   return (
     <div className={`vizhub-container ${theme} ${className}`}>
       <div className="p-6">
-        <div className="max-w-6xl mx-auto">
+        <div className="w-full">
           <main>
             {/* Debug info (only in development)
             {process.env.NODE_ENV === 'development' && (

@@ -15,7 +15,7 @@ export default function TextAnalysisViz(): ReactElement {
     <div className="flex flex-col gap-6">
       <JobList setTextAnalysisData={setTextAnalysisData} />
       {data ? (
-        <div className="bg-white rounded-lg shadow-sm p-6">
+        <div className="bg-gray-50 rounded-lg shadow-sm">
           <VizHub
             data={data}
             config={{
