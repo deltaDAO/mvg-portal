@@ -153,8 +153,8 @@ export default function JobList(props: {
 
         results.push({
           filename: resultFiles[i].filename,
-          url: url,
-          content: content
+          url,
+          content
         })
 
         // add time delay to avoid nonce collision
@@ -164,12 +164,13 @@ export default function JobList(props: {
       }
 
       const textAnalysisResults: TextAnalysisResult[] = results.map((file) => {
-        const filename = file.filename.toLowerCase()
-        let content = file.content
+        const { filename, content: fileContent } = file
+        const filenameLower = filename.toLowerCase()
+        let content = fileContent
 
-        if (filename.endsWith('.json')) {
+        if (filenameLower.endsWith('.json')) {
           try {
-            content = JSON.parse(file.content)
+            content = JSON.parse(fileContent)
           } catch (error) {
             console.error('Error parsing JSON content:', error)
             return {}
@@ -178,9 +179,12 @@ export default function JobList(props: {
 
         const result: TextAnalysisResult = {}
 
-        if (filename.includes('wordcloud') || filename.includes('word_cloud')) {
+        if (
+          filenameLower.includes('wordcloud') ||
+          filenameLower.includes('word_cloud')
+        ) {
           result.wordcloud = content
-        } else if (filename.includes('sentiment')) {
+        } else if (filenameLower.includes('sentiment')) {
           // Handle sentiment data
           try {
             let parsedContent
@@ -229,11 +233,11 @@ export default function JobList(props: {
             console.error('Error processing sentiment data:', error)
             return result
           }
-        } else if (filename.includes('date_distribution')) {
+        } else if (filenameLower.includes('date_distribution')) {
           result.dataDistribution = content
-        } else if (filename.includes('email_distribution')) {
+        } else if (filenameLower.includes('email_distribution')) {
           result.emailDistribution = content
-        } else if (filename.includes('document_summary')) {
+        } else if (filenameLower.includes('document_summary')) {
           result.documentSummary = content
         }
 

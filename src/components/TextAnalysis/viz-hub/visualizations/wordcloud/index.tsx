@@ -483,7 +483,7 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
                         No Words to Display
                       </h3>
                       <p className="mb-4 text-gray-500 dark:text-gray-400">
-                        Your current filters don't match any words.
+                        Your current filters don&apos;t match any words.
                       </p>
 
                       <div className="space-y-3 text-left">
@@ -492,8 +492,8 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
                             <span className="font-semibold block mb-1">
                               Search term has no matches
                             </span>
-                            Your search term "{searchTerm}" doesn't match any
-                            words.
+                            Your search term &ldquo;{searchTerm}&rdquo;
+                            doesn&apos;t match any words.
                           </div>
                         )}
 
@@ -524,14 +524,18 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
               </>
             )}
 
-            <style jsx>{`
-              .wordcloud-container svg:active {
-                cursor: grabbing;
-              }
-              .cloud-word {
-                user-select: none;
-              }
-            `}</style>
+            <style
+              dangerouslySetInnerHTML={{
+                __html: `
+                .wordcloud-container svg:active {
+                  cursor: grabbing;
+                }
+                .cloud-word {
+                  user-select: none;
+                }
+              `
+              }}
+            />
           </div>
 
           {selectedWord && (

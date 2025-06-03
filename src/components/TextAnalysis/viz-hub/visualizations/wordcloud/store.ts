@@ -532,7 +532,7 @@ export const useWordCloudStore = create<WordCloudStore>((set, get) => ({
         // Wait a tiny amount of time and reapply search term
         // This helps ensure the whitelist filter is properly applied first
         setTimeout(() => {
-          set({ searchTerm: currentSearchTerm })
+          set({ searchTerm })
           get().filterWords() // Update filtered words after search term is reapplied
         }, 10)
       } else {
@@ -656,7 +656,7 @@ export const useWordCloudStore = create<WordCloudStore>((set, get) => ({
 
       // Reapply search term after a short delay
       setTimeout(() => {
-        set({ searchTerm: searchTerm })
+        set({ searchTerm })
         get().filterWords() // Update filtered words after search term is reapplied
       }, 10)
     } else {
