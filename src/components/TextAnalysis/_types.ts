@@ -37,7 +37,7 @@ export interface WordCloud {
 }
 
 export interface TextAnalysisResult {
-  wordcloud?: WordCloud
+  wordcloud?: WordCloud[]
   sentiment?: Sentiment
   dataDistribution?: string
   emailDistribution?: string

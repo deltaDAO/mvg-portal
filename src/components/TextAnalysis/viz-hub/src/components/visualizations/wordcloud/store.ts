@@ -2,8 +2,6 @@ import { create } from 'zustand'
 import { WordData, WordCloudOptions } from './types'
 import { ENGLISH_STOPWORDS, CUSTOM_COLORS } from './constants'
 import { Language } from './useStoplistManager'
-import { useDataStore, WordCloudData } from '../../../store/dataStore'
-import { TextAnalysisUseCaseData } from '@/@context/UseCases/models/TextAnalysis.model'
 
 // Define the store type
 interface WordCloudStore {
@@ -97,7 +95,7 @@ interface WordCloudStore {
   getActiveStopwords: () => string[]
   getActiveWhitelist: () => string[]
   getWordColor: (word: string) => string
-  fetchData: (data: TextAnalysisUseCaseData[]) => Promise<WordCloudData>
+  fetchData: () => Promise<void>
 
   // Cache for filtering operations
   filterCacheKey: string
@@ -903,48 +901,65 @@ export const useWordCloudStore = create<WordCloudStore>((set, get) => ({
   },
 
   // Fetch word cloud data
-  fetchData: async (data: TextAnalysisUseCaseData[]) => {
-    try {
-      set({ isLoading: true, error: null })
-      const { fetchWordCloudData } = useDataStore.getState()
-      const result = await fetchWordCloudData(data)
+  fetchData: async () => {
+    set({ isLoading: true, error: null })
 
-      // Update words and trigger filtering
+    try {
+      // Import the dataStore
+      const { fetchWordCloudData } = await import('@/store/dataStore').then(
+        (module) => module.useDataStore.getState()
+      )
+
+      // Fetch data from the API
+      const data = await fetchWordCloudData()
+
+      // Calculate the minimum frequency in the dataset
+      const minCount = Math.min(
+        ...data.wordCloudData.map((w: WordData) => w.count)
+      )
+
+      // Get current min frequency
+      const { minFrequency } = get()
+
+      // Check if we have a stored whitelist state in localStorage
+      const storedWhitelistActive =
+        typeof window !== 'undefined'
+          ? localStorage.getItem(STORAGE_KEYS.WHITELIST_ACTIVE) === 'true'
+          : false
+
+      // If minFrequency is 0, set it to the minimum value from the dataset
+      const newMinFrequency = minFrequency === 0 ? minCount : minFrequency
+
+      // Set the words data but DON'T immediately set filtered words,
+      // instead we'll use filterWords to properly apply filters
       set({
-        words: result.wordCloudData,
+        words: data.wordCloudData,
+        minFrequency: newMinFrequency,
+        // Use stored whitelist state instead of forcing it to false
+        whitelistActive: storedWhitelistActive,
         isLoading: false
       })
 
-      // Trigger filtering after words are set
+      // Save min frequency to localStorage if it was updated
+      if (newMinFrequency !== minFrequency && typeof window !== 'undefined') {
+        localStorage.setItem(
+          STORAGE_KEYS.MIN_FREQUENCY,
+          newMinFrequency.toString()
+        )
+      }
+
+      // Auto-detect stopwords and apply filters
       setTimeout(() => {
+        get().autoDetectStopwords()
         get().filterWords()
       }, 0)
-
-      return result
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching word cloud data:', error)
       set({
         error:
-          error instanceof Error
-            ? error.message
-            : 'Failed to fetch word cloud data',
+          error instanceof Error ? error.message : 'An unknown error occurred',
         isLoading: false
       })
-      throw error
     }
   }
 }))
-
-export const fetchWordCloudData = async (data: TextAnalysisUseCaseData[]) => {
-  try {
-    // Import the dataStore
-    const { fetchWordCloudData } = useDataStore.getState()
-
-    // Fetch data from the API
-    const result = await fetchWordCloudData(data)
-    return result
-  } catch (error) {
-    console.error('Error fetching word cloud data:', error)
-    throw error
-  }
-}

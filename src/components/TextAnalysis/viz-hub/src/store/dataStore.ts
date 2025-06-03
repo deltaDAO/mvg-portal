@@ -390,48 +390,16 @@ export const useDataStore = create<DataStore>((set, get) => ({
   },
 
   fetchWordCloudData: async (data: TextAnalysisUseCaseData[]) => {
-    console.log('Received data:', data)
-    let wordCloudData: WordCloudData = { wordCloudData: [] }
-
-    // Handle null/undefined case
-    if (!data) {
-      console.warn('No data provided to fetchWordCloudData')
-      return wordCloudData
+    // Early return if no data
+    if (!data?.[0]?.result?.[0]?.wordcloud) {
+      console.log('No wordcloud data available')
+      return { wordCloudData: [] }
     }
 
-    // Handle single object case
-    if (!Array.isArray(data)) {
-      console.log('Converting single object to array')
-      data = [data]
+    // The wordcloud data is already in the correct format
+    const wordCloudData: WordCloudData = {
+      wordCloudData: data[0].result[0].wordcloud
     }
-
-    try {
-      data.forEach((item) => {
-        if (!item || !item.result) {
-          console.warn('Invalid item structure:', item)
-          return
-        }
-
-        // Handle both array and single result cases
-        const results = Array.isArray(item.result) ? item.result : [item.result]
-
-        results.forEach((result) => {
-          if (result && result.wordcloud) {
-            const wordcloudData = Array.isArray(result.wordcloud)
-              ? result.wordcloud
-              : Object.entries(result.wordcloud).map(([value, count]) => ({
-                  value,
-                  count
-                }))
-
-            wordCloudData = { wordCloudData: wordcloudData }
-          }
-        })
-      })
-    } catch (error) {
-      console.error('Error processing wordcloud data:', error)
-    }
-
     console.log('Processed wordcloud data:', wordCloudData)
     return wordCloudData
   },
