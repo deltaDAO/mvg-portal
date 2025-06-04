@@ -57,11 +57,12 @@ export interface FormPublishData {
     dockerImageCustomChecksum?: string
     usesConsumerParameters?: boolean
     consumerParameters?: FormConsumerParameter[]
+    dataSubjectConsent?: boolean
     service?: {
       usesConsumerParameters?: boolean
       consumerParameters?: FormConsumerParameter[]
     }
-    useRemoteLicense: boolean
+    licenseTypeSelection: string
     licenseUrl: FileInfo[]
     uploadedLicense: License
   }

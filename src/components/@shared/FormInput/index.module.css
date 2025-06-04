@@ -14,34 +14,31 @@
 
 .required {
   font-size: var(--font-size-base);
-  color: var(--color-secondary);
+  color: var(--input-error-text-color);
   display: inline-block;
   margin-left: 0.1rem;
 }
 
 .error {
-  display: inline-block;
-  font-size: var(--font-size-mini);
-  line-height: 1.2;
+  display: block;
+  font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
-  color: var(--brand-white);
-  background: var(--brand-alert-red);
-  border-radius: var(--border-radius);
-  padding: 0.2rem 0.4rem;
-  position: absolute;
-  right: 0;
-  z-index: 1;
+  font-size: 10px;
+  color: var(--input-error-text-color);
+  margin-top: var(--input-error-spacing);
+  line-height: 1.2;
 }
 
 .hasError label {
-  color: var(--brand-alert-red);
+  color: var(--input-error-text-color);
 }
 
-.hasError input,
-.hasError input:focus,
-.hasError select,
-.hasError textarea,
-.hasError [class*='prefix'],
-.hasError [class*='postfix'] {
-  border-color: var(--brand-alert-red);
+body .hasError input,
+body .hasError input:focus,
+body .hasError select,
+body .hasError textarea,
+body .hasError [class*='prefix'],
+body .hasError [class*='postfix'] {
+  border-color: var(--input-error-border-color) !important;
+  box-shadow: none !important;
 }

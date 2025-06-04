@@ -8,17 +8,31 @@
 }
 
 .token {
-  border: 1px solid var(--border-color);
-  padding: calc(var(--spacer) / 3);
-  border-radius: var(--border-radius);
+  border: var(--input-border-size) solid var(--border-color);
+  border-left: 5px solid #fdd655;
+  border-radius: 0;
+  padding: 10px 17px;
+  background: var(--background-detail-box);
+  width: fit-content;
 }
 
 .image {
   display: block;
-  width: 128px;
-  height: 128px;
+  width: 90px;
+  height: 90px;
   border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  padding: 15px 25px;
+  box-shadow: var(--publish-shadow-lg);
+  background: #64ace0;
+  background: linear-gradient(
+    135deg,
+    #1f2c50 0%,
+    rgba(10, 75, 112, 0.8) 27.47%,
+    rgba(10, 75, 112, 0.7) 43.49%,
+    rgba(10, 75, 112, 0.8) 55.43%,
+    #1e2e52 100%
+  );
+  border: none;
   position: relative;
   margin: 0;
 }

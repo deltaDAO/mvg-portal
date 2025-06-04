@@ -12,12 +12,15 @@
 .boxSelection {
   display: block;
   flex: 1 1 0px;
-  padding: calc(var(--spacer) / 3) calc(var(--spacer) / 2)
-    calc(var(--spacer) / 4) calc(var(--spacer) / 2) !important;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
+  padding: 15px 25px;
+  border-radius: var(--publish-border-radius);
+  border: 1.5px solid rgba(10, 75, 112, 0.5);
   color: var(--color-secondary);
   cursor: pointer;
+  box-shadow: -2px 0 8px 0 rgba(0, 0, 0, 0.15);
+  background: transparent;
+  transition: all 0.2s ease-out;
+  min-height: 90px;
 }
 
 .disabled {
@@ -37,16 +40,42 @@
 }
 
 .boxSelectionsWrapper input[type='radio']:checked + label {
-  color: var(--background-body);
-  border-color: var(--background-body);
-  background: var(--font-color-heading);
+  color: var(--brand-white);
+  border: none;
+  background: #64ace0;
+  background: linear-gradient(
+    135deg,
+    #1f2c50 0%,
+    rgba(10, 75, 112, 0.8) 27.47%,
+    rgba(10, 75, 112, 0.7) 43.49%,
+    rgba(10, 75, 112, 0.8) 55.43%,
+    #1e2e52 100%
+  );
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
 }
 
 .boxSelection svg {
   width: var(--font-size-h5);
   height: var(--font-size-h5);
-  fill: currentColor;
+  fill: var(--publish-accent);
   margin-bottom: calc(var(--spacer) / 5);
+  transition: fill 0.2s ease-out, width 0.2s ease-out, height 0.2s ease-out;
+}
+
+.boxSelection svg path {
+  fill: var(--publish-accent);
+}
+
+.boxSelectionsWrapper input[type='radio']:checked + label svg,
+.boxSelectionsWrapper input[type='radio']:checked + .boxSelection svg {
+  fill: var(--brand-white) !important;
+  width: 30px;
+  height: 30px;
+}
+
+.boxSelectionsWrapper input[type='radio']:checked + label svg path,
+.boxSelectionsWrapper input[type='radio']:checked + .boxSelection svg path {
+  fill: var(--brand-white) !important;
 }
 
 .boxSelectionsWrapper label {
@@ -56,4 +85,62 @@
   justify-content: space-around;
   color: var(--color-secondary);
   font-weight: normal;
+}
+/* Size variants */
+.small .boxSelection {
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  padding: 8px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.small .boxSelection svg {
+  display: none;
+}
+
+.small label {
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  flex-direction: row;
+  padding: 8px 25px;
+}
+
+.small .title {
+  margin: 0;
+  line-height: 24px;
+}
+
+/* Small size variant */
+.small .boxSelection,
+.small .boxSelectionsWrapper label {
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  padding: 8px 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.small .boxSelection {
+  border: 1px solid rgba(10, 75, 112, 0.5);
+}
+
+.small .boxSelection svg {
+  display: none;
+}
+
+.small .boxSelectionsWrapper label {
+  flex-direction: row;
+}
+
+.small .title {
+  margin: 0;
+  line-height: 24px;
 }

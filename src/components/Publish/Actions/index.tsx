@@ -73,7 +73,7 @@ export default function Actions({
         <SuccessConfetti
           success="Successfully published!"
           action={
-            <Button style="primary" to={`/asset/${did}`}>
+            <Button style="publish" to={`/asset/${did}`}>
               View Asset
             </Button>
           }
@@ -88,7 +88,7 @@ export default function Actions({
 
           {values.user.stepCurrent < wizardSteps.length ? (
             <Button
-              style="primary"
+              style="publish"
               onClick={handleNext}
               disabled={isContinueDisabled}
             >
@@ -103,7 +103,7 @@ export default function Actions({
             <Tooltip content={<AvailableNetworks />}>
               <Button
                 type="submit"
-                style="primary"
+                style="publish"
                 disabled
                 className={styles.infoButton}
               >
@@ -113,7 +113,7 @@ export default function Actions({
           ) : (
             <Button
               type="submit"
-              style="primary"
+              style="publish"
               disabled={isSubmitting || !isValid}
             >
               {isSubmitting ? (

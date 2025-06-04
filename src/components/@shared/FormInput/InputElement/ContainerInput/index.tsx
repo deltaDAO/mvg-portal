@@ -77,6 +77,7 @@ export default function ContainerInput(props: InputProps): ReactElement {
           isLoading={isLoading}
           storageType={'url'}
           handleButtonClick={handleValidation}
+          hideButton={true}
         />
       )}
     </>

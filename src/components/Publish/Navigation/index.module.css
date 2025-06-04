@@ -1,95 +1,272 @@
+/* Navigation Container - Figma Design */
 .navigation {
-  margin: -1.3rem calc(var(--spacer) / -1.5) var(--spacer)
-    calc(var(--spacer) / -1.5);
-  padding: calc(var(--spacer) / 2) 0;
-  scrollbar-width: none;
-  border-bottom: 1px solid var(--border-color);
-  background-color: var(--background-highlight);
-}
-
-@media (min-width: 40rem) {
-  .navigation {
-    margin-top: -2rem;
-    margin-left: calc(var(--spacer) * -2);
-    margin-right: calc(var(--spacer) * -2);
-  }
-}
-
-@media (min-width: 60rem) {
-  .navigation {
-    padding: var(--spacer) 0;
-    margin-left: calc(var(--spacer) * -4);
-    margin-right: calc(var(--spacer) * -4);
-  }
-}
-
-.navigation ol {
-  white-space: nowrap;
-  text-align: center;
-  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   padding: 0;
-  margin: 0;
-  counter-reset: list-number;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
+  gap: 16px;
+  width: 100%;
+  height: 66px;
+  border: none;
+  background: transparent;
 }
 
-.navigation li {
-  cursor: pointer;
-  display: inline-block;
-  margin: 0 var(--spacer);
-  padding: 0 calc(var(--spacer) / 2);
-  counter-increment: list-number;
-  font-weight: var(--font-weight-bold);
-  white-space: nowrap;
-  position: relative;
-}
-
-/* inject the numbers */
-.navigation li:before {
-  content: counter(list-number);
-  display: inline-flex;
+/* Single Steps Row */
+.stepsRow {
+  display: flex;
+  flex-direction: row;
   align-items: center;
+  gap: 80px;
+  width: 100%;
+  height: 100%;
+  overflow-x: scroll;
+}
+
+/* Custom Yellow Scrollbar */
+.stepsRow::-webkit-scrollbar {
+  height: 8px;
+}
+
+.stepsRow::-webkit-scrollbar-track {
+  background: #e5e5e5;
+  border-radius: 4px;
+}
+
+.stepsRow::-webkit-scrollbar-thumb {
+  background: #fdd655;
+  border-radius: 4px;
+}
+
+.stepsRow::-webkit-scrollbar-thumb:hover {
+  background: #fcc432;
+}
+
+/* Firefox scrollbar */
+.stepsRow {
+  scrollbar-width: thin;
+  scrollbar-color: #fdd655 #e5e5e5;
+}
+
+/* Individual Step */
+.step {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  cursor: pointer;
+  flex: none;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+/* Active Step - Frame 1000003227 */
+.activeStep {
+  gap: 10px;
+  width: auto;
+  height: 38px;
+}
+
+/* Inactive Step - Frame 1000003229 */
+.inactiveStep {
+  gap: 5px;
+  width: auto;
+  height: 30px;
+}
+
+/* Active Step Circle - Frame 1000003226 */
+.activeStepCircle {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  border: 1px solid var(--border-color);
-  margin-right: calc(var(--spacer) / 4);
+  align-items: center;
+  padding: 6px 11px;
+  gap: 10px;
+  width: 38px;
+  height: 38px;
+  background: #fdd655;
+  border-radius: 19px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 18px;
+  color: #0a4b70;
+  border: none;
+  flex: none;
+  flex-grow: 0;
+  flex-shrink: 0;
+  text-align: center;
 }
 
-/* inject line */
-.navigation li:after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 100%;
-  top: 1rem;
-  width: 50%;
-  height: 1px;
-  background: var(--border-color);
+/* Active Step Label */
+.activeStepLabel {
+  height: 21px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 21px;
+  color: #303031;
+  flex: none;
+  flex-grow: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
-.navigation li:last-child:after {
-  display: none;
+/* Inactive Step Circle - Frame 1000003227 */
+.inactiveStepCircle {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 9px;
+  gap: 10px;
+  width: 30px;
+  height: 30px;
+  border: 1px solid #757575;
+  border-radius: 19px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 18px;
+  color: #757575;
+  background: transparent;
+  flex: none;
+  align-self: stretch;
+  flex-grow: 0;
+  flex-shrink: 0;
+  text-align: center;
 }
 
-.current:before {
-  color: var(--background-content);
-  background: var(--font-color-heading);
-  border-color: transparent;
+/* Inactive Step Label */
+.inactiveStepLabel {
+  height: 16px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #303031;
+  flex: none;
+  flex-grow: 0;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
-.navigation .success:before {
-  content: '✓';
-  color: var(--brand-white);
-  background: var(--brand-alert-green);
-  border-color: transparent;
+/* Completed Step Circle */
+.inactiveStepCircle.completed {
+  background: #0a4b70;
+  border: 1px solid #0a4b70;
+  color: #ffffff;
+  font-weight: 700;
 }
 
-.success.current:before {
-  background: var(--font-color-heading);
-  color: var(--brand-alert-green);
-  border-color: var(--brand-alert-green);
+/* Progress Bar Container - COMMENTED OUT */
+/*
+.progressBar {
+  width: 1160px;
+  height: 4px;
+  background: #E5E5E5;
+  border-radius: 2px;
+  position: relative;
+  margin-top: 8px;
+}
+*/
+
+/* Progress Bar Fill - COMMENTED OUT */
+/*
+.progressFill {
+  height: 4px;
+  background: #FDD655;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  min-width: 20px;
+}
+*/
+
+/* Hover Effects */
+.step:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+  transition: all 0.2s ease;
+}
+
+.activeStepCircle:hover {
+  transform: scale(1.05);
+}
+
+.inactiveStepCircle:hover {
+  border-color: #0a4b70;
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .navigation {
+    width: 100%;
+    max-width: 1160px;
+    padding: 0 var(--publish-spacing-md);
+  }
+
+  .stepsRow {
+    width: 100%;
+    gap: 60px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Commented out progress bar
+  .progressBar {
+    width: 100%;
+  }
+  */
+}
+
+@media (max-width: 768px) {
+  .navigation {
+    height: auto;
+  }
+
+  .stepsRow {
+    gap: 40px;
+    padding: 0 var(--publish-spacing-md);
+  }
+
+  .activeStep {
+    width: auto;
+  }
+
+  .activeStepLabel {
+    font-size: 16px;
+  }
+
+  .inactiveStep {
+    width: auto;
+  }
+
+  .inactiveStepLabel {
+    font-size: 12px;
+  }
+
+  .activeStepCircle {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+    padding: 4px 8px;
+  }
+
+  .inactiveStepCircle {
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    padding: 3px 6px;
+  }
+
+  .step {
+    flex-shrink: 0;
+  }
 }

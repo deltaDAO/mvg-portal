@@ -1,13 +1,21 @@
 .actions {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   padding-top: var(--spacer);
+}
+
+/* When there are multiple buttons, center them */
+.actionsMultiple {
+  justify-content: center;
 }
 
 .actions button {
   margin: 0 calc(var(--spacer) / 2);
   min-height: 40px;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  border-radius: var(--publish-input-border-radius);
 }
 
 .infoIcon {
@@ -18,7 +26,8 @@
   margin-left: calc(var(--spacer) / 6);
   fill: currentColor;
 }
+
 .infoButton {
-  cursor: help !important;
-  pointer-events: all !important;
+  cursor: help;
+  pointer-events: all;
 }

@@ -5,11 +5,13 @@
   --color-primary: var(--brand-blue);
   --color-secondary: var(--brand-blue-light);
   --color-highlight: var(--brand-red);
+  --color-alert: var(--brand-alert-red);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
   --font-color-heading: var(--brand-black);
   --font-color-light: var(--brand-grey-light);
+  --font-color-label: var(--publish-text-secondary);
   --background-body: var(--brand-white);
   --background-body-transparent: rgba(255, 255, 255, 0.8);
   --background-content: var(--brand-white);
@@ -72,6 +74,9 @@
   --input-selected-background: var(--checkbox-selected-background);
   --input-selected-border-size: var(--border-size);
   --input-selected-border-color: var(--font-color-heading);
+  --input-error-text-color: var(--brand-error-red);
+  --input-error-border-color: rgba(255, 54, 13, 0.5);
+  --input-error-spacing: calc(var(--spacer) / 3);
 
   /* Buttons */
   --button-border-radius: var(--border-radius);
@@ -173,6 +178,83 @@
   --break-point--medium: 860px;
   --break-point--large: 1140px;
   --break-point--huge: 1400px;
+
+  /* Publish page design system - Figma specific variables */
+  --publish-container-width: 1160px;
+  --publish-text-link-color: var(--ocean-blue);
+  --publish-yellow: var(--publish-accent);
+
+  /* Publish Typography */
+  --publish-font-size-xs: 10px;
+  --publish-font-size: 14px;
+  --publish-font-size-base: 16px;
+  --publish-font-size-lg: 18px;
+  --publish-font-size-xl: 24px;
+  --publish-font-weight-normal: 400;
+  --publish-font-weight-bold: 700;
+  --publish-line-height-sm: 11px;
+  --publish-line-height-base: 16px;
+  --publish-line-height-lg: 18px;
+  --publish-line-height-xl: 21px;
+  --publish-line-height-2xl: 26px;
+  --publish-line-height-3xl: 28px;
+
+  /* Publish Spacing */
+  --publish-spacing-xs: 4px;
+  --publish-spacing-sm: 8px;
+  --publish-spacing-md: 16px;
+  --publish-spacing-lg: 24px;
+  --publish-spacing-xl: 32px;
+  --publish-spacing-2xl: 40px;
+  --publish-spacing-3xl: 55px;
+  --publish-spacing-4xl: 100px;
+
+  /* Publish Border Radius */
+  --publish-border-radius-sm: 2px;
+  --publish-border-radius: 20px;
+  --publish-border-radius-lg: 40px;
+  --publish-border-radius-full: 19px; /* For circular elements */
+
+  /* Publish Shadows */
+  --publish-shadow-sm: 1px 2px 8px rgba(0, 0, 0, 0.15);
+  --publish-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
+  --publish-shadow-lg: -2px 0px 8px rgba(0, 0, 0, 0.15);
+
+  /* Publish Form Elements - Specific to publish page only */
+  --publish-input-height: 40px;
+  --publish-input-padding: 15px 25px;
+  --publish-input-padding-x: 30px;
+  --publish-input-border-size: 1px;
+  --publish-input-border-color: rgba(10, 75, 112, 0.5);
+  --publish-input-border-radius: 20px;
+  --publish-input-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  --publish-input-error-border-color: rgba(255, 54, 13, 0.5);
+  --publish-input-error-text-color: var(--brand-error-red);
+  --publish-input-error-spacing: 7px;
+  --publish-form-container-padding: 40px;
+  --publish-checkbox-selected-background: var(--publish-accent);
+
+  /* Publish Progress Navigation */
+  --publish-progress-height: 12px;
+  --publish-progress-border-radius: var(--publish-border-radius);
+  --publish-step-size: 30px;
+  --publish-step-active-size: 38px;
+  --publish-step-gap: 55px;
+
+  /* Publish Asset Type Buttons */
+  --publish-asset-button-width: 520px;
+  --publish-asset-button-height: 80px;
+  --publish-asset-button-border: 1.5px;
+
+  /* Publish Docker Buttons */
+  --publish-docker-button-width: 328px;
+  --publish-docker-button-height: 40px;
+  --publish-docker-button-gap: 32px;
+
+  /* Publish Continue Button */
+  --publish-continue-button-width: 110px;
+  --publish-continue-button-height: 40px;
+  --publish-continue-button-padding: 4px 20px;
 }
 
 .dark {

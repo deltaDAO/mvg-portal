@@ -292,8 +292,10 @@ export default function PublishPage({
           />
           <Form className={styles.form} ref={scrollToRef}>
             <Navigation />
-            <Steps feedback={feedback} />
-            <Actions scrollToRef={scrollToRef} did={did} />
+            <div className={styles.metadataForm}>
+              <Steps feedback={feedback} />
+              <Actions scrollToRef={scrollToRef} did={did} />
+            </div>
           </Form>
           {debug && <Debug />}
         </>

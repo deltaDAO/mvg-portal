@@ -18,6 +18,10 @@ import { RemoteObject } from 'src/@types/ddo/RemoteObject'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
+import URLInput from '@shared/FormInput/InputElement/URLInput'
+import Button from '@shared/atoms/Button'
+import SectionContainer from './SectionContainer'
+import styles from './index.module.css'
 
 const assetTypeOptionsTitles = getFieldContent(
   'type',
@@ -67,7 +71,11 @@ export default function MetadataFields(): ReactElement {
     )
   }, [values.metadata.type])
 
-  dockerImageOptions.push({ name: 'custom', title: 'Custom', checked: false })
+  dockerImageOptions.push({
+    name: 'custom',
+    title: 'Custom',
+    checked: values.metadata.dockerImage === 'custom'
+  })
 
   async function handleLicenseFileUpload(
     fileItem: FileItem,
@@ -126,33 +134,27 @@ export default function MetadataFields(): ReactElement {
       }
     }
 
-    if (!values.metadata.useRemoteLicense) {
-      deleteRemoteFile()
-    } else {
+    if (values.metadata.licenseTypeSelection === 'Upload license file') {
+      // Only set licenseUrl when explicitly selecting "Upload license file"
       setFieldValue('metadata.licenseUrl', [{ url: '', type: 'url' }])
+    } else if (values.metadata.licenseTypeSelection !== '') {
+      // Only delete remote file if a different option (not empty) is selected
+      deleteRemoteFile()
     }
-  }, [values.metadata.useRemoteLicense])
+  }, [values.metadata.licenseTypeSelection])
+
+  function handleLicenseUrlValidation(e: React.SyntheticEvent, url: string) {
+    // For now, just update the field value - can add validation logic later
+    setFieldValue('metadata.licenseUrl', [{ url, type: 'url', valid: true }])
+  }
 
   return (
-    <>
+    <div>
       <Field
         {...getFieldContent('nft', content.metadata.fields)}
         component={Input}
         name="metadata.nft"
       />
-      <Field
-        {...getFieldContent('type', content.metadata.fields)}
-        component={Input}
-        name="metadata.type"
-        options={assetTypeOptions}
-      />
-      {values.metadata.type === 'dataset' && (
-        <Field
-          {...getFieldContent('dataSubjectConsent', content.metadata.fields)}
-          component={Input}
-          name="metadata.dataSubjectConsent"
-        />
-      )}
       <Field
         {...getFieldContent('name', content.metadata.fields)}
         component={Input}
@@ -175,98 +177,129 @@ export default function MetadataFields(): ReactElement {
         name="metadata.author"
       />
 
+      <Field
+        {...getFieldContent('type', content.metadata.fields)}
+        component={Input}
+        name="metadata.type"
+        options={assetTypeOptions}
+      />
+      {values.metadata.type === 'dataset' && (
+        <Field
+          {...getFieldContent('dataSubjectConsent', content.metadata.fields)}
+          component={Input}
+          name="metadata.dataSubjectConsent"
+        />
+      )}
+
       {values.metadata.type === 'algorithm' && (
         <>
-          <Field
-            {...getFieldContent('dockerImage', content.metadata.fields)}
-            component={Input}
-            name="metadata.dockerImage"
-            options={dockerImageOptions}
-          />
-          {values.metadata.dockerImage === 'custom' && (
-            <>
-              <Field
-                {...getFieldContent(
-                  'dockerImageCustom',
-                  content.metadata.fields
-                )}
-                component={Input}
-                name="metadata.dockerImageCustom"
-              />
-              <Field
-                {...getFieldContent(
-                  'dockerImageChecksum',
-                  content.metadata.fields
-                )}
-                component={Input}
-                name="metadata.dockerImageCustomChecksum"
-                disabled={
-                  values.metadata.dockerImageCustomChecksum && !meta.touched
-                }
-              />
-              <Field
-                {...getFieldContent(
-                  'dockerImageCustomEntrypoint',
-                  content.metadata.fields
-                )}
-                component={Input}
-                name="metadata.dockerImageCustomEntrypoint"
-              />
-            </>
-          )}
-          <Field
-            {...getFieldContent(
-              'usesConsumerParameters',
-              content.metadata.fields
+          <SectionContainer title="Docker configuration" required>
+            <Field
+              {...getFieldContent('dockerImage', content.metadata.fields)}
+              component={Input}
+              name="metadata.dockerImage"
+              options={dockerImageOptions}
+            />
+            {values.metadata.dockerImage === 'custom' && (
+              <>
+                <Field
+                  {...getFieldContent(
+                    'dockerImageCustom',
+                    content.metadata.fields
+                  )}
+                  component={Input}
+                  name="metadata.dockerImageCustom"
+                />
+                <Field
+                  {...getFieldContent(
+                    'dockerImageChecksum',
+                    content.metadata.fields
+                  )}
+                  component={Input}
+                  name="metadata.dockerImageCustomChecksum"
+                  disabled={
+                    values.metadata.dockerImageCustomChecksum && !meta.touched
+                  }
+                />
+                <Field
+                  {...getFieldContent(
+                    'dockerImageCustomEntrypoint',
+                    content.metadata.fields
+                  )}
+                  component={Input}
+                  name="metadata.dockerImageCustomEntrypoint"
+                />
+              </>
             )}
-            component={Input}
-            name="metadata.usesConsumerParameters"
-          />
-          {values.metadata.usesConsumerParameters && (
+          </SectionContainer>
+
+          {/* Custom Parameters Section */}
+          <SectionContainer title="Custom Parameters">
             <Field
               {...getFieldContent(
-                'consumerParameters',
-                consumerParametersContent.consumerParameters.fields
+                'usesConsumerParameters',
+                content.metadata.fields
               )}
               component={Input}
-              name="metadata.consumerParameters"
+              name="metadata.usesConsumerParameters"
             />
-          )}
+            {values.metadata.usesConsumerParameters && (
+              <div className={styles.customParametersContent}>
+                <Field
+                  {...getFieldContent(
+                    'consumerParameters',
+                    consumerParametersContent.consumerParameters.fields
+                  )}
+                  component={Input}
+                  name="metadata.consumerParameters"
+                  type="publishConsumerParameters"
+                />
+              </div>
+            )}
+          </SectionContainer>
         </>
       )}
 
       {/*
        Licensing and Terms
       */}
-      <Field
-        {...getFieldContent('licenseTypeSelection', content.metadata.fields)}
-        component={Input}
-        name="metadata.useRemoteLicense"
-      />
-      {values.metadata.useRemoteLicense ? (
-        <>
-          <Label htmlFor="license">License *</Label>
-          <FileUpload
-            fileName={values.metadata?.uploadedLicense?.name}
-            buttonLabel="Upload"
-            setFileItem={handleLicenseFileUpload}
-          ></FileUpload>
-        </>
-      ) : (
-        <>
+      <SectionContainer title="License">
+        <div className={styles.licenseDropdownWrapper}>
           <Field
-            {...getFieldContent('license', content.metadata.fields)}
+            {...getFieldContent(
+              'licenseTypeSelection',
+              content.metadata.fields
+            )}
             component={Input}
-            name="metadata.licenseUrl"
+            name="metadata.licenseTypeSelection"
           />
-        </>
-      )}
+        </div>
+        {values.metadata.licenseTypeSelection === 'Upload license file' && (
+          <div className={styles.licenseUrlContainer}>
+            <Label htmlFor="licenseFile">File *</Label>
+            <div className={styles.licenseUrlWrapper}>
+              <URLInput
+                submitText="Validate"
+                name="metadata.licenseUrl[0].url"
+                placeholder="e.g. https://file.com/license.json"
+                isLoading={false}
+                handleButtonClick={handleLicenseUrlValidation}
+                storageType="url"
+                checkUrl={true}
+                buttonStyle="publish"
+              />
+            </div>
+          </div>
+        )}
+      </SectionContainer>
 
-      <Field
-        {...getFieldContent('termsAndConditions', content.metadata.fields)}
-        component={Input}
-        name="metadata.termsAndConditions"
-      />
-    </>
+      <div className={styles.termsAndConditionsContainer}>
+        <Field
+          {...getFieldContent('termsAndConditions', content.metadata.fields)}
+          component={Input}
+          name="metadata.termsAndConditions"
+        />
+      </div>
+    </div>
   )
 }

@@ -51,7 +51,7 @@ export default function Navigation(): ReactElement {
       (step === 5 && isSuccessCustomDDO) ||
       (step === 6 && isSuccessPreview)
 
-    return isSuccess ? styles.success : null
+    return isSuccess
   }
 
   useEffect(() => {
@@ -66,21 +66,58 @@ export default function Navigation(): ReactElement {
     setFieldValue('user.stepCurrent', step)
   }, [router])
 
+  const currentStep = values.user.stepCurrent
+
+  // Progress bar function - COMMENTED OUT
+
+  const getProgressWidth = () => {
+    const progressPercentage = (currentStep / wizardSteps.length) * 100
+    return `${progressPercentage}%`
+  }
+
   return (
     <nav className={styles.navigation}>
-      <ol>
-        {wizardSteps.map((step) => (
-          <li
-            key={step.title}
-            onClick={() => handleStepClick(step.step)}
-            className={`${
-              values.user.stepCurrent === step.step ? styles.current : null
-            } ${getSuccessClass(step.step)}`}
-          >
-            {step.title}
-          </li>
-        ))}
-      </ol>
+      {/* Single Row with All Steps */}
+      <div className={styles.stepsRow}>
+        {wizardSteps.map((step) => {
+          const isActive = step.step === currentStep
+          const isCompleted = getSuccessClass(step.step)
+
+          return (
+            <div
+              key={step.step}
+              className={`${styles.step} ${
+                isActive ? styles.activeStep : styles.inactiveStep
+              }`}
+              onClick={() => handleStepClick(step.step)}
+            >
+              <div
+                className={`${
+                  isActive ? styles.activeStepCircle : styles.inactiveStepCircle
+                } ${isCompleted ? styles.completed : ''}`}
+              >
+                {isCompleted ? '✓' : step.step}
+              </div>
+              <span
+                className={`${
+                  isActive ? styles.activeStepLabel : styles.inactiveStepLabel
+                }`}
+              >
+                {step.title}
+              </span>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Progress Bar - COMMENTED OUT */}
+
+      <div className={styles.progressBar}>
+        <div
+          className={styles.progressFill}
+          style={{ width: getProgressWidth() }}
+        ></div>
+      </div>
     </nav>
   )
 }

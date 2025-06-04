@@ -11,21 +11,26 @@ export interface BoxSelectionOption {
   text?: JSX.Element | string
 }
 
+export type BoxSelectionSize = 'mini' | 'small' | 'large' | 'default'
+
 export default function BoxSelection({
   name,
   options,
   disabled,
   handleChange,
+  size = 'default',
   ...props
 }: {
   name: string
   options: BoxSelectionOption[]
   disabled?: boolean
+  size?: BoxSelectionSize
   handleChange?: (event: ChangeEvent<HTMLInputElement>) => void
 }): JSX.Element {
   const styleClassesWrapper = `${styles.boxSelectionsWrapper} ${
     disabled ? styles.disabled : ''
-  }`
+  } ${size === 'mini' ? styles.small : ''}`
+
   const styleClassesInput = `${styles.input} ${styles.radio}`
 
   return (

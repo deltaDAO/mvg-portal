@@ -60,9 +60,11 @@
       },
       {
         "name": "licenseTypeSelection",
-        "label": "Use Remote License",
-        "type": "checkbox",
-        "options": ["Select if you want to upload a license file"]
+        "label": "License Type",
+        "type": "select",
+        "placeholder": "Please select an option",
+        "options": ["Upload license file"],
+        "required": true
       },
       {
         "name": "accessTermsAndConditions",
@@ -78,6 +80,7 @@
         "label": "Docker Image",
         "help": "Please select an image to run your algorithm.",
         "type": "boxSelection",
+        "size": "mini",
         "options": [
           "populated from algorithmContainerPresets in Publish/_constants"
         ],
@@ -88,7 +91,6 @@
         "label": "Custom Docker Image",
         "placeholder": "e.g. oceanprotocol/algo_dockers:node-vibrant or quay.io/startx/mariadb",
         "help": "Provide the name and the tag of a public Docker hub image or the custom image if you have it hosted in a 3rd party repository",
-        "type": "container",
         "required": true
       },
       {
@@ -415,7 +417,7 @@
         "name": "allow",
         "label": "Allow ETH Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by clicking “add all”.",
+        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by clicking \"add all\".",
         "type": "credentials",
         "required": false
       },
@@ -423,7 +425,7 @@
         "name": "deny",
         "label": "Deny ETH Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by clicking “add all”.",
+        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by clicking \"add all\".",
         "type": "credentials"
       }
     ]

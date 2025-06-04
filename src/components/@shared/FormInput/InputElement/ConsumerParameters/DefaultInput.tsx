@@ -12,8 +12,8 @@ export default function DefaultInput({
   inputName: string
 }): ReactElement {
   const [field] = useField<FormConsumerParameter[]>(inputName)
-  const fieldType = field.value[index]?.type
-  const fieldOptions = field.value[index]?.options
+  const fieldType = field.value?.[index]?.type
+  const fieldOptions = field.value?.[index]?.options
 
   const getStringOptions = (
     options: { key: string; value: string }[]

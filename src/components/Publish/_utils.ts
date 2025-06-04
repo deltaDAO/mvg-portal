@@ -520,7 +520,10 @@ export async function transformPublishFormToDdo(
     : undefined
 
   let license: License
-  if (!values.metadata.useRemoteLicense && values.metadata.licenseUrl[0]) {
+  if (
+    values.metadata.licenseTypeSelection !== 'Upload license file' &&
+    values.metadata.licenseUrl[0]
+  ) {
     license = {
       name: values.metadata.licenseUrl[0].url,
       licenseDocuments: [
@@ -552,9 +555,10 @@ export async function transformPublishFormToDdo(
     },
     tags: transformTags(tags),
     author,
-    license: values.metadata.useRemoteLicense
-      ? values.metadata.uploadedLicense
-      : license,
+    license:
+      values.metadata.licenseTypeSelection === 'Upload license file'
+        ? values.metadata.uploadedLicense
+        : license,
     links: convertLinks(linksTransformed),
     additionalInformation: {
       termsAndConditions

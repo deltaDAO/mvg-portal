@@ -1,9 +1,12 @@
+/* Field Warning */
 .fieldWarning {
   composes: fieldWarning from '../index.module.css';
 }
 
+/* GDPR Section */
 .gdpr {
-  border: var(--input-border-size) solid var(--input-border-color);
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
   padding: calc(var(--spacer) / 2);
   margin-top: calc(var(--spacer) * -0.5);
   margin-bottom: var(--spacer);
@@ -13,6 +16,23 @@
   margin-bottom: calc(var(--spacer) / 2);
 }
 
+/* Docker Configuration Section */
+.dockerContainer {
+  border: 1px solid var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: 24px 16px;
+  margin-bottom: var(--spacer);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Remove bottom margin from elements within docker container */
+.dockerContainer > div {
+  margin-bottom: 0 !important;
+}
+
+/* License Section */
 .license {
   display: flex;
   align-items: center;
@@ -21,4 +41,224 @@
 .licenseItem {
   height: 40px;
   width: 100%;
+}
+
+.licenseContainer {
+  border: 1px solid var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: 24px 30px 24px 16px;
+  margin-bottom: var(--spacer);
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.licenseDropdownWrapper {
+  max-width: 300px;
+  width: fit-content;
+}
+
+/* License Type Dropdown Styling */
+.licenseDropdownWrapper select {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 10px;
+  gap: 10px;
+  min-width: 190px;
+  width: fit-content;
+  height: fit-content;
+  background: var(--publish-background-neutral);
+  border: 1px solid var(--publish-primary);
+  border-radius: var(--publish-input-border-radius);
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-primary);
+  appearance: none;
+  background-image: linear-gradient(
+      45deg,
+      transparent 50%,
+      var(--publish-primary) 50%
+    ),
+    linear-gradient(135deg, var(--publish-primary) 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(50% + 2px),
+    calc(100% - 10px) calc(50% + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+/* Override InputGroup styles for license section */
+.licenseContainer .inputGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0px 1px;
+  gap: 10px;
+  width: 100%;
+  /* max-width: 903px; */
+  height: 40px;
+}
+
+.licenseContainer .inputGroup > div {
+  flex: none;
+}
+
+.licenseContainer .inputGroup input {
+  box-sizing: border-box;
+  width: 810px;
+  height: var(--publish-input-height);
+  border: 1px solid var(--publish-input-border-color);
+  filter: drop-shadow(var(--publish-shadow));
+  border-radius: var(--publish-input-border-radius) !important;
+  border-top-right-radius: var(--publish-input-border-radius) !important;
+  border-bottom-right-radius: var(--publish-input-border-radius) !important;
+  border-top-left-radius: var(--publish-input-border-radius) !important;
+  border-bottom-left-radius: var(--publish-input-border-radius) !important;
+  padding: var(--publish-input-padding);
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+  margin: 0;
+}
+
+.licenseContainer .inputGroup input::placeholder {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+}
+
+.licenseContainer .inputGroup button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  gap: 10px;
+  width: 81px !important;
+  height: var(--publish-input-height);
+  background: var(--publish-accent-gradient) !important;
+  box-shadow: var(--publish-shadow-sm);
+  border-radius: var(--publish-input-border-radius) !important;
+  border-top-right-radius: var(--publish-input-border-radius) !important;
+  border-top-left-radius: var(--publish-input-border-radius) !important;
+  border-bottom-left-radius: var(--publish-input-border-radius) !important;
+  border-bottom-right-radius: var(--publish-input-border-radius) !important;
+  border: none;
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: 22px;
+  text-align: center;
+  color: var(--publish-primary);
+  cursor: pointer;
+  margin: 0 !important;
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+}
+
+.licenseContainer .inputGroup button:hover,
+.licenseContainer .inputGroup button:focus {
+  background: var(--publish-accent-gradient) !important;
+  transform: none;
+  box-shadow: var(--publish-shadow-sm);
+}
+
+/* File Label */
+.licenseContainer label {
+  width: 100%;
+  /* max-width: 903px; */
+  height: 16px;
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+  margin-bottom: 8px;
+}
+
+.licenseUrlWrapper {
+  width: 100%;
+  max-width: 90%;
+}
+
+/* Remove bottom margin from license dropdown */
+.licenseDropdownWrapper > div {
+  margin-bottom: 0 !important;
+}
+
+.continueButton:hover,
+.continueButton:focus {
+  background: var(--publish-accent-gradient) !important;
+  transform: none !important;
+}
+
+.termsAndConditionsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  gap: 16px;
+}
+
+/* Style the Terms and Conditions link specifically in publish context */
+.termsAndConditionsContainer :global(a) {
+  color: var(--ocean-blue) !important;
+  text-decoration: none;
+}
+
+.termsAndConditionsContainer :global(a:hover) {
+  color: var(--ocean-blue) !important;
+  text-decoration: underline;
+}
+
+/* Custom Parameters Section */
+.customParametersContainer {
+  border: 1px solid var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: 24px 16px;
+  margin-bottom: var(--spacer);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Remove bottom margin from the checkbox input within custom parameters */
+.customParametersContainer > div {
+  margin-bottom: 0 !important;
+}
+
+.customParametersContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Publish-specific override for Add parameter button */
+.customParametersContainer .actions .primary {
+  background: var(--publish-accent-gradient) !important;
+  box-shadow: var(--publish-shadow-sm) !important;
+  border-radius: var(--publish-input-border-radius) !important;
+  font-family: var(--publish-font-family) !important;
+  font-weight: var(--publish-font-weight-bold) !important;
+  font-size: var(--publish-font-size-sm) !important;
+  line-height: var(--publish-font-size-sm) !important;
+  color: var(--publish-primary) !important;
+}
+
+.customParametersContainer .actions .primary:hover,
+.customParametersContainer .actions .primary:focus {
+  background: var(--publish-accent-gradient) !important;
+  box-shadow: var(--publish-shadow-sm) !important;
 }

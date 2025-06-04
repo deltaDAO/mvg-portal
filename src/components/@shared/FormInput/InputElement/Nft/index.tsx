@@ -24,7 +24,7 @@ export default function Nft(props: InputProps): ReactElement {
   return (
     <div className={styles.nft}>
       <figure className={styles.image}>
-        <img src={field?.value?.image_data} width="128" height="128" />
+        {/* <img src={field?.value?.image_data} width="128" height="128" /> */}
         <div className={styles.actions}>
           <Button
             style="text"

@@ -1,23 +1,368 @@
+/* Main Publish Container */
+.publish {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-4xl);
+  max-width: var(--publish-container-width);
+  margin: 0 auto;
+  font-family: var(--publish-font-family);
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-lg);
+  width: 100%;
+  align-self: stretch;
+}
+
+/* Title Row */
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: var(--publish-spacing-sm);
+}
+
+/* Main Title */
+.mainTitle {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size-xl);
+  line-height: var(--publish-line-height-3xl);
+  color: var(--publish-text);
+  margin: 0;
+}
+
+/* Network Info Container */
+.networkInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: var(--publish-spacing-xs);
+}
+
+/* Network Details */
+.networkDetails {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  padding: 0;
+  gap: 3px;
+}
+
+/* Network Icon */
+.networkIcon {
+  width: var(--publish-line-height-3xl);
+  height: var(--publish-line-height-3xl);
+}
+
+/* Network Name */
+.networkName {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size-xl);
+  line-height: var(--publish-line-height-3xl);
+  color: var(--publish-text);
+  margin: 0;
+}
+
+/* Info Icon */
+.infoIcon {
+  width: 22px;
+  height: 22px;
+  color: var(--publish-neutral);
+}
+
+/* Description */
+.description {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size-lg);
+  line-height: var(--publish-line-height-2xl);
+  color: var(--publish-text-secondary);
+  margin: 0;
+  align-self: stretch;
+}
+
+/* Main Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-2xl);
+  width: 100%;
+  align-self: stretch;
+}
+
+/* Form Section */
 .form {
-  composes: box from '@shared/atoms/Box.module.css';
-  margin-bottom: var(--spacer);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-2xl);
+  width: 100%;
 }
 
-@media (min-width: 40rem) {
-  .form {
-    padding-left: calc(var(--spacer) * 2);
-    padding-right: calc(var(--spacer) * 2);
+/* Metadata Form Container */
+.metadataForm {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-form-container-padding);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Publish-specific overrides for FormInput components */
+.metadataForm input:not([type='checkbox']):not([type='radio']),
+.metadataForm textarea {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-input-padding);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+.metadataForm select {
+  padding: 6px 25px;
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+.metadataForm input:focus:not([type='checkbox']):not([type='radio']),
+.metadataForm select:focus,
+.metadataForm textarea:focus {
+  border-color: var(--publish-input-border-color);
+  box-shadow: none;
+}
+
+.metadataForm input::placeholder,
+.metadataForm textarea::placeholder {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+/* Override FormInput labels */
+.metadataForm label {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+}
+
+/* Override select arrows */
+.metadataForm select {
+  background-image: linear-gradient(
+      45deg,
+      transparent 50%,
+      var(--publish-text-secondary) 50%
+    ),
+    linear-gradient(135deg, var(--publish-text-secondary) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(1rem + 5px),
+    calc(100% - 13px) calc(1rem + 5px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+/* Publish-specific checkbox styling */
+.metadataForm input[type='checkbox']:checked {
+  border-color: var(--publish-accent);
+  background: var(--publish-accent);
+}
+
+.metadataForm input[type='checkbox']:checked::after {
+  border-color: var(--publish-white);
+}
+
+/* Publish-specific button styling */
+.metadataForm button,
+.publish button {
+  border-radius: var(--publish-input-border-radius);
+}
+
+/* Publish-specific overrides for TagsAutoComplete (react-select) */
+body .metadataForm [class$='control'] {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  min-height: var(--publish-input-height);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+body .metadataForm [class$='control']:hover {
+  border-color: var(--publish-input-border-color);
+}
+
+body .metadataForm [class$='control']:focus-within {
+  border-color: var(--publish-input-border-color);
+  box-shadow: none;
+}
+
+body .metadataForm [class$='ValueContainer'] {
+  padding: var(--publish-input-padding);
+}
+
+body .metadataForm [class$='Input'] {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+body .metadataForm [class$='placeholder'] {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+body .metadataForm [class$='multiValue'] {
+  border-radius: var(--publish-input-border-radius);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+body .metadataForm [class$='menu'] {
+  border-radius: var(--publish-input-border-radius);
+  border-color: var(--publish-input-border-color);
+  font-family: var(--publish-font-family);
+}
+
+body .metadataForm [class$='option'] {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+/* Publish-specific overrides for BoxSelection component (Docker Image selection) */
+body .metadataForm .boxSelection {
+  border: 1px solid rgba(10, 75, 112, 0.5);
+  border-radius: var(--publish-border-radius);
+  padding: 8px 25px;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  box-shadow: none;
+}
+
+body .metadataForm .boxSelectionsWrapper {
+  gap: var(--publish-docker-button-gap);
+}
+
+body .metadataForm .boxSelectionsWrapper > div {
+  flex: 1;
+}
+
+body .metadataForm .boxSelectionsWrapper input[type='radio']:checked + label {
+  background: var(--publish-primary-gradient);
+  border: 1px solid rgba(10, 75, 112, 0.5);
+  color: var(--publish-white);
+  box-shadow: none;
+}
+
+.metadataForm .boxSelection .title {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  margin: 0;
+  text-align: center;
+  line-height: 24px;
+}
+
+/* Hide icons in Docker selection for cleaner look */
+.metadataForm .boxSelection svg {
+  display: none;
+}
+
+/* Additional overrides for label to match design */
+.metadataForm .boxSelectionsWrapper label {
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  flex-direction: row;
+  padding: 8px 25px;
+}
+
+/* Section Container */
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-md);
+  width: 100%;
+}
+
+/* Section Title */
+.sectionTitle {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size-base);
+  line-height: var(--publish-line-height-lg);
+  color: var(--publish-text);
+  margin: 0;
+}
+
+/* Section Content */
+.sectionContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-md);
+  width: 100%;
+  align-self: stretch;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .publish {
+    width: 100%;
+    padding: 0 var(--publish-spacing-lg);
   }
 }
 
-@media (min-width: 60rem) {
-  .form {
-    padding-left: calc(var(--spacer) * 4);
-    padding-right: calc(var(--spacer) * 4);
+@media (max-width: 768px) {
+  .publish {
+    gap: var(--publish-spacing-2xl);
   }
-}
 
-.fieldWarning {
-  margin-top: -2rem;
-  margin-bottom: var(--spacer);
+  .header {
+    gap: var(--publish-spacing-md);
+  }
+
+  .titleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--publish-spacing-md);
+  }
+
+  .mainTitle,
+  .networkName {
+    font-size: var(--publish-font-size-lg);
+    line-height: var(--publish-line-height-2xl);
+  }
+
+  .description {
+    font-size: var(--publish-font-size-base);
+    line-height: var(--publish-line-height-xl);
+  }
 }

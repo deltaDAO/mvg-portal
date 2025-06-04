@@ -4,14 +4,14 @@
   font-weight: var(--font-weight-bold);
   color: var(--input-font-color);
   border: var(--input-border-size) solid var(--input-border-color);
-  box-shadow: none;
+  box-shadow: var(--input-box-shadow);
   width: 100%;
   background: var(--background-content);
-  padding: calc(var(--spacer) / 3);
+  padding: var(--input-padding);
   margin: 0;
   border-radius: var(--input-border-radius);
   transition: 0.2s ease-out;
-  height: 43px;
+  height: auto;
   min-width: 0;
   appearance: none;
   display: block;

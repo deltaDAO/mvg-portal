@@ -18,6 +18,7 @@ import { ConsumerParameters } from './ConsumerParameters'
 import ComputeEnvSelection from './ComputeEnvSelection'
 import Credentials from './Credential'
 import Option from './Radio/Option'
+import { PublishConsumerParameters } from './ConsumerParameters/PublishConsumerParameters'
 
 const cx = classNames.bind(styles)
 
@@ -98,7 +99,11 @@ const InputElement = forwardRef(
             {...props}
             multiple={multiple}
           >
-            {field !== undefined && field.value === '' && <option value="" />}
+            {field !== undefined && field.value === '' && (
+              <option value="" disabled hidden>
+                {props.placeholder}
+              </option>
+            )}
             {sortedOptions &&
               (sortedOptions as string[]).map(
                 (option: string, index: number) => (
@@ -159,6 +164,8 @@ const InputElement = forwardRef(
 
       case 'consumerParameters':
         return <ConsumerParameters {...field} form={form} {...props} />
+      case 'publishConsumerParameters':
+        return <PublishConsumerParameters {...field} form={form} {...props} />
 
       case 'textarea':
         return (
@@ -220,6 +227,7 @@ const InputElement = forwardRef(
         return (
           <BoxSelection
             options={options as BoxSelectionOption[]}
+            size={size}
             {...field}
             {...props}
           />

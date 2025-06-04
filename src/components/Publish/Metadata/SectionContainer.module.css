@@ -1,0 +1,38 @@
+.container {
+  position: relative;
+  border: 1px solid var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  margin-bottom: var(--spacer);
+  padding-top: 12px; /* Space for the label */
+}
+
+.label {
+  position: absolute;
+  top: -12px;
+  left: 16px;
+  background: var(--background-content);
+  padding: 0 8px;
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+}
+
+.required {
+  color: var(--input-error-text-color);
+  margin-left: 2px;
+}
+
+.content {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Remove bottom margin from child elements */
+.content > div {
+  margin-bottom: 0 !important;
+}

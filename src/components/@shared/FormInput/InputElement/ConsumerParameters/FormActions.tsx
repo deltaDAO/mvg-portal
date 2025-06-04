@@ -25,6 +25,9 @@ export default function FormActions({
     useFormikContext<FormPublishData>()
   const [field, meta, helpers] = useField<FormConsumerParameter[]>(fieldName)
 
+  // Safety check to ensure field.value is an array
+  const parameters = field.value || []
+
   const setParamPropsTouched = (index: number, touched = true) => {
     Object.keys(defaultConsumerParam).forEach((param) => {
       setFieldTouched(`${field.name}[${index}].${param}`, touched)
@@ -44,13 +47,13 @@ export default function FormActions({
       return
     }
 
-    helpers.setValue([...field.value, { ...defaultConsumerParam }])
+    helpers.setValue([...parameters, { ...defaultConsumerParam }])
 
-    onParameterAdded && onParameterAdded(field.value.length)
+    onParameterAdded && onParameterAdded(parameters.length)
   }
 
   const deleteParameter = (index: number) => {
-    helpers.setValue(field.value.filter((p, i) => i !== index))
+    helpers.setValue(parameters.filter((p, i) => i !== index))
 
     const previousIndex = Math.max(0, index - 1)
     onParameterDeleted && onParameterDeleted(previousIndex)
@@ -61,7 +64,7 @@ export default function FormActions({
       <Button
         style="ghost"
         size="small"
-        disabled={field.value.length === 1}
+        disabled={parameters.length === 1}
         onClick={(e) => {
           e.preventDefault()
           deleteParameter(index)

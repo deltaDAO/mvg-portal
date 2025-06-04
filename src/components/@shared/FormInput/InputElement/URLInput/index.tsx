@@ -15,6 +15,8 @@ export interface URLInputProps {
   checkUrl?: boolean
   storageType?: string
   hideButton?: boolean
+  placeholder?: string
+  buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish'
 }
 
 export default function URLInput({
@@ -25,6 +27,8 @@ export default function URLInput({
   checkUrl,
   storageType,
   hideButton,
+  placeholder,
+  buttonStyle = 'primary',
   ...props
 }: URLInputProps): ReactElement {
   const [field, meta] = useField(name)
@@ -60,11 +64,12 @@ export default function URLInput({
           {...props}
           {...field}
           type="url"
+          placeholder={placeholder}
         />
 
         {!hideButton && (
           <Button
-            style="primary"
+            style={buttonStyle}
             size="small"
             onClick={(e: React.SyntheticEvent) => {
               e.preventDefault()
