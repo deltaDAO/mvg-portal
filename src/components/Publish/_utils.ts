@@ -296,7 +296,7 @@ export function parseCredentialPolicies(credentials: Credential) {
   credentials.allow = credentials?.allow?.map((credential) => {
     if (isCredentialPolicyBased(credential)) {
       credential.values = credential.values.map((value) => {
-        value.request_credentials = value.request_credentials.map(
+        value.request_credentials = value.request_credentials?.map(
           (requestCredentials) => {
             if (requestCredentials.policies) {
               requestCredentials.policies = requestCredentials.policies
@@ -342,7 +342,7 @@ export function stringifyCredentialPolicies(credentials: Credential) {
   credentials.allow = credentials?.allow?.map((credential) => {
     if (isCredentialPolicyBased(credential)) {
       credential.values = credential.values.map((value) => {
-        value.request_credentials = value.request_credentials.map(
+        value.request_credentials = value.request_credentials?.map(
           (requestCredentials) => {
             requestCredentials.policies = requestCredentials.policies
               .map((policy) => {

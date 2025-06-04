@@ -156,7 +156,8 @@
       "UniversityDegree",
       "LegalPerson",
       "LegalRegistrationNumber",
-      "GaiaXTermsAndConditions"
+      "GaiaXTermsAndConditions",
+      "DataspaceParticipantCredential"
     ],
     "required": true
   }
