@@ -38,7 +38,8 @@
   .container {
     flex-direction: row;
     gap: calc(var(--spacer) / 0.4);
-    width: 1405px;
+    width: 1450px;
+    padding-right: 1rem;
   }
   .filterContainer {
     flex-direction: column;

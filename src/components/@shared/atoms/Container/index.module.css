@@ -1,5 +1,5 @@
 .container {
-  max-width: var(--break-point--huge);
+  /* max-width: var(--break-point--huge); */
   margin-left: auto;
   margin-right: auto;
   padding-left: calc(var(--spacer) / 3);
@@ -7,15 +7,17 @@
   width: 100%;
 }
 
-@media (min-width: 40rem) {
+@media (min-width: 40rem) and (max-width: 1499px) {
   .container {
+    max-width: var(--break-point--huge);
     padding-left: calc(var(--spacer) / 1.2);
     padding-right: calc(var(--spacer) / 1.2);
   }
 }
 @media (min-width: 1500px) {
   .container {
-    padding-left: calc(var(--spacer) / 3.2);
+    width: 1480px;
+    padding-left: calc(var(--spacer) / 1.2);
     padding-right: calc(var(--spacer) / 3.2);
   }
 }

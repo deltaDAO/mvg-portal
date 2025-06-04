@@ -583,11 +583,13 @@ export default function Compute({
             state="info"
           />
         ) : (
-          <Price
-            price={price}
-            orderPriceAndFees={datasetOrderPriceAndFees}
-            size="large"
-          />
+          <div className={styles.priceClass}>
+            <Price
+              price={price}
+              orderPriceAndFees={datasetOrderPriceAndFees}
+              size="large"
+            />
+          </div>
         )}
       </div>
 
@@ -693,7 +695,13 @@ export default function Compute({
                   retry={retry}
                 />
               ) : (
-                <AssetActionCheckCredentials asset={asset} service={service} />
+                <div className={styles.actionButton}>
+                  {' '}
+                  <AssetActionCheckCredentials
+                    asset={asset}
+                    service={service}
+                  />
+                </div>
               )}
             </>
           ) : (
