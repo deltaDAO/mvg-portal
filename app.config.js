@@ -73,7 +73,7 @@ module.exports = {
   // is used to create and show a privacy preference center / cookie banner
   // To learn more about how to configure and use this, please refer to the readme
   privacyPreferenceCenter:
-    process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'true',
+    process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'false',
 
   // Default terms to be used for service offerings made on this marketplace
   defaultTermsAndConditionsUrl: 'https://portal.pontus-x.eu/terms',
