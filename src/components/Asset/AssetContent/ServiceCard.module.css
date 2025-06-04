@@ -3,7 +3,6 @@
   padding: calc(var(--spacer) * 0.5) var(--spacer);
   border: 1px solid rgba(48, 48, 49, 0.1);
   border-radius: 20px;
-  height: 156px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;
 }
