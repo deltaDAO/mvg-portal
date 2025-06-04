@@ -173,7 +173,12 @@ function getComputeSettingsInitialValues({
   const allowAllPublishedAlgorithms = publisherTrustedAlgorithms === null
   const publisherTrustedAlgorithmsForForm = allowAllPublishedAlgorithms
     ? null
-    : publisherTrustedAlgorithms.map((algo) => algo.did)
+    : publisherTrustedAlgorithms.map((algo) =>
+        JSON.stringify({
+          algoDid: algo.did,
+          serviceId: algo.serviceId
+        })
+      )
 
   return {
     allowAllPublishedAlgorithms,

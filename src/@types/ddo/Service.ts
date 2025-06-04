@@ -21,6 +21,7 @@ export interface Compute {
   allowNetworkAccess: boolean
   publisherTrustedAlgorithmPublishers: string[]
   publisherTrustedAlgorithms: PublisherTrustedAlgorithms[]
+  allowAllPublishedAlgorithms?: boolean
 }
 
 export interface Service {

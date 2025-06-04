@@ -10,13 +10,27 @@ import {
 import { Signer } from 'ethers'
 import { ssiWalletApi } from 'app.config.cjs'
 
+export const STORAGE_KEY = 'ssiWalletApiOverride'
+
+export function setSsiWalletApiOverride(url: string) {
+  sessionStorage.setItem(STORAGE_KEY, url)
+}
+
+export function getSsiWalletApi(): string {
+  const override = sessionStorage.getItem(STORAGE_KEY)
+  return override || ssiWalletApi
+}
+
 export async function connectToWallet(
   owner: Signer
 ): Promise<SsiWalletSession> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
+
   try {
-    let response = await axios.get(
-      `${ssiWalletApi}/wallet-api/auth/account/web3/nonce`
-    )
+    let response = await axios.get(`${api}/wallet-api/auth/account/web3/nonce`)
 
     const nonce = response.data
     const payload = {
@@ -26,7 +40,7 @@ export async function connectToWallet(
     }
 
     response = await axios.post(
-      `${ssiWalletApi}/wallet-api/auth/account/web3/signed`,
+      `${api}/wallet-api/auth/account/web3/signed`,
       payload
     )
     return response.data
@@ -36,16 +50,24 @@ export async function connectToWallet(
 }
 
 export async function disconnectFromWallet() {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
-    await axios.post(`${ssiWalletApi}/wallet-api/auth/logout`)
+    await axios.post(`${api}/wallet-api/auth/logout`)
   } catch (error) {
     throw error.response
   }
 }
 
 export async function isSessionValid(token: string): Promise<boolean> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
-    await axios.get(`${ssiWalletApi}/wallet-api/auth/session`, {
+    await axios.get(`${api}/wallet-api/auth/session`, {
       headers: {
         Authorization: `Bearer ${token}`
       },
@@ -59,9 +81,13 @@ export async function isSessionValid(token: string): Promise<boolean> {
 }
 
 export async function getWallets(token: string): Promise<SsiWalletDesc[]> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.get(
-      `${ssiWalletApi}/wallet-api/wallet/accounts/wallets`,
+      `${api}/wallet-api/wallet/accounts/wallets`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -81,9 +107,13 @@ export async function getWalletKeys(
   wallet: SsiWalletDesc,
   token: string
 ): Promise<SsiKeyDesc[]> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.get(
-      `${ssiWalletApi}/wallet-api/wallet/${wallet?.id}/keys`,
+      `${api}/wallet-api/wallet/${wallet?.id}/keys`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -103,9 +133,13 @@ export async function getWalletKey(
   keyId: string,
   token: string
 ) {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.get(
-      `${ssiWalletApi}/wallet-api/wallet/${walletId}/keys/${keyId}/load`,
+      `${api}/wallet-api/wallet/${walletId}/keys/${keyId}/load`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -126,9 +160,13 @@ export async function signMessage(
   message: any,
   token: string
 ): Promise<string> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.post(
-      `${ssiWalletApi}/wallet-api/wallet/${walletId}/keys/${keyId}/sign`,
+      `${api}/wallet-api/wallet/${walletId}/keys/${keyId}/sign`,
       message,
       {
         headers: {
@@ -148,9 +186,13 @@ export async function getWalletIssuers(
   walletId: string,
   token: string
 ): Promise<SsiWalletIssuer[]> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.get(
-      `${ssiWalletApi}/wallet-api/wallet/${walletId}/issuers`,
+      `${api}/wallet-api/wallet/${walletId}/issuers`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -169,9 +211,13 @@ export async function getWalletDids(
   walletId: string,
   token: string
 ): Promise<SsiWalletDid[]> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.get(
-      `${ssiWalletApi}/wallet-api/wallet/${walletId}/dids`,
+      `${api}/wallet-api/wallet/${walletId}/dids`,
       {
         headers: {
           Authorization: `Bearer ${token}`
@@ -201,9 +247,13 @@ export async function matchCredentialForPresentationDefinition(
   presentationDefinition: any,
   token: string
 ): Promise<SsiVerifiableCredential[]> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.post(
-      `${ssiWalletApi}/wallet-api/wallet/${walletId}/exchange/matchCredentialsForPresentationDefinition`,
+      `${api}/wallet-api/wallet/${walletId}/exchange/matchCredentialsForPresentationDefinition`,
       presentationDefinition,
       {
         headers: {
@@ -224,9 +274,13 @@ export async function resolvePresentationRequest(
   presentationRequest: string,
   token: string
 ): Promise<string> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.post(
-      `${ssiWalletApi}/wallet-api/wallet/${walletId}/exchange/resolvePresentationRequest`,
+      `${api}/wallet-api/wallet/${walletId}/exchange/resolvePresentationRequest`,
       presentationRequest,
       {
         headers: {
@@ -249,9 +303,13 @@ export async function usePresentationRequest(
   selectedCredentials: string[],
   token: string
 ): Promise<{ redirectUri: string }> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
   try {
     const response = await axios.post(
-      `${ssiWalletApi}/wallet-api/wallet/${walletId}/exchange/usePresentationRequest`,
+      `${api}/wallet-api/wallet/${walletId}/exchange/usePresentationRequest`,
       {
         did,
         presentationRequest,

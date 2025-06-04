@@ -332,16 +332,21 @@ export function AssetActionCheckCredentials({
         }
         dids={exchangeStateData.dids}
       />
-      <Button
-        type="button"
-        style="primary"
-        onClick={() =>
-          setCheckCredentialState(CheckCredentialState.StartCredentialExchange)
-        }
-        disabled={!selectedWallet?.id}
-      >
-        Check Credentials
-      </Button>
+      <div className={styles.buttonWrapper}>
+        <Button
+          type="button"
+          style="primary"
+          onClick={() =>
+            setCheckCredentialState(
+              CheckCredentialState.StartCredentialExchange
+            )
+          }
+          disabled={!selectedWallet?.id}
+        >
+          Check Credentials
+        </Button>
+      </div>
+
       <div
         className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
       >

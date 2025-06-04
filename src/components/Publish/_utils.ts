@@ -70,6 +70,9 @@ import {
 } from '@utils/wallet/ssiWallet'
 import { isCredentialPolicyBased } from '@utils/credentials'
 import { State } from 'src/@types/ddo/State'
+import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
+import { CancelToken } from 'axios'
+import { ComputeEditForm } from '@components/Asset/Edit/_types'
 
 function makeDid(nftAddress: string, chainId: string): string {
   return (
@@ -355,9 +358,8 @@ export function stringifyCredentialPolicies(credentials: Credential) {
           }
         )
 
-        value.vp_policies = value.vp_policies.map((policy) =>
-          JSON.stringify(policy)
-        )
+        value.vp_policies =
+          value.vp_policies?.map((policy) => JSON.stringify(policy)) ?? []
         return value
       })
     }
@@ -407,25 +409,37 @@ export function generateCredentials(
         return policy
       }
     )
-    const newAllowList: CredentialPolicyBased = {
-      type: 'SSIpolicy',
-      values: []
-    }
+    const hasAny =
+      (requestCredentials?.length ?? 0) > 0 ||
+      (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
+      (vpPolicies?.length ?? 0) > 0
 
-    if (requestCredentials?.length > 0) {
-      newAllowList.values.push({
-        request_credentials: requestCredentials,
-        vc_policies: updatedCredentials?.vcPolicies,
-        vp_policies: vpPolicies
-      })
-    } else {
-      newAllowList.values.push({
-        request_credentials: [],
-        vc_policies: [],
-        vp_policies: vpPolicies
-      })
+    if (hasAny) {
+      const newAllowList: CredentialPolicyBased = {
+        type: 'SSIpolicy',
+        values: []
+      }
+
+      const entry: Record<string, any> = {}
+
+      if (requestCredentials?.length > 0) {
+        entry.request_credentials = requestCredentials
+      }
+      if (
+        updatedCredentials?.vcPolicies?.length > 0 &&
+        requestCredentials?.length > 0
+      ) {
+        entry.vc_policies = updatedCredentials.vcPolicies
+      }
+      if (vpPolicies?.length > 0) {
+        entry.vp_policies = vpPolicies
+      }
+
+      if (Object.keys(entry).length > 0) {
+        newAllowList.values.push(entry as any)
+        newCredentials.allow.push(newAllowList)
+      }
     }
-    newCredentials.allow.push(newAllowList)
   }
 
   if (updatedCredentials?.allow?.length > 0) {
@@ -464,7 +478,8 @@ export async function transformPublishFormToDdo(
   // Those 2 are only passed during actual publishing process
   // so we can always assume if they are not passed, we are on preview.
   datatokenAddress?: string,
-  nftAddress?: string
+  nftAddress?: string,
+  cancelToken?: CancelToken
 ): Promise<Asset> {
   const { metadata, services, user } = values
   const { chainId, accountId } = user
@@ -589,6 +604,12 @@ export async function transformPublishFormToDdo(
     (await getEncryptedFiles(file, chainId, providerUrl.url))
 
   const newServiceCredentials = generateCredentials(credentials)
+  const valuesCompute: ComputeEditForm = {
+    allowAllPublishedAlgorithms: values.allowAllPublishedAlgorithms,
+    publisherTrustedAlgorithms: values.publisherTrustedAlgorithms,
+    publisherTrustedAlgorithmPublishers:
+      values.publisherTrustedAlgorithmPublishers
+  }
   const newService: Service = {
     id: getHash(datatokenAddress + filesEncrypted),
     type: access,
@@ -609,9 +630,16 @@ export async function transformPublishFormToDdo(
       '@language': values.services[0].description?.language || ''
     },
     state: State.Active,
-    credentials: newServiceCredentials
+    credentials: newServiceCredentials,
+    ...(values.services[0].access === 'compute' && {
+      compute: await transformComputeFormToServiceComputeOptions(
+        valuesCompute,
+        values.services[0].computeOptions,
+        values.user?.chainId,
+        cancelToken
+      )
+    })
   }
-
   const newCredentials = generateCredentials(values.credentials)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

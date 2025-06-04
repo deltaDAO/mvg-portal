@@ -304,7 +304,7 @@ export function isAddressWhitelisted(
     return false
   }
 
-  if (service && !service.credentials) {
+  if (!service || (service && !service.credentials)) {
     LoggerInstance.error('The selected service has no credentials property')
     return false
   }

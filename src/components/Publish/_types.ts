@@ -73,6 +73,9 @@ export interface FormPublishData {
   previewPageVisited: boolean
   credentials: CredentialForm
   accessPolicyPageVisited: boolean
+  allowAllPublishedAlgorithms?: boolean
+  publisherTrustedAlgorithms?: string[]
+  publisherTrustedAlgorithmPublishers?: string[]
 }
 
 export interface StepContent {

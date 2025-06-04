@@ -39,7 +39,7 @@ export default function FormEditComputeService({
       const baseParams = {
         chainIds: [chainId],
         sort: { sortBy: SortTermOptions.Created },
-        filters: [getFilterTerm('metadata.type', 'algorithm')]
+        filters: [getFilterTerm('credentialSubject.metadata.type', 'algorithm')]
       } as BaseQueryParams
 
       const query = generateBaseQuery(baseParams)
@@ -87,6 +87,21 @@ export default function FormEditComputeService({
         options={
           getFieldContent('allowAllPublishedAlgorithms', content.form.data)
             .options
+        }
+      />
+
+      <Field
+        {...getFieldContent(
+          'publisherTrustedAlgorithmPublishers',
+          content.form.data
+        )}
+        component={Input}
+        name="publisherTrustedAlgorithmPublishers"
+        options={
+          getFieldContent(
+            'publisherTrustedAlgorithmPublishers',
+            content.form.data
+          ).options
         }
       />
     </>

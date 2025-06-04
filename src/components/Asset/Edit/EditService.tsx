@@ -130,14 +130,15 @@ export default function EditService({
             : assetStateToNumber(values.state),
         files: updatedFiles, // TODO: check if this works,
         credentials: updatedCredentials,
-        ...(values.access === 'compute' && {
-          compute: await transformComputeFormToServiceComputeOptions(
-            values,
-            service.compute,
-            asset.credentialSubject?.chainId,
-            newCancelToken()
-          )
-        })
+        ...(values.access === 'compute' &&
+          asset.credentialSubject?.metadata?.type === 'dataset' && {
+            compute: await transformComputeFormToServiceComputeOptions(
+              values,
+              service.compute,
+              asset.credentialSubject?.chainId,
+              newCancelToken()
+            )
+          })
       }
       if (values.consumerParameters) {
         updatedService.consumerParameters = transformConsumerParameters(
@@ -237,6 +238,7 @@ export default function EditService({
               chainId={asset.credentialSubject?.chainId}
               service={service}
               accessDetails={accessDetails}
+              assetType={asset.credentialSubject?.metadata?.type}
             />
 
             <Web3Feedback

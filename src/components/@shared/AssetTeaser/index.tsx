@@ -1,7 +1,6 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import Link from 'next/link'
 import Dotdotdot from 'react-dotdotdot'
-import Price from '@shared/Price'
 import removeMarkdown from 'remove-markdown'
 import Publisher from '@shared/Publisher'
 import AssetType from '@shared/AssetType'
@@ -11,13 +10,6 @@ import { getServiceByName } from '@utils/ddo'
 import { useUserPreferences } from '@context/UserPreferences'
 import { formatNumber } from '@utils/numbers'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import {
-  getAccessDetails,
-  getAvailablePrice,
-  getOrderPriceAndFees
-} from '@utils/accessDetailsAndPricing'
-import { useAccount } from 'wagmi'
-import { useCancelToken } from '@hooks/useCancelToken'
 
 export declare type AssetTeaserProps = {
   asset: AssetExtended
@@ -32,67 +24,11 @@ export default function AssetTeaser({
   noDescription
 }: AssetTeaserProps): ReactElement {
   const { name, type, description } = asset.credentialSubject.metadata
-  const { datatokens } = asset.credentialSubject
-  const { address: accountId } = useAccount()
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
   const owner = asset.credentialSubject.nft?.owner
   const { orders, allocated } = asset.credentialSubject.stats || {}
-  const [accessDetails, setAccessDetails] = useState(null)
-  const [orderPriceAndFees, setOrderPriceAndFees] = useState(null)
-  const [isUnsupportedPricing, setIsUnsupportedPricing] = useState(false)
-  const [price, setPrice] = useState(null)
-  const newCancelToken = useCancelToken()
   const { locale } = useUserPreferences()
-
-  useEffect(() => {
-    async function fetchAccessDetails() {
-      if (asset.credentialSubject?.services?.length > 0) {
-        const details = await getAccessDetails(
-          asset.credentialSubject?.chainId,
-          asset.credentialSubject?.services[0],
-          accountId,
-          newCancelToken()
-        )
-        setAccessDetails(details)
-      }
-    }
-
-    fetchAccessDetails()
-  }, [asset.credentialSubject?.chainId, asset.credentialSubject?.services])
-
-  useEffect(() => {
-    async function fetchOrderPriceAndFees() {
-      if (asset.credentialSubject?.services?.length > 0) {
-        const orderPrice = await getOrderPriceAndFees(
-          asset,
-          asset.credentialSubject?.services[0],
-          accessDetails,
-          owner
-        )
-        setOrderPriceAndFees(orderPrice)
-      }
-    }
-    if (accessDetails) fetchOrderPriceAndFees()
-  }, [
-    asset.credentialSubject?.chainId,
-    asset.credentialSubject?.services,
-    accessDetails
-  ])
-
-  useEffect(() => {
-    const unsupported =
-      !asset.credentialSubject?.services.length ||
-      (accessDetails && accessDetails.type === 'NOT_SUPPORTED')
-    setIsUnsupportedPricing(unsupported)
-  }, [asset.credentialSubject?.services, price?.value, accessDetails])
-
-  useEffect(() => {
-    if (accessDetails) {
-      const avaiablePrice = getAvailablePrice(accessDetails)
-      setPrice(avaiablePrice)
-    }
-  }, [accessDetails])
 
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
@@ -117,19 +53,6 @@ export default function AssetTeaser({
             </Dotdotdot>
           </div>
         )}
-        <div className={styles.price}>
-          {!price ? (
-            <div className={styles.loadingContainer}>Loading Price...</div>
-          ) : isUnsupportedPricing ? (
-            <strong>No pricing schema available</strong>
-          ) : (
-            <Price
-              price={price || { value: parseFloat(accessDetails.price) }}
-              orderPriceAndFees={orderPriceAndFees}
-              size="small"
-            />
-          )}
-        </div>
         <footer className={styles.footer}>
           <div className={styles.stats}>
             {allocated && allocated > 0 ? (

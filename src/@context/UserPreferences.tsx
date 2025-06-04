@@ -28,6 +28,8 @@ interface UserPreferencesValue {
   locale: string
   showOnboardingModule: boolean
   setShowOnboardingModule: (value: boolean) => void
+  showSsiWalletModule: boolean
+  setShowSsiWalletModule: (value: boolean) => void
   onboardingStep: number
   setOnboardingStep: (step: number) => void
 }
@@ -70,6 +72,7 @@ function UserPreferencesProvider({
   const [showOnboardingModule, setShowOnboardingModule] = useState<boolean>(
     localStorage?.showOnboardingModule ?? showOnboardingModuleByDefault
   )
+  const [showSsiWalletModule, setShowSsiWalletModule] = useState<boolean>(false)
   const [onboardingStep, setOnboardingStep] = useState<number>(
     localStorage?.onboardingStep || 0
   )
@@ -175,6 +178,8 @@ function UserPreferencesProvider({
           setAllowExternalContent,
           showOnboardingModule,
           setShowOnboardingModule,
+          showSsiWalletModule,
+          setShowSsiWalletModule,
           onboardingStep,
           setOnboardingStep
         } as UserPreferencesValue
