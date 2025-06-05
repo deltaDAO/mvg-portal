@@ -3,7 +3,6 @@ import { useState, FormEvent } from 'react'
 import Button from '../Home/common/Button'
 import Container from '@components/@shared/atoms/Container'
 import { getLandingPageContent } from '@utils/landingPageContent'
-import { submitContactForm } from '../../utils/submitContactForm'
 
 interface FormData {
   name: string
@@ -22,43 +21,56 @@ export default function ContactAndOnboarding() {
     message: '',
     privacyAgreement: false
   })
-  const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(
     null
   )
   const [submitMessage, setSubmitMessage] = useState<string>('')
 
+  const generateMailtoLink = (data: FormData): string => {
+    const to = 'info@cliox.org'
+    const subject = encodeURIComponent('New message from Clio-X Contact Form')
+    const body = encodeURIComponent(
+      `Name: ${data.name}\n` +
+        `Email: ${data.email}\n\n` +
+        `Message:\n${data.message}\n\n` +
+        `---\n` +
+        `This message was sent through the ClioX contact form.`
+    )
+
+    return `mailto:${to}?subject=${subject}&body=${body}`
+  }
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
-    setIsSubmitting(true)
-    setSubmitStatus(null)
-    setSubmitMessage('')
 
     try {
-      const result = await submitContactForm(formData)
+      // Generate mailto link and open email client
+      const mailtoLink = generateMailtoLink(formData)
+      window.location.href = mailtoLink
 
-      // Contact Form 7 returns different response formats
-      if (result.status === 'mail_sent') {
-        setSubmitStatus('success')
-        setSubmitMessage(result.message || 'Message sent successfully!')
+      // Show success message
+      setSubmitStatus('success')
+      setSubmitMessage(
+        'Opening your email client... Please send the email to complete your message.'
+      )
+
+      // Reset form after a short delay
+      setTimeout(() => {
         setFormData({
           name: '',
           email: '',
           message: '',
           privacyAgreement: false
-        }) // Reset form
-      } else {
-        setSubmitStatus('error')
-        setSubmitMessage(
-          result.message || 'Failed to send message. Please try again.'
-        )
-      }
+        })
+        setSubmitStatus(null)
+        setSubmitMessage('')
+      }, 3000)
     } catch (error) {
       setSubmitStatus('error')
-      setSubmitMessage('Failed to send message. Please try again.')
-      console.error('Failed to send message:', error)
-    } finally {
-      setIsSubmitting(false)
+      setSubmitMessage(
+        'Failed to open email client. Please try contacting us directly at info@cliox.org'
+      )
+      console.error('Failed to generate mailto link:', error)
     }
   }
 
@@ -332,13 +344,13 @@ export default function ContactAndOnboarding() {
                 variant="primary"
                 type="submit"
                 className={`w-full text-white transform transition-all duration-200 ease-in-out ${
-                  !formData.privacyAgreement || isSubmitting
+                  !formData.privacyAgreement
                     ? 'opacity-50 cursor-not-allowed'
                     : 'hover:opacity-90'
                 }`}
-                disabled={isSubmitting || !formData.privacyAgreement}
+                disabled={!formData.privacyAgreement}
               >
-                {isSubmitting ? 'Sending...' : 'Send Message'}
+                Send Message
               </Button>
             </form>
           </div>
