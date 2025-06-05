@@ -7,6 +7,7 @@ import consumerParametersContent from '../../../../content/publish/consumerParam
 import { FormPublishData } from '../_types'
 import IconDataset from '@images/dataset.svg'
 import IconAlgorithm from '@images/algorithm.svg'
+import IconSaas from '@images/saas.svg'
 import styles from './index.module.css'
 import { algorithmContainerPresets } from '../_constants'
 import { useMarketMetadata } from '@context/MarketMetadata'
@@ -31,7 +32,9 @@ export default function MetadataFields(): ReactElement {
     {
       name: assetTypeOptionsTitles[0].toLowerCase(),
       title: assetTypeOptionsTitles[0],
-      checked: values.metadata.type === assetTypeOptionsTitles[0].toLowerCase(),
+      checked:
+        values.metadata.type === assetTypeOptionsTitles[0].toLowerCase() &&
+        values.services[0]?.files[0]?.type !== 'saas',
       icon: <IconDataset />
     },
     {
@@ -39,6 +42,14 @@ export default function MetadataFields(): ReactElement {
       title: assetTypeOptionsTitles[1],
       checked: values.metadata.type === assetTypeOptionsTitles[1].toLowerCase(),
       icon: <IconAlgorithm />
+    },
+    {
+      name: assetTypeOptionsTitles[2].toLowerCase(),
+      title: assetTypeOptionsTitles[2],
+      checked:
+        values.metadata.type === assetTypeOptionsTitles[0].toLowerCase() &&
+        values.services[0]?.files[0]?.type === 'saas',
+      icon: <IconSaas />
     }
   ]
 
@@ -76,6 +87,15 @@ export default function MetadataFields(): ReactElement {
         component={Input}
         name="metadata.type"
         options={assetTypeOptions}
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+          if (event.target.value === 'saas') {
+            setFieldValue('metadata.type', 'dataset')
+            setFieldValue('services[0].files[0].type', 'saas')
+          } else {
+            setFieldValue('services[0].files[0].type', 'url')
+            setFieldValue('metadata.type', event.target.value)
+          }
+        }}
       />
       <Field
         {...getFieldContent('name', content.metadata.fields)}
