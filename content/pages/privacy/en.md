@@ -1,11 +1,11 @@
 ---
 title: Privacy Policy
-description: This privacy policy informs you about how ClioX processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
+description: Your privacy is important to us. It is Clio-X‘s policy to respect your privacy and comply with any applicable law and regulation regarding any personal information we may collect about you, including across our website, https://www.cliox.org/, and other sites we own and operate.
 ---
 
 ### Table of contents
 
-## 1. Privacy Contact details 
+## 1. Privacy Contact details
 
 **For questions related to privacy contact**:
 
@@ -15,7 +15,7 @@ description: This privacy policy informs you about how ClioX processes your pers
 
 Vancouver, BC Canada V6T 1Z4
 
-E-mail: info@cliox.org 
+E-mail: info@cliox.org
 
 If you have any questions about the protection of your personal data at ClioX, please contact our Privacy Officer:
 
@@ -32,8 +32,8 @@ E-mail: info@cliox.org
 ## 2. What's personal data?
 
 Personal data is any information that can be (directly or indirectly) related to you. ClioX processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
-•	IP address: Your IP address is processed when visiting and using our portal demonstrator.
-•	E-mail: If you contact ClioX via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
+• IP address: Your IP address is processed when visiting and using our portal demonstrator.
+• E-mail: If you contact ClioX via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
 For detailed information about the processing operations, lawfulness, purposes, and how your personal data serves to reach these purposes, please take a look at the chapter "Processing operations according to Article 13 GDPR".
 
 ## 3. Recipients and cross-border data transfer
@@ -82,7 +82,7 @@ ClioX relies on deltaDAO's use of [**Plausible Analytics**](https://plausible.io
 - Here you can find Plausible Analytic&#39;s [**privacy policy** &#8599;](https://plausible.io/privacy).
 - Here you can find more information about Plausible Analytic&#39;s [**privacy practices** &#8599;](https://plausible.io/data-policy), [**security practices** &#8599;](https://plausible.io/security) and a [**legal assessment on GDPR compliance** &#8599;](https://plausible.io/blog/legal-assessment-gdpr-eprivacy).
 
-## 4. Processing operations 
+## 4. Processing operations
 
 We process your personal data for the following purposes.
 
@@ -124,6 +124,8 @@ You have the right to object to the processing of your personal data where we ba
 **4.3 Contact via e-mail**  
 If you contact us via e-mail, ClioX collects, uses, and stores your e-mail address, and any other information you provide us in your message, such as your name. When you send us an e-mail, our (mail) service provider Microsoft Corporation (see also chapter 3) supports us in processing your personal data so we can communicate with you.
 
+All contact form submissions are processed exclusively within Canada on University of British Columbia (UBC) servers, which are compliant with and protected under the Personal Information Protection and Electronic Documents Act (PIPEDA) (add hyperlink to: Compliance with PIPEDA’s Ten Principles of Privacy section).
+
 **Purpose:**  
 We collect, use and store this personal data to respond to your inquiries.
 
@@ -137,6 +139,64 @@ Our legitimate interest is to answer your inquiries.
 We store your personal data as long as we need it to process your inquires. We store your personal data beyond this period if we are obliged to do so due to retention obligations under tax and commercial law or in the event of legal disputes. If the latter is the case, your personal data will be erased after the retention period has expired.
 
 **Right to object:** You have the right to object to the processing of your personal data (see also chapter 8.6).
+
+Compliance with PIPEDA’s Ten Principles of Privacy:
+
+At Clio-X, our privacy policy reflects all ten principles of fair information practices, as mandated by PIPEDA:
+
+1.⁠ Accountability:
+
+Clio-X takes full responsibility for the personal information under its control. Our designated Privacy Officer oversees compliance with PIPEDA's principles and ensures our privacy practices meet regulatory requirements. All personnel are trained and accountable for protecting customers’ personal information.
+
+2.⁠ ⁠Identifying purposes:
+
+We identify the purposes for collecting personal information before or at the time of collection.
+
+3.⁠ ⁠Consent:
+
+We obtain meaningful consent for collecting, using, or disclosing personal information, except where required or permitted by PIPEDA or other law(s). Consent may be "expressed" (verbally, in writing, or electronically) or "implied " through actions, such as continued use of our services after notification of privacy policy updates.
+
+4.⁠ ⁠Limiting collection:
+
+We collect only the personal information necessary for identified purposes.
+
+5.⁠ ⁠Limiting use, disclosure, and retention:
+
+Personal information is used or disclosed only for the purposes for which it was collected unless consent is obtained or disclosure is permitted by law. We retain this information only as long as necessary to fulfill the identified purposes or meet legal requirements.
+
+6.⁠ ⁠Accuracy:
+
+We maintain accurate, complete, and up-to-date personal information as necessary for the identified purposes.
+
+7.⁠ ⁠Safeguards:
+
+We protect personal information with security safeguards appropriate to its sensitivity level.
+
+8.⁠ ⁠Openness:
+
+Our privacy policies and practices regarding personal information management are readily available upon request. We provide clear documentation explaining our policies, standards, and codes through multiple accessible formats.
+
+9.⁠ ⁠Customer access:
+
+PIPEDA gives you a general right to access the personally identifiable information (PII) held by businesses subject to this law. Under PIPEDA, you need to make your access request in writing and pay a minimal fee of $30.00.
+
+If any organizational fees seem unjust, you have the right to complain about this. We retain the right to decide how we disclose the copies of your PII to you. We will take all necessary measures to fulfill your request within 30 days from receipt, otherwise, we must inform you of our inability to do so before the 30-day timeframe if:
+
+Meeting the time limit would unreasonably interfere with our business activities; or the time required to undertake consultations necessary to respond to the request would make it impractical to meet the time limit.
+
+We can also extend the time limit for the length of time required to convert the personal information into an alternative format. In these circumstances, we will advise you of the delay within the first 30 days and explain the reason for it.
+
+10\. Challenging compliance:
+
+You are welcome to direct any questions or inquiries concerning our compliance with this privacy policy and PIPEDA requirements by contacting our Privacy Officer. You may request a correction to any factual errors or omissions within your PII. We would ask you to provide some evidence to back up your claim. Under PIPEDA, an organization must amend the information, as required, if you successfully demonstrate that it’s incomplete or inaccurate. If we fail to resolve your concern to your satisfaction, you may also contact the Office of the Privacy Commissioner of Canada:
+
+30 Victoria Street
+
+Gatineau, QC K1A 1H3
+
+Toll Free: 1.800.282.1376
+
+www.priv.gc.ca
 
 **4.4 Aggregated statistics**
 
@@ -184,7 +244,7 @@ Reown retains IP addresses for the minimum time necessary to process the transac
 **Right to object:**  
 You have the right to object to the processing of your personal data (see also chapter 8.6).
 
-## 5. Automated decision making including profiling 
+## 5. Automated decision making including profiling
 
 Automated decision making including profiling does not take place.
 
@@ -202,31 +262,31 @@ ClioX relies on deltaDAO's use of [**Plausible Analytics**](https://plausible.io
 
 ## 7. External links
 
-Our portal demonstrator contains links to external websites that are beyond the control and responsibility of ClioX.
+In the event our site contains links to third-party sites and services, please be aware that those sites and services have their own privacy policies. After following a link to any third-party content, you should read their posted privacy policy information about how they collect and use personal information. This Privacy Policy does not apply to any of your activities after you leave our site.
 
 ## 8. Your rights
 
 If you want to make use of your rights described below, do not hesitate to contact us.
 
-**8.1 Right of access **  
+**8.1 Right of access**
 You have the right to obtain confirmation as to whether ClioX processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information.
 
-**8.2 Right to rectification **  
+**8.2 Right to rectification**
 You have the right to obtain without undue delay the rectification of inaccurate personal data about you. Additionally, you have the right that incomplete personal data about you are completed.
 
-**8.3 Right to erasure **  
+**8.3 Right to erasure**
 You have the right to obtain without undue delay the erasure of personal data about you, where the defined legal grounds apply.
 
-**8.4 Right to restriction **  
+**8.4 Right to restriction**
 Moreover, you have the right to obtain the restriction of processing your personal data where the defined legal grounds apply.
 
-**8.5 Right to data portability )**  
+**8.5 Right to data portability**
 You have the right to receive your personal data in a structured, commonly used, and machine-readable format. Additionally, you have the right to transmit those data to another controller without hindrance, where the defined legal grounds apply. You can make use of your right to data portability by contacting us.
 
-**8.6 Right to object **  
+**8.6 Right to object**  
 On grounds relating to your particular situation, you have the right to object to the processing of your personal data where we based the processing on legitimate interests. If you object, ClioX will no longer process your personal data unless we can demonstrate compelling legitimate grounds for the processing, overriding your rights, freedoms, and interests, or if the processing is required to establish, exercise, or defend legal claims.
 
-**8.7 Right to lodge a complaint **  
+**8.7 Right to lodge a complaint**  
 You have the right to lodge a complaint with a supervisory authority if you consider the processing of your personal data by ClioX to infringe the law in your jurisdiction. You can lodge a complaint in particular
 
 - in the Member State of your habitual residence,
