@@ -64,7 +64,8 @@
         "type": "select",
         "placeholder": "Please select an option",
         "options": ["Upload license file"],
-        "required": true
+        "required": true,
+        "hideLabel": true
       },
       {
         "name": "accessTermsAndConditions",

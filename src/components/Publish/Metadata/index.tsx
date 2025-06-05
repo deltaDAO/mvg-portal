@@ -19,8 +19,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
 import URLInput from '@shared/FormInput/InputElement/URLInput'
-import Button from '@shared/atoms/Button'
-import SectionContainer from './SectionContainer'
+import SectionContainer from '../../@shared/SectionContainer/SectionContainer'
 import styles from './index.module.css'
 
 const assetTypeOptionsTitles = getFieldContent(

@@ -82,6 +82,7 @@ export interface InputProps {
   disclaimerValues?: string[]
   accountId?: string
   actions?: string[]
+  hideLabel?: boolean
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {
@@ -138,17 +139,19 @@ export default function Input(props: Partial<InputProps>): ReactElement {
 
   return (
     <div className={styleClasses}>
-      <Label htmlFor={props.name}>
-        {label}
-        {props.required && (
-          <span title="Required" className={styles.required}>
-            *
-          </span>
-        )}
-        {help && !prominentHelp && (
-          <Tooltip content={<Markdown text={help} />} />
-        )}
-      </Label>
+      {!props.hideLabel && (
+        <Label htmlFor={props.name}>
+          {label}
+          {props.required && (
+            <span title="Required" className={styles.required}>
+              *
+            </span>
+          )}
+          {help && !prominentHelp && (
+            <Tooltip content={<Markdown text={help} />} />
+          )}
+        </Label>
+      )}
       <InputElement size={size} {...field} {...props} />
       {help && prominentHelp && <FormHelp>{help}</FormHelp>}
 
