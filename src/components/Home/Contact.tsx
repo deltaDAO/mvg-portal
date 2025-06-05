@@ -9,6 +9,7 @@ interface FormData {
   name: string
   email: string
   message: string
+  privacyAgreement: boolean
 }
 
 export default function ContactAndOnboarding() {
@@ -18,7 +19,8 @@ export default function ContactAndOnboarding() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
-    message: ''
+    message: '',
+    privacyAgreement: false
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(
@@ -39,7 +41,12 @@ export default function ContactAndOnboarding() {
       if (result.status === 'mail_sent') {
         setSubmitStatus('success')
         setSubmitMessage(result.message || 'Message sent successfully!')
-        setFormData({ name: '', email: '', message: '' }) // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          message: '',
+          privacyAgreement: false
+        }) // Reset form
       } else {
         setSubmitStatus('error')
         setSubmitMessage(
@@ -207,11 +214,11 @@ export default function ContactAndOnboarding() {
             <h3 className="text-xl font-sans font-semibold mb-6">
               Send us a message
             </h3>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
                 >
                   Name
                 </label>
@@ -232,7 +239,7 @@ export default function ContactAndOnboarding() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
                 >
                   Email
                 </label>
@@ -253,7 +260,7 @@ export default function ContactAndOnboarding() {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 mb-1.5"
                 >
                   Message
                 </label>
@@ -274,6 +281,41 @@ export default function ContactAndOnboarding() {
                 ></textarea>
               </div>
 
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  id="privacyAgreement"
+                  name="privacyAgreement"
+                  checked={formData.privacyAgreement}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      privacyAgreement: e.target.checked
+                    }))
+                  }
+                  className="mt-1 w-4 h-4 border-gray-300 rounded focus:ring-[var(--checkbox-selected-background)]"
+                  style={{
+                    accentColor: 'var(--checkbox-selected-background)'
+                  }}
+                  required
+                />
+                <label
+                  htmlFor="privacyAgreement"
+                  className="text-sm text-gray-700 leading-relaxed"
+                >
+                  I agree to the storage and processing of my information in
+                  accordance with the{' '}
+                  <a
+                    href="/privacy/en"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#734B3D] hover:opacity-80 underline"
+                  >
+                    privacy policy
+                  </a>
+                </label>
+              </div>
+
               {submitStatus && (
                 <div
                   className={`text-sm ${
@@ -289,8 +331,12 @@ export default function ContactAndOnboarding() {
               <Button
                 variant="primary"
                 type="submit"
-                className="w-full text-white transform transition-all duration-200 ease-in-out"
-                disabled={isSubmitting}
+                className={`w-full text-white transform transition-all duration-200 ease-in-out ${
+                  !formData.privacyAgreement || isSubmitting
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:opacity-90'
+                }`}
+                disabled={isSubmitting || !formData.privacyAgreement}
               >
                 {isSubmitting ? 'Sending...' : 'Send Message'}
               </Button>

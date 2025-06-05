@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Time from '@shared/atoms/Time'
 import { usePrivacyMetadata } from '@hooks/usePrivacyMetadata'
-import PrivacyLanguages from './PrivacyLanguages'
+// import PrivacyLanguages from './PrivacyLanguages'
 
 export default function PrivacyPolicyHeader({
   policy
@@ -14,7 +14,7 @@ export default function PrivacyPolicyHeader({
 
   return (
     <div>
-      <PrivacyLanguages label={params.languageLabel} />
+      {/* <PrivacyLanguages label={params.languageLabel} /> */}
       <p>
         <em>
           {params?.updated || 'Last updated on'}{' '}
