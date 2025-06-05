@@ -20,7 +20,7 @@
   display: block;
   width: 90px;
   height: 90px;
-  border-radius: var(--border-radius);
+  border-radius: var(--publish-border-radius);
   padding: 15px 25px;
   box-shadow: var(--publish-shadow-lg);
   background: #64ace0;

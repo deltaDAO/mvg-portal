@@ -3,8 +3,14 @@
   max-width: 50rem;
 }
 
+.headerExtended {
+  margin-bottom: 0;
+  max-width: none;
+  width: 100%;
+}
+
 .title {
-  font-size: var(--font-size-h3);
+  font-size: var(--publish-font-size-xl);
   margin-top: 0;
   margin-bottom: 0;
   display: inline-flex;
@@ -57,7 +63,7 @@
 }
 
 .description {
-  font-size: var(--font-size-h3);
+  font-size: var(--publish-font-size-lg);
   margin-top: calc(var(--spacer) / 4);
   margin-bottom: 0;
 }

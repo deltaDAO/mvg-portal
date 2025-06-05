@@ -289,6 +289,7 @@ export default function PublishPage({
           <PageHeader
             title={<Title networkId={values.user.chainId} />}
             description={content.description}
+            isExtended
           />
           <Form className={styles.form} ref={scrollToRef}>
             <Navigation />
