@@ -43,36 +43,40 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
   }
 
   return ddo ? (
-    <div className={styles.metaFull}>
-      {!isInPurgatory && (
+    <>
+      <div className={styles.metaFull}>
+        {!isInPurgatory && (
+          <span className={styles.dataAuther}>
+            <MetaItem
+              title="Data Author"
+              content={ddo?.credentialSubject.metadata?.author}
+            />
+          </span>
+        )}
         <MetaItem
-          title="Data Author"
-          content={ddo?.credentialSubject.metadata?.author}
+          title="Owner"
+          content={<Publisher account={ddo?.credentialSubject.nft?.owner} />}
         />
-      )}
-      <MetaItem
-        title="Owner"
-        content={<Publisher account={ddo?.credentialSubject.nft?.owner} />}
-      />
-      {assetState !== 'Active' && (
-        <MetaItem title="Asset State" content={assetState} />
-      )}
-      {paymentCollector &&
-        paymentCollector !== ddo?.credentialSubject.nft?.owner && (
-          <MetaItem
-            title="Revenue Sent To"
-            content={<Publisher account={paymentCollector} />}
-          />
+        {assetState !== 'Active' && (
+          <MetaItem title="Asset State" content={assetState} />
         )}
+        {paymentCollector &&
+          paymentCollector !== ddo?.credentialSubject.nft?.owner && (
+            <MetaItem
+              title="Revenue Sent To"
+              content={<Publisher account={paymentCollector} />}
+            />
+          )}
+        {ddo?.credentialSubject.metadata?.type === 'algorithm' &&
+          ddo?.credentialSubject.metadata?.algorithm && (
+            <MetaItem title="Docker Image" content={<DockerImage />} />
+          )}
+        <MetaItem title="DID" content={<code>{ddo?.id}</code>} />
+      </div>
 
-      {ddo?.credentialSubject.metadata?.type === 'algorithm' &&
-        ddo?.credentialSubject.metadata?.algorithm && (
-          <MetaItem title="Docker Image" content={<DockerImage />} />
-        )}
-      <MetaItem title="DID" content={<code>{ddo?.id}</code>} />
-      <div>
+      <div className={styles.licenseRow}>
         <Label htmlFor="license">
-          <strong>License</strong>
+          <span className={styles.licenceTitle}>License</span>
         </Label>
         {ddo.credentialSubject.metadata.license?.licenseDocuments?.[0]
           ?.mirrors?.[0]?.type === 'url' ? (
@@ -92,9 +96,9 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
             remoteSource={ddo.credentialSubject?.metadata?.license?.licenseDocuments
               ?.at(0)
               ?.mirrors?.at(0)}
-          ></IpfsRemoteSource>
+          />
         )}
       </div>
-    </div>
+    </>
   ) : null
 }

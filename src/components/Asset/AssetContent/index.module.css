@@ -15,6 +15,14 @@
   margin-top: var(--spacer);
 }
 
+.grid h4 {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 22px;
+  color: #303031;
+  margin-bottom: 18px;
+}
+
 .content {
   composes: box from '@shared/atoms/Box.module.css';
   padding-top: 0;
@@ -26,6 +34,12 @@
   border-radius: 20px;
   /* padding: 25px; */
 }
+.assetName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 24px;
+  color: #303031;
+}
 
 .metaMenu {
   position: relative;
@@ -33,6 +47,7 @@
   border-radius: 10px;
   /* width: 714px; */
   height: 60px;
+  width: 100%;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;
 }
@@ -79,8 +94,19 @@
   margin-top: 3rem;
 }
 
-.grid h4 {
-  font-weight: 700;
-  font-size: 22px;
-  color: #303031;
+.description {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 129%;
+  color: rgba(48, 48, 49, 0.7);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.description p {
+  margin-bottom: 0;
 }

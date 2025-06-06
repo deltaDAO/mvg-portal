@@ -113,7 +113,9 @@ export default function AssetContent({
             <div className={styles.publisherInfo}>
               <MetaInfo asset={asset} nftPublisher={nftPublisher} />
             </div>
-            <h3>{asset.credentialSubject?.metadata?.name || ''}</h3>
+            <span className={styles.assetName}>
+              {asset.credentialSubject?.metadata?.name || ''}
+            </span>
             {isInPurgatory === true ? (
               <Alert
                 title={content.asset.title}

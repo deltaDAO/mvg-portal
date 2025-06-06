@@ -5,6 +5,8 @@
   border-radius: 20px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;
+  position: relative;
+  height: 145px;
 }
 
 .service:hover {
@@ -12,18 +14,90 @@
 }
 
 .title {
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  font-size: var(--font-size-small);
-  margin-bottom: calc(var(--spacer) / 4);
-  color: var(--font-color-heading);
-  text-transform: uppercase;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  color: #303031;
+  line-height: 150%;
 }
 .free {
   font-weight: 700;
   font-size: 14px;
   color: #00adb2;
+  text-transform: uppercase;
 }
 .tokenSymbol {
   color: #00adb2;
+}
+.access {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(48, 48, 49, 0.7);
+  line-height: 250%;
+}
+.serviceTitle {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 16px;
+  color: #303031;
+  line-height: 180%;
+}
+.serviceDescription {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 124%;
+  color: rgba(48, 48, 49, 0.7);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.serviceDescriptionPlaceholder {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 124%;
+  color: rgba(48, 48, 49, 0.4);
+  font-style: italic;
+}
+
+.selectButton {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 157%;
+  text-align: center;
+  color: #0a4b70;
+  border-radius: 20px;
+  padding: 2px 12px;
+  width: 66px;
+  height: 26px;
+  box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+  background: linear-gradient(
+    135deg,
+    #fdd655 0%,
+    rgba(253, 214, 85, 0.8) 27.47%,
+    rgba(253, 214, 85, 0.7) 43.49%,
+    rgba(253, 214, 85, 0.8) 55.43%,
+    #fdd655 100%
+  );
+  border: none;
+}
+
+.selectButton:hover {
+  background: #f3ce4a;
+}
+.selectButtonWrapper {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.service:hover .selectButtonWrapper {
+  opacity: 1;
 }

@@ -1,6 +1,5 @@
 .meta {
   margin-left: calc(var(--spacer) * -0.75);
-  margin-right: calc(var(--spacer) * -0.75);
   margin-bottom: calc(var(--spacer) / 1.5);
   font-size: var(--font-size-small);
 }
@@ -15,8 +14,16 @@
 .badgeContainer {
   padding: calc(var(--spacer) / 2);
 }
+@media (min-width: 200px) and (max-width: 800px) {
+  .meta {
+    margin-left: calc(var(--spacer) * -1);
+  }
+  .publisherInfo {
+    flex-direction: row;
+  }
+}
 
-@media (min-width: 40rem) {
+@media (min-width: 801px) {
   .meta {
     margin-left: calc(var(--spacer) * -1);
     margin-right: calc(var(--spacer) * -1);
@@ -28,9 +35,9 @@
 
 .asset {
   margin-left: 30px;
+  margin-right: 1rem;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
   height: calc(var(--spacer) * 2);
-  /* border-bottom: 1px solid var(--border-color); */
 }

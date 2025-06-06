@@ -19,6 +19,7 @@
 }
 
 .title {
+  font-family: var(--font-family);
   margin-bottom: 0px;
   margin-top: 14px;
   font-weight: 400;
@@ -27,6 +28,7 @@
 }
 
 .error {
+  font-family: var(--font-family);
   font-size: 14px;
   margin-bottom: 0px;
   margin-top: 11px;
@@ -34,6 +36,7 @@
   text-decoration: underline;
   text-decoration-skip-ink: none;
   color: #4ca3d3;
+  cursor: pointer;
 }
 
 .warningImage svg {
