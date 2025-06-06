@@ -141,7 +141,6 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
     isWordSelectionActionRef,
     onWordSelect: (word) => {
       setSelectedWord(word)
-      console.log('Word selected:', word.value)
     }
   })
 
@@ -166,8 +165,6 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
         width: newWidth,
         height: newHeight
       })
-
-      console.log(`Dimensions updated: ${newWidth}x${newHeight}`)
     }, 250)
 
     // Only add resize listener on client side
@@ -224,16 +221,8 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
 
     // Skip updates when loading or modals are open
     if (isLoading || modalsOpenRef.current) {
-      console.log('Skipping word cloud update: loading or modal open')
       return
     }
-
-    console.log('Word cloud update triggered', {
-      wordCount: filteredWords.length,
-      shouldUpdateLayout,
-      isWordSelectionAction,
-      timestamp: new Date().toISOString()
-    })
 
     // Set the layout flag based on current state
     shouldUpdateLayoutRef.current = shouldUpdateLayout
@@ -281,9 +270,6 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
     // Let the store handle the state updates
     // The store will set isWordSelectionAction to true, preventing layout
     setSelectedWord(null)
-
-    // Record panel close in console for debugging
-    console.log('Panel closed with smooth transition')
   }
 
   // When panel state changes (appearing or disappearing),
@@ -332,8 +318,6 @@ const WordCloud: React.FC<WordCloudProps> = ({ skipLoading = false }) => {
 
       // Set the search term to filter to this word
       setSearchTerm(word)
-
-      console.log('Filtering to word:', word)
     }, 50)
   }
 

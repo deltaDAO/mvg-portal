@@ -27,7 +27,6 @@ const DocumentSummary = ({ skipLoading = false }: DocumentSummaryProps) => {
 
   // Define fetchSummary as a component method for reuse with error retry
   const fetchSummary = useCallback(async () => {
-    console.log('Fetching document summary data...')
     setIsLoading(true)
     setError(null)
     try {
@@ -43,7 +42,6 @@ const DocumentSummary = ({ skipLoading = false }: DocumentSummaryProps) => {
   }, [fetchDocumentSummary])
 
   useEffect(() => {
-    console.log('DocumentSummary component loaded, skipLoading:', skipLoading)
     fetchSummary()
   }, [fetchSummary])
 
