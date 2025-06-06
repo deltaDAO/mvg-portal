@@ -19,6 +19,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
 import URLInput from '@shared/FormInput/InputElement/URLInput'
+
 import SectionContainer from '../../@shared/SectionContainer/SectionContainer'
 import styles from './index.module.css'
 
@@ -142,13 +143,8 @@ export default function MetadataFields(): ReactElement {
     }
   }, [values.metadata.licenseTypeSelection])
 
-  function handleLicenseUrlValidation(e: React.SyntheticEvent, url: string) {
-    // For now, just update the field value - can add validation logic later
-    setFieldValue('metadata.licenseUrl', [{ url, type: 'url', valid: true }])
-  }
-
   return (
-    <div>
+    <div className={styles.metadataFieldsContainer}>
       <Field
         {...getFieldContent('nft', content.metadata.fields)}
         component={Input}
@@ -274,21 +270,11 @@ export default function MetadataFields(): ReactElement {
           />
         </div>
         {values.metadata.licenseTypeSelection === 'Upload license file' && (
-          <div className={styles.licenseUrlContainer}>
-            <Label htmlFor="licenseFile">File *</Label>
-            <div className={styles.licenseUrlWrapper}>
-              <URLInput
-                submitText="Validate"
-                name="metadata.licenseUrl[0].url"
-                placeholder="e.g. https://file.com/license.json"
-                isLoading={false}
-                handleButtonClick={handleLicenseUrlValidation}
-                storageType="url"
-                checkUrl={true}
-                buttonStyle="publish"
-              />
-            </div>
-          </div>
+          <Field
+            {...getFieldContent('license', content.metadata.fields)}
+            component={Input}
+            name="metadata.licenseUrl"
+          />
         )}
       </SectionContainer>
 

@@ -189,6 +189,12 @@
   margin-bottom: 8px;
 }
 
+.licenseUrlContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .licenseUrlWrapper {
   width: 100%;
   max-width: 90%;
@@ -247,18 +253,24 @@
 }
 /* Publish-specific override for Add parameter button */
 .customParametersContainer .actions .primary {
-  background: var(--publish-accent-gradient) !important;
-  box-shadow: var(--publish-shadow-sm) !important;
-  border-radius: var(--publish-input-border-radius) !important;
-  font-family: var(--publish-font-family) !important;
-  font-weight: var(--publish-font-weight-bold) !important;
-  font-size: var(--publish-font-size-sm) !important;
-  line-height: var(--publish-font-size-sm) !important;
-  color: var(--publish-primary) !important;
+  background: var(--publish-accent-gradient);
+  box-shadow: var(--publish-shadow-sm);
+  border-radius: var(--publish-input-border-radius);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-font-size);
+  color: var(--publish-primary);
 }
 
 .customParametersContainer .actions .primary:hover,
 .customParametersContainer .actions .primary:focus {
-  background: var(--publish-accent-gradient) !important;
-  box-shadow: var(--publish-shadow-sm) !important;
+  background: var(--publish-accent-gradient);
+  box-shadow: var(--publish-shadow-sm);
+}
+
+.metadataFieldsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
 }

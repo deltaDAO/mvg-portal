@@ -43,20 +43,11 @@
       },
       {
         "name": "license",
-        "label": "License",
-        "prominentHelp": false,
-        "type": "tabs",
-        "fields": [
-          {
-            "value": "url",
-            "title": "URL",
-            "label": "File",
-            "placeholder": "e.g. https://file.com/license.json",
-            "help": "A SPDX identifier of the license applicable to this service.",
-            "type": "files",
-            "required": true
-          }
-        ]
+        "label": "File",
+        "placeholder": "e.g. https://file.com/license.json",
+        "help": "A SPDX identifier of the license applicable to this service.",
+        "type": "files",
+        "required": true
       },
       {
         "name": "licenseTypeSelection",

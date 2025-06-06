@@ -6,6 +6,10 @@
   position: relative;
 }
 
+body .radioWrap > label {
+  font-size: var(--publish-font-size);
+}
+
 .radioLabel {
   margin: 0;
   padding: 0;

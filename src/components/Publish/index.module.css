@@ -125,7 +125,12 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 32px;
+}
+
+/* Publish-specific override for form input spacing */
+body .metadataForm [class*='FormInput_field'] {
+  margin-bottom: 0;
 }
 
 /* Publish-specific overrides for FormInput components */
@@ -195,6 +200,46 @@
 .metadataForm button,
 .publish button {
   border-radius: var(--publish-input-border-radius);
+}
+
+/* Publish-specific InputGroup styling */
+body .metadataForm [class*='InputGroup'],
+body .publish [class*='InputGroup'] {
+  gap: 10px;
+}
+
+body .metadataForm [class*='InputGroup'] input,
+body .publish [class*='InputGroup'] input {
+  width: 80%;
+}
+
+/* Publish-specific validate button styling - only target buttons inside InputGroup */
+body .metadataForm [class*='InputGroup'] button[class*='Button_button'],
+body .publish [class*='InputGroup'] button[class*='Button_button'] {
+  background: var(--publish-accent-gradient);
+  box-shadow: var(--publish-shadow-sm);
+  border-radius: var(--publish-input-border-radius);
+  border: none;
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: 22px;
+  text-align: center;
+  color: var(--publish-primary);
+  cursor: pointer;
+  padding: 9px 14px;
+  margin: 0;
+  text-transform: none;
+}
+
+body .metadataForm [class*='InputGroup'] button[class*='Button_button']:hover,
+body .metadataForm [class*='InputGroup'] button[class*='Button_button']:focus,
+body .publish [class*='InputGroup'] button[class*='Button_button']:hover,
+body .publish [class*='InputGroup'] button[class*='Button_button']:focus {
+  background: var(--publish-accent-gradient);
+  transform: none;
+  box-shadow: var(--publish-shadow-sm);
 }
 
 /* Publish-specific overrides for TagsAutoComplete (react-select) */

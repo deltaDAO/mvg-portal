@@ -39,7 +39,6 @@ export function PublishConsumerParameters(props: InputProps): ReactElement {
   const parameters = field.value || []
   const currentParam = parameters[currentIndex] || defaultConsumerParam
 
-  // Ensure currentIndex is always valid
   const safeCurrentIndex = Math.min(
     currentIndex,
     Math.max(0, parameters.length - 1)
@@ -59,126 +58,127 @@ export function PublishConsumerParameters(props: InputProps): ReactElement {
     }
   }
 
-  // Don't render if no parameters
   if (!parameters.length) {
     return <div>Loading...</div>
   }
 
   return (
-    <div className={styles.container}>
-      {/* Parameter Tabs - Vertical Stack */}
-      <div className={styles.tabsContainer}>
-        <div className={styles.tabs}>
-          {parameters.map((param, index) => (
-            <div
-              key={index}
-              className={`${styles.tab} ${
-                index === safeCurrentIndex ? styles.activeTab : ''
-              }`}
-              onClick={() => setCurrentIndex(index)}
-            >
-              PARAM {index + 1}
-              {parameters.length > 1 && index === safeCurrentIndex && (
-                <button
-                  type="button"
-                  className={styles.deleteButton}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    deleteParameter(safeCurrentIndex)
-                  }}
-                >
-                  🗑 Delete
-                </button>
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Parameter Form - Two Column Layout */}
-      <div className={styles.formContainer}>
-        <div className={styles.formRow}>
-          <div className={styles.formColumn}>
-            <Field
-              name={`${field.name}[${safeCurrentIndex}].name`}
-              label="Parameter Name"
-              required
-              component={Input}
-              className={styles.fullWidthInput}
-            />
-          </div>
-          <div className={styles.formColumn}>
-            <Field
-              name={`${field.name}[${safeCurrentIndex}].label`}
-              label="Parameter Label"
-              required
-              component={Input}
-              className={styles.fullWidthInput}
-            />
+    <>
+      <div className={styles.container}>
+        {/* Parameter Tabs - Vertical Stack */}
+        <div className={styles.tabsContainer}>
+          <div className={styles.tabs}>
+            {parameters.map((param, index) => (
+              <div
+                key={index}
+                className={`${styles.tab} ${
+                  index === safeCurrentIndex ? styles.activeTab : ''
+                }`}
+                onClick={() => setCurrentIndex(index)}
+              >
+                PARAM {index + 1}
+                {parameters.length > 1 && index === safeCurrentIndex && (
+                  <button
+                    type="button"
+                    className={styles.deleteButton}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      deleteParameter(safeCurrentIndex)
+                    }}
+                  >
+                    🗑 Delete
+                  </button>
+                )}
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className={styles.formRow}>
-          <div className={styles.formColumn}>
-            <Field
-              name={`${field.name}[${safeCurrentIndex}].description`}
-              label="Description"
-              required
-              component={Input}
-              className={styles.fullWidthInput}
-            />
-          </div>
-          <div className={styles.formColumn}>
-            <TypeInput
-              name={`${field.name}[${safeCurrentIndex}].type`}
-              label="Parameter Type"
-              required
-              index={safeCurrentIndex}
-              inputName={props.name}
-              className={styles.fullWidthInput}
-            />
-          </div>
-        </div>
-
-        <div className={styles.formRow}>
-          <div className={styles.formColumn}>
-            <Field
-              name={`${field.name}[${safeCurrentIndex}].required`}
-              label="Required"
-              required
-              type="select"
-              options={['optional', 'required']}
-              component={Input}
-              className={styles.fullWidthInput}
-            />
-          </div>
-          <div className={styles.formColumn}>
-            <DefaultInput
-              name={`${field.name}[${safeCurrentIndex}].default`}
-              label="Default Value"
-              required
-              index={safeCurrentIndex}
-              inputName={props.name}
-              className={styles.fullWidthInput}
-            />
-          </div>
-        </div>
-
-        {/* Options field for select type */}
-        {currentParam?.type === 'select' && (
+        {/* Parameter Form - Two Column Layout */}
+        <div className={styles.formContainer}>
           <div className={styles.formRow}>
-            <div className={styles.formColumnFull}>
-              <OptionsInput
-                name={`${field.name}[${safeCurrentIndex}].options`}
-                label="Options"
-                value={currentParam.options}
+            <div className={styles.formColumn}>
+              <Field
+                name={`${field.name}[${safeCurrentIndex}].name`}
+                label="Parameter Name"
+                required
+                component={Input}
+                className={styles.fullWidthInput}
+              />
+            </div>
+            <div className={styles.formColumn}>
+              <Field
+                name={`${field.name}[${safeCurrentIndex}].label`}
+                label="Parameter Label"
+                required
+                component={Input}
+                className={styles.fullWidthInput}
               />
             </div>
           </div>
-        )}
-      </div>
 
-      {/* Add Parameter Button */}
+          <div className={styles.formRow}>
+            <div className={styles.formColumn}>
+              <Field
+                name={`${field.name}[${safeCurrentIndex}].description`}
+                label="Description"
+                required
+                component={Input}
+                className={styles.fullWidthInput}
+              />
+            </div>
+            <div className={styles.formColumn}>
+              <TypeInput
+                name={`${field.name}[${safeCurrentIndex}].type`}
+                label="Parameter Type"
+                required
+                index={safeCurrentIndex}
+                inputName={props.name}
+                className={styles.fullWidthInput}
+              />
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
+            <div className={styles.formColumn}>
+              <Field
+                name={`${field.name}[${safeCurrentIndex}].required`}
+                label="Required"
+                required
+                type="select"
+                options={['optional', 'required']}
+                component={Input}
+                className={styles.fullWidthInput}
+              />
+            </div>
+            <div className={styles.formColumn}>
+              <DefaultInput
+                name={`${field.name}[${safeCurrentIndex}].default`}
+                label="Default Value"
+                required
+                index={safeCurrentIndex}
+                inputName={props.name}
+                className={styles.fullWidthInput}
+              />
+            </div>
+          </div>
+
+          {/* Options field for select type */}
+          {currentParam?.type === 'select' && (
+            <div className={styles.formRow}>
+              <div className={styles.formColumnFull}>
+                <OptionsInput
+                  name={`${field.name}[${safeCurrentIndex}].options`}
+                  label="Options"
+                  value={currentParam.options}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Add Parameter Button */}
+      </div>
       <div className={styles.addButtonContainer}>
         <button
           type="button"
@@ -188,6 +188,6 @@ export function PublishConsumerParameters(props: InputProps): ReactElement {
           <AddParam /> Add parameter
         </button>
       </div>
-    </div>
+    </>
   )
 }

@@ -122,6 +122,7 @@
   min-height: 40px;
   max-height: 40px;
   padding: 8px 25px;
+  font-size: var(--publish-font-size);
   display: flex;
   align-items: center;
   justify-content: center;

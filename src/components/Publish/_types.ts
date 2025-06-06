@@ -62,7 +62,8 @@ export interface FormPublishData {
       usesConsumerParameters?: boolean
       consumerParameters?: FormConsumerParameter[]
     }
-    licenseTypeSelection: string
+    useRemoteLicense: boolean
+    licenseTypeSelection?: string
     licenseUrl: FileInfo[]
     uploadedLicense: License
   }

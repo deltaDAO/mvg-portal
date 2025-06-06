@@ -3,7 +3,6 @@
   gap: var(--spacer);
   grid-template-columns: none;
   margin-top: calc(var(--spacer) / 2);
-  margin-bottom: var(--spacer);
   align-items: center;
 }
 

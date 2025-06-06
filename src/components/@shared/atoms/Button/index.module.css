@@ -73,15 +73,14 @@
   min-width: auto;
 }
 
-.publish,
-.publish:hover,
-.publish:focus,
-.publish:active {
-  height: var(--publish-continue-button-height);
+body .publish,
+body .publish:hover,
+body .publish:focus,
+body .publish:active {
   width: var(--publish-continue-button-width);
   padding: var(--publish-continue-button-padding);
   background: var(--publish-accent);
-  color: var(--publish-white);
+  color: var(--publish-primary);
   border-radius: var(--publish-input-border-radius);
   font-family: var(--publish-font-family);
   font-weight: var(--publish-font-weight-bold);
