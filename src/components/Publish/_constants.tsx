@@ -92,7 +92,8 @@ export const initialValues: FormPublishData = {
     dataSubjectConsent: false,
     licenseTypeSelection: '',
     licenseUrl: [{ url: '', type: 'url' }],
-    uploadedLicense: undefined
+    uploadedLicense: undefined,
+    useRemoteLicense: false
   },
   services: [
     {
