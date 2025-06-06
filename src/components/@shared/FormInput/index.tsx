@@ -83,6 +83,7 @@ export interface InputProps {
   accountId?: string
   actions?: string[]
   hideLabel?: boolean
+  buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {

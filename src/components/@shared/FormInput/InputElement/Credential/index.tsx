@@ -8,10 +8,15 @@ import InputGroup from '../../InputGroup'
 import InputElement from '..'
 import { InputProps } from '../..'
 
-export default function Credentials(props: InputProps) {
+interface CredentialProps extends InputProps {
+  buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
+}
+
+export default function Credentials(props: CredentialProps) {
   const [field, meta, helpers] = useField(props.name)
   const [addressList, setAddressList] = useState<string[]>(field.value || [])
   const [value, setValue] = useState('')
+  const { buttonStyle = 'ocean' } = props
 
   const hasWildcard = addressList.includes('*')
 
@@ -61,7 +66,7 @@ export default function Credentials(props: InputProps) {
           disabled={hasWildcard}
         />
         <Button
-          style="primary"
+          style={buttonStyle}
           size="small"
           onClick={handleAddValue}
           disabled={hasWildcard}
@@ -69,7 +74,7 @@ export default function Credentials(props: InputProps) {
           Add
         </Button>
         {!hasWildcard && (
-          <Button style="primary" size="small" onClick={handleAddAll}>
+          <Button style={buttonStyle} size="small" onClick={handleAddAll}>
             Add All
           </Button>
         )}
@@ -86,7 +91,7 @@ export default function Credentials(props: InputProps) {
                   disabled
                 />
                 <Button
-                  style="primary"
+                  style={buttonStyle}
                   size="small"
                   onClick={(e: React.SyntheticEvent) => {
                     e.preventDefault()

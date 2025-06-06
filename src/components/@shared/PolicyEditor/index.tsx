@@ -454,7 +454,8 @@ export function PolicyEditor(props): ReactElement {
     help,
     defaultPolicies = [],
     enabledView = false,
-    isAsset = false
+    isAsset = false,
+    buttonStyle = 'primary'
   }: PolicyEditorProps = props
 
   const [enabled, setEnabled] = useState(enabledView)
@@ -465,6 +466,23 @@ export function PolicyEditor(props): ReactElement {
   const [limitMaxCredentials, setLimitMaxCredentials] = useState(false)
   const [minimumCredentials, setMinimumCredentials] = useState('1')
   const [limitMinCredentials, setLimitMinCredentials] = useState(false)
+
+  // State for default policies - first 4 are enabled by default, last one is not
+  const [defaultPolicyStates, setDefaultPolicyStates] = useState({
+    signature: true,
+    'not-before': true,
+    expired: true,
+    'revoked-status-list': true,
+    'signature_sd-jwt-vc': false
+  })
+
+  const allPolicies = [
+    'signature',
+    'not-before',
+    'expired',
+    'revoked-status-list',
+    'signature_sd-jwt-vc'
+  ]
 
   const filteredDefaultPolicies = defaultPolicies.filter(
     (policy) => policy.length > 0
@@ -758,11 +776,42 @@ export function PolicyEditor(props): ReactElement {
           <label className={styles.editorLabel}>
             {label} {help && <Tooltip content={<Markdown text={help} />} />}
           </label>
+
+          {/* Policies applied to all credentials section */}
+          {enabled && (
+            <div className={styles.defaultPoliciesSection}>
+              <h3 className={styles.defaultPoliciesTitle}>
+                Policies applied to all credentials
+              </h3>
+              <div className={styles.defaultPoliciesList}>
+                {allPolicies.map((policy, index) => (
+                  <div key={policy} className={styles.defaultPolicyItem}>
+                    <label className={styles.policyLabel}>
+                      <input
+                        type="checkbox"
+                        checked={defaultPolicyStates[policy]}
+                        onChange={(e) =>
+                          setDefaultPolicyStates((prev) => ({
+                            ...prev,
+                            [policy]: e.target.checked
+                          }))
+                        }
+                        className={styles.policyCheckbox}
+                      />
+                      <span className={styles.policyName}>{policy}</span>
+                      <span className={styles.infoIcon}>ⓘ</span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className={`${styles.editorPanel} ${styles.marginBottom4em}`}>
             <div className={`${styles.panelColumn} ${styles.marginBottom2em}`}>
               <Button
                 type="button"
-                style="primary"
+                style={buttonStyle}
                 className={styles.marginBottom1em}
                 onClick={handleNewRequestCredential}
               >
@@ -796,7 +845,7 @@ export function PolicyEditor(props): ReactElement {
                       </div>
                       <Button
                         type="button"
-                        style="primary"
+                        style={buttonStyle}
                         onClick={() => handleDeleteRequestCredential(index)}
                         className={`${styles.deleteButton} ${styles.marginBottomButton}`}
                       >
@@ -840,7 +889,7 @@ export function PolicyEditor(props): ReactElement {
 
                         <Button
                           type="button"
-                          style="primary"
+                          style={buttonStyle}
                           className={styles.space}
                           onClick={() => {
                             if (credential.newPolicyType === 'staticPolicy')
@@ -920,7 +969,7 @@ export function PolicyEditor(props): ReactElement {
                     {credentials?.requestCredentials.length > 0 && (
                       <Button
                         type="button"
-                        style="primary"
+                        style={buttonStyle}
                         className={`${styles.marginBottom1em}`}
                         onClick={handleNewStaticPolicy}
                       >
@@ -955,7 +1004,7 @@ export function PolicyEditor(props): ReactElement {
                             </div>
                             <Button
                               type="button"
-                              style="primary"
+                              style={buttonStyle}
                               disabled={
                                 index < filteredDefaultPolicies?.length &&
                                 filteredDefaultPolicies.includes(

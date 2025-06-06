@@ -102,6 +102,35 @@ body .publish:active {
   box-shadow: var(--publish-shadow-sm);
 }
 
+.ocean,
+.ocean:hover,
+.ocean:focus,
+.ocean:active {
+  background: var(--ocean-blue);
+  color: var(--color-white);
+  border: 1px solid var(--ocean-blue);
+  border-radius: var(--border-radius);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  letter-spacing: 0.02rem;
+  transition: all 0.2s ease;
+  min-width: auto;
+}
+
+.ocean:hover,
+.ocean:focus {
+  background: var(--ocean-blue-dark, #2f5a7a);
+  border-color: var(--ocean-blue-dark, #2f5a7a);
+  transform: translate3d(0, -0.05rem, 0);
+  box-shadow: 0 6px 18px 0 rgba(75, 163, 211, 0.3);
+}
+
+.ocean:active {
+  transform: none;
+  box-shadow: 0 2px 8px 0 rgba(75, 163, 211, 0.3);
+}
+
 /* Size Modifiers */
 .small {
   font-size: var(--font-size-small);

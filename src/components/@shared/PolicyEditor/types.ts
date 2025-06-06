@@ -81,4 +81,5 @@ export interface PolicyEditorProps {
   defaultPolicies?: string[]
   enabledView?: boolean
   isAsset?: boolean
+  buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
 }

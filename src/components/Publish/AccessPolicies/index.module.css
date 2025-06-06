@@ -1,0 +1,63 @@
+.accessPoliciesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) * 1.5);
+}
+
+/* ETH Address section styling */
+.accessPoliciesContainer :global(.field) {
+  margin-bottom: var(--spacer);
+}
+
+/* SSI Policies section styling */
+.accessPoliciesContainer :global(.editorPanel) {
+  background: var(--color-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: calc(var(--spacer) * 1.5);
+  margin-bottom: var(--spacer);
+}
+
+/* Checkbox styling for SSI sections */
+.accessPoliciesContainer :global(.checkboxLabel) {
+  display: flex;
+  align-items: center;
+  gap: var(--spacer);
+  margin-bottom: calc(var(--spacer) * 0.75);
+  font-size: var(--font-size-base);
+  color: var(--font-color-text);
+}
+
+.accessPoliciesContainer :global(.checkboxLabel input[type='checkbox']) {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  accent-color: var(--ocean-blue);
+}
+
+/* Advanced features section */
+.accessPoliciesContainer :global(.editorLabel) {
+  font-weight: var(--font-weight-bold);
+  color: var(--font-color-heading);
+  margin-bottom: var(--spacer);
+  display: flex;
+  align-items: center;
+  gap: var(--spacer);
+}
+
+/* All buttons in credentials section should be ocean blue */
+.accessPoliciesContainer :global(.button.ocean) {
+  background: var(--ocean-blue);
+  color: var(--color-white);
+  border: 1px solid var(--ocean-blue);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+}
+
+.accessPoliciesContainer :global(.button.ocean:hover) {
+  background: var(--ocean-blue-dark, #2f5a7a);
+  border-color: var(--ocean-blue-dark, #2f5a7a);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px 0 rgba(75, 163, 211, 0.3);
+}
