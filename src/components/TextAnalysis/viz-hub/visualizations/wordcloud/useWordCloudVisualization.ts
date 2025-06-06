@@ -588,7 +588,7 @@ export const useWordCloudVisualization = ({
       const zoomControls = svg
         .append('g')
         .attr('class', 'zoom-controls')
-        .attr('transform', `translate(20, ${height - 130})`)
+        .attr('transform', `translate(20, ${height - 100})`)
 
       // Ensure zoom controls are always visible by adjusting position for smaller heights
       if (height < 200) {
@@ -778,7 +778,7 @@ export const useWordCloudVisualization = ({
         const padding = 20 // Padding from edges
 
         // Move the controls upward from the bottom by adding an extra offset
-        const upwardOffset = 30 // Pixels to move the controls upward
+        const upwardOffset = 0 // Pixels to move the controls upward
         const yPosition = Math.max(
           padding,
           svgHeight - zoomControlsHeight - padding - upwardOffset
