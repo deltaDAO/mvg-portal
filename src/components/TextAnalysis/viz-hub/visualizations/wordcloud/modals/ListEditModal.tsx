@@ -41,9 +41,9 @@ const ListEditModal: React.FC<ListEditModalProps> = ({
       textareaRef.current.focus()
 
       // Position cursor at the end
-      const { value, setSelectionRange } = textareaRef.current
+      const { value } = textareaRef.current
       const { length } = value
-      setSelectionRange(length, length)
+      textareaRef.current.setSelectionRange(length, length)
     }
   }, [isOpen])
 

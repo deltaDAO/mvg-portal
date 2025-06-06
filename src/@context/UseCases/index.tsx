@@ -14,8 +14,6 @@ export class UseCaseDB extends Dexie {
     super(DATABASE_NAME)
 
     // TESTLOG
-    console.log('Initializing UseCaseDB with name:', DATABASE_NAME)
-    console.log('Current database version:', DATABASE_VERSION)
 
     this.version(DATABASE_VERSION).stores({
       ...TEXT_ANALYSIS_TABLE
@@ -29,7 +27,7 @@ interface UseCasesValue {
   createOrUpdateTextAnalysis: (
     textAnalysis: TextAnalysisUseCaseData
   ) => Promise<IndexableType>
-  textAnalysisList: TextAnalysisUseCaseData[]
+  textAnalysisList: TextAnalysisUseCaseData[] | undefined
   updateTextAnalysis: (
     textAnalysiseses: TextAnalysisUseCaseData[]
   ) => Promise<IndexableType>
@@ -37,22 +35,16 @@ interface UseCasesValue {
   clearTextAnalysis: () => Promise<void>
 }
 
-const UseCasesContext = createContext(null)
+const UseCasesContext = createContext<UseCasesValue | null>(null)
 
 function UseCasesProvider({ children }: { children: ReactNode }): ReactElement {
   const textAnalysisList = useLiveQuery(() => database.textAnalysises.toArray())
 
   // TESTLOG
-  console.log('Database instance:', database)
-  console.log('TextAnalysis table:', database.textAnalysises)
-  console.log('TextAnalysisList from useLiveQuery:', textAnalysisList)
 
   const createOrUpdateTextAnalysis = async (
     textAnalysis: TextAnalysisUseCaseData
   ) => {
-    // TESTLOG
-    console.log('Creating/Updating text analysis:', textAnalysis)
-
     if (!textAnalysis.job || !textAnalysis.job.jobId) {
       LoggerInstance.error(
         `[UseCases] cannot insert without job or result data!`
@@ -60,7 +52,7 @@ function UseCasesProvider({ children }: { children: ReactNode }): ReactElement {
       return
     }
 
-    const exists = textAnalysisList.find(
+    const exists = textAnalysisList?.find(
       (row) => textAnalysis.job.jobId === row.job.jobId
     )
 
@@ -122,6 +114,12 @@ function UseCasesProvider({ children }: { children: ReactNode }): ReactElement {
 }
 
 // Helper hook to access the provider values
-const useUseCases = (): UseCasesValue => useContext(UseCasesContext)
+const useUseCases = (): UseCasesValue => {
+  const context = useContext(UseCasesContext)
+  if (!context) {
+    throw new Error('useUseCases must be used within a UseCasesProvider')
+  }
+  return context
+}
 
 export { UseCasesProvider, useUseCases }

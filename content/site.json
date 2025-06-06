@@ -161,12 +161,7 @@
     },
     {
       "name": "Resources",
-      "subItems": [
-        {
-          "name": "Documentation",
-          "link": "/docs"
-        }
-      ]
+      "link": "/resources"
     }
   ],
   "announcement": "",

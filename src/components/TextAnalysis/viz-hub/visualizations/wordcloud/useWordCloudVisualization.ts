@@ -147,7 +147,6 @@ export const useWordCloudVisualization = ({
     debounce(async (words: WordData[]) => {
       // Check if we're already updating (critical to prevent double renders)
       if (renderInProgressRef.current) {
-        console.log('Skipping render: another render already in progress')
         return
       }
 
@@ -157,8 +156,6 @@ export const useWordCloudVisualization = ({
       // Increment render count
       renderCountRef.current += 1
       const currentRenderCount = renderCountRef.current
-
-      console.log(`Starting word cloud render #${currentRenderCount}`)
 
       if (!svgRef.current) {
         renderInProgressRef.current = false
@@ -173,7 +170,6 @@ export const useWordCloudVisualization = ({
 
       // Skip updates if modals are open
       if (modalsOpenRef.current) {
-        console.log('Skipping update because modals are open')
         renderInProgressRef.current = false
         return
       }
@@ -181,7 +177,6 @@ export const useWordCloudVisualization = ({
       // IMPORTANT: Always clear the word cloud when there are no words to display
       if (words.length === 0) {
         setIsUpdating(true)
-        console.log('No words to display, clearing word cloud')
 
         try {
           const svg = d3.select(svgRef.current)
@@ -246,14 +241,6 @@ export const useWordCloudVisualization = ({
       renderRequestRef.current = currentCacheKey
       lastUpdateTimeRef.current = now
 
-      console.log(
-        `Processing render #${currentRenderCount} for ${words.length} words`,
-        {
-          shouldUpdateLayout: shouldUpdateLayoutRef.current,
-          isWordSelectionAction: isWordSelectionActionRef.current
-        }
-      )
-
       // There are two cases where we want to avoid complete relayout:
       // 1. Word selection/panel interaction (tracked by isWordSelectionActionRef)
       // 2. Panel visibility change (opening or closing panel)
@@ -262,10 +249,6 @@ export const useWordCloudVisualization = ({
       const isWordSelecting =
         isWordSelectionActionRef.current && selectedWordRef.current !== null
       const isWordSelectionOrPanelAction = isWordSelecting || isPanelClosing
-
-      if (isPanelClosing) {
-        console.log('Panel is closing, skipping layout update')
-      }
 
       // Check if SVG needs readjustment after container size changes
       // (like when panel opens/closes)
@@ -301,20 +284,12 @@ export const useWordCloudVisualization = ({
       // - Don't relayout the cloud (preserve positions)
       // - But still update colors/fonts, ensure words are visible, and recenter if needed
       if (isWordSelectionOrPanelAction) {
-        console.log(
-          isPanelClosing ? 'Panel closing detected' : 'Word selection detected'
-        )
-        console.log('Skipping layout update')
-
         // Check if we already have words displayed
         const svg = d3.select(svgRef.current)
         const wordsContainer = svg.select('.words-container')
 
         if (wordsContainer.empty()) {
           // If container is empty, we need to do a full render anyway
-          console.log(
-            'No existing words found, doing full render despite panel action'
-          )
         } else {
           const wordsGroup = wordsContainer.select('.words-group')
           const existingWords = wordsGroup.selectAll<SVGTextElement, CloudWord>(
@@ -345,17 +320,11 @@ export const useWordCloudVisualization = ({
                     'transform',
                     `translate(${svgWidth / 2},${svgHeight / 2})`
                   )
-
-                console.log('Recentered words after panel state change')
               }
             }
 
             renderInProgressRef.current = false
             return
-          } else {
-            console.log(
-              'No existing words found in group, proceeding with full render'
-            )
           }
         }
       }
@@ -835,10 +804,6 @@ export const useWordCloudVisualization = ({
       return
     }
 
-    console.log(
-      `Dimensions updated to ${dimensions.width}x${dimensions.height}, adjusting SVG`
-    )
-
     // Update the SVG dimensions
     const svg = d3.select(svgRef.current)
     svg
@@ -906,8 +871,6 @@ export const useWordCloudVisualization = ({
               .transition()
               .duration(300)
               .attr('transform', `translate(${svgWidth / 2},${svgHeight / 2})`)
-
-            console.log('Container resized, recentering words')
           }
         }
       }

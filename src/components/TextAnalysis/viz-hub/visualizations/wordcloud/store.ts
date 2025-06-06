@@ -736,8 +736,6 @@ export const useWordCloudStore = create<WordCloudStore>((set, get) => ({
 
     // Don't bother filtering if we have no words
     if (words.length === 0) {
-      console.log('No words to filter')
-      // 确保设置空数组，而不是保留旧数据
       set({ filteredWords: [] })
       return
     }
@@ -759,11 +757,8 @@ export const useWordCloudStore = create<WordCloudStore>((set, get) => ({
     const withinThrottleWindow = now - lastFilterOperation < 300 // 300ms throttle window
 
     if (cacheStillValid && withinThrottleWindow) {
-      console.log('Using cached filter results - skipping filter operation')
       return
     }
-
-    console.log('Computing new filtered words')
 
     // Update cache info
     set({
@@ -816,15 +811,6 @@ export const useWordCloudStore = create<WordCloudStore>((set, get) => ({
       filtered = [...filtered]
         .sort((a, b) => b.count - a.count)
         .slice(0, maxWords)
-    }
-
-    // Log the filter results
-    if (filtered.length === 0) {
-      console.log('No words match the current filters')
-    } else {
-      console.log(
-        `Filtered words: ${filtered.length} words remain after applying filters`
-      )
     }
 
     // Update filtered words - always update, even if empty (important for clearing visualizations)

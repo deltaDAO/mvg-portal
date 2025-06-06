@@ -41,21 +41,12 @@ export default function JobList(props: {
 
   const { setTextAnalysisData } = props
 
-  // TESTLOG
-  console.log('JobList component rendering')
-
   const {
     textAnalysisList,
     clearTextAnalysis,
     createOrUpdateTextAnalysis,
     deleteTextAnalysis
   } = useUseCases()
-
-  // TESTLOG
-  console.log('useUseCases hook result:', {
-    hasTextAnalysisList: !!textAnalysisList,
-    textAnalysisListLength: textAnalysisList?.length
-  })
 
   useEffect(() => {
     if (!textAnalysisList) {
@@ -68,9 +59,6 @@ export default function JobList(props: {
 
   const fetchJobs = useCallback(async () => {
     if (!accountId) {
-      // TESTLOG
-      console.log('No account ID found')
-
       return
     }
 
