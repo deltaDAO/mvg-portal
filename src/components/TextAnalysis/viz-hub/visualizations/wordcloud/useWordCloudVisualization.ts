@@ -325,7 +325,6 @@ export const useWordCloudVisualization = ({
 
             renderInProgressRef.current = false
             return
-          } else {
           }
         }
       }
