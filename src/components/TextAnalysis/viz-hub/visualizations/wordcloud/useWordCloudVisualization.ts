@@ -331,19 +331,23 @@ export const useWordCloudVisualization = ({
             // 2. If panel state changed, recenter the visualization
             if (needsSvgCentering || isPanelClosing) {
               // Recenter words - make sure they're in the middle of the new container size
-              const svgWidth = parseInt(svg.style('width'))
-              const svgHeight = parseInt(svg.style('height'))
+              const svgElement = svgRef.current
+              if (svgElement) {
+                const rect = svgElement.getBoundingClientRect()
+                const svgWidth = rect.width || dimensions.width || 500
+                const svgHeight = rect.height || dimensions.height || 400
 
-              // Smoothly transition to new center position
-              wordsGroup
-                .transition()
-                .duration(300)
-                .attr(
-                  'transform',
-                  `translate(${svgWidth / 2},${svgHeight / 2})`
-                )
+                // Smoothly transition to new center position
+                wordsGroup
+                  .transition()
+                  .duration(300)
+                  .attr(
+                    'transform',
+                    `translate(${svgWidth / 2},${svgHeight / 2})`
+                  )
 
-              console.log('Recentered words after panel state change')
+                console.log('Recentered words after panel state change')
+              }
             }
 
             renderInProgressRef.current = false
@@ -424,12 +428,16 @@ export const useWordCloudVisualization = ({
           })
 
         // Ensure words are centered in the SVG
-        const svgWidth = parseInt(svg.style('width'))
-        const svgHeight = parseInt(svg.style('height'))
-        wordsGroup.attr(
-          'transform',
-          `translate(${svgWidth / 2},${svgHeight / 2})`
-        )
+        const svgElement = svgRef.current
+        if (svgElement) {
+          const rect = svgElement.getBoundingClientRect()
+          const svgWidth = rect.width || dimensions.width || 500
+          const svgHeight = rect.height || dimensions.height || 400
+          wordsGroup.attr(
+            'transform',
+            `translate(${svgWidth / 2},${svgHeight / 2})`
+          )
+        }
 
         // Save previous words state
         previousWordsRef.current = cloudWords
@@ -439,15 +447,24 @@ export const useWordCloudVisualization = ({
           // Small delay to ensure words are properly positioned
           setTimeout(() => {
             // Apply zoom transform with proper centering
-            const width = parseInt(svg.style('width'))
-            const height = parseInt(svg.style('height'))
-            svg.call(
-              zoomRef.current!.transform,
-              d3.zoomIdentity
-                .translate(width / 2, height / 2)
-                .scale(0.87)
-                .translate(-width / 2, -height / 2)
-            )
+            const svgElement = svgRef.current
+            if (!svgElement) return
+
+            // Get dimensions safely with fallbacks
+            const rect = svgElement.getBoundingClientRect()
+            const width = rect.width || dimensions.width || 500
+            const height = rect.height || dimensions.height || 400
+
+            // Only apply zoom if we have valid dimensions
+            if (width > 0 && height > 0) {
+              svg.call(
+                zoomRef.current!.transform,
+                d3.zoomIdentity
+                  .translate(width / 2, height / 2)
+                  .scale(0.87)
+                  .translate(-width / 2, -height / 2)
+              )
+            }
           }, 100)
         }
       } finally {
@@ -477,6 +494,13 @@ export const useWordCloudVisualization = ({
 
     const svg = d3.select(svgRef.current)
     svg.selectAll('*').remove()
+
+    // Ensure SVG has proper width/height attributes for D3
+    svg
+      .attr('width', dimensions.width)
+      .attr('height', dimensions.height)
+      .style('width', `${dimensions.width}px`)
+      .style('height', `${dimensions.height}px`)
 
     // Theme-aware colors
     const bgColorStart = theme === 'dark' ? '#1f2937' : '#f8f9fa' // gray-800 : gray-100
@@ -520,8 +544,9 @@ export const useWordCloudVisualization = ({
     const wordsGroup = wordsContainer.append('g').attr('class', 'words-group')
 
     // Calculate initial transform to center
-    const width = parseInt(svg.style('width'))
-    const height = parseInt(svg.style('height'))
+    const rect = svgRef.current.getBoundingClientRect()
+    const width = rect.width || dimensions.width || 500
+    const height = rect.height || dimensions.height || 400
 
     // Set initial translation for words group to center of svg
     wordsGroup.attr('transform', `translate(${width / 2},${height / 2})`)
@@ -545,23 +570,25 @@ export const useWordCloudVisualization = ({
       // Store zoom behavior in ref for external control
       zoomRef.current = zoom
 
-      // Add zoom behavior to SVG
-      svg
-        .call(zoom)
-        .on('dblclick.zoom', null) // Disable double-click zoom
-        .style('cursor', 'grab')
-        .on('mousedown', function () {
-          d3.select(this).style('cursor', 'grabbing')
-        })
-        .on('mouseup', function () {
-          d3.select(this).style('cursor', 'grab')
-        })
+      // Add zoom behavior to SVG - only if dimensions are valid
+      if (width > 0 && height > 0) {
+        svg
+          .call(zoom)
+          .on('dblclick.zoom', null) // Disable double-click zoom
+          .style('cursor', 'grab')
+          .on('mousedown', function () {
+            d3.select(this).style('cursor', 'grabbing')
+          })
+          .on('mouseup', function () {
+            d3.select(this).style('cursor', 'grab')
+          })
+      }
 
       // Add zoom controls
       const zoomControls = svg
         .append('g')
         .attr('class', 'zoom-controls')
-        .attr('transform', `translate(20, ${height - 130})`)
+        .attr('transform', `translate(20, ${height - 100})`)
 
       // Ensure zoom controls are always visible by adjusting position for smaller heights
       if (height < 200) {
@@ -735,27 +762,32 @@ export const useWordCloudVisualization = ({
     // Add resize observer for responsive centering
     const resizeObserver = new ResizeObserver(() => {
       // Update the words group transform for centering
-      const svgWidth = parseInt(svg.style('width'))
-      const svgHeight = parseInt(svg.style('height'))
-      wordsGroup.attr(
-        'transform',
-        `translate(${svgWidth / 2},${svgHeight / 2})`
-      )
+      const svgElement = svgRef.current
+      if (svgElement) {
+        const rect = svgElement.getBoundingClientRect()
+        const svgWidth = rect.width || dimensions.width || 500
+        const svgHeight = rect.height || dimensions.height || 400
 
-      // Update zoom controls position with better boundary handling
-      const zoomControlsHeight = 120 // Height of the zoom controls
-      const padding = 20 // Padding from edges
+        wordsGroup.attr(
+          'transform',
+          `translate(${svgWidth / 2},${svgHeight / 2})`
+        )
 
-      // Move the controls upward from the bottom by adding an extra offset
-      const upwardOffset = 30 // Pixels to move the controls upward
-      const yPosition = Math.max(
-        padding,
-        svgHeight - zoomControlsHeight - padding - upwardOffset
-      )
+        // Update zoom controls position with better boundary handling
+        const zoomControlsHeight = 120 // Height of the zoom controls
+        const padding = 20 // Padding from edges
 
-      svg
-        .select('.zoom-controls')
-        .attr('transform', `translate(${padding}, ${yPosition})`)
+        // Move the controls upward from the bottom by adding an extra offset
+        const upwardOffset = 0 // Pixels to move the controls upward
+        const yPosition = Math.max(
+          padding,
+          svgHeight - zoomControlsHeight - padding - upwardOffset
+        )
+
+        svg
+          .select('.zoom-controls')
+          .attr('transform', `translate(${padding}, ${yPosition})`)
+      }
     })
 
     if (svgRef.current) {
@@ -861,17 +893,22 @@ export const useWordCloudVisualization = ({
         const wordsGroup = wordsContainer.select('.words-group')
 
         if (!wordsGroup.empty()) {
-          // Get current size
-          const svgWidth = parseInt(svg.style('width'))
-          const svgHeight = parseInt(svg.style('height'))
+          // Get current size safely
+          const svgElement = svgRef.current!
+          const rect = svgElement.getBoundingClientRect()
+          const svgWidth = rect.width || dimensions.width || 500
+          const svgHeight = rect.height || dimensions.height || 400
 
-          // Smoothly transition to new center
-          wordsGroup
-            .transition()
-            .duration(300)
-            .attr('transform', `translate(${svgWidth / 2},${svgHeight / 2})`)
+          // Only proceed if we have valid dimensions
+          if (svgWidth > 0 && svgHeight > 0) {
+            // Smoothly transition to new center
+            wordsGroup
+              .transition()
+              .duration(300)
+              .attr('transform', `translate(${svgWidth / 2},${svgHeight / 2})`)
 
-          console.log('Container resized, recentering words')
+            console.log('Container resized, recentering words')
+          }
         }
       }
     })
