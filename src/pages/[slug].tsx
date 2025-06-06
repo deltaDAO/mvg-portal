@@ -6,7 +6,7 @@ import Container from '@shared/atoms/Container'
 import { useRouter } from 'next/router'
 import { markdownToHtmlWithToc } from '@utils/markdown'
 
-export default function PageMarkdown(page: PageData): ReactElement {
+export default function PageMarkdown(page: PageData): ReactElement | null {
   const router = useRouter()
   if (!page || page.content === '') return null
 
