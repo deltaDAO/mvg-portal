@@ -12,6 +12,11 @@
 }
 
 .content {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 129%;
+  color: rgba(48, 48, 49, 0.7);
   word-wrap: break-word;
   white-space: normal;
 }
