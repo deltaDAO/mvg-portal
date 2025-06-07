@@ -1,0 +1,14 @@
+{
+  "articles": [
+    {
+      "id": "web-evolution",
+      "slug": "web-evolution",
+      "category": "articles",
+      "tag": "RESOURCE ARTICLE",
+      "title": "Web1.0 to Web3.0: Evolutions of the Internet",
+      "description": "Explore the historical transformation of the internet—from static Web1.0 to decentralized Web3.0.",
+      "image": "/content/resources/articles/web-evolution/images/web1.0toweb3.0_card.jpg",
+      "link": "/articles/web-evolution"
+    }
+  ]
+}

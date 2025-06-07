@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import Page from '@shared/Page'
 import Resources from '@components/Resources'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import articlesIndex from '../../content/resources/articles/index.json'
 
 export default function PageResources(): ReactElement {
   const { siteContent } = useMarketMetadata()
@@ -15,7 +16,7 @@ export default function PageResources(): ReactElement {
       uri={router.route}
       noPageHeader
     >
-      <Resources />
+      <Resources initialArticles={articlesIndex.articles} />
     </Page>
   )
 }
