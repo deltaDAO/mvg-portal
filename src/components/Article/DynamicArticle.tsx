@@ -1,56 +1,19 @@
 import { ReactElement } from 'react'
 import ScrollProgressBar from './ScrollProgressBar'
+import { ArticleMetadata } from '../../utils/loadResourcesServer'
 
-interface ArticleProps {
-  slug: string
+interface DynamicArticleProps {
+  article: ArticleMetadata
 }
 
-export default function Article({ slug }: ArticleProps): ReactElement {
-  // For now, we'll hardcode the article content. In the future, this could fetch from CMS
-  const articleData = {
-    title: 'Web1.0 to Web3.0: Evolutions of the Internet',
-    author: 'Faith',
-    date: 'June 5, 2025',
-    heroImage: '/images/web1.0toweb3.0_banner.jpg',
-    content: {
-      sections: [
-        {
-          title: 'Web 1.0: The Digital Library Era',
-          content: `In the early 1990s, the internet was a vast, untapped library of information. This era, often called Web 1.0 or the "Information Web," marked the beginning of the digital age. Websites were simple and static, resembling digital books filled with knowledge. The internet's foundation was laid with basic HTML pages and early search engines like Yahoo, paving the way for the digital revolution.`
-        },
-        {
-          title: 'Web 2.0: The Social Revolution',
-          content: `Fast forward to the early 2000s, and we enter the era of Web 2.0. The internet underwent a significant transformation, becoming a lively and interactive community. Social media platforms such as Facebook, Twitter, and YouTube emerged, connecting people from all over the globe. The internet shifted from being a platform for reading to one for sharing, collaborating, and connecting with others.`
-        },
-        {
-          title: 'Web 3.0: The Age of Ownership and Trust',
-          content: `Now, we stand on the cusp of Web 3.0, a revolutionary phase that promises to redefine the internet again. At its core, Web 3.0 is about decentralization, transparency, and trust. It leverages blockchain technology, a secure method for tracking information, to empower users with control over their data.`
-        }
-      ],
-      quote: 'Web 3.0 invites everyone to shape their digital destiny.',
-      finalParagraph: `This era opens up a new world of possibilities, including decentralized finance (DeFi), and digital art (NFTs), where users have the power to shape their digital destiny. It's as if the internet is coming of age, inviting everyone to join the celebration.`
-    }
-  }
-
-  const furtherReading = [
-    {
-      source: 'Washington Post Live',
-      title: 'Tim Berners-Lee - How He Came Up With the Internet',
-      url: 'https://youtu.be/fbV82k-ExT0?si=-v4qN9y8ZubMUuS3'
-    },
-    {
-      source: 'Ethereum.org',
-      title: 'What is Web3 & Why is it Important?',
-      url: 'https://ethereum.org/en/web3/'
-    },
-    {
-      source: 'Science Direct',
-      title: 'Blockchain Research & Applications',
-      url: 'https://www.sciencedirect.com/journal/blockchain-research-and-applications'
-    }
-  ]
+export default function DynamicArticle({
+  article
+}: DynamicArticleProps): ReactElement {
+  const articleData = article
 
   const handleShare = (platform: string) => {
+    if (!articleData) return
+
     const url = window.location.href
     const { title } = articleData
 
@@ -73,13 +36,15 @@ export default function Article({ slug }: ArticleProps): ReactElement {
     )
   }
 
+  const heroImageUrl = `/content/resources/articles/${articleData.slug}/${articleData.heroImage}`
+
   return (
     <div className="-mb-16">
       <ScrollProgressBar />
 
       {/* Hero Image */}
       <img
-        src={articleData.heroImage}
+        src={heroImageUrl}
         alt="Article Hero Image"
         className="w-full max-h-96 object-cover block mb-5"
         onError={(e) => {
@@ -96,13 +61,19 @@ export default function Article({ slug }: ArticleProps): ReactElement {
             {articleData.title}
           </h1>
           <div className="text-sm text-gray-600">
-            By {articleData.author} • {articleData.date}
+            By {articleData.author} •{' '}
+            {new Date(articleData.publishDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}{' '}
+            • {articleData.readTime}
           </div>
         </header>
 
         {/* Blog Content */}
         <article className="prose prose-lg max-w-none">
-          {articleData.content.sections.map((section, index) => (
+          {articleData.sections.map((section, index) => (
             <div key={index} className="mb-8">
               <h2 className="text-2xl md:text-3xl font-bold mb-4 mt-10 first:mt-0 text-[var(--font-color-heading)]">
                 {section.title}
@@ -114,13 +85,17 @@ export default function Article({ slug }: ArticleProps): ReactElement {
           ))}
 
           {/* Pull Quote */}
-          <blockquote className="text-xl md:text-2xl italic text-[var(--brand-clay)] border-l-4 border-[var(--brand-clay)] pl-5 my-10">
-            &ldquo;{articleData.content.quote}&rdquo;
-          </blockquote>
+          {articleData.quote && (
+            <blockquote className="text-xl md:text-2xl italic text-[var(--brand-clay)] border-l-4 border-[var(--brand-clay)] pl-5 my-10">
+              &ldquo;{articleData.quote}&rdquo;
+            </blockquote>
+          )}
 
-          <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-8 font-[var(--font-family-body)]">
-            {articleData.content.finalParagraph}
-          </p>
+          {articleData.finalParagraph && (
+            <p className="text-base md:text-lg text-gray-700 leading-relaxed mb-8 font-[var(--font-family-body)]">
+              {articleData.finalParagraph}
+            </p>
+          )}
 
           {/* Share Icons */}
           <div className="text-center mt-10 mb-12">
@@ -165,25 +140,30 @@ export default function Article({ slug }: ArticleProps): ReactElement {
           </div>
 
           {/* Further Reading */}
-          <h3 className="text-xl md:text-2xl font-bold mb-6 text-[var(--font-color-heading)]">
-            You Might Also Like
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
-            {furtherReading.map((item, index) => (
-              <a
-                key={index}
-                href={item.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block p-5 border border-gray-200 rounded-lg bg-gray-50 hover:bg-white hover:shadow-md transition-all duration-200 text-gray-700 no-underline"
-              >
-                <strong className="block text-sm text-[var(--brand-clay)] mb-2">
-                  {item.source}
-                </strong>
-                <span className="text-base">{item.title}</span>
-              </a>
-            ))}
-          </div>
+          {articleData.furtherReading &&
+            articleData.furtherReading.length > 0 && (
+              <>
+                <h3 className="text-xl md:text-2xl font-bold mb-6 text-[var(--font-color-heading)]">
+                  You Might Also Like
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
+                  {articleData.furtherReading.map((item, index) => (
+                    <a
+                      key={index}
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block p-5 border border-gray-200 rounded-lg bg-gray-50 hover:bg-white hover:shadow-md transition-all duration-200 text-gray-700 no-underline"
+                    >
+                      <strong className="block text-sm text-[var(--brand-clay)] mb-2">
+                        {item.source}
+                      </strong>
+                      <span className="text-base">{item.title}</span>
+                    </a>
+                  ))}
+                </div>
+              </>
+            )}
         </article>
       </div>
     </div>
