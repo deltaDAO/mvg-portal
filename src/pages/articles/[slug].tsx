@@ -3,14 +3,11 @@ import { useRouter } from 'next/router'
 import Page from '@shared/Page'
 import ArticleContent from '../../components/Article/ArticleContent'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import { useShowNewsletterBanner } from '../../@hooks/useShowNewsletterBanner'
 
 export default function ArticlePage(): ReactElement {
   const { siteContent } = useMarketMetadata()
   const router = useRouter()
   const { slug } = router.query
-
-  useShowNewsletterBanner()
 
   return (
     <Page

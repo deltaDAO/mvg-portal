@@ -3,13 +3,10 @@ import { useRouter } from 'next/router'
 import Page from '@shared/Page'
 import Resources from '@components/Resources'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import { useShowNewsletterBanner } from '../@hooks/useShowNewsletterBanner'
 
 export default function PageResources(): ReactElement {
   const { siteContent } = useMarketMetadata()
   const router = useRouter()
-
-  useShowNewsletterBanner()
 
   return (
     <Page

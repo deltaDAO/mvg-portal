@@ -219,11 +219,11 @@ export default function Links(): ReactElement {
             {/* Join the community - Full width of right side */}
             <div className="col-span-2 mt-1">
               <h3 className={`${styles.sectionTitle} mb-1.5`}>
-                Join the community
+                Stay in the loop
               </h3>
               <p className={`${styles.subtitle} text-sm mb-2.5`}>
-                Our newsletter provides you with latest data economy happenings
-                on a monthly basis.
+                Bite-sized insights on Web3 tech to help you explore Clio-X with
+                confidence—delivered monthly.
               </p>
               <Link href="/coming-soon">
                 <button className="bg-[var(--color-primary)] hover:bg-[var(--color-highlight)] text-white font-bold py-2 px-5 rounded transition-colors cursor-pointer">
