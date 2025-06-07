@@ -23,7 +23,7 @@ const validationSchema = Yup.object({
     is: 'Other',
     then: (schema) => schema.required('Please specify your reason')
   }),
-  verificationCode: Yup.string().required('Verification code is required'),
+  // verificationCode: Yup.string().required('Verification code is required'),
   privacyConsent: Yup.boolean()
     .oneOf([true], 'You must agree to the privacy policy')
     .required('Privacy consent is required')
@@ -31,8 +31,12 @@ const validationSchema = Yup.object({
 
 export default function PartnerIntakeForm(): ReactElement {
   const [expandedFaq, setExpandedFaq] = useState(true)
-  const [generatedCode, setGeneratedCode] = useState('')
-  const [codeSent, setCodeSent] = useState(false)
+  // const [generatedCode, setGeneratedCode] = useState('')
+  // const [codeSent, setCodeSent] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<'success' | 'error' | null>(
+    null
+  )
+  const [submitMessage, setSubmitMessage] = useState<string>('')
 
   const partnershipOptions = [
     { value: '', label: 'Select a reason' },
@@ -42,27 +46,67 @@ export default function PartnerIntakeForm(): ReactElement {
     { value: 'Other', label: 'Something else' }
   ]
 
-  const sendVerificationCode = (email: string) => {
-    if (!email || !email.includes('@')) {
-      alert('Please enter a valid email before requesting a code.')
-      return
-    }
+  const generateMailtoLink = (data: FormValues): string => {
+    const to = 'info@cliox.org'
+    const subject = encodeURIComponent(
+      'New Partner Application - ' + data.organizationName
+    )
+    const body = encodeURIComponent(
+      `Organization Name: ${data.organizationName}\n` +
+        `Contact Name: ${data.contactName}\n` +
+        `Contact Email: ${data.contactEmail}\n` +
+        `Partnership Reason: ${data.partnershipReason}\n` +
+        (data.otherReason ? `Other Reason: ${data.otherReason}\n` : '') +
+        // `Email Verification Code: ${data.verificationCode}\n` +
+        `Privacy Consent: Yes\n\n` +
+        `---\n` +
+        `This application was sent through the ClioX Partner Intake Form.`
+    )
 
-    const code = Math.floor(100000 + Math.random() * 900000).toString()
-    setGeneratedCode(code)
-    setCodeSent(true)
-    alert(`Verification code sent to: ${email}\nCode (for demo): ${code}`)
+    return `mailto:${to}?subject=${subject}&body=${body}`
   }
 
-  const handleSubmit = (values: FormValues) => {
-    if (values.verificationCode !== generatedCode) {
-      alert('Verification code is incorrect or missing.')
-      return
-    }
+  // const sendVerificationCode = (email: string) => {
+  //   if (!email || !email.includes('@')) {
+  //     alert('Please enter a valid email before requesting a code.')
+  //     return
+  //   }
 
-    console.log('Form submitted:', values)
-    alert('Application submitted successfully!')
-    // Here you would typically send the data to your backend
+  //   const code = Math.floor(100000 + Math.random() * 900000).toString()
+  //   setGeneratedCode(code)
+  //   setCodeSent(true)
+  //   alert(`Verification code sent to: ${email}\nCode (for demo): ${code}`)
+  // }
+
+  const handleSubmit = async (values: FormValues) => {
+    // if (values.verificationCode !== generatedCode) {
+    //   alert('Verification code is incorrect or missing.')
+    //   return
+    // }
+
+    try {
+      // Generate mailto link and open email client
+      const mailtoLink = generateMailtoLink(values)
+      window.location.href = mailtoLink
+
+      // Show success message
+      setSubmitStatus('success')
+      setSubmitMessage(
+        'Opening your email client... Please send the email to complete your partner application.'
+      )
+
+      // Reset form after a short delay (but keep the generated code for reference)
+      setTimeout(() => {
+        setSubmitStatus(null)
+        setSubmitMessage('')
+      }, 5000)
+    } catch (error) {
+      setSubmitStatus('error')
+      setSubmitMessage(
+        'Failed to open email client. Please try contacting us directly at partnerships@cliox.org'
+      )
+      console.error('Failed to generate mailto link:', error)
+    }
   }
 
   return (
@@ -238,8 +282,8 @@ export default function PartnerIntakeForm(): ReactElement {
                 </div>
               )}
 
-              {/* Email Verification */}
-              <div>
+              {/* Email Verification - Temporarily Commented Out */}
+              {/* <div>
                 <label className="block font-medium text-black text-sm mb-1.5">
                   *Email Verification Code
                 </label>
@@ -263,7 +307,7 @@ export default function PartnerIntakeForm(): ReactElement {
                     {errors.verificationCode}
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Privacy Consent */}
               <div className="pt-2">
@@ -292,6 +336,19 @@ export default function PartnerIntakeForm(): ReactElement {
                   </div>
                 )}
               </div>
+
+              {/* Status Message */}
+              {submitStatus && (
+                <div
+                  className={`text-sm text-center ${
+                    submitStatus === 'success'
+                      ? 'text-green-600'
+                      : 'text-red-600'
+                  }`}
+                >
+                  {submitMessage}
+                </div>
+              )}
 
               {/* Submit Button */}
               <div className="pt-4 text-center">
