@@ -6,6 +6,9 @@ export interface ResourceCard {
   description: string
   image: string
   link: string
+  // Optional content for search functionality
+  content?: string
+  tags?: string[]
 }
 
 export interface Tab {
