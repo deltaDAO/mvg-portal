@@ -1,4 +1,5 @@
 import { ReactElement, useState, useMemo, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import SearchIcon from '@images/search.svg'
 import { ResourceCard, Tab } from './types'
 import { loadResourcesByCategory } from '@/utils/loadResources'
@@ -23,7 +24,51 @@ export default function Resources({
   const [searchQuery, setSearchQuery] = useState('')
   const [resourceCards, setResourceCards] =
     useState<ResourceCard[]>(initialArticles)
+  const [allResourceCards, setAllResourceCards] = useState<ResourceCard[]>([])
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
+
+  const handleContactClick = (e: React.MouseEvent) => {
+    e.preventDefault()
+    router.push('/').then(() => {
+      // Small delay to ensure page has loaded
+      setTimeout(() => {
+        const contactSection = document.querySelector('#contact')
+        if (contactSection) {
+          contactSection.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 100)
+    })
+  }
+
+  // Load all resources for search functionality
+  useEffect(() => {
+    const loadAllResources = async () => {
+      try {
+        const allResources: ResourceCard[] = []
+
+        // Load articles (use initial if available)
+        if (initialArticles.length > 0) {
+          allResources.push(...initialArticles)
+        } else {
+          const articles = await loadResourcesByCategory('articles')
+          allResources.push(...articles)
+        }
+
+        // Load other resource types
+        for (const tab of tabs.filter((t) => t.id !== 'articles')) {
+          const resources = await loadResourcesByCategory(tab.id)
+          allResources.push(...resources)
+        }
+
+        setAllResourceCards(allResources)
+      } catch (error) {
+        console.error('Error loading all resources:', error)
+      }
+    }
+
+    loadAllResources()
+  }, [initialArticles])
 
   // Load resources when active tab changes
   useEffect(() => {
@@ -51,15 +96,29 @@ export default function Resources({
   }, [activeTab, initialArticles])
 
   const filteredCards = useMemo(() => {
-    return resourceCards.filter((card) => {
-      const matchesCategory = card.category === activeTab
-      const matchesSearch =
-        searchQuery === '' ||
-        card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        card.description.toLowerCase().includes(searchQuery.toLowerCase())
-      return matchesCategory && matchesSearch
-    })
-  }, [resourceCards, activeTab, searchQuery])
+    // If there's a search query, search across all resources
+    if (searchQuery.trim() !== '') {
+      return allResourceCards.filter(
+        (card) =>
+          card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          card.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          card.tag.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+
+    // Otherwise, filter by current tab
+    return resourceCards.filter((card) => card.category === activeTab)
+  }, [resourceCards, allResourceCards, activeTab, searchQuery])
+
+  // Show search results count when searching
+  const searchResultsText = useMemo(() => {
+    if (searchQuery.trim() === '') return null
+
+    const count = filteredCards.length
+    if (count === 0) return `No results found for "${searchQuery}"`
+    if (count === 1) return `1 result found for "${searchQuery}"`
+    return `${count} results found for "${searchQuery}"`
+  }, [filteredCards.length, searchQuery])
 
   return (
     <div className="bg-white -mb-16">
@@ -75,7 +134,8 @@ export default function Resources({
               you need to get the most out of Clio-X. If you don&apos;t see what
               you need, feel free to{' '}
               <a
-                href="#contact"
+                href="/#contact"
+                onClick={handleContactClick}
                 className="text-amber-700 underline hover:text-amber-800"
               >
                 get in touch
@@ -111,34 +171,41 @@ export default function Resources({
             <SearchIcon className="w-5 h-5 mr-3 flex-shrink-0" />
             <input
               type="text"
-              placeholder="Search for articles, videos, events"
+              placeholder="Search across all resources..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full text-base text-gray-700 placeholder-gray-500 border-none outline-none bg-transparent"
             />
           </div>
+          {searchResultsText && (
+            <div className="mt-3 text-sm text-gray-600">
+              {searchResultsText}
+            </div>
+          )}
         </div>
 
-        {/* Tabs */}
-        <div className="flex flex-wrap justify-center gap-4 py-5 mb-10">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center justify-center px-4 py-2.5 cursor-pointer font-semibold text-base h-12 border-b-2 transition-colors duration-200 ${
-                activeTab === tab.id
-                  ? 'text-amber-700 border-amber-700'
-                  : 'text-black border-transparent hover:text-amber-700'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        {/* Tabs - hide when searching */}
+        {searchQuery.trim() === '' && (
+          <div className="flex flex-wrap justify-center gap-4 py-5 mb-10">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center justify-center px-4 py-2.5 cursor-pointer font-semibold text-base h-12 border-b-2 transition-colors duration-200 ${
+                  activeTab === tab.id
+                    ? 'text-amber-700 border-amber-700'
+                    : 'text-black border-transparent hover:text-amber-700'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Resource Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-5 pb-16">
-          {loading ? (
+          {loading && searchQuery.trim() === '' ? (
             <div className="col-span-full text-center py-16">
               <p className="text-gray-500 text-lg">Loading resources...</p>
             </div>
@@ -178,11 +245,23 @@ export default function Resources({
               </div>
             ))
           )}
-          {!loading && filteredCards.length === 0 && (
+          {!loading &&
+            filteredCards.length === 0 &&
+            searchQuery.trim() === '' && (
+              <div className="col-span-full text-center py-16">
+                <p className="text-gray-500 text-lg">
+                  No resources found in this category.
+                </p>
+              </div>
+            )}
+          {filteredCards.length === 0 && searchQuery.trim() !== '' && (
             <div className="col-span-full text-center py-16">
               <p className="text-gray-500 text-lg">
-                No resources found in this category
-                {searchQuery && ' matching your search'}.
+                No resources found matching your search.
+              </p>
+              <p className="text-gray-400 text-sm mt-2">
+                Try using different keywords or clear your search to browse all
+                resources.
               </p>
             </div>
           )}

@@ -48,35 +48,81 @@ export async function loadArticleMetadata(
   }
 }
 
-// Function to load all published articles
-export async function loadAllArticles(): Promise<ResourceCard[]> {
+// Convert article metadata to resource card format
+function articleToResourceCard(article: ArticleMetadata): ResourceCard {
+  return {
+    id: article.id,
+    category: article.category,
+    tag: article.tag,
+    title: article.title,
+    description: article.description,
+    image: article.cardImage,
+    link: `/articles/${article.slug}`
+  }
+}
+
+// Load articles from index
+async function loadAllArticles(): Promise<ResourceCard[]> {
   try {
-    // For now, we'll hardcode the articles list
-    // In a real implementation, this would scan the articles directory
-    const articleSlugs = ['web-evolution']
-
-    const articles: ResourceCard[] = []
-
-    for (const slug of articleSlugs) {
-      const metadata = await loadArticleMetadata(slug)
-      if (metadata && metadata.isPublished) {
-        articles.push({
-          id: metadata.id,
-          category: metadata.category,
-          tag: metadata.tag,
-          title: metadata.title,
-          description: metadata.description,
-          image: `/content/resources/articles/${slug}/${metadata.cardImage}`,
-          link: `/articles/${slug}`
-        })
-      }
-    }
-
-    return articles
+    const articlesIndex = await import(
+      '../../content/resources/articles/index.json'
+    )
+    return articlesIndex.articles || []
   } catch (error) {
     console.error('Error loading articles:', error)
     return []
   }
+}
+
+// Load academy resources
+async function loadAcademyResources(): Promise<ResourceCard[]> {
+  try {
+    const academyIndex = await import(
+      '../../content/resources/academy/index.json'
+    )
+    return academyIndex.academy || []
+  } catch (error) {
+    console.error('Error loading academy resources:', error)
+    return []
+  }
+}
+
+// Load events
+async function loadEvents(): Promise<ResourceCard[]> {
+  try {
+    const eventsIndex = await import(
+      '../../content/resources/events/index.json'
+    )
+    return eventsIndex.events || []
+  } catch (error) {
+    console.error('Error loading events:', error)
+    return []
+  }
+}
+
+// Load guides
+async function loadGuides(): Promise<ResourceCard[]> {
+  try {
+    const guidesIndex = await import(
+      '../../content/resources/guides/index.json'
+    )
+    return guidesIndex.guides || []
+  } catch (error) {
+    console.error('Error loading guides:', error)
+    return []
+  }
+}
+
+// Load glossary (placeholder)
+async function loadGlossary(): Promise<ResourceCard[]> {
+  // TODO: Implement glossary content loading
+  return []
+}
+
+// Load research papers (placeholder)
+async function loadResearchPapers(): Promise<ResourceCard[]> {
+  // TODO: Implement research papers loading
+  return []
 }
 
 // Function to load resources by category
@@ -87,20 +133,15 @@ export async function loadResourcesByCategory(
     case 'articles':
       return await loadAllArticles()
     case 'academy':
-      // TODO: Implement academy content loading
-      return []
+      return await loadAcademyResources()
     case 'events':
-      // TODO: Implement events content loading
-      return []
+      return await loadEvents()
     case 'guides':
-      // TODO: Implement guides content loading
-      return []
+      return await loadGuides()
     case 'glossary':
-      // TODO: Implement glossary content loading
-      return []
+      return await loadGlossary()
     case 'research':
-      // TODO: Implement research papers loading
-      return []
+      return await loadResearchPapers()
     default:
       return []
   }
