@@ -88,6 +88,12 @@ export function loadAllArticlesServer(): ResourceCard[] {
   for (const slug of articleSlugs) {
     const metadata = loadArticleMetadataServer(slug)
     if (metadata && metadata.isPublished) {
+      // Combine all section content for search
+      const combinedContent =
+        metadata.sections
+          ?.map((section) => `${section.title} ${section.content}`)
+          .join(' ') || ''
+
       articles.push({
         id: metadata.id,
         category: metadata.category,
@@ -95,7 +101,9 @@ export function loadAllArticlesServer(): ResourceCard[] {
         title: metadata.title,
         description: metadata.description,
         image: `/content/resources/articles/${slug}/${metadata.cardImage}`,
-        link: `/articles/${slug}`
+        link: `/articles/${slug}`,
+        content: combinedContent,
+        tags: metadata.tags
       })
     }
   }

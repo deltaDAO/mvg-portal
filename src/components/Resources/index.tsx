@@ -47,13 +47,9 @@ export default function Resources({
       try {
         const allResources: ResourceCard[] = []
 
-        // Load articles (use initial if available)
-        if (initialArticles.length > 0) {
-          allResources.push(...initialArticles)
-        } else {
-          const articles = await loadResourcesByCategory('articles')
-          allResources.push(...articles)
-        }
+        // Always load articles from metadata files to get full content
+        const articles = await loadResourcesByCategory('articles')
+        allResources.push(...articles)
 
         // Load other resource types
         for (const tab of tabs.filter((t) => t.id !== 'articles')) {
@@ -98,11 +94,17 @@ export default function Resources({
   const filteredCards = useMemo(() => {
     // If there's a search query, search across all resources
     if (searchQuery.trim() !== '') {
+      const searchTerm = searchQuery.toLowerCase()
       return allResourceCards.filter(
         (card) =>
-          card.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          card.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          card.tag.toLowerCase().includes(searchQuery.toLowerCase())
+          card.title.toLowerCase().includes(searchTerm) ||
+          card.description.toLowerCase().includes(searchTerm) ||
+          card.tag.toLowerCase().includes(searchTerm) ||
+          // Search through article content
+          (card.content && card.content.toLowerCase().includes(searchTerm)) ||
+          // Search through tags array
+          (card.tags &&
+            card.tags.some((tag) => tag.toLowerCase().includes(searchTerm)))
       )
     }
 

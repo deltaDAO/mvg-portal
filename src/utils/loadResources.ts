@@ -50,6 +50,12 @@ export async function loadArticleMetadata(
 
 // Convert article metadata to resource card format
 function articleToResourceCard(article: ArticleMetadata): ResourceCard {
+  // Combine all section content for search
+  const combinedContent =
+    article.sections
+      ?.map((section) => `${section.title} ${section.content}`)
+      .join(' ') || ''
+
   return {
     id: article.id,
     category: article.category,
@@ -57,17 +63,42 @@ function articleToResourceCard(article: ArticleMetadata): ResourceCard {
     title: article.title,
     description: article.description,
     image: article.cardImage,
-    link: `/articles/${article.slug}`
+    link: `/articles/${article.slug}`,
+    content: combinedContent,
+    tags: article.tags
   }
 }
 
-// Load articles from index
+// Load articles with full content from metadata files
 async function loadAllArticles(): Promise<ResourceCard[]> {
   try {
+    // First get the list of articles from the index
     const articlesIndex = await import(
       '../../content/resources/articles/index.json'
     )
-    return articlesIndex.articles || []
+    const articlesList = articlesIndex.articles || []
+
+    // Then load the full metadata for each article
+    const articlesWithContent: ResourceCard[] = []
+
+    for (const article of articlesList) {
+      try {
+        const metadata = await loadArticleMetadata(article.slug)
+        if (metadata && metadata.isPublished) {
+          const resourceCard = articleToResourceCard(metadata)
+          articlesWithContent.push(resourceCard)
+        }
+      } catch (error) {
+        console.error(
+          `Error loading metadata for article ${article.slug}:`,
+          error
+        )
+        // Fallback to basic article data if metadata fails to load
+        articlesWithContent.push(article)
+      }
+    }
+
+    return articlesWithContent
   } catch (error) {
     console.error('Error loading articles:', error)
     return []
