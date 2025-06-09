@@ -30,7 +30,7 @@ export function generateQuery(
         : [])
     ],
     sort: {
-      'credentialSubject.stats.orders': 'desc'
+      'indexedMetadata.stats.orders': 'desc'
     },
     sortOptions: {
       sortBy: SortTermOptions.Orders

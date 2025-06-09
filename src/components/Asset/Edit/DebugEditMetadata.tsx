@@ -68,7 +68,9 @@ export default function DebugEditMetadata({
         credentialSubject: {
           ...asset.credentialSubject,
           metadata: newMetadata,
-          credentials: updatedCredentials,
+          credentials: updatedCredentials
+        },
+        indexedMetadata: {
           nft: updatedNft
         }
       }
@@ -77,7 +79,6 @@ export default function DebugEditMetadata({
       delete (tmpAsset as AssetExtended).accessDetails
       delete (tmpAsset as AssetExtended).views
       delete (tmpAsset as AssetExtended).offchain
-      delete (tmpAsset as AssetExtended).credentialSubject.stats
 
       setUpdatedAsset(tmpAsset)
     }

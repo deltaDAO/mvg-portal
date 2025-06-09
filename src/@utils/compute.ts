@@ -240,7 +240,7 @@ async function getJobs(
           const compJob: ComputeJobMetaData = {
             ...job,
             assetName: asset.credentialSubject?.metadata?.name,
-            assetDtSymbol: asset.credentialSubject?.datatokens[0].symbol,
+            assetDtSymbol: asset.indexedMetadata?.stats[0].symbol,
             networkId: asset.credentialSubject.chainId
           }
           computeJobs.push(compJob)

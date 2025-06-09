@@ -108,7 +108,9 @@ export default function Edit({
         credentialSubject: {
           ...(asset as Asset).credentialSubject,
           metadata: updatedMetadata,
-          credentials: updatedCredentials,
+          credentials: updatedCredentials
+        },
+        indexedMetadata: {
           nft: updatedNft
         },
         additionalDdos:
@@ -124,7 +126,6 @@ export default function Edit({
       delete (updatedAsset as AssetExtended).accessDetails
       delete (updatedAsset as AssetExtended).views
       delete (updatedAsset as AssetExtended).offchain
-      delete (updatedAsset as AssetExtended).credentialSubject.stats
 
       const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,

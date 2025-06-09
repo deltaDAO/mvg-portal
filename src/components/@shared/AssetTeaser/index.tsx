@@ -7,8 +7,6 @@ import AssetType from '@shared/AssetType'
 import NetworkName from '@shared/NetworkName'
 import styles from './index.module.css'
 import { getServiceByName } from '@utils/ddo'
-import { useUserPreferences } from '@context/UserPreferences'
-import { formatNumber } from '@utils/numbers'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
 export declare type AssetTeaserProps = {
@@ -27,8 +25,7 @@ export default function AssetTeaser({
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
   const owner = asset.indexedMetadata.nft?.owner
-  const { orders, allocated } = asset.credentialSubject.stats || {}
-  const { locale } = useUserPreferences()
+  const { orders } = asset.indexedMetadata.stats[0] || {}
 
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
@@ -55,18 +52,6 @@ export default function AssetTeaser({
         )}
         <footer className={styles.footer}>
           <div className={styles.stats}>
-            {allocated && allocated > 0 ? (
-              <span className={styles.typeLabel}>
-                {allocated < 0 ? (
-                  ''
-                ) : (
-                  <>
-                    <strong>{formatNumber(allocated, locale, '0')}</strong>{' '}
-                    veOCEAN
-                  </>
-                )}
-              </span>
-            ) : null}
             {orders && orders > 0 ? (
               <span className={styles.typeLabel}>
                 {orders < 0 ? (

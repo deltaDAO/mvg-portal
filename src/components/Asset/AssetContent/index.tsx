@@ -157,7 +157,7 @@ export default function AssetContent({
             <p>Loading access details...</p>
           ) : (
             <>
-              {asset?.credentialSubject?.nft?.state === 0 ? (
+              {asset?.indexedMetadata?.nft?.state === 0 ? (
                 selectedService === undefined ? (
                   <>
                     <h3>Available services:</h3>
@@ -190,7 +190,7 @@ export default function AssetContent({
                 )
               ) : (
                 <h4>
-                  {asset?.credentialSubject?.nft?.owner === accountId
+                  {asset?.indexedMetadata?.nft?.owner === accountId
                     ? 'You are the asset owner.'
                     : 'Services cannot be ordered.'}
                 </h4>

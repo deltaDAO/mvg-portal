@@ -46,7 +46,16 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Price',
     selector: (row) => {
-      return <Price price={row.credentialSubject.stats.price} size="small" />
+      return (
+        <Price
+          price={{
+            value: Number(row.indexedMetadata.stats[0].prices[0].price),
+            tokenSymbol: row.indexedMetadata.stats[0].symbol,
+            tokenAddress: row.indexedMetadata.stats[0].datatokenAddress
+          }}
+          size="small"
+        />
+      )
     },
     maxWidth: '7rem'
   },
@@ -55,9 +64,9 @@ const columns: TableOceanColumn<AssetExtended>[] = [
     selector: (row) => {
       return (
         <strong>
-          {row.credentialSubject.stats.orders < 0
+          {row.indexedMetadata.stats[0].orders < 0
             ? 'N/A'
-            : row.credentialSubject.stats.orders}
+            : row.indexedMetadata.stats[0].orders}
         </strong>
       )
     },

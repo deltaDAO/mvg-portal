@@ -585,7 +585,7 @@ export async function getDownloadAssets(
           return {
             asset,
             networkId: asset?.credentialSubject?.chainId,
-            dtSymbol: asset?.credentialSubject?.datatokens[0]?.symbol,
+            dtSymbol: asset?.indexedMetadata?.stats[0]?.symbol,
             timestamp
           }
         })

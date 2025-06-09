@@ -312,7 +312,7 @@ export default function Download({
         hasPreviousOrder={isOwned}
         hasDatatoken={hasDatatoken}
         btSymbol={accessDetails.baseToken?.symbol}
-        dtSymbol={asset.credentialSubject?.datatokens[serviceIndex]?.symbol} // TODO - check datatokens
+        dtSymbol={asset.indexedMetadata?.stats[serviceIndex]?.symbol} // TODO - check datatokens
         dtBalance={dtBalance}
         type="submit"
         assetTimeout={secondsToString(service.timeout)}
