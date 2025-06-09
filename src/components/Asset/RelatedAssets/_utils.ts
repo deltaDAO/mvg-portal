@@ -26,7 +26,7 @@ export function generateQuery(
           ]
         : []),
       ...(owner
-        ? [{ term: { 'credentialSubject.nft.owner.keyword': owner } }]
+        ? [{ term: { 'indexedMetadata.nft.owner.keyword': owner } }]
         : [])
     ],
     sort: {

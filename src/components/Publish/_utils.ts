@@ -743,7 +743,6 @@ export async function signAssetAndUploadToIpfs(
   }
 
   // these properties are mutable due blockchain interaction
-  delete credential.credentialSubject.datatokens
   delete credential.credentialSubject.event
 
   let jwtVerifiableCredential

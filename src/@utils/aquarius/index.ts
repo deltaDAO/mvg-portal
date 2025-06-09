@@ -69,7 +69,7 @@ export function parseFilters(
     serviceType: 'credentialSubject.metadata.type',
     filterSet: 'credentialSubject.metadata.tags.keyword',
     filterTime: 'credentialSubject.metadata.created',
-    assetState: 'credentialSubject.nft.state'
+    assetState: 'indexedMetadata.nft.state'
   }
   if (filtersList) {
     const filterTerms = Object.keys(filtersList)?.map((key) => {
@@ -146,12 +146,12 @@ export function generateBaseQuery(
             : []),
           ...(baseQueryParams.ignorePurgatory
             ? []
-            : [getFilterTerm('credentialSubject.purgatory.state', false)]),
+            : [getFilterTerm('indexedMetadata.purgatory.state', false)]),
           {
             bool: {
               must_not: [
                 !baseQueryParams.ignoreState &&
-                  getFilterTerm('credentialSubject.nft.state', 5),
+                  getFilterTerm('indexedMetadata.nft.state', 5),
                 getDynamicPricingMustNot()
               ]
             }
@@ -355,7 +355,7 @@ export async function getPublishedAssets(
   if (!accountId) return
   const filters: FilterTerm[] = []
   filters.push(
-    getFilterTerm('credentialSubject.nft.owner', accountId.toLowerCase())
+    getFilterTerm('indexedMetadata.nft.owner', accountId.toLowerCase())
   )
   if (filtersList) {
     parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
@@ -419,7 +419,7 @@ async function getTopPublishers(
     aggs: {
       topPublishers: {
         terms: {
-          field: 'credentialSubject.nft.owner.keyword',
+          field: 'indexedMetadata.nft.owner.keyword',
           order: { totalSales: 'desc' }
         },
         aggs: {

@@ -23,7 +23,7 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
         const datatoken = new Datatoken(signer, ddo.credentialSubject?.chainId)
         setPaymentCollector(
           await datatoken.getPaymentCollector(
-            ddo.credentialSubject.datatokens[0].address
+            ddo.indexedMetadata.stats[0].datatokenAddress || ''
           )
         )
       } catch (error) {
@@ -52,13 +52,13 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
       )}
       <MetaItem
         title="Owner"
-        content={<Publisher account={ddo?.credentialSubject.nft?.owner} />}
+        content={<Publisher account={ddo?.indexedMetadata.nft?.owner} />}
       />
       {assetState !== 'Active' && (
         <MetaItem title="Asset State" content={assetState} />
       )}
       {paymentCollector &&
-        paymentCollector !== ddo?.credentialSubject.nft?.owner && (
+        paymentCollector !== ddo?.indexedMetadata.nft?.owner && (
           <MetaItem
             title="Revenue Sent To"
             content={<Publisher account={paymentCollector} />}

@@ -9,11 +9,8 @@ import { ConfigHelper, Config } from '@oceanprotocol/lib'
 */
 export function sanitizeDevelopmentConfig(config: Config): Config {
   return {
-    subgraphUri: process.env.NEXT_PUBLIC_SUBGRAPH_URI || config.subgraphUri,
-    metadataCacheUri:
-      process.env.NEXT_PUBLIC_METADATACACHE_URI || config.metadataCacheUri,
-    providerUri: process.env.NEXT_PUBLIC_PROVIDER_URL || config.providerUri,
-    nodeUri: process.env.NEXT_PUBLIC_RPC_URL || config.nodeUri,
+    nodeUri: process.env.NEXT_PUBLIC_NODE_URI || config.nodeUri,
+    oceanNodeUri: process.env.NEXT_PUBLIC_PROVIDER_URL || config.oceanNodeUri,
     fixedRateExchangeAddress:
       process.env.NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS,
     dispenserAddress: process.env.NEXT_PUBLIC_DISPENSER_ADDRESS,
@@ -56,6 +53,6 @@ export function getDevelopmentConfig(): Config {
     // metadataContractAddress: contractAddresses.development?.Metadata,
     // oceanTokenAddress: contractAddresses.development?.Ocean,
     // There is no subgraph in barge so we hardcode the Sepolia one for now
-    subgraphUri: 'https://v4.subgraph.sepolia.oceanprotocol.com'
+    nodeUri: 'https://v4.subgraph.sepolia.oceanprotocol.com'
   } as Config
 }

@@ -99,7 +99,7 @@ export default function Edit({
 
       const updatedCredentials = generateCredentials(values?.credentials)
       const updatedNft: AssetNft = {
-        ...asset.credentialSubject.nft,
+        ...asset.indexedMetadata.nft,
         state: State[values.assetState as unknown as keyof typeof State]
       }
 

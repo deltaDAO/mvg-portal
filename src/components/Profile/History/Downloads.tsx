@@ -34,16 +34,15 @@ export default function ComputeDownloads({
         const config = getOceanConfig(row.asset?.chainId)
         const invoiceData: InvoiceData[] = []
 
-        for (const dt of row.asset.credentialSubject.datatokens) {
+        for (const dt of row.asset.indexedMetadata.stats) {
           try {
             const result = await decodeBuyDataSet(
               row.asset.id,
-              dt.address,
+              dt.datatokenAddress,
               row.asset.credentialSubject.chainId,
-              row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
-              row.asset.credentialSubject.stats.price.tokenAddress ||
-                config.oceanTokenAddress,
-              row.asset.credentialSubject.stats.price.value,
+              row.asset.indexedMetadata.stats.price.tokenSymbol || 'OCEAN',
+              dt.prices[0].token || config.oceanTokenAddress,
+              Number(dt.prices[0].price),
               accountId
             )
             invoiceData.push(...result)
@@ -80,16 +79,15 @@ export default function ComputeDownloads({
         const config = getOceanConfig(row.asset?.chainId)
         const invoiceData: InvoiceData[] = []
 
-        for (const dt of row.asset.credentialSubject.datatokens) {
+        for (const dt of row.asset.indexedMetadata.stats) {
           try {
             const result = await decodeBuyDataSet(
               row.asset.id,
               dt.address,
               row.asset.credentialSubject.chainId,
-              row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
-              row.asset.credentialSubject.stats.price.tokenAddress ||
-                config.oceanTokenAddress,
-              row.asset.credentialSubject.stats.price.value,
+              dt.symbol || 'OCEAN',
+              dt.prices[0].token || config.oceanTokenAddress,
+              Number(dt.prices[0].price),
               accountId
             )
             invoiceData.push(...result)

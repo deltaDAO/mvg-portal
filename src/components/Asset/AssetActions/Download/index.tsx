@@ -107,8 +107,8 @@ export default function Download({
     (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
 
   useEffect(() => {
-    Number(asset.credentialSubject.nft.state) === 4 && setIsOrderDisabled(true)
-  }, [asset.credentialSubject.nft.state])
+    Number(asset.indexedMetadata.nft.state) === 4 && setIsOrderDisabled(true)
+  }, [asset.indexedMetadata.nft.state])
 
   useEffect(() => {
     if (asset?.credentialSubject?.event?.from === accountId) {

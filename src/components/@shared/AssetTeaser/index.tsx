@@ -26,7 +26,7 @@ export default function AssetTeaser({
   const { name, type, description } = asset.credentialSubject.metadata
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
-  const owner = asset.credentialSubject.nft?.owner
+  const owner = asset.indexedMetadata.nft?.owner
   const { orders, allocated } = asset.credentialSubject.stats || {}
   const { locale } = useUserPreferences()
 

@@ -20,9 +20,10 @@ import { isValidDid } from '@utils/ddo'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 import { useAccount, useNetwork } from 'wagmi'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { Asset, Purgatory } from 'src/@types/Asset'
+import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { parseCredentialPolicies } from '@components/Publish/_utils'
+import { Purgatory } from '@oceanprotocol/ddo-js'
 
 export interface AssetProviderValue {
   isInPurgatory: boolean
@@ -112,14 +113,14 @@ function AssetProvider({
         return
       }
 
-      if (asset.credentialSubject.nft.state === (1 | 2 | 3)) {
+      if (asset.indexedMetadata.nft.state === (1 | 2 | 3)) {
         setTitle(
           `This asset has been set as "${assetStateToString(
-            asset.credentialSubject.nft.state
+            asset.indexedMetadata.nft.state
           )}" by the publisher`
         )
         setError(
-          did + `\n\nPublisher Address: ${asset.credentialSubject.nft.owner}`
+          did + `\n\nPublisher Address: ${asset.indexedMetadata.nft.owner}`
         )
         LoggerInstance.error(`[asset] Failed getting asset for ${did}`, asset)
         return
@@ -148,10 +149,10 @@ function AssetProvider({
           accessDetails
         }))
         setTitle(asset.credentialSubject?.metadata?.name)
-        setOwner(asset.credentialSubject.nft?.owner)
-        setIsInPurgatory(asset.credentialSubject.purgatory?.state)
-        setPurgatoryData(asset.credentialSubject.purgatory)
-        setAssetState(assetStateToString(asset.credentialSubject.nft.state))
+        setOwner(asset.indexedMetadata.nft?.owner)
+        setIsInPurgatory(asset.indexedMetadata.purgatory?.state)
+        setPurgatoryData(asset.indexedMetadata.purgatory)
+        setAssetState(assetStateToString(asset.indexedMetadata.nft.state))
         LoggerInstance.log('[asset] Got asset', asset)
       }
 
@@ -250,9 +251,9 @@ function AssetProvider({
   // Set Asset State as a string
   // -----------------------------------
   useEffect(() => {
-    if (!asset?.credentialSubject.nft) return
+    if (!asset?.indexedMetadata.nft) return
 
-    setAssetState(assetStateToString(asset.credentialSubject.nft.state))
+    setAssetState(assetStateToString(asset.indexedMetadata.nft.state))
   }, [asset])
 
   return (

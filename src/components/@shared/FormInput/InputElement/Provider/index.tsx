@@ -103,7 +103,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
     const oceanConfig = getOceanConfig(chain?.id || 100)
     const providerUrl =
       customProviderUrl ||
-      oceanConfig?.providerUri ||
+      oceanConfig?.oceanNodeUri ||
       initialValues.services[0].providerUrl.url
     helpers.setValue({ url: providerUrl, valid: true, custom: true })
   }
