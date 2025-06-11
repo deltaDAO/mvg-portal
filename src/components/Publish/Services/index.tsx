@@ -68,14 +68,16 @@ export default function ServicesFields(): ReactElement {
           name="services[0].algorithmPrivacy"
         />
       ) : (
-        <>
-          <Field
-            {...getFieldContent('access', content.services.fields)}
-            component={Input}
-            name="services[0].access"
-            options={accessTypeOptions}
-          />
-        </>
+        values.services[0]?.files[0]?.type !== 'saas' && (
+          <>
+            <Field
+              {...getFieldContent('access', content.services.fields)}
+              component={Input}
+              name="services[0].access"
+              options={accessTypeOptions}
+            />
+          </>
+        )
       )}
       <Field
         {...getFieldContent('providerUrl', content.services.fields)}
@@ -102,11 +104,14 @@ export default function ServicesFields(): ReactElement {
           name="services[0].files"
         />
       )}
-      <Field
-        {...getFieldContent('links', content.services.fields)}
-        component={Input}
-        name="services[0].links"
-      />
+      {values.services[0]?.files[0]?.type !== 'saas' && (
+        <Field
+          {...getFieldContent('links', content.services.fields)}
+          component={Input}
+          name="services[0].links"
+        />
+      )}
+
       <Field
         {...getFieldContent('usesConsumerParameters', content.services.fields)}
         component={Input}
