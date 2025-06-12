@@ -13,7 +13,7 @@
         "name": "type",
         "label": "Asset Type",
         "type": "boxSelection",
-        "options": ["Dataset", "Algorithm"],
+        "options": ["Dataset", "Algorithm", "SaaS"],
         "required": true
       },
       {
@@ -167,6 +167,25 @@
         "required": true
       },
       {
+        "name": "redirectUrl",
+        "title": "Redirect URL",
+        "label": "Redirect URL",
+        "placeholder": "e.g. https://delta-dao/the-future-is-now",
+        "help": "The url the user will be redirected to after buying access to the Software as a Service offering.",
+        "type": "saas",
+        "required": true
+      },
+      {
+        "name": "paymentMode",
+        "title": "PaymentMode",
+        "label": "PaymentMode",
+        "help": "Choose the payment mode of your Software as a Service offering.",
+        "type": "select",
+        "selected": "",
+        "options": ["Subscription", "Pay per use"],
+        "required": true
+      },
+      {
         "name": "files",
         "label": "File",
         "prominentHelp": false,
@@ -204,30 +223,6 @@
                 "help": "This HEADERS will be stored encrypted after publishing.",
                 "type": "headers",
                 "required": false
-              }
-            ]
-          },
-          {
-            "value": "saas",
-            "title": "SaaS",
-            "label": "Redirect URL",
-            "placeholder": "e.g. https://delta-dao/the-future-is-now",
-            "help": "The url the user will be redirected to after buying access to the Software as a Service offering.",
-            "prominentHelp": true,
-            "type": "saas",
-            "fieldFormPrefix": "metadata.saas",
-            "required": true,
-            "methods": false,
-            "innerFields": [
-              {
-                "value": "paymentMode",
-                "title": "PaymentMode",
-                "label": "PaymentMode",
-                "help": "Choose the payment mode of your Software as a Service offering.",
-                "type": "select",
-                "selected": "",
-                "options": ["Subscription", "Pay per use"],
-                "required": true
               }
             ]
           },
