@@ -222,7 +222,6 @@ export async function queryMetadata(
       { ...query },
       { cancelToken }
     )
-    console.log('response', response)
     if (!response || response.status !== 200 || !response.data) return
     const data = response.data[0] || []
     return transformQueryResult(data, query.from, query.size)
@@ -501,8 +500,9 @@ export async function getUserSalesAndRevenue(
       // TODO stats is not in ddo
       if (assets && assets.results) {
         assets.results.forEach((asset) => {
-          const orders = asset?.credentialSubject?.stats?.orders || 0
-          const price = asset?.credentialSubject?.stats?.price?.value || 0
+          const orders = asset?.indexedMetadata?.stats[0]?.orders || 0
+          const price =
+            Number(asset?.indexedMetadata?.stats?.[0]?.prices?.[0]?.price) || 0
           totalOrders += orders
           totalRevenue += orders * price
         })
@@ -573,17 +573,20 @@ export async function getDownloadAssets(
     }
   } as BaseQueryParams
   const query = generateBaseQuery(baseQueryparams)
-  console.log('query', query)
   try {
     const result = await queryMetadata(query, cancelToken)
-    console.log('result here', result)
     let downloadedAssets: DownloadedAsset[] = []
     if (result) {
       downloadedAssets = result?.results
         .map((asset) => {
-          const timestamp = new Date(
-            asset?.indexedMetadata?.event.datetime
-          ).getTime()
+          const timestampStr =
+            asset?.indexedMetadata?.event?.datetime ??
+            asset?.indexedMetadata?.nft?.created
+
+          const timestamp = timestampStr
+            ? new Date(timestampStr).getTime()
+            : Date.now()
+
           return {
             asset,
             networkId: asset?.credentialSubject?.chainId,

@@ -174,7 +174,6 @@ export async function getAlgorithmsForAsset(
     ),
     token
   )
-  console.log('queryResults', gueryResults)
   const algorithms: Asset[] = gueryResults?.results
   return algorithms
 }

@@ -29,7 +29,6 @@ const Account = forwardRef((props, ref: any) => {
 
     if (isConnected && signer && appConfig.ssiEnabled && !sessionToken) {
       if (storedApi) {
-        console.log('here')
         connectToWallet(signer)
           .then((session) => {
             setSessionToken(session)
