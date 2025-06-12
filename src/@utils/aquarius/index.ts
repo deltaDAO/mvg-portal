@@ -126,7 +126,8 @@ FilterTerm | undefined {
 
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams,
-  index?: string
+  index?: string,
+  allNode?: boolean
 ): SearchQuery {
   const generatedQuery = {
     index: index ?? 'op_ddo_v5.0.0',
@@ -160,11 +161,16 @@ export function generateBaseQuery(
               ]
             }
           },
-          {
-            terms: {
-              'credentialSubject.services.serviceEndpoint.keyword': nodeUriIndex
-            }
-          }
+          ...(!allNode
+            ? [
+                {
+                  terms: {
+                    'credentialSubject.services.serviceEndpoint.keyword':
+                      nodeUriIndex
+                  }
+                }
+              ]
+            : [])
         ]
       }
     }
@@ -547,7 +553,7 @@ export async function getUserOrders(
       size: 1000
     }
   } as BaseQueryParams
-  const query = generateBaseQuery(baseQueryparams, 'order')
+  const query = generateBaseQuery(baseQueryparams, 'order', true)
   try {
     return queryMetadata(query, cancelToken)
   } catch (error) {
