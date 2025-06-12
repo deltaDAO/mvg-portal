@@ -1,7 +1,11 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import axios, { CancelToken, AxiosResponse } from 'axios'
-import { metadataCacheUri, allowDynamicPricing } from '../../../app.config.cjs'
+import {
+  metadataCacheUri,
+  allowDynamicPricing,
+  nodeUriIndex
+} from '../../../app.config.cjs'
 import {
   SortDirectionOptions,
   SortTermOptions
@@ -154,6 +158,11 @@ export function generateBaseQuery(
                   getFilterTerm('credentialSubject.nft.state', 5),
                 getDynamicPricingMustNot()
               ]
+            }
+          },
+          {
+            terms: {
+              'credentialSubject.services.serviceEndpoint.keyword': nodeUriIndex
             }
           }
         ]
