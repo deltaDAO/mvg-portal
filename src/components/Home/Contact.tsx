@@ -128,7 +128,7 @@ export default function ContactAndOnboarding() {
               </div>
 
               {/* Social Media Contacts */}
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <h3 className="text-lg font-sans font-semibold text-gray-800">
                   {contact.socialSection.title}
                 </h3>
@@ -179,7 +179,7 @@ export default function ContactAndOnboarding() {
                     )
                   )}
                 </div>
-              </div>
+              </div> */}
 
               {/* Build with Us section */}
               {contact.buildWithUs && (
