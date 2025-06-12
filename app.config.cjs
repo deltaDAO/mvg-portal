@@ -112,5 +112,11 @@ module.exports = {
 
   opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL,
   showOnboardingModuleByDefault:
-    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'false'
+    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'false',
+  nodeUriIndex: process.env.NEXT_PUBLIC_NODE_URI_INDEXED
+    ? JSON.parse(process.env.NEXT_PUBLIC_NODE_URI_INDEXED)
+    : [
+        process.env.NEXT_PUBLIC_PROVIDER_URL ||
+          'https://ocean-node-vm3.oceanenterprise.io'
+      ]
 }
