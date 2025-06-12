@@ -11,7 +11,7 @@ import { validationConsumerParameters } from '@components/@shared/FormInput/Inpu
 
 const validationMetadata = {
   type: Yup.string()
-    .matches(/dataset|algorithm/g, { excludeEmptyString: true })
+    .matches(/dataset|algorithm|saas/g, { excludeEmptyString: true })
     .required('Required'),
   name: Yup.string()
     .min(4, (param) => `Title must be at least ${param.min} characters`)

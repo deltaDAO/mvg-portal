@@ -68,30 +68,50 @@ export default function ServicesFields(): ReactElement {
           name="services[0].algorithmPrivacy"
         />
       ) : (
-        <>
-          <Field
-            {...getFieldContent('access', content.services.fields)}
-            component={Input}
-            name="services[0].access"
-            options={accessTypeOptions}
-          />
-        </>
+        values.services[0]?.files[0]?.type !== 'saas' && (
+          <>
+            <Field
+              {...getFieldContent('access', content.services.fields)}
+              component={Input}
+              name="services[0].access"
+              options={accessTypeOptions}
+            />
+          </>
+        )
       )}
       <Field
         {...getFieldContent('providerUrl', content.services.fields)}
         component={Input}
         name="services[0].providerUrl"
       />
-      <Field
-        {...getFieldContent('files', content.services.fields)}
-        component={Input}
-        name="services[0].files"
-      />
-      <Field
-        {...getFieldContent('links', content.services.fields)}
-        component={Input}
-        name="services[0].links"
-      />
+      {values.services[0]?.files[0]?.type === 'saas' ? (
+        <>
+          <Field
+            {...getFieldContent('redirectUrl', content.services.fields)}
+            component={Input}
+            name="services[0].files[0].url"
+          />
+          <Field
+            {...getFieldContent('paymentMode', content.services.fields)}
+            component={Input}
+            name="metadata.saas.paymentMode"
+          />
+        </>
+      ) : (
+        <Field
+          {...getFieldContent('files', content.services.fields)}
+          component={Input}
+          name="services[0].files"
+        />
+      )}
+      {values.services[0]?.files[0]?.type !== 'saas' && (
+        <Field
+          {...getFieldContent('links', content.services.fields)}
+          component={Input}
+          name="services[0].links"
+        />
+      )}
+
       <Field
         {...getFieldContent('usesConsumerParameters', content.services.fields)}
         component={Input}
