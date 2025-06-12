@@ -38,8 +38,8 @@ export function getOceanConfig(network: string | number): Config {
   }
 
   // Override RPC URL for Sepolia if it's set (the reason is ocean.js supports only infura)
-  if (network === 11155111 && process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL) {
-    config.nodeUri = process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL
+  if (network === 11155111 && process.env.NEXT_PUBLIC_NODE_URI) {
+    config.nodeUri = process.env.NEXT_PUBLIC_NODE_URI
   }
 
   return config as Config

@@ -221,7 +221,7 @@ export default function AssetContent({
                   onClick={() =>
                     handleGeneratePdf(
                       asset.id,
-                      asset.credentialSubject.event.txid
+                      asset.indexedMetadata?.event.txid
                     )
                   }
                   disabled={loadingInvoice}
@@ -252,7 +252,7 @@ export default function AssetContent({
                   onClick={() =>
                     handleGenerateJson(
                       asset.id,
-                      asset.credentialSubject.event.txid
+                      asset.indexedMetadata?.event.txid
                     )
                   }
                   disabled={loadingInvoiceJson}

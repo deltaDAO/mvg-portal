@@ -146,7 +146,7 @@ export default function AssetList({
 
             {activeAssetView === AssetViewOptions.Grid &&
               assets?.map((asset) => {
-                if (asset.credentialSubject) {
+                if (asset?.indexedMetadata && asset?.credentialSubject) {
                   return (
                     <AssetTeaser
                       asset={asset}

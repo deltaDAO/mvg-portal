@@ -187,7 +187,6 @@ export async function getResults(
     filterSet
   )
   const queryResult = await queryMetadata(searchQuery, cancelToken)
-
   return queryResult?.results?.length === 0
     ? {
         ...queryResult,

@@ -130,7 +130,7 @@ function ProfileProvider({
       // Fetch all pages of user orders
       while (currentPage <= totalPages) {
         const orders = await getUserOrders(accountId, cancelToken, currentPage)
-
+        console.log('orders', orders)
         orders?.results?.forEach((order) => {
           if (order.datatokenAddress) dtList.push(order.datatokenAddress)
         })
@@ -138,15 +138,19 @@ function ProfileProvider({
         totalPages = orders?.totalPages || 0
         currentPage++
       }
+      console.log('dtlist', dtList)
 
-      // Paginate only the download assets
-      const { downloadedAssets, totalResults } = await getDownloadAssets(
+      const result = await getDownloadAssets(
         dtList,
         chainIds,
         cancelToken,
         ownAccount,
         page // Only paginate here
       )
+      console.log('result', result)
+      // Paginate only the download assets
+      const downloadedAssets = result?.downloadedAssets || []
+      const totalResults = result?.totalResults || 0
 
       setDownloads(downloadedAssets)
       setDownloadsTotal(totalResults)

@@ -664,12 +664,6 @@ export async function transformPublishFormToDdo(
       // Only added for DDO preview, reflecting Asset response,
       // again, we can assume if `datatokenAddress` is not passed,
       // we are on preview.
-      nft: {
-        ...generateNftCreateData(values?.metadata.nft, accountId),
-        address: '',
-        state: 0,
-        created: ''
-      },
       stats: {
         allocated: 0,
         orders: 0,
@@ -678,6 +672,14 @@ export async function transformPublishFormToDdo(
           tokenSymbol: values.pricing?.baseToken?.symbol || 'OCEAN',
           tokenAddress: values.pricing?.baseToken?.address || oceanTokenAddress
         }
+      }
+    },
+    indexedMetadata: {
+      nft: {
+        ...generateNftCreateData(values?.metadata.nft, accountId),
+        address: '',
+        state: 0,
+        created: ''
       }
     },
     additionalDdos: values?.additionalDdos || []
@@ -743,6 +745,7 @@ export async function signAssetAndUploadToIpfs(
   }
 
   // these properties are mutable due blockchain interaction
+  delete credential.credentialSubject.datatokens
   delete credential.credentialSubject.event
 
   let jwtVerifiableCredential

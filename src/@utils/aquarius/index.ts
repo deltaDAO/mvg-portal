@@ -83,13 +83,13 @@ export function parseFilters(
           ? getFilterTerm(filterQueryPath[key], uniqueTags)
           : undefined
       }
-      if (key === 'filterTime' && filtersList[key].length > 0) {
+      if (key === 'filterTime' && filtersList[key]?.length > 0) {
         const now = new Date()
         const targetDate = new Date(now.getTime() - Number(filtersList[key][0]))
         const targetDateISOString = targetDate.toISOString()
         return getRangeFilterTerm(filterQueryPath[key], targetDateISOString)
       }
-      if (filtersList[key].length > 0) {
+      if (filtersList[key]?.length > 0) {
         return getFilterTerm(filterQueryPath[key], filtersList[key])
       }
       return undefined
@@ -104,13 +104,13 @@ export function getWhitelistShould(): FilterTerm[] {
   const { whitelists } = addressConfig
 
   const whitelistFilterTerms = Object.entries(whitelists)
-    .filter(([field, whitelist]) => whitelist.length > 0)
+    .filter(([field, whitelist]) => whitelist?.length > 0)
     .map(([field, whitelist]) =>
       whitelist.map((address) => getFilterTerm(field, address, 'match'))
     )
     .reduce((prev, cur) => prev.concat(cur), [])
 
-  return whitelistFilterTerms.length > 0 ? whitelistFilterTerms : []
+  return whitelistFilterTerms?.length > 0 ? whitelistFilterTerms : []
 }
 
 export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcase
@@ -204,7 +204,7 @@ export function transformQueryResult(
   result.results = queryResult.results
 
   result.totalResults =
-    queryResult.totalResults || queryResult.results.length || 0
+    queryResult.totalResults || queryResult.results?.length || 0
 
   result.totalPages = Math.ceil(result.totalResults / size)
   result.page = from ? from + 1 : 1
@@ -222,6 +222,7 @@ export async function queryMetadata(
       { ...query },
       { cancelToken }
     )
+    console.log('response', response)
     if (!response || response.status !== 200 || !response.data) return
     const data = response.data[0] || []
     return transformQueryResult(data, query.from, query.size)
@@ -240,7 +241,6 @@ export async function getAsset(
 ): Promise<any> {
   try {
     if (!isValidDid(did)) return
-
     const response: AxiosResponse<any> = await axios.get(
       `${metadataCacheUri}/api/aquarius/assets/ddo/${did}`,
       { cancelToken }
@@ -464,7 +464,7 @@ export async function getTopAssetsPublishers(
     return []
   }
 
-  for (let i = 0; i < topPublishers.buckets.length; i++) {
+  for (let i = 0; i < topPublishers.buckets?.length; i++) {
     publishers.push({
       id: topPublishers.buckets[i].key,
       totalSales: parseInt(topPublishers.buckets[i].totalSales.value)
@@ -512,7 +512,7 @@ export async function getUserSalesAndRevenue(
     } while (
       assets &&
       assets.results &&
-      assets.results.length > 0 &&
+      assets.results?.length > 0 &&
       page <= assets.totalPages
     )
 
@@ -573,14 +573,16 @@ export async function getDownloadAssets(
     }
   } as BaseQueryParams
   const query = generateBaseQuery(baseQueryparams)
+  console.log('query', query)
   try {
     const result = await queryMetadata(query, cancelToken)
+    console.log('result here', result)
     let downloadedAssets: DownloadedAsset[] = []
     if (result) {
-      downloadedAssets = result.results
+      downloadedAssets = result?.results
         .map((asset) => {
           const timestamp = new Date(
-            asset?.credentialSubject?.event.datetime
+            asset?.indexedMetadata?.event.datetime
           ).getTime()
           return {
             asset,

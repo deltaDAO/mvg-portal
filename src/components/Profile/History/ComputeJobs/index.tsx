@@ -83,8 +83,8 @@ export default function ComputeJobs({
         const asset = await getAsset(row.inputDID[0], newCancelToken())
         const priceAlgo = assetAlgo.stats.price.value
         const priceAsset = Number(asset.indexedMetadata.stats[0].price[0].price)
-        const ownerAlgo = assetAlgo.event.from
-        const ownerAsset = asset.event.from
+        const ownerAlgo = assetAlgo.indexedMetadata?.event.from
+        const ownerAsset = asset.indexedMetadata?.event.from
 
         const response = await decodeBuyComputeJob(
           row.agreementId,
@@ -124,8 +124,8 @@ export default function ComputeJobs({
         const priceAsset = Number(
           asset.indexedMetadata?.stats[0]?.prices[0]?.price
         )
-        const ownerAlgo = assetAlgo.event.from
-        const ownerAsset = asset.event.from
+        const ownerAlgo = assetAlgo.indexedMetadata?.event.from
+        const ownerAsset = asset.indexedMetadata?.event.from
 
         const response = await decodeBuyComputeJob(
           row.agreementId,
