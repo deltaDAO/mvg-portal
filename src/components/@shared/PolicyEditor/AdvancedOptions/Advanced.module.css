@@ -47,9 +47,7 @@
 }
 
 .numberInput {
-  width: 4rem !important;
-  min-width: 4rem;
-  max-width: 4rem;
+  min-width: 294px;
 }
 
 .hidden {
