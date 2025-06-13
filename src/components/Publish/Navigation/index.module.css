@@ -187,18 +187,26 @@
 }
 */
 
-/* Hover Effects */
-.step:hover {
+.step:hover,
+.step:focus-within {
   opacity: 0.8;
   transform: translateY(-1px);
   transition: all 0.2s ease;
 }
 
-.activeStepCircle:hover {
+.step:focus-visible {
+  outline: 2px solid var(--publish-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.activeStepCircle:hover,
+.activeStepCircle:focus {
   transform: scale(1.05);
 }
 
-.inactiveStepCircle:hover {
+.inactiveStepCircle:hover,
+.inactiveStepCircle:focus {
   border-color: #0a4b70;
   transform: scale(1.05);
 }

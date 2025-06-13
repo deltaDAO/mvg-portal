@@ -49,8 +49,9 @@
 .container.publish input:focus:not([type='checkbox']):not([type='radio']),
 .container.publish select:focus,
 .container.publish textarea:focus {
-  border-color: var(--publish-input-border-color);
-  box-shadow: none;
+  border-color: var(--publish-primary);
+  box-shadow: 0 0 0 2px rgba(10, 75, 112, 0.2);
+  outline: none;
 }
 
 .container.publish input::placeholder,

@@ -73,8 +73,7 @@
 }
 
 body .publish {
-  min-width: var(--publish-continue-button-width);
-  min-width: var(--publish-continue-button-width);
+  min-width: auto;
   padding: var(--publish-continue-button-padding);
   background: var(--publish-accent);
   color: var(--publish-primary);
@@ -84,7 +83,6 @@ body .publish {
   font-size: var(--publish-font-size-base);
   line-height: var(--publish-line-height-base);
   box-shadow: var(--publish-shadow);
-  min-width: auto;
   text-transform: none;
   transition: all 0.3s ease;
 }
@@ -95,8 +93,6 @@ body .publish:focus {
   box-shadow: var(--publish-shadow-lg);
   background: #facf5a;
   color: #0a4b70;
-  transform: translate3d(0, -0.05rem, 0);
-  box-shadow: var(--publish-shadow-lg);
   transition: all 0.3s ease;
 }
 

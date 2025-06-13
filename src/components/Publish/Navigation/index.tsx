@@ -1,5 +1,5 @@
 import { FormikContextType, useFormikContext } from 'formik'
-import { ReactElement, useEffect } from 'react'
+import React, { ReactElement, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { FormPublishData } from '../_types'
 import { wizardSteps } from '../_constants'
@@ -15,8 +15,14 @@ export default function Navigation(): ReactElement {
   }: FormikContextType<FormPublishData> = useFormikContext()
 
   function handleStepClick(step: number) {
-    // Change step view
     router.push(`/publish/${step}`)
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent, step: number) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleStepClick(step)
+    }
   }
 
   function getSuccessClass(step: number) {
@@ -70,10 +76,10 @@ export default function Navigation(): ReactElement {
 
   // Progress bar function - COMMENTED OUT
 
-  const getProgressWidth = () => {
-    const progressPercentage = (currentStep / wizardSteps.length) * 100
-    return `${progressPercentage}%`
-  }
+  // const getProgressWidth = () => {
+  //   const progressPercentage = (currentStep / wizardSteps.length) * 100
+  //   return `${progressPercentage}%`
+  // }
 
   return (
     <nav className={styles.navigation}>
@@ -90,6 +96,13 @@ export default function Navigation(): ReactElement {
                 isActive ? styles.activeStep : styles.inactiveStep
               }`}
               onClick={() => handleStepClick(step.step)}
+              onKeyDown={(e) => handleKeyDown(e, step.step)}
+              role="button"
+              tabIndex={0}
+              aria-current={isActive ? 'step' : undefined}
+              aria-label={`Step ${step.step}: ${step.title}${
+                isCompleted ? ' (completed)' : ''
+              }`}
             >
               <div
                 className={`${
@@ -112,12 +125,12 @@ export default function Navigation(): ReactElement {
 
       {/* Progress Bar - COMMENTED OUT */}
 
-      <div className={styles.progressBar}>
+      {/* <div className={styles.progressBar}>
         <div
           className={styles.progressFill}
           style={{ width: getProgressWidth() }}
         ></div>
-      </div>
+      </div> */}
     </nav>
   )
 }
