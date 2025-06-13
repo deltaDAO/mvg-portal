@@ -111,7 +111,7 @@ export default function Download({
   }, [asset.indexedMetadata.nft.state])
 
   useEffect(() => {
-    if (asset?.credentialSubject?.event?.from === accountId) {
+    if (asset?.indexedMetadata?.event?.from === accountId) {
       setIsOwner(true)
     }
   }, [asset, accountId])
