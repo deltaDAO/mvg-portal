@@ -104,8 +104,13 @@
       "title": "Find Us",
       "contacts": [
         {
+          "platform": "LinkedIn",
+          "link": "https://www.linkedin.com/company/clio-x-org",
+          "text": "Follow us on LinkedIn"
+        },
+        {
           "platform": "Telegram",
-          "link": "https://t.me/cliox",
+          "link": "https://t.me/ClioXorg",
           "text": "Join our Telegram"
         }
       ]
