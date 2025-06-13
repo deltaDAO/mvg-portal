@@ -1,0 +1,153 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--publish-spacing-md);
+}
+
+.title {
+  font-size: var(--publish-font-size);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--publish-spacing-sm);
+}
+
+.container.large {
+  gap: var(--publish-spacing-xl);
+}
+
+.container.border {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-form-container-padding);
+}
+
+.container.publish {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-form-container-padding-top-extended);
+  gap: var(--publish-spacing-xl);
+}
+
+/* Publish-specific override for form input spacing */
+.container.publish :global([class*='FormInput_field']) {
+  margin-bottom: 0;
+}
+
+/* Publish-specific overrides for FormInput components */
+.container.publish input:not([type='checkbox']):not([type='radio']),
+.container.publish textarea {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-input-padding);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+.container.publish input:focus:not([type='checkbox']):not([type='radio']),
+.container.publish select:focus,
+.container.publish textarea:focus {
+  border-color: var(--publish-input-border-color);
+  box-shadow: none;
+}
+
+.container.publish input::placeholder,
+.container.publish textarea::placeholder {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+/* Override FormInput labels */
+.container.publish label {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+}
+
+/* Override select arrows */
+.container.publish select {
+  background-image: url('../../../../@images/chevron_down.svg');
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  background-position: calc(100% - 15px) center;
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
+  padding: 6px 36px 6px 10px;
+}
+
+/* Publish-specific checkbox styling */
+.container.publish input[type='checkbox']:checked {
+  border-color: var(--publish-accent);
+  background: var(--publish-accent);
+}
+
+.container.publish input[type='checkbox']:checked::after {
+  border-color: var(--publish-white);
+}
+
+/* Publish-specific overrides for TagsAutoComplete (react-select) */
+.container.publish :global([class$='control']) {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  min-height: var(--publish-input-height);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+}
+
+.container.publish :global([class$='control']:hover) {
+  border-color: var(--publish-input-border-color);
+}
+
+.container.publish :global([class$='control']:focus-within) {
+  border-color: var(--publish-input-border-color);
+  box-shadow: none;
+}
+
+/* Publish-specific overrides for BoxSelection component */
+.container.publish :global(.boxSelection) {
+  border: 1px solid var(--publish-border);
+  border-radius: var(--publish-border-radius);
+  padding: 8px 25px;
+  height: 40px;
+  min-height: 40px;
+  max-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  box-shadow: none;
+}
+
+/* ADD button (accent color) - target CSS class */
+.container.publish button.primary {
+  background: var(--publish-accent-gradient);
+  color: var(--publish-primary);
+  border: none;
+  box-shadow: var(--publish-shadow-sm);
+}
+
+.container.publish button.primary:hover,
+.container.publish button.primary:focus {
+  background: var(--publish-accent-gradient);
+  transform: none;
+  box-shadow: var(--publish-shadow-sm);
+}
+
+/* SUBMIT URL button (primary blue) - target CSS class */
+.container.publish button.publish {
+  background: var(--publish-primary-gradient);
+  color: var(--publish-white);
+  border: none;
+  box-shadow: var(--publish-shadow-sm);
+}
+
+.container.publish button.publish:hover,
+.container.publish button.publish:focus {
+  background: var(--publish-primary-gradient);
+  transform: none;
+  box-shadow: var(--publish-shadow-sm);
+}

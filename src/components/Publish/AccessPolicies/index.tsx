@@ -5,8 +5,9 @@ import appConfig from 'app.config.cjs'
 import { getDefaultPolicies } from '../_utils'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import AccessRulesSection from './AccessRulesSection'
-import SSIPoliciesSection from './SSIPoliciesSection'
+import SSIPoliciesSection from '../../@shared/SSIPoliciesSection'
 import styles from './index.module.css'
+import ContainerForm from '../../@shared/atoms/ContainerForm'
 
 export function AccessPolicies(): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
@@ -33,9 +34,12 @@ export function AccessPolicies(): ReactElement {
   }, [])
 
   return (
-    <div className={styles.accessPoliciesContainer}>
+    <ContainerForm style="large">
       <AccessRulesSection />
-      <SSIPoliciesSection defaultPolicies={defaultPolicies} />
-    </div>
+      <SSIPoliciesSection
+        defaultPolicies={defaultPolicies}
+        fieldNamePrefix="credentials"
+      />
+    </ContainerForm>
   )
 }

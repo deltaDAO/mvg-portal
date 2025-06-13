@@ -82,7 +82,11 @@ const InputElement = forwardRef(
     }: InputProps,
     ref: RefObject<HTMLInputElement>
   ): ReactElement => {
-    const styleClasses = cx({ select: true, [size]: size })
+    const styleClasses = cx({
+      select: props.selectStyle !== 'publish',
+      publishSelect: props.selectStyle === 'publish',
+      [size]: size
+    })
 
     switch (props.type) {
       case 'select': {

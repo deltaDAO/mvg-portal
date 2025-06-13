@@ -14,7 +14,7 @@
   flex: 1 1 0px;
   padding: 15px 25px;
   border-radius: var(--publish-border-radius);
-  border: 1.5px solid rgba(10, 75, 112, 0.5);
+  border: 1.5px solid var(--publish-border);
   color: var(--color-secondary);
   cursor: pointer;
   box-shadow: -2px 0 8px 0 rgba(0, 0, 0, 0.15);
@@ -130,7 +130,7 @@
 }
 
 .small .boxSelection {
-  border: 1px solid rgba(10, 75, 112, 0.5);
+  border: 1px solid var(--publish-input-border-color);
 }
 
 .small .boxSelection svg {

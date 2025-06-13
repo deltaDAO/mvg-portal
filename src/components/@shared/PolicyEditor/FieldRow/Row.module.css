@@ -1,0 +1,27 @@
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--sp-4);
+  row-gap: var(--sp-4);
+}
+
+.row > * {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.addPolicy {
+  flex: 0 0 auto;
+  margin-top: var(--sp-4);
+  align-self: flex-start;
+}
+
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .row > * {
+    flex: 1 1 auto;
+  }
+}

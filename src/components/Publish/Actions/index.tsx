@@ -67,8 +67,11 @@ export default function Actions({
     values.feedback?.[2].status === 'error' ||
     values.feedback?.[3].status === 'error'
 
+  const isMetadataPage = values.user.stepCurrent === 1
+  const actionsClassName = isMetadataPage ? styles.actionsRight : styles.actions
+
   return (
-    <footer className={styles.actions}>
+    <footer className={actionsClassName}>
       {did ? (
         <SuccessConfetti
           success="Successfully published!"

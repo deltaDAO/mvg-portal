@@ -1,5 +1,6 @@
 import { getFieldContent } from '@utils/form'
 import { Field } from 'formik'
+import cs from 'classnames'
 import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import Input from '../FormInput'
@@ -17,6 +18,17 @@ import {
 import fields from './editor.json'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
+import CredentialCard from './CredentialCard/Card'
+import StaticPolicyBlock from './PolicyBlocks/Static'
+import AllowedIssuerPolicyBlock from './PolicyBlocks/AllowedIssuer'
+import CustomUrlPolicyBlock from './PolicyBlocks/CustomUrl'
+import CustomFieldPolicyBlock from './PolicyBlocks/CustomField'
+import AdvancedOptions from './AdvancedOptions/Advanced'
+import FieldRow from './FieldRow/Row'
+import fieldRowStyles from './FieldRow/Row.module.css'
+import DeleteButton from '../DeleteButton/DeleteButton'
+import CustomPolicyBlock from './PolicyBlocks/Custom'
+import AddIcon from '@images/add_param.svg'
 
 interface PolicyViewProps {
   policy: PolicyType
@@ -50,14 +62,10 @@ function StaticPolicyView(props: PolicyViewProps): ReactElement {
               name={`${name}.requestCredentials[${index}].policies[${innerIndex}].name`}
             />
           </div>
-          <Button
-            type="button"
-            style="primary"
+          <DeleteButton
             onClick={onDeletePolicy}
             className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-          >
-            Delete
-          </Button>
+          />
         </div>
       </div>
     </>
@@ -102,7 +110,7 @@ function ParameterizedPolicyView(props: PolicyViewProps): ReactElement {
           </div>
           <Button
             type="button"
-            style="primary"
+            style="ghost"
             onClick={onDeletePolicy}
             className={`${styles.deleteButton} ${styles.marginBottomButton}`}
           >
@@ -113,7 +121,7 @@ function ParameterizedPolicyView(props: PolicyViewProps): ReactElement {
         <Button
           type="button"
           className={`${styles.marginTopMinus2em} ${styles.marginBottom2em}`}
-          style="primary"
+          style="gradient"
           onClick={() => newArgument(parameterizedPolicy)}
         >
           New {{ ...getFieldContent('issuerDid', fields) }.label}
@@ -130,16 +138,12 @@ function ParameterizedPolicyView(props: PolicyViewProps): ReactElement {
                   name={`${name}.requestCredentials[${index}].policies[${innerIndex}].args[${argumentIndex}]`}
                 />
               </div>
-              <Button
-                type="button"
-                style="primary"
+              <DeleteButton
                 onClick={() =>
                   deleteArgument(parameterizedPolicy, argumentIndex)
                 }
                 className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-              >
-                Delete
-              </Button>
+              />
             </div>
           </div>
         ))}
@@ -193,7 +197,7 @@ function CustomUrlPolicyView(props: PolicyViewProps): ReactElement {
               </div>
               <Button
                 type="button"
-                style="primary"
+                style="ghost"
                 onClick={onDeletePolicy}
                 className={`${styles.deleteButton} ${styles.marginBottomButton}`}
               >
@@ -211,7 +215,7 @@ function CustomUrlPolicyView(props: PolicyViewProps): ReactElement {
         <Button
           type="button"
           className={`${styles.marginTopMinus2em} ${styles.marginBottom2em}`}
-          style="primary"
+          style="gradient"
           onClick={() => newArgument(urlPolicy)}
         >
           New {{ ...getFieldContent('argument', fields) }.label}
@@ -238,7 +242,7 @@ function CustomUrlPolicyView(props: PolicyViewProps): ReactElement {
               </div>
               <Button
                 type="button"
-                style="primary"
+                style="ghost"
                 onClick={() => deleteArgument(urlPolicy, argumentIndex)}
                 className={`${styles.deleteButton} ${styles.marginBottomButton}`}
               >
@@ -290,7 +294,7 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
           </div>
           <Button
             type="button"
-            style="primary"
+            style="ghost"
             onClick={onDeletePolicy}
             className={`${styles.deleteButton} ${styles.marginBottomButton}`}
           >
@@ -301,7 +305,7 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
         <Button
           type="button"
           className={`${styles.marginTopMinus2em} ${styles.marginBottom2em}`}
-          style="primary"
+          style="gradient"
           onClick={() => newRule(customPolicy)}
         >
           New {{ ...getFieldContent('rule', fields) }.label}
@@ -332,7 +336,7 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
               </div>
               <Button
                 type="button"
-                style="primary"
+                style="ghost"
                 onClick={() => deleteRule(customPolicy, ruleIndex)}
                 className={`${styles.deleteButton} ${styles.marginBottomButton}`}
               >
@@ -347,16 +351,43 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
 }
 
 function PolicyView(props: PolicyViewProps): ReactElement {
-  const { policy }: PolicyViewProps = props
+  const { policy, onDeletePolicy, ...rest }: PolicyViewProps = props
   switch (policy?.type) {
     case 'staticPolicy':
-      return StaticPolicyView(props)
+      return (
+        <StaticPolicyBlock
+          {...rest}
+          policy={policy}
+          onDelete={onDeletePolicy}
+        />
+      )
     case 'parameterizedPolicy':
-      return ParameterizedPolicyView(props)
+      return (
+        <AllowedIssuerPolicyBlock
+          {...rest}
+          policy={policy}
+          onDelete={onDeletePolicy}
+          onValueChange={rest.onValueChange}
+        />
+      )
     case 'customUrlPolicy':
-      return CustomUrlPolicyView(props)
+      return (
+        <CustomUrlPolicyBlock
+          {...rest}
+          policy={policy}
+          onDelete={onDeletePolicy}
+          onValueChange={rest.onValueChange}
+        />
+      )
     case 'customPolicy':
-      return CustomPolicyView(props)
+      return (
+        <CustomPolicyBlock
+          {...rest}
+          policy={policy}
+          onDelete={onDeletePolicy}
+          onValueChange={rest.onValueChange}
+        />
+      )
     default:
       return <></>
   }
@@ -380,7 +411,7 @@ function StaticVpPolicyView(props: VpPolicyViewProps): ReactElement {
           </div>
           <Button
             type="button"
-            style="primary"
+            style="ghost"
             onClick={onDeletePolicy}
             className={`${styles.deleteButton} ${styles.marginBottomButton}`}
           >
@@ -420,7 +451,7 @@ function ArgumentVpPolicyView(props: VpPolicyViewProps): ReactElement {
             </div>
             <Button
               type="button"
-              style="primary"
+              style="ghost"
               onClick={onDeletePolicy}
               className={`${styles.deleteButton} ${styles.marginBottomButton}`}
             >
@@ -483,6 +514,22 @@ export function PolicyEditor(props): ReactElement {
     'revoked-status-list',
     'signature_sd-jwt-vc'
   ]
+
+  function getPolicyDescription(policy: string): string {
+    const descriptions = {
+      signature:
+        'Verifies the cryptographic signature of the credential to ensure authenticity.',
+      'not-before':
+        "Checks that the current time is after the credential's valid-from date.",
+      expired:
+        'Verifies that the credential has not expired based on its expiration date.',
+      'revoked-status-list':
+        'Checks against revocation lists to ensure the credential has not been revoked.',
+      'signature_sd-jwt-vc':
+        'Verifies selective disclosure JWT verifiable credential signatures.'
+    }
+    return descriptions[policy] || 'Policy verification rule.'
+  }
 
   const filteredDefaultPolicies = defaultPolicies.filter(
     (policy) => policy.length > 0
@@ -759,217 +806,161 @@ export function PolicyEditor(props): ReactElement {
     maximumCredentials
   ])
 
-  return (
+  const ssiContent = enabled && (
     <>
-      <div className={styles.enablePolicyToggle}>
-        <label className={styles.checkboxLabel}>
-          <input
-            type="checkbox"
-            checked={enabled}
-            onChange={() => handlePolicyEditorToggle(!enabled)}
-          />
-          Enable SSI Policy Editor
-        </label>
-      </div>
+      {/* Policies applied to all credentials section */}
       {enabled && (
-        <>
-          <label className={styles.editorLabel}>
-            {label} {help && <Tooltip content={<Markdown text={help} />} />}
-          </label>
-
-          {/* Policies applied to all credentials section */}
-          {enabled && (
-            <div className={styles.defaultPoliciesSection}>
-              <h3 className={styles.defaultPoliciesTitle}>
-                Policies applied to all credentials
-              </h3>
-              <div className={styles.defaultPoliciesList}>
-                {allPolicies.map((policy, index) => (
-                  <div key={policy} className={styles.defaultPolicyItem}>
-                    <label className={styles.policyLabel}>
-                      <input
-                        type="checkbox"
-                        checked={defaultPolicyStates[policy]}
-                        onChange={(e) =>
-                          setDefaultPolicyStates((prev) => ({
-                            ...prev,
-                            [policy]: e.target.checked
-                          }))
-                        }
-                        className={styles.policyCheckbox}
-                      />
-                      <span className={styles.policyName}>{policy}</span>
-                      <span className={styles.infoIcon}>ⓘ</span>
-                    </label>
-                  </div>
-                ))}
+        <div className={styles.defaultPoliciesSection}>
+          <h3 className={styles.defaultPoliciesTitle}>
+            Policies applied to all credentials
+          </h3>
+          <div className={styles.defaultPoliciesList}>
+            {allPolicies.map((policy, index) => (
+              <div key={policy} className={styles.defaultPolicyItem}>
+                <label className={styles.policyLabel}>
+                  <input
+                    type="checkbox"
+                    checked={defaultPolicyStates[policy]}
+                    onChange={(e) =>
+                      setDefaultPolicyStates((prev) => ({
+                        ...prev,
+                        [policy]: e.target.checked
+                      }))
+                    }
+                    className={styles.checkbox}
+                  />
+                  <span className={styles.policyName}>{policy}</span>
+                  <Tooltip
+                    content={<Markdown text={getPolicyDescription(policy)} />}
+                  />
+                </label>
               </div>
-            </div>
-          )}
+            ))}
+          </div>
+        </div>
+      )}
 
-          <div className={`${styles.editorPanel} ${styles.marginBottom4em}`}>
-            <div className={`${styles.panelColumn} ${styles.marginBottom2em}`}>
-              <Button
-                type="button"
-                style={buttonStyle}
-                className={styles.marginBottom1em}
-                onClick={handleNewRequestCredential}
+      <div className={`${styles.marginBottom4em}`}>
+        <div className={`${styles.panelColumn}`}>
+          <div className={styles.credentialCards}>
+            {credentials?.requestCredentials?.map((credential, index) => (
+              <CredentialCard
+                key={index}
+                index={index}
+                name={name}
+                credential={credential}
+                onDelete={() => handleDeleteRequestCredential(index)}
               >
-                New {{ ...getFieldContent('requestCredential', fields) }.label}
-              </Button>
-
-              {credentials?.requestCredentials?.map((credential, index) => (
-                <div
-                  key={index}
-                  className={`${styles.panelColumn} ${styles.item}`}
-                >
-                  <div
-                    className={`${styles.paddingLeft1em} ${styles.paddingLeft1em} ${styles.paddingRight1em} ${styles.paddingTop1em}`}
-                  >
-                    <div
-                      className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100} ${styles.flexGrow}`}
-                    >
-                      <div className={styles.flexGrow}>
-                        <Field
-                          {...getFieldContent('type', fields)}
-                          component={Input}
-                          name={`${name}.requestCredentials[${index}].type`}
-                        />
-                      </div>
-                      <div className={styles.flexGrow}>
-                        <Field
-                          {...getFieldContent('format', fields)}
-                          component={Input}
-                          name={`${name}.requestCredentials[${index}].format`}
-                        />
-                      </div>
-                      <Button
-                        type="button"
-                        style={buttonStyle}
-                        onClick={() => handleDeleteRequestCredential(index)}
-                        className={`${styles.deleteButton} ${styles.marginBottomButton}`}
+                <div className={styles.policiesRow}>
+                  <span className={styles.label}>Policies:</span>
+                  <div className={styles.addPolicyContainer}>
+                    <div className={styles.dropdownButtonWrapper}>
+                      <select
+                        onChange={(e) => {
+                          const policyType = e.target.value
+                          if (policyType === 'staticPolicy')
+                            handleNewStaticCustomPolicy(credential)
+                          else if (policyType === 'parameterizedPolicy')
+                            handleNewParameterizedCustomPolicy(credential)
+                          else if (policyType === 'customUrlPolicy')
+                            handleNewCustomUrlPolicy(credential)
+                          else if (policyType === 'customPolicy')
+                            handleNewCustomPolicy(credential)
+                          // Reset select after action
+                          e.target.value = ''
+                        }}
+                        className={styles.addPolicyDropdown}
+                        defaultValue=""
                       >
-                        Delete
-                      </Button>
+                        <option value="" disabled hidden>
+                          Add policy
+                        </option>
+                        <option value="staticPolicy">Static Policy</option>
+                        <option value="parameterizedPolicy">
+                          Allowed Issuer
+                        </option>
+                        <option value="customUrlPolicy">
+                          Custom URL Policy
+                        </option>
+                        <option value="customPolicy">Custom Policy</option>
+                      </select>
                     </div>
-                    <div
-                      className={`${styles.marginTopMinus2em} ${styles.panelRow} ${styles.alignItemsBaseline} ${styles.justifyContentSpaceBetween}`}
-                    >
-                      <div
-                        className={`${styles.panelRow} ${styles.alignItemsBaseline}`}
-                      >
-                        <label>
-                          {{ ...getFieldContent('newPolicy', fields) }.label}
-                        </label>
-
-                        <select
-                          value={credential.newPolicyType || 'staticPolicy'}
-                          onChange={(e) => {
-                            credential.newPolicyType = e.target.value
-                            setCredentials({ ...credentials })
-                          }}
-                          className={styles.selectDropdown}
-                        >
-                          <option value="staticPolicy">
-                            {{ ...getFieldContent('static', fields) }.label}
-                          </option>
-                          <option value="parameterizedPolicy">
-                            {
-                              { ...getFieldContent('parameterized', fields) }
-                                .label
-                            }
-                          </option>
-                          <option value="customUrlPolicy">
-                            {{ ...getFieldContent('customUrl', fields) }.label}
-                          </option>
-                          <option value="customPolicy">
-                            {{ ...getFieldContent('custom', fields) }.label}
-                          </option>
-                        </select>
-
-                        <Button
-                          type="button"
-                          style={buttonStyle}
-                          className={styles.space}
-                          onClick={() => {
-                            if (credential.newPolicyType === 'staticPolicy')
-                              handleNewStaticCustomPolicy(credential)
-                            else if (
-                              credential.newPolicyType === 'parameterizedPolicy'
-                            )
-                              handleNewParameterizedCustomPolicy(credential)
-                            else if (
-                              credential.newPolicyType === 'customUrlPolicy'
-                            )
-                              handleNewCustomUrlPolicy(credential)
-                            else if (
-                              credential.newPolicyType === 'customPolicy'
-                            )
-                              handleNewCustomPolicy(credential)
-                          }}
-                        >
-                          Add Policy
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className={styles.paddingLeft3em}>
-                    {credential?.policies?.map((policy, innerIndex) => (
-                      <div key={innerIndex} className={styles.panelColumn}>
-                        <PolicyView
-                          index={index}
-                          innerIndex={innerIndex}
-                          name={name}
-                          policy={policy}
-                          onDeletePolicy={() =>
-                            handleDeleteCustomPolicy(credential, innerIndex)
-                          }
-                          onValueChange={() => {
-                            setCredentials(credentials)
-                          }}
-                        />
-                      </div>
-                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-            {credentials?.requestCredentials.length > 0 && (
-              <>
-                <div
-                  className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
-                >
-                  {credentials?.vpPolicies?.map((policy, index) => {
-                    // Only render if it's not a static policy with excluded names
-                    if (
-                      policy?.type === 'staticVpPolicy' &&
-                      (policy.name === 'presentation-definition' ||
-                        policy.name === 'holder-binding')
-                    ) {
-                      return null
-                    }
 
-                    return (
-                      <VpPolicyView
-                        key={index}
+                <div className={styles.policiesContainer}>
+                  {credential?.policies?.length === 0 ? (
+                    <div className={styles.noPolicies}>
+                      No static policies defined.
+                    </div>
+                  ) : (
+                    credential?.policies?.map((policy, innerIndex) => (
+                      <PolicyView
+                        key={innerIndex}
                         index={index}
+                        innerIndex={innerIndex}
                         name={name}
                         policy={policy}
-                        onDeletePolicy={() => handleDeleteVpPolicy(index)}
+                        onDeletePolicy={() =>
+                          handleDeleteCustomPolicy(credential, innerIndex)
+                        }
+                        onValueChange={() => {
+                          setCredentials(credentials)
+                        }}
                       />
-                    )
-                  })}
+                    ))
+                  )}
                 </div>
+              </CredentialCard>
+            ))}
+          </div>
+        </div>
 
-                {isAsset && (
+        <Button
+          type="button"
+          style="gradient"
+          className={cs(styles.marginCenter, styles.marginY16px)}
+          onClick={handleNewRequestCredential}
+        >
+          <AddIcon /> New{' '}
+          {{ ...getFieldContent('requestCredential', fields) }.label}
+        </Button>
+
+        {credentials?.requestCredentials.length > 0 && (
+          <>
+            <div
+              className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
+            >
+              {credentials?.vpPolicies?.map((policy, index) => {
+                // Only render if it's not a static policy with excluded names
+                if (
+                  policy?.type === 'staticVpPolicy' &&
+                  (policy.name === 'presentation-definition' ||
+                    policy.name === 'holder-binding')
+                ) {
+                  return null
+                }
+
+                return (
+                  <VpPolicyView
+                    key={index}
+                    index={index}
+                    name={name}
+                    policy={policy}
+                    onDeletePolicy={() => handleDeleteVpPolicy(index)}
+                  />
+                )
+              })}
+            </div>
+
+            {/* {isAsset && (
                   <div
                     className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
                   >
                     {credentials?.requestCredentials.length > 0 && (
                       <Button
                         type="button"
-                        style={buttonStyle}
+                        style="gradient"
                         className={`${styles.marginBottom1em}`}
                         onClick={handleNewStaticPolicy}
                       >
@@ -977,193 +968,36 @@ export function PolicyEditor(props): ReactElement {
                         {{ ...getFieldContent('staticPolicy', fields) }.label}
                       </Button>
                     )}
-
-                    {credentials?.requestCredentials.length > 0 &&
-                      credentials?.vcPolicies?.map((rule, index) => (
-                        <div
-                          key={index}
-                          className={`${styles.panelColumn} ${styles.width100}`}
-                        >
-                          <div
-                            className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-                          >
-                            <div className={`${styles.flexGrow}`}>
-                              <Field
-                                key={index}
-                                {...staticPolicyLabel(index)}
-                                component={Input}
-                                name={`${name}.vcPolicies[${index}]`}
-                                readOnly={
-                                  index < filteredDefaultPolicies?.length &&
-                                  filteredDefaultPolicies.includes(
-                                    credentials?.vcPolicies[index]
-                                  ) &&
-                                  credentials?.vcPolicies[index]?.length > 0
-                                }
-                              />
-                            </div>
-                            <Button
-                              type="button"
-                              style={buttonStyle}
-                              disabled={
-                                index < filteredDefaultPolicies?.length &&
-                                filteredDefaultPolicies.includes(
-                                  credentials?.vcPolicies[index]
-                                ) &&
-                                credentials?.vcPolicies[index]?.length > 0
-                              }
-                              onClick={() => handleDeleteStaticPolicy(index)}
-                              className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
                   </div>
-                )}
-              </>
-            )}
+                )} */}
+          </>
+        )}
+      </div>
+      {isAsset && (
+        <div className={`${styles.panelColumn} ${styles.marginBottom1em}`}>
+          <div className={styles.checkboxWithTooltip}>
+            <Input
+              name="editAdvancedFeatures"
+              label="Edit Advanced SSI Policy Features"
+              type="checkbox"
+              options={['Edit Advanced SSI Policy Features']}
+              checked={editAdvancedFeatures}
+              onChange={() => setEditAdvancedFeatures(!editAdvancedFeatures)}
+              hideLabel={true}
+              className={styles.advancedOptionsCheckbox}
+            />
+            <Tooltip
+              content={
+                <Markdown text="Enable advanced SSI policy features including holder binding, credential limits, and presentation requirements." />
+              }
+            />
           </div>
-          {isAsset && (
-            <div className={`${styles.panelColumn} ${styles.marginBottom1em}`}>
-              <label className={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={editAdvancedFeatures}
-                  onChange={() =>
-                    setEditAdvancedFeatures(!editAdvancedFeatures)
-                  }
-                />
-                Edit Advanced SSI Policy Features
-                <Tooltip
-                  content={
-                    <Markdown
-                      text={`Enable to edit advanced SSI policy features.`}
-                    />
-                  }
-                />
-              </label>
-            </div>
-          )}
-
-          {editAdvancedFeatures && (
-            <>
-              <label className={styles.editorLabel}>
-                Advanced SSI Policy Features
-                <Tooltip
-                  content={
-                    <Markdown
-                      text={`The requested Verifiable Credentials are grouped in a Verifiable Presentation before being submitted for verification. This screen allows the user to set the policies applicable to the Verifiable Presentation.`}
-                    />
-                  }
-                />
-              </label>
-              <div
-                className={`${styles.editorPanel} ${styles.marginBottom2em}`}
-              >
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={holderBinding}
-                    onChange={handleHolderBindingToggle}
-                  />
-                  Credential(s) presenter same as credential(s) owner
-                  <Tooltip content={<Markdown text={`TO EDIT`} />} />
-                </label>
-
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={requireAllTypes}
-                    onChange={handlePresentationDefinitionToggle}
-                  />
-                  All requested credential types are necessary for verification
-                  <Tooltip content={<Markdown text={`TO EDIT`} />} />
-                </label>
-
-                <div
-                  className={`${styles.panelRow} ${styles.alignItemsCenter} ${styles.marginTop1em} ${styles.marginTop1em}`}
-                >
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={limitMinCredentials}
-                      onChange={() =>
-                        setLimitMinCredentials(!limitMinCredentials)
-                      }
-                    />
-                    Minimum number of credentials required
-                    <Tooltip
-                      content={
-                        <Markdown
-                          text={`Enable to limit min credentials required for verification.`}
-                        />
-                      }
-                    />
-                  </label>
-
-                  {limitMinCredentials && (
-                    <input
-                      type="number"
-                      min={1}
-                      max={100}
-                      value={minimumCredentials}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value)
-                        if (!isNaN(value)) {
-                          const clamped = Math.max(1, Math.min(100, value))
-                          setMinimumCredentials(clamped.toString())
-                        }
-                      }}
-                      className={`${styles.input} ${styles.numberInput}`}
-                    />
-                  )}
-                </div>
-
-                <div
-                  className={`${styles.panelRow} ${styles.alignItemsCenter} ${styles.marginTop05em} ${styles.marginBottom2em}`}
-                >
-                  <label className={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      checked={limitMaxCredentials}
-                      onChange={() =>
-                        setLimitMaxCredentials(!limitMaxCredentials)
-                      }
-                    />
-                    Maximum number of credentials required
-                    <Tooltip
-                      content={
-                        <Markdown
-                          text={`Enable to limit max credentials required for verification.`}
-                        />
-                      }
-                    />
-                  </label>
-
-                  {limitMaxCredentials && (
-                    <input
-                      type="number"
-                      min={1}
-                      max={100}
-                      value={maximumCredentials}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value)
-                        if (!isNaN(value)) {
-                          const clamped = Math.max(1, Math.min(100, value))
-                          setMaximumCredentials(clamped.toString())
-                        }
-                      }}
-                      className={`${styles.input} ${styles.numberInput}`}
-                    />
-                  )}
-                </div>
-              </div>
-            </>
-          )}
-        </>
+        </div>
       )}
+
+      {editAdvancedFeatures && <AdvancedOptions name={name} />}
     </>
   )
+
+  return ssiContent
 }

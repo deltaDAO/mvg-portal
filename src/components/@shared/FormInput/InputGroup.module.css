@@ -1,6 +1,7 @@
 .inputGroup input {
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  width: 100%;
 }
 
 .inputGroup button {
@@ -22,7 +23,9 @@
 @media screen and (min-width: 30rem) {
   .inputGroup {
     display: flex;
-    gap: var(--spacer);
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--sp-2_5);
   }
 
   .inputGroup > div {
@@ -43,6 +46,12 @@
     margin-left: -1px;
     width: fit-content;
     white-space: nowrap;
+    height: 40px;
+  }
+
+  .inputGroup button > svg {
+    min-width: 16px;
+    min-height: 16px;
   }
 }
 

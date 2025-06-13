@@ -75,7 +75,8 @@ export interface InputProps {
   postfixes?: string[]
   step?: string
   defaultChecked?: boolean
-  size?: 'mini' | 'small' | 'large' | 'default'
+  size?: 'mini' | 'small' | 'large' | 'default' | 'medium'
+  selectStyle?: 'default' | 'publish'
   className?: string
   checked?: boolean
   disclaimer?: string

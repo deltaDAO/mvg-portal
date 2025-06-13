@@ -1,0 +1,64 @@
+.container {
+  padding: var(--sp-4);
+  border: 1px solid var(--publish-input-border-color-dark);
+  border-radius: var(--publish-input-border-radius);
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--sp-1_5);
+}
+
+.title {
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: var(--sp-4);
+}
+
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.checkboxRow {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--sp-1_5);
+}
+
+.checkboxRow > div > div {
+  margin-top: 0;
+}
+
+.inputRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+
+.inputRow > div > div > div {
+  margin-top: 0;
+}
+
+.numberInput {
+  width: 4rem !important;
+  min-width: 4rem;
+  max-width: 4rem;
+}
+
+.hidden {
+  display: none;
+}
+
+.checkboxWithTooltip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--sp-1_5);
+}

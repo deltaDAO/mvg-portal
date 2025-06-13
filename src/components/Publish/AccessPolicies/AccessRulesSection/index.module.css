@@ -1,0 +1,92 @@
+.accessRuleField {
+  margin-bottom: calc(var(--spacer) * 2);
+}
+
+.fieldLabel {
+  display: block;
+  font-weight: var(--font-weight-bold);
+  color: var(--font-color-heading);
+  margin-bottom: var(--publish-spacing-sm);
+  font-size: var(--font-size-base);
+}
+
+.inputRow {
+  display: flex;
+  gap: calc(var(--spacer) * 0.5);
+  align-items: center;
+  margin-bottom: calc(var(--spacer) * 0.75);
+}
+
+.addressInput {
+  flex: 1;
+  padding: calc(var(--spacer) * 0.75);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  color: var(--font-color-text);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.addressInput:focus {
+  outline: none;
+  border-color: var(--ocean-blue);
+  box-shadow: 0 0 0 3px rgba(75, 163, 211, 0.1);
+}
+
+.deleteButton {
+  border: 1px solid var(--publish-primary) !important;
+  border-radius: var(--publish-border-radius) !important;
+  padding: 9px 14px !important;
+  box-shadow: var(--publish-shadow) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  min-width: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.deleteButton:hover {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border-color: var(--publish-primary) !important;
+  transform: none !important;
+  box-shadow: var(--publish-shadow) !important;
+}
+
+.deleteButton svg {
+  width: 16px;
+  height: 16px;
+  fill: var(--publish-primary);
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteButton:disabled svg {
+  fill: var(--color-secondary);
+}
+
+.addressList > * {
+  margin-bottom: calc(var(--spacer) * 0.5);
+}
+
+.addressList > *:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .inputRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .addressItem {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .addressItem .deleteButton {
+    margin-top: calc(var(--spacer) * 0.5);
+  }
+}

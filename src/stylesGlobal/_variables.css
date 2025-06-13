@@ -82,7 +82,7 @@
   /* Buttons */
   --button-border-radius: var(--border-radius);
   --button-font-color: var(--brand-white);
-  --button-background: var(--font-color-light);
+  --button-background: var(--clr-slate-12);
   --button-hover-font-color: var(--brand-white);
   --button-hover-background: var(--font-color-light);
   --button-active-font-color: var(--brand-white);
@@ -172,6 +172,18 @@
   --border-size-sm: 1px;
   --border-size: 2px;
 
+  /* Additional tokens for PolicyEditor */
+  --radius-xl: 20px;
+  --radius-sm: 2px;
+  --sp-6: 24px;
+  --sp-4: 16px;
+  --sp-2_5: 10px;
+  --sp-2: 8px;
+  --sp-1_5: 6px;
+  --sp-1: 4px;
+  --line-accent: 3px;
+  --shadow-md: 1px 4px 8px rgba(0, 0, 0, 0.15);
+
   --layout-max-width: 85rem;
   --checkbox-size: 1.6em;
 
@@ -223,16 +235,20 @@
 
   /* Publish Form Elements - Specific to publish page only */
   --publish-input-height: 40px;
+  --publish-input-padding-small: 6px 10px;
   --publish-input-padding: 15px 25px;
+  --publish-input-padding-compact: 12px 30px;
   --publish-input-padding-x: 30px;
   --publish-input-border-size: 1px;
   --publish-input-border-color: rgba(10, 75, 112, 0.5);
+  --publish-input-border-color-dark: rgba(48, 48, 49, 0.2);
   --publish-input-border-radius: 20px;
   --publish-input-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   --publish-input-error-border-color: rgba(255, 54, 13, 0.5);
   --publish-input-error-text-color: var(--brand-error-red);
   --publish-input-error-spacing: 7px;
   --publish-form-container-padding: 40px;
+  --publish-form-container-padding-top-extended: 50px 40px 40px 40px;
   --publish-checkbox-selected-background: var(--publish-accent);
 
   /* Publish Progress Navigation */

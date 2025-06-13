@@ -1,16 +1,23 @@
 .actions {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: var(--spacer);
+}
+
+.actionsRight {
+  display: flex;
   justify-content: flex-end;
   align-items: center;
   padding-top: var(--spacer);
 }
 
-/* When there are multiple buttons, center them */
 .actionsMultiple {
   justify-content: center;
 }
 
-.actions button {
+.actions button,
+.actionsRight button {
   margin: 0 calc(var(--spacer) / 2);
   min-height: 40px;
   font-family: var(--publish-font-family);

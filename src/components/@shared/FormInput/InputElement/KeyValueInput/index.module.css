@@ -9,7 +9,7 @@
 .pairsAddedContainer {
   display: flex;
   justify-content: space-between;
-  gap: 0 calc(var(--spacer) / 4);
+  gap: var(--sp-2_5);
   margin-bottom: var(--spacer);
 }
 
@@ -32,4 +32,41 @@
 .error {
   composes: error from '../../index.module.css';
   top: 100%;
+}
+
+.pairsContainer .addButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  gap: 4px;
+  height: 40px;
+  background: var(--publish-accent-gradient);
+  box-shadow: var(--publish-shadow-sm);
+  border-radius: 20px;
+  border: none;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  color: var(--publish-primary);
+  cursor: pointer;
+  text-transform: uppercase;
+  min-width: auto;
+}
+
+.pairsContainer .addButton:hover,
+.pairsContainer .addButton:focus {
+  background: var(--publish-accent-gradient);
+  transform: none;
+  box-shadow: var(--publish-shadow-sm);
+}
+
+.addButton .addIcon {
+  width: 16px;
+  height: 16px;
+  fill: #0a4b70;
+}
+
+.addButton .addIcon path {
+  fill: #0a4b70;
 }

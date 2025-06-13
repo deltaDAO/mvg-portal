@@ -11,7 +11,7 @@ export interface BoxSelectionOption {
   text?: JSX.Element | string
 }
 
-export type BoxSelectionSize = 'mini' | 'small' | 'large' | 'default'
+export type BoxSelectionSize = 'mini' | 'small' | 'large' | 'default' | 'medium'
 
 export default function BoxSelection({
   name,

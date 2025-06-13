@@ -1,18 +1,21 @@
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
 import { ReactElement, useEffect, useState, useMemo } from 'react'
-import IconDownload from '@images/download.svg'
+import IconDownload from '@images/download2.svg'
 import IconCompute from '@images/compute.svg'
 import content from '../../../../content/publish/form.json'
-import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
 import { getFieldContent } from '@utils/form'
 import { FormPublishData } from '../_types'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import { PolicyEditor } from '@components/@shared/PolicyEditor'
 import { getDefaultPolicies } from '../_utils'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { supportedLanguages } from '@components/Asset/languageType'
 import FormEditComputeService from '@components/Asset/Edit/FormEditComputeService'
+import AccessRulesSection from '../AccessPolicies/AccessRulesSection'
+import ConsumerParametersSection from '../../@shared/ConsumerParametersSection'
+import SSIPoliciesSection from '../../@shared/SSIPoliciesSection'
+
+import SectionContainer from '../../@shared/SectionContainer/SectionContainer'
 
 const accessTypeOptionsTitles = getFieldContent(
   'access',
@@ -70,7 +73,7 @@ export default function ServicesFields(): ReactElement {
       name: 'download',
       value: accessTypeOptionsTitles[0].toLowerCase(),
       title: 'Download',
-      icon: <IconDownload />,
+      icon: <IconDownload fill="var(--publish-white)" />,
       // BoxSelection component is not a Formik component
       // so we need to handle checked state manually.
       checked:
@@ -125,31 +128,35 @@ export default function ServicesFields(): ReactElement {
           name="services[0].dataTokenOptions"
         />
       </div>
-      <Field
-        {...getFieldContent('name', content.services.fields)}
-        component={Input}
-        name="services[0].name"
-      />
-      <Field
-        {...getFieldContent('description', content.services.fields)}
-        component={Input}
-        name="services[0].description.value"
-      />
-      <Field
-        {...getFieldContent('language', content.services.fields)}
-        component={Input}
-        name="services[0].description.language"
-        type="select"
-        options={languageOptions}
-        value={getCurrentLanguageName()}
-        onChange={(e) => handleLanguageChange(e.target.value)}
-      />
-      <Field
-        {...getFieldContent('direction', content.services.fields)}
-        component={Input}
-        name="services[0].description.direction"
-        readOnly
-      />
+
+      <SectionContainer title="Service Data" required>
+        <Field
+          {...getFieldContent('name', content.services.fields)}
+          component={Input}
+          name="services[0].name"
+        />
+        <Field
+          {...getFieldContent('description', content.services.fields)}
+          component={Input}
+          name="services[0].description.value"
+        />
+        <Field
+          {...getFieldContent('language', content.services.fields)}
+          component={Input}
+          name="services[0].description.language"
+          type="select"
+          options={languageOptions}
+          value={getCurrentLanguageName()}
+          onChange={(e) => handleLanguageChange(e.target.value)}
+        />
+        <Field
+          {...getFieldContent('direction', content.services.fields)}
+          component={Input}
+          name="services[0].description.direction"
+          readOnly
+        />
+      </SectionContainer>
+
       {values.metadata.type === 'algorithm' ? (
         <Field
           {...getFieldContent('algorithmPrivacy', content.services.fields)}
@@ -157,84 +164,68 @@ export default function ServicesFields(): ReactElement {
           name="services[0].algorithmPrivacy"
         />
       ) : (
-        <>
-          <Field
-            {...getFieldContent('access', content.services.fields)}
-            component={Input}
-            name="services[0].access"
-            options={accessTypeOptions}
-          />
-          {values.services[0]?.access === 'compute' && (
-            <FormEditComputeService
-              chainId={values?.user?.chainId}
-              serviceEndpoint={values.services[0].providerUrl.url}
-              serviceCompute={values.services[0]?.computeOptions}
-            />
-          )}
-        </>
-      )}
-      <Field
-        {...getFieldContent('providerUrl', content.services.fields)}
-        component={Input}
-        name="services[0].providerUrl"
-      />
-      <Field
-        {...getFieldContent('files', content.services.fields)}
-        component={Input}
-        name="services[0].files"
-      />
-      <Field
-        {...getFieldContent('links', content.services.fields)}
-        component={Input}
-        name="services[0].links"
-      />
-      <Field
-        {...getFieldContent('timeout', content.services.fields)}
-        component={Input}
-        name="services[0].timeout"
-      />
-      <Field
-        {...getFieldContent('allow', content.credentials.fields)}
-        component={Input}
-        name="services[0].credentials.allow"
-      />
-      <Field
-        {...getFieldContent('deny', content.credentials.fields)}
-        component={Input}
-        name="services[0].credentials.deny"
-      />
-
-      {appConfig.ssiEnabled ? (
-        <PolicyEditor
-          label="SSI Policies"
-          credentials={values.services[0].credentials}
-          setCredentials={(newCredentials) =>
-            setFieldValue('services[0].credentials', newCredentials)
-          }
-          name="services[0].credentials"
-          defaultPolicies={defaultPolicies}
-          help="Self-sovereign identity (SSI) is used verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
-        />
-      ) : (
-        <></>
-      )}
-
-      <Field
-        {...getFieldContent('usesConsumerParameters', content.services.fields)}
-        component={Input}
-        name="services[0].usesConsumerParameters"
-      />
-
-      {values.services[0].usesConsumerParameters && (
         <Field
-          {...getFieldContent(
-            'consumerParameters',
-            consumerParametersContent.consumerParameters.fields
-          )}
+          {...getFieldContent('access', content.services.fields)}
           component={Input}
-          name="services[0].consumerParameters"
+          name="services[0].access"
+          options={accessTypeOptions}
         />
       )}
+
+      {values.services[0]?.access === 'compute' && (
+        <FormEditComputeService
+          chainId={values?.user?.chainId}
+          serviceEndpoint={values.services[0].providerUrl.url}
+          serviceCompute={values.services[0]?.computeOptions}
+        />
+      )}
+
+      <SectionContainer
+        title="Service Configuration"
+        required
+        help="Configure essential settings for your service here. Upload relevant files using the appropriate field. Enter your service provider's URL and any associated links, and specify the timeout duration as needed. Ensure all details are accurately entered for optimal service performance."
+      >
+        {/* Card 1: File Upload Card */}
+        <SectionContainer border padding="16px">
+          <Field
+            {...getFieldContent('files', content.services.fields)}
+            component={Input}
+            name="services[0].files"
+          />
+        </SectionContainer>
+
+        {/* Card 2: Provider URL Card */}
+        <SectionContainer border padding="16px">
+          <Field
+            {...getFieldContent('providerUrl', content.services.fields)}
+            component={Input}
+            name="services[0].providerUrl"
+          />
+          <Field
+            {...getFieldContent('links', content.services.fields)}
+            component={Input}
+            name="services[0].links"
+          />
+          <Field
+            {...getFieldContent('timeout', content.services.fields)}
+            component={Input}
+            name="services[0].timeout"
+          />
+        </SectionContainer>
+      </SectionContainer>
+
+      <AccessRulesSection />
+
+      <SSIPoliciesSection
+        defaultPolicies={defaultPolicies}
+        fieldNamePrefix="services[0]"
+        showEnableCheckbox={false}
+      />
+
+      <ConsumerParametersSection
+        fieldNamePrefix="services[0]"
+        type="publishConsumerParameters"
+      />
     </>
   )
 }

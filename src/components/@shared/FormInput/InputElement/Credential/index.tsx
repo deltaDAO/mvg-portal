@@ -1,6 +1,7 @@
 import { useField } from 'formik'
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 import Button from '../../../atoms/Button'
+import PublishButton from '../../../PublishButton'
 import styles from './index.module.css'
 import { isAddress } from 'ethers/lib/utils.js'
 import { toast } from 'react-toastify'
@@ -65,18 +66,22 @@ export default function Credentials(props: CredentialProps) {
           }
           disabled={hasWildcard}
         />
-        <Button
-          style={buttonStyle}
-          size="small"
+        <PublishButton
+          icon="add"
+          text="ADD"
+          buttonStyle="primary"
           onClick={handleAddValue}
           disabled={hasWildcard}
-        >
-          Add
-        </Button>
+          type="button"
+        />
         {!hasWildcard && (
-          <Button style={buttonStyle} size="small" onClick={handleAddAll}>
-            Add All
-          </Button>
+          <PublishButton
+            icon="add"
+            text="ADD ALL"
+            buttonStyle="primary"
+            onClick={handleAddAll}
+            type="button"
+          />
         )}
       </InputGroup>
 

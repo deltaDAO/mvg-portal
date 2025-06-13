@@ -1,0 +1,29 @@
+body .deleteButton {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2_5);
+  height: 40px;
+  border-radius: 20px;
+  padding: 12px 24px;
+  background: transparent;
+  color: var(--clr-navy);
+  border: 1px solid var(--clr-navy);
+  text-transform: none;
+  padding: 9px 14px;
+}
+
+.deleteButton:hover,
+.deleteButton:focus {
+  background: rgba(10, 75, 112, 0.05);
+}
+
+.deleteButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.deleteButton svg {
+  min-width: 16px;
+  min-height: 16px;
+  fill: currentColor;
+}

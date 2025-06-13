@@ -26,6 +26,7 @@ import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
 import { ethers } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
+import ContainerForm from '../@shared/atoms/ContainerForm'
 
 export default function PublishPage({
   content
@@ -293,10 +294,10 @@ export default function PublishPage({
           />
           <Form className={styles.form} ref={scrollToRef}>
             <Navigation />
-            <div className={styles.metadataForm}>
+            <ContainerForm style="publish">
               <Steps feedback={feedback} />
               <Actions scrollToRef={scrollToRef} did={did} />
-            </div>
+            </ContainerForm>
           </Form>
           {debug && <Debug />}
         </>

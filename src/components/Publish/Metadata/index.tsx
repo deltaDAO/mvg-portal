@@ -3,7 +3,6 @@ import Input from '@shared/FormInput'
 import { Field, useField, useFormikContext } from 'formik'
 import { ReactElement, useEffect } from 'react'
 import content from '../../../../content/publish/form.json'
-import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
 import { FormPublishData } from '../_types'
 import IconDataset from '@images/dataset.svg'
 import IconAlgorithm from '@images/algorithm.svg'
@@ -19,9 +18,11 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
 import URLInput from '@shared/FormInput/InputElement/URLInput'
+import ConsumerParametersSection from '../../@shared/ConsumerParametersSection'
 
 import SectionContainer from '../../@shared/SectionContainer/SectionContainer'
 import styles from './index.module.css'
+import ContainerForm from '../../@shared/atoms/ContainerForm'
 
 const assetTypeOptionsTitles = getFieldContent(
   'type',
@@ -144,7 +145,7 @@ export default function MetadataFields(): ReactElement {
   }, [values.metadata.licenseTypeSelection])
 
   return (
-    <div className={styles.metadataFieldsContainer}>
+    <ContainerForm style="large">
       <Field
         {...getFieldContent('nft', content.metadata.fields)}
         component={Input}
@@ -228,54 +229,37 @@ export default function MetadataFields(): ReactElement {
             )}
           </SectionContainer>
 
-          {/* Custom Parameters Section */}
-          <SectionContainer title="Custom Parameters">
-            <Field
-              {...getFieldContent(
-                'usesConsumerParameters',
-                content.metadata.fields
-              )}
-              component={Input}
-              name="metadata.usesConsumerParameters"
-            />
-            {values.metadata.usesConsumerParameters && (
-              <div className={styles.customParametersContent}>
-                <Field
-                  {...getFieldContent(
-                    'consumerParameters',
-                    consumerParametersContent.consumerParameters.fields
-                  )}
-                  component={Input}
-                  name="metadata.consumerParameters"
-                  type="publishConsumerParameters"
-                />
-              </div>
-            )}
-          </SectionContainer>
+          <ConsumerParametersSection
+            title="Custom Parameters"
+            fieldNamePrefix="metadata"
+            type="publishConsumerParameters"
+          />
         </>
       )}
 
       {/*
        Licensing and Terms
       */}
-      <SectionContainer title="License">
-        <div className={styles.licenseDropdownWrapper}>
-          <Field
-            {...getFieldContent(
-              'licenseTypeSelection',
-              content.metadata.fields
-            )}
-            component={Input}
-            name="metadata.licenseTypeSelection"
-          />
+      <SectionContainer title="License Type" required>
+        <div className={styles.licenseContainer}>
+          <div className={styles.licenseDropdownWrapper}>
+            <Field
+              {...getFieldContent(
+                'licenseTypeSelection',
+                content.metadata.fields
+              )}
+              component={Input}
+              name="metadata.licenseTypeSelection"
+            />
+          </div>
+          {values.metadata.licenseTypeSelection === 'Upload license file' && (
+            <Field
+              {...getFieldContent('license', content.metadata.fields)}
+              component={Input}
+              name="metadata.licenseUrl"
+            />
+          )}
         </div>
-        {values.metadata.licenseTypeSelection === 'Upload license file' && (
-          <Field
-            {...getFieldContent('license', content.metadata.fields)}
-            component={Input}
-            name="metadata.licenseUrl"
-          />
-        )}
       </SectionContainer>
 
       <div className={styles.termsAndConditionsContainer}>
@@ -285,6 +269,6 @@ export default function MetadataFields(): ReactElement {
           name="metadata.termsAndConditions"
         />
       </div>
-    </div>
+    </ContainerForm>
   )
 }

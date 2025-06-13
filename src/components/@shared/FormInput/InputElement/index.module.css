@@ -82,6 +82,44 @@
   font-family: var(--font-family-base);
 }
 
+body .publishSelect {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 10px;
+  gap: 10px;
+  min-width: 190px;
+  width: fit-content;
+  height: fit-content;
+  background: var(--publish-background-neutral);
+  border: 1px solid var(--publish-primary);
+  border-radius: var(--publish-input-border-radius);
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-primary);
+  appearance: none;
+  background-image: url('../../../../@images/chevron_down.svg') !important;
+  background-position: calc(100% - 15px) center !important;
+  background-size: 12px 12px !important;
+  background-repeat: no-repeat !important;
+  /* Remove styles inherited from .input */
+  font-size: var(--publish-font-size);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  color: var(--publish-primary);
+  border: 1px solid var(--publish-primary);
+  box-shadow: none;
+  margin: 0;
+  transition: 0.2s ease-out;
+  height: auto;
+  min-width: 0;
+  display: block;
+}
+
 .algorithmLabel {
   display: grid;
   gap: var(--spacer);
@@ -228,6 +266,31 @@
 }
 
 .select.small {
+  padding-right: 2rem;
+
+  /* custom arrow */
+  background-position: calc(100% - 14px) 1rem, calc(100% - 9px) 1rem, 100% 0;
+  background-size: 5px 5px, 5px 5px, 2rem 3rem;
+}
+
+.medium,
+.select.medium {
+  font-size: var(--font-size-medium);
+  height: fit-content;
+  padding: var(--publish-input-padding-compact);
+}
+
+.medium::placeholder {
+  font-size: var(--font-size-medium);
+}
+
+.prefix.medium,
+.postfix.medium {
+  height: fit-content;
+  font-size: var(--font-size-medium);
+}
+
+.select.medium {
   padding-right: 2rem;
 
   /* custom arrow */

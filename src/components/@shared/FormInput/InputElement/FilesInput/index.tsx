@@ -10,6 +10,7 @@ import styles from './index.module.css'
 import { useNetwork } from 'wagmi'
 import InputKeyValue from '../KeyValueInput'
 import Button from '@shared/atoms/Button'
+import PublishButton from '@shared/PublishButton'
 import Loader from '@shared/atoms/Loader'
 import { checkJson } from '@utils/codemirror'
 import { isGoogleUrl } from '@utils/url/index'
@@ -122,7 +123,7 @@ export default function FilesInput(props: InputProps): ReactElement {
   }, [storageType, providerUrl, headers, query, abi, meta])
 
   return (
-    <>
+    <div className={styles.filesContainer}>
       {field?.value?.[0]?.valid === true ||
       field?.value?.[0]?.type === 'hidden' ? (
         <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
@@ -175,30 +176,36 @@ export default function FilesInput(props: InputProps): ReactElement {
                   })}
               </div>
 
-              <Button
-                style="primary"
-                onClick={(e: React.SyntheticEvent) => {
-                  e.preventDefault()
-                  handleValidation(e, field.value[0].url)
-                }}
-                disabled={disabledButton}
-              >
-                {isLoading ? (
+              {isLoading ? (
+                <Button
+                  style="publish"
+                  className={styles.submitButton}
+                  disabled={true}
+                >
                   <Loader />
-                ) : (
-                  `submit ${
+                </Button>
+              ) : (
+                <PublishButton
+                  icon="validate"
+                  text={`Submit ${
                     storageType === 'graphql'
                       ? 'query'
                       : storageType === 'smartcontract'
                       ? 'abi'
-                      : 'url'
-                  }`
-                )}
-              </Button>
+                      : 'URL'
+                  }`}
+                  buttonStyle="gradient"
+                  onClick={(e: React.SyntheticEvent) => {
+                    e.preventDefault()
+                    handleValidation(e, field.value[0].url)
+                  }}
+                  disabled={disabledButton}
+                />
+              )}
             </>
           )}
         </>
       )}
-    </>
+    </div>
   )
 }

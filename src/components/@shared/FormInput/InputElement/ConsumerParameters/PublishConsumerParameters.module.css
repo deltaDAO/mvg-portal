@@ -157,7 +157,6 @@
   color: rgba(48, 48, 49, 0.7);
 }
 
-/* Use descendant selectors to ensure all input elements get full width */
 .formColumn :global(input),
 .formColumn :global(select),
 .formColumn :global(textarea) {
@@ -165,7 +164,7 @@
   width: 100% !important;
   min-width: 100% !important;
   height: 40px;
-  border: 1px solid rgba(10, 75, 112, 0.5);
+  border: 1px solid var(--publish-border);
   filter: drop-shadow(1px 4px 8px rgba(0, 0, 0, 0.15));
   border-radius: 20px;
   padding: 0px 30px;
@@ -178,7 +177,6 @@
   background: #ffffff;
 }
 
-/* Custom chevron styling for select elements with repositioned chevron */
 .formColumn :global(select) {
   padding-right: 3rem !important;
   appearance: none !important;
@@ -193,12 +191,10 @@
   background-color: #ffffff !important;
 }
 
-/* Force any nested divs to take full width */
 .formColumn :global(div) {
   width: 100% !important;
 }
 
-/* Specific class for full width inputs */
 .fullWidthInput {
   width: 100% !important;
 }

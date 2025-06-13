@@ -47,7 +47,7 @@
   --publish-accent: #fdd655;
   --publish-text: #303031;
   --publish-text-secondary: rgba(48, 48, 49, 0.7);
-  --publish-border: rgba(10, 75, 112, 0.5);
+  --publish-border: var(--publish-border);
   --publish-border-error: rgba(255, 54, 13, 0.5);
   --publish-neutral: #757575;
   --publish-white: #ffffff;
@@ -85,4 +85,11 @@
   --publish-background-highlight: rgba(253, 214, 85, 0.15);
   --publish-background-neutral: rgba(48, 48, 49, 0.02);
   --publish-background-subtle: rgba(48, 48, 49, 0.08);
+
+  /* Additional colors for PolicyEditor */
+  --clr-navy: #0a4b70;
+  --clr-amber: #fdd655;
+  --clr-error: #ff360d;
+  --clr-slate-70: rgba(48, 48, 49, 0.7);
+  --clr-slate-12: rgba(48, 48, 49, 0.12);
 }

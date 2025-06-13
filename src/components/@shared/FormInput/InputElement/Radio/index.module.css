@@ -1,7 +1,3 @@
-.radioGroup {
-  margin-top: calc(var(--spacer) / 2);
-}
-
 .radioWrap {
   position: relative;
 }

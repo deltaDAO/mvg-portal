@@ -11,6 +11,7 @@ import styles from './index.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 import Button from '@shared/atoms/Button'
+import PublishButton from '@shared/PublishButton'
 import { InputProps } from '@shared/FormInput'
 import classNames from 'classnames/bind'
 
@@ -127,17 +128,16 @@ export default function InputKeyValue({
           onChange={handleChange}
         />
 
-        <Button
-          style="primary"
-          size="small"
+        <PublishButton
+          icon="add"
+          text="Add"
+          buttonStyle="primary"
           onClick={(e: React.SyntheticEvent) => {
             e.preventDefault()
             addPair()
           }}
           disabled={disabledButton}
-        >
-          add
-        </Button>
+        />
 
         {uniqueKeys && !hasOnlyUniqueKeys && (
           <p
@@ -163,7 +163,7 @@ export default function InputKeyValue({
               />
 
               <Button
-                style="primary"
+                style="outlined"
                 size="small"
                 onClick={(e: React.SyntheticEvent) => {
                   e.preventDefault()

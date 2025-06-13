@@ -25,7 +25,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    helpers.setValue({ url: customProviderUrl, valid: true, custom: true })
+    helpers.setValue({ url: customProviderUrl, valid: false, custom: true })
   }, [])
 
   async function handleValidation(e: React.SyntheticEvent) {

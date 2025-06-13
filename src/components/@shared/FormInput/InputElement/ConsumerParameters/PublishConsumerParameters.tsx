@@ -7,6 +7,7 @@ import OptionsInput from './OptionsInput'
 import TypeInput from './TypeInput'
 import styles from './PublishConsumerParameters.module.css'
 import AddParam from '@images/add_param.svg'
+import Button from '../../../atoms/Button'
 
 export const defaultConsumerParam: FormConsumerParameter = {
   name: '',
@@ -180,13 +181,9 @@ export function PublishConsumerParameters(props: InputProps): ReactElement {
         {/* Add Parameter Button */}
       </div>
       <div className={styles.addButtonContainer}>
-        <button
-          type="button"
-          className={styles.addButton}
-          onClick={addParameter}
-        >
+        <Button type="button" style="gradient" onClick={addParameter}>
           <AddParam /> Add parameter
-        </button>
+        </Button>
       </div>
     </>
   )
