@@ -71,6 +71,7 @@ export default function DebugEditMetadata({
           credentials: updatedCredentials
         },
         indexedMetadata: {
+          ...asset?.indexedMetadata,
           nft: updatedNft
         }
       }

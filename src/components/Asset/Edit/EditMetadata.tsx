@@ -24,7 +24,7 @@ import {
 import { Metadata } from 'src/@types/ddo/Metadata'
 import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { customProviderUrl } from '../../../../app.config.cjs'
+import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
 import { ethers } from 'ethers'
 import { convertLinks } from '@utils/links'
 import { License } from 'src/@types/ddo/License'
@@ -111,6 +111,7 @@ export default function Edit({
           credentials: updatedCredentials
         },
         indexedMetadata: {
+          ...asset?.indexedMetadata,
           nft: updatedNft
         },
         additionalDdos:
@@ -131,7 +132,7 @@ export default function Edit({
       const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,
         signer,
-        false,
+        encryptAsset,
         customProviderUrl ||
           updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
         ssiWalletContext

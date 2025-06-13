@@ -32,7 +32,7 @@ import DebugEditService from './DebugEditService'
 import styles from './index.module.css'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { customProviderUrl } from 'app.config.cjs'
+import { customProviderUrl, encryptAsset } from 'app.config.cjs'
 import { ethers } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
 import { State } from 'src/@types/ddo/State'
@@ -169,7 +169,7 @@ export default function EditService({
       const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,
         signer,
-        false,
+        encryptAsset,
         customProviderUrl ||
           updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
         ssiWalletContext

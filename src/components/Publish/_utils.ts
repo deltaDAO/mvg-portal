@@ -747,6 +747,7 @@ export async function signAssetAndUploadToIpfs(
   // these properties are mutable due blockchain interaction
   delete credential.credentialSubject.datatokens
   delete credential.credentialSubject.event
+  delete asset.indexedMetadata.event
 
   let jwtVerifiableCredential
   if (appConfig.ssiEnabled) {
@@ -780,7 +781,6 @@ export async function signAssetAndUploadToIpfs(
       owner
     )
   }
-
   const stringAsset = JSON.stringify(jwtVerifiableCredential)
   const bytes = Buffer.from(stringAsset)
   const metadata = hexlify(bytes)
