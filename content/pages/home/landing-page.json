@@ -107,11 +107,6 @@
           "platform": "Telegram",
           "link": "https://t.me/cliox",
           "text": "Join our Telegram"
-        },
-        {
-          "platform": "Discord",
-          "link": "https://discord.gg/cliox",
-          "text": "Join our Discord"
         }
       ]
     },
