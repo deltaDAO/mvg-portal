@@ -68,15 +68,19 @@ const validationMetadata = {
   licenseUrl: Yup.array().when('useRemoteLicense', {
     is: false,
     then: Yup.array().test('urlTest', (array, context) => {
-      if (!array) {
+      if (!array || !array[0]) {
         return context.createError({ message: `Need a valid url` })
       }
-      const { url, valid } = array?.[0] as {
+      const { url, valid } = array[0] as {
         url: string
         type: 'url'
         valid: boolean
       }
-      if (!url || url?.length === 0 || !valid) {
+      if (!url || url.length === 0) {
+        return context.createError({ message: `Need a valid url` })
+      }
+      // Only check valid flag if validation has been attempted (valid is not undefined)
+      if (valid !== undefined && !valid) {
         return context.createError({ message: `Need a valid url` })
       }
       return true
