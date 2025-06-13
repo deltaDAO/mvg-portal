@@ -1,7 +1,11 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import axios, { CancelToken, AxiosResponse } from 'axios'
-import { metadataCacheUri, allowDynamicPricing } from '../../../app.config.cjs'
+import {
+  metadataCacheUri,
+  allowDynamicPricing,
+  nodeUriIndex
+} from '../../../app.config.cjs'
 import {
   SortDirectionOptions,
   SortTermOptions
@@ -122,7 +126,8 @@ FilterTerm | undefined {
 
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams,
-  index?: string
+  index?: string,
+  allNode?: boolean
 ): SearchQuery {
   const generatedQuery = {
     index: index ?? 'op_ddo_v5.0.0',
@@ -155,7 +160,17 @@ export function generateBaseQuery(
                 getDynamicPricingMustNot()
               ]
             }
-          }
+          },
+          ...(!allNode
+            ? [
+                {
+                  terms: {
+                    'credentialSubject.services.serviceEndpoint.keyword':
+                      nodeUriIndex
+                  }
+                }
+              ]
+            : [])
         ]
       }
     }
@@ -538,7 +553,7 @@ export async function getUserOrders(
       size: 1000
     }
   } as BaseQueryParams
-  const query = generateBaseQuery(baseQueryparams, 'order')
+  const query = generateBaseQuery(baseQueryparams, 'order', true)
   try {
     return queryMetadata(query, cancelToken)
   } catch (error) {
