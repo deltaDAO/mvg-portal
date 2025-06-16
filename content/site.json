@@ -23,6 +23,10 @@
         {
           "name": "Email Text Analysis Visualization",
           "link": "/usecases/textAnalysis"
+        },
+        {
+          "name": "Cameroon Arrete",
+          "link": "/usecases/cameroonArrete"
         }
       ]
     },

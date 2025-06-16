@@ -1,0 +1,6 @@
+.info {
+  display: block;
+  margin: calc(var(--spacer) / 3) auto;
+  text-align: center;
+  font-style: italic;
+}
