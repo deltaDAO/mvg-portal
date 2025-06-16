@@ -1,29 +1,42 @@
 body .deleteButton {
   display: flex;
   align-items: center;
-  gap: var(--sp-2_5);
+  gap: var(--sp-1);
   height: 40px;
-  border-radius: 20px;
+  border-radius: 20px !important;
   padding: 12px 24px;
   background: transparent;
   color: var(--clr-navy);
   border: 1px solid var(--clr-navy);
   text-transform: none;
   padding: 9px 14px;
+  transition: all 0.3s ease;
 }
 
-.deleteButton:hover,
-.deleteButton:focus {
-  background: rgba(10, 75, 112, 0.05);
+body .deleteButton:hover,
+body .deleteButton:focus {
+  border-color: var(
+    --clr-navy-darker,
+    #001f3f
+  ); /* Fallback color if --clr-navy-darker isn't defined */
+  color: var(--clr-navy-darker, #001f3f);
+  cursor: pointer;
+  background: transparent;
+  fill: var(--clr-navy-darker, #001f3f);
+  cursor: pointer;
+  transform: scale(1.02) translateY(-2px);
+  box-shadow: 1px 2px 8px var(--box-shadow-color);
+  transition: all 0.3s ease;
 }
 
-.deleteButton:disabled {
+body .deleteButton:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.deleteButton svg {
+body .deleteButton svg {
   min-width: 16px;
   min-height: 16px;
   fill: currentColor;
+  margin: 0;
 }

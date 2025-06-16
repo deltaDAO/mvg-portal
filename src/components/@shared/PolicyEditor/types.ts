@@ -82,4 +82,5 @@ export interface PolicyEditorProps {
   enabledView?: boolean
   isAsset?: boolean
   buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
+  hideDefaultPolicies?: boolean
 }

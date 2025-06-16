@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import Input from '@components/@shared/FormInput'
 import SectionContainer from '../../../@shared/SectionContainer/SectionContainer'
 import Button from '@components/@shared/atoms/Button'
@@ -21,7 +21,7 @@ export default function AccessRulesSection(): ReactElement {
   const [allowInputValue, setAllowInputValue] = useState('')
   const [denyInputValue, setDenyInputValue] = useState('')
   const [allowDropdownValue, setAllowDropdownValue] = useState(
-    'Allow specific addresses'
+    'Please select an option'
   )
   const [denyDropdownValue, setDenyDropdownValue] = useState(
     'Please select an option'
@@ -29,6 +29,26 @@ export default function AccessRulesSection(): ReactElement {
 
   const allowList = values.services?.[0]?.credentials?.allow || []
   const denyList = values.services?.[0]?.credentials?.deny || []
+
+  useEffect(() => {
+    if (allowDropdownValue === 'Allow all addresses') {
+      if (!allowList.includes('*')) {
+        const newAllowList = [...allowList, '*']
+        setFieldValue('services[0].credentials.allow', newAllowList)
+      }
+      setAllowInputValue('')
+    }
+  }, [allowDropdownValue, allowList, setFieldValue])
+
+  useEffect(() => {
+    if (denyDropdownValue === 'Deny all addresses') {
+      if (!denyList.includes('*')) {
+        const newDenyList = [...denyList, '*']
+        setFieldValue('services[0].credentials.deny', newDenyList)
+      }
+      setDenyInputValue('')
+    }
+  }, [denyDropdownValue, denyList, setFieldValue])
 
   const handleAddAllowAddress = (e: React.FormEvent) => {
     e.preventDefault()
@@ -100,6 +120,20 @@ export default function AccessRulesSection(): ReactElement {
     setFieldValue('services[0].credentials.deny', newDenyList)
   }
 
+  const handleAllowDropdownChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const { value } = e.target
+    setAllowDropdownValue(value)
+  }
+
+  const handleDenyDropdownChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const { value } = e.target
+    setDenyDropdownValue(value)
+  }
+
   return (
     <SectionContainer title="Access Rules" gap="16px">
       <ContainerForm>
@@ -108,7 +142,7 @@ export default function AccessRulesSection(): ReactElement {
             Allow ETH Address
             <Tooltip
               content={
-                <Markdown text="Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by clicking 'add all'." />
+                <Markdown text="Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by selecting 'Allow all addresses'." />
               }
             />
           </Label>
@@ -118,39 +152,49 @@ export default function AccessRulesSection(): ReactElement {
             type="select"
             selectStyle="publish"
             size="default"
-            options={['Allow specific addresses', 'Please select an option']}
+            options={[
+              'Please select an option',
+              'Allow specific addresses',
+              'Allow all addresses'
+            ]}
             value={allowDropdownValue}
-            onChange={(e) =>
-              setAllowDropdownValue((e.target as HTMLSelectElement).value)
-            }
+            onChange={handleAllowDropdownChange}
           />
         </div>
 
-        <InputGroup>
-          <InputElement
-            name="allowAddress"
-            placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
-            value={allowInputValue}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setAllowInputValue(e.target.value)
-            }
-          />
-          <Button
-            type="button"
-            onClick={() => {
-              setAllowInputValue('')
-              setFieldValue('services[0].credentials.allow', [])
-            }}
-            disabled={allowList.length === 0 && !allowInputValue.trim()}
-            style="outlined"
-          >
-            <DeleteIcon /> Delete
-          </Button>
-        </InputGroup>
+        {allowDropdownValue === 'Allow specific addresses' && (
+          <>
+            <InputGroup>
+              <InputElement
+                name="allowAddress"
+                placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
+                value={allowInputValue}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setAllowInputValue(e.target.value)
+                }
+              />
+              <Button
+                type="button"
+                onClick={() => {
+                  setAllowInputValue('')
+                  setFieldValue('services[0].credentials.allow', [])
+                }}
+                disabled={allowList.length === 0 && !allowInputValue.trim()}
+                style="outlined"
+              >
+                <DeleteIcon /> Delete
+              </Button>
+            </InputGroup>
 
-        <Button style="gradient" onClick={handleAddAllowAddress} type="button">
-          <AddIcon /> Add new address
-        </Button>
+            <Button
+              style="gradient"
+              onClick={handleAddAllowAddress}
+              type="button"
+            >
+              <AddIcon /> Add new address
+            </Button>
+          </>
+        )}
 
         {allowList.length > 0 && (
           <div className={styles.addressList}>
@@ -180,7 +224,7 @@ export default function AccessRulesSection(): ReactElement {
             Deny ETH Address
             <Tooltip
               content={
-                <Markdown text="Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by clicking 'add all'." />
+                <Markdown text="Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by selecting 'Deny all addresses'." />
               }
             />
           </Label>
@@ -189,16 +233,18 @@ export default function AccessRulesSection(): ReactElement {
             name="denyDropdown"
             type="select"
             selectStyle="publish"
-            options={['Please select an option', 'Deny specific addresses']}
+            options={[
+              'Please select an option',
+              'Deny specific addresses',
+              'Deny all addresses'
+            ]}
             hideLabel
             value={denyDropdownValue}
-            onChange={(e) =>
-              setDenyDropdownValue((e.target as HTMLSelectElement).value)
-            }
+            onChange={handleDenyDropdownChange}
           />
         </div>
 
-        {denyDropdownValue !== 'Please select an option' && (
+        {denyDropdownValue === 'Deny specific addresses' && (
           <>
             <InputGroup>
               <InputElement
@@ -229,28 +275,28 @@ export default function AccessRulesSection(): ReactElement {
             >
               <AddIcon /> Add new address
             </Button>
-
-            {denyList.length > 0 && (
-              <div className={styles.addressList}>
-                {denyList.map((address, index) => (
-                  <InputGroup key={`deny-${index}`}>
-                    <InputElement
-                      name={`denyAddress-${index}`}
-                      value={address === '*' ? 'All Wallets (*)' : address}
-                      disabled
-                    />
-                    <Button
-                      type="button"
-                      onClick={() => handleDeleteDenyAddress(address)}
-                      style="outlined"
-                    >
-                      <DeleteIcon /> Delete
-                    </Button>
-                  </InputGroup>
-                ))}
-              </div>
-            )}
           </>
+        )}
+
+        {denyList.length > 0 && (
+          <div className={styles.addressList}>
+            {denyList.map((address, index) => (
+              <InputGroup key={`deny-${index}`}>
+                <InputElement
+                  name={`denyAddress-${index}`}
+                  value={address === '*' ? 'All Wallets (*)' : address}
+                  disabled
+                />
+                <Button
+                  type="button"
+                  onClick={() => handleDeleteDenyAddress(address)}
+                  style="outlined"
+                >
+                  <DeleteIcon /> Delete
+                </Button>
+              </InputGroup>
+            ))}
+          </div>
         )}
       </ContainerForm>
     </SectionContainer>

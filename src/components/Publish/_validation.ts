@@ -191,6 +191,18 @@ const validationCredentials = {
 }
 
 const validationService = {
+  name: Yup.string()
+    .min(10, (param) => `Service Name must be at least ${param.min} characters`)
+    .required('Required'),
+  description: Yup.object().shape({
+    value: Yup.string()
+      .min(
+        10,
+        (param) =>
+          `Service description must be at least ${param.min} characters`
+      )
+      .required('Required')
+  }),
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({

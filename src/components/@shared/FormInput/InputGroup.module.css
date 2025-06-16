@@ -10,7 +10,7 @@
   margin-top: -1px;
   width: 100%;
 }
-
+/* 
 .inputGroup button:hover,
 .inputGroup button:focus,
 .inputGroup input:focus + button:hover,
@@ -18,7 +18,7 @@
   background: var(--button-primary-background);
   transform: none;
   box-shadow: none;
-}
+} */
 
 @media screen and (min-width: 30rem) {
   .inputGroup {

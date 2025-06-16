@@ -219,7 +219,9 @@ export default function ServicesFields(): ReactElement {
       <SSIPoliciesSection
         defaultPolicies={defaultPolicies}
         fieldNamePrefix="services[0]"
-        showEnableCheckbox={false}
+        showEnableCheckbox={true}
+        hideDefaultPolicies={true}
+        isAsset={false}
       />
 
       <ConsumerParametersSection

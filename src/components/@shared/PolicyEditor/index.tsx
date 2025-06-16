@@ -28,6 +28,7 @@ import FieldRow from './FieldRow/Row'
 import fieldRowStyles from './FieldRow/Row.module.css'
 import DeleteButton from '../DeleteButton/DeleteButton'
 import CustomPolicyBlock from './PolicyBlocks/Custom'
+
 import AddIcon from '@images/add_param.svg'
 
 interface PolicyViewProps {
@@ -486,7 +487,8 @@ export function PolicyEditor(props): ReactElement {
     defaultPolicies = [],
     enabledView = false,
     isAsset = false,
-    buttonStyle = 'primary'
+    buttonStyle = 'primary',
+    hideDefaultPolicies = false
   }: PolicyEditorProps = props
 
   const [enabled, setEnabled] = useState(enabledView)
@@ -498,12 +500,11 @@ export function PolicyEditor(props): ReactElement {
   const [minimumCredentials, setMinimumCredentials] = useState('1')
   const [limitMinCredentials, setLimitMinCredentials] = useState(false)
 
-  // State for default policies - first 4 are enabled by default, last one is not
   const [defaultPolicyStates, setDefaultPolicyStates] = useState({
-    signature: true,
-    'not-before': true,
-    expired: true,
-    'revoked-status-list': true,
+    'not-before': !hideDefaultPolicies,
+    expired: !hideDefaultPolicies,
+    'revoked-status-list': !hideDefaultPolicies,
+    signature: false,
     'signature_sd-jwt-vc': false
   })
 
@@ -809,7 +810,7 @@ export function PolicyEditor(props): ReactElement {
   const ssiContent = enabled && (
     <>
       {/* Policies applied to all credentials section */}
-      {enabled && (
+      {enabled && !hideDefaultPolicies && (
         <div className={styles.defaultPoliciesSection}>
           <h3 className={styles.defaultPoliciesTitle}>
             Policies applied to all credentials
@@ -840,12 +841,11 @@ export function PolicyEditor(props): ReactElement {
         </div>
       )}
 
-      <div className={`${styles.marginBottom4em}`}>
-        <div className={`${styles.panelColumn}`}>
-          <div className={styles.credentialCards}>
-            {credentials?.requestCredentials?.map((credential, index) => (
+      <div className={`${styles.container}`}>
+        {credentials?.requestCredentials?.map((credential, index) => (
+          <div className={`${styles.panelColumn}`} key={index}>
+            <div className={styles.credentialCards}>
               <CredentialCard
-                key={index}
                 index={index}
                 name={name}
                 credential={credential}
@@ -888,7 +888,7 @@ export function PolicyEditor(props): ReactElement {
                   </div>
                 </div>
 
-                <div className={styles.policiesContainer}>
+                <div>
                   {credential?.policies?.length === 0 ? (
                     <div className={styles.noPolicies}>
                       No static policies defined.
@@ -912,66 +912,19 @@ export function PolicyEditor(props): ReactElement {
                   )}
                 </div>
               </CredentialCard>
-            ))}
+            </div>
           </div>
-        </div>
+        ))}
 
         <Button
           type="button"
           style="gradient"
-          className={cs(styles.marginCenter, styles.marginY16px)}
+          className={cs(styles.marginCenter)}
           onClick={handleNewRequestCredential}
         >
           <AddIcon /> New{' '}
           {{ ...getFieldContent('requestCredential', fields) }.label}
         </Button>
-
-        {credentials?.requestCredentials.length > 0 && (
-          <>
-            <div
-              className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
-            >
-              {credentials?.vpPolicies?.map((policy, index) => {
-                // Only render if it's not a static policy with excluded names
-                if (
-                  policy?.type === 'staticVpPolicy' &&
-                  (policy.name === 'presentation-definition' ||
-                    policy.name === 'holder-binding')
-                ) {
-                  return null
-                }
-
-                return (
-                  <VpPolicyView
-                    key={index}
-                    index={index}
-                    name={name}
-                    policy={policy}
-                    onDeletePolicy={() => handleDeleteVpPolicy(index)}
-                  />
-                )
-              })}
-            </div>
-
-            {/* {isAsset && (
-                  <div
-                    className={`${styles.panelColumn} ${styles.marginBottom2em} ${styles.width100}`}
-                  >
-                    {credentials?.requestCredentials.length > 0 && (
-                      <Button
-                        type="button"
-                        style="gradient"
-                        className={`${styles.marginBottom1em}`}
-                        onClick={handleNewStaticPolicy}
-                      >
-                        New{' '}
-                        {{ ...getFieldContent('staticPolicy', fields) }.label}
-                      </Button>
-                    )}
-                  </div>
-                )} */}
-          </>
-        )}
       </div>
       {isAsset && (
         <div className={`${styles.panelColumn} ${styles.marginBottom1em}`}>
@@ -995,7 +948,27 @@ export function PolicyEditor(props): ReactElement {
         </div>
       )}
 
-      {editAdvancedFeatures && <AdvancedOptions name={name} />}
+      {editAdvancedFeatures && (
+        <AdvancedOptions
+          name={name}
+          holderBinding={holderBinding}
+          requireAllTypes={requireAllTypes}
+          limitMinCredentials={limitMinCredentials}
+          minCredentialsCount={minimumCredentials}
+          limitMaxCredentials={limitMaxCredentials}
+          maxCredentialsCount={maximumCredentials}
+          onHolderBindingChange={handleHolderBindingToggle}
+          onRequireAllTypesChange={handlePresentationDefinitionToggle}
+          onLimitMinCredentialsChange={() =>
+            setLimitMinCredentials(!limitMinCredentials)
+          }
+          onMinCredentialsCountChange={(value) => setMinimumCredentials(value)}
+          onLimitMaxCredentialsChange={() =>
+            setLimitMaxCredentials(!limitMaxCredentials)
+          }
+          onMaxCredentialsCountChange={(value) => setMaximumCredentials(value)}
+        />
+      )}
     </>
   )
 

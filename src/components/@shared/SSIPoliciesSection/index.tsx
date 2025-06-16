@@ -12,6 +12,8 @@ interface SSIPoliciesSectionProps {
   title?: string
   help?: string
   showEnableCheckbox?: boolean
+  hideDefaultPolicies?: boolean
+  isAsset?: boolean
 }
 
 export default function SSIPoliciesSection({
@@ -19,7 +21,9 @@ export default function SSIPoliciesSection({
   fieldNamePrefix,
   title = 'SSI Policies',
   help = 'Self-sovereign identity (SSI) policies define verification requirements for asset consumers. Configure which credentials and verification policies are required to access this asset.',
-  showEnableCheckbox = true
+  showEnableCheckbox = true,
+  hideDefaultPolicies = false,
+  isAsset = true
 }: SSIPoliciesSectionProps): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
   const [enabled, setEnabled] = useState(false)
@@ -80,9 +84,10 @@ export default function SSIPoliciesSection({
             name={credentialsPath}
             defaultPolicies={defaultPolicies}
             help="Self-sovereign identity (SSI) is used verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
-            isAsset={true}
+            isAsset={isAsset}
             buttonStyle="ocean"
             enabledView={true}
+            hideDefaultPolicies={hideDefaultPolicies}
           />
         </SectionContainer>
       )}

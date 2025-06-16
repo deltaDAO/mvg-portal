@@ -25,8 +25,13 @@
   font-weight: var(--font-weight-bold);
   font-size: 10px;
   color: var(--input-error-text-color);
-  margin-top: var(--input-error-spacing);
   line-height: 1.2;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 2px;
+  z-index: 1;
 }
 
 .hasError label {

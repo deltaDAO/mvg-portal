@@ -16,6 +16,8 @@ import axios from 'axios'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { useNetwork } from 'wagmi'
 import { customProviderUrl } from 'app.config.cjs'
+import CircleErrorIcon from '@images/circle_error.svg'
+import CircleCheckIcon from '@images/circle_check.svg'
 
 export default function CustomProvider(props: InputProps): ReactElement {
   const { chain } = useNetwork()
@@ -25,7 +27,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    helpers.setValue({ url: customProviderUrl, valid: false, custom: true })
+    helpers.setValue({ url: customProviderUrl, valid: true, custom: true })
   }, [])
 
   async function handleValidation(e: React.SyntheticEvent) {
@@ -108,9 +110,12 @@ export default function CustomProvider(props: InputProps): ReactElement {
     helpers.setValue({ url: providerUrl, valid: true, custom: true })
   }
 
-  return field?.value?.valid === true ? (
-    <FileInfo file={field.value} handleClose={handleFileInfoClose} />
-  ) : (
+  function handleClear() {
+    helpers.setValue({ url: '', valid: false, custom: true })
+    helpers.setTouched(false)
+  }
+
+  return (
     <>
       <UrlInput
         submitText="Validate"
@@ -118,15 +123,30 @@ export default function CustomProvider(props: InputProps): ReactElement {
         name={`${field.name}.url`}
         isLoading={isLoading}
         handleButtonClick={handleValidation}
+        showDeleteButton
+        onDelete={handleClear}
+        disabled={field?.value?.valid === true}
+        disableButton={field?.value?.valid === true}
       />
-      <Button
-        style="text"
-        size="small"
-        onClick={handleDefault}
-        className={styles.default}
-      >
-        Use Default Provider
-      </Button>
+
+      {field?.value?.valid === true ? (
+        <div className={styles.defaultContainer}>
+          <CircleCheckIcon />
+          <div className={styles.confirmed}>File confirmed</div>
+        </div>
+      ) : (
+        <Button
+          style="text"
+          size="small"
+          onClick={handleDefault}
+          className={styles.default}
+        >
+          <div className={styles.defaultContainer}>
+            <CircleErrorIcon />
+            Use Default Provider
+          </div>
+        </Button>
+      )}
     </>
   )
 }

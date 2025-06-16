@@ -1,6 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Button from '@shared/atoms/Button'
 import PublishButton from '@shared/PublishButton'
+import DeleteButton from '@shared/DeleteButton/DeleteButton'
 import { ErrorMessage, useField } from 'formik'
 import Loader from '@shared/atoms/Loader'
 import styles from './index.module.css'
@@ -19,6 +20,10 @@ export interface URLInputProps {
   hideButton?: boolean
   placeholder?: string
   buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
+  showDeleteButton?: boolean
+  onDelete?: () => void
+  disabled?: boolean
+  disableButton?: boolean
 }
 
 export default function URLInput({
@@ -31,6 +36,10 @@ export default function URLInput({
   hideButton,
   placeholder,
   buttonStyle = 'publish',
+  showDeleteButton = false,
+  onDelete,
+  disabled = false,
+  disableButton = false,
   ...props
 }: URLInputProps): ReactElement {
   const [field, meta] = useField(name)
@@ -72,6 +81,7 @@ export default function URLInput({
           type="url"
           placeholder={placeholder}
           data-storage-type={storageType}
+          disabled={disabled}
         />
 
         {!hideButton &&
@@ -84,7 +94,7 @@ export default function URLInput({
                 e.preventDefault()
                 handleButtonClick(e, field.value)
               }}
-              disabled={isButtonDisabled || isLoading}
+              disabled={isButtonDisabled || isLoading || disableButton}
             />
           ) : (
             <Button
@@ -94,11 +104,13 @@ export default function URLInput({
                 e.preventDefault()
                 handleButtonClick(e, field.value)
               }}
-              disabled={isButtonDisabled}
+              disabled={isButtonDisabled || disableButton}
             >
               {isLoading ? <Loader /> : submitText}
             </Button>
           ))}
+
+        {showDeleteButton && onDelete && <DeleteButton onClick={onDelete} />}
       </InputGroup>
 
       {meta.touched && meta.error && (
