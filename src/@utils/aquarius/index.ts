@@ -593,6 +593,7 @@ export async function getDownloadAssets(
     let downloadedAssets: DownloadedAsset[] = []
     if (result) {
       downloadedAssets = result?.results
+        .filter((asset) => asset?.indexedMetadata)
         .map((asset) => {
           const timestampStr =
             asset?.indexedMetadata?.event?.datetime ??
