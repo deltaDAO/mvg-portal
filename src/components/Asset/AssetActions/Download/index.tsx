@@ -473,6 +473,7 @@ export default function Download({
             <AssetAction asset={asset} />
           </div>
           {!isFullPriceLoading &&
+            !isOwner &&
             (appConfig.ssiEnabled ? (
               <>
                 {verifierSessionCache &&
