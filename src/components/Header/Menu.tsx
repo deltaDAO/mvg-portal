@@ -62,7 +62,7 @@ export default function Menu(): ReactElement {
   const isPublishRoute = router.pathname.startsWith('/publish')
   const isCatalogRoute =
     router.pathname === '/search' &&
-    router.query.sort === 'indexedMetadata.nft.created' &&
+    router.query.sort === 'indexedMetadata.event.block' &&
     router.query.sortOrder === 'desc'
 
   const showPublishButton = !isPublishRoute
@@ -75,7 +75,7 @@ export default function Menu(): ReactElement {
   }
   const handleCatalogClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    router.push('/search?sort=indexedMetadata.nft.created&sortOrder=desc')
+    router.push('/search?sort=indexedMetadata.event.block&sortOrder=desc')
     setIsMobileMenuOpen(false)
   }
   const toggleMobileMenu = () => {
