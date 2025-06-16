@@ -576,6 +576,11 @@ export async function getDownloadAssets(
   filters.push(
     getFilterTerm('credentialSubject.services.datatokenAddress.keyword', dtList)
   )
+  filters.push({
+    exists: {
+      field: 'indexedMetadata'
+    }
+  })
   filters.push(getFilterTerm('credentialSubject.services.type', 'access'))
   const baseQueryparams = {
     chainIds,
