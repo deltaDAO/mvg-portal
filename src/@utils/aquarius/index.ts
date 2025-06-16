@@ -121,7 +121,7 @@ export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcas
 FilterTerm | undefined {
   return allowDynamicPricing === 'true'
     ? undefined
-    : getFilterTerm('credentialSubject.price.type', 'pool')
+    : getFilterTerm('indexedMetadata.stats.prices.type', 'pool')
 }
 
 export function generateBaseQuery(
