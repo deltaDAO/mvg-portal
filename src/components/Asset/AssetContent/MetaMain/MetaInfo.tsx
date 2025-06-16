@@ -17,7 +17,7 @@ export default function MetaInfo({
 }): ReactElement {
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
-  const nftOwner = asset?.credentialSubject?.nft?.owner
+  const nftOwner = asset?.indexedMetadata?.nft?.owner
 
   return (
     <div className={styles.wrapper}>

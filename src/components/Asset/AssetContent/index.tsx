@@ -93,7 +93,7 @@ export default function AssetContent({
     if (!receipts.length) return
 
     const publisher = receipts?.find((e) => e.type === 'METADATA_CREATED')
-      ?.credentialSubject.nft?.owner
+      ?.indexedMetadata.nft?.owner
     setNftPublisher(publisher)
   }, [receipts])
 
@@ -157,7 +157,7 @@ export default function AssetContent({
             <p>Loading access details...</p>
           ) : (
             <>
-              {asset?.credentialSubject?.nft?.state === 0 ? (
+              {asset?.indexedMetadata?.nft?.state === 0 ? (
                 selectedService === undefined ? (
                   <>
                     <h3>Available services:</h3>
@@ -190,7 +190,7 @@ export default function AssetContent({
                 )
               ) : (
                 <h4>
-                  {asset?.credentialSubject?.nft?.owner === accountId
+                  {asset?.indexedMetadata?.nft?.owner === accountId
                     ? 'You are the asset owner.'
                     : 'Services cannot be ordered.'}
                 </h4>
@@ -221,7 +221,7 @@ export default function AssetContent({
                   onClick={() =>
                     handleGeneratePdf(
                       asset.id,
-                      asset.credentialSubject.event.txid
+                      asset.indexedMetadata?.event.txid
                     )
                   }
                   disabled={loadingInvoice}
@@ -252,7 +252,7 @@ export default function AssetContent({
                   onClick={() =>
                     handleGenerateJson(
                       asset.id,
-                      asset.credentialSubject.event.txid
+                      asset.indexedMetadata?.event.txid
                     )
                   }
                   disabled={loadingInvoiceJson}

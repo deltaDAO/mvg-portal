@@ -40,17 +40,15 @@ export default function UrqlClientProvider({
   useEffect(() => {
     const oceanConfig = getOceanConfig(1)
 
-    if (!oceanConfig?.subgraphUri) {
-      LoggerInstance.error(
-        'No subgraphUri defined, preventing UrqlProvider from initialization.'
-      )
+    if (!oceanConfig?.nodeUri) {
+      LoggerInstance.error('No nodeUri defined.')
       return
     }
 
-    const newClient = createUrqlClient(oceanConfig.subgraphUri)
+    const newClient = createUrqlClient(oceanConfig.nodeUri)
     urqlClient = newClient
     setClient(newClient)
-    LoggerInstance.log(`[URQL] Client connected to ${oceanConfig.subgraphUri}`)
+    LoggerInstance.log(`[URQL] Client connected to ${oceanConfig.nodeUri}`)
   }, [])
 
   return client ? <Provider value={client}>{children}</Provider> : <></>

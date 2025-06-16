@@ -107,11 +107,11 @@ export default function Download({
     (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
 
   useEffect(() => {
-    Number(asset.credentialSubject.nft.state) === 4 && setIsOrderDisabled(true)
-  }, [asset.credentialSubject.nft.state])
+    Number(asset.indexedMetadata.nft.state) === 4 && setIsOrderDisabled(true)
+  }, [asset.indexedMetadata.nft.state])
 
   useEffect(() => {
-    if (asset?.credentialSubject?.event?.from === accountId) {
+    if (asset?.indexedMetadata?.event?.from === accountId) {
       setIsOwner(true)
     }
   }, [asset, accountId])
@@ -312,7 +312,7 @@ export default function Download({
         hasPreviousOrder={isOwned}
         hasDatatoken={hasDatatoken}
         btSymbol={accessDetails.baseToken?.symbol}
-        dtSymbol={asset.credentialSubject?.datatokens[serviceIndex]?.symbol} // TODO - check datatokens
+        dtSymbol={asset.indexedMetadata?.stats[serviceIndex]?.symbol} // TODO - check datatokens
         dtBalance={dtBalance}
         type="submit"
         assetTimeout={secondsToString(service.timeout)}

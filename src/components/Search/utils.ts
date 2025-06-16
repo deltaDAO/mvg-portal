@@ -48,7 +48,7 @@ export function getSearchQuery(
   const filters: FilterTerm[] = []
   filters.push({
     term: {
-      'credentialSubject.nft.state': State.Active
+      'indexedMetadata.nft.state': State.Active
     }
   })
   let searchTerm = text || ''
@@ -68,10 +68,10 @@ export function getSearchQuery(
         : '**'
     const searchFields = [
       'id',
-      'credentialSubject.nft.owner',
-      'credentialSubject.datatokens.address',
-      'credentialSubject.datatokens.name',
-      'credentialSubject.datatokens.symbol',
+      'indexedMetadata.nft.owner',
+      'indexedMetadata.stats.datatokenAddress',
+      'indexedMetadata.stats.name',
+      'indexedMetadata.stats.symbol',
       'credentialSubject.metadata.name^10',
       'credentialSubject.metadata.author',
       'credentialSubject.metadata.description',
@@ -187,7 +187,6 @@ export async function getResults(
     filterSet
   )
   const queryResult = await queryMetadata(searchQuery, cancelToken)
-
   return queryResult?.results?.length === 0
     ? {
         ...queryResult,

@@ -183,8 +183,8 @@ export async function setNFTMetadataAndTokenURI(
             external_url: externalUrl
           }
         : {
-            name: (asset as Asset).credentialSubject.nft.name,
-            symbol: (asset as Asset).credentialSubject.nft.symbol,
+            name: (asset as Asset).indexedMetadata.nft.name,
+            symbol: (asset as Asset).indexedMetadata.nft.symbol,
             description: `${nftMetadataTemplate.description}\n\nView on Ocean Enterprise: ${externalUrl}`,
             external_url: externalUrl
           }

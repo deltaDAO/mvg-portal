@@ -9,6 +9,10 @@ module.exports = {
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
     'https://ocean-node-vm3.oceanenterprise.io',
 
+  nodeUri:
+    process.env.NEXT_PUBLIC_NODE_URI ||
+    'https://eth-sepolia.blastapi.io/a91cc615-dbae-493b-b011-5796477a64de',
+
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
   chainIds: [11155111, 8996],
