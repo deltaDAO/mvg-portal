@@ -17,7 +17,7 @@
 
 .banner.success {
   background-color: var(--brand-alert-green);
-  color: var(--brand-darker-black);
+  color: var(--brand-black);
 }
 
 .banner > div {
