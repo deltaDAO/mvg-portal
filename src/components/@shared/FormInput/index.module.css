@@ -27,10 +27,9 @@
   color: var(--input-error-text-color);
   line-height: 1.2;
   position: absolute;
-  top: 100%;
+  top: 98%;
   left: 0;
   right: 0;
-  margin-top: 2px;
   z-index: 1;
 }
 

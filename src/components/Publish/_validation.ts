@@ -191,9 +191,7 @@ const validationCredentials = {
 }
 
 const validationService = {
-  name: Yup.string()
-    .min(10, (param) => `Service Name must be at least ${param.min} characters`)
-    .required('Required'),
+  name: Yup.string().required('Required'),
   description: Yup.object().shape({
     value: Yup.string()
       .min(

@@ -1,6 +1,5 @@
-.textblock {
-  margin-top: var(--spacer);
-  margin-bottom: var(--spacer);
+.textblock > div > div {
+  margin-bottom: 0;
 }
 
 .fileUrlInput {
@@ -27,6 +26,12 @@
 .headerValueInput {
   max-width: 200px;
   width: 100%;
+}
+
+.filesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
 }
 
 .filesContainer .addButton {
