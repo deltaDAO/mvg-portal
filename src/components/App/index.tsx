@@ -27,8 +27,11 @@ export default function App({
 
   return (
     <div className={styles.app}>
-      {siteContent?.announcement !== '' && (
-        <AnnouncementBanner state="warning" text={siteContent?.announcement} />
+      {siteContent?.announcement.text !== '' && (
+        <AnnouncementBanner
+          state={siteContent?.announcement?.state}
+          text={siteContent?.announcement?.text}
+        />
       )}
       {appConfig.showPreviewAlert === 'true' &&
         devPreviewAnnouncementText !== '' && (
