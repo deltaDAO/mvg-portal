@@ -2,7 +2,7 @@ import { ReactElement, useState } from 'react'
 import JobList from './JobList'
 import { VizHub } from './viz-hub'
 import { useDataLoader } from './useDataLoader'
-import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
+import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/CameroonGazette.model'
 
 export default function TextAnalysisViz(): ReactElement {
   const [textAnalysisData, setTextAnalysisData] = useState<
