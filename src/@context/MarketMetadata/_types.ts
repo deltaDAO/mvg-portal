@@ -85,7 +85,10 @@ export interface SiteContent {
       }[]
     }[]
   }[]
-  announcement: string
+  announcement: {
+    text: string
+    state: 'success' | 'warning' | 'error'
+  }
   devPreviewAnnouncement: string
   warning: {
     ctd: string
