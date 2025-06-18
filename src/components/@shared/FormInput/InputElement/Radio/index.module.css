@@ -81,3 +81,18 @@ body .radioWrap > label {
 .checkbox:checked::after {
   opacity: 1;
 }
+
+.publishRadio {
+  border: 0;
+}
+
+.publishRadio:checked {
+  border-color: var(--brand-white);
+  background: var(--brand-white);
+}
+
+.publishRadio:checked::after {
+  background: var(--clr-navy);
+  width: 10px;
+  height: 10px;
+}

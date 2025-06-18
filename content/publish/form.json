@@ -376,6 +376,7 @@
   },
   "additionalDdos": {
     "title": "Additional Asset Descriptions",
+    "help": "Additional Asset Descriptions are used to provide additional information about the asset. They are displayed in the asset description section.",
     "fields": [
       {
         "name": "additionalCredential",

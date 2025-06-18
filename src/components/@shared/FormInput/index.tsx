@@ -7,6 +7,7 @@ import {
   useEffect,
   useState
 } from 'react'
+import cs from 'classnames'
 import InputElement from './InputElement'
 import Label from './Label'
 import styles from './index.module.css'
@@ -23,6 +24,7 @@ import {
 } from '@shared/FormInput/InputElement/BoxSelection'
 import { getObjectPropertyByPath } from '@utils/index'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
+import ErrorSVG from '@images/circle_error.svg'
 
 const cx = classNames.bind(styles)
 
@@ -85,6 +87,8 @@ export interface InputProps {
   actions?: string[]
   hideLabel?: boolean
   buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
+  variant?: 'default' | 'publish'
+  centerError?: boolean
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {
@@ -111,7 +115,8 @@ export default function Input(props: Partial<InputProps>): ReactElement {
     form,
     field,
     disclaimer,
-    disclaimerValues
+    disclaimerValues,
+    centerError
   } = props
 
   const isFormikField = typeof field !== 'undefined'
@@ -158,7 +163,10 @@ export default function Input(props: Partial<InputProps>): ReactElement {
       {help && prominentHelp && <FormHelp>{help}</FormHelp>}
 
       {field?.name !== 'files' && isFormikField && hasFormikError && (
-        <div className={styles.error}>
+        <div
+          className={cs(styles.error, { [styles.centerError]: centerError })}
+        >
+          {centerError && <ErrorSVG className={styles.errorIcon} />}
           <ErrorMessage name={field.name} />
         </div>
       )}

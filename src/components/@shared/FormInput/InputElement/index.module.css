@@ -322,3 +322,36 @@ body .publishSelect {
   background-position: calc(100% - 14px) 1rem, calc(100% - 9px) 1rem, 100% 0;
   background-size: 5px 5px, 5px 5px, 2rem 3rem;
 }
+
+.publishPrefixGroup,
+.publishPrefixGroup .prefixGroup,
+.publishPrefixGroup .postfixGroup {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--sp-2_5);
+}
+
+.publishPrefix,
+.publishPostfix {
+  border: 1px solid var(--publish-primary);
+  background: transparent;
+  color: var(--publish-primary);
+  border-radius: var(--publish-border-radius);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  padding: 4px 8px;
+}
+
+.publishPrefixGroup input {
+  border-left: 1px solid var(--input-border-color);
+  border-top-left-radius: var(--input-border-radius);
+  border-bottom-left-radius: var(--input-border-radius);
+  width: 60%;
+}
+
+.publishPrefixGroup.postfixGroup input {
+  border-right: 1px solid var(--input-border-color);
+  border-top-right-radius: var(--input-border-radius);
+  border-bottom-right-radius: var(--input-border-radius);
+}

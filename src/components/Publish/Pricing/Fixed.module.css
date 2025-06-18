@@ -1,8 +1,20 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-8);
+}
+
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
 .title {
   font-size: var(--font-size-base);
-  margin-top: var(--spacer);
   margin-bottom: 0;
-  padding-bottom: calc(var(--spacer) / 4);
 }
 
 .tokens {

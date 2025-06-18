@@ -1,9 +1,8 @@
 .fees {
   display: grid;
   gap: var(--spacer);
-  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-  padding: var(--spacer) 0;
-  text-align: center;
+  grid-template-columns: 1fr 1fr;
+  text-align: start;
 }
 
 .fees > div {
@@ -16,12 +15,5 @@
 }
 
 .fees input {
-  max-width: 5rem;
-}
-
-@media screen and (min-width: 25rem) {
-  .fees {
-    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
-    padding: var(--spacer);
-  }
+  max-width: 90%;
 }

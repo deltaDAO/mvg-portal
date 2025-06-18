@@ -6,15 +6,6 @@
   align-items: center;
 }
 
-.token {
-  border: var(--input-border-size) solid var(--border-color);
-  border-left: 5px solid #fdd655;
-  border-radius: 0;
-  padding: 10px 17px;
-  background: var(--background-detail-box);
-  width: fit-content;
-}
-
 .image {
   display: block;
   width: 90px;

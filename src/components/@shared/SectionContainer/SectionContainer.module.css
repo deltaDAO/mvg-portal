@@ -55,3 +55,11 @@
 .content > div {
   margin-bottom: 0 !important;
 }
+
+.default {
+  padding: 0;
+}
+
+.borderNavy {
+  border: 1px solid var(--clr-navy);
+}

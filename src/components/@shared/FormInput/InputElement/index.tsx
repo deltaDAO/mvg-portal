@@ -77,6 +77,7 @@ const InputElement = forwardRef(
       prefixes,
       postfixes,
       actions,
+      variant = 'default',
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -243,10 +244,20 @@ const InputElement = forwardRef(
       default:
         return prefix || postfix ? (
           <div
-            className={`${prefix ? styles.prefixGroup : styles.postfixGroup}`}
+            className={`${prefix ? styles.prefixGroup : styles.postfixGroup} ${
+              variant === 'publish' ? styles.publishPrefixGroup : ''
+            }`}
           >
             {prefix && (
-              <div className={cx({ prefix: true, [size]: size })}>{prefix}</div>
+              <div
+                className={cx({
+                  prefix: true,
+                  [size]: size,
+                  publishPrefix: variant === 'publish'
+                })}
+              >
+                {prefix}
+              </div>
             )}
             <DefaultInput
               ref={ref}
@@ -256,7 +267,13 @@ const InputElement = forwardRef(
               {...props}
             />
             {postfix && (
-              <div className={cx({ postfix: true, [size]: size })}>
+              <div
+                className={cx({
+                  postfix: true,
+                  [size]: size,
+                  publishPostfix: variant === 'publish'
+                })}
+              >
                 {postfix}
               </div>
             )}

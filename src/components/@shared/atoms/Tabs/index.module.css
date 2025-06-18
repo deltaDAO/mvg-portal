@@ -75,3 +75,52 @@
 .radio {
   composes: radio from '../../FormInput/InputElement/Radio/index.module.css';
 }
+
+.publishTabListWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.publishTabListContainer {
+  width: fit-content;
+  margin-left: 0;
+  margin-right: 0;
+  border-bottom-color: var(--publish-border);
+}
+
+.publishTab {
+  border: 0;
+}
+
+.publishTab[aria-selected='true'] {
+  border-radius: var(--publish-border-radius);
+  background-color: var(--clr-navy);
+  color: var(--brand-white);
+  border-color: var(--clr-navy);
+}
+
+.publishTabList {
+  padding: var(--sp-1) 0 var(--sp-1) 0;
+}
+
+.publishTabPanel {
+  width: 100%;
+  max-width: 490px;
+  padding: var(--sp-1) 0 var(--sp-1) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+  margin: 0 auto;
+}
+
+.publishTabContent {
+  padding: 0;
+}
+
+@media (min-width: 40rem) {
+  .publishTabContent {
+    padding: var(--sp-4) 0 var(--sp-4) 0;
+  }
+}

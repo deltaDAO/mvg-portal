@@ -30,6 +30,7 @@ export default function SectionContainer({
     styles.container,
     variant && styles[variant],
     border && styles.border,
+    title && styles.borderNavy,
     className
   ]
     .filter(Boolean)

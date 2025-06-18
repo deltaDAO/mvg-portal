@@ -44,6 +44,7 @@
   padding: var(--publish-input-padding);
   font-family: var(--publish-font-family);
   font-weight: var(--publish-font-weight-normal);
+  width: 100%;
 }
 
 .container.publish input:focus:not([type='checkbox']):not([type='radio']),

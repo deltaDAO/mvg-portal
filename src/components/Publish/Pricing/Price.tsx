@@ -16,7 +16,7 @@ export default function Price({
 }): ReactElement {
   const [field, meta] = useField('pricing.price')
 
-  const { values } = useFormikContext<FormPublishData>()
+  const { values, ...form } = useFormikContext<FormPublishData>()
   const { dataTokenOptions } = values.services[0]
 
   return (
@@ -44,9 +44,11 @@ export default function Price({
                     values.pricing?.baseToken?.symbol
                   )
                 }
-                {...field}
+                variant="publish"
+                centerError={true}
+                field={field}
+                form={form}
               />
-              <Error meta={meta} />
             </div>
             <div className={styles.datatoken}>
               <h4>

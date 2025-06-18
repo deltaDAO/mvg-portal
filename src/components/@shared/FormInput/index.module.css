@@ -33,6 +33,17 @@
   z-index: 1;
 }
 
+.error.centerError {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--sp-1_5);
+  position: absolute;
+  bottom: -30px;
+  left: 40px;
+  right: auto;
+}
+
 .hasError label {
   color: var(--input-error-text-color);
 }
@@ -45,4 +56,10 @@ body .hasError [class*='prefix'],
 body .hasError [class*='postfix'] {
   border-color: var(--input-error-border-color) !important;
   box-shadow: none !important;
+}
+
+.errorIcon {
+  width: 16px;
+  height: 16px;
+  margin: 0;
 }

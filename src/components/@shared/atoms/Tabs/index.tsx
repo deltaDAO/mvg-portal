@@ -15,6 +15,7 @@ export interface TabsProps {
   showRadio?: boolean
   selectedIndex?: number
   onIndexSelected?: (index: number) => void
+  variant?: 'default' | 'publish'
 }
 
 export default function Tabs({
@@ -23,7 +24,8 @@ export default function Tabs({
   handleTabChange,
   showRadio,
   selectedIndex,
-  onIndexSelected
+  onIndexSelected,
+  variant = 'default'
 }: TabsProps): ReactElement {
   return (
     <ReactTabs
@@ -31,36 +33,60 @@ export default function Tabs({
       selectedIndex={selectedIndex}
       onSelect={onIndexSelected}
     >
-      <div className={styles.tabListContainer}>
-        <TabList className={styles.tabList}>
-          {items.map((item, index) => (
-            <Tab
-              className={styles.tab}
-              key={index}
-              onClick={
-                handleTabChange ? () => handleTabChange(item.title) : null
-              }
-              disabled={item.disabled}
-            >
-              {showRadio ? (
-                <InputRadio
-                  className={styles.radioInput}
-                  name={item.title}
-                  type="radio"
-                  checked={index === selectedIndex}
-                  options={[item.title]}
-                  readOnly
-                />
-              ) : (
-                item.title
-              )}
-            </Tab>
-          ))}
-        </TabList>
+      <div
+        className={variant === 'publish' ? styles.publishTabListWrapper : ''}
+      >
+        <div
+          className={`${styles.tabListContainer} ${
+            variant === 'publish' ? styles.publishTabListContainer : ''
+          }`}
+        >
+          <TabList
+            className={`${styles.tabList} ${
+              variant === 'publish' ? styles.publishTabList : ''
+            }`}
+          >
+            {items.map((item, index) => (
+              <Tab
+                className={`${styles.tab} ${
+                  variant === 'publish' ? styles.publishTab : ''
+                }`}
+                key={index}
+                onClick={
+                  handleTabChange ? () => handleTabChange(item.title) : null
+                }
+                disabled={item.disabled}
+              >
+                {showRadio ? (
+                  <InputRadio
+                    className={styles.radioInput}
+                    name={item.title}
+                    type="radio"
+                    checked={index === selectedIndex}
+                    options={[item.title]}
+                    readOnly
+                    variant={variant}
+                  />
+                ) : (
+                  item.title
+                )}
+              </Tab>
+            ))}
+          </TabList>
+        </div>
       </div>
-      <div className={styles.tabContent}>
+      <div
+        className={`${styles.tabContent} ${
+          variant === 'publish' ? styles.publishTabContent : ''
+        }`}
+      >
         {items.map((item, index) => (
-          <TabPanel key={index}>{item.content}</TabPanel>
+          <TabPanel
+            key={index}
+            className={variant === 'publish' ? styles.publishTabPanel : ''}
+          >
+            {item.content}
+          </TabPanel>
         ))}
       </div>
     </ReactTabs>

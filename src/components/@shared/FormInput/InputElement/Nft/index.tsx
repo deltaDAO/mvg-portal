@@ -1,4 +1,5 @@
 import Button from '@shared/atoms/Button'
+import InfoBox from '@shared/atoms/InfoBox'
 import { InputProps } from '@shared/FormInput'
 import { generateNftMetadata } from '@utils/nft'
 import { useField } from 'formik'
@@ -41,12 +42,12 @@ export default function Nft(props: InputProps): ReactElement {
         </div>
       </figure>
 
-      <div className={styles.token}>
-        <strong>{field?.value?.name}</strong> —{' '}
-        <strong>{field?.value?.symbol}</strong>
-        <br />
-        {field?.value?.description}
-      </div>
+      <InfoBox
+        title={field?.value?.name}
+        subtitle={field?.value?.symbol}
+        description={field?.value?.description}
+        variant="info"
+      />
     </div>
   )
 }

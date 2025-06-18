@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: var(--spacer);
+  /* padding-top: var(--spacer); */
 }
 
 .actionsRight {
