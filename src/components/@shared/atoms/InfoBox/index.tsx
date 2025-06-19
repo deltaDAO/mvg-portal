@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode } from 'react'
 import classNames from 'classnames/bind'
 import styles from './index.module.css'
+import WarningSVG from '@images/warning.svg'
 
 const cx = classNames.bind(styles)
 
@@ -9,7 +10,6 @@ export interface InfoBoxProps {
   title?: string
   subtitle?: string
   description?: string
-  variant?: 'warning' | 'info'
   className?: string
 }
 
@@ -18,29 +18,25 @@ export default function InfoBox({
   title,
   subtitle,
   description,
-  variant = 'info',
   className
 }: InfoBoxProps): ReactElement {
-  const styleClasses = cx({
-    infoBox: true,
-    [variant]: true,
-    [className]: className
-  })
-
   return (
-    <div className={styleClasses}>
-      {title && subtitle && (
-        <div className={styles.header}>
-          <strong>{title}</strong> — <strong>{subtitle}</strong>
-          {description && (
-            <>
-              <br />
-              {description}
-            </>
-          )}
-        </div>
-      )}
-      {children}
+    <div className={cx(styles.infoBox, className)}>
+      <div className={styles.root}>
+        <WarningSVG width={22} height={22} className={styles.warningIcon} />
+        {title && subtitle && (
+          <div className={styles.header}>
+            <strong>{title}</strong> — <strong>{subtitle}</strong>
+            {description && (
+              <>
+                <br />
+                {description}
+              </>
+            )}
+          </div>
+        )}
+        {children}
+      </div>
     </div>
   )
 }
