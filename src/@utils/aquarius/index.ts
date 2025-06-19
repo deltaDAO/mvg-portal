@@ -1,7 +1,11 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import axios, { CancelToken, AxiosResponse } from 'axios'
-import { metadataCacheUri, allowDynamicPricing } from '../../../app.config.cjs'
+import {
+  metadataCacheUri,
+  allowDynamicPricing,
+  nodeUriIndex
+} from '../../../app.config.cjs'
 import {
   SortDirectionOptions,
   SortTermOptions
@@ -69,7 +73,7 @@ export function parseFilters(
     serviceType: 'credentialSubject.metadata.type',
     filterSet: 'credentialSubject.metadata.tags.keyword',
     filterTime: 'credentialSubject.metadata.created',
-    assetState: 'credentialSubject.nft.state'
+    assetState: 'indexedMetadata.nft.state'
   }
   if (filtersList) {
     const filterTerms = Object.keys(filtersList)?.map((key) => {
@@ -83,13 +87,13 @@ export function parseFilters(
           ? getFilterTerm(filterQueryPath[key], uniqueTags)
           : undefined
       }
-      if (key === 'filterTime' && filtersList[key].length > 0) {
+      if (key === 'filterTime' && filtersList[key]?.length > 0) {
         const now = new Date()
         const targetDate = new Date(now.getTime() - Number(filtersList[key][0]))
         const targetDateISOString = targetDate.toISOString()
         return getRangeFilterTerm(filterQueryPath[key], targetDateISOString)
       }
-      if (filtersList[key].length > 0) {
+      if (filtersList[key]?.length > 0) {
         return getFilterTerm(filterQueryPath[key], filtersList[key])
       }
       return undefined
@@ -104,25 +108,26 @@ export function getWhitelistShould(): FilterTerm[] {
   const { whitelists } = addressConfig
 
   const whitelistFilterTerms = Object.entries(whitelists)
-    .filter(([field, whitelist]) => whitelist.length > 0)
+    .filter(([field, whitelist]) => whitelist?.length > 0)
     .map(([field, whitelist]) =>
       whitelist.map((address) => getFilterTerm(field, address, 'match'))
     )
     .reduce((prev, cur) => prev.concat(cur), [])
 
-  return whitelistFilterTerms.length > 0 ? whitelistFilterTerms : []
+  return whitelistFilterTerms?.length > 0 ? whitelistFilterTerms : []
 }
 
 export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcase
 FilterTerm | undefined {
   return allowDynamicPricing === 'true'
     ? undefined
-    : getFilterTerm('credentialSubject.price.type', 'pool')
+    : getFilterTerm('indexedMetadata.stats.prices.type', 'pool')
 }
 
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams,
-  index?: string
+  index?: string,
+  allNode?: boolean
 ): SearchQuery {
   const generatedQuery = {
     index: index ?? 'op_ddo_v5.0.0',
@@ -146,16 +151,26 @@ export function generateBaseQuery(
             : []),
           ...(baseQueryParams.ignorePurgatory
             ? []
-            : [getFilterTerm('credentialSubject.purgatory.state', false)]),
+            : [getFilterTerm('indexedMetadata.purgatory.state', false)]),
           {
             bool: {
               must_not: [
                 !baseQueryParams.ignoreState &&
-                  getFilterTerm('credentialSubject.nft.state', 5),
+                  getFilterTerm('indexedMetadata.nft.state', 5),
                 getDynamicPricingMustNot()
               ]
             }
-          }
+          },
+          ...(!allNode
+            ? [
+                {
+                  terms: {
+                    'credentialSubject.services.serviceEndpoint.keyword':
+                      nodeUriIndex
+                  }
+                }
+              ]
+            : [])
         ]
       }
     }
@@ -204,7 +219,7 @@ export function transformQueryResult(
   result.results = queryResult.results
 
   result.totalResults =
-    queryResult.totalResults || queryResult.results.length || 0
+    queryResult.totalResults || queryResult.results?.length || 0
 
   result.totalPages = Math.ceil(result.totalResults / size)
   result.page = from ? from + 1 : 1
@@ -240,7 +255,6 @@ export async function getAsset(
 ): Promise<any> {
   try {
     if (!isValidDid(did)) return
-
     const response: AxiosResponse<any> = await axios.get(
       `${metadataCacheUri}/api/aquarius/assets/ddo/${did}`,
       { cancelToken }
@@ -355,7 +369,7 @@ export async function getPublishedAssets(
   if (!accountId) return
   const filters: FilterTerm[] = []
   filters.push(
-    getFilterTerm('credentialSubject.nft.owner', accountId.toLowerCase())
+    getFilterTerm('indexedMetadata.nft.owner', accountId.toLowerCase())
   )
   if (filtersList) {
     parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
@@ -419,7 +433,7 @@ async function getTopPublishers(
     aggs: {
       topPublishers: {
         terms: {
-          field: 'credentialSubject.nft.owner.keyword',
+          field: 'indexedMetadata.nft.owner.keyword',
           order: { totalSales: 'desc' }
         },
         aggs: {
@@ -464,7 +478,7 @@ export async function getTopAssetsPublishers(
     return []
   }
 
-  for (let i = 0; i < topPublishers.buckets.length; i++) {
+  for (let i = 0; i < topPublishers.buckets?.length; i++) {
     publishers.push({
       id: topPublishers.buckets[i].key,
       totalSales: parseInt(topPublishers.buckets[i].totalSales.value)
@@ -501,8 +515,9 @@ export async function getUserSalesAndRevenue(
       // TODO stats is not in ddo
       if (assets && assets.results) {
         assets.results.forEach((asset) => {
-          const orders = asset?.credentialSubject?.stats?.orders || 0
-          const price = asset?.credentialSubject?.stats?.price?.value || 0
+          const orders = asset?.indexedMetadata?.stats[0]?.orders || 0
+          const price =
+            Number(asset?.indexedMetadata?.stats?.[0]?.prices?.[0]?.price) || 0
           totalOrders += orders
           totalRevenue += orders * price
         })
@@ -512,7 +527,7 @@ export async function getUserSalesAndRevenue(
     } while (
       assets &&
       assets.results &&
-      assets.results.length > 0 &&
+      assets.results?.length > 0 &&
       page <= assets.totalPages
     )
 
@@ -538,7 +553,7 @@ export async function getUserOrders(
       size: 1000
     }
   } as BaseQueryParams
-  const query = generateBaseQuery(baseQueryparams, 'order')
+  const query = generateBaseQuery(baseQueryparams, 'order', true)
   try {
     return queryMetadata(query, cancelToken)
   } catch (error) {
@@ -561,6 +576,11 @@ export async function getDownloadAssets(
   filters.push(
     getFilterTerm('credentialSubject.services.datatokenAddress.keyword', dtList)
   )
+  filters.push({
+    exists: {
+      field: 'indexedMetadata'
+    }
+  })
   filters.push(getFilterTerm('credentialSubject.services.type', 'access'))
   const baseQueryparams = {
     chainIds,
@@ -577,15 +597,20 @@ export async function getDownloadAssets(
     const result = await queryMetadata(query, cancelToken)
     let downloadedAssets: DownloadedAsset[] = []
     if (result) {
-      downloadedAssets = result.results
+      downloadedAssets = result?.results
         .map((asset) => {
-          const timestamp = new Date(
-            asset?.credentialSubject?.event.datetime
-          ).getTime()
+          const timestampStr =
+            asset?.indexedMetadata?.event?.datetime ??
+            asset?.indexedMetadata?.nft?.created
+
+          const timestamp = timestampStr
+            ? new Date(timestampStr).getTime()
+            : Date.now()
+
           return {
             asset,
             networkId: asset?.credentialSubject?.chainId,
-            dtSymbol: asset?.credentialSubject?.datatokens[0]?.symbol,
+            dtSymbol: asset?.indexedMetadata?.stats[0]?.symbol,
             timestamp
           }
         })

@@ -32,7 +32,7 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   },
   {
     name: 'Datatoken',
-    selector: (asset) => asset.credentialSubject.datatokens[0].symbol
+    selector: (asset) => asset.indexedMetadata.stats[0]?.symbol
   },
   {
     name: 'Time',
@@ -45,18 +45,17 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   },
   {
     name: 'Sales',
-    selector: (asset) => asset.credentialSubject.stats?.orders || 0
+    selector: (asset) => asset.indexedMetadata.stats[0]?.orders || 0
   },
   {
     name: 'Price',
     selector: (asset) => {
       const price =
-        asset.credentialSubject.stats?.price?.value ??
+        asset.indexedMetadata.stats[0]?.prices[0]?.price ??
         (asset.accessDetails[0]?.price
           ? parseFloat(asset.accessDetails[0]?.price)
           : 0)
-      const tokenSymbol =
-        asset.credentialSubject.stats?.price?.tokenSymbol || 'OCEAN'
+      const tokenSymbol = asset.indexedMetadata.stats[0]?.symbol || 'OCEAN'
       return `${price} ${tokenSymbol}`
     }
   },
@@ -64,9 +63,9 @@ const columns: TableOceanColumn<AssetExtended>[] = [
     name: 'Revenue',
     selector: (asset) =>
       `${
-        (asset.credentialSubject.stats?.orders || 0) *
-        (asset.credentialSubject.stats?.price?.value || 0)
-      } ${asset.credentialSubject.stats?.price?.tokenSymbol || 'OCEAN'}`
+        (asset.indexedMetadata.stats[0]?.orders || 0) *
+        (Number(asset.indexedMetadata.stats[0]?.prices[0]?.price) || 0)
+      } ${asset.indexedMetadata.stats[0]?.symbol || 'OCEAN'}`
   }
 ]
 

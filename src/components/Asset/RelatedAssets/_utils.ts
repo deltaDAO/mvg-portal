@@ -26,11 +26,11 @@ export function generateQuery(
           ]
         : []),
       ...(owner
-        ? [{ term: { 'credentialSubject.nft.owner.keyword': owner } }]
+        ? [{ term: { 'indexedMetadata.nft.owner.keyword': owner } }]
         : [])
     ],
     sort: {
-      'credentialSubject.stats.orders': 'desc'
+      'indexedMetadata.stats.orders': 'desc'
     },
     sortOptions: {
       sortBy: SortTermOptions.Orders

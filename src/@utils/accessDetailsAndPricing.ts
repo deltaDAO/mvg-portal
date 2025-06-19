@@ -1,5 +1,4 @@
 import {
-  AssetPrice,
   Datatoken,
   FixedRateExchange,
   getErrorMessage,
@@ -18,10 +17,11 @@ import {
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
 import { getDummySigner } from './wallet'
-import { Service } from 'src/@types/ddo/Service'
-import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from '../@types/ddo/Service'
+import { AssetExtended } from '../@types/AssetExtended'
 import { CancelToken } from 'axios'
 import { getUserOrders } from './aquarius'
+import { AssetPrice } from '../@types/AssetPrice'
 
 /**
  * This will be used to get price including fees before ordering

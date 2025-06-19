@@ -61,9 +61,9 @@ import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
 import { Signer } from 'ethers'
 import { useAccount } from 'wagmi'
-import { Service } from 'src/@types/ddo/Service'
-import { Asset, AssetPrice } from 'src/@types/Asset'
-import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from '../../../../@types/ddo/Service'
+import { Asset, AssetPrice } from '../../../../@types/Asset'
+import { AssetExtended } from '../../../../@types/AssetExtended'
 import { AssetActionCheckCredentials } from '../CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
@@ -500,6 +500,8 @@ export default function Compute({
         computeAlgorithm,
         null,
         null,
+        null,
+        asset.credentialSubject?.chainId,
         output,
         newAbortController()
       )
