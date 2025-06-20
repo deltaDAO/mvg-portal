@@ -114,8 +114,10 @@ body .radioWrap > label {
   opacity: 1;
 }
 
-.publishRadio {
-  border: 0;
+body .publishRadio {
+  border: 1px solid var(--publish-primary) !important;
+  border-radius: var(--publish-input-border-radius);
+  background-color: var(--brand-white);
 }
 
 .publishRadio:checked {

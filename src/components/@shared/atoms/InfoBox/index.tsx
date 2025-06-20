@@ -11,6 +11,7 @@ export interface InfoBoxProps {
   subtitle?: string
   description?: string
   className?: string
+  warning?: boolean
 }
 
 export default function InfoBox({
@@ -18,12 +19,15 @@ export default function InfoBox({
   title,
   subtitle,
   description,
-  className
+  className,
+  warning = false
 }: InfoBoxProps): ReactElement {
   return (
     <div className={cx(styles.infoBox, className)}>
       <div className={styles.root}>
-        <WarningSVG width={22} height={22} className={styles.warningIcon} />
+        {warning && (
+          <WarningSVG width={22} height={22} className={styles.warningIcon} />
+        )}
         {title && subtitle && (
           <div className={styles.header}>
             <strong>{title}</strong> — <strong>{subtitle}</strong>

@@ -14,7 +14,7 @@ export default function Fixed({
 }): ReactElement {
   return (
     <div className={styles.container}>
-      <InfoBox variant="info">{content.info}</InfoBox>
+      <InfoBox>{content.info}</InfoBox>
 
       <div className={styles.priceContainer}>
         <h4 className={styles.title}>Price</h4>

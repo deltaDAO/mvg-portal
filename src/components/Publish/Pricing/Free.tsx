@@ -24,7 +24,7 @@ export default function Free({ content }: { content: any }): ReactElement {
 
   return (
     <>
-      <InfoBox variant="info">{content.info}</InfoBox>
+      <InfoBox>{content.info}</InfoBox>
       <h4 className={styles.title}>Price</h4>
       <Price content={content} />
     </>

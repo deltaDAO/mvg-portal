@@ -11,6 +11,7 @@ import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
 import Time from '../atoms/Time'
 import Loader from '../atoms/Loader'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import InfoBox from '../atoms/InfoBox'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
@@ -161,7 +162,7 @@ export default function AssetList({
               })}
           </>
         ) : (
-          <div className={styles.empty}>No results found</div>
+          <InfoBox warning>No results found</InfoBox>
         )}
       </div>
       {showPagination && (

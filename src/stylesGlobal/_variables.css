@@ -182,6 +182,7 @@
   --sp-8: 32px;
   --sp-7: 28px;
   --sp-6: 24px;
+  --sp-5: 20px;
   --sp-4: 16px;
   --sp-2_5: 10px;
   --sp-2: 8px;
@@ -208,6 +209,7 @@
   --publish-font-size: 14px;
   --publish-font-size-base: 16px;
   --publish-font-size-lg: 18px;
+  --publish-font-size-xxl: 22px;
   --publish-font-size-xl: 24px;
   --publish-font-weight-normal: 400;
   --publish-font-weight-bold: 700;

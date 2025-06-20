@@ -46,7 +46,6 @@ export default function Nft(props: InputProps): ReactElement {
         title={field?.value?.name}
         subtitle={field?.value?.symbol}
         description={field?.value?.description}
-        variant="info"
       />
     </div>
   )
