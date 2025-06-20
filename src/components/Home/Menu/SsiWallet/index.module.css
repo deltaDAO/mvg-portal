@@ -1,6 +1,17 @@
 .panelColumn {
+  width: 500px;
   display: flex;
   flex-direction: column;
+}
+.panelColumn h3 {
+  font-weight: 700;
+  font-size: 18px;
+  color: #303031;
+}
+.panelColumn label {
+  font-weight: 700;
+  font-size: 14px;
+  color: rgba(48, 48, 49, 0.7);
 }
 
 .panelRow {
@@ -68,6 +79,15 @@
   }
   .text {
     max-width: 40px;
+  }
+  .panelColumn {
+    width: 100%;
+  }
+  .panelColumn h3 {
+    font-size: 14px;
+  }
+  .panelColumn label {
+    font-size: 12px;
   }
 }
 
@@ -137,11 +157,10 @@
 }
 
 .dialogBorder {
-  border: 1px solid var(--border-color);
-  border-bottom-left-radius: var(--border-radius);
-  border-bottom-right-radius: var(--border-radius);
-  border-top: 0;
-  padding: 1em;
+  border: 1px solid rgba(48, 48, 49, 0.3);
+  border-radius: 10px;
+  padding: 24px;
+  width: 548px;
 }
 
 @media screen and (max-width: 768px) {
@@ -151,36 +170,132 @@
 }
 
 .closeButton {
-  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
-  font-size: var(--font-size-small);
+  border-radius: 20px;
+  padding: 4px 20px;
+  width: 79px;
+  height: 32px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-align: center;
+  color: #0a4b70;
+  box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(48, 48, 49, 0.12);
 }
 
 .resetButton {
-  padding: calc(var(--spacer) / 3) var(--spacer);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  border-radius: var(--button-border-radius);
+  border-radius: 20px;
+  padding: 4px 20px;
+  width: 169px;
+  height: 32px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-align: center;
+  color: #0a4b70;
+  box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+  background: linear-gradient(
+    135deg,
+    #fdd655 0%,
+    rgba(253, 214, 85, 0.8) 27.47%,
+    rgba(253, 214, 85, 0.7) 43.49%,
+    rgba(253, 214, 85, 0.8) 55.43%,
+    #fdd655 100%
+  );
 }
 
 .inputField {
-  font-size: var(--font-size-base);
+  border: 1px solid rgba(10, 75, 112, 0.5);
+  border-radius: 20px;
+  padding: 12px 30px;
+  width: 500px;
+  height: 40px;
+  font-weight: 400;
+  font-size: 14px;
+  color: #303031;
   font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  color: var(--input-font-color);
-  border: var(--input-border-size) solid var(--input-border-color);
+
   box-shadow: none;
-  width: 100%;
   background: var(--background-content);
-  padding: calc(var(--spacer) / 4);
-  border-radius: var(--input-border-radius);
-  height: 38px;
+}
+
+.buttonStyles {
+  width: 300px;
+  height: 32px;
+  display: flex;
+  flex-direction: row;
+  margin: 0 auto;
+  gap: 8px;
 }
 
 @media screen and (max-width: 480px) {
   .inputField {
     height: 35px;
     font-size: var(--font-size-small);
+  }
+  .dialogBorder {
+    width: 100%;
+  }
+  .closeButton {
+    border-radius: 20px;
+    padding: 4px 10px;
+    width: 20px;
+    font-size: 8px;
+  }
+
+  .resetButton {
+    border-radius: 20px;
+    padding: 4px 20px;
+    width: 160px;
+    height: 32px;
+    font-weight: 700;
+    font-size: 8px;
+  }
+
+  .inputField {
+    width: 100%;
+    height: 40px;
+    font-weight: 400;
+    font-size: 8px;
+  }
+  .buttonStyles {
+    width: 200px;
+  }
+}
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .panelColumn {
+    width: 100%;
+  }
+  .panelColumn h3 {
+    font-size: 16px;
+  }
+  .panelColumn label {
+    font-size: 14px;
+  }
+  .dialogBorder {
+    width: 85%;
+  }
+  .closeButton {
+    border-radius: 20px;
+    padding: 4px 10px;
+    width: 20px;
+    font-size: 10px;
+  }
+
+  .resetButton {
+    border-radius: 20px;
+    width: 170px;
+    font-size: 10px;
+  }
+
+  .inputField {
+    width: 100%;
+    height: 40px;
+    font-weight: 400;
+    font-size: 10px;
+  }
+  .buttonStyles {
+    width: 300px;
   }
 }
 
@@ -203,10 +318,6 @@
 
   .dialogBorder {
     padding: 0.8em;
-  }
-
-  .closeButton {
-    padding: calc(var(--spacer) / 6) calc(var(--spacer) / 3);
   }
 
   .inputField {

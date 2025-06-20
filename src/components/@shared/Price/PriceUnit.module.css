@@ -2,19 +2,27 @@
   display: inline-block;
   font-weight: var(--font-weight-bold);
   font-family: var(--font-family-base);
-
+  font-weight: 700;
   color: var(--font-color-text);
   line-height: 1.2;
+  font-size: 14px;
 }
 
 .price > div:first-child {
   white-space: nowrap;
 }
+.free {
+  color: #00adb2; /* Green color for "Free" */
+  font-weight: 700;
+}
 
 .symbol {
-  font-weight: var(--font-weight-base);
-  color: var(--color-secondary);
-  font-size: var(--font-size-base);
+  font-size: 14px;
+  font-weight: 700;
+  color: #00adb2;
+  /* font-weight: var(--font-weight-base);
+  color: var(--color-secondary); */
+  /* font-size: var(--font-size-base); */
 }
 
 .price.large {

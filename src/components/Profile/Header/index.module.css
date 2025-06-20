@@ -62,3 +62,9 @@
   right: calc(var(--spacer) / 3);
   bottom: calc(var(--spacer) / 6);
 }
+
+@media screen and (min-width: 1500px) {
+  .grid {
+    width: 1480px;
+  }
+}
