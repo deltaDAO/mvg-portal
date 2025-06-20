@@ -1,0 +1,36 @@
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.tag {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 129%;
+  color: #4ca3d3;
+  padding: 0.1rem 0.2rem 0.1rem 0.6rem;
+  margin-bottom: calc(var(--spacer) / 10);
+  text-align: center;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tag:hover:not(span),
+.tag:focus:not(span) {
+  color: var(--color-highlight);
+}
+
+.more {
+  font-size: var(--font-size-mini);
+  margin-left: calc(var(--spacer) / 8);
+}
+
+.title {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  color: #303031;
+}

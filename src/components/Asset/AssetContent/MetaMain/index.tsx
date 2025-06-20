@@ -24,9 +24,9 @@ export default function MetaMain({
         <Nft isBlockscoutExplorer={isBlockscoutExplorer} />
         <MetaAsset asset={asset} />
       </header>
-      <div className={styles.publisherInfo}>
+      {/* <div className={styles.publisherInfo}>
         <MetaInfo asset={asset} nftPublisher={nftPublisher} />
-      </div>
+      </div> */}
     </aside>
   )
 }

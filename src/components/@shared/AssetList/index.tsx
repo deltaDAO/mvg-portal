@@ -125,12 +125,12 @@ export default function AssetList({
     <Loader />
   ) : (
     <>
-      {showAssetViewSelector && (
+      {/* {showAssetViewSelector && (
         <AssetViewSelector
           activeAssetView={activeAssetView}
           setActiveAssetView={setActiveAssetView}
         />
-      )}
+      )} */}
       <div className={styleClasses}>
         {assets?.length > 0 && assets[0] !== undefined ? (
           <>

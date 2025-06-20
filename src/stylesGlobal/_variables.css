@@ -19,7 +19,7 @@
   --background-detail-box: var(--publish-background-highlight);
   --border-color: var(--brand-grey-lighter);
   --box-shadow-color: rgba(0, 0, 0, 0.05);
-  --checkbox-selected-background: var(--brand-blue);
+  --checkbox-selected-background: var(--ocean-orange-color);
   --bookmark-icon-fill-color: var(--brand-grey-lighter);
   --bookmark-icon-selected-fill-color: var(--brand-grey);
   --link-font-color: var(--color-highlight);
