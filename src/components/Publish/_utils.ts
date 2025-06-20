@@ -296,7 +296,7 @@ export function parseCredentialPolicies(credentials: Credential) {
   credentials.allow = credentials?.allow?.map((credential) => {
     if (isCredentialPolicyBased(credential)) {
       credential.values = credential.values.map((value) => {
-        value.request_credentials = value.request_credentials.map(
+        value.request_credentials = value.request_credentials?.map(
           (requestCredentials) => {
             if (requestCredentials.policies) {
               requestCredentials.policies = requestCredentials.policies
@@ -342,7 +342,7 @@ export function stringifyCredentialPolicies(credentials: Credential) {
   credentials.allow = credentials?.allow?.map((credential) => {
     if (isCredentialPolicyBased(credential)) {
       credential.values = credential.values.map((value) => {
-        value.request_credentials = value.request_credentials.map(
+        value.request_credentials = value.request_credentials?.map(
           (requestCredentials) => {
             requestCredentials.policies = requestCredentials.policies
               .map((policy) => {
@@ -668,12 +668,6 @@ export async function transformPublishFormToDdo(
       // Only added for DDO preview, reflecting Asset response,
       // again, we can assume if `datatokenAddress` is not passed,
       // we are on preview.
-      nft: {
-        ...generateNftCreateData(values?.metadata.nft, accountId),
-        address: '',
-        state: 0,
-        created: ''
-      },
       stats: {
         allocated: 0,
         orders: 0,
@@ -682,6 +676,14 @@ export async function transformPublishFormToDdo(
           tokenSymbol: values.pricing?.baseToken?.symbol || 'OCEAN',
           tokenAddress: values.pricing?.baseToken?.address || oceanTokenAddress
         }
+      }
+    },
+    indexedMetadata: {
+      nft: {
+        ...generateNftCreateData(values?.metadata.nft, accountId),
+        address: '',
+        state: 0,
+        created: ''
       }
     },
     additionalDdos: values?.additionalDdos || []
@@ -749,6 +751,7 @@ export async function signAssetAndUploadToIpfs(
   // these properties are mutable due blockchain interaction
   delete credential.credentialSubject.datatokens
   delete credential.credentialSubject.event
+  delete asset.indexedMetadata.event
 
   let jwtVerifiableCredential
   if (appConfig.ssiEnabled) {
@@ -782,7 +785,6 @@ export async function signAssetAndUploadToIpfs(
       owner
     )
   }
-
   const stringAsset = JSON.stringify(jwtVerifiableCredential)
   const bytes = Buffer.from(stringAsset)
   const metadata = hexlify(bytes)

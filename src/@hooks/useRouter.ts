@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Router as FactoryRouter, LoggerInstance } from '@oceanprotocol/lib'
+import { Router as FactoryRouter } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 import { useNetwork, useSigner } from 'wagmi'
 import { ethers } from 'ethers'
@@ -21,6 +21,7 @@ function useFactoryRouter() {
   useEffect(() => {
     if (!signer || !chain?.id) return
     const config = getOceanConfig(chain.id)
+    if (!config) return
     setFactoryRouter(
       new FactoryRouter(config?.routerFactoryAddress, signer, config.chainId)
     )

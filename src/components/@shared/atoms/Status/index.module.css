@@ -1,7 +1,7 @@
 /* default: success, green circle */
 .status {
-  width: var(--font-size-small);
-  height: var(--font-size-small);
+  width: 5px;
+  height: 40px;
   border-radius: 50%;
   display: inline-block;
   background: var(--brand-alert-green);
@@ -21,6 +21,6 @@
 /* red square */
 .error {
   border-radius: 0;
-  background: var(--brand-alert-red);
+  background: #fdd655;
   text-transform: capitalize;
 }

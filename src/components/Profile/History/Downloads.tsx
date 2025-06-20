@@ -31,19 +31,18 @@ export default function ComputeDownloads({
       setLoadingInvoice(row.asset.id)
       let pdfUrlsResponse: Blob[]
       if (!jsonInvoices[row.asset.id]) {
-        const config = getOceanConfig(row.asset?.chainId)
+        const config = getOceanConfig(row.asset?.credentialSubject?.chainId)
         const invoiceData: InvoiceData[] = []
 
-        for (const dt of row.asset.credentialSubject.datatokens) {
+        for (const dt of row.asset.indexedMetadata.stats) {
           try {
             const result = await decodeBuyDataSet(
               row.asset.id,
-              dt.address,
+              dt.datatokenAddress,
               row.asset.credentialSubject.chainId,
-              row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
-              row.asset.credentialSubject.stats.price.tokenAddress ||
-                config.oceanTokenAddress,
-              row.asset.credentialSubject.stats.price.value,
+              row.asset.indexedMetadata.stats.symbol || 'OCEAN',
+              dt.prices[0].token || config.oceanTokenAddress,
+              Number(dt.prices[0].price),
               accountId
             )
             invoiceData.push(...result)
@@ -77,19 +76,18 @@ export default function ComputeDownloads({
       setLoadingInvoiceJson(row.asset.id)
 
       if (!jsonInvoices[row.asset.id]) {
-        const config = getOceanConfig(row.asset?.chainId)
+        const config = getOceanConfig(row.asset?.credentialSubject?.chainId)
         const invoiceData: InvoiceData[] = []
 
-        for (const dt of row.asset.credentialSubject.datatokens) {
+        for (const dt of row.asset.indexedMetadata.stats) {
           try {
             const result = await decodeBuyDataSet(
               row.asset.id,
-              dt.address,
+              dt.datatokenAddress,
               row.asset.credentialSubject.chainId,
-              row.asset.credentialSubject.stats.price.tokenSymbol || 'OCEAN',
-              row.asset.credentialSubject.stats.price.tokenAddress ||
-                config.oceanTokenAddress,
-              row.asset.credentialSubject.stats.price.value,
+              dt.symbol || 'OCEAN',
+              dt.prices[0].token || config.oceanTokenAddress,
+              Number(dt.prices[0].price),
               accountId
             )
             invoiceData.push(...result)

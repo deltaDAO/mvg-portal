@@ -144,7 +144,7 @@ export function getQueryString(
   trustedPublishersList?.length > 0 &&
     baseParams.filters.push(
       getFilterTerm(
-        'credentialSubject.nft.owner',
+        'indexedMetadata.nft.owner',
         trustedPublishersList.map((address) => address.toLowerCase())
       )
     )
@@ -174,7 +174,6 @@ export async function getAlgorithmsForAsset(
     ),
     token
   )
-  console.log('queryResults', gueryResults)
   const algorithms: Asset[] = gueryResults?.results
   return algorithms
 }
@@ -240,7 +239,7 @@ async function getJobs(
           const compJob: ComputeJobMetaData = {
             ...job,
             assetName: asset.credentialSubject?.metadata?.name,
-            assetDtSymbol: asset.credentialSubject?.datatokens[0].symbol,
+            assetDtSymbol: asset.indexedMetadata?.stats[0].symbol,
             networkId: asset.credentialSubject.chainId
           }
           computeJobs.push(compJob)

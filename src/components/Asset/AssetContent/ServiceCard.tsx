@@ -15,26 +15,37 @@ export default function ServiceCard({
 
   return (
     <div onClick={onClick} className={styles.service}>
-      <span className={styles.title}>Name: </span>
-      {service.name || 'Unknown'}
+      <span className={styles.serviceTitle}>{service.name || 'Unknown'} </span>
       <br />
-      <span className={styles.title}>Description: </span>
-      <span>{service.description?.['@value']}</span>
-      <br />
+      <div>
+        {service.description?.['@value'] ? (
+          <span className={styles.serviceDescription}>
+            {service.description?.['@value']}
+          </span>
+        ) : (
+          <span className={styles.serviceDescriptionPlaceholder}>
+            No description available.
+          </span>
+        )}
+      </div>
       <span className={styles.title}>Type: </span>
-      {service.type}
+      <span className={styles.access}>{service.type}</span>
       <br />
       <span className={styles.title}>Price: </span>
-      {accessDetails.type === 'fixed'
-        ? `${accessDetails.price} ${accessDetails.baseToken.symbol}`
-        : 'free'}
+      {accessDetails.type === 'fixed' ? (
+        <>
+          {accessDetails.price}{' '}
+          <span className={styles.tokenSymbol}>
+            {accessDetails.baseToken.symbol}
+          </span>
+        </>
+      ) : (
+        <span className={styles.free}>free</span>
+      )}
       <br />
-      <span className={styles.title}>Access Duration: </span>
-      {service.timeout === 0
-        ? 'Forever'
-        : service.timeout >= 86400
-        ? `${service.timeout / 86400} day(s)`
-        : `${service.timeout / 3600} hour(s)`}
+      <div className={styles.selectButtonWrapper}>
+        <button className={styles.selectButton}>Select</button>
+      </div>{' '}
     </div>
   )
 }

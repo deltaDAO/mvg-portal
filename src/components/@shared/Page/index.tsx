@@ -36,10 +36,10 @@ export default function Page({
       {/* Header section - always wrapped in Container except for home page */}
       {!isHome && (
         <Container>
-          <SearchBar
+          {/* <SearchBar
             placeholder="Search for service offerings"
             isSearchPage={isSearchPage}
-          />
+          /> */}
           {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
           {title && !noPageHeader && (
             <PageHeader center={headerCenter} isHome={isHome} />

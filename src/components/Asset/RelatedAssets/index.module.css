@@ -6,3 +6,9 @@
   font-size: var(--font-size-large);
   color: var(--color-secondary);
 }
+
+@media screen and (min-width: 1500px) {
+  .section {
+    width: 1420px;
+  }
+}

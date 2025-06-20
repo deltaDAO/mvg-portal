@@ -1,7 +1,5 @@
 import {
   Arweave,
-  GraphqlQuery,
-  Smartcontract,
   ComputeAlgorithm,
   ComputeAsset,
   ComputeEnvironment,
@@ -12,7 +10,6 @@ import {
   ProviderComputeInitializeResults,
   ProviderInstance,
   UrlFile,
-  AbiItem,
   UserCustomParameters,
   getErrorMessage
 } from '@oceanprotocol/lib'
@@ -55,9 +52,11 @@ export async function initializeProviderForCompute(
       [computeAsset],
       computeAlgo,
       computeEnv?.id,
+      null,
       validUntil,
       customProviderUrl || datasetService.serviceEndpoint,
-      accountId
+      accountId,
+      null
     )
   } catch (error) {
     const message = getErrorMessage(error.message)
@@ -159,45 +158,6 @@ export async function getFileInfo(
           fileArweave,
           customProviderUrl || providerUrl,
           withChecksum
-        )
-      } catch (error) {
-        const message = getErrorMessage(error.message)
-        LoggerInstance.error('[Provider Get File info] Error:', message)
-        toast.error(message)
-      }
-      break
-    }
-    case 'graphql': {
-      const fileGraphql: GraphqlQuery = {
-        type: storageType,
-        url: file,
-        headers: headersProvider,
-        query
-      }
-      try {
-        response = await ProviderInstance.getFileInfo(
-          fileGraphql,
-          customProviderUrl || providerUrl
-        )
-      } catch (error) {
-        const message = getErrorMessage(error.message)
-        LoggerInstance.error('[Provider Get File info] Error:', message)
-        toast.error(message)
-      }
-      break
-    }
-    case 'smartcontract': {
-      // clean obj
-      const fileSmartContract: Smartcontract = {
-        chainId,
-        type: storageType,
-        address: file,
-        abi: JSON.parse(abi) as AbiItem
-      }
-      try {
-        response = await ProviderInstance.getFileInfo(
-          fileSmartContract,
-          customProviderUrl || providerUrl
         )
       } catch (error) {
         const message = getErrorMessage(error.message)

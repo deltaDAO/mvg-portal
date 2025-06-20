@@ -41,3 +41,12 @@
 .tabs div[class*='tab-panel--selected'] {
   margin-bottom: var(--spacer);
 }
+
+@media screen and (min-width: 1500px) {
+  .tabs div[class*='tabContent'] {
+    width: 1480px;
+  }
+  .tabs ul[class*='tabList'] {
+    width: 1480px;
+  }
+}

@@ -11,7 +11,7 @@ export default function MetaAsset({
   return (
     <div className={styles.wrapper}>
       <span className={styles.owner}>
-        Owned by <Publisher account={asset?.credentialSubject?.nft?.owner} />
+        Owned by <Publisher account={asset?.indexedMetadata?.nft?.owner} />
       </span>
     </div>
   )

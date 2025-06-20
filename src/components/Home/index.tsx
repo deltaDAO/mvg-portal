@@ -101,7 +101,7 @@ function HeroSection({
   }
   const handleCatalogClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    router.push('/search?sort=credentialSubject.nft.created&sortOrder=desc')
+    router.push('/search?sort=indexedMetadata.event.block&sortOrder=desc')
   }
 
   return (

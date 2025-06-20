@@ -180,9 +180,17 @@ export default function AssetActions({
 
   return (
     <>
-      <Button style="text" size="small" onClick={handleBack}>
-        Back
-      </Button>
+      <div
+        style={{
+          marginTop: '10px',
+          marginLeft: '10px'
+        }}
+      >
+        <Button style="text" size="small" onClick={handleBack}>
+          Back
+        </Button>
+      </div>
+
       <div className={styles.actions}>
         {isCompute ? (
           <Compute

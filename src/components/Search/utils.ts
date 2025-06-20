@@ -41,16 +41,44 @@ export function getSearchQuery(
   sortDirection?: string,
   serviceType?: string | string[],
   accessType?: string | string[],
-  filterSet?: string | string[]
+  filterSet?: string | string[],
+  assetState?: string | string[]
 ): SearchQuery {
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
-  filters.push({
-    term: {
-      'credentialSubject.nft.state': State.Active
+  if (assetState) {
+    const normalizeState = (s: string): number => Number(s)
+
+    if (Array.isArray(assetState)) {
+      const stateNumbers = assetState
+        .map(normalizeState)
+        .filter((v) => !isNaN(v))
+      if (stateNumbers.length > 0) {
+        filters.push({
+          terms: {
+            'indexedMetadata.nft.state': stateNumbers
+          }
+        })
+      }
+    } else {
+      const stateNumber = normalizeState(assetState)
+      if (!isNaN(stateNumber)) {
+        filters.push({
+          term: {
+            'indexedMetadata.nft.state': stateNumber
+          }
+        })
+      }
     }
-  })
+  } else {
+    filters.push({
+      term: {
+        'indexedMetadata.nft.state': State.Active
+      }
+    })
+  }
+
   let searchTerm = text || ''
   let nestedQuery
   if (tags) {
@@ -68,10 +96,10 @@ export function getSearchQuery(
         : '**'
     const searchFields = [
       'id',
-      'credentialSubject.nft.owner',
-      'credentialSubject.datatokens.address',
-      'credentialSubject.datatokens.name',
-      'credentialSubject.datatokens.symbol',
+      'indexedMetadata.nft.owner',
+      'indexedMetadata.stats.datatokenAddress',
+      'indexedMetadata.stats.name',
+      'indexedMetadata.stats.symbol',
       'credentialSubject.metadata.name^10',
       'credentialSubject.metadata.author',
       'credentialSubject.metadata.description',
@@ -156,6 +184,7 @@ export async function getResults(
     serviceType?: string | string[]
     accessType?: string | string[]
     filterSet?: string[]
+    assetState?: string | string[]
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -170,7 +199,8 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    filterSet
+    filterSet,
+    assetState
   } = params
 
   const searchQuery = getSearchQuery(
@@ -184,10 +214,10 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    filterSet
+    filterSet,
+    assetState
   )
   const queryResult = await queryMetadata(searchQuery, cancelToken)
-
   return queryResult?.results?.length === 0
     ? {
         ...queryResult,

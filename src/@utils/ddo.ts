@@ -9,26 +9,20 @@ import {
 import {
   Arweave,
   FileInfo,
-  GraphqlQuery,
   Ipfs,
   LoggerInstance,
-  Smartcontract,
   UrlFile
 } from '@oceanprotocol/lib'
 import { checkJson } from './codemirror'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { Option } from 'src/@types/ddo/Option'
-import {
-  isCredentialAddressBased,
-  isCredentialPolicyBased
-} from './credentials'
+import { isCredentialAddressBased } from './credentials'
 import {
   CredentialAddressBased,
   Credential,
   CredentialPolicyBased
 } from 'src/@types/ddo/Credentials'
-import { getSsiVerifiableCredentialType } from './wallet/ssiWallet'
 
 export function isValidDid(did: string): boolean {
   const regex = /^did:ope:[A-Za-z0-9]{64}$/
@@ -148,27 +142,6 @@ export function normalizeFile(
           file[0]?.transactionId ||
           file?.transactionId
       } as Arweave
-      break
-    }
-    case 'graphql': {
-      fileObj = {
-        type: storageType,
-        url: file[0]?.url || file?.url,
-        query: file[0]?.query || file?.query,
-        headers: headersProvider
-      } as GraphqlQuery
-      break
-    }
-    case 'smartcontract': {
-      // clean obj
-      fileObj = {
-        chainId,
-        type: storageType,
-        address: file[0]?.address || file?.address || file[0]?.url || file?.url,
-        abi: checkJson(file[0]?.abi || file?.abi)
-          ? JSON.parse(file[0]?.abi || file?.abi)
-          : file[0]?.abi || file?.abi
-      } as Smartcontract
       break
     }
     default: {

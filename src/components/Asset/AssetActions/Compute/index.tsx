@@ -61,9 +61,9 @@ import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
 import { Signer } from 'ethers'
 import { useAccount } from 'wagmi'
-import { Service } from 'src/@types/ddo/Service'
-import { Asset, AssetPrice } from 'src/@types/Asset'
-import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from '../../../../@types/ddo/Service'
+import { Asset, AssetPrice } from '../../../../@types/Asset'
+import { AssetExtended } from '../../../../@types/AssetExtended'
 import { AssetActionCheckCredentials } from '../CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
@@ -500,6 +500,8 @@ export default function Compute({
         computeAlgorithm,
         null,
         null,
+        null,
+        asset.credentialSubject?.chainId,
         output,
         newAbortController()
       )
@@ -583,11 +585,13 @@ export default function Compute({
             state="info"
           />
         ) : (
-          <Price
-            price={price}
-            orderPriceAndFees={datasetOrderPriceAndFees}
-            size="large"
-          />
+          <div className={styles.priceClass}>
+            <Price
+              price={price}
+              orderPriceAndFees={datasetOrderPriceAndFees}
+              size="large"
+            />
+          </div>
         )}
       </div>
 
@@ -693,7 +697,13 @@ export default function Compute({
                   retry={retry}
                 />
               ) : (
-                <AssetActionCheckCredentials asset={asset} service={service} />
+                <div className={styles.actionButton}>
+                  {' '}
+                  <AssetActionCheckCredentials
+                    asset={asset}
+                    service={service}
+                  />
+                </div>
               )}
             </>
           ) : (

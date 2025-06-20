@@ -24,7 +24,7 @@ export async function transformAssetToAssetSelection(
       getServiceByName(asset, 'compute') || getServiceByName(asset, 'access')
 
     if (
-      asset.credentialSubject.stats?.price?.value >= 0 &&
+      Number(asset.indexedMetadata.stats[0]?.prices[0]?.price) >= 0 &&
       normalizeUrl(algoService?.serviceEndpoint) ===
         normalizeUrl(datasetProviderEndpoint)
     ) {
@@ -53,7 +53,7 @@ export async function transformAssetToAssetSelection(
           price: priceInfo.value,
           tokenSymbol: priceInfo.tokenSymbol,
           checked: isSelected ?? false,
-          symbol: asset.credentialSubject.datatokens[idx]?.symbol ?? '',
+          symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: isAddressWhitelisted(
             asset,
             accountId,

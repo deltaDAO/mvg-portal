@@ -8,7 +8,7 @@
   "menu": [
     {
       "name": "Catalogue",
-      "link": "/search?sort=credentialSubject.nft.created&sortOrder=desc"
+      "link": "/search?sort=indexedMetadata.event.block&sortOrder=desc"
     },
     {
       "name": "Publish",
@@ -56,7 +56,7 @@
         "links": [
           {
             "name": "Catalogue",
-            "link": "/search?sort=credentialSubject.nft.created&sortOrder=desc"
+            "link": "/search?sort=indexedMetadata.event.block&sortOrder=desc"
           },
           {
             "name": "Profile",

@@ -24,8 +24,8 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Datatoken Symbol',
     selector: (row) => (
-      <Tooltip content={row.credentialSubject.datatokens[0].name}>
-        <>{row.credentialSubject.datatokens[0].symbol}</>
+      <Tooltip content={row.indexedMetadata.stats[0].name}>
+        <>{row.indexedMetadata.stats[0].symbol}</>
       </Tooltip>
     ),
     maxWidth: '10rem'
@@ -33,7 +33,14 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Price',
     selector: (row) => (
-      <Price price={row.credentialSubject.stats.price} size="small" />
+      <Price
+        price={{
+          value: Number(row.indexedMetadata.stats[0].prices[0].price),
+          tokenSymbol: row.indexedMetadata.stats[0].symbol,
+          tokenAddress: row.indexedMetadata.stats[0].datatokenAddress
+        }}
+        size="small"
+      />
     ),
     right: true
   }

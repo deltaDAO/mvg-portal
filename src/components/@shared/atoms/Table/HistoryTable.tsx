@@ -77,7 +77,7 @@ export default function HistoryTable({
           exportedAsset[col.name as string] = getNetworkDisplayName(networkData)
         } else if (col.name === 'Time') {
           exportedAsset[col.name as string] = new Date(
-            asset.credentialSubject.event.datetime
+            asset.indexedMetadata?.event?.datetime
           ).toLocaleString()
         } else {
           exportedAsset[col.name as string] = value
