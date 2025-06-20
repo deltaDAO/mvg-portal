@@ -34,38 +34,8 @@ export const assets: AssetExtended[] = [
       }
     ],
     credentialSubject: {
-      nft: {
-        address: '0xE07B0a3403fAD9568cd970C04C3D08A9c1Ab93d0',
-        created: '2022-10-10T14:31:24',
-        name: 'DATASET_DN1',
-        owner: '0xe2DD09d719Da89e5a3D0F2549c7E24566e947260',
-        state: 0,
-        symbol: 'DATASET_DN1',
-        tokenURI: 'https://oceanprotocol.com/nft/'
-      },
-      purgatory: {
-        state: false,
-        reason: ''
-      },
-      stats: {
-        allocated: 0,
-        orders: 0,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
-      },
       chainId: 5,
       credentials: undefined,
-      datatokens: [
-        {
-          address: '0x8f90ABA587aBE691E136D7d1a64762A2FF15bE4D',
-          name: 'DATASET_DT1',
-          serviceId: '2',
-          symbol: 'DATASET_DT1'
-        }
-      ],
       event: {
         block: 7745556,
         contract: '0xE07B0a3403fAD9568cd970C04C3D08A9c1Ab93d0',
@@ -119,6 +89,49 @@ export const assets: AssetExtended[] = [
         }
       ]
     },
+    indexedMetadata: {
+      nft: {
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        name: 'Ocean Data NFT',
+        symbol: 'OCEAN-NFT',
+        state: 0,
+        tokenURI:
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
+      },
+      purgatory: {
+        state: false,
+        reason: ''
+      },
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
+      },
+      stats: [
+        {
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
+          serviceId:
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
+        }
+      ]
+    },
     issuer: '',
     type: []
   },
@@ -152,39 +165,7 @@ export const assets: AssetExtended[] = [
       }
     ],
     credentialSubject: {
-      nft: {
-        address: '0x866e4ED7b001f40c4067d0a37d6d401a0B13EfD6',
-        created: '2022-10-06T23:06:11',
-        name: 'Ocean Data NFT',
-        owner: '0x58754d9b3dbB4ddF5AC3502AcB963743b15e6398',
-        state: 0,
-        symbol: 'OCEAN-NFT',
-        tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDpkYWJiY2YzNTJlOWQ5MGQ0ZTRmNDRhNTA0NDBiMDc5OGExYTFkOTBlNzYyYWIyYzdlZGJhNmFiNGYyMTI5ZGViIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOmRhYmJjZjM1MmU5ZDkwZDRlNGY0NGE1MDQ0MGIwNzk4YTFhMWQ5MGU3NjJhYjJjN2VkYmE2YWI0ZjIxMjlkZWIiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDIyQzExLDE5IDIzLDE3IDM1LDIwQzQ2LDIyIDU5LDI5IDcwLDMyQzgwLDM0IDg5LDMyIDk5LDMwTDk5LDk5WicvJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJiYicgZD0nTTAsOTlMMCw0NEMxMiw0NyAyNSw1MSAzNiw1MUM0Niw1MCA1NCw0NCA2NSw0MkM3NSwzOSA4Nyw0MCA5OSw0Mkw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmZmJyBkPSdNMCw5OUwwLDY4QzksNjYgMTgsNjUgMzEsNjlDNDMsNzIgNTgsNzkgNzAsODBDODEsODAgOTAsNzQgOTksNjhMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDL3N2ZyUzRSJ9'
-      },
-      purgatory: {
-        state: false,
-        reason: ''
-      },
-      stats: {
-        allocated: 45554.69921875,
-        orders: 1,
-        price: {
-          tokenAddress: '0x282d8efCe846A88B159800bd4130ad77443Fa1A1',
-          tokenSymbol: 'mOCEAN',
-          value: 100
-        }
-      },
       chainId: 137,
-      datatokens: [
-        {
-          address: '0xE5E5056A988EAE27f1624CF1212895f5B01D487b',
-          name: 'Limpid Ray Token',
-          serviceId:
-            '52ce21def42afaef2b51e90389355e13bd93e502147172b22051f16f74af163d',
-          symbol: 'LIMRAY-96'
-        }
-      ],
       event: {
         block: 34021412,
         contract: '0x866e4ED7b001f40c4067d0a37d6d401a0B13EfD6',
@@ -248,6 +229,49 @@ export const assets: AssetExtended[] = [
         match_deny: 'any'
       }
     },
+    indexedMetadata: {
+      nft: {
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        name: 'Ocean Data NFT',
+        symbol: 'OCEAN-NFT',
+        state: 0,
+        tokenURI:
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
+      },
+      purgatory: {
+        state: false,
+        reason: ''
+      },
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
+      },
+      stats: [
+        {
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
+          serviceId:
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
+        }
+      ]
+    },
     issuer: '',
     type: []
   },
@@ -281,39 +305,7 @@ export const assets: AssetExtended[] = [
       }
     ],
     credentialSubject: {
-      nft: {
-        address: '0xca3cCFc6CEcf459200AADA1d4a51024F0EAAC230',
-        created: '2022-10-06T21:31:12',
-        name: 'Ocean Data NFT',
-        owner: '0x7E0ad0B2CD0560Caf9a4Fc25904d2AB7238d140b',
-        state: 0,
-        symbol: 'OCEAN-NFT',
-        tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBOZXVyYURBTyBNYXJrZXRwbGFjZTogaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOmZjZmFmZmVhYjAzOWZkNDQwNmI0NTQ2ZGFiNTdhMDM4MGQ5NzFmNmEyNzQ2ZjU4OGJiZWFmZWIzOGZjNDA2YzkiLCJleHRlcm5hbF91cmwiOiJodHRwczovL21hcmtldC5vY2VhbnByb3RvY29sLmNvbS9hc3NldC9kaWQ6b3A6ZmNmYWZmZWFiMDM5ZmQ0NDA2YjQ1NDZkYWI1N2EwMzgwZDk3MWY2YTI3NDZmNTg4YmJlYWZlYjM4ZmM0MDZjOSIsImJhY2tncm91bmRfY29sb3IiOiIxNDE0MTQiLCJpbWFnZV9kYXRhIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB2aWV3Qm94PScwIDAgOTkgOTknIGZpbGw9J3VuZGVmaW5lZCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyNzcnIGQ9J00wLDk5TDAsMjVDNywyNyAxNSwyOSAyMywyN0MzMCwyNCAzNywxNyA0NywxOEM1NiwxOCA2NywyNCA3NiwyN0M4NCwyOSA5MSwyNiA5OSwyNEw5OSw5OVonLyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyYmInIGQ9J00wLDk5TDAsNDhDOCw0OCAxNyw0OSAyNiw1MUMzNCw1MiA0Miw1NSA1MCw1NkM1Nyw1NiA2Myw1NCA3Miw1NEM4MCw1MyA4OSw1MyA5OSw1M0w5OSw5OVonJTNFJTNDL3BhdGglM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmZmJyBkPSdNMCw5OUwwLDcxQzksNzMgMTgsNzUgMjcsNzdDMzUsNzggNDMsODAgNTEsODBDNTgsNzkgNjUsNzcgNzMsNzZDODAsNzQgODksNzMgOTksNzNMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDL3N2ZyUzRSJ9'
-      },
-      purgatory: {
-        state: false,
-        reason: ''
-      },
-      stats: {
-        allocated: 0,
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
-      },
       chainId: 5,
-      datatokens: [
-        {
-          address: '0x57201e593912f4abBB62fEaa4479598c3Ad0010B',
-          name: 'Delighted Anchovy Token',
-          serviceId:
-            '9325f8ff50ff3a46f757e7d819379b4d69fc73e4496880210c8fef8e587addbe',
-          symbol: 'DELANC-21'
-        }
-      ],
       event: {
         block: 7724118,
         contract: '0xca3cCFc6CEcf459200AADA1d4a51024F0EAAC230',
@@ -365,6 +357,49 @@ export const assets: AssetExtended[] = [
       },
       nftAddress: '0xca3cCFc6CEcf459200AADA1d4a51024F0EAAC230'
     },
+    indexedMetadata: {
+      nft: {
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        name: 'Ocean Data NFT',
+        symbol: 'OCEAN-NFT',
+        state: 0,
+        tokenURI:
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
+      },
+      purgatory: {
+        state: false,
+        reason: ''
+      },
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
+      },
+      stats: [
+        {
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
+          serviceId:
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
+        }
+      ]
+    },
     issuer: '',
     type: []
   },
@@ -398,39 +433,7 @@ export const assets: AssetExtended[] = [
       }
     ],
     credentialSubject: {
-      nft: {
-        address: '0x59E27Aa74275E2373A965C0a9dca8f112b82D785',
-        created: '2022-10-06T21:27:36',
-        name: 'Ocean Data NFT',
-        owner: '0x7E0ad0B2CD0560Caf9a4Fc25904d2AB7238d140b',
-        state: 0,
-        symbol: 'OCEAN-NFT',
-        tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBOZXVyYURBTyBNYXJrZXRwbGFjZTogaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjE2Y2Y0MjRkYWFhOGNmNzYzYzBhNzUzYzRmZTkwNDU5ODFmZGM3Mjg1NzFiOTUwMjE1MTQ0NTBkMjE2MGJiYjgiLCJleHRlcm5hbF91cmwiOiJodHRwczovL21hcmtldC5vY2VhbnByb3RvY29sLmNvbS9hc3NldC9kaWQ6b3A6MTZjZjQyNGRhYWE4Y2Y3NjNjMGE3NTNjNGZlOTA0NTk4MWZkYzcyODU3MWI5NTAyMTUxNDQ1MGQyMTYwYmJiOCIsImJhY2tncm91bmRfY29sb3IiOiIxNDE0MTQiLCJpbWFnZV9kYXRhIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB2aWV3Qm94PScwIDAgOTkgOTknIGZpbGw9J3VuZGVmaW5lZCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyNzcnIGQ9J00wLDk5TDAsMzFDMTIsMjUgMjQsMjAgMzUsMTlDNDUsMTcgNTUsMjAgNjYsMjFDNzYsMjEgODcsMjEgOTksMjFMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDQ2QzgsNTAgMTYsNTQgMjksNTRDNDEsNTMgNTYsNDYgNjksNDVDODEsNDMgOTAsNDUgOTksNDhMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2N0MxMSw2OSAyMiw3MiAzNCw3M0M0NSw3MyA1Niw3MSA2Nyw3MUM3Nyw3MCA4OCw3MSA5OSw3M0w5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0='
-      },
-      purgatory: {
-        state: false,
-        reason: ''
-      },
-      stats: {
-        allocated: 50.2051887512,
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
-      },
       chainId: 5,
-      datatokens: [
-        {
-          address: '0xC48934b7FfE9a061039e8a2a0DAe303D2b1b68AF',
-          name: 'Arcadian Shell Token',
-          serviceId:
-            'f0e61512966f65e3198fc3caecf198a1f20ff3ca781437e15fe9edc7a00745a4',
-          symbol: 'ARCSHE-59'
-        }
-      ],
       event: {
         block: 7724103,
         contract: '0x59E27Aa74275E2373A965C0a9dca8f112b82D785',
@@ -482,6 +485,49 @@ export const assets: AssetExtended[] = [
         match_deny: 'any'
       }
     },
+    indexedMetadata: {
+      nft: {
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        name: 'Ocean Data NFT',
+        symbol: 'OCEAN-NFT',
+        state: 0,
+        tokenURI:
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
+      },
+      purgatory: {
+        state: false,
+        reason: ''
+      },
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
+      },
+      stats: [
+        {
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
+          serviceId:
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
+        }
+      ]
+    },
     issuer: '',
     type: []
   },
@@ -515,39 +561,7 @@ export const assets: AssetExtended[] = [
       }
     ],
     credentialSubject: {
-      nft: {
-        address: '0x9293919ED1362e6e0572900B2595a2A0bA1cc77C',
-        created: '2022-10-06T21:20:36',
-        name: 'Ocean Data NFT',
-        owner: '0x7E0ad0B2CD0560Caf9a4Fc25904d2AB7238d140b',
-        state: 0,
-        symbol: 'OCEAN-NFT',
-        tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBOZXVyYURBTyBNYXJrZXRwbGFjZTogaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjkzMGIwMTZlYTk3OTAxNTY1OTNlMDE2YmEyYTRmZTdhOGJkMjc2YzgwNDMzMjBmOGJhMzRkOWIzNjM5NTA2OWUiLCJleHRlcm5hbF91cmwiOiJodHRwczovL21hcmtldC5vY2VhbnByb3RvY29sLmNvbS9hc3NldC9kaWQ6b3A6OTMwYjAxNmVhOTc5MDE1NjU5M2UwMTZiYTJhNGZlN2E4YmQyNzZjODA0MzMyMGY4YmEzNGQ5YjM2Mzk1MDY5ZSIsImJhY2tncm91bmRfY29sb3IiOiIxNDE0MTQiLCJpbWFnZV9kYXRhIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB2aWV3Qm94PScwIDAgOTkgOTknIGZpbGw9J3VuZGVmaW5lZCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyNzcnIGQ9J00wLDk5TDAsMjRDNywyNSAxNSwyNiAyNywyN0MzOCwyNyA1NCwyNiA2NywyNkM3OSwyNSA4OSwyNCA5OSwyNEw5OSw5OVonLyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyYmInIGQ9J00wLDk5TDAsNDFDOSw0NyAxOCw1MyAyOSw1NUM0MCw1NiA1Myw1NCA2NSw1M0M3Nyw1MSA4OCw1MSA5OSw1Mkw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmZmJyBkPSdNMCw5OUwwLDc5QzEzLDc5IDI3LDgwIDM3LDc3QzQ2LDczIDUyLDY2IDYyLDY3QzcxLDY3IDg1LDc0IDk5LDgxTDk5LDk5WiclM0UlM0MvcGF0aCUzRSUzQy9zdmclM0UifQ=='
-      },
-      purgatory: {
-        state: false,
-        reason: ''
-      },
-      stats: {
-        allocated: 0,
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
-      },
       chainId: 5,
-      datatokens: [
-        {
-          address: '0x1FC8dB81E8b68EB1891f83e742377827b56a0663',
-          name: 'Querulous Plankton Token',
-          serviceId:
-            '9a3135912010f6b27a6c1511c0221853136b3cbc1a55c62ce2b147512300402f',
-          symbol: 'QUEPLA-8'
-        }
-      ],
       event: {
         block: 7724073,
         contract: '0x9293919ED1362e6e0572900B2595a2A0bA1cc77C',
@@ -605,6 +619,49 @@ export const assets: AssetExtended[] = [
         match_deny: 'any'
       }
     },
+    indexedMetadata: {
+      nft: {
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        name: 'Ocean Data NFT',
+        symbol: 'OCEAN-NFT',
+        state: 0,
+        tokenURI:
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
+      },
+      purgatory: {
+        state: false,
+        reason: ''
+      },
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
+      },
+      stats: [
+        {
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
+          serviceId:
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
+        }
+      ]
+    },
     issuer: '',
     type: []
   },
@@ -638,39 +695,7 @@ export const assets: AssetExtended[] = [
     ],
     version: '5.0.0',
     credentialSubject: {
-      nft: {
-        address: '0xeB7eC160ce8F73bE2e7d542c2283F1aEa163C07B',
-        created: '2022-10-06T20:30:36',
-        name: 'Ocean Data NFT',
-        owner: '0x7E0ad0B2CD0560Caf9a4Fc25904d2AB7238d140b',
-        state: 0,
-        symbol: 'OCEAN-NFT',
-        tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBOZXVyYURBTyBNYXJrZXRwbGFjZTogaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjZiNDMxNGJkNzM0NWQwN2ExMGJhMmM4MmEzNTI2NTUyNzNiMDBjZGNlYjJlZWRkMzFjOGUwZDJiNTg4MWViMTYiLCJleHRlcm5hbF91cmwiOiJodHRwczovL21hcmtldC5vY2VhbnByb3RvY29sLmNvbS9hc3NldC9kaWQ6b3A6NmI0MzE0YmQ3MzQ1ZDA3YTEwYmEyYzgyYTM1MjY1NTI3M2IwMGNkY2ViMmVlZGQzMWM4ZTBkMmI1ODgxZWIxNiIsImJhY2tncm91bmRfY29sb3IiOiIxNDE0MTQiLCJpbWFnZV9kYXRhIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB2aWV3Qm94PScwIDAgOTkgOTknIGZpbGw9J3VuZGVmaW5lZCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyNzcnIGQ9J00wLDk5TDAsMjVDMTIsMjYgMjQsMjcgMzUsMjhDNDUsMjggNTIsMjggNjMsMjhDNzMsMjcgODYsMjYgOTksMjVMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDQ4QzExLDQ3IDIzLDQ2IDM0LDQ3QzQ0LDQ3IDU1LDQ4IDY2LDQ5Qzc2LDQ5IDg3LDQ5IDk5LDQ5TDk5LDk5WiclM0UlM0MvcGF0aCUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyZmYnIGQ9J00wLDk5TDAsODBDOCw3NCAxNyw2OCAyOCw3MEMzOCw3MSA1MSw3OSA2NCw4MEM3Niw4MCA4Nyw3NCA5OSw2OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0='
-      },
-      purgatory: {
-        state: false,
-        reason: ''
-      },
-      stats: {
-        allocated: 0,
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
-      },
       chainId: 5,
-      datatokens: [
-        {
-          address: '0x0A9CFaFf200efb1d6F125E342Dfc78Fb3edD28A4',
-          name: 'Inspired Ling Token',
-          serviceId:
-            '383b0e1b8dc3e816af394bfae899eb0c9826f2383602c0fbcd70705e1e9c1302',
-          symbol: 'INSLIN-54'
-        }
-      ],
       event: {
         block: 7723888,
         contract: '0xeB7eC160ce8F73bE2e7d542c2283F1aEa163C07B',
@@ -737,6 +762,49 @@ export const assets: AssetExtended[] = [
         match_deny: 'any'
       }
     },
+    indexedMetadata: {
+      nft: {
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        name: 'Ocean Data NFT',
+        symbol: 'OCEAN-NFT',
+        state: 0,
+        tokenURI:
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
+      },
+      purgatory: {
+        state: false,
+        reason: ''
+      },
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
+      },
+      stats: [
+        {
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
+          serviceId:
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
+        }
+      ]
+    },
     issuer: '',
     type: []
   },
@@ -769,40 +837,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0xACa9d4Df6a4dfF29913A111099bc4aC6363C124F',
-        created: '2022-10-06T20:24:24',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0x7E0ad0B2CD0560Caf9a4Fc25904d2AB7238d140b',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBOZXVyYURBTyBNYXJrZXRwbGFjZTogaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOmY4NmRlZGYzYzg3MmY3OWY3ODg2MjcwMjU2ODVhNjgwZWFhYzlmOGJkN2I2ZTYyMjE2NGZkODU2M2UyMWU4MzYiLCJleHRlcm5hbF91cmwiOiJodHRwczovL21hcmtldC5vY2VhbnByb3RvY29sLmNvbS9hc3NldC9kaWQ6b3A6Zjg2ZGVkZjNjODcyZjc5Zjc4ODYyNzAyNTY4NWE2ODBlYWFjOWY4YmQ3YjZlNjIyMTY0ZmQ4NTYzZTIxZTgzNiIsImJhY2tncm91bmRfY29sb3IiOiIxNDE0MTQiLCJpbWFnZV9kYXRhIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB2aWV3Qm94PScwIDAgOTkgOTknIGZpbGw9J3VuZGVmaW5lZCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyNzcnIGQ9J00wLDk5TDAsMjVDOCwyNCAxNiwyMyAyNCwyNEMzMSwyNCAzOCwyNyA0NywyOEM1NSwyOCA2NiwyOCA3NSwyOEM4MywyNyA5MSwyNyA5OSwyN0w5OSw5OVonLyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyYmInIGQ9J00wLDk5TDAsNTRDOCw1MiAxNiw1MSAyNSw1MEMzMyw0OCA0MSw0NyA0OSw0NkM1Niw0NCA2NCw0MSA3Myw0M0M4MSw0NCA5MCw0OSA5OSw1NUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmZmJyBkPSdNMCw5OUwwLDczQzcsNzIgMTUsNzEgMjUsNzBDMzQsNjggNDQsNjcgNTIsNjlDNTksNzAgNjQsNzQgNzIsNzVDNzksNzUgODksNzIgOTksNzBMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDL3N2ZyUzRSJ9'
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        allocated: 0,
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 5,
-      datatokens: [
+      stats: [
         {
-          address: '0x7626dE49a774c18E0f7Fc658821a87E103f80fab',
-          name: 'Lovely Prawn Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            'be48353fe208e765c24b0a344c2cc826ff0ea18582a162d67f6ad23078595d59',
-          symbol: 'LOVPRA-51'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 5,
       event: {
         block: 7723861,
         contract: '0xACa9d4Df6a4dfF29913A111099bc4aC6363C124F',
@@ -901,40 +980,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0x9C725CADD67f67B5F755a30879945c3ECF6aAA46',
-        created: '2022-10-06T20:10:12',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0x7E0ad0B2CD0560Caf9a4Fc25904d2AB7238d140b',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBOZXVyYURBTyBNYXJrZXRwbGFjZTogaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjJmOWNmM2ViYThmZjIxZGIzMjM1MGFhNmQ0OGRiODljYTg2YmVhYjdhZGY3MjlhNDBhNWRlYmRjZWY4Y2Q3Y2IiLCJleHRlcm5hbF91cmwiOiJodHRwczovL21hcmtldC5vY2VhbnByb3RvY29sLmNvbS9hc3NldC9kaWQ6b3A6MmY5Y2YzZWJhOGZmMjFkYjMyMzUwYWE2ZDQ4ZGI4OWNhODZiZWFiN2FkZjcyOWE0MGE1ZGViZGNlZjhjZDdjYiIsImJhY2tncm91bmRfY29sb3IiOiIxNDE0MTQiLCJpbWFnZV9kYXRhIjoiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyB2aWV3Qm94PScwIDAgOTkgOTknIGZpbGw9J3VuZGVmaW5lZCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyNzcnIGQ9J00wLDk5TDAsMjRDOSwyNSAxOCwyNyAyOSwyOEMzOSwyOCA1MSwyOCA2MywyOEM3NCwyNyA4NiwyNyA5OSwyOEw5OSw5OVonLyUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyYmInIGQ9J00wLDk5TDAsNDlDMTIsNDcgMjUsNDUgMzUsNDVDNDQsNDQgNTEsNDQgNjIsNDVDNzIsNDUgODUsNDcgOTksNTBMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw3NEMxMSw3NCAyMyw3NSAzNCw3NkM0NCw3NiA1Myw3OCA2NCw3OEM3NCw3NyA4Niw3NSA5OSw3NEw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0='
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        allocated: 0,
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 5,
-      datatokens: [
+      stats: [
         {
-          address: '0x40C929B5265F13E668A3e81c4289A279bd2f7452',
-          name: 'Fecund Anchovy Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            '440cdd2f76cd72803ca478fd432d087d6213711ac35163591afe22bbc77a0154',
-          symbol: 'FECANC-54'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 5,
       event: {
         block: 7723800,
         contract: '0x9C725CADD67f67B5F755a30879945c3ECF6aAA46',
@@ -1012,40 +1102,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0x5f7D840050e008F91f9Fd3dba5fE0f91BbE4b14F',
-        created: '2022-10-06T11:16:48',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0xF5dcd98a1C99c2c65C62025Cb23cFB6f12F35497',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDoxZWE2OTdiNDQ3ZjBhMGIzMjA5MDQ4ZjE0NGMwMzMxY2ExYThjMTBhZjI3ZTIzMzUxMmE0MTYyM2I5M2ZmOGVkIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjFlYTY5N2I0NDdmMGEwYjMyMDkwNDhmMTQ0YzAzMzFjYTFhOGMxMGFmMjdlMjMzNTEyYTQxNjIzYjkzZmY4ZWQiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI4QzEwLDI0IDIwLDIxIDI3LDIxQzMzLDIwIDM3LDIyIDQ2LDI0QzU0LDI1IDY2LDI3IDc2LDI4Qzg1LDI4IDkyLDI3IDk5LDI2TDk5LDk5WicvJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJiYicgZD0nTTAsOTlMMCw1NkM4LDU1IDE3LDU0IDI1LDUxQzMyLDQ3IDQwLDQwIDQ5LDQyQzU3LDQzIDY4LDUyIDc3LDU0Qzg1LDU1IDkyLDUwIDk5LDQ2TDk5LDk5WiclM0UlM0MvcGF0aCUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyZmYnIGQ9J00wLDk5TDAsNzdDNiw3OCAxMyw4MCAyMSw4MEMyOCw3OSAzNyw3NiA0Niw3NUM1NCw3MyA2NCw3MSA3Myw3MkM4MSw3MiA5MCw3NCA5OSw3Nkw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0='
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        allocated: 114.1658859253,
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 137,
-      datatokens: [
+      stats: [
         {
-          address: '0x0A81F1c69e5428067e6124817C7AFFE8bC0adF9f',
-          name: 'Fabulous Walrus Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            '485bd67a4bdb69353b4500bb194c6a20c6be57337956cf2f699f3530847ef038',
-          symbol: 'FABWAL-60'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 137,
       event: {
         block: 34000873,
         contract: '0x5f7D840050e008F91f9Fd3dba5fE0f91BbE4b14F',
@@ -1128,39 +1229,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0x4eF0395f0319E6d919942ea3a98472cf957967Da',
-        created: '2022-10-05T18:25:48',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0x26D9690eD920682FbC4f3A05e480B8c6ff978ca8',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDpkMTU2MzkxOWRkNjFjOGVhNTc5MGI4NWYzYTU2OWZhNjllNDZjODRhNjAwMjkwY2EzNzdhMWNiMDA5YmI3Njk0IiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOmQxNTYzOTE5ZGQ2MWM4ZWE1NzkwYjg1ZjNhNTY5ZmE2OWU0NmM4NGE2MDAyOTBjYTM3N2ExY2IwMDliYjc2OTQiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzUsMjkgMTEsMjkgMjAsMzBDMjgsMzAgMzgsMzEgNDgsMjlDNTcsMjYgNjUsMjEgNzQsMjBDODIsMTggOTAsMTkgOTksMjBMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU3QzksNTcgMTgsNTggMjYsNTVDMzMsNTEgMzksNDIgNDcsNDJDNTQsNDEgNjQsNTAgNzQsNTNDODMsNTUgOTEsNTEgOTksNDdMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw3NEMxMCw3MiAyMCw3MCAyOCw2OUMzNSw2NyAzOCw2NiA0Niw3MEM1Myw3MyA2NCw3OSA3NCw4MEM4Myw4MCA5MSw3MyA5OSw2N0w5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0='
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 5,
-      datatokens: [
+      stats: [
         {
-          address: '0xbadac447bF4868aeCa6A9c7448DDAdfe6632509a',
-          name: 'Tactful Shark Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            'c02b30d8930ac5d2561d4c391c74c06a39d6060802be2534218bd3449d9387ce',
-          symbol: 'TACSHA-14'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 5,
       event: {
         block: 7717509,
         contract: '0x4eF0395f0319E6d919942ea3a98472cf957967Da',
@@ -1236,39 +1349,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0xf919A3b0D1538CAA24Efe2BeaAbe43F776aE83ED',
-        created: '2022-10-05T18:21:24',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0x26D9690eD920682FbC4f3A05e480B8c6ff978ca8',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDphZWI5ZmFhZDE5OWU3OWViMjFjZGRjMTU1NTdmYTQyZmU5NWEwMmUwM2M0OTNiZThlODQ5NTk0YWFlNjAyMjFhIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOmFlYjlmYWFkMTk5ZTc5ZWIyMWNkZGMxNTU1N2ZhNDJmZTk1YTAyZTAzYzQ5M2JlOGU4NDk1OTRhYWU2MDIyMWEiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDE4QzEwLDE3IDIwLDE2IDI4LDE5QzM1LDIxIDM5LDI4IDQ4LDI5QzU2LDI5IDY3LDI0IDc3LDIyQzg2LDE5IDkyLDE4IDk5LDE4TDk5LDk5WicvJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJiYicgZD0nTTAsOTlMMCw0OEM2LDUwIDEzLDUyIDIzLDU1QzMyLDU3IDQ0LDU4IDUzLDU2QzYxLDUzIDY3LDQ1IDc1LDQzQzgyLDQwIDkwLDQxIDk5LDQzTDk5LDk5WiclM0UlM0MvcGF0aCUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyZmYnIGQ9J00wLDk5TDAsNzVDOSw3NCAxOSw3MyAyOCw3NEMzNiw3NCA0NCw3NSA1Miw3NUM1OSw3NCA2Nyw3MyA3NSw3M0M4Miw3MiA5MCw3MSA5OSw3MUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0='
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 5,
-      datatokens: [
+      stats: [
         {
-          address: '0x772224c2C2bddb88A55b3905aAaf8C7188b02ce3',
-          name: 'Rebarbative Barnacle Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            '42e244808872c9f4ad96db99d9877abbf3cae9988dec9bd52ab2e336d7ac83af',
-          symbol: 'REBBAR-99'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 5,
       event: {
         block: 7717490,
         contract: '0xf919A3b0D1538CAA24Efe2BeaAbe43F776aE83ED',
@@ -1344,38 +1469,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0x0fb9814D744ed407878D6D7508649b8D43F6b30a',
-        created: '2022-10-05T09:49:12',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0xF5dcd98a1C99c2c65C62025Cb23cFB6f12F35497',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDoxOTFhZjcxZTI3MWQ0ZWI2ZjlhYzU4MmIyYTZhNzhlOGQ3OTE2N2RhN2ExM2EzMDg3OGM3YjY5OTg0MmFhNDIxIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjE5MWFmNzFlMjcxZDRlYjZmOWFjNTgyYjJhNmE3OGU4ZDc5MTY3ZGE3YTEzYTMwODc4YzdiNjk5ODQyYWE0MjEiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI4QzEwLDI1IDIxLDIyIDMzLDIzQzQ0LDIzIDU3LDI4IDY5LDI5QzgwLDI5IDg5LDI0IDk5LDIwTDk5LDk5WicvJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJiYicgZD0nTTAsOTlMMCw0NEMxMiw0OCAyNSw1MiAzNyw1NEM0OCw1NSA1OCw1MiA2OSw1MUM3OSw0OSA4OSw0OCA5OSw0OEw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmZmJyBkPSdNMCw5OUwwLDc3QzksNzQgMTgsNzEgMjksNzBDMzksNjggNTIsNjcgNjQsNjlDNzUsNzAgODcsNzMgOTksNzdMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDL3N2ZyUzRSJ9'
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        allocated: 11159.279296875,
-        orders: 1,
-        price: {
-          value: 0
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 137,
-      datatokens: [
+      stats: [
         {
-          address: '0x89A0170556BB80438081D69F43d8C07a90e9Aa24',
-          name: 'Invidious Octopus Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            '8573fbf5e2e5a90631e26bef416f140f815570b5124b8ad52812443d110a57c2',
-          symbol: 'INVOCT-85'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 137,
       event: {
         block: 33956932,
         contract: '0x0fb9814D744ed407878D6D7508649b8D43F6b30a',
@@ -1452,37 +1590,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0xeE1c6bE384D3ee734E906443E9d893b03852bFC6',
-        created: '2022-10-05T07:41:24',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0x3e81AA994f774eE914D57946DDF2486EA7d42D65',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo1MGM2MGNlMDgxMGJmOGY4YjFjNmNhNDIxZTUyMzFiMTA2Y2Y0ZGU3ODQ5NDUwMzc0OThjODQxNDdlMTFkYmM1IiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjUwYzYwY2UwODEwYmY4ZjhiMWM2Y2E0MjFlNTIzMWIxMDZjZjRkZTc4NDk0NTAzNzQ5OGM4NDE0N2UxMWRiYzUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDIwQzEzLDI0IDI3LDI4IDM3LDI3QzQ2LDI1IDUzLDE5IDYzLDE4QzcyLDE2IDg1LDIwIDk5LDI1TDk5LDk5WicvJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJiYicgZD0nTTAsOTlMMCw1NkM4LDU0IDE3LDUzIDI5LDUzQzQwLDUyIDU0LDUxIDY3LDUyQzc5LDUyIDg5LDUzIDk5LDU1TDk5LDk5WiclM0UlM0MvcGF0aCUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyZmYnIGQ9J00wLDk5TDAsNjlDMTEsNzMgMjIsNzcgMzQsNzdDNDUsNzYgNTgsNzEgNjksNjlDNzksNjYgODksNjcgOTksNjhMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDL3N2ZyUzRSJ9'
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        orders: 0,
-        price: {
-          value: 0
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 5,
-      datatokens: [
+      stats: [
         {
-          address: '0xAd42c7AfEe47140B5CD87F05d5846c418145f43A',
-          name: 'Zealous Clam Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            '081b597131102e14ea5f16d6ba49f46889fb700f88f9430d03ec64441280a894',
-          symbol: 'ZEACLA-28'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 5,
       event: {
         block: 7714916,
         contract: '0xeE1c6bE384D3ee734E906443E9d893b03852bFC6',
@@ -1564,39 +1716,52 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0xaD244AC409cEfA155059890b425b83F6A4146d69',
-        created: '2022-10-04T22:43:00',
-        name: 'ETH predictions',
-        owner: '0x7BA3d8551A6f2C70a5d47bb448BcF7EF69661822',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        name: 'Ocean Data NFT',
+        symbol: 'OCEAN-NFT',
         state: 0,
-        symbol: 'ETH predictions',
-        tokenURI: 'https://oceanprotocol.com/nft/'
+        tokenURI:
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        allocated: 0,
-        orders: 0,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
+      stats: [
+        {
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
+          serviceId:
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
+        }
+      ]
+    },
+    credentialSubject: {
       chainId: 137,
       credentials: undefined,
-      datatokens: [
-        {
-          address: '0xf31b9c3EEE46249c29339319Bfd41167DE5980f1',
-          name: 'ETH predictions: DT1',
-          serviceId: '0',
-          symbol: 'DT1'
-        }
-      ],
       event: {
         block: 33937819,
         contract: '0xaD244AC409cEfA155059890b425b83F6A4146d69',
@@ -1676,39 +1841,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
+      nft: {
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        name: 'Ocean Data NFT',
+        symbol: 'OCEAN-NFT',
+        state: 0,
+        tokenURI:
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
+      },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        orders: 1,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      nft: {
-        address: '0x4CA9EfCD6bbFC935FbBaaDAF65aA6f8Fc3504fe1',
-        created: '2022-10-04T12:45:00',
-        name: 'Ocean Data NFT',
-        owner: '0x9c4e3CaE2B87180BEa0238b25bacf38473c39e11',
-        state: 0,
-        symbol: 'OCEAN-NFT',
-        tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo4MjY5ODYwMGM5ZjAwM2JkZmE5N2JmMDU0YjViYjliMGY4M2MxOGI0ZWE3NDhjZTFlZGRiYWI4MTEwZmY5ZWE5IiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjgyNjk4NjAwYzlmMDAzYmRmYTk3YmYwNTRiNWJiOWIwZjgzYzE4YjRlYTc0OGNlMWVkZGJhYjgxMTBmZjllYTkiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDE3QzYsMTYgMTMsMTYgMjIsMTdDMzAsMTcgNDAsMTkgNTAsMjBDNTksMjAgNjcsMjEgNzUsMjFDODIsMjAgOTAsMTkgOTksMTlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU0QzYsNTAgMTMsNDcgMjIsNDdDMzAsNDYgMzksNDkgNDksNTJDNTgsNTQgNjgsNTggNzcsNTdDODUsNTUgOTIsNDkgOTksNDNMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw4MkM3LDgwIDE1LDc5IDI0LDc2QzMyLDcyIDQwLDY2IDQ5LDY4QzU3LDY5IDY0LDc4IDczLDgxQzgxLDgzIDkwLDgwIDk5LDc4TDk5LDk5WiclM0UlM0MvcGF0aCUzRSUzQy9zdmclM0UifQ=='
-      },
-      chainId: 5,
-      datatokens: [
+      stats: [
         {
-          address: '0xf5dbd5a675248f92E3F37da98090144C1355ABb5',
-          name: 'Feckless Orca Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            '9dec1b8dbf546767988ca98374631b7325a5c0ddb5b75e21e6da0f527cc45285',
-          symbol: 'FECORC-10'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 5,
       event: {
         block: 7710252,
         contract: '0x4CA9EfCD6bbFC935FbBaaDAF65aA6f8Fc3504fe1',
@@ -1785,37 +1962,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0x3A695322d631451474090F322eA3d8d2eC8c1562',
-        created: '2022-10-04T11:39:12',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo5YzEyMzUwNTBiY2Q1MWM4ZWM5YTcwNTgxMTAxMDJjOTU5NTEzNjgzNDkxMWMzMTViNGY3MzliYzlhODgwYjhlIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjljMTIzNTA1MGJjZDUxYzhlYzlhNzA1ODExMDEwMmM5NTk1MTM2ODM0OTExYzMxNWI0ZjczOWJjOWE4ODBiOGUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDIxQzExLDIwIDIyLDIwIDMzLDIxQzQzLDIxIDU0LDIyIDY1LDIzQzc1LDIzIDg3LDIyIDk5LDIyTDk5LDk5WicvJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJiYicgZD0nTTAsOTlMMCw1M0MxMiw0OCAyNSw0NCAzNiw0NUM0Niw0NSA1NCw1MSA2NSw1M0M3NSw1NCA4Nyw1MSA5OSw0OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmZmJyBkPSdNMCw5OUwwLDY4QzEyLDczIDI1LDc4IDM2LDgwQzQ2LDgxIDU0LDc4IDY1LDc3Qzc1LDc1IDg3LDc1IDk5LDc2TDk5LDk5WiclM0UlM0MvcGF0aCUzRSUzQy9zdmclM0UifQ=='
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        orders: 0,
-        price: {
-          value: 0
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 5,
-      datatokens: [
+      stats: [
         {
-          address: '0x23C1FD10DADCaF558fB7173b79CfD0D867568a3D',
-          name: 'Equanimous Barracuda Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            '89d66d7e77abccb2899b224662a733b42edefeb769138d6562928c38f75b4caa',
-          symbol: 'EQUBAR-39'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 5,
       event: {
         block: 7716390,
         contract: '0x3A695322d631451474090F322eA3d8d2eC8c1562',
@@ -1897,40 +2088,51 @@ export const assets: AssetExtended[] = [
         paymentCollector: ''
       }
     ],
-    credentialSubject: {
+    indexedMetadata: {
       nft: {
-        address: '0x3a1deC08e0367D8eCCBa714DF23949c105B7D06B',
-        created: '2022-10-04T02:38:59',
+        address: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
         name: 'Ocean Data NFT',
-        owner: '0x8542472a8De568cD3B09A53368C1962d8DfDBE2f',
-        state: 0,
         symbol: 'OCEAN-NFT',
+        state: 0,
         tokenURI:
-          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo5NDQyYTU1YzI1ZTlhMGZkMzAyMzEwODllYzM0ZTQzMGQwMzI1Y2UwZDNlMDNhYjFhYTI3NTc5ZWI1NmY3NTcwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjk0NDJhNTVjMjVlOWEwZmQzMDIzMTA4OWVjMzRlNDMwZDAzMjVjZTBkM2UwM2FiMWFhMjc1NzllYjU2Zjc1NzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDIyQzEyLDIyIDI1LDIyIDM2LDIzQzQ2LDIzIDUzLDI1IDY0LDI2Qzc0LDI2IDg2LDI2IDk5LDI2TDk5LDk5WicvJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJiYicgZD0nTTAsOTlMMCw0NkM4LDQ3IDE3LDQ4IDI5LDQ4QzQwLDQ3IDU1LDQ2IDY4LDQ3QzgwLDQ3IDg5LDUwIDk5LDUzTDk5LDk5WiclM0UlM0MvcGF0aCUzRSUzQ3BhdGggZmlsbD0nJTIzZmY0MDkyZmYnIGQ9J00wLDk5TDAsNjhDMTAsNzMgMjAsNzkgMzAsODBDMzksODAgNDksNzYgNjEsNzVDNzIsNzMgODUsNzUgOTksNzhMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDL3N2ZyUzRSJ9'
+          'data:application/json;base64,eyJuYW1lIjoiT2NlYW4gRGF0YSBORlQiLCJzeW1ib2wiOiJPQ0VBTi1ORlQiLCJkZXNjcmlwdGlvbiI6IlRoaXMgTkZUIHJlcHJlc2VudHMgYW4gYXNzZXQgaW4gdGhlIE9jZWFuIFByb3RvY29sIHY0IGVjb3N5c3RlbS5cblxuVmlldyBvbiBPY2VhbiBNYXJrZXQ6IGh0dHBzOi8vbWFya2V0Lm9jZWFucHJvdG9jb2wuY29tL2Fzc2V0L2RpZDpvcDo2NjU0YjA3OTM3NjViMjY5Njk2Y2VjOGQyZjBkMDc3ZDliYmNkZDNjNGYwMzNkOTQxYWI5Njg0ZThhZDA2NjMwIiwiZXh0ZXJuYWxfdXJsIjoiaHR0cHM6Ly9tYXJrZXQub2NlYW5wcm90b2NvbC5jb20vYXNzZXQvZGlkOm9wOjY2NTRiMDc5Mzc2NWIyNjk2OTZjZWM4ZDJmMGQwNzdkOWJiY2RkM2M0ZjAzM2Q5NDFhYjk2ODRlOGFkMDY2MzAiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiMTQxNDE0IiwiaW1hZ2VfZGF0YSI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0Nzdmcgdmlld0JveD0nMCAwIDk5IDk5JyBmaWxsPSd1bmRlZmluZWQnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5Mjc3JyBkPSdNMCw5OUwwLDI5QzksMjUgMTksMjIgMjksMjFDMzgsMTkgNDksMTkgNjEsMjFDNzIsMjIgODUsMjUgOTksMjlMOTksOTlaJy8lM0UlM0NwYXRoIGZpbGw9JyUyM2ZmNDA5MmJiJyBkPSdNMCw5OUwwLDU1QzgsNDkgMTcsNDQgMjgsNDNDMzgsNDEgNTAsNDIgNjMsNDNDNzUsNDMgODcsNDIgOTksNDJMOTksOTlaJyUzRSUzQy9wYXRoJTNFJTNDcGF0aCBmaWxsPSclMjNmZjQwOTJmZicgZD0nTTAsOTlMMCw2OEMxMSw2NiAyMiw2NSAzMiw2N0M0MSw2OCA1MCw3MyA2MSw3NkM3MSw3OCA4NSw3OCA5OSw3OUw5OSw5OVonJTNFJTNDL3BhdGglM0UlM0Mvc3ZnJTNFIn0=',
+        owner: '0x99840Df5Cb42faBE0Feb8811Aaa4BC99cA6C84e0',
+        created: '2022-09-29T11:31:12'
       },
       purgatory: {
         state: false,
         reason: ''
       },
-      stats: {
-        allocated: 422.9883117676,
-        orders: 0,
-        price: {
-          value: 3231343254,
-          tokenAddress: '0xCfDdA22C9837aE76E0faA845354f33C62E03653a',
-          tokenSymbol: 'OCEAN'
-        }
+      event: {
+        txid: '0x3e07a75c1cc5d4146222a93ab4319144e60ecca3ebfb8b15f1ff339d6f479dc9',
+        block: 7680195,
+        from: '0x903322C7E45A60d7c8C3EA236c5beA9Af86310c7',
+        contract: '0xbA5BA7B09e2FA1eb0258f647503F81D2Af5cb07d',
+        datetime: '2022-09-29T11:31:12'
       },
-      chainId: 1,
-      datatokens: [
+      stats: [
         {
-          address: '0x98d87B273Ed411A5940a0C4a3717d58C81917Eb5',
-          name: 'Egregious Anchovy Token',
+          datatokenAddress: '0x067e1E6ec580F3F0f6781679A4A5AB07A6464b08',
+          name: 'Stupendous Orca Token',
+          symbol: 'STUORC-59',
           serviceId:
-            '60be64b7b7b10944c2b3eac740f476d85b2625a5db32bd0a3db1959f9a8100bb',
-          symbol: 'EGRANC-29'
+            'dbc42f4c62d2452f8731fd023eacfae74e9c7a42fbd12ce84310f13342e4aab1',
+          orders: 22,
+          prices: [
+            {
+              type: 'fixedrate',
+              price: '3231343254',
+              token: '0x1B083D8584dd3e6Ff37d04a6e7e82b5F622f3985',
+              contract: '0x80E63f73cAc60c1662f27D2DFd2EA834acddBaa8',
+              exchangeId:
+                '0x65f7ed54c5c1eed1e1900c02d8050e2f6a530699a68a39813444d88f764bd847'
+            }
+          ]
         }
-      ],
+      ]
+    },
+    credentialSubject: {
+      chainId: 1,
       event: {
         block: 15671852,
         contract: '0x3a1deC08e0367D8eCCBa714DF23949c105B7D06B',

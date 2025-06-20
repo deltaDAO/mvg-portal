@@ -1,7 +1,7 @@
 import { ReactElement, ReactNode, useState } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
-import Caret from '@images/caret.svg'
+import ArrowIcon from './ArrowIcon'
 import classNames from 'classnames/bind'
 import Badge from '@shared/atoms/Badge'
 
@@ -44,7 +44,7 @@ export default function Accordion({
           onClick={handleClick}
           className={styles.toggle}
         >
-          <Caret />
+          <ArrowIcon className={cx({ arrow: true, arrowOpen: open })} />{' '}
         </Button>
       </h3>
       {action}

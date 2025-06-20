@@ -5,7 +5,9 @@
   justify-content: space-between;
   cursor: pointer;
   margin-bottom: 0;
-  color: var(--font-color-title);
+  font-weight: 700;
+  /* font-size: 22px; */
+  color: #303031;
 }
 
 .title > span:first-child,

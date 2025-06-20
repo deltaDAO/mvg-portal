@@ -84,9 +84,6 @@ const nextConfig = () => {
         }
       ]
 
-      console.log('Routes:')
-      console.log(routes)
-
       return routes
     }
   }

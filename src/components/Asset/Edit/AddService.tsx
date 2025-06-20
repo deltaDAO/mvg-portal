@@ -31,6 +31,7 @@ import {
   customProviderUrl,
   defaultDatatokenCap,
   defaultDatatokenTemplateIndex,
+  encryptAsset,
   marketFeeAddress,
   publisherMarketFixedSwapFee
 } from 'app.config.cjs'
@@ -212,12 +213,12 @@ export default function AddService({
       delete (updatedAsset as AssetExtended).accessDetails
       delete (updatedAsset as AssetExtended).views
       delete (updatedAsset as AssetExtended).offchain
-      delete (updatedAsset as AssetExtended).credentialSubject.stats
+      delete (updatedAsset as any).credentialSubject.stats
 
       const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,
         signer,
-        false,
+        encryptAsset,
         customProviderUrl ||
           updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
         ssiWalletContext

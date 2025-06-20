@@ -14,6 +14,7 @@ import { addExistingParamsToUrl } from '../Search/utils'
 import { useRouter } from 'next/router'
 import { animated, useSpring } from 'react-spring'
 import { useSearchBarStatus } from '@context/SearchBarStatus'
+// import SearchLogo from '@images/search.svg'
 
 async function emptySearch() {
   const searchParams = new URLSearchParams(window?.location.href)
@@ -98,24 +99,43 @@ export default function SearchBar({
   })
 
   return (
-    <form className={styles.search} autoComplete={!value ? 'off' : 'on'}>
-      <animated.div style={springStile} className={styles.springContainer}>
+    // <form className={styles.search} autoComplete={!value ? 'off' : 'on'}>
+    //   <animated.div style={springStile} className={styles.springContainer}>
+    //     <InputElement
+    //       ref={searchBarRef}
+    //       type="search"
+    //       name="search"
+    //       placeholder={placeholder || 'Search...'}
+    //       value={value}
+    //       onChange={handleChange}
+    //       required
+    //       size="small"
+    //       className={styles.input}
+    //       onKeyPress={handleKeyPress}
+    //     />
+    //     <button onClick={handleButtonClick} className={styles.button}>
+    //       <SearchIcon className={styles.searchIcon} />
+    //     </button>
+    //   </animated.div>
+    // </form>
+    <form className={styles.searchBlock} autoComplete={!value ? 'off' : 'on'}>
+      <div className={styles.searchContainer}>
         <InputElement
           ref={searchBarRef}
           type="search"
           name="search"
-          placeholder={placeholder || 'Search...'}
+          placeholder={placeholder || 'Search'}
           value={value}
           onChange={handleChange}
           required
-          size="small"
-          className={styles.input}
+          size="large"
+          className={styles.searchInput}
           onKeyPress={handleKeyPress}
         />
-        <button onClick={handleButtonClick} className={styles.button}>
+        <button onClick={handleButtonClick} className={styles.searchButton}>
           <SearchIcon className={styles.searchIcon} />
         </button>
-      </animated.div>
+      </div>
     </form>
   )
 }

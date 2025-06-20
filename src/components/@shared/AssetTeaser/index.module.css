@@ -9,9 +9,11 @@
   height: 100%;
   color: var(--teaser-font-color);
   background: var(--teaser-background);
-  border-radius: var(--teaser-border-radius);
-  border: var(--teaser-border-size) solid var(--teaser-border-color);
-  box-shadow: var(--teaser-box-shadow);
+  border-radius: 20px;
+  /* border-radius: var(--teaser-border-radius); */
+  border: var(--teaser-border-size) solid #eeeeee99;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  /* box-shadow: var(--teaser-box-shadow); */
   position: relative;
   padding-top: calc(var(--spacer) / 2);
   padding-bottom: calc(var(--spacer) / 2);
@@ -23,6 +25,7 @@
 a.link:hover,
 a.link:focus {
   box-shadow: var(--teaser-hover-box-shadow);
+  border: var(--teaser-border-size) solid #e0e0e0;
 }
 
 .detailLine {
@@ -38,15 +41,27 @@ a.link:focus {
 }
 
 .content p {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(48, 48, 49, 0.7);
   margin-bottom: calc(var(--spacer) / 3);
 }
 
 .title {
-  font-size: var(--font-size-large);
-  color: var(--teaser-title-font-color);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  color: #303031;
   margin: 0;
   padding-bottom: calc(var(--spacer) / 6);
   overflow-wrap: break-word;
+}
+.owner {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(48, 48, 49, 0.5);
 }
 
 .price {
@@ -61,7 +76,11 @@ a.link:focus {
 }
 
 .typeLabel {
-  font-size: var(--font-size-mini);
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 10px;
+  color: rgba(48, 48, 49, 0.7);
+  /* font-size: var(--font-size-mini); */
   display: inline-block;
   border-left: 1px solid var(--border-color);
   padding-left: calc(var(--spacer) / 4);

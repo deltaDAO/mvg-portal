@@ -33,7 +33,18 @@
 }
 
 .placeholder {
-  width: 100%;
+  border-radius: 10px 0 0 10px;
+  padding: 6px 25px;
+  margin-left: 0px;
+  width: 61px;
   height: 100%;
-  background: var(--nft-placeholder-background);
+  box-shadow: -2px 0 8px 0 rgba(0, 0, 0, 0.15);
+  background: linear-gradient(
+    135deg,
+    #1f2c50 0%,
+    rgba(10, 75, 112, 0.8) 27.47%,
+    rgba(10, 75, 112, 0.7) 43.49%,
+    rgba(10, 75, 112, 0.8) 55.43%,
+    #1e2e52 100%
+  );
 }

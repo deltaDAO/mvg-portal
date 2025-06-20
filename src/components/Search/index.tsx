@@ -9,6 +9,7 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import styles from './index.module.css'
 import { useRouter } from 'next/router'
 import { useDebouncedCallback } from 'use-debounce'
+import SearchBar from '@components/Header/SearchBar'
 
 export default function SearchPage({
   setTotalResults,
@@ -23,6 +24,7 @@ export default function SearchPage({
   const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [loading, setLoading] = useState<boolean>(true)
   const newCancelToken = useCancelToken()
+  const isSearchPage = true
 
   useEffect(() => {
     const parsed = queryString.parse(location.search, {
@@ -81,6 +83,12 @@ export default function SearchPage({
         <Sort expanded />
       </div>
       <div className={styles.results}>
+        <div className={styles.searchContainer}>
+          <SearchBar
+            placeholder="Search for service offerings"
+            isSearchPage={isSearchPage}
+          />
+        </div>
         <AssetList
           assets={queryResult?.results}
           showPagination

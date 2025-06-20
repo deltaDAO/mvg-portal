@@ -3,7 +3,9 @@
   flex-direction: column;
   gap: calc(var(--spacer) / 2);
 }
-
+.searchContainer {
+  margin-bottom: 20px;
+}
 .filterContainer {
   display: flex;
   flex-direction: row;
@@ -16,7 +18,28 @@
 @media screen and (min-width: 65rem) {
   .container {
     flex-direction: row;
-    gap: calc(var(--spacer) / 1.2);
+    gap: calc(var(--spacer) / 0.5);
+  }
+  .filterContainer {
+    flex-direction: column;
+    width: 15rem;
+    border-right: 1px solid var(--border-color);
+  }
+  .filterContainer > div {
+    padding-bottom: calc(var(--spacer) / 1.2);
+    border-bottom: 1px solid var(--border-color);
+  }
+  .results {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1500px) {
+  .container {
+    flex-direction: row;
+    gap: calc(var(--spacer) / 0.4);
+    width: 1450px;
+    padding-right: 1rem;
   }
   .filterContainer {
     flex-direction: column;

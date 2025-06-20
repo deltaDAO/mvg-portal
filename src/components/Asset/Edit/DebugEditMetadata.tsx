@@ -57,18 +57,21 @@ export default function DebugEditMetadata({
         values.credentials
       )
       const updatedNft: AssetNft = {
-        ...asset.credentialSubject.nft,
+        ...asset.indexedMetadata.nft,
         state:
           values.assetState !== undefined
             ? State[values.assetState as unknown as keyof typeof State]
-            : asset.credentialSubject.nft.state
+            : asset.indexedMetadata.nft.state
       }
       const tmpAsset: Asset = {
         ...asset,
         credentialSubject: {
           ...asset.credentialSubject,
           metadata: newMetadata,
-          credentials: updatedCredentials,
+          credentials: updatedCredentials
+        },
+        indexedMetadata: {
+          ...asset?.indexedMetadata,
           nft: updatedNft
         }
       }
@@ -77,7 +80,7 @@ export default function DebugEditMetadata({
       delete (tmpAsset as AssetExtended).accessDetails
       delete (tmpAsset as AssetExtended).views
       delete (tmpAsset as AssetExtended).offchain
-      delete (tmpAsset as AssetExtended).credentialSubject.stats
+      delete (tmpAsset as any).credentialSubject.stats
 
       setUpdatedAsset(tmpAsset)
     }
