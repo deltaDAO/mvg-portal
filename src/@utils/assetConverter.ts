@@ -17,11 +17,9 @@ export async function transformAssetToAssetSelection(
   if (!assets) return []
 
   const algorithmList: AssetSelectionAsset[] = []
-
   for (const asset of assets) {
     const algoService =
       getServiceByName(asset, 'compute') || getServiceByName(asset, 'access')
-
     if (
       Number(asset.indexedMetadata.stats[0]?.prices[0]?.price) >= 0 &&
       normalizeUrl(algoService?.serviceEndpoint) ===
@@ -31,7 +29,6 @@ export async function transformAssetToAssetSelection(
       const matches = new Set(
         selectedAlgorithms?.map((a) => `${a.did}|${a.serviceId}`)
       )
-
       // fetch all accessDetails in one go
       const cancelTokenSource = axios.CancelToken.source()
       const { services } = asset.credentialSubject
@@ -49,7 +46,12 @@ export async function transformAssetToAssetSelection(
       // only loop through those services that appear in selectedAlgorithms
       services.forEach((service, idx) => {
         const key = `${asset.id}|${service.id}`
-        if (!matches.has(key)) return // <-- skip any service that wasn't in selectedAlgorithms
+        if (
+          selectedAlgorithms &&
+          selectedAlgorithms.length > 0 &&
+          !matches.has(key)
+        )
+          return // <-- skip any service that wasn't in selectedAlgorithms
 
         const priceInfo = getAvailablePrice(accessDetails[idx])
         const assetEntry: AssetSelectionAsset = {
