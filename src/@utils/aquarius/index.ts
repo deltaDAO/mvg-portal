@@ -272,27 +272,6 @@ export async function getAsset(
   }
 }
 
-export async function getAssetsNames(
-  didList: string[],
-  cancelToken: CancelToken
-): Promise<Record<string, string>> {
-  try {
-    const response: AxiosResponse<Record<string, string>> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/names`,
-      { didList },
-      { cancelToken }
-    )
-    if (!response || response.status !== 200 || !response.data) return
-    return response.data
-  } catch (error) {
-    if (axios.isCancel(error)) {
-      LoggerInstance.log(error.message)
-    } else {
-      LoggerInstance.error(error.message)
-    }
-  }
-}
-
 export async function getAssetsFromDids(
   didList: string[],
   chainIds: number[],
@@ -598,7 +577,7 @@ export async function getDownloadAssets(
     let downloadedAssets: DownloadedAsset[] = []
     if (result) {
       downloadedAssets = result?.results
-        .map((asset) => {
+        ?.map((asset) => {
           const timestampStr =
             asset?.indexedMetadata?.event?.datetime ??
             asset?.indexedMetadata?.nft?.created

@@ -14,13 +14,14 @@ import {
   getErrorMessage
 } from '@oceanprotocol/lib'
 // if customProviderUrl is set, we need to call provider using this custom endpoint
-import { customProviderUrl } from '../../app.config.cjs'
+import { customProviderUrl, oceanTokenAddress } from '../../app.config.cjs'
 import { KeyValuePair } from '@shared/FormInput/InputElement/KeyValueInput'
 import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
 import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import { ResourceType } from 'src/@types/ResourceType'
 
 export async function initializeProviderForCompute(
   dataset: AssetExtended,
@@ -28,7 +29,8 @@ export async function initializeProviderForCompute(
   datasetAccessDetails: AccessDetails,
   algorithm: AssetExtended,
   accountId: Signer,
-  computeEnv: ComputeEnvironment = null
+  computeEnv: ComputeEnvironment = null,
+  selectedResources: ResourceType
 ): Promise<ProviderComputeInitializeResults> {
   const computeAsset: ComputeAsset = {
     documentId: dataset.id,
@@ -42,21 +44,24 @@ export async function initializeProviderForCompute(
   }
 
   const validUntil = getValidUntilTime(
-    computeEnv?.maxJobDuration,
+    selectedResources?.jobDuration,
     datasetService.timeout,
     algorithm.credentialSubject.services[0].timeout
   )
-
   try {
+    const resourceRequests = computeEnv.resources.map((res) => ({
+      id: res.id,
+      amount: selectedResources?.[res.id] || res.min
+    }))
     return await ProviderInstance.initializeCompute(
       [computeAsset],
       computeAlgo,
       computeEnv?.id,
-      null,
+      oceanTokenAddress,
       validUntil,
       customProviderUrl || datasetService.serviceEndpoint,
       accountId,
-      null
+      resourceRequests
     )
   } catch (error) {
     const message = getErrorMessage(error.message)

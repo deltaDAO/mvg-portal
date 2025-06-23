@@ -20,6 +20,7 @@ import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelecti
 import { BoxSelectionOption } from '@shared/FormInput/InputElement/BoxSelection'
 import { getObjectPropertyByPath } from '@utils/index'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
+import { ResourceType } from 'src/@types/ResourceType'
 
 const cx = classNames.bind(styles)
 
@@ -79,6 +80,14 @@ export interface InputProps {
   disclaimerValues?: string[]
   accountId?: string
   actions?: string[]
+  allResourceValues?: {
+    [envId: string]: ResourceType
+  }
+  setAllResourceValues?: React.Dispatch<
+    React.SetStateAction<{
+      [envId: string]: ResourceType
+    }>
+  >
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {

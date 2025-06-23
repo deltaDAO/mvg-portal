@@ -1,114 +1,259 @@
-import Dotdotdot from 'react-dotdotdot'
-import slugify from 'slugify'
-import PriceUnit from '@shared/Price/PriceUnit'
-import Loader from '@shared/atoms/Loader'
-import styles from './index.module.css'
-import assetSelectionStyles from '../AssetSelection/index.module.css'
-import { Empty } from '../AssetSelection'
-import { formatDuration, intervalToDuration } from 'date-fns'
-import { useMarketMetadata } from '@context/MarketMetadata'
-import Tooltip from '@components/@shared/atoms/Tooltip'
-import ComputeEnvDetails from './ComputeEnvDetails'
+import { Datatoken } from '@oceanprotocol/lib'
+import { useEffect, useState } from 'react'
+import { ResourceType } from 'src/@types/ResourceType'
+import { useNetwork, useSigner } from 'wagmi'
 
 export default function ComputeEnvSelection({
   computeEnvs,
-  selected,
-  disabled,
-  ...props
+  setAllResourceValues
 }: {
   computeEnvs: ComputeEnvironmentExtended[]
-  selected?: string
-  disabled?: boolean
+  setAllResourceValues?: React.Dispatch<
+    React.SetStateAction<{
+      [envId: string]: ResourceType
+    }>
+  >
 }): JSX.Element {
-  const { approvedBaseTokens } = useMarketMetadata()
-  const styleClassesWrapper = `${styles.selection} ${
-    disabled ? assetSelectionStyles.disabled : ''
-  }`
+  const [selectedEnvId, setSelectedEnvId] = useState<string>()
+  const { chain } = useNetwork()
+  const { data: signer } = useSigner()
+
+  const [mode, setMode] = useState<'free' | 'paid'>('free')
+  const [resourceValues, setResourceValues] = useState<{
+    [envId: string]: ResourceType
+  }>({})
+
+  const formatMB = (bytes: number) => Math.floor(bytes / 1_000_000)
+  const formatMinutes = (seconds: number) => Math.floor(seconds / 60)
+
+  const [symbolMap, setSymbolMap] = useState<{ [address: string]: string }>({})
+
+  const fetchSymbol = async (address: string) => {
+    if (symbolMap[address]) return symbolMap[address]
+    if (!signer || !chain?.id) return '...'
+    const datatoken = new Datatoken(signer, chain.id)
+    const sym = await datatoken.getSymbol(address)
+    setSymbolMap((prev) => ({ ...prev, [address]: sym }))
+    return sym
+  }
+
+  useEffect(() => {
+    if (computeEnvs?.length === 1) {
+      setSelectedEnvId(computeEnvs[0].id)
+    }
+  }, [computeEnvs])
+
+  useEffect(() => {
+    const reset: { [envId: string]: any } = {}
+    for (const env of computeEnvs ?? []) {
+      const getDefault = (id: string) => {
+        if (mode === 'free') return 0
+        const r = env.resources?.find((r) => r.id === id)
+        if (id === 'ram' || id === 'disk') return formatMB(r.min)
+        return r?.min ?? 0
+      }
+      reset[env.id] = {
+        cpu: getDefault('cpu'),
+        ram: getDefault('ram'),
+        disk: getDefault('disk'),
+        jobDuration: 0,
+        price: 0,
+        mode
+      }
+    }
+    setResourceValues(reset)
+    if (setAllResourceValues) setAllResourceValues(reset)
+  }, [mode, computeEnvs])
 
   return (
-    <div className={styleClassesWrapper}>
-      <div className={styles.scroll}>
-        {!computeEnvs ? (
-          <Loader />
-        ) : computeEnvs && !computeEnvs.length ? (
-          <Empty message="No Compute Environment available." />
-        ) : (
-          computeEnvs
-            // ToDo: ComputeEnvironmentExtended - needs to be adapted for the new data structure
-            .map(
-              (env) =>
-                env as unknown as {
-                  id: string
-                  description: string
-                  cpuNumber: number
-                  gpuNumber: number
-                  maxJobDuration: number
-                  priceMin: number
-                  feeToken: string
-                }
-            )
-            .map((env) => (
-              <div className={styles.row} key={env.id}>
-                <input
-                  id={slugify(env.id)}
-                  className={`${assetSelectionStyles.input} ${assetSelectionStyles.radio}`}
-                  {...props}
-                  checked={selected && env.id === selected}
-                  type="radio"
-                  value={env.id}
-                />
-                <label
-                  className={assetSelectionStyles.label}
-                  htmlFor={slugify(env.description || env.id)}
-                  title={env.description || env.id}
-                >
-                  <h3 className={assetSelectionStyles.title}>
-                    <Dotdotdot clamp={1} tagName="span">
-                      {env.description || env.id}
-                    </Dotdotdot>
-                    <Tooltip
-                      content={
-                        <ComputeEnvDetails
-                          computeEnv={
-                            // ToDo: ComputeEnvironmentExtended - needs to be adapted for the new data structure
-                            env as unknown as ComputeEnvironmentExtended
-                          }
-                        />
-                      }
-                    />
-                  </h3>
-                  <Dotdotdot
-                    clamp={1}
-                    tagName="code"
-                    className={styles.details}
-                  >
-                    {env?.cpuNumber > 0 && 'CPU | '}
-                    {env?.gpuNumber > 0 && 'GPU | '}
-                    {'max duration: '}
-                    {formatDuration(
-                      intervalToDuration({
-                        start: 0,
-                        end: env?.maxJobDuration * 1000
-                      })
-                    )}
-                  </Dotdotdot>
-                  <PriceUnit
-                    price={env.priceMin}
-                    size="small"
-                    className={assetSelectionStyles.price}
-                    symbol={`${
-                      approvedBaseTokens?.find(
-                        (token) =>
-                          token.address.toLowerCase() ===
-                          env.feeToken.toLowerCase()
-                      )?.symbol || 'EUROe'
-                    } / minute`}
+    <div>
+      {computeEnvs?.map((env) => {
+        const chainId = '11155111'
+        const fee = env.fees?.[chainId]?.[0]
+        const freeAvailable = !!env.free
+        const isSelected = selectedEnvId === env.id
+        const tokenAddress = fee?.feeToken
+        const tokenSymbol = symbolMap[tokenAddress] || '...'
+        if (tokenAddress) fetchSymbol(tokenAddress)
+
+        const getDefault = (id: string) => {
+          // Try to get min for paid, 0 for free
+          if (mode === 'free') return 0
+          const r = env.resources?.find((r) => r.id === id)
+          if (id === 'ram' || id === 'disk') return formatMB(r.min)
+          return r?.min ?? 0
+        }
+        const currentRes = resourceValues[env.id] ?? {
+          cpu: getDefault('cpu'),
+          ram: getDefault('ram'),
+          disk: getDefault('disk'),
+          jobDuration: 0,
+          price: 0,
+          mode
+        }
+
+        const resourceLimits =
+          mode === 'free' ? env.free?.resources : env.resources
+
+        const getLimits = (id: string) =>
+          resourceLimits?.find((r) => r.id === id) ?? { max: 0, min: 0 }
+
+        const maxDurationSec =
+          mode === 'free' ? env.free?.maxJobDuration : env.maxJobDuration
+
+        const updateRes = (
+          type: 'cpu' | 'ram' | 'disk' | 'jobDuration',
+          value: number
+        ) => {
+          setResourceValues((prev) => {
+            const prevRes = prev[env.id] ?? {
+              cpu: 0,
+              ram: 0,
+              disk: 0,
+              jobDuration: 0,
+              price: 0,
+              mode
+            }
+            const newRes = { ...prevRes, [type]: value, mode }
+
+            let newPrice = 0
+            if (mode === 'paid' && fee?.prices) {
+              for (const p of fee.prices) {
+                const units =
+                  p.id === 'cpu'
+                    ? newRes.cpu
+                    : p.id === 'ram'
+                    ? newRes.ram
+                    : p.id === 'disk'
+                    ? newRes.disk
+                    : 0
+                newPrice += units * p.price
+              }
+
+              newPrice *= formatMinutes(newRes.jobDuration)
+            }
+
+            const updated = {
+              ...prev,
+              [env.id]: { ...newRes, price: mode === 'free' ? 0 : newPrice }
+            }
+
+            if (setAllResourceValues) {
+              setAllResourceValues(updated)
+            }
+
+            return updated
+          })
+        }
+
+        return (
+          <div key={env.id} style={{ border: '1px solid #ccc', margin: '1em' }}>
+            <label title={env.id}>
+              <input
+                type="radio"
+                checked={isSelected}
+                onChange={() => setSelectedEnvId(env.id)}
+              />
+              <span
+                style={{
+                  display: 'inline-block',
+                  maxWidth: '300px',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {env.id}
+              </span>
+            </label>
+
+            {freeAvailable && (
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    checked={mode === 'free'}
+                    onChange={() => setMode('free')}
                   />
+                  Free
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    checked={mode === 'paid'}
+                    onChange={() => setMode('paid')}
+                  />
+                  Paid
                 </label>
               </div>
-            ))
-        )}
-      </div>
+            )}
+
+            <div>
+              <label>CPU: </label>
+              <input
+                type="range"
+                min={getLimits('cpu').min}
+                max={getLimits('cpu').max}
+                value={currentRes.cpu}
+                onChange={(e) => updateRes('cpu', Number(e.target.value))}
+              />
+              <span>{currentRes.cpu} units</span>
+            </div>
+
+            <div>
+              <label>RAM: </label>
+              <input
+                type="range"
+                min={formatMB(getLimits('ram').min)}
+                max={formatMB(getLimits('ram').max)}
+                value={currentRes.ram}
+                onChange={(e) => updateRes('ram', Number(e.target.value))}
+              />
+              <span>{currentRes.ram} MB</span>
+            </div>
+
+            <div>
+              <label>DISK: </label>
+              <input
+                type="range"
+                min={formatMB(getLimits('disk').min)}
+                max={formatMB(getLimits('disk').max)}
+                value={currentRes.disk}
+                onChange={(e) => updateRes('disk', Number(e.target.value))}
+              />
+              <span>{currentRes.disk} MB</span>
+            </div>
+
+            <div>
+              <label>Job Duration: </label>
+              <input
+                type="range"
+                min={0}
+                max={maxDurationSec}
+                step={60}
+                value={currentRes.jobDuration}
+                onChange={(e) =>
+                  updateRes('jobDuration', Number(e.target.value))
+                }
+              />
+              <span>{formatMinutes(currentRes.jobDuration)} minutes</span>
+            </div>
+
+            {mode === 'paid' && fee && (
+              <>
+                {fee.prices?.map((p) => (
+                  <div key={p.id}>
+                    <strong>Price:</strong> {p.price} {tokenSymbol} / {p.id}
+                  </div>
+                ))}
+                <div>
+                  <strong>Total Cost:</strong> {currentRes.price} {tokenSymbol}
+                </div>
+              </>
+            )}
+          </div>
+        )
+      })}
     </div>
   )
 }
