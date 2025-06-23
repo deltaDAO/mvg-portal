@@ -1,8 +1,9 @@
 import { ReactElement, useState } from 'react'
 import JobList from './JobList'
-import { VizHub } from './viz-hub'
+import VizHub from '../@shared/VizHub/VizHub'
 import { useDataLoader } from './useDataLoader'
 import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
+import { TEXT_ANALYSIS_CONFIG } from './_constants'
 
 export default function TextAnalysisViz(): ReactElement {
   const [textAnalysisData, setTextAnalysisData] = useState<
@@ -26,6 +27,7 @@ export default function TextAnalysisViz(): ReactElement {
               showDocumentSummary: true,
               showFutureFeatures: true
             }}
+            useCaseConfig={TEXT_ANALYSIS_CONFIG}
             theme="light"
           />
         </div>

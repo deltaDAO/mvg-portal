@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import type { VizHubData } from './viz-hub'
+import type { VizHubData } from '../@shared/VizHub/types'
 import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
 
 export interface DataLoadingState {

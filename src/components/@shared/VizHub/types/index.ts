@@ -37,6 +37,29 @@ export interface VizHubData {
   documentSummary?: DocumentSummaryData
 }
 
+// Use case specific configuration
+export interface UseCaseConfig {
+  /**
+   * The use case name - used for data storage keys and identification
+   */
+  useCaseName: string
+
+  /**
+   * Algorithm DIDs mapping for different chains
+   */
+  algoDids: Record<number, string>
+
+  /**
+   * Result ZIP file configuration
+   */
+  resultZip: {
+    fileName: string
+    metadataFileName: string
+    detectionsFileName: string
+    imagesFolderName: string
+  }
+}
+
 // Configuration interface for controlling which visualizations to show
 export interface VizHubConfig {
   showEmailDistribution?: boolean
@@ -51,6 +74,7 @@ export interface VizHubConfig {
 export interface VizHubProps {
   data?: VizHubData
   config?: VizHubConfig
+  useCaseConfig: UseCaseConfig
   className?: string
   theme?: 'light' | 'dark'
 }

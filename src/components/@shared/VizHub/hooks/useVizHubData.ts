@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useDataStore } from '../store/dataStore'
-import type { VizHubData, VizHubConfig } from '../types'
+import type { VizHubData, VizHubConfig, UseCaseConfig } from '../types'
 import { DEFAULT_VIZHUB_CONFIG } from '../types'
 
 /**
@@ -25,7 +25,8 @@ const convertToCSV = (data: any[], headers: string[]): string => {
  */
 export function useVizHubData(
   externalData?: VizHubData,
-  config?: VizHubConfig
+  config?: VizHubConfig,
+  useCaseConfig?: UseCaseConfig
 ) {
   const { checkDataStatus, dataStatus, processingStatus, statusMessage } =
     useDataStore()

@@ -18,6 +18,7 @@ import type { VizHubProps } from './types'
 function VizHubInternal({
   data,
   config,
+  useCaseConfig,
   className = '',
   theme = 'light'
 }: VizHubProps) {
@@ -28,7 +29,7 @@ function VizHubInternal({
     config: effectiveConfig,
     hasAnyData,
     dataSourceInfo
-  } = useVizHubData(data, config)
+  } = useVizHubData(data, config, useCaseConfig)
 
   // Show loading state if processing
   if (processingStatus === 'not_ready') {
