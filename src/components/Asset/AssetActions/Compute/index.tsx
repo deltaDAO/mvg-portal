@@ -356,6 +356,7 @@ export default function Compute({
         throw new Error('Error setting algorithm price and fees!')
 
       setAlgoOrderPriceAndFees(algorithmOrderPriceAndFees)
+      return algorithmOrderPriceAndFees
     }
   }
 
@@ -394,7 +395,7 @@ export default function Compute({
           selectedAlgorithmAsset.credentialSubject?.metadata.type
         )[selectedAlgorithmAsset.accessDetails?.[0]?.type === 'fixed' ? 2 : 3]
       )
-      await setAlgoPrice(
+      const algoOrderPriceAndFeesResponse = await setAlgoPrice(
         initializedProviderResponse?.algorithm?.providerFee ||
           initializedProvider?.algorithm?.providerFee
       )
@@ -403,7 +404,7 @@ export default function Compute({
         selectedAlgorithmAsset,
         selectedAlgorithmAsset?.credentialSubject?.services[0],
         selectedAlgorithmAsset?.accessDetails[0],
-        algoOrderPriceAndFees,
+        algoOrderPriceAndFees || algoOrderPriceAndFeesResponse,
         accountId,
         initializedProviderResponse?.algorithm ||
           initializedProvider?.algorithm,
@@ -419,7 +420,6 @@ export default function Compute({
           asset.credentialSubject?.metadata.type
         )[accessDetails.type === 'fixed' ? 2 : 3]
       )
-
       const datasetOrderTx = await handleComputeOrder(
         signer,
         asset,
