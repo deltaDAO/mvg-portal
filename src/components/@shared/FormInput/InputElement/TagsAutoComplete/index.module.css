@@ -1,21 +1,42 @@
 .select [class$='control'] {
-  border-color: var(--input-border-color);
-  border-radius: var(--input-border-radius);
+  border-color: var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
   box-shadow: none;
   background-color: var(--input-background);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--publish-font-size);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
   cursor: text;
   min-height: 43px;
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
 }
 
 .select [class$='control']:hover {
-  border-color: var(--input-border-color);
+  border-color: var(--publish-input-border-color);
 }
 
 .select [class$='control']:focus-within {
-  border-color: var(--input-border-color);
+  border-color: var(--publish-input-border-color);
+}
+
+/* ONLY when dropdown menu is actually open/visible */
+.select [class*='menu-is-open'] [class$='control'],
+.select [class*='menuIsOpen'] [class$='control'],
+.select:has([class$='menu']) [class$='control'] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.select [class$='control'] + * [class$='menu'] ~ [class$='control'],
+.select [class$='menu'] + [class$='control'] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.select:has([class$='menu'] ~ *) [class$='control'] {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .select [class$='ValueContainer'] {
@@ -26,40 +47,40 @@
   margin: 0;
   padding-bottom: 0;
   padding-top: 0;
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
+  font-size: var(--publish-font-size);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
 }
 
 .select input {
-  color: var(--font-color-heading) !important;
-}
-
-.select [class$='menu'] {
-  background-color: var(--background-highlight);
-  border-radius: var(--input-border-radius);
+  color: var(--publish-text) !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .select [class$='option'] {
-  color: var(--input-font-color);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
+  color: var(--publish-text);
+  font-size: var(--publish-font-size);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  padding: var(--publish-spacing-sm) var(--publish-spacing-md);
+  transition: background-color 0.2s ease;
 }
 
 .select [class$='option']:active {
-  background-color: var(--background-highlight);
+  background-color: var(--input-background-highlight);
 }
 
 .select [class$='multiValue'],
 .select [class$='multiValue'] > *,
 .select [class$='multiValue']:hover > * {
-  border-radius: var(--input-border-radius);
+  border-radius: var(--publish-border-radius);
   background-color: var(--input-background-highlight);
-  color: var(--input-font-color);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
+  color: var(--publish-text);
+  font-size: var(--publish-font-size);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -72,30 +93,51 @@
 .select [class$='placeholder'] {
   margin-left: 0;
   margin-right: 0;
-  color: var(--input-placeholder-font-color);
-  font-weight: var(--font-weight-base);
+  color: var(--publish-text-secondary);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
   transition: 0.2s ease-out;
   opacity: 0.7;
 }
 
 .select [class$='menu'] {
   background-color: var(--input-background);
-  margin-top: -2px;
-  border: var(--input-border-size) solid var(--input-border-color);
-  border-top-color: var(--input-border-color);
+  margin-top: 0;
+  border: 2px solid var(--publish-input-border-color);
+  border-top: none;
+  border-bottom-left-radius: var(--publish-input-border-radius);
+  border-bottom-right-radius: var(--publish-input-border-radius);
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  box-shadow: none;
+  box-shadow: var(--publish-shadow);
+  overflow: hidden;
 }
 
 .select [class$='menu'] [class$='option']:hover,
 .select [class$='menu'] [class$='option']:focus-within {
-  background-color: var(--font-color-heading);
-  color: var(--input-background);
+  background-color: var(--input-background-highlight);
+  color: var(--publish-text);
+}
+
+.select [class$='menu'] [class$='option']:first-child {
+  padding-top: var(--publish-spacing-sm);
+}
+
+.select [class$='menu'] [class$='option']:last-child {
+  padding-bottom: var(--publish-spacing-sm);
+}
+
+.select [class$='MenuList'] {
+  padding: 0;
 }
 
 .select [class$='NoOptionsMessage'] {
-  font-size: var(--font-size-small);
-  color: var(--input-placeholder-font-color);
+  font-size: var(--publish-font-size);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  color: var(--publish-text-secondary);
   text-align: left;
+  padding: var(--publish-spacing-md);
+  margin: 0;
 }

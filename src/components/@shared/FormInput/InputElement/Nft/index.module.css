@@ -6,25 +6,28 @@
   align-items: center;
 }
 
-.image {
-  display: block;
+.imageWrapper {
+  border-radius: var(--publish-border-radius);
+  overflow: hidden;
+  box-shadow: var(--publish-shadow-lg);
   width: 90px;
   height: 90px;
-  border-radius: var(--publish-border-radius);
-  padding: 15px 25px;
-  box-shadow: var(--publish-shadow-lg);
-  background: #64ace0;
-  background: linear-gradient(
-    135deg,
-    #1f2c50 0%,
-    rgba(10, 75, 112, 0.8) 27.47%,
-    rgba(10, 75, 112, 0.7) 43.49%,
-    rgba(10, 75, 112, 0.8) 55.43%,
-    #1e2e52 100%
-  );
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
   border: none;
   position: relative;
   margin: 0;
+}
+
+.image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .actions {
