@@ -25,7 +25,6 @@ import {
 import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { getOrderPriceAndFees } from './accessDetailsAndPricing'
 
 async function initializeProvider(
   asset: AssetExtended,
@@ -164,7 +163,7 @@ export async function order(
           accessDetails.baseToken.address,
           accessDetails.datatoken.address,
           (
-            Number(orderPriceAndFees.price) + Number(orderPriceAndFees.opcFee)
+            Number(orderPriceAndFees?.price) + Number(orderPriceAndFees.opcFee)
           ).toString(),
           false
         )

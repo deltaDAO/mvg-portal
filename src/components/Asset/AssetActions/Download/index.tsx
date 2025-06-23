@@ -131,7 +131,6 @@ export default function Download({
 
       try {
         !orderPriceAndFees && setIsPriceLoading(true)
-
         const _orderPriceAndFees = await getOrderPriceAndFees(
           asset,
           service,

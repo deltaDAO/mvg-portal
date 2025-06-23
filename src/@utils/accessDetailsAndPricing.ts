@@ -1,4 +1,5 @@
 import {
+  ComputeAsset,
   Datatoken,
   FixedRateExchange,
   getErrorMessage,
@@ -50,13 +51,19 @@ export async function getOrderPriceAndFees(
   // fetch provider fee
   let initializeData
   try {
-    const initialize = await ProviderInstance.initialize(
-      asset.id,
-      service.id,
-      0,
-      accountId,
-      customProviderUrl || service.serviceEndpoint
-    )
+    let initialize = null
+    if (service.type === 'compute') {
+      console.log('is compute')
+    } else {
+      initialize = await ProviderInstance.initialize(
+        asset.id,
+        service.id,
+        0,
+        accountId,
+        customProviderUrl || service.serviceEndpoint
+      )
+    }
+
     initializeData = !providerFees && initialize
   } catch (error) {
     if (error.message.includes('Unexpected token')) {
@@ -218,7 +225,7 @@ export async function getAccessDetails(
   if (fixedRates.length > 0) {
     const freAddress = fixedRates[0].contractAddress
     const exchangeId = fixedRates[0].id
-    const fre = new FixedRateExchange(freAddress, signer)
+    const fre = new FixedRateExchange(freAddress, signer, chainId)
     const exchange = await fre.getExchange(exchangeId)
 
     return {

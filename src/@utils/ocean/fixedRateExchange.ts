@@ -21,7 +21,11 @@ export async function getFixedBuyPrice(
     signer = await getDummySigner(chainId)
   }
 
-  const fixed = new FixedRateExchange(config.fixedRateExchangeAddress, signer)
+  const fixed = new FixedRateExchange(
+    config.fixedRateExchangeAddress,
+    signer,
+    chainId
+  )
   const estimatedPrice = await fixed.calcBaseInGivenDatatokensOut(
     accessDetails.addressOrId,
     '1',
