@@ -163,7 +163,7 @@ export async function order(
           accessDetails.baseToken.address,
           accessDetails.datatoken.address,
           (
-            Number(orderPriceAndFees?.price) + Number(orderPriceAndFees.opcFee)
+            Number(orderPriceAndFees?.price) + Number(orderPriceAndFees?.opcFee)
           ).toString(),
           false
         )
