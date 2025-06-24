@@ -54,7 +54,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { getDummySigner } from '@utils/wallet'
 import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
-import { ethers, Signer } from 'ethers'
+import { BigNumber, ethers, Signer } from 'ethers'
 import { useAccount } from 'wagmi'
 import { Service } from '../../../../@types/ddo/Service'
 import { Asset, AssetPrice } from '../../../../@types/Asset'
@@ -242,9 +242,13 @@ export default function Compute({
         ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
         signer
       )
-      const amountToDeposit = (
-        initializedProvider.payment.amount * 2
-      ).toString()
+      const price = BigNumber.from(selectedResources.price)
+      const payment = BigNumber.from(initializedProvider.payment.amount)
+
+      const amountToDeposit = price
+        .mul(BigNumber.from(10).pow(18))
+        .add(payment.mul(2))
+        .toString()
       await escrow.verifyFundsForEscrowPayment(
         oceanTokenAddress,
         selectedComputeEnv.consumerAddress,
@@ -443,24 +447,47 @@ export default function Compute({
         amount: selectedResources[res.id] || res.min
       }))
 
-      await ProviderInstance.computeStart(
-        service.serviceEndpoint,
-        signer,
-        selectedComputeEnv.id,
-        [
-          {
-            documentId: asset.id,
-            serviceId: service.id,
-            transferTxId: datasetOrderTx,
-            userdata: userCustomParameters?.dataServiceParams
-          }
-        ],
-        computeAlgorithm,
-        selectedResources.jobDuration,
-        oceanTokenAddress,
-        resourceRequests,
-        asset.credentialSubject?.chainId
-      )
+      if (selectedResources.mode === 'paid') {
+        await ProviderInstance.computeStart(
+          service.serviceEndpoint,
+          signer,
+          selectedComputeEnv.id,
+          [
+            {
+              documentId: asset.id,
+              serviceId: service.id,
+              transferTxId: datasetOrderTx,
+              userdata: userCustomParameters?.dataServiceParams
+            }
+          ],
+          computeAlgorithm,
+          selectedResources.jobDuration,
+          oceanTokenAddress,
+          resourceRequests,
+          asset.credentialSubject?.chainId
+        )
+      } else {
+        const algorithm: ComputeAlgorithm = {
+          documentId: selectedAlgorithmAsset?.id,
+          serviceId: selectedAlgorithmAsset?.credentialSubject?.services[0].id,
+          meta: selectedAlgorithmAsset?.credentialSubject?.metadata
+            ?.algorithm as any
+        }
+
+        await ProviderInstance.freeComputeStart(
+          service.serviceEndpoint,
+          signer,
+          selectedComputeEnv.id,
+          [
+            {
+              documentId: asset.id,
+              serviceId: service.id
+            }
+          ],
+          algorithm,
+          resourceRequests
+        )
+      }
 
       setIsOrdered(true)
       setRefetchJobs(!refetchJobs)
