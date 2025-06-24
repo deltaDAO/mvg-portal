@@ -90,7 +90,7 @@
   font-weight: 400;
   font-size: 18px;
   line-height: 26px;
-  color: rgba(48, 48, 49, 0.7);
+  color: var(--publish-text-secondary);
   margin-top: 0;
   margin-bottom: 0;
   width: 100%;

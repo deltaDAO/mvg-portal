@@ -216,7 +216,7 @@
   font-weight: 700;
   font-size: 18px;
   line-height: 21px;
-  color: rgba(48, 48, 49, 0.7);
+  color: var(--publish-text-secondary);
   margin: 0 0 16px 0;
   padding: 0;
 }
@@ -293,14 +293,14 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 14px;
-  color: rgba(48, 48, 49, 0.7);
+  color: var(--publish-text-secondary);
   flex: 1;
 }
 
 .infoIcon {
   width: 12px;
   height: 12px;
-  color: rgba(48, 48, 49, 0.7);
+  color: var(--publish-text-secondary);
   font-size: 12px;
   display: flex;
   align-items: center;
@@ -462,9 +462,9 @@ body .addPolicyDropdown option {
 }
 
 .noPolicies {
-  color: rgba(0, 0, 0, 0.5);
-  font-style: italic;
+  color: var(--publish-text-secondary);
   text-align: left;
+  font-size: var(--font-size-mini);
 }
 
 .input,

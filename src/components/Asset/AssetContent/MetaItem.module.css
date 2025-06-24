@@ -16,7 +16,7 @@
   font-weight: 400;
   font-size: 14px;
   line-height: 129%;
-  color: rgba(48, 48, 49, 0.7);
+  color: var(--publish-text-secondary);
   word-wrap: break-word;
   white-space: normal;
 }
