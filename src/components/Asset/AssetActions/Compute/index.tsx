@@ -247,7 +247,7 @@ export default function Compute({
 
       const amountToDeposit = price
         .mul(BigNumber.from(10).pow(18))
-        .add(payment.mul(2))
+        .add(payment)
         .toString()
       await escrow.verifyFundsForEscrowPayment(
         oceanTokenAddress,
