@@ -13,6 +13,13 @@ interface DataDistributionProps {
   description?: string
   type: 'email' | 'date'
   skipLoading?: boolean
+  customization?: {
+    title?: string
+    xAxisLabel?: string
+    yAxisLabel?: string
+    chartType?: 'bar' | 'line' | 'area'
+    unit?: string
+  }
 }
 
 interface DataPoint {
@@ -30,7 +37,8 @@ const DataDistribution = ({
   title,
   description,
   type,
-  skipLoading = false
+  skipLoading = false,
+  customization
 }: DataDistributionProps) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const [data, setData] = useState<DataPoint[]>([])
@@ -274,7 +282,7 @@ const DataDistribution = ({
         .attr('text-anchor', 'middle')
         .attr('x', width / 2)
         .attr('y', height + margin.bottom - 10)
-        .text('Date')
+        .text(customization?.xAxisLabel || 'Date')
         .style('fill', textColor)
         .attr('class', 'text-sm')
 
@@ -284,7 +292,7 @@ const DataDistribution = ({
         .attr('transform', 'rotate(-90)')
         .attr('y', -margin.left + 20)
         .attr('x', -height / 2)
-        .text('Count')
+        .text(customization?.yAxisLabel || 'Count')
         .style('fill', textColor)
         .attr('class', 'text-sm')
 
@@ -294,7 +302,7 @@ const DataDistribution = ({
         .attr('text-anchor', 'middle')
         .attr('x', width / 2)
         .attr('y', -5)
-        .text('Email Count Over Time')
+        .text(customization?.title || 'Email Count Over Time')
         .style('fill', titleColor)
         .attr('class', 'text-xs font-semibold')
     } else if (chartType === 'email') {
@@ -396,7 +404,7 @@ const DataDistribution = ({
         .attr('text-anchor', 'middle')
         .attr('x', width / 2)
         .attr('y', height + margin.bottom - 10)
-        .text('Emails per Day')
+        .text(customization?.xAxisLabel || 'Emails per Day')
         .style('fill', textColor)
         .attr('class', 'text-sm')
 
@@ -406,7 +414,7 @@ const DataDistribution = ({
         .attr('transform', 'rotate(-90)')
         .attr('y', -margin.left + 20)
         .attr('x', -height / 2)
-        .text('Frequency')
+        .text(customization?.yAxisLabel || 'Frequency')
         .style('fill', textColor)
         .attr('class', 'text-sm')
 
@@ -416,7 +424,7 @@ const DataDistribution = ({
         .attr('text-anchor', 'middle')
         .attr('x', width / 2)
         .attr('y', -5)
-        .text('Distribution of Emails per Day')
+        .text(customization?.title || 'Distribution of Emails per Day')
         .style('fill', titleColor)
         .attr('class', 'text-xs font-semibold')
     } else {
@@ -523,6 +531,7 @@ const DataDistribution = ({
               }))
         }
         chartType={chartType}
+        customization={customization}
       />
     </div>
   )

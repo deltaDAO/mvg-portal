@@ -25,3 +25,33 @@ export const TEXT_ANALYSIS_CONFIG: UseCaseConfig = {
   algoDids: TEXT_ANALYSIS_ALGO_DIDS,
   resultZip: TEXT_ANALYSIS_RESULT_ZIP
 }
+
+/**
+ * VizHub configuration for Text Analysis - demonstrating new flexibility
+ */
+export const TEXT_ANALYSIS_VIZHUB_CONFIG = {
+  // Component visibility
+  components: {
+    wordCloud: true,
+    sentiment: true,
+    emailDistribution: true,
+    dateDistribution: true,
+    documentSummary: true,
+    futureFeatures: false
+  },
+
+  // Customization for distribution charts
+  customization: {
+    dateDistribution: {
+      title: 'Email Count Over Time',
+      xAxisLabel: 'Date',
+      yAxisLabel: 'Count'
+    },
+    emailDistribution: {
+      title: 'Email Analysis Distribution',
+      xAxisLabel: 'Emails per Day',
+      yAxisLabel: 'Frequency',
+      unit: 'email analysis results'
+    }
+  }
+}

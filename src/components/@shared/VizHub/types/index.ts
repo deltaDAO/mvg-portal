@@ -62,12 +62,60 @@ export interface UseCaseConfig {
 
 // Configuration interface for controlling which visualizations to show
 export interface VizHubConfig {
+  // Legacy support (keep for backward compatibility)
   showEmailDistribution?: boolean
   showDateDistribution?: boolean
   showSentiment?: boolean
   showWordCloud?: boolean
   showDocumentSummary?: boolean
   showFutureFeatures?: boolean
+
+  // NEW: Focused component visibility control
+  components?: {
+    wordCloud?: boolean
+    sentiment?: boolean
+    emailDistribution?: boolean
+    dateDistribution?: boolean
+    documentSummary?: boolean
+    futureFeatures?: boolean
+  }
+
+  // NEW: Customization for components that need it
+  customization?: {
+    emailDistribution?: {
+      title?: string
+      xAxisLabel?: string
+      yAxisLabel?: string
+      chartType?: 'bar' | 'line' | 'area'
+      unit?: string
+    }
+    dateDistribution?: {
+      title?: string
+      xAxisLabel?: string
+      yAxisLabel?: string
+      dateFormat?: string
+      aggregation?: 'day' | 'week' | 'month'
+    }
+  }
+
+  // NEW: Extension system
+  extensions?: VizHubExtension[]
+}
+
+// Extension interface
+export interface VizHubExtension {
+  id: string
+  name: string
+  component: React.ComponentType<any>
+  position:
+    | 'before-wordcloud'
+    | 'after-wordcloud'
+    | 'after-sentiment'
+    | 'before-sentiment'
+    | 'sidebar'
+    | 'footer'
+  requiredData?: string[]
+  props?: Record<string, any>
 }
 
 // Main VizHub component props

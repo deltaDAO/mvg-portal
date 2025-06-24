@@ -10,7 +10,52 @@ import FutureFeatures from './ui/common/FutureFeatures'
 import { STORAGE_KEYS } from './store/dataStore'
 import { useVizHubData } from './hooks/useVizHubData'
 import { VizHubThemeProvider } from './store/themeStore'
-import type { VizHubProps } from './types'
+import type { VizHubProps, VizHubConfig } from './types'
+
+/**
+ * Helper function to resolve component visibility with backward compatibility
+ */
+function resolveComponentVisibility(config: VizHubConfig) {
+  // New components config takes precedence, fallback to legacy config
+  return {
+    wordCloud: config.components?.wordCloud ?? config.showWordCloud ?? true,
+    sentiment: config.components?.sentiment ?? config.showSentiment ?? true,
+    emailDistribution:
+      config.components?.emailDistribution ??
+      config.showEmailDistribution ??
+      true,
+    dateDistribution:
+      config.components?.dateDistribution ??
+      config.showDateDistribution ??
+      true,
+    documentSummary:
+      config.components?.documentSummary ?? config.showDocumentSummary ?? true,
+    futureFeatures:
+      config.components?.futureFeatures ?? config.showFutureFeatures ?? true
+  }
+}
+
+/**
+ * Helper function to render extensions at a specific position
+ */
+function renderExtensions(
+  extensions: any[] = [],
+  position: string,
+  useCaseConfig: any
+) {
+  return extensions
+    .filter((ext) => ext.position === position)
+    .map((ext) => {
+      const Component = ext.component
+      return (
+        <Component
+          key={ext.id}
+          useCaseConfig={useCaseConfig}
+          {...(ext.props || {})}
+        />
+      )
+    })
+}
 
 /**
  * Internal VizHub component that expects to be within a theme provider
@@ -30,6 +75,15 @@ function VizHubInternal({
     hasAnyData,
     dataSourceInfo
   } = useVizHubData(data, config, useCaseConfig)
+
+  // Resolve component visibility with backward compatibility
+  const componentVisibility = resolveComponentVisibility(effectiveConfig)
+
+  // Get customization settings
+  const customization = effectiveConfig.customization || {}
+
+  // Get extensions
+  const extensions = effectiveConfig.extensions || []
 
   // Show loading state if processing
   if (processingStatus === 'not_ready') {
@@ -86,50 +140,58 @@ function VizHubInternal({
             {/* Distribution Charts Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Email Distribution */}
-              {effectiveConfig.showEmailDistribution && (
+              {componentVisibility.emailDistribution && (
                 <VisualizationWrapper
                   isAvailable={dataStatus[STORAGE_KEYS.EMAIL_DISTRIBUTION]}
-                  title="Email Distribution"
+                  title={
+                    customization.emailDistribution?.title ||
+                    'Email Distribution'
+                  }
                   className=""
                 >
                   <DataDistribution
-                    title="Data Distribution on Email Counts"
-                    description="Shows the distribution of email counts over time"
+                    title={
+                      customization.emailDistribution?.title ||
+                      'Data Distribution on Email Counts'
+                    }
+                    description={`Shows the distribution of ${
+                      customization.emailDistribution?.unit || 'email counts'
+                    } over time`}
                     type="email"
                     skipLoading={true}
+                    customization={customization.emailDistribution}
                   />
                 </VisualizationWrapper>
               )}
 
               {/* Date Distribution */}
-              {effectiveConfig.showDateDistribution && (
+              {componentVisibility.dateDistribution && (
                 <VisualizationWrapper
                   isAvailable={dataStatus[STORAGE_KEYS.DATE_DISTRIBUTION]}
-                  title="Date Distribution"
+                  title={
+                    customization.dateDistribution?.title || 'Date Distribution'
+                  }
                   className=""
                 >
                   <DataDistribution
-                    title="Data Distribution on Date"
-                    description="Shows the distribution of emails by date"
+                    title={
+                      customization.dateDistribution?.title ||
+                      'Data Distribution on Date'
+                    }
+                    description="Shows the distribution of items by date"
                     type="date"
                     skipLoading={true}
+                    customization={customization.dateDistribution}
                   />
                 </VisualizationWrapper>
               )}
             </div>
 
-            {/* Sentiment Analysis */}
-            {effectiveConfig.showSentiment && (
-              <VisualizationWrapper
-                isAvailable={dataStatus[STORAGE_KEYS.SENTIMENT]}
-                title="Sentiment Analysis"
-              >
-                <SentimentChart skipLoading={true} />
-              </VisualizationWrapper>
-            )}
+            {/* Extensions: before-wordcloud */}
+            {renderExtensions(extensions, 'before-wordcloud', useCaseConfig)}
 
             {/* Word Cloud */}
-            {effectiveConfig.showWordCloud && (
+            {componentVisibility.wordCloud && (
               <VisualizationWrapper
                 isAvailable={dataStatus[STORAGE_KEYS.WORD_CLOUD]}
                 title="Word Cloud"
@@ -138,8 +200,27 @@ function VizHubInternal({
               </VisualizationWrapper>
             )}
 
+            {/* Extensions: after-wordcloud */}
+            {renderExtensions(extensions, 'after-wordcloud', useCaseConfig)}
+
+            {/* Extensions: before-sentiment */}
+            {renderExtensions(extensions, 'before-sentiment', useCaseConfig)}
+
+            {/* Sentiment Analysis */}
+            {componentVisibility.sentiment && (
+              <VisualizationWrapper
+                isAvailable={dataStatus[STORAGE_KEYS.SENTIMENT]}
+                title="Sentiment Analysis"
+              >
+                <SentimentChart skipLoading={true} />
+              </VisualizationWrapper>
+            )}
+
+            {/* Extensions: after-sentiment */}
+            {renderExtensions(extensions, 'after-sentiment', useCaseConfig)}
+
             {/* Document Summary */}
-            {effectiveConfig.showDocumentSummary && (
+            {componentVisibility.documentSummary && (
               <VisualizationWrapper
                 isAvailable={dataStatus[STORAGE_KEYS.DOCUMENT_SUMMARY]}
                 title="Document Summary"
@@ -149,8 +230,18 @@ function VizHubInternal({
             )}
 
             {/* Future Features */}
-            {effectiveConfig.showFutureFeatures && <FutureFeatures />}
+            {componentVisibility.futureFeatures && <FutureFeatures />}
+
+            {/* Extensions: footer */}
+            {renderExtensions(extensions, 'footer', useCaseConfig)}
           </main>
+
+          {/* Extensions: sidebar */}
+          {extensions.some((ext) => ext.position === 'sidebar') && (
+            <aside className="w-full md:w-80 mt-6 md:mt-0 md:ml-6">
+              {renderExtensions(extensions, 'sidebar', useCaseConfig)}
+            </aside>
+          )}
         </div>
       </div>
     </div>
