@@ -156,7 +156,7 @@ export default function MetadataFields(): ReactElement {
   }, [values.metadata.licenseTypeSelection])
 
   return (
-    <ContainerForm style="publish">
+    <>
       <Field
         {...getFieldContent('nft', content.metadata.fields)}
         component={Input}
@@ -293,6 +293,6 @@ export default function MetadataFields(): ReactElement {
           name="metadata.termsAndConditions"
         />
       </div>
-    </ContainerForm>
+    </>
   )
 }
