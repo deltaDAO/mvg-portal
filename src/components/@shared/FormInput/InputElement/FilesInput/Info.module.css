@@ -1,54 +1,25 @@
-.info {
-  border-radius: var(--border-radius);
-  padding: calc(var(--spacer) / 2);
-  border: 1px solid var(--border-color);
-  background-color: var(--background-highlight);
-  position: relative;
+.defaultContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1_5);
 }
 
-.info ul {
+.defaultContainer svg {
+  width: 14px;
+  height: 14px;
   margin: 0;
+  color: var(--color-success);
 }
 
-.info li {
-  display: inline-block;
+.fileDetails {
+  display: flex;
+  flex-direction: row;
+  gap: var(--sp-1_5);
   font-size: var(--font-size-small);
-  margin-right: calc(var(--spacer) / 2);
   color: var(--color-secondary);
 }
 
-.info li.success {
-  color: var(--brand-alert-green);
-}
-
-.url {
-  margin: 0;
-  font-size: var(--font-size-base);
-  line-height: var(--line-height);
-  overflow-wrap: break-word;
-  word-wrap: break-word;
-  word-break: break-all;
-  padding-right: calc(var(--spacer) / 2);
-}
-
-.hideUrl {
-  filter: blur(0.2rem);
-  user-select: none;
-}
-
-.warning {
-  margin-top: calc(var(--spacer) / 3);
-  margin-left: 0;
-}
-
-.removeButton {
-  cursor: pointer;
-  border: none;
-  position: absolute;
-  top: -0.2rem;
-  right: 0;
-  font-size: var(--font-size-h3);
-  cursor: pointer;
-  color: var(--font-color-text);
-  background-color: transparent;
+.confirmed {
+  font-weight: var(--font-weight-base);
+  color: var(--color-success, #10b981);
 }

@@ -135,17 +135,28 @@ export default function MetadataFields(): ReactElement {
       }
     }
 
-    if (values.metadata.licenseTypeSelection === 'Upload license file') {
-      // Only set licenseUrl when explicitly selecting "Upload license file"
-      setFieldValue('metadata.licenseUrl', [{ url: '', type: 'url' }])
-    } else if (values.metadata.licenseTypeSelection !== '') {
-      // Only delete remote file if a different option (not empty) is selected
+    if (values.metadata.licenseTypeSelection === 'URL') {
+      const currentUrl = values.metadata.licenseUrl?.[0]
+      if (!currentUrl || currentUrl.type !== 'url') {
+        setFieldValue('metadata.licenseUrl', [{ url: '', type: 'url' }])
+      } else if (
+        currentUrl.type === 'url' &&
+        currentUrl.url &&
+        currentUrl.valid
+      ) {
+        deleteRemoteFile()
+      }
+    } else if (values.metadata.licenseTypeSelection === 'Upload license file') {
+      setFieldValue('metadata.licenseUrl', [])
+    } else if (values.metadata.licenseTypeSelection === '') {
+      // No selection: clear both
+      setFieldValue('metadata.licenseUrl', [])
       deleteRemoteFile()
     }
   }, [values.metadata.licenseTypeSelection])
 
   return (
-    <ContainerForm style="large">
+    <ContainerForm style="publish">
       <Field
         {...getFieldContent('nft', content.metadata.fields)}
         component={Input}
@@ -180,11 +191,13 @@ export default function MetadataFields(): ReactElement {
         options={assetTypeOptions}
       />
       {values.metadata.type === 'dataset' && (
-        <Field
-          {...getFieldContent('dataSubjectConsent', content.metadata.fields)}
-          component={Input}
-          name="metadata.dataSubjectConsent"
-        />
+        <div className={styles.consentContainer}>
+          <Field
+            {...getFieldContent('dataSubjectConsent', content.metadata.fields)}
+            component={Input}
+            name="metadata.dataSubjectConsent"
+          />
+        </div>
       )}
 
       {values.metadata.type === 'algorithm' && (
@@ -252,12 +265,23 @@ export default function MetadataFields(): ReactElement {
               name="metadata.licenseTypeSelection"
             />
           </div>
-          {values.metadata.licenseTypeSelection === 'Upload license file' && (
+          {values.metadata.licenseTypeSelection === 'URL' && (
             <Field
               {...getFieldContent('license', content.metadata.fields)}
               component={Input}
               name="metadata.licenseUrl"
             />
+          )}
+          {values.metadata.licenseTypeSelection === 'Upload license file' && (
+            <div className={styles.licenseUrlContainer}>
+              <Label htmlFor="license">License File *</Label>
+              <FileUpload
+                fileName={values.metadata.uploadedLicense?.name}
+                buttonLabel="Upload File"
+                setFileItem={handleLicenseFileUpload}
+                buttonStyle="publish"
+              />
+            </div>
           )}
         </div>
       </SectionContainer>

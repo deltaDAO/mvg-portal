@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import { FormPublishData } from '../_types'
 import { wizardSteps } from '../_constants'
 import styles from './index.module.css'
+import CheckmarkIcon from '@images/checkmark.svg'
 
 export default function Navigation(): ReactElement {
   const router = useRouter()
@@ -13,17 +14,6 @@ export default function Navigation(): ReactElement {
     touched,
     setFieldValue
   }: FormikContextType<FormPublishData> = useFormikContext()
-
-  function handleStepClick(step: number) {
-    router.push(`/publish/${step}`)
-  }
-
-  function handleKeyDown(event: React.KeyboardEvent, step: number) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      handleStepClick(step)
-    }
-  }
 
   function getSuccessClass(step: number) {
     const isSuccessMetadata = errors.metadata === undefined
@@ -58,6 +48,17 @@ export default function Navigation(): ReactElement {
       (step === 6 && isSuccessPreview)
 
     return isSuccess
+  }
+
+  function handleStepClick(step: number) {
+    router.push(`/publish/${step}`)
+  }
+
+  function handleKeyDown(event: React.KeyboardEvent, step: number) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      handleStepClick(step)
+    }
   }
 
   useEffect(() => {
@@ -109,7 +110,7 @@ export default function Navigation(): ReactElement {
                   isActive ? styles.activeStepCircle : styles.inactiveStepCircle
                 } ${isCompleted ? styles.completed : ''}`}
               >
-                {isCompleted ? '✓' : step.step}
+                {isCompleted ? <CheckmarkIcon /> : step.step}
               </div>
               <span
                 className={`${

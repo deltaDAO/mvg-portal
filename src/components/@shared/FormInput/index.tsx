@@ -167,7 +167,18 @@ export default function Input(props: Partial<InputProps>): ReactElement {
           className={cs(styles.error, { [styles.centerError]: centerError })}
         >
           {centerError && <ErrorSVG className={styles.errorIcon} />}
-          <ErrorMessage name={field.name} />
+          <ErrorMessage name={field.name}>
+            {(msg) => {
+              if (typeof msg === 'string') {
+                return msg
+              } else if (Array.isArray(msg) && msg[0]?.url) {
+                return msg[0].url
+              } else if (msg && typeof msg === 'object' && msg.url) {
+                return msg.url
+              }
+              return String(msg)
+            }}
+          </ErrorMessage>
         </div>
       )}
 

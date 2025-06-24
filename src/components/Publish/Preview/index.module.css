@@ -23,8 +23,9 @@
 
 .previewTitle {
   text-transform: uppercase;
-  color: var(--color-secondary);
+  color: var(--publish-text);
   margin-bottom: calc(var(--spacer) / 2);
+  font-size: 22px;
 }
 
 .assetTitle {

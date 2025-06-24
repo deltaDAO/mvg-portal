@@ -29,11 +29,11 @@ export default function FilesInput(props: InputProps): ReactElement {
     ? props.form?.values?.services[0].providerUrl.url
     : asset.credentialSubject?.services[0].serviceEndpoint
 
-  const storageType = field.value[0].type
-  const query = field.value[0].query || undefined
-  const abi = field.value[0].abi || undefined
-  const headers = field.value[0].headers || undefined
-  const method = field.value[0].method || 'get'
+  const storageType = field.value?.[0]?.type
+  const query = field.value?.[0]?.query || undefined
+  const abi = field.value?.[0]?.abi || undefined
+  const headers = field.value?.[0]?.headers || undefined
+  const method = field.value?.[0]?.method || 'get'
 
   async function handleValidation(e: React.SyntheticEvent, url: string) {
     // File example 'https://oceanprotocol.com/tech-whitepaper.pdf'
@@ -109,6 +109,8 @@ export default function FilesInput(props: InputProps): ReactElement {
   }
 
   useEffect(() => {
+    if (!storageType) return
+
     storageType === 'graphql' && setDisabledButton(!providerUrl || !query)
 
     storageType === 'smartcontract' &&
@@ -124,9 +126,8 @@ export default function FilesInput(props: InputProps): ReactElement {
 
   return (
     <div className={styles.filesContainer}>
-      {field?.value?.[0]?.valid === true ||
-      field?.value?.[0]?.type === 'hidden' ? (
-        <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
+      {!field?.value?.[0] || !storageType ? (
+        <div></div>
       ) : (
         <>
           {props.methods && storageType === 'url' ? (
@@ -147,10 +148,20 @@ export default function FilesInput(props: InputProps): ReactElement {
               hideButton={
                 storageType === 'graphql' || storageType === 'smartcontract'
               }
+              hideError={true}
               checkUrl={true}
               handleButtonClick={handleValidation}
               storageType={storageType}
+              showDeleteButton={field?.value?.[0]?.valid === true}
+              onDelete={handleClose}
+              disabled={field?.value?.[0]?.valid === true}
+              disableButton={field?.value?.[0]?.valid === true}
             />
+          )}
+
+          {(field?.value?.[0]?.valid === true ||
+            field?.value?.[0]?.type === 'hidden') && (
+            <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
           )}
 
           {props.innerFields && (
@@ -169,7 +180,7 @@ export default function FilesInput(props: InputProps): ReactElement {
                           }
                           {...innerField}
                           name={`${field.name}[0].${innerField.value}`}
-                          value={field.value[0][innerField.value]}
+                          value={field.value?.[0]?.[innerField.value]}
                         />
                       </>
                     )

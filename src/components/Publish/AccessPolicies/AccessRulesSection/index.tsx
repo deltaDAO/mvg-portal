@@ -30,11 +30,13 @@ export default function AccessRulesSection(): ReactElement {
   const allowList = values.services?.[0]?.credentials?.allow || []
   const denyList = values.services?.[0]?.credentials?.deny || []
 
+  const hasAllowAll = allowList.includes('*')
+  const hasDenyAll = denyList.includes('*')
+
   useEffect(() => {
     if (allowDropdownValue === 'Allow all addresses') {
       if (!allowList.includes('*')) {
-        const newAllowList = [...allowList, '*']
-        setFieldValue('services[0].credentials.allow', newAllowList)
+        setFieldValue('services[0].credentials.allow', ['*'])
       }
       setAllowInputValue('')
     }
@@ -43,12 +45,35 @@ export default function AccessRulesSection(): ReactElement {
   useEffect(() => {
     if (denyDropdownValue === 'Deny all addresses') {
       if (!denyList.includes('*')) {
-        const newDenyList = [...denyList, '*']
-        setFieldValue('services[0].credentials.deny', newDenyList)
+        setFieldValue('services[0].credentials.deny', ['*'])
       }
       setDenyInputValue('')
     }
   }, [denyDropdownValue, denyList, setFieldValue])
+
+  useEffect(() => {
+    if (hasAllowAll && allowDropdownValue !== 'Allow all addresses') {
+      setAllowDropdownValue('Allow all addresses')
+    } else if (
+      !hasAllowAll &&
+      allowList.length > 0 &&
+      allowDropdownValue !== 'Allow specific addresses'
+    ) {
+      setAllowDropdownValue('Allow specific addresses')
+    }
+  }, [hasAllowAll, allowList.length, allowDropdownValue])
+
+  useEffect(() => {
+    if (hasDenyAll && denyDropdownValue !== 'Deny all addresses') {
+      setDenyDropdownValue('Deny all addresses')
+    } else if (
+      !hasDenyAll &&
+      denyList.length > 0 &&
+      denyDropdownValue !== 'Deny specific addresses'
+    ) {
+      setDenyDropdownValue('Deny specific addresses')
+    }
+  }, [hasDenyAll, denyList.length, denyDropdownValue])
 
   const handleAddAllowAddress = (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,6 +108,10 @@ export default function AccessRulesSection(): ReactElement {
       (address) => address !== addressToDelete
     )
     setFieldValue('services[0].credentials.allow', newAllowList)
+
+    if (addressToDelete === '*') {
+      setAllowDropdownValue('Please select an option')
+    }
   }
 
   const handleAddDenyAddress = (e: React.FormEvent) => {
@@ -118,6 +147,10 @@ export default function AccessRulesSection(): ReactElement {
       (address) => address !== addressToDelete
     )
     setFieldValue('services[0].credentials.deny', newDenyList)
+
+    if (addressToDelete === '*') {
+      setDenyDropdownValue('Please select an option')
+    }
   }
 
   const handleAllowDropdownChange = (
@@ -152,17 +185,34 @@ export default function AccessRulesSection(): ReactElement {
             type="select"
             selectStyle="publish"
             size="default"
-            options={[
-              'Please select an option',
-              'Allow specific addresses',
-              'Allow all addresses'
-            ]}
+            options={
+              hasAllowAll
+                ? ['Allow all addresses']
+                : [
+                    'Please select an option',
+                    'Allow specific addresses',
+                    'Allow all addresses'
+                  ]
+            }
             value={allowDropdownValue}
             onChange={handleAllowDropdownChange}
+            disabled={hasAllowAll}
           />
+          {hasAllowAll && (
+            <div
+              style={{
+                fontSize: '14px',
+                color: '#666',
+                fontStyle: 'italic',
+                marginTop: '8px'
+              }}
+            >
+              All wallet addresses are allowed access.
+            </div>
+          )}
         </div>
 
-        {allowDropdownValue === 'Allow specific addresses' && (
+        {allowDropdownValue === 'Allow specific addresses' && !hasAllowAll && (
           <>
             <InputGroup>
               <InputElement
@@ -233,18 +283,35 @@ export default function AccessRulesSection(): ReactElement {
             name="denyDropdown"
             type="select"
             selectStyle="publish"
-            options={[
-              'Please select an option',
-              'Deny specific addresses',
-              'Deny all addresses'
-            ]}
+            options={
+              hasDenyAll
+                ? ['Deny all addresses']
+                : [
+                    'Please select an option',
+                    'Deny specific addresses',
+                    'Deny all addresses'
+                  ]
+            }
             hideLabel
             value={denyDropdownValue}
             onChange={handleDenyDropdownChange}
+            disabled={hasDenyAll}
           />
+          {hasDenyAll && (
+            <div
+              style={{
+                fontSize: '14px',
+                color: '#666',
+                fontStyle: 'italic',
+                marginTop: '8px'
+              }}
+            >
+              All wallet addresses are denied access.
+            </div>
+          )}
         </div>
 
-        {denyDropdownValue === 'Deny specific addresses' && (
+        {denyDropdownValue === 'Deny specific addresses' && !hasDenyAll && (
           <>
             <InputGroup>
               <InputElement

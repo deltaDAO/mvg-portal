@@ -33,6 +33,10 @@
   text-align: center;
 }
 
+:global(.publish) .title {
+  font-weight: var(--publish-font-weight-normal);
+}
+
 .boxSelectionsWrapper input[type='radio'] {
   position: fixed;
   opacity: 0;

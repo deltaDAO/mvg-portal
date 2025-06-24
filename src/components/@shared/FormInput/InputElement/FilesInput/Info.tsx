@@ -3,6 +3,7 @@ import { prettySize } from './utils'
 import cleanupContentType from '@utils/cleanupContentType'
 import styles from './Info.module.css'
 import { FileInfo as FileInfoData } from '@oceanprotocol/lib'
+import CircleCheckIcon from '@images/circle_check.svg'
 
 export default function FileInfo({
   file,
@@ -18,20 +19,16 @@ export default function FileInfo({
   const hideUrl = file.type === 'hidden' || false
 
   return (
-    <div className={`${styles.info}`}>
-      <h3 className={`${styles.url} ${hideUrl ? styles.hideUrl : null}`}>
-        {hideUrl
-          ? 'https://oceanprotocolenterprise/the-future-is-now'
-          : file.url}
-      </h3>
-      <ul>
-        <li className={styles.success}>✓ File confirmed</li>
-        {file.contentLength && <li>{prettySize(+file.contentLength)}</li>}
-        {contentTypeCleaned && <li>{contentTypeCleaned}</li>}
-      </ul>
-      <button className={styles.removeButton} onClick={handleClose}>
-        &times;
-      </button>
-    </div>
+    <>
+      <div className={styles.fileDetails}>
+        <div className={styles.defaultContainer}>
+          <CircleCheckIcon />
+          <div className={styles.confirmed}>File confirmed</div>
+        </div>
+        {file.contentLength && <span>{prettySize(+file.contentLength)}</span>}
+        {file.contentLength && contentTypeCleaned && <span> • </span>}
+        {contentTypeCleaned && <span>{contentTypeCleaned}</span>}
+      </div>
+    </>
   )
 }

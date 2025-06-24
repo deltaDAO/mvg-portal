@@ -213,6 +213,14 @@
   gap: 16px;
 }
 
+.consentContainer input[type='checkbox'] + label {
+  font-weight: var(--publish-font-weight-normal) !important;
+}
+
+.termsAndConditionsContainer input[type='checkbox'] + label {
+  font-weight: var(--publish-font-weight-normal) !important;
+}
+
 /* Style the Terms and Conditions link specifically in publish context */
 .termsAndConditionsContainer :global(a) {
   color: var(--ocean-blue);

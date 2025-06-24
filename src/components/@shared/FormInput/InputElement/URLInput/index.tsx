@@ -18,6 +18,7 @@ export interface URLInputProps {
   checkUrl?: boolean
   storageType?: string
   hideButton?: boolean
+  hideError?: boolean
   placeholder?: string
   buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
   showDeleteButton?: boolean
@@ -34,6 +35,7 @@ export default function URLInput({
   checkUrl,
   storageType,
   hideButton,
+  hideError = false,
   placeholder,
   buttonStyle = 'publish',
   showDeleteButton = false,
@@ -113,9 +115,20 @@ export default function URLInput({
         {showDeleteButton && onDelete && <DeleteButton onClick={onDelete} />}
       </InputGroup>
 
-      {meta.touched && meta.error && (
+      {!hideError && meta.touched && meta.error && (
         <div className={styles.error}>
-          <ErrorMessage name={field.name} />
+          <ErrorMessage name={field.name}>
+            {(msg) => {
+              if (typeof msg === 'string') {
+                return msg
+              } else if (Array.isArray(msg) && msg[0]?.url) {
+                return msg[0].url
+              } else if (msg && typeof msg === 'object' && msg.url) {
+                return msg.url
+              }
+              return String(msg)
+            }}
+          </ErrorMessage>
         </div>
       )}
     </>

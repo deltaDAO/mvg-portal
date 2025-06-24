@@ -26,10 +26,10 @@
   font-size: 10px;
   color: var(--input-error-text-color);
   line-height: 1.2;
-  position: absolute;
-  top: 98%;
+  position: relative;
+  top: 105%;
   left: 0;
-  right: 0;
+  right: auto;
   z-index: 1;
 }
 

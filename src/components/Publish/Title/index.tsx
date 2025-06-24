@@ -17,31 +17,33 @@ export default function Title({
   const { isSupportedOceanNetwork } = useNetworkMetadata()
 
   return (
-    <>
-      {content.title}{' '}
+    <div className={styles.titleContainer}>
+      <span className={styles.titleText}>{content.title}</span>
       {networkId && (
         <>
-          into
-          <NetworkName
-            networkId={networkId}
-            className={
-              isSupportedOceanNetwork || !accountId
-                ? styles.network
-                : `${styles.network} ${styles.error}`
-            }
-          />
-          <Tooltip
-            content={<AvailableNetworks />}
-            className={
-              isSupportedOceanNetwork || !accountId
-                ? styles.tooltip
-                : `${styles.tooltip} ${styles.error}`
-            }
-          >
-            <Info className={styles.infoIcon} />
-          </Tooltip>
+          <span className={styles.intoText}>into</span>
+          <div className={styles.networkContainer}>
+            <NetworkName
+              networkId={networkId}
+              className={
+                isSupportedOceanNetwork || !accountId
+                  ? styles.network
+                  : `${styles.network} ${styles.error}`
+              }
+            />
+            <Tooltip
+              content={<AvailableNetworks />}
+              className={
+                isSupportedOceanNetwork || !accountId
+                  ? styles.tooltip
+                  : `${styles.tooltip} ${styles.error}`
+              }
+            >
+              <Info className={styles.infoIcon} />
+            </Tooltip>
+          </div>
         </>
       )}
-    </>
+    </div>
   )
 }

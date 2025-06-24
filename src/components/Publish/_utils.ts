@@ -521,7 +521,7 @@ export async function transformPublishFormToDdo(
 
   let license: License
   if (
-    values.metadata.licenseTypeSelection !== 'Upload license file' &&
+    values.metadata.licenseTypeSelection === 'URL' &&
     values.metadata.licenseUrl[0]
   ) {
     license = {

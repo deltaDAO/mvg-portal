@@ -54,7 +54,7 @@
         "label": "License Type",
         "type": "select",
         "placeholder": "Please select an option",
-        "options": ["Upload license file"],
+        "options": ["URL", "Upload license file"],
         "required": true,
         "hideLabel": true
       },

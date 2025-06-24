@@ -56,9 +56,6 @@ export default function Actions({
   const isContinueDisabled =
     (values.user.stepCurrent === 1 && errors.metadata !== undefined) ||
     (values.user.stepCurrent === 2 && errors.credentials !== undefined) ||
-    (values.user.stepCurrent === 2 &&
-      (!values.services?.[0]?.credentials?.allow ||
-        values.services[0].credentials.allow.length < 1)) ||
     (values.user.stepCurrent === 3 && errors.services !== undefined) ||
     (values.user.stepCurrent === 4 && errors.pricing !== undefined) ||
     (values.user.stepCurrent === 5 && errors.additionalDdos !== undefined)
