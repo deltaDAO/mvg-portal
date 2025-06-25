@@ -31,12 +31,12 @@ declare type MenuItem = {
 export function MenuLink({ name, link, className, isLive }: MenuItem) {
   const router = useRouter()
 
-  const basePath = router?.pathname.split(/[/?]/)[1]
-  const baseLink = link.split(/[/?]/)[1]
+  const currentPath = router?.pathname
+  const isActive = link.startsWith('/') && currentPath === link
 
   const classes = cx({
     link: true,
-    active: link.startsWith('/') && basePath === baseLink,
+    active: isActive,
     [className]: className
   })
 
