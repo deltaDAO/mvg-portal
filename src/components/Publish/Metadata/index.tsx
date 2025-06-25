@@ -17,12 +17,10 @@ import { RemoteObject } from 'src/@types/ddo/RemoteObject'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
-import URLInput from '@shared/FormInput/InputElement/URLInput'
 import ConsumerParametersSection from '../../@shared/ConsumerParametersSection'
 
 import SectionContainer from '../../@shared/SectionContainer/SectionContainer'
 import styles from './index.module.css'
-import ContainerForm from '../../@shared/atoms/ContainerForm'
 
 const assetTypeOptionsTitles = getFieldContent(
   'type',

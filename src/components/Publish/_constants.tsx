@@ -86,12 +86,12 @@ export const initialValues: FormPublishData = {
     dockerImageCustomTag: '',
     dockerImageCustomEntrypoint: '',
     dockerImageCustomChecksum: '',
-    tags: undefined,
+    tags: [],
     usesConsumerParameters: false,
-    consumerParameters: undefined,
+    consumerParameters: [],
     dataSubjectConsent: false,
     licenseTypeSelection: '',
-    licenseUrl: [],
+    licenseUrl: [{ url: '', type: 'url' }],
     uploadedLicense: undefined
   },
   services: [
