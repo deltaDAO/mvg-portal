@@ -18,7 +18,9 @@ import Markdown from '@shared/Markdown'
 
 export default function AccessRulesSection(): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
-  const [allowInputValue, setAllowInputValue] = useState('')
+  const [allowInputValue, setAllowInputValue] = useState(
+    values.credentials?.allowInputValue || ''
+  )
   const [denyInputValue, setDenyInputValue] = useState('')
   const [allowDropdownValue, setAllowDropdownValue] = useState(
     'Please select an option'
@@ -27,8 +29,8 @@ export default function AccessRulesSection(): ReactElement {
     'Please select an option'
   )
 
-  const allowList = values.services?.[0]?.credentials?.allow || []
-  const denyList = values.services?.[0]?.credentials?.deny || []
+  const allowList = values.credentials?.allow || []
+  const denyList = values.credentials?.deny || []
 
   const hasAllowAll = allowList.includes('*')
   const hasDenyAll = denyList.includes('*')
@@ -36,7 +38,7 @@ export default function AccessRulesSection(): ReactElement {
   useEffect(() => {
     if (allowDropdownValue === 'Allow all addresses') {
       if (!allowList.includes('*')) {
-        setFieldValue('services[0].credentials.allow', ['*'])
+        setFieldValue('credentials.allow', ['*'])
       }
       setAllowInputValue('')
     }
@@ -45,7 +47,7 @@ export default function AccessRulesSection(): ReactElement {
   useEffect(() => {
     if (denyDropdownValue === 'Deny all addresses') {
       if (!denyList.includes('*')) {
-        setFieldValue('services[0].credentials.deny', ['*'])
+        setFieldValue('credentials.deny', ['*'])
       }
       setDenyInputValue('')
     }
@@ -99,15 +101,16 @@ export default function AccessRulesSection(): ReactElement {
     }
 
     const newAllowList = [...allowList, allowInputValue.toLowerCase()]
-    setFieldValue('services[0].credentials.allow', newAllowList)
+    setFieldValue('credentials.allow', newAllowList)
     setAllowInputValue('')
+    setFieldValue('credentials.allowInputValue', '')
   }
 
   const handleDeleteAllowAddress = (addressToDelete: string) => {
     const newAllowList = allowList.filter(
       (address) => address !== addressToDelete
     )
-    setFieldValue('services[0].credentials.allow', newAllowList)
+    setFieldValue('credentials.allow', newAllowList)
 
     if (addressToDelete === '*') {
       setAllowDropdownValue('Please select an option')
@@ -138,7 +141,7 @@ export default function AccessRulesSection(): ReactElement {
     }
 
     const newDenyList = [...denyList, denyInputValue.toLowerCase()]
-    setFieldValue('services[0].credentials.deny', newDenyList)
+    setFieldValue('credentials.deny', newDenyList)
     setDenyInputValue('')
   }
 
@@ -146,7 +149,7 @@ export default function AccessRulesSection(): ReactElement {
     const newDenyList = denyList.filter(
       (address) => address !== addressToDelete
     )
-    setFieldValue('services[0].credentials.deny', newDenyList)
+    setFieldValue('credentials.deny', newDenyList)
 
     if (addressToDelete === '*') {
       setDenyDropdownValue('Please select an option')
@@ -214,32 +217,20 @@ export default function AccessRulesSection(): ReactElement {
 
         {allowDropdownValue === 'Allow specific addresses' && !hasAllowAll && (
           <>
-            <InputGroup>
-              <InputElement
-                name="allowAddress"
-                placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
-                value={allowInputValue}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setAllowInputValue(e.target.value)
-                }
-              />
-              <Button
-                type="button"
-                onClick={() => {
-                  setAllowInputValue('')
-                  setFieldValue('services[0].credentials.allow', [])
-                }}
-                disabled={allowList.length === 0 && !allowInputValue.trim()}
-                style="outlined"
-              >
-                <DeleteIcon /> Delete
-              </Button>
-            </InputGroup>
-
+            <InputElement
+              name="allowAddress"
+              placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
+              value={allowInputValue}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                setAllowInputValue(e.target.value)
+                setFieldValue('credentials.allowInputValue', e.target.value)
+              }}
+            />
             <Button
               style="gradient"
               onClick={handleAddAllowAddress}
               type="button"
+              disabled={!allowInputValue.trim()}
             >
               <AddIcon /> Add new address
             </Button>
@@ -313,32 +304,19 @@ export default function AccessRulesSection(): ReactElement {
 
         {denyDropdownValue === 'Deny specific addresses' && !hasDenyAll && (
           <>
-            <InputGroup>
-              <InputElement
-                name="denyAddress"
-                placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
-                value={denyInputValue}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setDenyInputValue(e.target.value)
-                }
-              />
-              <Button
-                type="button"
-                onClick={() => {
-                  setDenyInputValue('')
-                  setFieldValue('services[0].credentials.deny', [])
-                }}
-                disabled={denyList.length === 0 && !denyInputValue.trim()}
-                style="outlined"
-              >
-                <DeleteIcon /> Delete
-              </Button>
-            </InputGroup>
-
+            <InputElement
+              name="denyAddress"
+              placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
+              value={denyInputValue}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                setDenyInputValue(e.target.value)
+              }
+            />
             <Button
               style="gradient"
               onClick={handleAddDenyAddress}
               type="button"
+              disabled={!denyInputValue.trim()}
             >
               <AddIcon /> Add new address
             </Button>

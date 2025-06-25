@@ -67,6 +67,7 @@ export type VpPolicyType = StaticVpPolicy | ArgumentVpPolicy
 export interface CredentialForm {
   allow?: string[]
   deny?: string[]
+  allowInputValue?: string
   requestCredentials?: RequestCredentialForm[]
   vpPolicies?: VpPolicyType[]
   vcPolicies?: string[]

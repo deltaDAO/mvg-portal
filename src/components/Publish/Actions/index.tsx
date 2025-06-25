@@ -11,6 +11,7 @@ import AvailableNetworks from '@components/Publish/AvailableNetworks'
 import Info from '@images/info.svg'
 import Loader from '@shared/atoms/Loader'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
+import { isAddress } from 'ethers/lib/utils.js'
 
 export default function Actions({
   scrollToRef,
@@ -53,9 +54,23 @@ export default function Actions({
     handleAction('prev')
   }
 
+  const hasValidAllowAddress = () => {
+    if (values.credentials.allow && values.credentials.allow.length > 0) {
+      return true
+    }
+
+    const inputValue = values.credentials.allowInputValue?.trim()
+    if (inputValue) {
+      return isAddress(inputValue)
+    }
+
+    return false
+  }
+
   const isContinueDisabled =
     (values.user.stepCurrent === 1 && errors.metadata !== undefined) ||
     (values.user.stepCurrent === 2 && errors.credentials !== undefined) ||
+    (values.user.stepCurrent === 2 && !hasValidAllowAddress()) ||
     (values.user.stepCurrent === 3 && errors.services !== undefined) ||
     (values.user.stepCurrent === 4 && errors.pricing !== undefined) ||
     (values.user.stepCurrent === 5 && errors.additionalDdos !== undefined)
