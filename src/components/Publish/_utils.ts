@@ -48,7 +48,6 @@ import {
   VP
 } from 'src/@types/ddo/Credentials'
 import * as VCDataModel from 'src/@types/ddo/VerifiableCredential'
-import { asset } from '.jest/__fixtures__/datasetWithAccessDetails'
 import { convertLinks } from '@utils/links'
 import { License } from 'src/@types/ddo/License'
 import base64url from 'base64url'
@@ -56,8 +55,6 @@ import { JWTHeaderParameters } from 'jose'
 import {
   PolicyArgument,
   PolicyRule,
-  PolicyRuleLeftValuePrefix,
-  PolicyRuleRightValuePrefix,
   PolicyType,
   CredentialForm,
   VpPolicyType

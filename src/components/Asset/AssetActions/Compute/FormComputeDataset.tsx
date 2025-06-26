@@ -258,7 +258,13 @@ export default function FormStartCompute({
       return
 
     setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
-    setAlgoOrderPrice(algoOrderPriceAndFees?.price)
+    const details = selectedAlgorithmAsset.accessDetails[serviceIndex]
+
+    if (details.validOrderTx) {
+      setAlgoOrderPrice('0')
+    } else {
+      setAlgoOrderPrice(algoOrderPriceAndFees?.price)
+    }
 
     const totalPrices: totalPriceMap[] = []
 
@@ -267,10 +273,10 @@ export default function FormStartCompute({
       !datasetOrderPrice || hasPreviousOrder || hasDatatoken
         ? new Decimal(0)
         : new Decimal(datasetOrderPrice).toDecimalPlaces(MAX_DECIMALS)
+    const rawPrice = details?.validOrderTx ? 0 : details.price
 
-    const priceAlgo = new Decimal(
-      selectedAlgorithmAsset?.accessDetails[serviceIndex]?.price
-    ).toDecimalPlaces(MAX_DECIMALS)
+    // wrap in Decimal and round to your MAX_DECIMALS
+    const priceAlgo = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
 
     const priceC2D =
       c2dPrice !== undefined
@@ -689,6 +695,7 @@ export default function FormStartCompute({
           service={service}
           selectedAlgorithmAsset={selectedAlgorithmAsset}
           isLoading={isLoading}
+          svcIndex={serviceIndex}
         />
       )}
 

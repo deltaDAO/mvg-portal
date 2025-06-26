@@ -30,23 +30,25 @@ export async function initializeProviderForCompute(
   algorithm: AssetExtended,
   accountId: Signer,
   computeEnv: ComputeEnvironment = null,
-  selectedResources: ResourceType
+  selectedResources: ResourceType,
+  svcIndexAlgo: number
 ): Promise<ProviderComputeInitializeResults> {
   const computeAsset: ComputeAsset = {
     documentId: dataset.id,
     serviceId: datasetService.id,
     transferTxId: datasetAccessDetails.validOrderTx
   }
+
   const computeAlgo: ComputeAlgorithm = {
     documentId: algorithm.id,
-    serviceId: algorithm.credentialSubject?.services[0].id,
-    transferTxId: algorithm.accessDetails?.[0]?.validOrderTx
+    serviceId: algorithm.credentialSubject?.services[svcIndexAlgo].id,
+    transferTxId: algorithm.accessDetails?.[svcIndexAlgo]?.validOrderTx
   }
 
   const validUntil = getValidUntilTime(
     selectedResources?.jobDuration,
     datasetService.timeout,
-    algorithm.credentialSubject.services[0].timeout
+    algorithm.credentialSubject.services[svcIndexAlgo].timeout
   )
   try {
     const resourceRequests = computeEnv.resources.map((res) => ({

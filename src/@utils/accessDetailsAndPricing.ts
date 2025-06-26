@@ -53,7 +53,7 @@ export async function getOrderPriceAndFees(
   try {
     let initialize = null
     if (service.type === 'compute') {
-      console.log('is compute')
+      console.log('service type is compute')
     } else {
       initialize = await ProviderInstance.initialize(
         asset.id,
@@ -63,7 +63,6 @@ export async function getOrderPriceAndFees(
         customProviderUrl || service.serviceEndpoint
       )
     }
-
     initializeData = !providerFees && initialize
   } catch (error) {
     if (error.message.includes('Unexpected token')) {
@@ -104,7 +103,6 @@ export async function getOrderPriceAndFees(
     toast.error(message)
   }
   orderPriceAndFee.providerFee = providerFees || initializeData?.providerFee
-
   // fetch price and swap fees
   if (accessDetails.type === 'fixed') {
     const fixed = await getFixedBuyPrice(
@@ -117,7 +115,6 @@ export async function getOrderPriceAndFees(
     orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount
     orderPriceAndFee.consumeMarketFixedSwapFee = fixed.consumeMarketFeeAmount
   }
-
   const price = new Decimal(+accessDetails.price || 0)
   const consumeMarketFeePercentage =
     +orderPriceAndFee?.consumeMarketOrderFee || 0
@@ -187,7 +184,6 @@ export async function getAccessDetails(
       totalPages = orderTotal
       page++
     }
-
     const order = allOrders.find(
       (order) =>
         order.datatokenAddress.toLowerCase() ===

@@ -65,6 +65,7 @@ import { checkVerifierSessionId } from '@utils/wallet/policyServer'
 import appConfig, { oceanTokenAddress } from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
+import { getSvcIndex } from './utils'
 
 export default function Compute({
   accountId,
@@ -134,6 +135,7 @@ export default function Compute({
     lookupVerifierSessionId,
     lookupVerifierSessionIdSkip
   } = useSsiWallet()
+  const [svcIndex, setSvcIndex] = useState(0)
 
   const [allResourceValues, setAllResourceValues] = useState<{
     [envId: string]: ResourceType
@@ -160,15 +162,24 @@ export default function Compute({
 
   const isUnsupportedPricing = accessDetails.type === 'NOT_SUPPORTED'
 
+  useEffect(() => {
+    const response = getSvcIndex(service, selectedAlgorithmAsset)
+    setSvcIndex(response)
+  }, [service, selectedAlgorithmAsset])
+
   async function checkAssetDTBalance(algoAsset: AssetExtended | undefined) {
     try {
-      if (!algoAsset?.credentialSubject?.services[0].datatokenAddress) return
+      if (!algoAsset?.credentialSubject?.services[svcIndex].datatokenAddress)
+        return
       const dummySigner = await getDummySigner(
         algoAsset?.credentialSubject?.chainId
       )
-      const datatokenInstance = new Datatoken(dummySigner)
+      const datatokenInstance = new Datatoken(
+        dummySigner,
+        algoAsset.credentialSubject.chainId
+      )
       const dtBalance = await datatokenInstance.balance(
-        algoAsset?.credentialSubject?.services[0].datatokenAddress,
+        algoAsset?.credentialSubject?.services[svcIndex].datatokenAddress,
         accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
       )
       setAlgorithmDTBalance(new Decimal(dtBalance).toString())
@@ -204,7 +215,6 @@ export default function Compute({
     try {
       if (!selectedComputeEnv || !selectedComputeEnv.id || !selectedResources)
         throw new Error(`Error getting compute environment!`)
-
       const initializedProvider = await initializeProviderForCompute(
         asset,
         service,
@@ -212,7 +222,8 @@ export default function Compute({
         selectedAlgorithmAsset,
         signer,
         selectedComputeEnv,
-        selectedResources
+        selectedResources,
+        svcIndex
       )
       if (
         !initializedProvider ||
@@ -232,8 +243,8 @@ export default function Compute({
       )
       setComputeStatusText(
         getComputeFeedback(
-          selectedAlgorithmAsset?.accessDetails[0]?.baseToken?.symbol,
-          selectedAlgorithmAsset?.accessDetails[0]?.datatoken?.symbol,
+          selectedAlgorithmAsset?.accessDetails[svcIndex]?.baseToken?.symbol,
+          selectedAlgorithmAsset?.accessDetails[svcIndex]?.datatoken?.symbol,
           selectedAlgorithmAsset?.credentialSubject?.metadata?.type
         )[0]
       )
@@ -258,7 +269,7 @@ export default function Compute({
         '10'
       )
       setInitializedProviderResponse(initializedProvider)
-      return { initializedProvider, datasetOrderPriceResponse }
+      return { initializedProvider, datasetOrderPriceResponse, svcIndex }
     } catch (error) {
       setError(error.message)
       LoggerInstance.error(`[compute] ${error.message} `)
@@ -374,9 +385,13 @@ export default function Compute({
       setIsOrdered(false)
       setError(undefined)
 
+      const { datasetOrderPriceResponse, initializedProvider, svcIndex } =
+        await initPriceAndFees()
+
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: selectedAlgorithmAsset?.id,
-        serviceId: selectedAlgorithmAsset?.credentialSubject?.services[0].id,
+        serviceId:
+          selectedAlgorithmAsset?.credentialSubject?.services[svcIndex].id,
         algocustomdata: userCustomParameters?.algoParams,
         userdata: userCustomParameters?.algoServiceParams
       }
@@ -388,9 +403,6 @@ export default function Compute({
         selectedAlgorithmAsset
       )
       if (!allowed) throw new Error('Dataset is not orderable.')
-
-      const { datasetOrderPriceResponse, initializedProvider } =
-        await initPriceAndFees()
 
       setComputeStatusText(
         getComputeFeedback(
@@ -406,15 +418,15 @@ export default function Compute({
       const algorithmOrderTx = await handleComputeOrder(
         signer,
         selectedAlgorithmAsset,
-        selectedAlgorithmAsset?.credentialSubject?.services[0],
-        selectedAlgorithmAsset?.accessDetails[0],
+        selectedAlgorithmAsset?.credentialSubject?.services[svcIndex],
+        selectedAlgorithmAsset?.accessDetails[svcIndex],
         algoOrderPriceAndFees || algoOrderPriceAndFeesResponse,
         accountId,
         initializedProviderResponse?.algorithm ||
           initializedProvider?.algorithm,
         hasAlgoAssetDatatoken,
-        lookupVerifierSessionId(asset.id, service.id),
-        selectedComputeEnv.consumerAddress
+        lookupVerifierSessionId(asset.id, service.id)
+        // selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
       setComputeStatusText(
@@ -423,6 +435,11 @@ export default function Compute({
           accessDetails.datatoken?.symbol,
           asset.credentialSubject?.metadata.type
         )[accessDetails.type === 'fixed' ? 2 : 3]
+      )
+      console.log(
+        ', initializedProviderResponseinitializedProviderResponse',
+        initializedProviderResponse,
+        initializedProvider
       )
       const datasetOrderTx = await handleComputeOrder(
         signer,
@@ -434,8 +451,8 @@ export default function Compute({
         initializedProviderResponse?.datasets[0] ||
           initializedProvider?.datasets[0],
         hasDatatoken,
-        lookupVerifierSessionId(asset.id, service.id),
-        selectedComputeEnv.consumerAddress
+        lookupVerifierSessionId(asset.id, service.id)
+        // selectedComputeEnv.consumerAddress
       )
       if (!datasetOrderTx) throw new Error('Failed to order dataset.')
 
@@ -469,7 +486,8 @@ export default function Compute({
       } else {
         const algorithm: ComputeAlgorithm = {
           documentId: selectedAlgorithmAsset?.id,
-          serviceId: selectedAlgorithmAsset?.credentialSubject?.services[0].id,
+          serviceId:
+            selectedAlgorithmAsset?.credentialSubject?.services[svcIndex].id,
           meta: selectedAlgorithmAsset?.credentialSubject?.metadata
             ?.algorithm as any
         }
@@ -529,7 +547,7 @@ export default function Compute({
         ),
         algoServiceParams: parseConsumerParameterValues(
           values?.algoServiceParams,
-          selectedAlgorithmAsset?.credentialSubject?.services[0]
+          selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
             .consumerParameters
         ),
         algoParams: parseConsumerParameterValues(
@@ -602,7 +620,7 @@ export default function Compute({
           validateOnMount
           validationSchema={getComputeValidationSchema(
             service.consumerParameters,
-            selectedAlgorithmAsset?.credentialSubject?.services[0]
+            selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
               .consumerParameters,
             selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
               ?.consumerParameters
@@ -645,7 +663,7 @@ export default function Compute({
                       : 'OCEAN')
                   }
                   algorithmSymbol={
-                    selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken
+                    selectedAlgorithmAsset?.accessDetails?.[svcIndex]?.baseToken
                       ?.symbol ||
                     (selectedAlgorithmAsset?.credentialSubject?.chainId === 137
                       ? 'mOCEAN'
@@ -653,13 +671,15 @@ export default function Compute({
                   }
                   providerFeesSymbol={providerFeesSymbol}
                   dtSymbolSelectedComputeAsset={
-                    selectedAlgorithmAsset?.accessDetails?.[0]?.datatoken.symbol
+                    selectedAlgorithmAsset?.accessDetails?.[svcIndex]?.datatoken
+                      .symbol
                   }
                   dtBalanceSelectedComputeAsset={algorithmDTBalance}
                   selectedComputeAssetType="algorithm"
                   selectedComputeAssetTimeout={secondsToString(
-                    selectedAlgorithmAsset?.credentialSubject?.services[0]
-                      ?.timeout
+                    selectedAlgorithmAsset?.credentialSubject?.services[
+                      svcIndex
+                    ]?.timeout
                   )}
                   allResourceValues={allResourceValues}
                   setAllResourceValues={setAllResourceValues}
@@ -705,19 +725,22 @@ export default function Compute({
                 (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
               }
               algorithmSymbol={
-                selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken?.symbol ||
+                selectedAlgorithmAsset?.accessDetails?.[svcIndex]?.baseToken
+                  ?.symbol ||
                 (selectedAlgorithmAsset?.credentialSubject?.chainId === 137
                   ? 'mOCEAN'
                   : 'OCEAN')
               }
               providerFeesSymbol={providerFeesSymbol}
               dtSymbolSelectedComputeAsset={
-                selectedAlgorithmAsset?.accessDetails?.[0]?.datatoken.symbol
+                selectedAlgorithmAsset?.accessDetails?.[svcIndex]?.datatoken
+                  .symbol
               }
               dtBalanceSelectedComputeAsset={algorithmDTBalance}
               selectedComputeAssetType="algorithm"
               selectedComputeAssetTimeout={secondsToString(
-                selectedAlgorithmAsset?.credentialSubject?.services[0]?.timeout
+                selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
+                  ?.timeout
               )}
               allResourceValues={allResourceValues}
               setAllResourceValues={setAllResourceValues}

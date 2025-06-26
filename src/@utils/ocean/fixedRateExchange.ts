@@ -26,10 +26,14 @@ export async function getFixedBuyPrice(
     signer,
     chainId
   )
-  const estimatedPrice = await fixed.calcBaseInGivenDatatokensOut(
-    accessDetails.addressOrId,
-    '1',
-    consumeMarketFixedSwapFee
-  )
-  return estimatedPrice
+  try {
+    const estimatedPrice = await fixed.calcBaseInGivenDatatokensOut(
+      accessDetails.addressOrId,
+      '1',
+      consumeMarketFixedSwapFee
+    )
+    return estimatedPrice
+  } catch (error) {
+    console.log('Error:', error)
+  }
 }
