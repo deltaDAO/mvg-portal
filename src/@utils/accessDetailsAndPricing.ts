@@ -186,12 +186,17 @@ export async function getAccessDetails(
       totalPages = orderTotal
       page++
     }
-    const order = allOrders.find(
+    const matchingOrders = allOrders.filter(
       (order) =>
         order.datatokenAddress.toLowerCase() ===
           datatokenAddress.toLowerCase() ||
-        order.payer.toLowerCase() === datatokenAddress.toLowerCase()
+        order.payer.toLowerCase() === datatokenAddress.toLowerCase() ||
+        order.payer.toLowerCase() === accountId.toLowerCase()
     )
+
+    const order = matchingOrders.reduce((prev, curr) => {
+      return curr.timestamp > prev.timestamp ? curr : prev
+    }, matchingOrders[0])
 
     if (order) {
       const orderTimestamp = order.timestamp
