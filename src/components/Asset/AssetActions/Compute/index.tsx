@@ -251,7 +251,8 @@ export default function Compute({
       // await setAlgoPrice(initializedProvider?.algorithm?.providerFee)
       const escrow = new EscrowContract(
         ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
-        signer
+        signer,
+        asset.credentialSubject.chainId
       )
       const price = BigNumber.from(selectedResources.price)
       const payment = BigNumber.from(initializedProvider.payment.amount)

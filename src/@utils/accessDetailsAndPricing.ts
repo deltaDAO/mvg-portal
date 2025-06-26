@@ -178,7 +178,9 @@ export async function getAccessDetails(
 
     // Fetch all orders across all pages
     while (page <= totalPages) {
-      const res = await getUserOrders(accountId, cancelToken, page)
+      const filter =
+        service.type === 'compute' ? 'payer.keyword' : 'consumer.keyword'
+      const res = await getUserOrders(accountId, cancelToken, page, filter)
       allOrders = allOrders.concat(res?.results || [])
       const orderTotal = res?.totalPages || 0
       totalPages = orderTotal
@@ -201,40 +203,6 @@ export async function getAccessDetails(
         (orderTimestamp && orderTimestamp * 1000 + timeout * 1000 > now)
       accessDetails.isOwned = isValid
       accessDetails.validOrderTx = isValid ? order.orderId : ''
-    } else {
-      let page = 1
-      let totalPages = 1
-
-      // Fetch all orders across all pages as payer
-      while (page <= totalPages) {
-        const res = await getUserOrders(
-          accountId,
-          cancelToken,
-          page,
-          'payer.keyword'
-        )
-        allOrders = allOrders.concat(res?.results || [])
-        const orderTotal = res?.totalPages || 0
-        totalPages = orderTotal
-        page++
-      }
-      const order = allOrders.find(
-        (order) =>
-          order.datatokenAddress.toLowerCase() ===
-            datatokenAddress.toLowerCase() ||
-          order.payer.toLowerCase() === datatokenAddress.toLowerCase()
-      )
-      if (order) {
-        const orderTimestamp = order.timestamp
-        const timeout = Number(service.timeout)
-        const now = Date.now()
-
-        const isValid =
-          timeout === 0 ||
-          (orderTimestamp && orderTimestamp * 1000 + timeout * 1000 > now)
-        accessDetails.isOwned = isValid
-        accessDetails.validOrderTx = isValid ? order.orderId : ''
-      }
     }
   } catch (err) {
     LoggerInstance.error('[getAccessDetails] Failed to fetch user orders', err)
