@@ -425,8 +425,8 @@ export default function Compute({
         initializedProviderResponse?.algorithm ||
           initializedProvider?.algorithm,
         hasAlgoAssetDatatoken,
-        lookupVerifierSessionId(asset.id, service.id)
-        // selectedComputeEnv.consumerAddress
+        lookupVerifierSessionId(asset.id, service.id),
+        selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
       setComputeStatusText(
@@ -435,11 +435,6 @@ export default function Compute({
           accessDetails.datatoken?.symbol,
           asset.credentialSubject?.metadata.type
         )[accessDetails.type === 'fixed' ? 2 : 3]
-      )
-      console.log(
-        ', initializedProviderResponseinitializedProviderResponse',
-        initializedProviderResponse,
-        initializedProvider
       )
       const datasetOrderTx = await handleComputeOrder(
         signer,
@@ -451,8 +446,8 @@ export default function Compute({
         initializedProviderResponse?.datasets[0] ||
           initializedProvider?.datasets[0],
         hasDatatoken,
-        lookupVerifierSessionId(asset.id, service.id)
-        // selectedComputeEnv.consumerAddress
+        lookupVerifierSessionId(asset.id, service.id),
+        selectedComputeEnv.consumerAddress
       )
       if (!datasetOrderTx) throw new Error('Failed to order dataset.')
 

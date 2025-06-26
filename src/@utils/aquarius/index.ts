@@ -520,10 +520,12 @@ export async function getUserSalesAndRevenue(
 export async function getUserOrders(
   accountId: string,
   cancelToken: CancelToken,
-  page?: number
+  page?: number,
+  filterTerm?: string
 ): Promise<PagedAssets> {
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('consumer.keyword', accountId))
+  const filterTermKeyword = filterTerm || 'consumer.keyword'
+  filters.push(getFilterTerm(filterTermKeyword, accountId))
   const baseQueryparams = {
     filters,
     ignorePurgatory: true,

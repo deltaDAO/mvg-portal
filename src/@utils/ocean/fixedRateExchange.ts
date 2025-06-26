@@ -20,7 +20,6 @@ export async function getFixedBuyPrice(
   if (!signer) {
     signer = await getDummySigner(chainId)
   }
-
   const fixed = new FixedRateExchange(
     config.fixedRateExchangeAddress,
     signer,

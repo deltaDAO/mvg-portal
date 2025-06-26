@@ -459,63 +459,6 @@ export default function FormStartCompute({
     />
   )
 
-  const handleFullPrice = async () => {
-    setIsFullPriceLoading(true)
-
-    const computeEnv = computeEnvs.find((env) => env.id === values.computeEnv)
-
-    if (
-      values.algorithm &&
-      selectedAlgorithmAsset &&
-      computeEnv &&
-      isConsumable
-    ) {
-      try {
-        // Update state in parent (if needed)
-        if (!allResourceValues[computeEnv.id]) {
-          const cpu = computeEnv.resources.find((r) => r.id === 'cpu')?.min || 1
-          const ram =
-            computeEnv.resources.find((r) => r.id === ('ram' as any))?.min ||
-            1_000_000_000
-          const disk =
-            computeEnv.resources.find((r) => r.id === ('disk' as any))?.min ||
-            1_000_000_000
-          const jobDuration = computeEnv.maxJobDuration || 3600
-
-          const newRes = {
-            cpu,
-            ram,
-            disk,
-            jobDuration,
-            price: 0,
-            mode: allResourceValues[computeEnv.id].mode
-          }
-
-          setAllResourceValues((prev) => ({
-            ...prev,
-            [computeEnv.id]: newRes
-          }))
-        }
-        await onCheckAlgoDTBalance()
-        await onRunInitPriceAndFees()
-      } catch (error) {
-        console.error('[handleFullPrice] Error initializing prices', error)
-      }
-    }
-
-    setIsFullPriceLoading(false)
-  }
-
-  const CalculateButton = () => (
-    <div style={{ textAlign: 'center' }}>
-      <CalculateButtonBuy
-        type="submit"
-        onClick={handleFullPrice}
-        isLoading={isLoading}
-      />
-    </div>
-  )
-
   const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
     function formatDuration(seconds: number): string {
       const d = Math.floor(seconds / 86400)
@@ -699,30 +642,29 @@ export default function FormStartCompute({
         />
       )}
 
-      {isFullPriceLoading ? (
+      {/* {isFullPriceLoading ? (
         <CalculateButton />
-      ) : (
-        <>
-          <AssetActionBuy asset={asset} />
-          <Field
-            component={Input}
-            name="termsAndConditions"
-            type="checkbox"
-            options={['Terms and Conditions']}
-            prefixes={['I agree to the']}
-            actions={['/terms']}
-            disabled={isLoading}
-          />
-          <Field
-            component={Input}
-            name="acceptPublishingLicense"
-            type="checkbox"
-            options={['Publishing License']}
-            prefixes={['I agree the']}
-            disabled={isLoading}
-          />
-        </>
-      )}
+      ) : ( */}
+      <>
+        <AssetActionBuy asset={asset} />
+        <Field
+          component={Input}
+          name="termsAndConditions"
+          type="checkbox"
+          options={['Terms and Conditions']}
+          prefixes={['I agree to the']}
+          actions={['/terms']}
+          disabled={isLoading}
+        />
+        <Field
+          component={Input}
+          name="acceptPublishingLicense"
+          type="checkbox"
+          options={['Publishing License']}
+          prefixes={['I agree the']}
+          disabled={isLoading}
+        />
+      </>
     </Form>
   )
 }
