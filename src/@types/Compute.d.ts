@@ -9,6 +9,8 @@ declare global {
     assetDtSymbol: string
     networkId: number
     providerUrl?: string
+    assets?: any
+    algorithm?: any
   }
 
   interface AlgorithmOption {

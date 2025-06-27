@@ -160,7 +160,7 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         <h3>Verifiable Credentials to present</h3>
 
         <label htmlFor="verifiableCredentials" className={styles.marginBottom2}>
-          Choose your Wallet VPs, you can select multiple:
+          Choose the VCs to present. You can select multiple entries:
         </label>
 
         {(() => {
