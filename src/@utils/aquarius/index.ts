@@ -301,6 +301,7 @@ export async function getAssetsFromDids(
 
 export async function getAlgorithmDatasetsForCompute(
   algorithmId: string,
+  serviceId: string,
   datasetProviderUri: string,
   accountId: string,
   datasetChainId?: number,
@@ -308,15 +309,20 @@ export async function getAlgorithmDatasetsForCompute(
 ): Promise<AssetSelectionAsset[]> {
   const baseQueryParams = {
     chainIds: [datasetChainId],
-    nestedQuery: {
-      must: {
-        match_phrase: {
-          'services.compute.publisherTrustedAlgorithms.did': {
-            query: algorithmId
-          }
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            algorithmId
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            serviceId
         }
       }
-    },
+    ],
     sortOptions: {
       sortBy: SortTermOptions.Created,
       sortDirection: SortDirectionOptions.Descending
@@ -326,7 +332,6 @@ export async function getAlgorithmDatasetsForCompute(
   const query = generateBaseQuery(baseQueryParams)
   const computeDatasets = await queryMetadata(query, cancelToken)
   if (computeDatasets?.results?.length === 0 || !computeDatasets) return []
-
   const datasets = await transformAssetToAssetSelection(
     datasetProviderUri,
     computeDatasets.results,
