@@ -190,8 +190,7 @@ export async function getAccessDetails(
       (order) =>
         order.datatokenAddress.toLowerCase() ===
           datatokenAddress.toLowerCase() ||
-        order.payer.toLowerCase() === datatokenAddress.toLowerCase() ||
-        order.payer.toLowerCase() === accountId.toLowerCase()
+        order.payer.toLowerCase() === datatokenAddress.toLowerCase()
     )
 
     const order = matchingOrders.reduce((prev, curr) => {
