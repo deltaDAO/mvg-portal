@@ -135,37 +135,36 @@ export default function FormStartCompute({
   const selectedResources = allResourceValues?.[values.computeEnv]
   const c2dPrice = selectedResources?.price
 
-  useEffect(() => {
-    const trusted = service.compute?.publisherTrustedAlgorithms.find(
-      (t) => t.did === selectedAlgorithmAsset?.id
-    )
-    if (trusted) {
-      const { serviceId } = trusted
-
-      const svcIndex =
-        selectedAlgorithmAsset.credentialSubject.services.findIndex(
-          (s) => s.id === serviceId
-        )
-      setServiceIndex(svcIndex)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAlgorithmAsset])
-
-  function getAlgorithmAsset(algo: string): Asset {
+  function getAlgorithmAsset(algo: string): {
+    algorithmAsset: AssetExtended | null
+    serviceIndexAlgo: number | null
+  } {
     let algorithmId: string
-
+    let serviceId: string = ''
     try {
       const parsed = JSON.parse(algo)
       algorithmId = parsed?.algoDid || algo
+      serviceId = parsed?.serviceId || ''
     } catch (e) {
-      // Not JSON, assume it's already a string DID
       algorithmId = algo
     }
-    let assetDdo = null
+
+    let assetDdo: AssetExtended | null = null
+    let serviceIndexAlgo: number | null = null
+
     ddoListAlgorithms.forEach((ddo: Asset) => {
-      if (ddo.id === algorithmId) assetDdo = ddo
+      if (ddo.id === algorithmId) {
+        assetDdo = ddo
+        if (serviceId && ddo.credentialSubject?.services) {
+          const index = ddo.credentialSubject.services.findIndex(
+            (svc: any) => svc.id === serviceId
+          )
+          serviceIndexAlgo = index !== -1 ? index : null
+        }
+      }
     })
-    return assetDdo
+
+    return { algorithmAsset: assetDdo, serviceIndexAlgo }
   }
 
   // Pre-select computeEnv and/or algo if there is only one available option
@@ -195,7 +194,10 @@ export default function FormStartCompute({
 
     async function fetchAlgorithmAssetExtended() {
       // TODO test this type override
-      const algorithmAsset: AssetExtended = getAlgorithmAsset(values.algorithm)
+      const { algorithmAsset, serviceIndexAlgo } = getAlgorithmAsset(
+        values.algorithm
+      )
+      setServiceIndex(serviceIndexAlgo)
       const algoAccessDetails = await Promise.all(
         algorithmAsset.credentialSubject?.services.map((service) =>
           getAccessDetails(
@@ -259,7 +261,6 @@ export default function FormStartCompute({
 
     setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
     const details = selectedAlgorithmAsset.accessDetails[serviceIndex]
-
     if (details.validOrderTx) {
       setAlgoOrderPrice('0')
     } else {
