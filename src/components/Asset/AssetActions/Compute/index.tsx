@@ -65,7 +65,6 @@ import { checkVerifierSessionId } from '@utils/wallet/policyServer'
 import appConfig, { oceanTokenAddress } from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
-import { getSvcIndex } from './utils'
 
 export default function Compute({
   accountId,
@@ -163,9 +162,10 @@ export default function Compute({
   const isUnsupportedPricing = accessDetails.type === 'NOT_SUPPORTED'
 
   useEffect(() => {
-    const response = getSvcIndex(service, selectedAlgorithmAsset)
-    setSvcIndex(response)
-  }, [service, selectedAlgorithmAsset])
+    if (selectedAlgorithmAsset) {
+      setSvcIndex(selectedAlgorithmAsset?.serviceIndex)
+    }
+  }, [selectedAlgorithmAsset])
 
   async function checkAssetDTBalance(algoAsset: AssetExtended | undefined) {
     try {

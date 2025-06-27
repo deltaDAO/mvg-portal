@@ -211,7 +211,8 @@ export default function FormStartCompute({
 
       const extendedAlgoAsset: AssetExtended = {
         ...algorithmAsset,
-        accessDetails: algoAccessDetails
+        accessDetails: algoAccessDetails,
+        serviceIndex: serviceIndexAlgo
       }
       setSelectedAlgorithmAsset(extendedAlgoAsset)
     }
