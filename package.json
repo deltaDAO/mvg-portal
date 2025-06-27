@@ -37,6 +37,7 @@
     "@tippyjs/react": "^4.2.6",
     "@uiw/react-codemirror": "^4.19.5",
     "@urql/exchange-refocus": "^1.0.0",
+    "@vercel/analytics": "^1.5.0",
     "autoprefixer": "^10.4.21",
     "axios": "^1.2.0",
     "classnames": "^2.3.2",

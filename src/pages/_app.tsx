@@ -15,6 +15,7 @@ import { connectKitTheme, wagmiClient } from '@utils/wallet'
 import AutomationProvider from '../@context/Automation/AutomationProvider'
 import { FilterProvider } from '@context/Filter'
 import { UseCasesProvider } from '../@context/UseCases'
+import { Analytics } from '@vercel/analytics/react'
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
@@ -47,6 +48,7 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
           </MarketMetadataProvider>
         </ConnectKitProvider>
       </WagmiConfig>
+      <Analytics />
     </>
   )
 }
