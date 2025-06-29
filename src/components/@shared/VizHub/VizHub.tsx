@@ -187,22 +187,6 @@ function VizHubInternal({
               )}
             </div>
 
-            {/* Extensions: before-wordcloud */}
-            {renderExtensions(extensions, 'before-wordcloud', useCaseConfig)}
-
-            {/* Word Cloud */}
-            {componentVisibility.wordCloud && (
-              <VisualizationWrapper
-                isAvailable={dataStatus[STORAGE_KEYS.WORD_CLOUD]}
-                title="Word Cloud"
-              >
-                <WordCloud />
-              </VisualizationWrapper>
-            )}
-
-            {/* Extensions: after-wordcloud */}
-            {renderExtensions(extensions, 'after-wordcloud', useCaseConfig)}
-
             {/* Extensions: before-sentiment */}
             {renderExtensions(extensions, 'before-sentiment', useCaseConfig)}
 
@@ -218,6 +202,22 @@ function VizHubInternal({
 
             {/* Extensions: after-sentiment */}
             {renderExtensions(extensions, 'after-sentiment', useCaseConfig)}
+
+            {/* Extensions: before-wordcloud */}
+            {renderExtensions(extensions, 'before-wordcloud', useCaseConfig)}
+
+            {/* Word Cloud */}
+            {componentVisibility.wordCloud && (
+              <VisualizationWrapper
+                isAvailable={dataStatus[STORAGE_KEYS.WORD_CLOUD]}
+                title="Word Cloud"
+              >
+                <WordCloud />
+              </VisualizationWrapper>
+            )}
+
+            {/* Extensions: after-wordcloud */}
+            {renderExtensions(extensions, 'after-wordcloud', useCaseConfig)}
 
             {/* Document Summary */}
             {componentVisibility.documentSummary && (
