@@ -19,14 +19,19 @@ import Accordion from '../@shared/Accordion'
 import Button from '../@shared/atoms/Button'
 import ComputeJobs, { GetCustomActions } from '../Profile/History/ComputeJobs'
 import styles from './JobList.module.css'
-import { TEXT_ANALYSIS_ALGO_DIDS, TEXT_ANALYSIS_RESULT_ZIP } from './_constants'
+import {
+  CAMEROON_GAZETTE_ALGO_DIDS,
+  CAMEROON_GAZETTE_RESULT_ZIP
+} from './_constants'
 import { TextAnalysisResult } from './_types'
 
 export default function JobList(props: {
   setTextAnalysisData: (textAnalysisData: TextAnalysisUseCaseData[]) => void
 }): ReactElement {
   const { chainIds } = useUserPreferences()
-  const textAnalysisAlgoDids: string[] = Object.values(TEXT_ANALYSIS_ALGO_DIDS)
+  const cameroonGazetteAlgoDids: string[] = Object.values(
+    CAMEROON_GAZETTE_ALGO_DIDS
+  )
 
   const { address: accountId } = useAccount()
   const { data: signer } = useSigner()
@@ -87,7 +92,7 @@ export default function JobList(props: {
         // Filter computeJobs for dids configured in _constants
         computeJobs.computeJobs.filter(
           (job) =>
-            textAnalysisAlgoDids.includes(job.algoDID) && job.status === 70
+            cameroonGazetteAlgoDids.includes(job.algoDID) && job.status === 70
 
           // TODO: Uncomment this when the resultFileName is available
           // job.results.filter((result) => result.filename === resultFileName)
@@ -101,7 +106,7 @@ export default function JobList(props: {
     }
   }, [
     chainIds,
-    textAnalysisAlgoDids,
+    cameroonGazetteAlgoDids,
     accountId,
     autoWallet,
     // resultFileName,

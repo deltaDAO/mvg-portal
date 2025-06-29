@@ -2,15 +2,16 @@ import type { UseCaseConfig } from '../@shared/VizHub/types'
 
 /**
  * Mapping of { chainId: useCaseAlgorithmDID }
+ * TODO: Update with correct CameroonGazette algorithm DID
  */
-export const TEXT_ANALYSIS_ALGO_DIDS = {
+export const CAMEROON_GAZETTE_ALGO_DIDS = {
   32456:
-    'did:op:9e5f592ef426caea54471829d11262171f207a608adb5cdd1d1046b50540e651'
+    'did:op:81d57f431deebbd2e74561eac4875da42276afa3cbcf910d27ee8b2425193b0f'
 }
 
-export const TEXT_ANALYSIS_USECASE_NAME = 'cameroonGazette'
+export const CAMEROON_GAZETTE_USECASE_NAME = 'cameroonGazette'
 
-export const TEXT_ANALYSIS_RESULT_ZIP = {
+export const CAMEROON_GAZETTE_RESULT_ZIP = {
   fileName: 'result.zip',
   metadataFileName: 'metadata.json',
   detectionsFileName: 'detections.json',
@@ -21,9 +22,9 @@ export const TEXT_ANALYSIS_RESULT_ZIP = {
  * Configuration for Cameroon Gazette use case
  */
 export const CAMEROON_GAZETTE_CONFIG: UseCaseConfig = {
-  useCaseName: TEXT_ANALYSIS_USECASE_NAME,
-  algoDids: TEXT_ANALYSIS_ALGO_DIDS,
-  resultZip: TEXT_ANALYSIS_RESULT_ZIP
+  useCaseName: CAMEROON_GAZETTE_USECASE_NAME,
+  algoDids: CAMEROON_GAZETTE_ALGO_DIDS,
+  resultZip: CAMEROON_GAZETTE_RESULT_ZIP
 }
 
 /**
@@ -35,7 +36,7 @@ export const CAMEROON_GAZETTE_VIZHUB_CONFIG = {
     dateDistribution: true,
     documentSummary: true,
     wordCloud: true,
-    sentiment: true,
+    sentiment: false,
     emailDistribution: true,
     futureFeatures: false
   },
@@ -48,8 +49,8 @@ export const CAMEROON_GAZETTE_VIZHUB_CONFIG = {
       yAxisLabel: 'Number of Gazettes'
     },
     emailDistribution: {
-      title: 'Gazette Email Distribution',
-      xAxisLabel: 'Gazette Emails per Day',
+      title: 'Gazette Volume Distribution',
+      xAxisLabel: 'Gazettes per Day',
       yAxisLabel: 'Publication Frequency',
       unit: 'gazette publications'
     }
