@@ -13,6 +13,12 @@
   cursor: pointer;
 }
 
+/* Active state for parent menu items when child is active */
+.menuItem.active,
+.menuItem.active:hover {
+  color: var(--menu-font-color-active);
+}
+
 .subItem {
   width: fit-content;
   text-transform: none !important;

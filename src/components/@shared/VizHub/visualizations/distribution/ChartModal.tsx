@@ -23,6 +23,13 @@ interface ChartModalProps {
   title: string
   chartData: ChartData
   chartType: 'date' | 'email'
+  customization?: {
+    title?: string
+    xAxisLabel?: string
+    yAxisLabel?: string
+    chartType?: 'bar' | 'line' | 'area'
+    unit?: string
+  }
 }
 
 type MarginType = {
@@ -41,7 +48,8 @@ const ChartModal = ({
   onClose,
   title,
   chartData,
-  chartType
+  chartType,
+  customization
 }: ChartModalProps) => {
   const modalChartRef = useRef<HTMLDivElement>(null)
   const zoomRef = useRef<D3ZoomBehavior | null>(null)
@@ -322,7 +330,7 @@ const ChartModal = ({
         .attr('text-anchor', 'middle')
         .attr('x', width / 2)
         .attr('y', height + margin.bottom - 10)
-        .text('Date')
+        .text(customization?.xAxisLabel || 'Date')
         .attr('class', 'text-sm')
         .style('fill', textColor)
 
@@ -332,7 +340,7 @@ const ChartModal = ({
         .attr('transform', 'rotate(-90)')
         .attr('y', -margin.left + 20)
         .attr('x', -height / 2)
-        .text('Count')
+        .text(customization?.yAxisLabel || 'Count')
         .attr('class', 'text-sm')
         .style('fill', textColor)
     } else if (chartType === 'email') {
@@ -494,7 +502,7 @@ const ChartModal = ({
         .attr('text-anchor', 'middle')
         .attr('x', width / 2)
         .attr('y', height + margin.bottom - 10)
-        .text('Emails per Day')
+        .text(customization?.xAxisLabel || 'Emails per Day')
         .attr('class', 'text-sm')
         .style('fill', textColor)
 
@@ -504,11 +512,11 @@ const ChartModal = ({
         .attr('transform', 'rotate(-90)')
         .attr('y', -margin.left + 20)
         .attr('x', -height / 2)
-        .text('Frequency')
+        .text(customization?.yAxisLabel || 'Frequency')
         .attr('class', 'text-sm')
         .style('fill', textColor)
     }
-  }, [isOpen, chartData, chartType, title, theme])
+  }, [isOpen, chartData, chartType, title, theme, customization])
 
   // Handle zoom in
   const handleZoomIn = () => {

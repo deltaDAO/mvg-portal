@@ -2,8 +2,11 @@ import { ReactElement, useState } from 'react'
 import JobList from './JobList'
 import VizHub from '../@shared/VizHub/VizHub'
 import { useDataLoader } from './useDataLoader'
-import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/TextAnalysis.model'
-import { TEXT_ANALYSIS_CONFIG, TEXT_ANALYSIS_VIZHUB_CONFIG } from './_constants'
+import { TextAnalysisUseCaseData } from '../../@context/UseCases/models/CameroonGazette.model'
+import {
+  CAMEROON_GAZETTE_CONFIG,
+  CAMEROON_GAZETTE_VIZHUB_CONFIG
+} from './_constants'
 
 export default function TextAnalysisViz(): ReactElement {
   const [textAnalysisData, setTextAnalysisData] = useState<
@@ -19,8 +22,8 @@ export default function TextAnalysisViz(): ReactElement {
         <div className="bg-gray-50 rounded-lg shadow-sm">
           <VizHub
             data={data}
-            config={TEXT_ANALYSIS_VIZHUB_CONFIG}
-            useCaseConfig={TEXT_ANALYSIS_CONFIG}
+            config={CAMEROON_GAZETTE_VIZHUB_CONFIG}
+            useCaseConfig={CAMEROON_GAZETTE_CONFIG}
             theme="light"
           />
         </div>
