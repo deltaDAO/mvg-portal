@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import SentimentChart from './visualizations/sentiment/SentimentChart'
 import DataDistribution from './visualizations/distribution/DataDistribution'
 import WordCloud from './visualizations/wordcloud'
@@ -7,7 +8,7 @@ import DocumentSummary from './visualizations/summary/DocumentSummary'
 import VisualizationWrapper from './ui/common/VisualizationWrapper'
 import LoadingIndicator from './ui/common/LoadingIndicator'
 import FutureFeatures from './ui/common/FutureFeatures'
-import { STORAGE_KEYS } from './store/dataStore'
+import { STORAGE_KEYS, useDataStore } from './store/dataStore'
 import { useVizHubData } from './hooks/useVizHubData'
 import { VizHubThemeProvider } from './store/themeStore'
 import type { VizHubProps, VizHubConfig } from './types'
@@ -76,6 +77,9 @@ function VizHubInternal({
     dataSourceInfo
   } = useVizHubData(data, config, useCaseConfig)
 
+  // Get the clearAllData function from the data store
+  const { clearAllData } = useDataStore()
+
   // Resolve component visibility with backward compatibility
   const componentVisibility = resolveComponentVisibility(effectiveConfig)
 
@@ -84,6 +88,14 @@ function VizHubInternal({
 
   // Get extensions
   const extensions = effectiveConfig.extensions || []
+
+  // Force clear data when component unmounts
+  useEffect(() => {
+    return () => {
+      // Clear all data when VizHub component is unmounted
+      clearAllData()
+    }
+  }, [clearAllData])
 
   // Show loading state if processing
   if (processingStatus === 'not_ready') {
