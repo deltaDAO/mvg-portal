@@ -603,7 +603,7 @@ export async function transformPublishFormToDdo(
   const newServiceCredentials = generateCredentials(credentials)
   const valuesCompute: ComputeEditForm = {
     allowAllPublishedAlgorithms: values.allowAllPublishedAlgorithms,
-    publisherTrustedAlgorithms: values.publisherTrustedAlgorithms,
+    publisherTrustedAlgorithms: values.publisherTrustedAlgorithms ?? [],
     publisherTrustedAlgorithmPublishers:
       values.publisherTrustedAlgorithmPublishers
   }

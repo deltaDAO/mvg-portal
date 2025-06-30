@@ -387,7 +387,7 @@ export async function transformComputeFormToServiceComputeOptions(
   cancelToken: CancelToken
 ): Promise<Compute> {
   const publisherTrustedAlgorithms = values.allowAllPublishedAlgorithms
-    ? null
+    ? []
     : await createTrustedAlgorithmList(
         values.publisherTrustedAlgorithms,
         assetChainId,
@@ -403,6 +403,5 @@ export async function transformComputeFormToServiceComputeOptions(
     publisherTrustedAlgorithms,
     publisherTrustedAlgorithmPublishers
   }
-
   return privacy
 }
