@@ -146,15 +146,18 @@ export function getQueryString(
   } as BaseQueryParams
   algorithmDidList?.length > 0 &&
     baseParams.filters.push(getFilterTerm('_id', algorithmDidList))
-  trustedPublishersList?.length > 0 &&
+  if (
+    trustedPublishersList?.length > 0 &&
+    !(trustedPublishersList.length === 1 && trustedPublishersList[0] === '*')
+  ) {
     baseParams.filters.push(
       getFilterTerm(
         'indexedMetadata.nft.owner',
         trustedPublishersList.map((address) => address.toLowerCase())
       )
     )
+  }
   const query = generateBaseQuery(baseParams)
-
   return query
 }
 
@@ -171,7 +174,7 @@ export async function getAlgorithmsForAsset(
     return []
   }
 
-  const gueryResults = await queryMetadata(
+  const queryResults = await queryMetadata(
     getQueryString(
       service.compute.publisherTrustedAlgorithms,
       service.compute.publisherTrustedAlgorithmPublishers,
@@ -179,7 +182,7 @@ export async function getAlgorithmsForAsset(
     ),
     token
   )
-  const algorithms: Asset[] = gueryResults?.results
+  const algorithms: Asset[] = queryResults?.results
   return algorithms
 }
 
