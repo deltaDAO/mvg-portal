@@ -85,7 +85,7 @@ export function FileUpload({
       <Button
         style={buttonStyle === 'default' ? 'primary' : buttonStyle}
         onClick={handleButtonClick}
-        className={`${styles.marginRight2} ${styles.marginBottom4}`}
+        className={`${styles.marginRight2}`}
       >
         {buttonLabel}
       </Button>

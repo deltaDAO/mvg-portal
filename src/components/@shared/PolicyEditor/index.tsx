@@ -502,17 +502,17 @@ export function PolicyEditor(props): ReactElement {
 
   const [defaultPolicyStates, setDefaultPolicyStates] = useState({
     'not-before': !hideDefaultPolicies,
-    expired: !hideDefaultPolicies,
+    expired: false,
     'revoked-status-list': !hideDefaultPolicies,
-    signature: false,
+    signature: !hideDefaultPolicies,
     'signature_sd-jwt-vc': false
   })
 
   const allPolicies = [
     'signature',
     'not-before',
-    'expired',
     'revoked-status-list',
+    'expired',
     'signature_sd-jwt-vc'
   ]
 

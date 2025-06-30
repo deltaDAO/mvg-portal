@@ -56,5 +56,5 @@
 }
 
 .preferencesDetails input[type='checkbox'] + label {
-  font-weight: var(--font-weight-base) !important;
+  font-weight: 700;
 }

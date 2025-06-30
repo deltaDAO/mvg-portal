@@ -21,5 +21,5 @@
 
 .confirmed {
   font-weight: var(--font-weight-base);
-  color: var(--color-success, #10b981);
+  color: var(--color-success, #5fb359);
 }
