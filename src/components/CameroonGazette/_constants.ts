@@ -36,7 +36,7 @@ export const CAMEROON_GAZETTE_VIZHUB_CONFIG = {
     dateDistribution: true,
     documentSummary: true,
     wordCloud: true,
-    sentiment: false,
+    sentiment: true,
     emailDistribution: true,
     futureFeatures: false
   },
