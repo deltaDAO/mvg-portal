@@ -387,7 +387,14 @@ export async function transformComputeFormToServiceComputeOptions(
   cancelToken: CancelToken
 ): Promise<Compute> {
   const publisherTrustedAlgorithms = values.allowAllPublishedAlgorithms
-    ? []
+    ? [
+        {
+          did: '*',
+          containerSectionChecksum: '*',
+          filesChecksum: '*',
+          serviceId: '*'
+        }
+      ]
     : await createTrustedAlgorithmList(
         values.publisherTrustedAlgorithms,
         assetChainId,

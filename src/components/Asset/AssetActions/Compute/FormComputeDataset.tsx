@@ -197,7 +197,9 @@ export default function FormStartCompute({
       const { algorithmAsset, serviceIndexAlgo } = getAlgorithmAsset(
         values.algorithm
       )
-      setServiceIndex(serviceIndexAlgo)
+      if (serviceIndexAlgo) {
+        setServiceIndex(serviceIndexAlgo)
+      }
       const algoAccessDetails = await Promise.all(
         algorithmAsset.credentialSubject?.services.map((service) =>
           getAccessDetails(
@@ -262,7 +264,7 @@ export default function FormStartCompute({
 
     setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
     const details = selectedAlgorithmAsset.accessDetails[serviceIndex]
-    if (details.validOrderTx) {
+    if (details?.validOrderTx) {
       setAlgoOrderPrice('0')
     } else {
       setAlgoOrderPrice(algoOrderPriceAndFees?.price)
