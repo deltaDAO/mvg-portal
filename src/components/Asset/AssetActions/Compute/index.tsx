@@ -617,7 +617,7 @@ export default function Compute({
           validationSchema={getComputeValidationSchema(
             service.consumerParameters,
             selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
-              .consumerParameters,
+              ?.consumerParameters,
             selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
               ?.consumerParameters
           )}
