@@ -26,7 +26,7 @@
   font-size: 10px;
   color: var(--input-error-text-color);
   line-height: 1.2;
-  position: relative;
+  position: absolute;
   top: 105%;
   left: 0;
   right: auto;
