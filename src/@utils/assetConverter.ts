@@ -12,7 +12,8 @@ export async function transformAssetToAssetSelection(
   datasetProviderEndpoint: string,
   assets: Asset[],
   accountId: string,
-  selectedAlgorithms?: PublisherTrustedAlgorithmService[]
+  selectedAlgorithms?: PublisherTrustedAlgorithmService[],
+  allow?: boolean
 ): Promise<AssetSelectionAsset[]> {
   if (!assets) return []
   const algorithmList: AssetSelectionAsset[] = []
@@ -72,11 +73,9 @@ export async function transformAssetToAssetSelection(
           tokenSymbol: priceInfo.tokenSymbol,
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
-          isAccountIdWhitelisted: isAddressWhitelisted(
-            asset,
-            accountId,
-            service
-          )
+          isAccountIdWhitelisted: !allow
+            ? isAddressWhitelisted(asset, accountId, service)
+            : true
         }
         // put selected ones up front
         algorithmList.unshift(assetEntry)

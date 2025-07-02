@@ -11,6 +11,7 @@ import { Badge } from '@components/@shared/VerifiedBadge'
 import styles from './index.module.css'
 import classNames from 'classnames/bind'
 import Pagination from '@components/@shared/Pagination'
+import { useAccount } from 'wagmi'
 
 const cx = classNames.bind(styles)
 
@@ -55,6 +56,8 @@ export default function AssetSelection({
   const [filteredAssets, setFilteredAssets] = useState<AssetSelectionAsset[]>(
     []
   )
+  const { address: userAccount } = useAccount()
+
   const [currentPage, setCurrentPage] = useState(1)
 
   const assetsPerPage = 5
@@ -182,7 +185,7 @@ export default function AssetSelection({
                     <Tooltip
                       content={
                         <WhitelistIndicator
-                          accountId={accountId}
+                          accountId={accountId || userAccount}
                           isAccountIdWhitelisted={false}
                           minimal
                         />
