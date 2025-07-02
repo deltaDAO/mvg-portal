@@ -12,8 +12,7 @@ import {
   queryMetadata,
   getFilterTerm,
   generateBaseQuery,
-  getAssetsFromDids,
-  getAsset
+  getAssetsFromDids
 } from './aquarius'
 import { getServiceById } from './ddo'
 import { SortTermOptions } from '../@types/aquarius/SearchQuery'
