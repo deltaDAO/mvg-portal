@@ -20,12 +20,19 @@ export async function getFixedBuyPrice(
   if (!signer) {
     signer = await getDummySigner(chainId)
   }
-
-  const fixed = new FixedRateExchange(config.fixedRateExchangeAddress, signer)
-  const estimatedPrice = await fixed.calcBaseInGivenDatatokensOut(
-    accessDetails.addressOrId,
-    '1',
-    consumeMarketFixedSwapFee
+  const fixed = new FixedRateExchange(
+    config.fixedRateExchangeAddress,
+    signer,
+    chainId
   )
-  return estimatedPrice
+  try {
+    const estimatedPrice = await fixed.calcBaseInGivenDatatokensOut(
+      accessDetails.addressOrId,
+      '1',
+      consumeMarketFixedSwapFee
+    )
+    return estimatedPrice
+  } catch (error) {
+    console.log('Error:', error)
+  }
 }

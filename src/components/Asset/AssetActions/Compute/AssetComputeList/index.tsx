@@ -25,7 +25,7 @@ export default function AssetComputeSelection({
           assets.map((asset: AssetSelectionAsset) => (
             <Link
               href={`/asset/${asset.did}`}
-              key={asset.did}
+              key={asset.serviceId}
               className={styles.row}
             >
               <div className={styles.info}>

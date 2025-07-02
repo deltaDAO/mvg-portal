@@ -204,6 +204,7 @@ const InputElement = forwardRef(
         return (
           <ComputeEnvSelection
             computeEnvs={options as ComputeEnvironmentExtended[]}
+            setAllResourceValues={props.setAllResourceValues}
             {...field}
             {...props}
           />

@@ -80,7 +80,7 @@ export default function HistoryData({
   const { filters, ignorePurgatory } = useFilter()
   const [queryResult, setQueryResult] = useState<PagedAssets>()
   const [isLoading, setIsLoading] = useState(true)
-  const [page, setPage] = useState<number>(1)
+  const [page, setPage] = useState<number>(0)
   const [revenue, setRevenue] = useState(0)
   const [sales, setSales] = useState(0)
   const [allAssets, setAllAssets] = useState<Asset[]>([])
@@ -157,21 +157,25 @@ export default function HistoryData({
           filters,
           page
         )
-        const updatedResults = await Promise.all(
-          result.results.map(async (item) => {
-            const accessDetails = await getAccessDetails(
-              item.credentialSubject.chainId,
-              item.credentialSubject.services[0],
-              accountId,
-              newCancelToken()
-            )
+        let updatedResults = []
+        if (result.results) {
+          updatedResults = await Promise.all(
+            result?.results?.map(async (item) => {
+              const accessDetails = await getAccessDetails(
+                item.credentialSubject.chainId,
+                item.credentialSubject.services[0],
+                accountId,
+                newCancelToken()
+              )
 
-            return {
-              ...item,
-              accessDetails
-            }
-          })
-        )
+              return {
+                ...item,
+                accessDetails
+              }
+            })
+          )
+        }
+
         setQueryResult({
           ...result,
           results: updatedResults

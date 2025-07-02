@@ -11,7 +11,8 @@ import {
   ProviderFees,
   ProviderInstance,
   ProviderInitialize,
-  getErrorMessage
+  getErrorMessage,
+  ZERO_ADDRESS
 } from '@oceanprotocol/lib'
 import { Signer, ethers } from 'ethers'
 import { getOceanConfig } from './ocean'
@@ -68,9 +69,8 @@ export async function order(
   providerFees?: ProviderFees,
   computeConsumerAddress?: string
 ): Promise<ethers.providers.TransactionResponse> {
-  const datatoken = new Datatoken(signer)
+  const datatoken = new Datatoken(signer, asset.credentialSubject?.chainId)
   const config = getOceanConfig(asset.credentialSubject?.chainId)
-
   const initializeData = await initializeProvider(
     asset,
     service,
@@ -95,21 +95,18 @@ export async function order(
         '0x0000000000000000000000000000000000000000'
     }
   } as OrderParams
-
   switch (accessDetails.type) {
     case 'fixed': {
       // this assumes all fees are in ocean
-
       const freParams = {
         exchangeContract: config.fixedRateExchangeAddress,
         exchangeId: accessDetails.addressOrId,
-        maxBaseTokenAmount: orderPriceAndFees.price,
+        maxBaseTokenAmount: orderPriceAndFees?.price,
         baseTokenAddress: accessDetails.baseToken?.address,
         baseTokenDecimals: accessDetails.baseToken?.decimals || 18,
         swapMarketFee: consumeMarketFixedSwapFee,
         marketFeeAddress
       } as FreOrderParams
-
       if (accessDetails.templateId === 1) {
         if (!hasDatatoken) {
           // buy datatoken
@@ -119,7 +116,7 @@ export async function order(
             await signer.getAddress(),
             accessDetails.baseToken.address,
             config.fixedRateExchangeAddress,
-            orderPriceAndFees.price,
+            orderPriceAndFees?.price,
             false
           )
           const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
@@ -131,7 +128,7 @@ export async function order(
             signer
           )
           const consumeMarketFee = (
-            (parseFloat(orderPriceAndFees.price) *
+            (parseFloat(orderPriceAndFees?.price) *
               parseFloat(consumeMarketFixedSwapFee)) /
             100
           ).toFixed(2)
@@ -139,7 +136,7 @@ export async function order(
           const freTx = await fre.buyDatatokens(
             accessDetails.addressOrId,
             '1',
-            orderPriceAndFees.price,
+            orderPriceAndFees?.price,
             marketFeeAddress,
             '0'
           )
@@ -157,7 +154,7 @@ export async function order(
         freParams.maxBaseTokenAmount = (
           Number(freParams.maxBaseTokenAmount) +
           (Number(freParams.maxBaseTokenAmount) +
-            Number(orderPriceAndFees.opcFee))
+            Number(orderPriceAndFees?.opcFee))
         ).toString()
         const tx: any = await approve(
           signer,
@@ -166,7 +163,7 @@ export async function order(
           accessDetails.baseToken.address,
           accessDetails.datatoken.address,
           (
-            Number(orderPriceAndFees.price) + Number(orderPriceAndFees.opcFee)
+            Number(orderPriceAndFees?.price) + Number(orderPriceAndFees?.opcFee)
           ).toString(),
           false
         )
@@ -299,10 +296,12 @@ export async function handleComputeOrder(
     asset.credentialSubject?.metadata?.type
   )
   LoggerInstance.log('[compute] Using initializeData: ', initializeData)
-
   try {
     // Return early when valid order is found, and no provider fees
     // are to be paid
+    if (accessDetails.validOrderTx) {
+      return accessDetails.validOrderTx
+    }
     if (initializeData?.validOrder && !initializeData.providerFee) {
       LoggerInstance.log(
         '[compute] Has valid order: ',
@@ -345,7 +344,6 @@ export async function handleComputeOrder(
     }
 
     LoggerInstance.log('[compute] Calling order ...', initializeData)
-
     const txStartOrder = await order(
       signer,
       asset,

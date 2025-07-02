@@ -62,14 +62,14 @@ export default function RelatedAssets(): ReactElement {
           }
           tagResults = (await queryMetadata(tagQuery, newCancelToken())).results
         }
-        if (tagResults.length === 4) {
+        if (tagResults?.length === 4) {
           setRelatedAssets(tagResults)
         } else {
           const ownerQuery = generateBaseQuery(
             generateQuery(
               chainIds,
               asset.credentialSubject.nftAddress,
-              4 - tagResults.length,
+              4 - tagResults?.length,
               null,
               asset.indexedMetadata.nft.owner
             )
@@ -81,9 +81,9 @@ export default function RelatedAssets(): ReactElement {
 
           // combine both results, and filter out duplicates
           // stolen from: https://stackoverflow.com/a/70326769/733677
-          const bothResults = tagResults.concat(
+          const bothResults = tagResults?.concat(
             ownerResults?.filter(
-              (asset2) => !tagResults.find((asset1) => asset1.id === asset2.id)
+              (asset2) => !tagResults?.find((asset1) => asset1.id === asset2.id)
             )
           )
           setRelatedAssets(bothResults)

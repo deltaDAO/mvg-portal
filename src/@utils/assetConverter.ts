@@ -17,33 +17,42 @@ export async function transformAssetToAssetSelection(
   if (!assets) return []
 
   const algorithmList: AssetSelectionAsset[] = []
-
-  // Iterate over every asset…
   for (const asset of assets) {
     const algoService =
       getServiceByName(asset, 'compute') || getServiceByName(asset, 'access')
-
     if (
       Number(asset.indexedMetadata.stats[0]?.prices[0]?.price) >= 0 &&
       normalizeUrl(algoService?.serviceEndpoint) ===
         normalizeUrl(datasetProviderEndpoint)
     ) {
-      const isSelected = selectedAlgorithms?.some((alg) => alg.did === asset.id)
-
+      // pre‐compute which (asset,service) pairs are in your selectedAlgorithms
+      const matches = new Set(
+        selectedAlgorithms?.map((a) => `${a.did}|${a.serviceId}`)
+      )
+      // fetch all accessDetails in one go
       const cancelTokenSource = axios.CancelToken.source()
       const { services } = asset.credentialSubject
       const accessDetails = await Promise.all(
-        services.map((service) =>
+        services.map((s) =>
           getAccessDetails(
             asset.credentialSubject.chainId,
-            service,
+            s,
             accountId,
             cancelTokenSource.token
           )
         )
       )
 
+      // only loop through those services that appear in selectedAlgorithms
       services.forEach((service, idx) => {
+        const key = `${asset.id}|${service.id}`
+        if (
+          selectedAlgorithms &&
+          selectedAlgorithms.length > 0 &&
+          !matches.has(key)
+        )
+          return // <-- skip any service that wasn't in selectedAlgorithms
+
         const priceInfo = getAvailablePrice(accessDetails[idx])
         const assetEntry: AssetSelectionAsset = {
           did: asset.id,
@@ -52,7 +61,7 @@ export async function transformAssetToAssetSelection(
           name: asset.credentialSubject.metadata.name,
           price: priceInfo.value,
           tokenSymbol: priceInfo.tokenSymbol,
-          checked: isSelected ?? false,
+          checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: isAddressWhitelisted(
             asset,
@@ -60,11 +69,11 @@ export async function transformAssetToAssetSelection(
             service
           )
         }
-
-        if (isSelected) algorithmList.unshift(assetEntry)
-        else algorithmList.push(assetEntry)
+        // put selected ones up front
+        algorithmList.unshift(assetEntry)
       })
     }
   }
+
   return algorithmList
 }

@@ -37,11 +37,13 @@ export function parseConsumerParameterValues(
 export default function ConsumerParameters({
   service,
   selectedAlgorithmAsset,
-  isLoading
+  isLoading,
+  svcIndex
 }: {
   service: Service
   selectedAlgorithmAsset?: AssetExtended
   isLoading?: boolean
+  svcIndex?: number
 }): ReactElement {
   const [tabs, setTabs] = useState<TabsItem[]>([])
   const [tabIndex, setTabIndex] = useState(0)
@@ -61,8 +63,8 @@ export default function ConsumerParameters({
     }
     // TODO -
     if (
-      selectedAlgorithmAsset?.credentialSubject?.services[0]?.consumerParameters
-        ?.length > 0
+      selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
+        ?.consumerParameters?.length > 0
     ) {
       tabs.push({
         title: 'Algo Service',
@@ -70,7 +72,7 @@ export default function ConsumerParameters({
           <FormConsumerParameters
             name="algoServiceParams"
             parameters={
-              selectedAlgorithmAsset.credentialSubject?.services[0]
+              selectedAlgorithmAsset.credentialSubject?.services[svcIndex]
                 .consumerParameters
             }
             disabled={isLoading}

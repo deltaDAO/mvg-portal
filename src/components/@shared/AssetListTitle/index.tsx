@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { ReactElement, useEffect, useState } from 'react'
-import { getAssetsNames } from '@utils/aquarius'
 import styles from './index.module.css'
 import axios from 'axios'
 import { useMarketMetadata } from '@context/MarketMetadata'
@@ -17,7 +16,7 @@ export default function AssetListTitle({
 }): ReactElement {
   const { appConfig } = useMarketMetadata()
   const [assetTitle, setAssetTitle] = useState<string>(title)
-  const [assetTitleTrimmed, setAssetTitleTrimmed] = useState('')
+  const [assetTitleTrimmed, setAssetTitleTrimmed] = useState(title)
   useEffect(() => {
     if (title || !appConfig.metadataCacheUri) return
     if (asset) {
@@ -35,13 +34,10 @@ export default function AssetListTitle({
     const source = axios.CancelToken.source()
 
     async function getAssetName() {
-      const title = await getAssetsNames([did], source.token)
-      setAssetTitle(title[did])
-
-      if (title[did].length > 16) {
-        setAssetTitleTrimmed(title[did].slice(0, 13) + '...')
+      if (title.length > 16) {
+        setAssetTitleTrimmed(title.slice(0, 13) + '...')
       } else {
-        setAssetTitleTrimmed(title[did])
+        setAssetTitleTrimmed(title)
       }
     }
     !asset && did && getAssetName()

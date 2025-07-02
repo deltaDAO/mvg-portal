@@ -47,24 +47,48 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
 
   const [algoName, setAlgoName] = useState<string>()
   const [algoDtSymbol, setAlgoDtSymbol] = useState<string>()
+  const [assetName, setAssetName] = useState<string>()
+  const [assetDtSymbol, setAssetDtSymbol] = useState<string>()
 
   useEffect(() => {
     async function getAlgoMetadata() {
-      const ddo = (await getAsset(job.algoDID, newCancelToken())) as AssetType
-      setAlgoDtSymbol(ddo.indexedMetadata.stats[0].symbol)
-      setAlgoName(ddo?.credentialSubject.metadata.name)
+      if (job.algorithm) {
+        const ddo = (await getAsset(
+          job.algorithm.documentId,
+          newCancelToken()
+        )) as AssetType
+        setAlgoDtSymbol(ddo.indexedMetadata.stats[0].symbol)
+        setAlgoName(ddo?.credentialSubject.metadata.name)
+      }
     }
+
+    async function getAssetsMetadata() {
+      if (job.assets) {
+        const ddo = (await getAsset(
+          job.assets[0].documentId,
+          newCancelToken()
+        )) as AssetType
+        setAssetDtSymbol(ddo.indexedMetadata.stats[0].symbol)
+        setAssetName(ddo?.credentialSubject.metadata.name)
+      }
+    }
+
     getAlgoMetadata()
-  }, [appConfig.metadataCacheUri, job.algoDID, newCancelToken])
+    getAssetsMetadata()
+  }, [appConfig.metadataCacheUri, job.algorithm, newCancelToken])
 
   return (
     <>
       <Asset
-        title={job.assetName}
-        symbol={job.assetDtSymbol}
-        did={job.inputDID[0]}
+        title={assetName}
+        symbol={assetDtSymbol}
+        did={job.assets ? job.assets[0].documentId : job.jobId}
       />
-      <Asset title={algoName} symbol={algoDtSymbol} did={job.algoDID} />
+      <Asset
+        title={algoName}
+        symbol={algoDtSymbol}
+        did={job.algorithm.documentId}
+      />
     </>
   )
 }
@@ -92,12 +116,24 @@ export default function Details({
         <div className={styles.meta}>
           <MetaItem
             title="Created"
-            content={<Time date={job.dateCreated} isUnix relative />}
+            content={
+              <Time
+                date={((job as any).algoStartTimestamp * 1000).toString()}
+                isUnix
+                relative
+              />
+            }
           />
           {job.dateFinished && (
             <MetaItem
               title="Finished"
-              content={<Time date={job.dateFinished} isUnix relative />}
+              content={
+                <Time
+                  date={((job as any).algoStopTimestamp * 1000).toString()}
+                  isUnix
+                  relative
+                />
+              }
             />
           )}
           <MetaItem title="Job ID" content={<code>{job.jobId}</code>} />

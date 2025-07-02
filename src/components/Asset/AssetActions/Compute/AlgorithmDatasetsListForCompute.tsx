@@ -28,6 +28,7 @@ export default function AlgorithmDatasetsListForCompute({
     async function getDatasetsAllowedForCompute() {
       const datasets = await getAlgorithmDatasetsForCompute(
         asset.id,
+        service.id,
         service.serviceEndpoint,
         accountId,
         asset.credentialSubject?.chainId,

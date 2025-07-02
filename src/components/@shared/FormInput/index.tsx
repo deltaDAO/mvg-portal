@@ -25,6 +25,7 @@ import {
 import { getObjectPropertyByPath } from '@utils/index'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import ErrorSVG from '@images/circle_error.svg'
+import { ResourceType } from 'src/@types/ResourceType'
 
 const cx = classNames.bind(styles)
 
@@ -89,6 +90,14 @@ export interface InputProps {
   buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
   variant?: 'default' | 'publish'
   centerError?: boolean
+  allResourceValues?: {
+    [envId: string]: ResourceType
+  }
+  setAllResourceValues?: React.Dispatch<
+    React.SetStateAction<{
+      [envId: string]: ResourceType
+    }>
+  >
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {

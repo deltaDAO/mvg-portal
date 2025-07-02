@@ -1,4 +1,5 @@
 import {
+  ComputeAsset,
   Datatoken,
   FixedRateExchange,
   getErrorMessage,
@@ -50,13 +51,18 @@ export async function getOrderPriceAndFees(
   // fetch provider fee
   let initializeData
   try {
-    const initialize = await ProviderInstance.initialize(
-      asset.id,
-      service.id,
-      0,
-      accountId,
-      customProviderUrl || service.serviceEndpoint
-    )
+    let initialize = null
+    if (service.type === 'compute') {
+      console.log('service type is compute')
+    } else {
+      initialize = await ProviderInstance.initialize(
+        asset.id,
+        service.id,
+        0,
+        accountId,
+        customProviderUrl || service.serviceEndpoint
+      )
+    }
     initializeData = !providerFees && initialize
   } catch (error) {
     if (error.message.includes('Unexpected token')) {
@@ -97,7 +103,6 @@ export async function getOrderPriceAndFees(
     toast.error(message)
   }
   orderPriceAndFee.providerFee = providerFees || initializeData?.providerFee
-
   // fetch price and swap fees
   if (accessDetails.type === 'fixed') {
     const fixed = await getFixedBuyPrice(
@@ -110,7 +115,6 @@ export async function getOrderPriceAndFees(
     orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount
     orderPriceAndFee.consumeMarketFixedSwapFee = fixed.consumeMarketFeeAmount
   }
-
   const price = new Decimal(+accessDetails.price || 0)
   const consumeMarketFeePercentage =
     +orderPriceAndFee?.consumeMarketOrderFee || 0
@@ -174,19 +178,25 @@ export async function getAccessDetails(
 
     // Fetch all orders across all pages
     while (page <= totalPages) {
-      const res = await getUserOrders(accountId, cancelToken, page)
+      const filter =
+        service.type === 'compute' ? 'payer.keyword' : 'consumer.keyword'
+      const res = await getUserOrders(accountId, cancelToken, page, filter)
       allOrders = allOrders.concat(res?.results || [])
       const orderTotal = res?.totalPages || 0
       totalPages = orderTotal
       page++
     }
-
-    const order = allOrders.find(
+    const matchingOrders = allOrders.filter(
       (order) =>
         order.datatokenAddress.toLowerCase() ===
           datatokenAddress.toLowerCase() ||
         order.payer.toLowerCase() === datatokenAddress.toLowerCase()
     )
+
+    const order = matchingOrders.reduce((prev, curr) => {
+      return curr.timestamp > prev.timestamp ? curr : prev
+    }, matchingOrders[0])
+
     if (order) {
       const orderTimestamp = order.timestamp
       const timeout = Number(service.timeout)
@@ -218,7 +228,7 @@ export async function getAccessDetails(
   if (fixedRates.length > 0) {
     const freAddress = fixedRates[0].contractAddress
     const exchangeId = fixedRates[0].id
-    const fre = new FixedRateExchange(freAddress, signer)
+    const fre = new FixedRateExchange(freAddress, signer, chainId)
     const exchange = await fre.getExchange(exchangeId)
 
     return {

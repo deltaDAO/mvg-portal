@@ -272,27 +272,6 @@ export async function getAsset(
   }
 }
 
-export async function getAssetsNames(
-  didList: string[],
-  cancelToken: CancelToken
-): Promise<Record<string, string>> {
-  try {
-    const response: AxiosResponse<Record<string, string>> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/names`,
-      { didList },
-      { cancelToken }
-    )
-    if (!response || response.status !== 200 || !response.data) return
-    return response.data
-  } catch (error) {
-    if (axios.isCancel(error)) {
-      LoggerInstance.log(error.message)
-    } else {
-      LoggerInstance.error(error.message)
-    }
-  }
-}
-
 export async function getAssetsFromDids(
   didList: string[],
   chainIds: number[],
@@ -322,6 +301,7 @@ export async function getAssetsFromDids(
 
 export async function getAlgorithmDatasetsForCompute(
   algorithmId: string,
+  serviceId: string,
   datasetProviderUri: string,
   accountId: string,
   datasetChainId?: number,
@@ -329,15 +309,20 @@ export async function getAlgorithmDatasetsForCompute(
 ): Promise<AssetSelectionAsset[]> {
   const baseQueryParams = {
     chainIds: [datasetChainId],
-    nestedQuery: {
-      must: {
-        match_phrase: {
-          'services.compute.publisherTrustedAlgorithms.did': {
-            query: algorithmId
-          }
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            algorithmId
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            serviceId
         }
       }
-    },
+    ],
     sortOptions: {
       sortBy: SortTermOptions.Created,
       sortDirection: SortDirectionOptions.Descending
@@ -347,7 +332,6 @@ export async function getAlgorithmDatasetsForCompute(
   const query = generateBaseQuery(baseQueryParams)
   const computeDatasets = await queryMetadata(query, cancelToken)
   if (computeDatasets?.results?.length === 0 || !computeDatasets) return []
-
   const datasets = await transformAssetToAssetSelection(
     datasetProviderUri,
     computeDatasets.results,
@@ -541,10 +525,12 @@ export async function getUserSalesAndRevenue(
 export async function getUserOrders(
   accountId: string,
   cancelToken: CancelToken,
-  page?: number
+  page?: number,
+  filterTerm?: string
 ): Promise<PagedAssets> {
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('consumer.keyword', accountId))
+  const filterTermKeyword = filterTerm || 'consumer.keyword'
+  filters.push(getFilterTerm(filterTermKeyword, accountId))
   const baseQueryparams = {
     filters,
     ignorePurgatory: true,
@@ -598,7 +584,7 @@ export async function getDownloadAssets(
     let downloadedAssets: DownloadedAsset[] = []
     if (result) {
       downloadedAssets = result?.results
-        .map((asset) => {
+        ?.map((asset) => {
           const timestampStr =
             asset?.indexedMetadata?.event?.datetime ??
             asset?.indexedMetadata?.nft?.created

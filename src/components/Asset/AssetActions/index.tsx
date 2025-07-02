@@ -131,7 +131,7 @@ export default function AssetActions({
 
     async function init() {
       try {
-        const datatokenInstance = new Datatoken(web3Provider as any)
+        const datatokenInstance = new Datatoken(web3Provider as any, chain.id)
         const dtBalance = await datatokenInstance.balance(
           service.datatokenAddress,
           accountId
