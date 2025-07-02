@@ -16,6 +16,15 @@ export default function Credentials(props: InputProps) {
   const hasWildcard = addressList.includes('*')
 
   useEffect(() => {
+    const isExternalUpdate =
+      JSON.stringify(field.value) !== JSON.stringify(addressList)
+
+    if (isExternalUpdate) {
+      setAddressList(field.value || [])
+    }
+  }, [field.value])
+
+  useEffect(() => {
     helpers.setValue(addressList)
   }, [addressList])
 

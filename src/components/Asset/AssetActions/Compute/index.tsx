@@ -290,7 +290,6 @@ export default function Compute({
     getAlgorithmsForAsset(asset, service, newCancelToken()).then(
       (algorithmsAssets) => {
         setDdoAlgorithmList(algorithmsAssets)
-
         getAlgorithmAssetSelectionList(
           service,
           algorithmsAssets,

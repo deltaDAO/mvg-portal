@@ -30,6 +30,7 @@ import {
 } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
+import { ServiceComputeOptions } from '@oceanprotocol/ddo-js'
 
 async function getAssetMetadata(
   queryDtList: string[],
@@ -132,7 +133,8 @@ export async function getComputeEnvironment(
 export function getQueryString(
   trustedAlgorithmList: PublisherTrustedAlgorithms[],
   trustedPublishersList: string[],
-  chainId?: number
+  chainId?: number,
+  allAlgosAllowed?: boolean
 ): SearchQuery {
   const algorithmDidList = trustedAlgorithmList?.map((x) => x.did)
 
@@ -145,7 +147,9 @@ export function getQueryString(
     }
   } as BaseQueryParams
   algorithmDidList?.length > 0 &&
+    !allAlgosAllowed &&
     baseParams.filters.push(getFilterTerm('_id', algorithmDidList))
+
   if (
     trustedPublishersList?.length > 0 &&
     !(trustedPublishersList.length === 1 && trustedPublishersList[0] === '*')
@@ -161,6 +165,27 @@ export function getQueryString(
   return query
 }
 
+function isAllAlgoAllowed(compute: ServiceComputeOptions): boolean {
+  // Check if publisherTrustedAlgorithmPublishers contains "*"
+  if (
+    Array.isArray(compute.publisherTrustedAlgorithmPublishers) &&
+    compute.publisherTrustedAlgorithmPublishers.includes('*')
+  ) {
+    return true
+  }
+
+  // Check if publisherTrustedAlgorithms contains a single object where all values are "*"
+  if (
+    Array.isArray(compute.publisherTrustedAlgorithms) &&
+    compute.publisherTrustedAlgorithms.length === 1
+  ) {
+    const algo = compute.publisherTrustedAlgorithms[0]
+    return Object.values(algo).every((value) => value === '*')
+  }
+
+  return false
+}
+
 export async function getAlgorithmsForAsset(
   asset: Asset,
   service: Service,
@@ -173,12 +198,13 @@ export async function getAlgorithmsForAsset(
   ) {
     return []
   }
-
+  const allAlgosAllowed = isAllAlgoAllowed(service.compute)
   const queryResults = await queryMetadata(
     getQueryString(
       service.compute.publisherTrustedAlgorithms,
       service.compute.publisherTrustedAlgorithmPublishers,
-      asset.credentialSubject?.chainId
+      asset.credentialSubject?.chainId,
+      allAlgosAllowed
     ),
     token
   )
