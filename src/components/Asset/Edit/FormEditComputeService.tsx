@@ -48,7 +48,8 @@ export default function FormEditComputeService({
         serviceEndpoint,
         queryResult?.results || [],
         accountId,
-        publisherTrustedAlgorithms
+        publisherTrustedAlgorithms,
+        true
       )
       return algorithmSelectionList
     },
