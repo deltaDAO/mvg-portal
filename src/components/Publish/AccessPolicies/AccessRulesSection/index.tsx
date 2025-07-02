@@ -16,7 +16,11 @@ import ContainerForm from '../../../@shared/atoms/ContainerForm'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 
-export default function AccessRulesSection(): ReactElement {
+export default function AccessRulesSection({
+  fieldPrefix = 'credentials'
+}: {
+  fieldPrefix?: string
+} = {}): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
   const [allowInputValue, setAllowInputValue] = useState(
     values.credentials?.allowInputValue || ''
@@ -29,8 +33,17 @@ export default function AccessRulesSection(): ReactElement {
     'Please select an option'
   )
 
-  const allowList = values.credentials?.allow || []
-  const denyList = values.credentials?.deny || []
+  const getFieldValue = (field: string) => {
+    if (fieldPrefix === 'credentials') {
+      return values.credentials?.[field] || []
+    } else if (fieldPrefix === 'services[0].credentials') {
+      return values.services?.[0]?.credentials?.[field] || []
+    }
+    return []
+  }
+
+  const allowList = getFieldValue('allow')
+  const denyList = getFieldValue('deny')
 
   const hasAllowAll = allowList.includes('*')
   const hasDenyAll = denyList.includes('*')
@@ -38,7 +51,7 @@ export default function AccessRulesSection(): ReactElement {
   useEffect(() => {
     if (allowDropdownValue === 'Allow all addresses') {
       if (!allowList.includes('*')) {
-        setFieldValue('credentials.allow', ['*'])
+        setFieldValue(`${fieldPrefix}.allow`, ['*'])
       }
       setAllowInputValue('')
     }
@@ -47,7 +60,7 @@ export default function AccessRulesSection(): ReactElement {
   useEffect(() => {
     if (denyDropdownValue === 'Deny all addresses') {
       if (!denyList.includes('*')) {
-        setFieldValue('credentials.deny', ['*'])
+        setFieldValue(`${fieldPrefix}.deny`, ['*'])
       }
       setDenyInputValue('')
     }
@@ -101,16 +114,18 @@ export default function AccessRulesSection(): ReactElement {
     }
 
     const newAllowList = [...allowList, allowInputValue.toLowerCase()]
-    setFieldValue('credentials.allow', newAllowList)
+    setFieldValue(`${fieldPrefix}.allow`, newAllowList)
     setAllowInputValue('')
-    setFieldValue('credentials.allowInputValue', '')
+    if (fieldPrefix === 'credentials') {
+      setFieldValue('credentials.allowInputValue', '')
+    }
   }
 
   const handleDeleteAllowAddress = (addressToDelete: string) => {
     const newAllowList = allowList.filter(
       (address) => address !== addressToDelete
     )
-    setFieldValue('credentials.allow', newAllowList)
+    setFieldValue(`${fieldPrefix}.allow`, newAllowList)
 
     if (addressToDelete === '*') {
       setAllowDropdownValue('Please select an option')
@@ -141,7 +156,7 @@ export default function AccessRulesSection(): ReactElement {
     }
 
     const newDenyList = [...denyList, denyInputValue.toLowerCase()]
-    setFieldValue('credentials.deny', newDenyList)
+    setFieldValue(`${fieldPrefix}.deny`, newDenyList)
     setDenyInputValue('')
   }
 
@@ -149,7 +164,7 @@ export default function AccessRulesSection(): ReactElement {
     const newDenyList = denyList.filter(
       (address) => address !== addressToDelete
     )
-    setFieldValue('credentials.deny', newDenyList)
+    setFieldValue(`${fieldPrefix}.deny`, newDenyList)
 
     if (addressToDelete === '*') {
       setDenyDropdownValue('Please select an option')
@@ -223,7 +238,9 @@ export default function AccessRulesSection(): ReactElement {
               value={allowInputValue}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setAllowInputValue(e.target.value)
-                setFieldValue('credentials.allowInputValue', e.target.value)
+                if (fieldPrefix === 'credentials') {
+                  setFieldValue('credentials.allowInputValue', e.target.value)
+                }
               }}
             />
             <Button

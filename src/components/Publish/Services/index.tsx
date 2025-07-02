@@ -214,7 +214,7 @@ export default function ServicesFields(): ReactElement {
         </SectionContainer>
       </SectionContainer>
 
-      <AccessRulesSection />
+      <AccessRulesSection fieldPrefix="services[0].credentials" />
 
       <SSIPoliciesSection
         defaultPolicies={defaultPolicies}

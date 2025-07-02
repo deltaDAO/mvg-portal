@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '../../_types'
 import { PolicyEditor } from '@components/@shared/PolicyEditor'
@@ -14,7 +14,29 @@ export default function SSIPoliciesSection({
   defaultPolicies
 }: SSIPoliciesSectionProps): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
+
   const [enabled, setEnabled] = useState(false)
+
+  useEffect(() => {
+    console.log('SSI Policies Check:', {
+      requestCredentials: values.credentials?.requestCredentials?.length || 0,
+      vcPolicies: values.credentials?.vcPolicies?.length || 0,
+      vpPolicies: values.credentials?.vpPolicies?.length || 0,
+      currentEnabled: enabled
+    })
+
+    const hasCurrentPolicies =
+      values.credentials?.requestCredentials?.length > 0 ||
+      values.credentials?.vcPolicies?.length > 0 ||
+      values.credentials?.vpPolicies?.length > 0
+
+    console.log('Has current policies:', hasCurrentPolicies)
+
+    if (hasCurrentPolicies !== enabled) {
+      console.log('Updating enabled state to:', hasCurrentPolicies)
+      setEnabled(hasCurrentPolicies)
+    }
+  }, [values.credentials])
 
   if (!appConfig.ssiEnabled) {
     return null

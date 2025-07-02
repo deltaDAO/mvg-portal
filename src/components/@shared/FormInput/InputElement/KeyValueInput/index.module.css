@@ -13,6 +13,13 @@
   margin-bottom: var(--spacer);
 }
 
+.pairsAddedContainer > button {
+  min-width: 90px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .hasError label {
   color: var(--brand-alert-red);
 }

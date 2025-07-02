@@ -52,7 +52,7 @@ function StaticPolicyView(props: PolicyViewProps): ReactElement {
   return (
     <>
       <label>{{ ...getFieldContent('staticPolicy', fields) }.label}</label>
-      <div className={`${styles.editorPanel} ${styles.marginBottom1em}`}>
+      <div className={`${styles.editorPanel}`}>
         <div
           className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
         >

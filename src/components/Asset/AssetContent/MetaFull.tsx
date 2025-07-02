@@ -8,9 +8,16 @@ import { getDummySigner } from '@utils/wallet'
 import { Asset } from 'src/@types/Asset'
 import { IpfsRemoteSource } from '@components/@shared/IpfsRemoteSource'
 import Label from '@components/@shared/FormInput/Label'
+import { assetStateToString } from '@utils/assetState'
 
 export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
   const { isInPurgatory, assetState } = useAsset()
+
+  const effectiveAssetState =
+    assetState ||
+    (ddo?.indexedMetadata?.nft?.state !== undefined
+      ? assetStateToString(ddo.indexedMetadata.nft.state)
+      : 'Active')
 
   const [paymentCollector, setPaymentCollector] = useState<string>()
 
@@ -57,8 +64,8 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
           title="Owner"
           content={<Publisher account={ddo?.indexedMetadata?.nft?.owner} />}
         />
-        {assetState !== 'Active' && (
-          <MetaItem title="Asset State" content={assetState} />
+        {effectiveAssetState !== 'Active' && (
+          <MetaItem title="Asset State" content={effectiveAssetState} />
         )}
         {paymentCollector &&
           paymentCollector !== ddo?.indexedMetadata?.nft?.owner && (

@@ -16,14 +16,7 @@
 .editorPanel {
   display: flex;
   flex-direction: column;
-  background: var(--box-template-background);
-  border-radius: var(--box-template-border-radius);
-  border: var(--box-template-border-size) solid var(--box-template-border-color);
-  box-shadow: var(--box-template-box-shadow);
-  padding-left: calc(var(--spacer) / 1.5);
-  padding-right: calc(var(--spacer) / 1.5);
-  padding-top: calc(var(--spacer) / 1.5);
-  padding-bottom: 0;
+  align-items: center;
 }
 
 .paddingLeft3em {

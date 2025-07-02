@@ -11,6 +11,7 @@ import InputGroup from '../../FormInput/InputGroup'
 interface StaticPolicyBlockProps {
   name: string
   index: number
+  innerIndex?: number
   policy: any
   onDelete: () => void
   readOnly?: boolean
@@ -19,17 +20,23 @@ interface StaticPolicyBlockProps {
 export default function StaticPolicyBlock({
   name,
   index,
+  innerIndex,
   policy,
   onDelete,
   readOnly = false
 }: StaticPolicyBlockProps): ReactElement {
+  const fieldName =
+    innerIndex !== undefined
+      ? `${name}.requestCredentials[${index}].policies[${innerIndex}].name`
+      : `${name}.vcPolicies[${index}]`
+
   return (
     <div className={styles.block}>
       <InputGroup>
         <Field
           {...getFieldContent('staticPolicy', fields)}
           component={Input}
-          name={`${name}.vcPolicies[${index}]`}
+          name={fieldName}
           readOnly={readOnly}
           className={styles.policyInput}
         />

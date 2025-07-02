@@ -25,6 +25,13 @@
   border-radius: var(--publish-input-border-radius);
 }
 
+.actions button [class*='loaderWrap'],
+.actionsRight button [class*='loaderWrap'] {
+  margin-top: 0;
+  justify-content: center;
+  align-items: center;
+}
+
 .infoIcon {
   width: 0.85em;
   height: 0.85em;

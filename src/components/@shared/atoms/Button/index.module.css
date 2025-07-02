@@ -161,10 +161,10 @@ body .publish:focus {
   opacity: 0.9;
 }
 
-body .button.outlined,
-body .button.outlined:hover,
-body .button.outlined:focus,
-body .button.outlined:active {
+.button.outlined,
+.button.outlined:hover,
+.button.outlined:focus,
+.button.outlined:active {
   border: 1px solid var(--publish-primary);
   border-radius: var(--publish-input-border-radius);
   padding: 9px 14px;

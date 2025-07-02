@@ -45,10 +45,9 @@ export default function Price({
                   )
                 }
                 variant="publish"
-                centerError={true}
-                field={field}
-                form={form}
+                {...field}
               />
+              <Error meta={meta} />
             </div>
             <div className={styles.datatoken}>
               <h4>

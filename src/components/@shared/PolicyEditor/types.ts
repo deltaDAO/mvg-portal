@@ -68,6 +68,7 @@ export interface CredentialForm {
   allow?: string[]
   deny?: string[]
   allowInputValue?: string
+  denyInputValue?: string
   requestCredentials?: RequestCredentialForm[]
   vpPolicies?: VpPolicyType[]
   vcPolicies?: string[]

@@ -54,7 +54,7 @@ export default function CustomUrlPolicyBlock({
         <Field
           {...getFieldContent('policyUrl', fields)}
           component={Input}
-          name={`${name}.requestCredentials[${index}].policies[${innerIndex}].url`}
+          name={`${name}.requestCredentials[${index}].policies[${innerIndex}].policyUrl`}
         />
 
         {policy.arguments?.map((argument, argIndex) => (

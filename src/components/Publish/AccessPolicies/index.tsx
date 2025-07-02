@@ -5,7 +5,7 @@ import appConfig from 'app.config.cjs'
 import { getDefaultPolicies } from '../_utils'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import AccessRulesSection from './AccessRulesSection'
-import SSIPoliciesSection from '../../@shared/SSIPoliciesSection'
+import SSIPoliciesSection from './SSIPoliciesSection'
 import styles from './index.module.css'
 
 export function AccessPolicies(): ReactElement {
@@ -35,10 +35,7 @@ export function AccessPolicies(): ReactElement {
   return (
     <>
       <AccessRulesSection />
-      <SSIPoliciesSection
-        defaultPolicies={defaultPolicies}
-        fieldNamePrefix="credentials"
-      />
+      <SSIPoliciesSection defaultPolicies={defaultPolicies} />
     </>
   )
 }

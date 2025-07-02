@@ -133,6 +133,8 @@ export function PublishConsumerParameters(props: InputProps): ReactElement {
                 name={`${field.name}[${safeCurrentIndex}].type`}
                 label="Parameter Type"
                 required
+                type="select"
+                options={paramTypes}
                 index={safeCurrentIndex}
                 inputName={props.name}
                 className={styles.fullWidthInput}

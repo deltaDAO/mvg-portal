@@ -26,7 +26,8 @@ export default function Actions({
     values,
     errors,
     isValid,
-    isSubmitting
+    isSubmitting,
+    setFieldValue
   }: FormikContextType<FormPublishData> = useFormikContext()
   // async function handleActivation(e: FormEvent<HTMLButtonElement>) {
   //   // prevent accidentially submitting a form the button might be in
@@ -46,6 +47,67 @@ export default function Actions({
 
   function handleNext(e: FormEvent) {
     e.preventDefault()
+
+    if (values.user.stepCurrent === 2) {
+      const typedAllowValue = values.credentials.allowInputValue?.trim()
+      if (
+        typedAllowValue &&
+        typedAllowValue.length >= 40 &&
+        typedAllowValue.startsWith('0x')
+      ) {
+        try {
+          const isValidAddress = isAddress(typedAllowValue)
+          if (isValidAddress) {
+            const lowerCaseAddress = typedAllowValue.toLowerCase()
+            const currentAllowList = values.credentials.allow || []
+            if (!currentAllowList.includes(lowerCaseAddress)) {
+              console.log(
+                'Auto-committing typed allow address before navigation:',
+                lowerCaseAddress
+              )
+              const newAllowList = [...currentAllowList, lowerCaseAddress]
+              setFieldValue('credentials.allow', newAllowList)
+              setFieldValue('credentials.allowInputValue', '')
+            }
+          }
+        } catch (error) {
+          console.log(
+            'Allow address validation error during auto-commit:',
+            error
+          )
+        }
+      }
+
+      const typedDenyValue = values.credentials.denyInputValue?.trim()
+      if (
+        typedDenyValue &&
+        typedDenyValue.length >= 40 &&
+        typedDenyValue.startsWith('0x')
+      ) {
+        try {
+          const isValidAddress = isAddress(typedDenyValue)
+          if (isValidAddress) {
+            const lowerCaseAddress = typedDenyValue.toLowerCase()
+            const currentDenyList = values.credentials.deny || []
+            if (!currentDenyList.includes(lowerCaseAddress)) {
+              console.log(
+                'Auto-committing typed deny address before navigation:',
+                lowerCaseAddress
+              )
+              const newDenyList = [...currentDenyList, lowerCaseAddress]
+              setFieldValue('credentials.deny', newDenyList)
+              setFieldValue('credentials.denyInputValue', '')
+            }
+          }
+        } catch (error) {
+          console.log(
+            'Deny address validation error during auto-commit:',
+            error
+          )
+        }
+      }
+    }
+
     handleAction('next')
   }
 
@@ -59,12 +121,25 @@ export default function Actions({
       return true
     }
 
-    const inputValue = values.credentials.allowInputValue?.trim()
-    if (inputValue) {
-      return isAddress(inputValue)
+    const typedValue = values.credentials.allowInputValue?.trim()
+    if (typedValue) {
+      if (typedValue === '*') {
+        return true
+      }
+
+      if (typedValue.length >= 40 && typedValue.startsWith('0x')) {
+        try {
+          const isValidAddress = isAddress(typedValue)
+          if (isValidAddress) {
+            return true
+          }
+        } catch (error) {
+          console.log('Allow address validation error:', error)
+        }
+      }
     }
 
-    return false
+    return true
   }
 
   const isContinueDisabled =
