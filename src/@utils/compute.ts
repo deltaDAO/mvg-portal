@@ -12,8 +12,7 @@ import {
   queryMetadata,
   getFilterTerm,
   generateBaseQuery,
-  getAssetsFromDids,
-  getAsset
+  getAssetsFromDids
 } from './aquarius'
 import { getServiceById } from './ddo'
 import { SortTermOptions } from '../@types/aquarius/SearchQuery'
@@ -30,6 +29,7 @@ import {
 } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
+import { ServiceComputeOptions } from '@oceanprotocol/ddo-js'
 
 async function getAssetMetadata(
   queryDtList: string[],
@@ -132,7 +132,8 @@ export async function getComputeEnvironment(
 export function getQueryString(
   trustedAlgorithmList: PublisherTrustedAlgorithms[],
   trustedPublishersList: string[],
-  chainId?: number
+  chainId?: number,
+  allAlgosAllowed?: boolean
 ): SearchQuery {
   const algorithmDidList = trustedAlgorithmList?.map((x) => x.did)
 
@@ -145,17 +146,43 @@ export function getQueryString(
     }
   } as BaseQueryParams
   algorithmDidList?.length > 0 &&
+    !allAlgosAllowed &&
     baseParams.filters.push(getFilterTerm('_id', algorithmDidList))
-  trustedPublishersList?.length > 0 &&
+
+  if (
+    trustedPublishersList?.length > 0 &&
+    !(trustedPublishersList.length === 1 && trustedPublishersList[0] === '*')
+  ) {
     baseParams.filters.push(
       getFilterTerm(
         'indexedMetadata.nft.owner',
         trustedPublishersList.map((address) => address.toLowerCase())
       )
     )
+  }
   const query = generateBaseQuery(baseParams)
-
   return query
+}
+
+function isAllAlgoAllowed(compute: ServiceComputeOptions): boolean {
+  // Check if publisherTrustedAlgorithmPublishers contains "*"
+  if (
+    Array.isArray(compute.publisherTrustedAlgorithmPublishers) &&
+    compute.publisherTrustedAlgorithmPublishers.includes('*')
+  ) {
+    return true
+  }
+
+  // Check if publisherTrustedAlgorithms contains a single object where all values are "*"
+  if (
+    Array.isArray(compute.publisherTrustedAlgorithms) &&
+    compute.publisherTrustedAlgorithms.length === 1
+  ) {
+    const algo = compute.publisherTrustedAlgorithms[0]
+    return Object.values(algo).every((value) => value === '*')
+  }
+
+  return false
 }
 
 export async function getAlgorithmsForAsset(
@@ -170,16 +197,17 @@ export async function getAlgorithmsForAsset(
   ) {
     return []
   }
-
-  const gueryResults = await queryMetadata(
+  const allAlgosAllowed = isAllAlgoAllowed(service.compute)
+  const queryResults = await queryMetadata(
     getQueryString(
       service.compute.publisherTrustedAlgorithms,
       service.compute.publisherTrustedAlgorithmPublishers,
-      asset.credentialSubject?.chainId
+      asset.credentialSubject?.chainId,
+      allAlgosAllowed
     ),
     token
   )
-  const algorithms: Asset[] = gueryResults?.results
+  const algorithms: Asset[] = queryResults?.results
   return algorithms
 }
 
@@ -384,7 +412,14 @@ export async function transformComputeFormToServiceComputeOptions(
   cancelToken: CancelToken
 ): Promise<Compute> {
   const publisherTrustedAlgorithms = values.allowAllPublishedAlgorithms
-    ? null
+    ? [
+        {
+          did: '*',
+          containerSectionChecksum: '*',
+          filesChecksum: '*',
+          serviceId: '*'
+        }
+      ]
     : await createTrustedAlgorithmList(
         values.publisherTrustedAlgorithms,
         assetChainId,
@@ -400,6 +435,5 @@ export async function transformComputeFormToServiceComputeOptions(
     publisherTrustedAlgorithms,
     publisherTrustedAlgorithmPublishers
   }
-
   return privacy
 }

@@ -1,5 +1,5 @@
 import { ReactElement, useCallback, useEffect, useState } from 'react'
-import { Field, FormikContextType, useFormikContext } from 'formik'
+import { Field, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import stylesIndex from './index.module.css'
@@ -27,10 +27,46 @@ export default function FormEditComputeService({
   serviceCompute: Compute
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const { values }: FormikContextType<ServiceEditForm> = useFormikContext()
   const newCancelToken = useCancelToken()
-
+  const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
+  const [prevTrustedPublishers, setPrevTrustedPublishers] = useState<string[]>()
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
+
+  useEffect(() => {
+    if (values.allowAllPublishedAlgorithms) {
+      if (
+        values.publisherTrustedAlgorithmPublishers?.length !== 1 ||
+        values.publisherTrustedAlgorithmPublishers[0] !== '*'
+      ) {
+        setPrevTrustedPublishers(values.publisherTrustedAlgorithmPublishers)
+        setFieldValue('publisherTrustedAlgorithmPublishers', ['*'])
+      }
+    } else if (
+      values.publisherTrustedAlgorithmPublishers?.length === 1 &&
+      values.publisherTrustedAlgorithmPublishers[0] === '*' &&
+      prevTrustedPublishers
+    ) {
+      setFieldValue(
+        'publisherTrustedAlgorithmPublishers',
+        prevTrustedPublishers
+      )
+    }
+  }, [values.allowAllPublishedAlgorithms])
+
+  useEffect(() => {
+    if (
+      values.publisherTrustedAlgorithmPublishers?.length === 1 &&
+      values.publisherTrustedAlgorithmPublishers[0] === '*' &&
+      !values.allowAllPublishedAlgorithms
+    ) {
+      setFieldValue('allowAllPublishedAlgorithms', true)
+    } else if (
+      values.allowAllPublishedAlgorithms &&
+      values.publisherTrustedAlgorithmPublishers?.[0] !== '*'
+    ) {
+      setFieldValue('allowAllPublishedAlgorithms', false)
+    }
+  }, [values.publisherTrustedAlgorithmPublishers])
 
   const getAlgorithmList = useCallback(
     async (
@@ -98,6 +134,7 @@ export default function FormEditComputeService({
         )}
         component={Input}
         name="publisherTrustedAlgorithmPublishers"
+        disabled={values.allowAllPublishedAlgorithms}
         options={
           getFieldContent(
             'publisherTrustedAlgorithmPublishers',

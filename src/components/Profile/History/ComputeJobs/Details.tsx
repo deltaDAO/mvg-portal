@@ -99,7 +99,6 @@ export default function Details({
   job: ComputeJobMetaData
 }): ReactElement {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
   return (
     <>
       <Button style="text" size="small" onClick={() => setIsDialogOpen(true)}>
@@ -118,7 +117,13 @@ export default function Details({
             title="Created"
             content={
               <Time
-                date={((job as any).algoStartTimestamp * 1000).toString()}
+                date={
+                  Number((job as any).algoStartTimestamp) > 0
+                    ? (
+                        Number((job as any).algoStartTimestamp) * 1000
+                      ).toString()
+                    : (Number(job.dateCreated) * 1000).toString()
+                }
                 isUnix
                 relative
               />

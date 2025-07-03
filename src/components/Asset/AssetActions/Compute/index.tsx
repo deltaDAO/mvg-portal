@@ -290,7 +290,6 @@ export default function Compute({
     getAlgorithmsForAsset(asset, service, newCancelToken()).then(
       (algorithmsAssets) => {
         setDdoAlgorithmList(algorithmsAssets)
-
         getAlgorithmAssetSelectionList(
           service,
           algorithmsAssets,
@@ -459,9 +458,9 @@ export default function Compute({
         id: res.id,
         amount: selectedResources[res.id] || res.min
       }))
-
+      let response
       if (selectedResources.mode === 'paid') {
-        await ProviderInstance.computeStart(
+        response = await ProviderInstance.computeStart(
           service.serviceEndpoint,
           signer,
           selectedComputeEnv.id,
@@ -479,6 +478,7 @@ export default function Compute({
           resourceRequests,
           asset.credentialSubject?.chainId
         )
+        console.log('[compute] Compute response:', response)
       } else {
         const algorithm: ComputeAlgorithm = {
           documentId: selectedAlgorithmAsset?.id,
@@ -487,8 +487,7 @@ export default function Compute({
           meta: selectedAlgorithmAsset?.credentialSubject?.metadata
             ?.algorithm as any
         }
-
-        await ProviderInstance.freeComputeStart(
+        response = await ProviderInstance.freeComputeStart(
           service.serviceEndpoint,
           signer,
           selectedComputeEnv.id,
@@ -501,13 +500,25 @@ export default function Compute({
           algorithm,
           resourceRequests
         )
+        console.log('[compute] Free compute response:', response)
       }
-
+      if (!response) {
+        throw new Error(
+          'Failed to start compute job, check console for more details'
+        )
+      }
       setIsOrdered(true)
       setRefetchJobs(!refetchJobs)
     } catch (error) {
-      const message = getErrorMessage(error.message)
-      LoggerInstance.error('[Compute] Error:', message)
+      let message: string
+      try {
+        message =
+          error.message && typeof error.message === 'string'
+            ? JSON.parse(error.message)
+            : error.message || String(error)
+      } catch {
+        message = error.message || String(error)
+      }
       setError(message)
       setRetry(true)
     } finally {
