@@ -9,28 +9,16 @@ import { ConfigHelper, Config } from '@oceanprotocol/lib'
 */
 export function sanitizeDevelopmentConfig(config: Config): Config {
   return {
-    ...config,
-    subgraphUri: process.env.NEXT_PUBLIC_SUBGRAPH_URI || config.subgraphUri,
-    metadataCacheUri:
-      process.env.NEXT_PUBLIC_METADATACACHE_URI || config.metadataCacheUri,
-    providerUri: process.env.NEXT_PUBLIC_PROVIDER_URL || config.providerUri,
     nodeUri: process.env.NEXT_PUBLIC_NODE_URI || config.nodeUri,
+    oceanNodeUri: process.env.NEXT_PUBLIC_PROVIDER_URL || config.oceanNodeUri,
     fixedRateExchangeAddress:
-      process.env.NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS ||
-      config.fixedRateExchangeAddress,
-    dispenserAddress:
-      process.env.NEXT_PUBLIC_DISPENSER_ADDRESS || config.dispenserAddress,
-    oceanTokenAddress:
-      process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS || config.oceanTokenAddress,
-    nftFactoryAddress:
-      process.env.NEXT_PUBLIC_NFT_FACTORY_ADDRESS || config.nftFactoryAddress,
-    routerFactoryAddress:
-      process.env.NEXT_PUBLIC_ROUTER_FACTORY_ADDRESS ||
-      config.routerFactoryAddress,
-    accessListFactory:
-      process.env.NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS ||
-      config.accessListFactory
-  }
+      process.env.NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS,
+    dispenserAddress: process.env.NEXT_PUBLIC_DISPENSER_ADDRESS,
+    oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
+    nftFactoryAddress: process.env.NEXT_PUBLIC_NFT_FACTORY_ADDRESS,
+    routerFactoryAddress: process.env.NEXT_PUBLIC_ROUTER_FACTORY_ADDRESS,
+    accessListFactory: process.env.NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS
+  } as Config
 }
 
 export function getOceanConfig(network: string | number): Config {
@@ -65,6 +53,6 @@ export function getDevelopmentConfig(): Config {
     // metadataContractAddress: contractAddresses.development?.Metadata,
     // oceanTokenAddress: contractAddresses.development?.Ocean,
     // There is no subgraph in barge so we hardcode the Sepolia one for now
-    subgraphUri: 'https://v4.subgraph.sepolia.oceanprotocol.com'
+    nodeUri: 'https://v4.subgraph.sepolia.oceanprotocol.com'
   } as Config
 }
