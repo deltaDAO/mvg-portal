@@ -19,6 +19,9 @@ import useBalance from '@hooks/useBalance'
 import Button from '@components/@shared/atoms/Button'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import BackSVG from '@images/back.svg'
+import WhitelistIndicator from './Compute/WhitelistIndicator'
+import AssetInteractionPanel from './AssetInteractionPanel'
 
 export default function AssetActions({
   asset,
@@ -180,47 +183,33 @@ export default function AssetActions({
 
   return (
     <>
-      <div
-        style={{
-          marginTop: '10px',
-          marginLeft: '10px'
-        }}
-      >
-        <Button style="text" size="small" onClick={handleBack}>
-          Back
+      <div className={styles.headerRow}>
+        <Button
+          style="outlined"
+          size="small"
+          onClick={handleBack}
+          className={styles.backButton}
+        >
+          <BackSVG /> Back
         </Button>
-      </div>
-
-      <div className={styles.actions}>
-        {isCompute ? (
-          <Compute
+        {accountId && (
+          <WhitelistIndicator
             accountId={accountId}
-            signer={signer}
-            asset={asset}
-            service={service}
-            accessDetails={accessDetails}
-            dtBalance={dtBalance}
             isAccountIdWhitelisted={isAccountIdWhitelisted}
-            file={fileMetadata}
-            fileIsLoading={fileIsLoading}
-          />
-        ) : (
-          <Download
-            accountId={accountId}
-            signer={signer}
-            asset={asset}
-            service={service}
-            accessDetails={accessDetails}
-            serviceIndex={serviceIndex}
-            dtBalance={dtBalance}
-            isBalanceSufficient={isBalanceSufficient}
-            isAccountIdWhitelisted={isAccountIdWhitelisted}
-            file={fileMetadata}
-            fileIsLoading={fileIsLoading}
+            minimal
           />
         )}
-        <AssetStats />
       </div>
+
+      <AssetInteractionPanel
+        asset={asset}
+        service={service}
+        accessDetails={accessDetails}
+        serviceIndex={serviceIndex}
+        file={fileMetadata}
+        fileIsLoading={fileIsLoading}
+        isAccountIdWhitelisted={isAccountIdWhitelisted}
+      />
     </>
   )
 }

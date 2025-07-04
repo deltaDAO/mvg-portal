@@ -23,11 +23,11 @@
 .free {
   font-weight: 700;
   font-size: 14px;
-  color: #00adb2;
+  color: var(--clr-teal);
   text-transform: uppercase;
 }
 .tokenSymbol {
-  color: #00adb2;
+  color: var(--clr-teal);
 }
 .access {
   font-family: var(--font-family);

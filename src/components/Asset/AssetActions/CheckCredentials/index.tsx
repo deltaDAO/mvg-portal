@@ -312,7 +312,7 @@ export function AssetActionCheckCredentials({
   }
 
   return (
-    <div className={`${styles.panelColumn} ${styles.alignItemsCenter}`}>
+    <>
       <VpSelector
         setShowDialog={setShowVpDialog}
         showDialog={showVpDialog}
@@ -332,48 +332,17 @@ export function AssetActionCheckCredentials({
         }
         dids={exchangeStateData.dids}
       />
-      <div className={styles.buttonWrapper}>
-        <Button
-          type="button"
-          style="primary"
-          onClick={() =>
-            setCheckCredentialState(
-              CheckCredentialState.StartCredentialExchange
-            )
-          }
-          disabled={!selectedWallet?.id}
-        >
-          Check Credentials
-        </Button>
-      </div>
 
-      <div
-        className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
+      <button
+        type="button"
+        className={styles.checkCredentialsButton}
+        onClick={() =>
+          setCheckCredentialState(CheckCredentialState.StartCredentialExchange)
+        }
+        disabled={!selectedWallet?.id}
       >
-        {requiredCredentials
-          ?.sort((credential1, credential2) =>
-            credential1.localeCompare(credential2)
-          )
-          .map((credential) => {
-            return (
-              <React.Fragment key={credential}>
-                {isCredentialCached(cachedCredentials, credential) ? (
-                  <VerifiedPatch
-                    key={credential}
-                    className={`${styles.marginTop6px} ${styles.fillGreen}`}
-                  />
-                ) : (
-                  <div
-                    key={credential}
-                    className={`${styles.marginTop6px} ${styles.fillRed}`}
-                  ></div>
-                )}
-
-                {credential}
-              </React.Fragment>
-            )
-          })}
-      </div>
-    </div>
+        Check Credentials
+      </button>
+    </>
   )
 }

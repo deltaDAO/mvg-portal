@@ -544,12 +544,6 @@ export default function Download({
               accessDetails={accessDetails}
             />
           )}
-          {accountId && !isOwner && (
-            <WhitelistIndicator
-              accountId={accountId}
-              isAccountIdWhitelisted={isAccountIdWhitelisted}
-            />
-          )}
         </aside>
       </Form>
     </Formik>

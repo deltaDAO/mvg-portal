@@ -5,3 +5,27 @@
   margin: auto;
   padding: var(--spacer) calc(var(--spacer) / 1.5);
 }
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: calc(var(--spacer) / 2);
+  padding: 0 10px;
+}
+
+body .backButton {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1) !important;
+  padding: 4px 8px !important;
+
+  line-height: 117% !important;
+}
+
+.backButton svg {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+}

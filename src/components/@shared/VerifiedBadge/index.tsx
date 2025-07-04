@@ -1,6 +1,6 @@
 import classNames from 'classnames/bind'
 import { ReactElement } from 'react'
-import VerifiedPatch from '@images/patch_check.svg'
+import VerifiedPatch from '@images/circle_check.svg'
 import Cross from '@images/cross.svg'
 import styles from './index.module.css'
 import Loader from '../atoms/Loader'
@@ -25,8 +25,8 @@ export function Badge({
         [className]: className
       })}
     >
-      <span>{verifiedService}</span>
       {isValid ? <VerifiedPatch /> : <Cross />}
+      <span>{verifiedService}</span>
     </div>
   )
 }
