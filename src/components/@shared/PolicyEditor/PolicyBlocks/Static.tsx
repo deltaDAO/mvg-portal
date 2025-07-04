@@ -39,6 +39,7 @@ export default function StaticPolicyBlock({
           name={fieldName}
           readOnly={readOnly}
           className={styles.policyInput}
+          selectStyle="default"
         />
         <DeleteButton onClick={onDelete} disabled={readOnly} />
       </InputGroup>
