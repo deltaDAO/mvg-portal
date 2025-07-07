@@ -14,6 +14,8 @@ export interface DidSelectorProps {
 export function DidSelector(props: DidSelectorProps): ReactElement {
   const { showDialog, setShowDialog, acceptSelection, abortSelection, dids } =
     props
+
+  console.log('DidSelector', props)
   const selectorDialog = useRef<HTMLDialogElement>(null)
   const [selectedDid, setSelectedDid] = useState<SsiWalletDid>()
 

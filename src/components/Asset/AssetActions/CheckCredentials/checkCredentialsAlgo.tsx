@@ -78,6 +78,7 @@ export function AssetActionCheckCredentialsAlgo({
   useEffect(() => {
     async function handleCredentialExchange() {
       try {
+        console.log('handleCredentialExchange', checkCredentialState)
         switch (checkCredentialState) {
           case CheckCredentialState.StartCredentialExchange: {
             const presentationResult = await requestCredentialPresentation(
@@ -165,34 +166,44 @@ export function AssetActionCheckCredentialsAlgo({
           }
 
           case CheckCredentialState.ReadDids: {
+            console.log('here')
             let { selectedCredentials } = exchangeStateData
+            console.log('selectedCredentials', selectedCredentials)
             if (!selectedCredentials || selectedCredentials.length === 0) {
               selectedCredentials = exchangeStateData.verifiableCredentials
             }
+            console.log('selectedCredentials 2', selectedCredentials)
             if (!selectedCredentials || selectedCredentials.length === 0) {
               selectedCredentials = cachedCredentials
             }
-
+            console.log('selectedCredentials 3', selectedCredentials)
             if (!selectedCredentials || selectedCredentials.length === 0) {
+              console.log('this iffff')
               toast.error('You must select at least one credential to present')
+              console.log('stop credential exchange')
               setCheckCredentialState(CheckCredentialState.Stop)
               break
             }
-
+            console.log('continue credential exchange')
             ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
             setCachedCredentials(selectedCredentials)
-
+            console.log('ssiWalletCache', ssiWalletCache)
             exchangeStateData.dids = await getWalletDids(
               selectedWallet.id,
               sessionToken.token
             )
+            console.log('exchangeStateData.dids', exchangeStateData.dids)
 
             exchangeStateData.selectedDid =
               exchangeStateData.dids.length > 0
                 ? exchangeStateData.dids[0].did
                 : ''
-
+            console.log(
+              'exchangeStateData.selectedDid',
+              exchangeStateData.selectedDid
+            )
             setExchangeStateData({ ...exchangeStateData })
+            console.log('open did dialog')
             setShowDidDialog(true)
             break
           }
@@ -236,12 +247,14 @@ export function AssetActionCheckCredentialsAlgo({
               ...exchangeStateData,
               ...newExchangeStateData()
             })
+            console.log('stopS')
             setCheckCredentialState(CheckCredentialState.Stop)
             break
           }
 
           case CheckCredentialState.AbortSelection: {
             setExchangeStateData(newExchangeStateData())
+            console.log('stopS')
             setCheckCredentialState(CheckCredentialState.Stop)
             break
           }
