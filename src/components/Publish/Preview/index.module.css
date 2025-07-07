@@ -4,18 +4,71 @@
   margin-bottom: var(--spacer);
   margin-left: calc(var(--spacer) / -4);
   margin-right: calc(var(--spacer) / -4);
-
   width: 100%;
-
-  /* Disable all user actions as to not run into unintended
-  consequences of browsing away from publish. */
   pointer-events: none;
+}
+
+.preview :global(.debugOutput) {
+  pointer-events: auto;
+}
+
+.preview :global(.debugOutput) pre {
+  pointer-events: auto;
+}
+
+.preview div[class*='debugOutput'] {
+  pointer-events: auto;
+}
+
+.preview div[class*='debugOutput'] pre {
+  pointer-events: auto;
+}
+
+.preview :global(.debugOutput) h5 {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #303031;
+  margin-bottom: calc(var(--spacer) / 4);
+  margin-top: var(--spacer);
+}
+
+.preview div[class*='debugOutput'] pre {
+  height: 200px;
+  max-height: 800px;
+  min-height: 200px;
+  overflow-y: auto;
+  border-radius: 20px;
+  background-color: var(--background-body);
+  border: 1px solid rgba(48, 48, 49, 0.24);
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.preview :global(.debugOutput) pre::-webkit-scrollbar {
+  width: 8px;
+}
+
+.preview :global(.debugOutput) pre::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.preview :global(.debugOutput) pre::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+.preview :global(.debugOutput) pre::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 @media (min-width: 60rem) {
   .preview {
-    /* margin-left: calc(var(--spacer) * -3);
-    margin-right: calc(var(--spacer) * -3); */
     margin-left: 0;
     margin-right: 0;
   }

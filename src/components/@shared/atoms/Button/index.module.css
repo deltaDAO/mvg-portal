@@ -74,7 +74,6 @@
 
 body .publish {
   min-width: auto;
-  padding: var(--publish-continue-button-padding);
   background: var(--publish-accent);
   color: var(--publish-primary);
   border-radius: var(--publish-input-border-radius) !important;
@@ -226,4 +225,13 @@ body .publish:focus {
 .ghost:hover,
 .ghost:focus {
   background: rgba(10, 75, 112, 0.05);
+}
+
+/* Specific padding overrides for Upload File and View Asset buttons */
+.button.publish.marginRight2 {
+  padding: 14px 20px;
+}
+
+:global(.action) .button.publish {
+  padding: 14px 20px;
 }

@@ -92,5 +92,6 @@
   --clr-amber: #fdd655;
   --clr-error: #ff360d;
   --clr-slate-70: rgba(48, 48, 49, 0.7);
+  --clr-slate-50: rgba(48, 48, 49, 0.5);
   --clr-slate-12: rgba(48, 48, 49, 0.12);
 }
