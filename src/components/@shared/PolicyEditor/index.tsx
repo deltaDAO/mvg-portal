@@ -323,7 +323,7 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
 
                 <Field
                   as="select"
-                  name={`customPolicy.rules.${index}.leftValue`}
+                  name={`${name}.requestCredentials[${index}].policies[${innerIndex}].rules[${ruleIndex}].leftValue`}
                   className={styles.select}
                   required
                 >
