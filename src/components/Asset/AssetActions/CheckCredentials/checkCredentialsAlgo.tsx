@@ -20,11 +20,9 @@ import styles from './index.module.css'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { useAccount } from 'wagmi'
-import {
-  CheckCredentialState,
-  ExchangeStateData,
-  useCredentialDialogState
-} from '@hooks/useCredentials'
+import { CheckCredentialState, ExchangeStateData } from '@hooks/useCredentials'
+import { useCredentialDialog } from '../Compute/CredentialDialogProvider'
+
 function newExchangeStateData(): ExchangeStateData {
   return {
     openid4vp: '',
@@ -57,7 +55,7 @@ export function AssetActionCheckCredentialsAlgo({
     setShowVpDialog,
     showDidDialog,
     setShowDidDialog
-  } = useCredentialDialogState()
+  } = useCredentialDialog()
 
   const {
     cacheVerifierSessionId,
@@ -78,7 +76,6 @@ export function AssetActionCheckCredentialsAlgo({
   useEffect(() => {
     async function handleCredentialExchange() {
       try {
-        console.log('handleCredentialExchange', checkCredentialState)
         switch (checkCredentialState) {
           case CheckCredentialState.StartCredentialExchange: {
             const presentationResult = await requestCredentialPresentation(
@@ -140,16 +137,12 @@ export function AssetActionCheckCredentialsAlgo({
               const cachedCredentialsIds = resultCachedCredentials.map(
                 (credential) => credential.parsedDocument.id
               )
-              console.log('cachedCredentialsIds', cachedCredentialsIds)
               exchangeStateData.verifiableCredentials =
                 exchangeStateData.verifiableCredentials.filter(
                   (credential) =>
                     !cachedCredentialsIds.includes(credential.parsedDocument.id)
                 )
-              console.log(
-                'exchangeStateData.verifiableCredentials',
-                exchangeStateData.verifiableCredentials
-              )
+
               if (exchangeStateData.verifiableCredentials.length > 0) {
                 setShowVpDialog(true)
               } else {
@@ -166,44 +159,32 @@ export function AssetActionCheckCredentialsAlgo({
           }
 
           case CheckCredentialState.ReadDids: {
-            console.log('here')
             let { selectedCredentials } = exchangeStateData
-            console.log('selectedCredentials', selectedCredentials)
             if (!selectedCredentials || selectedCredentials.length === 0) {
               selectedCredentials = exchangeStateData.verifiableCredentials
             }
-            console.log('selectedCredentials 2', selectedCredentials)
             if (!selectedCredentials || selectedCredentials.length === 0) {
               selectedCredentials = cachedCredentials
             }
-            console.log('selectedCredentials 3', selectedCredentials)
             if (!selectedCredentials || selectedCredentials.length === 0) {
-              console.log('this iffff')
               toast.error('You must select at least one credential to present')
-              console.log('stop credential exchange')
               setCheckCredentialState(CheckCredentialState.Stop)
               break
             }
-            console.log('continue credential exchange')
             ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
-            setCachedCredentials(selectedCredentials)
-            console.log('ssiWalletCache', ssiWalletCache)
+            if (selectedCredentials.length > 0) {
+              setCachedCredentials(selectedCredentials)
+            }
             exchangeStateData.dids = await getWalletDids(
               selectedWallet.id,
               sessionToken.token
             )
-            console.log('exchangeStateData.dids', exchangeStateData.dids)
 
             exchangeStateData.selectedDid =
               exchangeStateData.dids.length > 0
                 ? exchangeStateData.dids[0].did
                 : ''
-            console.log(
-              'exchangeStateData.selectedDid',
-              exchangeStateData.selectedDid
-            )
             setExchangeStateData({ ...exchangeStateData })
-            console.log('open did dialog')
             setShowDidDialog(true)
             break
           }
@@ -215,15 +196,12 @@ export function AssetActionCheckCredentialsAlgo({
                 exchangeStateData.openid4vp,
                 sessionToken.token
               )
-
             try {
               const result = await sendPresentationRequest(
                 selectedWallet?.id,
                 exchangeStateData.selectedDid,
                 resolvedPresentationRequest,
-                exchangeStateData.selectedCredentials.map(
-                  (cred) => cred.parsedDocument.id
-                ),
+                exchangeStateData.selectedCredentials,
                 sessionToken.token
               )
               if (
@@ -247,14 +225,12 @@ export function AssetActionCheckCredentialsAlgo({
               ...exchangeStateData,
               ...newExchangeStateData()
             })
-            console.log('stopS')
             setCheckCredentialState(CheckCredentialState.Stop)
             break
           }
 
           case CheckCredentialState.AbortSelection: {
             setExchangeStateData(newExchangeStateData())
-            console.log('stopS')
             setCheckCredentialState(CheckCredentialState.Stop)
             break
           }

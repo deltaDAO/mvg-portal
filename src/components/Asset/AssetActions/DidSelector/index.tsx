@@ -15,7 +15,6 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
   const { showDialog, setShowDialog, acceptSelection, abortSelection, dids } =
     props
 
-  console.log('DidSelector', props)
   const selectorDialog = useRef<HTMLDialogElement>(null)
   const [selectedDid, setSelectedDid] = useState<SsiWalletDid>()
 
@@ -32,16 +31,22 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
     setShowDialog(false)
     abortSelection()
   }
-
   useEffect(() => {
     if (showDialog) {
       if (dids?.length > 0) {
         setSelectedDid(dids[0])
       }
-
-      selectorDialog.current.showModal()
+      try {
+        selectorDialog.current.showModal()
+      } catch (e) {
+        console.error('dialog showModal error', e)
+      }
     } else {
-      selectorDialog.current.close()
+      try {
+        selectorDialog.current.close()
+      } catch (e) {
+        console.error('dialog close error', e)
+      }
     }
   }, [showDialog, setShowDialog])
 

@@ -25,7 +25,6 @@ import { Asset } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { ResourceType } from 'src/@types/ResourceType'
-import { AssetActionCheckCredentials } from '../CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
 
@@ -604,7 +603,7 @@ export default function FormStartCompute({
             {appConfig.ssiEnabled && selectedAlgorithmAsset ? (
               verifierSessionCache &&
               lookupVerifierSessionId(
-                `${selectedAlgorithmAsset?.id}-algo`,
+                `${selectedAlgorithmAsset?.id}`,
                 selectedAlgorithmAsset?.credentialSubject?.services?.[
                   serviceIndex
                 ]?.id
