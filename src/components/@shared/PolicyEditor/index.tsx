@@ -17,6 +17,7 @@ import {
 import fields from './editor.json'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
+import { credentialFieldOptions } from './constant/credentialFields'
 
 interface PolicyViewProps {
   policy: PolicyType
@@ -25,6 +26,7 @@ interface PolicyViewProps {
   innerIndex: number
   onDeletePolicy: () => void
   onValueChange: () => void
+  credentialType?: string
 }
 
 interface VpPolicyViewProps {
@@ -274,6 +276,9 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
     onValueChange()
   }
 
+  const credentialType = props.credentialType || 'id'
+  const options = credentialFieldOptions[credentialType] || ['id']
+
   return (
     <>
       <label>{{ ...getFieldContent('customPolicy', fields) }.label}</label>
@@ -311,13 +316,25 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
             <div
               className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100} ${styles.paddingLeft3em}`}
             >
-              <div className={styles.flexGrow}>
+              <div className={styles.field}>
+                <label htmlFor={`customPolicy.rules.${index}.leftValue`}>
+                  Credential field*
+                </label>
+
                 <Field
-                  {...getFieldContent('leftValue', fields)}
-                  component={Input}
-                  name={`${name}.requestCredentials[${index}].policies[${innerIndex}].rules[${ruleIndex}].leftValue`}
-                />
+                  as="select"
+                  name={`customPolicy.rules.${index}.leftValue`}
+                  className={styles.select}
+                  required
+                >
+                  {options.map((field) => (
+                    <option key={field} value={field}>
+                      {field}
+                    </option>
+                  ))}
+                </Field>
               </div>
+
               <Field
                 {...getFieldContent('operator', fields)}
                 component={Input}
@@ -879,6 +896,7 @@ export function PolicyEditor(props): ReactElement {
                           onValueChange={() => {
                             setCredentials(credentials)
                           }}
+                          credentialType={credential.type}
                         />
                       </div>
                     ))}
