@@ -12,10 +12,10 @@ export async function transformAssetToAssetSelection(
   datasetProviderEndpoint: string,
   assets: Asset[],
   accountId: string,
-  selectedAlgorithms?: PublisherTrustedAlgorithmService[]
+  selectedAlgorithms?: PublisherTrustedAlgorithmService[],
+  allow?: boolean
 ): Promise<AssetSelectionAsset[]> {
   if (!assets) return []
-
   const algorithmList: AssetSelectionAsset[] = []
   for (const asset of assets) {
     const algoService =
@@ -25,10 +25,19 @@ export async function transformAssetToAssetSelection(
       normalizeUrl(algoService?.serviceEndpoint) ===
         normalizeUrl(datasetProviderEndpoint)
     ) {
-      // pre‐compute which (asset,service) pairs are in your selectedAlgorithms
+      const isAllAlgorithmsAllowed =
+        selectedAlgorithms?.some(
+          (algo) =>
+            algo.did === '*' &&
+            algo.containerSectionChecksum === '*' &&
+            algo.filesChecksum === '*' &&
+            algo.serviceId === '*'
+        ) ?? false
+
       const matches = new Set(
         selectedAlgorithms?.map((a) => `${a.did}|${a.serviceId}`)
       )
+
       // fetch all accessDetails in one go
       const cancelTokenSource = axios.CancelToken.source()
       const { services } = asset.credentialSubject
@@ -49,6 +58,7 @@ export async function transformAssetToAssetSelection(
         if (
           selectedAlgorithms &&
           selectedAlgorithms.length > 0 &&
+          !isAllAlgorithmsAllowed &&
           !matches.has(key)
         )
           return // <-- skip any service that wasn't in selectedAlgorithms
@@ -63,11 +73,9 @@ export async function transformAssetToAssetSelection(
           tokenSymbol: priceInfo.tokenSymbol,
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
-          isAccountIdWhitelisted: isAddressWhitelisted(
-            asset,
-            accountId,
-            service
-          )
+          isAccountIdWhitelisted: !allow
+            ? isAddressWhitelisted(asset, accountId, service)
+            : true
         }
         // put selected ones up front
         algorithmList.unshift(assetEntry)

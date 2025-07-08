@@ -14,7 +14,7 @@
   {
     "name": "leftValue",
     "label": "Credential field",
-    "type": "text",
+    "type": "dynamic-select",
     "required": true
   },
   {
