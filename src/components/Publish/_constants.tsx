@@ -130,6 +130,7 @@ export const initialValues: FormPublishData = {
     allow: [],
     deny: [],
     allowInputValue: '',
+    denyInputValue: '',
     requestCredentials: [],
     vcPolicies: [],
     vpPolicies: []

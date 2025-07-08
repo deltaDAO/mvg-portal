@@ -25,7 +25,9 @@ export default function AccessRulesSection({
   const [allowInputValue, setAllowInputValue] = useState(
     values.credentials?.allowInputValue || ''
   )
-  const [denyInputValue, setDenyInputValue] = useState('')
+  const [denyInputValue, setDenyInputValue] = useState(
+    values.credentials?.denyInputValue || ''
+  )
   const [allowDropdownValue, setAllowDropdownValue] = useState(
     'Please select an option'
   )
@@ -63,6 +65,9 @@ export default function AccessRulesSection({
         setFieldValue(`${fieldPrefix}.deny`, ['*'])
       }
       setDenyInputValue('')
+      if (fieldPrefix === 'credentials') {
+        setFieldValue('credentials.denyInputValue', '')
+      }
     }
   }, [denyDropdownValue, denyList, setFieldValue])
 
@@ -158,6 +163,9 @@ export default function AccessRulesSection({
     const newDenyList = [...denyList, denyInputValue.toLowerCase()]
     setFieldValue(`${fieldPrefix}.deny`, newDenyList)
     setDenyInputValue('')
+    if (fieldPrefix === 'credentials') {
+      setFieldValue('credentials.denyInputValue', '')
+    }
   }
 
   const handleDeleteDenyAddress = (addressToDelete: string) => {
@@ -325,9 +333,12 @@ export default function AccessRulesSection({
               name="denyAddress"
               placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
               value={denyInputValue}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 setDenyInputValue(e.target.value)
-              }
+                if (fieldPrefix === 'credentials') {
+                  setFieldValue('credentials.denyInputValue', e.target.value)
+                }
+              }}
             />
             <Button
               style="gradient"

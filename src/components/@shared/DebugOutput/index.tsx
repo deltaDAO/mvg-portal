@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import styles from './index.module.css'
 
 export default function DebugOutput({
   title,
@@ -8,9 +9,9 @@ export default function DebugOutput({
   output: any
 }): ReactElement {
   return (
-    <div style={{ marginTop: 'var(--spacer)' }}>
+    <div className={styles.debugOutput}>
       {title && <h5>{title}</h5>}
-      <pre style={{ wordWrap: 'break-word' }}>
+      <pre>
         <code>{JSON.stringify(output, null, 2)}</code>
       </pre>
     </div>

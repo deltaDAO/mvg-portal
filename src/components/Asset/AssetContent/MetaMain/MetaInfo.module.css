@@ -1,5 +1,5 @@
 .wrapper {
-  padding: calc(var(--spacer) / 2);
+  padding: calc(var(--spacer) / 2) 0;
   font-family: var(--font-family);
   font-weight: 400;
   font-size: 14px;
@@ -12,12 +12,10 @@
   border-right: 1px solid var(--border-color);
   padding-right: calc(var(--spacer) / 3.5);
   margin-right: calc(var(--spacer) / 4);
-  margin-left: -15px;
 }
 
 .byline {
   display: inline-block;
-  font-size: var(--font-size-small);
   text-transform: none;
 }
 

@@ -214,6 +214,7 @@ const InputElement = forwardRef(
         return (
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
+            accountId={accountId}
             multiple
             {...field}
             {...props}

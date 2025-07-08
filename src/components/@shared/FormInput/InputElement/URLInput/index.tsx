@@ -108,7 +108,7 @@ export default function URLInput({
               }}
               disabled={isButtonDisabled || disableButton}
             >
-              {isLoading ? <Loader /> : submitText}
+              {isLoading ? <Loader white /> : submitText}
             </Button>
           ))}
 

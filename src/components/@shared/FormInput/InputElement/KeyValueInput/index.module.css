@@ -1,16 +1,18 @@
 .pairsContainer {
-  display: flex;
-  justify-content: space-between;
-  gap: 0 calc(var(--spacer) / 4);
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: calc(var(--spacer) / 4);
   margin-bottom: var(--spacer);
   position: relative;
+  align-items: end;
 }
 
 .pairsAddedContainer {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
   gap: var(--sp-2_5);
   margin-bottom: var(--spacer);
+  align-items: end;
 }
 
 .pairsAddedContainer > button {

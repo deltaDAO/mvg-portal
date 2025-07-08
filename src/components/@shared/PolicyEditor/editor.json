@@ -14,7 +14,7 @@
   {
     "name": "leftValue",
     "label": "Credential field",
-    "type": "text",
+    "type": "dynamic-select",
     "required": true
   },
   {
@@ -107,7 +107,14 @@
   {
     "name": "staticPolicy",
     "label": "Static Policy",
-    "type": "text",
+    "type": "select",
+    "options": [
+      "signature",
+      "not-before",
+      "revoked-status-list",
+      "expired",
+      "signature_sd-jwt-vc"
+    ],
     "required": true
   },
   {

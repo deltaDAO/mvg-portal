@@ -7,5 +7,5 @@
 }
 
 a.txHash {
-  color: var(--color-highlight);
+  color: var(--publish-primary);
 }

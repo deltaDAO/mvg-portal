@@ -228,7 +228,7 @@ export default function ComputeEnvSelection({
               <label>Job Duration: </label>
               <input
                 type="range"
-                min={0}
+                min={60}
                 max={maxDurationSec}
                 step={60}
                 value={currentRes.jobDuration}

@@ -28,6 +28,7 @@ import FieldRow from './FieldRow/Row'
 import fieldRowStyles from './FieldRow/Row.module.css'
 import DeleteButton from '../DeleteButton/DeleteButton'
 import CustomPolicyBlock from './PolicyBlocks/Custom'
+import { credentialFieldOptions } from './constant/credentialFields'
 
 import AddIcon from '@images/add_param.svg'
 
@@ -38,6 +39,7 @@ interface PolicyViewProps {
   innerIndex: number
   onDeletePolicy: () => void
   onValueChange: () => void
+  credentialType?: string
 }
 
 interface VpPolicyViewProps {
@@ -279,6 +281,9 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
     onValueChange()
   }
 
+  const credentialType = props.credentialType || 'id'
+  const options = credentialFieldOptions[credentialType] || ['id']
+
   return (
     <>
       <label>{{ ...getFieldContent('customPolicy', fields) }.label}</label>
@@ -316,13 +321,25 @@ function CustomPolicyView(props: PolicyViewProps): ReactElement {
             <div
               className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100} ${styles.paddingLeft3em}`}
             >
-              <div className={styles.flexGrow}>
+              <div className={styles.field}>
+                <label htmlFor={`customPolicy.rules.${index}.leftValue`}>
+                  Credential field*
+                </label>
+
                 <Field
-                  {...getFieldContent('leftValue', fields)}
-                  component={Input}
+                  as="select"
                   name={`${name}.requestCredentials[${index}].policies[${innerIndex}].rules[${ruleIndex}].leftValue`}
-                />
+                  className={styles.select}
+                  required
+                >
+                  {options.map((field) => (
+                    <option key={field} value={field}>
+                      {field}
+                    </option>
+                  ))}
+                </Field>
               </div>
+
               <Field
                 {...getFieldContent('operator', fields)}
                 component={Input}
