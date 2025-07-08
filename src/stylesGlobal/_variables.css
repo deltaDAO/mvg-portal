@@ -6,6 +6,7 @@
   --color-secondary: var(--brand-blue-light);
   --color-highlight: var(--brand-red);
   --color-alert: var(--brand-alert-red);
+  --color-success: var(--brand-alert-green);
 
   /* Only use these vars for most color referencing for easy light/dark mode */
   --font-color-text: var(--brand-grey);
