@@ -292,7 +292,7 @@ export function AssetActionCheckCredentialsAlgo({
           }
           disabled={!selectedWallet?.id}
         >
-          Check Credentials
+          Check Algorithm Credentials
         </Button>
       </div>
       <div
