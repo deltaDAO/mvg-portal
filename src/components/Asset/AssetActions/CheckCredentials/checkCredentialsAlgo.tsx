@@ -63,14 +63,14 @@ export function AssetActionCheckCredentialsAlgo({
     ssiWalletCache,
     cachedCredentials,
     setCachedCredentials,
-    sessionToken,
-    clearVerifierSessionCache
+    sessionToken
   } = useSsiWallet()
 
   function handleResetWalletCache() {
-    ssiWalletCache.clearCredentials()
-    setCachedCredentials(undefined)
-    clearVerifierSessionCache()
+    setCheckCredentialState(CheckCredentialState.Stop)
+    // ssiWalletCache.clearCredentials()
+    // setCachedCredentials(undefined)
+    // clearVerifierSessionCache()
   }
 
   useEffect(() => {
@@ -167,7 +167,9 @@ export function AssetActionCheckCredentialsAlgo({
               selectedCredentials = cachedCredentials
             }
             if (!selectedCredentials || selectedCredentials.length === 0) {
-              toast.error('You must select at least one credential to present')
+              toast.error(
+                'You must select at least one credential to present, check if you have any required credential in your wallet'
+              )
               setCheckCredentialState(CheckCredentialState.Stop)
               break
             }
@@ -236,6 +238,7 @@ export function AssetActionCheckCredentialsAlgo({
           }
         }
       } catch (error: any) {
+        console.log(error)
         toast.error(
           error?.message
             ? `SSI credential validation was not succesful: ${error.message}`
@@ -262,25 +265,29 @@ export function AssetActionCheckCredentialsAlgo({
 
   return (
     <div className={`${styles.panelColumn} ${styles.alignItemsCenter}`}>
-      <VpSelector
-        setShowDialog={setShowVpDialog}
-        showDialog={showVpDialog}
-        acceptSelection={handleAcceptCredentialSelection}
-        abortSelection={() =>
-          setCheckCredentialState(CheckCredentialState.AbortSelection)
-        }
-        ssiVerifiableCredentials={exchangeStateData.verifiableCredentials}
-        assetAllowCredentials={asset.credentialSubject?.credentials?.allow}
-      />
-      <DidSelector
-        setShowDialog={setShowDidDialog}
-        showDialog={showDidDialog}
-        acceptSelection={handleAcceptDidSelection}
-        abortSelection={() =>
-          setCheckCredentialState(CheckCredentialState.AbortSelection)
-        }
-        dids={exchangeStateData.dids}
-      />
+      {showVpDialog && (
+        <VpSelector
+          setShowDialog={setShowVpDialog}
+          showDialog={showVpDialog}
+          acceptSelection={handleAcceptCredentialSelection}
+          abortSelection={() =>
+            setCheckCredentialState(CheckCredentialState.AbortSelection)
+          }
+          ssiVerifiableCredentials={exchangeStateData.verifiableCredentials}
+          assetAllowCredentials={asset.credentialSubject?.credentials?.allow}
+        />
+      )}
+      {showDidDialog && (
+        <DidSelector
+          setShowDialog={setShowDidDialog}
+          showDialog={showDidDialog}
+          acceptSelection={handleAcceptDidSelection}
+          abortSelection={() =>
+            setCheckCredentialState(CheckCredentialState.AbortSelection)
+          }
+          dids={exchangeStateData.dids}
+        />
+      )}
       <div className={styles.buttonWrapper}>
         <Button
           type="button"

@@ -275,7 +275,7 @@ export default function FormStartCompute({
       !datasetOrderPrice || hasPreviousOrder || hasDatatoken
         ? new Decimal(0)
         : new Decimal(datasetOrderPrice).toDecimalPlaces(MAX_DECIMALS)
-    const rawPrice = details?.validOrderTx ? 0 : details.price
+    const rawPrice = details?.validOrderTx ? 0 : details?.price
 
     // wrap in Decimal and round to your MAX_DECIMALS
     const priceAlgo = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
@@ -610,7 +610,7 @@ export default function FormStartCompute({
               ) ? (
                 <PurchaseButton />
               ) : (
-                <div style={{ marginTop: '60px', marginLeft: '60px' }}>
+                <div style={{ marginTop: '60px', marginLeft: '10px' }}>
                   <AssetActionCheckCredentialsAlgo
                     asset={selectedAlgorithmAsset}
                     service={
