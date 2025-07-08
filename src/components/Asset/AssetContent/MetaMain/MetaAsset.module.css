@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-left: calc(var(--spacer) / 2);
   justify-content: center;
 }
 
@@ -18,6 +17,7 @@
   line-height: 157%;
   color: var(--clr-slate-50);
   display: block;
+  margin-left: var(--spacer);
 }
 
 .addWrap {

@@ -28,7 +28,7 @@
   max-width: 100%;
   box-sizing: border-box;
   padding: var(--spacer);
-  margin: var(--spacer) 0;
+  margin: 0;
   word-wrap: break-word;
   white-space: pre-wrap;
 }

@@ -34,7 +34,7 @@
   margin-top: var(--spacer);
 }
 
-.preview div[class*='debugOutput'] pre {
+body .preview div[class*='debugOutput'] pre {
   height: 200px;
   max-height: 800px;
   min-height: 200px;
@@ -47,6 +47,7 @@
   font-size: 0.875rem;
   line-height: 1.4;
   resize: vertical;
+  margin-bottom: 0;
 }
 
 .preview :global(.debugOutput) pre::-webkit-scrollbar {
