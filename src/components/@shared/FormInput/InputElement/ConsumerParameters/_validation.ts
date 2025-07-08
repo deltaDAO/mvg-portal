@@ -39,14 +39,12 @@ export const validationConsumerParameters: {
     .required('Required'),
   type: Yup.string().oneOf(paramTypes).required('Required'),
   description: Yup.string()
-    .min(10, (param) => `Description must be at least ${param.min} characters`)
     .max(
       500,
       (param) => `Description must have maximum ${param.max} characters`
     )
     .required('Required'),
   label: Yup.string()
-    .min(4, (param) => `Label must be at least ${param.min} characters`)
     .max(50, (param) => `Label must have maximum ${param.max} characters`)
     .required('Required'),
   required: Yup.string().oneOf(['optional', 'required']).required('Required'),
