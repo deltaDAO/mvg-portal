@@ -5,6 +5,11 @@
   justify-content: center;
 }
 
+button .loaderWrap {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .loader {
   display: block;
   flex: 0 0 1.2rem;
@@ -25,8 +30,13 @@
 }
 
 .loader.white {
-  border-color: rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-color: rgba(255, 255, 255, 0.6);
+  border-top-color: #ffffff;
+}
+
+.loader.primary {
+  border-color: rgba(10, 75, 112, 0.3);
+  border-top-color: var(--publish-primary);
 }
 
 @keyframes loader {

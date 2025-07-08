@@ -208,7 +208,7 @@ export default function Actions({
               disabled={isSubmitting || !isValid}
             >
               {isSubmitting ? (
-                <Loader white />
+                <Loader primary />
               ) : hasSubmitError ? (
                 'Retry'
               ) : (
