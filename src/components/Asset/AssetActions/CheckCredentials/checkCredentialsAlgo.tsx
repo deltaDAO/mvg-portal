@@ -22,6 +22,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { useAccount } from 'wagmi'
 import { CheckCredentialState, ExchangeStateData } from '@hooks/useCredentials'
 import { useCredentialDialog } from '../Compute/CredentialDialogProvider'
+import { parseCredentialPolicies } from '@components/Publish/_utils'
 
 function newExchangeStateData(): ExchangeStateData {
   return {
@@ -78,6 +79,11 @@ export function AssetActionCheckCredentialsAlgo({
       try {
         switch (checkCredentialState) {
           case CheckCredentialState.StartCredentialExchange: {
+            parseCredentialPolicies(asset.credentialSubject?.credentials)
+            asset?.credentialSubject?.services?.forEach((service) => {
+              parseCredentialPolicies(service.credentials)
+            })
+
             const presentationResult = await requestCredentialPresentation(
               asset,
               accountId,
