@@ -33,6 +33,12 @@
   white-space: pre-wrap;
 }
 
+.debugOutput pre.large {
+  height: 800px;
+  max-height: 800px;
+  min-height: 800px;
+}
+
 .debugOutput code {
   font-family: inherit;
   font-size: inherit;
