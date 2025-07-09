@@ -54,7 +54,7 @@ export function AccessPolicies(): ReactElement {
           }
           name="credentials"
           defaultPolicies={defaultPolicies}
-          help="Self-sovereign identity (SSI) is used verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
+          help="Self-sovereign identity (SSI) is used to verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
           isAsset={true}
         />
       ) : (
