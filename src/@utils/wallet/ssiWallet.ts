@@ -296,6 +296,39 @@ export async function resolvePresentationRequest(
   }
 }
 
+export async function sendPresentationRequest(
+  walletId: string,
+  did: string,
+  presentationRequest: string,
+  selectedCredentials: string[],
+  token: string
+): Promise<{ redirectUri: string }> {
+  const api = getSsiWalletApi()
+  if (!api) {
+    throw new Error('No SSI Wallet API configured')
+  }
+  try {
+    const response = await axios.post(
+      `${api}/wallet-api/wallet/${walletId}/exchange/usePresentationRequest`,
+      {
+        did,
+        presentationRequest,
+        selectedCredentials
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        withCredentials: true
+      }
+    )
+
+    return response.data
+  } catch (error) {
+    throw error.response
+  }
+}
+
 export async function usePresentationRequest(
   walletId: string,
   did: string,
