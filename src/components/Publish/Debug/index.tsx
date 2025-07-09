@@ -30,8 +30,8 @@ export default function Debug(): ReactElement {
 
   return (
     <div className={styles.debug}>
-      <DebugOutput title="Collected Form Values" output={valuePreview} />
-      <DebugOutput title="Transformed DDO Values" output={ddo} />
+      <DebugOutput title="Collected Form Values" output={valuePreview} large />
+      <DebugOutput title="Transformed DDO Values" output={ddo} large />
     </div>
   )
 }
