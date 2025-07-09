@@ -18,14 +18,15 @@ import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
-import CalculateButtonBuy from '../CalculateButtonBuy'
-import { consumeMarketOrderFee } from 'app.config.cjs'
+import appConfig, { consumeMarketOrderFee } from 'app.config.cjs'
 import { Row } from '../Row'
 import { Service } from 'src/@types/ddo/Service'
 import { Asset } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { ResourceType } from 'src/@types/ResourceType'
+import { useSsiWallet } from '@context/SsiWallet'
+import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
 
 export default function FormStartCompute({
   asset,
@@ -110,6 +111,7 @@ export default function FormStartCompute({
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
+  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const {
@@ -129,12 +131,8 @@ export default function FormStartCompute({
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
-  const [isFullPriceLoading, setIsFullPriceLoading] = useState(
-    accessDetails.type !== 'free'
-  )
   const selectedResources = allResourceValues?.[values.computeEnv]
   const c2dPrice = selectedResources?.price
-
   function getAlgorithmAsset(algo: string): {
     algorithmAsset: AssetExtended | null
     serviceIndexAlgo: number | null
@@ -277,7 +275,7 @@ export default function FormStartCompute({
       !datasetOrderPrice || hasPreviousOrder || hasDatatoken
         ? new Decimal(0)
         : new Decimal(datasetOrderPrice).toDecimalPlaces(MAX_DECIMALS)
-    const rawPrice = details?.validOrderTx ? 0 : details.price
+    const rawPrice = details?.validOrderTx ? 0 : details?.price
 
     // wrap in Decimal and round to your MAX_DECIMALS
     const priceAlgo = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
@@ -602,7 +600,30 @@ export default function FormStartCompute({
             </div>
           )}
           <div style={{ textAlign: 'center' }}>
-            <PurchaseButton />
+            {appConfig.ssiEnabled && selectedAlgorithmAsset ? (
+              verifierSessionCache &&
+              lookupVerifierSessionId(
+                `${selectedAlgorithmAsset?.id}`,
+                selectedAlgorithmAsset?.credentialSubject?.services?.[
+                  serviceIndex
+                ]?.id
+              ) ? (
+                <PurchaseButton />
+              ) : (
+                <div style={{ marginTop: '60px', marginLeft: '10px' }}>
+                  <AssetActionCheckCredentialsAlgo
+                    asset={selectedAlgorithmAsset}
+                    service={
+                      selectedAlgorithmAsset?.credentialSubject?.services?.[
+                        serviceIndex
+                      ]
+                    }
+                  />
+                </div>
+              )
+            ) : (
+              <PurchaseButton />
+            )}
           </div>
         </>
       </div>
