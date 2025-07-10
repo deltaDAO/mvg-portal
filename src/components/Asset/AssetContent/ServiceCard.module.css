@@ -6,7 +6,7 @@
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;
   position: relative;
-  height: 145px;
+  min-height: 145px;
 }
 
 .service:hover {
