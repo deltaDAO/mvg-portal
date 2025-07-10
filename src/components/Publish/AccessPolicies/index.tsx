@@ -6,7 +6,6 @@ import { getDefaultPolicies } from '../_utils'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import AccessRulesSection from './AccessRulesSection'
 import SSIPoliciesSection from './SSIPoliciesSection'
-import styles from './index.module.css'
 
 export function AccessPolicies(): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
