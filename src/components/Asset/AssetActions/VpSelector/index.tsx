@@ -1,4 +1,3 @@
-import Button from '@components/@shared/atoms/Button'
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import styles from './index.module.css'
 import { SsiVerifiableCredential } from 'src/@types/SsiWallet'
@@ -52,48 +51,47 @@ function VpField(props: VpFieldProps): ReactElement {
   }
 
   return (
-    <>
-      <label
-        className={`${styles.panelRow} ${styles.justifyContentFlexEnd} ${styles.marginRight2} ${styles.flexWrap}`}
-      >
-        {getSsiVerifiableCredentialType(credential)}
-        <input
-          value={'false'}
-          type="checkbox"
-          className={styles.inputField}
-          onChange={() => onChange(index, !checked)}
-          checked={checked}
-        />
-      </label>
-      <div
-        className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginBottom3}`}
-      >
-        <React.Fragment key={'ID'}>
-          <div>Id</div>
-          <div>
-            <DataView
-              data={credential?.parsedDocument?.id}
-              maxLength={maxLength}
-            />
+    <div className={styles.credentialRow}>
+      <input
+        type="checkbox"
+        className={styles.inputField}
+        onChange={() => onChange(index, !checked)}
+        checked={checked}
+      />
+      <div className={styles.credentialContent}>
+        <div className={styles.credentialName}>
+          {getSsiVerifiableCredentialType(credential)}
+        </div>
+        <div className={styles.fieldData}>
+          <div className={styles.fieldNames}>
+            <div>Id</div>
+            {Object.keys(credential?.parsedDocument?.credentialSubject || {})
+              .sort((key1, key2) => key1.localeCompare(key2))
+              .map((key) => (
+                <div key={key}>{key}</div>
+              ))}
           </div>
-        </React.Fragment>
-        {Object.keys(credential?.parsedDocument?.credentialSubject || {})
-          .sort((key1, key2) => key1.localeCompare(key2))
-          .map((key) => {
-            return (
-              <React.Fragment key={key}>
-                <div>CredentialSubject.{key}</div>
-                <div>
+          <div className={styles.fieldValues}>
+            <div>
+              <DataView
+                data={credential?.parsedDocument?.id}
+                maxLength={maxLength}
+              />
+            </div>
+            {Object.keys(credential?.parsedDocument?.credentialSubject || {})
+              .sort((key1, key2) => key1.localeCompare(key2))
+              .map((key) => (
+                <div key={key}>
                   <DataView
                     data={credential?.parsedDocument?.credentialSubject?.[key]}
                     maxLength={maxLength}
                   />
                 </div>
-              </React.Fragment>
-            )
-          })}
+              ))}
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -159,10 +157,6 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
       <div className={`${styles.panelColumn} ${styles.width100p}`}>
         <h3>Verifiable Credentials to present</h3>
 
-        <label htmlFor="verifiableCredentials" className={styles.marginBottom2}>
-          Choose the VCs to present. You can select multiple entries:
-        </label>
-
         {(() => {
           const minCreds = (assetAllowCredentials as any)
             ?.find((c) => c.type === 'SSIpolicy')
@@ -179,14 +173,14 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
               : null
 
           return minCount ? (
-            <span className={styles.marginBottom2}>
+            <span>
               <strong>Minimum credentials required:</strong> {minCount}
             </span>
           ) : null
         })()}
 
         <div
-          className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStrech} ${styles.marginBottom2}`}
+          className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStretch}`}
         >
           {ssiVerifiableCredentials
             ?.sort(sortCredentials)
@@ -205,22 +199,15 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         </div>
 
         <div className={styles.panelRow}>
-          <Button
-            style="primary"
-            size="small"
-            className={`${styles.width100p} ${styles.acceptButton} ${styles.marginRight2}`}
+          <button className={styles.abortButton} onClick={handleAbortSelection}>
+            Close
+          </button>
+          <button
+            className={styles.acceptButton}
             onClick={handleAcceptSelection}
           >
             Accept
-          </Button>
-          <Button
-            style="primary"
-            size="small"
-            className={`${styles.width100p} ${styles.abortButton}`}
-            onClick={handleAbortSelection}
-          >
-            Cancel
-          </Button>
+          </button>
         </div>
       </div>
     </dialog>
