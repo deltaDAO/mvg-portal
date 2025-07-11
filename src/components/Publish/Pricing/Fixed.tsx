@@ -3,7 +3,7 @@ import FormHelp from '@shared/FormInput/Help'
 import Price from './Price'
 import Fees from './Fees'
 import styles from './Fixed.module.css'
-import InfoBox from '@shared/atoms/InfoBox'
+import Alert from '@shared/atoms/Alert'
 
 export default function Fixed({
   approvedBaseTokens,
@@ -14,7 +14,7 @@ export default function Fixed({
 }): ReactElement {
   return (
     <div className={styles.container}>
-      <InfoBox>{content.info}</InfoBox>
+      <Alert>{content.info}</Alert>
 
       <div className={styles.priceContainer}>
         <h4 className={styles.title}>Price</h4>
