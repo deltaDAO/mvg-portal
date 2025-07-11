@@ -66,6 +66,7 @@ import appConfig, { oceanTokenAddress } from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 import { CredentialDialogProvider } from './CredentialDialogProvider'
+import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
 
 export default function Compute({
   accountId,
@@ -224,7 +225,11 @@ export default function Compute({
         signer,
         selectedComputeEnv,
         selectedResources,
-        svcIndex
+        svcIndex,
+        lookupVerifierSessionId(
+          selectedAlgorithmAsset.id,
+          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id
+        )
       )
       if (
         !initializedProvider ||
@@ -460,6 +465,16 @@ export default function Compute({
         amount: selectedResources[res.id] || res.min
       }))
       let response
+      const policyServerAlgo: PolicyServerInitiateActionData = {
+        sessionId: lookupVerifierSessionId(
+          selectedAlgorithmAsset.id,
+          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id
+        ),
+        successRedirectUri: ``,
+        errorRedirectUri: ``,
+        responseRedirectUri: ``,
+        presentationDefinitionUri: ``
+      }
       if (selectedResources.mode === 'paid') {
         response = await ProviderInstance.computeStart(
           service.serviceEndpoint,
@@ -478,6 +493,8 @@ export default function Compute({
           oceanTokenAddress,
           resourceRequests,
           asset.credentialSubject?.chainId
+          // null,
+          // policyServerAlgo
         )
         console.log('[compute] Compute response:', response)
       } else {
@@ -500,6 +517,8 @@ export default function Compute({
           ],
           algorithm,
           resourceRequests
+          // null,
+          // policyServerAlgo
         )
         console.log('[compute] Free compute response:', response)
       }

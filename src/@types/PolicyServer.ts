@@ -14,6 +14,7 @@ export interface PolicyServerResponse {
 }
 
 export interface PolicyServerInitiateActionData {
+  sessionId: string
   successRedirectUri: string
   errorRedirectUri: string
   responseRedirectUri: string
@@ -22,7 +23,6 @@ export interface PolicyServerInitiateActionData {
 
 export interface PolicyServerInitiateAction {
   action: PolicyServerActions.INITIATE
-  sessionId?: string
   ddo: any
   policyServer: PolicyServerInitiateActionData
   serviceId: string
