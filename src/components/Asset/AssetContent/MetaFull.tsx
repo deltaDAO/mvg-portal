@@ -23,7 +23,7 @@ export default function MetaFull({ ddo }: { ddo: Asset }): ReactElement {
         const datatoken = new Datatoken(signer, ddo.credentialSubject?.chainId)
         setPaymentCollector(
           await datatoken.getPaymentCollector(
-            ddo.indexedMetadata.stats[0].datatokenAddress || ''
+            ddo.indexedMetadata?.stats[0]?.datatokenAddress || ''
           )
         )
       } catch (error) {

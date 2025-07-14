@@ -2,11 +2,12 @@ import Button from '@components/@shared/atoms/Button'
 import { useSsiWallet } from '@context/SsiWallet'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import styles from './index.module.css'
-import { SsiKeyDesc, SsiWalletDesc } from 'src/@types/SsiWallet'
+import { SsiKeyDesc, SsiWalletDesc, SsiWalletDid } from 'src/@types/SsiWallet'
 import {
   connectToWallet,
   getSsiVerifiableCredentialType,
   getSsiWalletApi,
+  getWalletDids,
   getWalletKeys,
   getWallets,
   isSessionValid
@@ -29,11 +30,14 @@ export function SsiWallet(): ReactElement {
     ssiWalletCache,
     cachedCredentials,
     setCachedCredentials,
-    clearVerifierSessionCache
+    clearVerifierSessionCache,
+    selectedDid,
+    setSelectedDid
   } = useSsiWallet()
 
   const [ssiWallets, setSsiWallets] = useState<SsiWalletDesc[]>([])
   const [ssiKeys, setSsiKey] = useState<SsiKeyDesc[]>([])
+  const [walletDids, setWalletDids] = useState<SsiWalletDid[]>([])
 
   const selectorDialog = useRef<HTMLDialogElement>(null)
 
@@ -53,12 +57,25 @@ export function SsiWallet(): ReactElement {
     }
   }, [selectedWallet, sessionToken])
 
+  const fetchDids = useCallback(async () => {
+    if (!selectedWallet || !sessionToken) return
+
+    try {
+      const dids = await getWalletDids(selectedWallet.id, sessionToken.token)
+      setWalletDids(dids)
+      if (!selectedDid) setSelectedDid(dids[0]?.did) // pre-select the first DID if exists
+    } catch (error) {
+      LoggerInstance.error(error)
+    }
+  }, [selectedWallet, sessionToken])
+
   const fetchKeys = useCallback(async () => {
     if (!selectedWallet || !sessionToken) {
       return
     }
     try {
       const keys = await getWalletKeys(selectedWallet, sessionToken.token)
+      console.log('keys', keys)
       setSsiKey(keys)
       setSelectedKey(selectedKey || keys[0])
     } catch (error) {
@@ -68,16 +85,24 @@ export function SsiWallet(): ReactElement {
   }, [selectedWallet, selectedKey])
 
   useEffect(() => {
-    if (!sessionToken) {
-      return
-    }
+    if (!selectedDid || !walletDids.length || !ssiKeys.length) return
 
-    if (!selectedWallet) {
-      fetchWallets()
+    const matchingDid = walletDids.find((did) => did.did === selectedDid)
+    const matchingKey = ssiKeys.find(
+      (key) => key.keyId.id === matchingDid?.keyId
+    )
+
+    if (matchingKey) {
+      setSelectedKey(matchingKey)
     }
-    if (!selectedKey) {
-      fetchKeys()
-    }
+  }, [selectedDid, walletDids, ssiKeys])
+
+  useEffect(() => {
+    if (!sessionToken) return
+
+    if (!selectedWallet) fetchWallets()
+    fetchDids()
+    if (!selectedKey) fetchKeys()
   }, [sessionToken, selectedWallet, selectedKey])
 
   async function handleReconnection() {
@@ -177,6 +202,22 @@ export function SsiWallet(): ReactElement {
                     </option>
                   )
                 })}
+              </select>
+
+              <label htmlFor="ssiDids" className={styles.marginBottom7px}>
+                {`Choose the Publisher's DID:`}
+              </label>
+              <select
+                value={selectedDid}
+                id="ssiDids"
+                className={`${styles.marginBottom2} ${styles.padding1} ${styles.inputField}`}
+                onChange={(e) => setSelectedDid(e.target.value)}
+              >
+                {walletDids?.map((did) => (
+                  <option key={did.did} value={did.did}>
+                    {did.alias ? did.alias : did.did}
+                  </option>
+                ))}
               </select>
 
               <label htmlFor="ssiKeys" className={styles.marginBottom7px}>
