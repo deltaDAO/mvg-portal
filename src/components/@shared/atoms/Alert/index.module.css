@@ -38,7 +38,6 @@
 
 .action,
 button.action {
-  margin-top: calc(var(--spacer) / 2);
   background: var(--publish-primary);
   color: var(--brand-white);
   border: 1px solid var(--publish-primary);

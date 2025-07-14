@@ -122,10 +122,11 @@
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   padding: 0px;
   gap: 40px;
   width: 100%;
+  min-height: 80px;
 }
 
 .formColumn {
@@ -193,6 +194,22 @@
 
 .formColumn :global(div) {
   width: 100% !important;
+}
+
+/* Ensure error messages have proper spacing */
+.formColumn :global(.error) {
+  margin-top: 4px;
+  min-height: 16px;
+  line-height: 1.2;
+}
+
+/* Ensure form fields have enough space for error messages */
+.formColumn :global(.field) {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
 }
 
 .fullWidthInput {
