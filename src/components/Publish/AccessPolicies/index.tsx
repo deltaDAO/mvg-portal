@@ -15,12 +15,10 @@ export function AccessPolicies(): ReactElement {
     if (appConfig.ssiEnabled) {
       getDefaultPolicies()
         .then((policies) => {
-          setFieldValue('credentials.vcPolicies', policies)
           setDefaultPolicies(policies)
         })
         .catch((error) => {
           LoggerInstance.error(error)
-          setFieldValue('credentials.vcPolicies', [])
           setDefaultPolicies([])
         })
     }
