@@ -74,9 +74,10 @@ export async function initializeProviderForCompute(
       validUntil,
       customProviderUrl || datasetService.serviceEndpoint,
       accountId,
-      resourceRequests
-      // dataset.credentialSubject?.chainId || algorithm.credentialSubject?.chainId,
-      // policyServer
+      resourceRequests,
+      dataset.credentialSubject?.chainId ||
+        algorithm.credentialSubject?.chainId,
+      policyServer
     )
   } catch (error) {
     const message = getErrorMessage(error.message)

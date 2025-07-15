@@ -11,9 +11,7 @@ import {
   unitsToAmount,
   ProviderFees,
   UserCustomParameters,
-  getErrorMessage,
-  EscrowContract,
-  ComputeAsset
+  EscrowContract
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
 import Price from '@shared/Price'
@@ -492,9 +490,10 @@ export default function Compute({
           selectedResources.jobDuration,
           oceanTokenAddress,
           resourceRequests,
-          asset.credentialSubject?.chainId
-          // null,
-          // policyServerAlgo
+          asset.credentialSubject?.chainId,
+          null,
+          null,
+          policyServerAlgo
         )
         console.log('[compute] Compute response:', response)
       } else {
@@ -516,9 +515,10 @@ export default function Compute({
             }
           ],
           algorithm,
-          resourceRequests
-          // null,
-          // policyServerAlgo
+          resourceRequests,
+          null,
+          null,
+          policyServerAlgo
         )
         console.log('[compute] Free compute response:', response)
       }
