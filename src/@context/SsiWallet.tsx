@@ -90,6 +90,7 @@ export function SsiWalletProvider({
     if (!sessionToken) {
       setSelectedWallet(undefined)
       setSelectedKey(undefined)
+      setSelectedDid(undefined)
     }
     localStorage.setItem(SessionTokenStorage, JSON.stringify(sessionToken))
   }, [sessionToken])
