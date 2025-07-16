@@ -3,52 +3,17 @@ import React, { ReactElement, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { FormPublishData } from '../_types'
 import { wizardSteps } from '../_constants'
+import { useProgressBar } from '../../../@hooks/useProgressBar'
+import { useStepCompletion } from '../../../@hooks/useStepCompletion'
 import styles from './index.module.css'
 import CheckmarkIcon from '@images/checkmark.svg'
 
 export default function Navigation(): ReactElement {
   const router = useRouter()
-  const {
-    values,
-    errors,
-    touched,
-    setFieldValue
-  }: FormikContextType<FormPublishData> = useFormikContext()
+  const { values, setFieldValue }: FormikContextType<FormPublishData> =
+    useFormikContext()
 
-  function getSuccessClass(step: number) {
-    const isSuccessMetadata = errors.metadata === undefined
-    const isSuccessAccessPolicies =
-      values.accessPolicyPageVisited && errors.credentials === undefined
-    const isSuccessServices = errors.services === undefined
-    const isSuccessPricing =
-      errors.pricing === undefined &&
-      (touched.pricing?.price || touched.pricing?.freeAgreement)
-
-    const additionalDdosAreValid =
-      values.additionalDdosPageVisited &&
-      values.additionalDdos?.map((ddo) => ddo.data?.length > 0).every(Boolean)
-
-    const isSuccessCustomDDO =
-      errors.additionalDdos === undefined && additionalDdosAreValid
-
-    const isSuccessPreview =
-      isSuccessMetadata &&
-      isSuccessAccessPolicies &&
-      isSuccessServices &&
-      isSuccessPricing &&
-      isSuccessCustomDDO &&
-      values.previewPageVisited
-
-    const isSuccess =
-      (step === 1 && isSuccessMetadata) ||
-      (step === 2 && isSuccessAccessPolicies) ||
-      (step === 3 && isSuccessServices) ||
-      (step === 4 && isSuccessPricing) ||
-      (step === 5 && isSuccessCustomDDO) ||
-      (step === 6 && isSuccessPreview)
-
-    return isSuccess
-  }
+  const { getSuccessClass, getLastCompletedStep } = useStepCompletion()
 
   function handleStepClick(step: number) {
     router.push(`/publish/${step}`)
@@ -66,30 +31,30 @@ export default function Navigation(): ReactElement {
     if (router.query?.step) {
       const currentStep: string = router.query.step as string
       const stepParam: number = parseInt(currentStep)
-      // check if query param is a valid step, if not we take the user to step 1
       stepParam <= wizardSteps.length ? (step = stepParam) : handleStepClick(1)
     }
-    // load current step on refresh - CAUTION: all data will be deleted anyway
     setFieldValue('user.stepCurrent', step)
-  }, [router])
+  }, [router, setFieldValue])
 
   const currentStep = values.user.stepCurrent
+  const lastCompletedStep = getLastCompletedStep(wizardSteps.length)
+  const progressTargetIdx = Math.min(lastCompletedStep + 1, wizardSteps.length)
 
-  // Progress bar function - COMMENTED OUT
-
-  // const getProgressWidth = () => {
-  //   const progressPercentage = (currentStep / wizardSteps.length) * 100
-  //   return `${progressPercentage}%`
-  // }
+  const { stepRefs, stepsRowRef, progressBarWidth } = useProgressBar({
+    progressTargetIdx
+  })
 
   return (
     <nav className={styles.navigation}>
-      {/* Single Row with All Steps */}
-      <div className={styles.stepsRow}>
+      <div className={styles.stepsRow} ref={stepsRowRef}>
+        <div
+          className={styles.progressBar}
+          style={{ width: `${progressBarWidth}px` }}
+          aria-hidden="true"
+        />
         {wizardSteps.map((step) => {
           const isActive = step.step === currentStep
           const isCompleted = getSuccessClass(step.step)
-
           return (
             <div
               key={step.step}
@@ -104,6 +69,7 @@ export default function Navigation(): ReactElement {
               aria-label={`Step ${step.step}: ${step.title}${
                 isCompleted ? ' (completed)' : ''
               }`}
+              ref={(el) => (stepRefs.current[step.step - 1] = el)}
             >
               <div
                 className={`${
@@ -123,15 +89,6 @@ export default function Navigation(): ReactElement {
           )
         })}
       </div>
-
-      {/* Progress Bar - COMMENTED OUT */}
-
-      {/* <div className={styles.progressBar}>
-        <div
-          className={styles.progressFill}
-          style={{ width: getProgressWidth() }}
-        ></div>
-      </div> */}
     </nav>
   )
 }

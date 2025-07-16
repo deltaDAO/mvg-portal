@@ -470,6 +470,17 @@ export function generateCredentials(
   return newCredentials
 }
 
+function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Omit<T, K> {
+  const clone = { ...obj }
+  for (const key of keys) {
+    delete clone[key]
+  }
+  return clone
+}
+
 export async function transformPublishFormToDdo(
   values: FormPublishData,
   // Those 2 are only passed during actual publishing process
@@ -478,7 +489,19 @@ export async function transformPublishFormToDdo(
   nftAddress?: string,
   cancelToken?: CancelToken
 ): Promise<Asset> {
-  const { metadata, services, user } = values
+  // Omit UI-only step completion flags
+  const safeValues = omit(values, [
+    'step1Completed',
+    'step2Completed',
+    'step3Completed',
+    'step4Completed',
+    'step5Completed',
+    'step6Completed',
+    'previewPageVisited',
+    'submissionPageVisited'
+  ])
+
+  const { metadata, services, user } = safeValues
   const { chainId, accountId } = user
   const {
     type,

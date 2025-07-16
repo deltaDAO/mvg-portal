@@ -1,5 +1,5 @@
 .field {
-  margin-bottom: calc(var(--spacer) * var(--line-height));
+  margin-bottom: calc(var(--spacer) * var(--line-height) + 20px);
   position: relative;
 }
 
@@ -62,4 +62,19 @@ body .hasError [class*='postfix'] {
   width: 16px;
   height: 16px;
   margin: 0;
+}
+
+/* Row-level error spacing - apply to row containers when any field has errors */
+.rowWithErrors {
+  margin-bottom: calc(var(--spacer) * var(--line-height) + 20px) !important;
+}
+
+/* Automatic detection: if a flex row contains any field with errors, add spacing 
+   Note: :has() is supported in modern browsers (Chrome 105+, Firefox 103+, Safari 15.4+) */
+:global(.formRow):has(.hasError),
+:global(.pairsContainer):has(.hasError),
+:global(.inputRow):has(.hasError),
+:global(.argumentRow):has(.hasError),
+:global(.ruleRow):has(.hasError) {
+  margin-bottom: calc(var(--spacer) * var(--line-height) + 20px) !important;
 }

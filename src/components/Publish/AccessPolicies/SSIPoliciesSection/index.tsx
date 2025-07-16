@@ -18,27 +18,36 @@ export default function SSIPoliciesSection({
   const [enabled, setEnabled] = useState(false)
 
   useEffect(() => {
-    console.log('SSI Policies Check:', {
-      requestCredentials: values.credentials?.requestCredentials?.length || 0,
-      vcPolicies: values.credentials?.vcPolicies?.length || 0,
-      vpPolicies: values.credentials?.vpPolicies?.length || 0,
-      currentEnabled: enabled
-    })
-
     const hasCurrentPolicies =
       values.credentials?.requestCredentials?.length > 0 ||
       values.credentials?.vcPolicies?.length > 0 ||
       values.credentials?.vpPolicies?.length > 0
 
-    console.log('Has current policies:', hasCurrentPolicies)
+    setEnabled(hasCurrentPolicies)
+  }, [
+    values.credentials?.requestCredentials,
+    values.credentials?.vcPolicies,
+    values.credentials?.vpPolicies
+  ])
 
-    if (hasCurrentPolicies !== enabled) {
-      console.log('Updating enabled state to:', hasCurrentPolicies)
-      setEnabled(hasCurrentPolicies)
+  const handleToggleSSI = () => {
+    const newEnabled = !enabled
+    setEnabled(newEnabled)
+
+    if (newEnabled) {
+      setFieldValue('credentials.vcPolicies', defaultPolicies)
+    } else {
+      setFieldValue('credentials.requestCredentials', [])
+      setFieldValue('credentials.vcPolicies', [])
+      setFieldValue('credentials.vpPolicies', [])
     }
-  }, [values.credentials])
+  }
 
   if (!appConfig.ssiEnabled) {
+    return null
+  }
+
+  if (!values.step2Completed) {
     return null
   }
 
@@ -50,7 +59,7 @@ export default function SSIPoliciesSection({
         type="checkbox"
         options={['Enable SSI Policies']}
         checked={enabled}
-        onChange={() => setEnabled(!enabled)}
+        onChange={handleToggleSSI}
         hideLabel={true}
       />
       {enabled && (

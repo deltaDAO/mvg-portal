@@ -74,6 +74,13 @@ export interface FormPublishData {
   previewPageVisited: boolean
   credentials: CredentialForm
   accessPolicyPageVisited: boolean
+  step1Completed: boolean
+  step2Completed: boolean
+  step3Completed: boolean
+  step4Completed: boolean
+  step5Completed: boolean
+  step6Completed: boolean
+  submissionPageVisited: boolean
   allowAllPublishedAlgorithms?: boolean
   publisherTrustedAlgorithms?: string[]
   publisherTrustedAlgorithmPublishers?: string[]

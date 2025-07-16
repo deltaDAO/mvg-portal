@@ -1,60 +1,50 @@
-.alert {
-  composes: box from '../Box.module.css';
-  max-width: 40rem;
-  margin: auto;
-  border-width: 0;
-  border-left-width: 0.5rem;
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  padding-top: calc(var(--spacer) / 2);
-  padding-bottom: calc(var(--spacer) / 2);
-  position: relative;
+.root {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: var(--sp-2);
 }
 
-.alert + .alert {
-  margin-top: calc(var(--spacer) / 2);
+.warningIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
-.alert,
-.title {
-  color: var(--brand-white);
+.infoBox {
+  display: flex;
+  flex-direction: column;
+
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-xl);
+
+  border: 0 transparent;
+  border-left: 5px solid #fdd655;
+  border-radius: 0;
+  padding: 8px 11px;
+  background: var(--background-detail-box);
+  width: fit-content;
 }
 
-.title {
-  font-size: var(--font-size-base);
-  margin-bottom: calc(var(--spacer) / 8);
+.header {
+  font-size: var(--publish-font-size);
   color: inherit;
 }
 
-.badge {
-  vertical-align: middle;
-  margin-left: calc(var(--spacer) / 8);
-  margin-top: -0.3rem;
-}
-
-.text {
-  font-size: var(--font-size-small);
-}
-
-.text a {
-  color: inherit;
-  text-decoration: underline;
-}
-
-.text p:last-child {
-  margin-bottom: 0;
-}
-
-.text code {
-  font-size: 0.8rem;
-  color: inherit;
-  padding-left: 0;
-  padding-right: 0;
+.header strong {
+  font-weight: var(--publish-font-weight-bold);
 }
 
 .action,
 button.action {
-  margin-top: calc(var(--spacer) / 2);
+  background: var(--publish-primary);
+  color: var(--brand-white);
+  border: 1px solid var(--publish-primary);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-spacing-sm) var(--publish-spacing-md);
+  font-size: var(--publish-font-size);
+  font-weight: var(--publish-font-weight-bold);
 }
 
 .close {
@@ -75,23 +65,25 @@ button.action {
   opacity: 0.7;
 }
 
-/* States */
+/* Alert state variations - only change border and background, keep original text color */
 .error {
   border-color: var(--brand-alert-red);
-  color: var(--brand-alert-red);
+  background: rgba(255, 0, 0, 0.15);
 }
 
 .success {
-  border-color: var(--brand-alert-green);
-  color: var(--brand-alert-green);
+  border-color: #6afe74;
+  background: rgba(93, 253, 85, 0.15);
 }
 
 .info {
-  border-color: var(--brand-alert-yellow);
-  color: #9f7e19;
+  border-color: #fdd655;
+  background: rgba(253, 214, 85, 0.15);
 }
 
-.warning {
-  border-color: var(--brand-alert-orange);
-  color: var(--brand-alert-orange);
+@media screen and (max-width: 640px) {
+  .infoBox {
+    padding: var(--publish-spacing-md);
+    margin-bottom: var(--publish-spacing-md);
+  }
 }

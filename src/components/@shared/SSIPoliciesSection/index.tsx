@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '../../Publish/_types'
 import { PolicyEditor } from '@components/@shared/PolicyEditor'
@@ -28,10 +28,6 @@ export default function SSIPoliciesSection({
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
   const [enabled, setEnabled] = useState(false)
 
-  if (!appConfig.ssiEnabled) {
-    return null
-  }
-
   const getCredentialsPath = () => {
     if (fieldNamePrefix.includes('services')) {
       return `${fieldNamePrefix}.credentials`
@@ -60,6 +56,24 @@ export default function SSIPoliciesSection({
   }
 
   const credentials = getCredentialsValue()
+
+  // Auto-enable checkbox if policies exist
+  useEffect(() => {
+    const hasCurrentPolicies =
+      (credentials as any)?.requestCredentials?.length > 0 ||
+      (credentials as any)?.vcPolicies?.length > 0 ||
+      (credentials as any)?.vpPolicies?.length > 0
+
+    setEnabled(hasCurrentPolicies)
+  }, [
+    (credentials as any)?.requestCredentials,
+    (credentials as any)?.vcPolicies,
+    (credentials as any)?.vpPolicies
+  ])
+
+  if (!appConfig.ssiEnabled) {
+    return null
+  }
 
   return (
     <>

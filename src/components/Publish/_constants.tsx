@@ -136,6 +136,13 @@ export const initialValues: FormPublishData = {
     vpPolicies: []
   },
   accessPolicyPageVisited: false,
+  step1Completed: false,
+  step2Completed: false,
+  step3Completed: false,
+  step4Completed: false,
+  step5Completed: false,
+  step6Completed: false,
+  submissionPageVisited: false,
   previewPageVisited: false
 }
 

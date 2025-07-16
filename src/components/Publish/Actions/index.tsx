@@ -48,6 +48,18 @@ export default function Actions({
   function handleNext(e: FormEvent) {
     e.preventDefault()
 
+    if (values.user.stepCurrent === 1) setFieldValue('step1Completed', true)
+    if (values.user.stepCurrent === 2) setFieldValue('step2Completed', true)
+    if (values.user.stepCurrent === 3) setFieldValue('step3Completed', true)
+    if (values.user.stepCurrent === 4) setFieldValue('step4Completed', true)
+    if (values.user.stepCurrent === 5) setFieldValue('step5Completed', true)
+    if (values.user.stepCurrent === 6) {
+      setFieldValue('step6Completed', true)
+      setFieldValue('previewPageVisited', true)
+    }
+    if (values.user.stepCurrent === 7)
+      setFieldValue('submissionPageVisited', true)
+
     if (values.user.stepCurrent === 2) {
       const typedAllowValue = values.credentials.allowInputValue?.trim()
       if (
@@ -139,16 +151,41 @@ export default function Actions({
       }
     }
 
-    return true
+    return false
   }
 
   const isContinueDisabled =
-    (values.user.stepCurrent === 1 && errors.metadata !== undefined) ||
-    (values.user.stepCurrent === 2 && errors.credentials !== undefined) ||
-    (values.user.stepCurrent === 2 && !hasValidAllowAddress()) ||
-    (values.user.stepCurrent === 3 && errors.services !== undefined) ||
-    (values.user.stepCurrent === 4 && errors.pricing !== undefined) ||
-    (values.user.stepCurrent === 5 && errors.additionalDdos !== undefined)
+    (values.user.stepCurrent === 1 &&
+      (errors.metadata !== undefined ||
+        (values.metadata.licenseTypeSelection === 'URL' &&
+          !values.metadata.licenseUrl?.[0]?.valid) ||
+        (values.metadata.licenseTypeSelection === 'Upload license file' &&
+          !values.metadata.uploadedLicense))) ||
+    (values.user.stepCurrent === 2 &&
+      (!values.step1Completed ||
+        errors.credentials !== undefined ||
+        !hasValidAllowAddress())) ||
+    (values.user.stepCurrent === 3 &&
+      (!values.step1Completed ||
+        !values.step2Completed ||
+        errors.services !== undefined)) ||
+    (values.user.stepCurrent === 4 &&
+      (!values.step1Completed ||
+        !values.step2Completed ||
+        !values.step3Completed ||
+        errors.pricing !== undefined)) ||
+    (values.user.stepCurrent === 5 &&
+      (!values.step1Completed ||
+        !values.step2Completed ||
+        !values.step3Completed ||
+        !values.step4Completed ||
+        errors.additionalDdos !== undefined)) ||
+    (values.user.stepCurrent === 6 &&
+      (!values.step1Completed ||
+        !values.step2Completed ||
+        !values.step3Completed ||
+        !values.step4Completed ||
+        !values.step5Completed))
 
   const hasSubmitError =
     values.feedback?.[1].status === 'error' ||

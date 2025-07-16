@@ -34,3 +34,50 @@ Full.args = {
     console.log('Alert closed!')
   }
 }
+
+export const InfoBoxStyle: Props = Template.bind({})
+InfoBoxStyle.args = {
+  title: 'Information Title',
+  subtitle: 'Subtitle',
+  description:
+    'This is a description that provides more context about the information being displayed.',
+  state: 'info'
+}
+
+export const InfoBoxWithChildren: Props = Template.bind({})
+InfoBoxWithChildren.args = {
+  title: 'Container Title',
+  subtitle: 'Container Subtitle',
+  children: <div>This is custom content inside the InfoBox-style alert</div>
+}
+
+export const InfoBoxWarning: Props = Template.bind({})
+InfoBoxWarning.args = {
+  title: 'Warning Information',
+  subtitle: 'Important Notice',
+  description: 'This is a warning message with additional details.',
+  warning: true
+}
+
+export const InfoBoxWithChildrenOnly: Props = Template.bind({})
+InfoBoxWithChildrenOnly.args = {
+  children: (
+    <div>This is an InfoBox-style alert with only children content</div>
+  ),
+  state: 'warning'
+}
+
+export const AllStates: Props = Template.bind({})
+AllStates.args = {
+  children: (
+    <div>
+      <Alert text="This is an error message" state="error" />
+      <br />
+      <Alert text="This is a warning message" state="warning" />
+      <br />
+      <Alert text="This is an info message" state="info" />
+      <br />
+      <Alert text="This is a success message" state="success" />
+    </div>
+  )
+}
