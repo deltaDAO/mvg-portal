@@ -47,10 +47,6 @@ export default function SSIPoliciesSection({
     return null
   }
 
-  if (!values.step2Completed) {
-    return null
-  }
-
   return (
     <>
       <Input
