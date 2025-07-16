@@ -53,6 +53,12 @@ export default function Actions({
     if (values.user.stepCurrent === 3) setFieldValue('step3Completed', true)
     if (values.user.stepCurrent === 4) setFieldValue('step4Completed', true)
     if (values.user.stepCurrent === 5) setFieldValue('step5Completed', true)
+    if (values.user.stepCurrent === 6) {
+      setFieldValue('step6Completed', true)
+      setFieldValue('previewPageVisited', true)
+    }
+    if (values.user.stepCurrent === 7)
+      setFieldValue('submissionPageVisited', true)
 
     if (values.user.stepCurrent === 2) {
       const typedAllowValue = values.credentials.allowInputValue?.trim()

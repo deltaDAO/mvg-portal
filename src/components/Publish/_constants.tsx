@@ -141,6 +141,8 @@ export const initialValues: FormPublishData = {
   step3Completed: false,
   step4Completed: false,
   step5Completed: false,
+  step6Completed: false,
+  submissionPageVisited: false,
   previewPageVisited: false
 }
 

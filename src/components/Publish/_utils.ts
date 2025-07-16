@@ -495,7 +495,10 @@ export async function transformPublishFormToDdo(
     'step2Completed',
     'step3Completed',
     'step4Completed',
-    'step5Completed'
+    'step5Completed',
+    'step6Completed',
+    'previewPageVisited',
+    'submissionPageVisited'
   ])
 
   const { metadata, services, user } = safeValues

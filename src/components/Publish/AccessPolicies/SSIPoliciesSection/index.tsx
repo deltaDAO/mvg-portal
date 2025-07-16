@@ -23,10 +23,25 @@ export default function SSIPoliciesSection({
       values.credentials?.vcPolicies?.length > 0 ||
       values.credentials?.vpPolicies?.length > 0
 
-    if (hasCurrentPolicies !== enabled) {
-      setEnabled(hasCurrentPolicies)
+    setEnabled(hasCurrentPolicies)
+  }, [
+    values.credentials?.requestCredentials,
+    values.credentials?.vcPolicies,
+    values.credentials?.vpPolicies
+  ])
+
+  const handleToggleSSI = () => {
+    const newEnabled = !enabled
+    setEnabled(newEnabled)
+
+    if (newEnabled) {
+      setFieldValue('credentials.vcPolicies', defaultPolicies)
+    } else {
+      setFieldValue('credentials.requestCredentials', [])
+      setFieldValue('credentials.vcPolicies', [])
+      setFieldValue('credentials.vpPolicies', [])
     }
-  }, [values.credentials, enabled])
+  }
 
   if (!appConfig.ssiEnabled) {
     return null
@@ -44,7 +59,7 @@ export default function SSIPoliciesSection({
         type="checkbox"
         options={['Enable SSI Policies']}
         checked={enabled}
-        onChange={() => setEnabled(!enabled)}
+        onChange={handleToggleSSI}
         hideLabel={true}
       />
       {enabled && (

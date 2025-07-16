@@ -79,6 +79,8 @@ export interface FormPublishData {
   step3Completed: boolean
   step4Completed: boolean
   step5Completed: boolean
+  step6Completed: boolean
+  submissionPageVisited: boolean
   allowAllPublishedAlgorithms?: boolean
   publisherTrustedAlgorithms?: string[]
   publisherTrustedAlgorithmPublishers?: string[]
