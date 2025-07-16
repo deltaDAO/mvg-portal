@@ -88,7 +88,7 @@ export function SsiWallet(): ReactElement {
     if (!sessionToken) return
 
     if (!selectedWallet) fetchWallets()
-    fetchDids()
+    if (!selectedDid) fetchDids()
     if (!selectedKey) fetchKeys()
   }, [sessionToken, selectedWallet, selectedKey])
 
