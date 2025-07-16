@@ -22,7 +22,10 @@ import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { ResourceType } from 'src/@types/ResourceType'
-import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
+import {
+  PolicyServerInitiateActionData,
+  PolicyServerInitiateComputeActionData
+} from 'src/@types/PolicyServer'
 
 export async function initializeProviderForCompute(
   dataset: AssetExtended,
@@ -33,7 +36,8 @@ export async function initializeProviderForCompute(
   computeEnv: ComputeEnvironment = null,
   selectedResources: ResourceType,
   svcIndexAlgo: number,
-  sessionId: string
+  datasetSessionId: string,
+  algoSessionId: string
 ): Promise<ProviderComputeInitializeResults> {
   const computeAsset: ComputeAsset = {
     documentId: dataset.id,
@@ -53,19 +57,33 @@ export async function initializeProviderForCompute(
     algorithm.credentialSubject.services[svcIndexAlgo].timeout
   )
 
-  const policyServer: PolicyServerInitiateActionData = {
-    sessionId,
-    successRedirectUri: ``,
-    errorRedirectUri: ``,
-    responseRedirectUri: ``,
-    presentationDefinitionUri: ``
-  }
+  const policiesServer: PolicyServerInitiateComputeActionData[] = [
+    {
+      sessionId: algoSessionId,
+      serviceId: algorithm.credentialSubject.services[svcIndexAlgo].id,
+      documentId: algorithm.id,
+      successRedirectUri: ``,
+      errorRedirectUri: ``,
+      responseRedirectUri: ``,
+      presentationDefinitionUri: ``
+    },
+    {
+      sessionId: datasetSessionId,
+      serviceId: datasetService.id,
+      documentId: dataset.id,
+      successRedirectUri: ``,
+      errorRedirectUri: ``,
+      responseRedirectUri: ``,
+      presentationDefinitionUri: ``
+    }
+  ]
 
   try {
     const resourceRequests = computeEnv.resources.map((res) => ({
       id: res.id,
       amount: selectedResources?.[res.id] || res.min
     }))
+    console.log('policyServer:', policiesServer)
     return await ProviderInstance.initializeCompute(
       [computeAsset],
       computeAlgo,
@@ -77,7 +95,7 @@ export async function initializeProviderForCompute(
       resourceRequests,
       dataset.credentialSubject?.chainId ||
         algorithm.credentialSubject?.chainId,
-      policyServer
+      policiesServer
     )
   } catch (error) {
     const message = getErrorMessage(error.message)

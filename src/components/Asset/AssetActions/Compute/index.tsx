@@ -64,7 +64,7 @@ import appConfig, { oceanTokenAddress } from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 import { CredentialDialogProvider } from './CredentialDialogProvider'
-import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
+import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
 
 export default function Compute({
   accountId,
@@ -224,6 +224,7 @@ export default function Compute({
         selectedComputeEnv,
         selectedResources,
         svcIndex,
+        lookupVerifierSessionId(asset.id, service.id),
         lookupVerifierSessionId(
           selectedAlgorithmAsset.id,
           selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id
@@ -463,16 +464,32 @@ export default function Compute({
         amount: selectedResources[res.id] || res.min
       }))
       let response
-      const policyServerAlgo: PolicyServerInitiateActionData = {
+      const policyServerAlgo: PolicyServerInitiateComputeActionData = {
         sessionId: lookupVerifierSessionId(
           selectedAlgorithmAsset.id,
           selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id
         ),
+        serviceId:
+          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id,
+        documentId: selectedAlgorithmAsset.id,
         successRedirectUri: ``,
         errorRedirectUri: ``,
         responseRedirectUri: ``,
         presentationDefinitionUri: ``
       }
+      const policyServerDataset: PolicyServerInitiateComputeActionData = {
+        sessionId: lookupVerifierSessionId(asset.id, service.id),
+        serviceId: service.id,
+        documentId: asset.id,
+        successRedirectUri: ``,
+        errorRedirectUri: ``,
+        responseRedirectUri: ``,
+        presentationDefinitionUri: ``
+      }
+      const policiesServer: PolicyServerInitiateComputeActionData[] = [
+        policyServerAlgo,
+        policyServerDataset
+      ]
       if (selectedResources.mode === 'paid') {
         response = await ProviderInstance.computeStart(
           service.serviceEndpoint,
@@ -518,7 +535,7 @@ export default function Compute({
           resourceRequests,
           null,
           null,
-          policyServerAlgo
+          policiesServer
         )
         console.log('[compute] Free compute response:', response)
       }
