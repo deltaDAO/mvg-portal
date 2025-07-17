@@ -510,7 +510,7 @@ export default function Compute({
           asset.credentialSubject?.chainId,
           null,
           null,
-          policyServerAlgo
+          policiesServer
         )
         console.log('[compute] Compute response:', response)
       } else {
