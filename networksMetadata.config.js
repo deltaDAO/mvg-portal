@@ -45,28 +45,6 @@ const networksMetadata = [
         standard: ''
       }
     ]
-  },
-  {
-    chainId: 23294,
-    networkId: 23294,
-    name: 'Oasis Sapphire Mainnet',
-    chain: 'Oasis Sapphire Mainnet',
-    rpc: ['https://rpc.main.pontus-x.eu/0953a56072a9a7ca46f57498453d2b3d'],
-    faucets: [],
-    nativeCurrency: {
-      name: 'ROSE',
-      symbol: 'ROSE',
-      decimals: 18
-    },
-    infoURL: 'https://docs.pontus-x.eu',
-    shortName: 'Pontus-X',
-    explorers: [
-      {
-        name: 'Pontus-X Testnet Explorer',
-        url: 'https://explorer.pontus-x.eu/testnet/pontusx',
-        standard: ''
-      }
-    ]
   }
 ]
 
