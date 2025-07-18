@@ -79,7 +79,7 @@ export interface InputProps {
   step?: string
   defaultChecked?: boolean
   size?: 'mini' | 'small' | 'large' | 'default' | 'medium'
-  selectStyle?: 'default' | 'publish'
+  selectStyle?: 'default' | 'publish' | 'custom' | 'serviceLanguage'
   className?: string
   checked?: boolean
   disclaimer?: string

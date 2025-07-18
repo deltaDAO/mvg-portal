@@ -5,7 +5,6 @@
 .textblock > div {
   display: flex;
   flex-direction: column;
-  gap: var(--sp-2);
 }
 
 .fileUrlInput {

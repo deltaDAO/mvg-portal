@@ -1,6 +1,7 @@
 .pairsContainer {
+  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr 82px;
   gap: calc(var(--spacer) / 4);
   margin-bottom: var(--spacer);
   position: relative;
@@ -61,6 +62,10 @@
   cursor: pointer;
   text-transform: uppercase;
   min-width: auto;
+}
+
+.pairsContainer button {
+  max-width: 82px;
 }
 
 .pairsContainer .addButton:hover,

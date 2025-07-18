@@ -78,7 +78,21 @@
   padding: 6px 36px 6px 10px;
 }
 
-/* Publish-specific checkbox styling */
+.container.publish
+  :global([class*='FormInput_field'])
+  select[name='services[0].description.language'] {
+  border: 1px solid rgba(10, 75, 112, 0.5);
+  border-radius: 20px;
+  padding: 10px 25px;
+  min-height: 40px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  color: #303031;
+}
+
 .container.publish input[type='checkbox']:checked {
   border-color: var(--publish-accent);
   background: var(--publish-accent);

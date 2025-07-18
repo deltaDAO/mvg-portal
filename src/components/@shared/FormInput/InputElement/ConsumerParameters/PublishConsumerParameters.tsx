@@ -7,6 +7,7 @@ import OptionsInput from './OptionsInput'
 import TypeInput from './TypeInput'
 import styles from './PublishConsumerParameters.module.css'
 import AddParam from '@images/add_param.svg'
+import BinIcon from '@images/bin.svg'
 import Button from '../../../atoms/Button'
 
 export const defaultConsumerParam: FormConsumerParameter = {
@@ -87,7 +88,7 @@ export function PublishConsumerParameters(props: InputProps): ReactElement {
                       deleteParameter(safeCurrentIndex)
                     }}
                   >
-                    🗑 Delete
+                    <BinIcon /> Delete
                   </button>
                 )}
               </div>

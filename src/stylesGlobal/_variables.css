@@ -79,6 +79,7 @@
   --input-error-text-color: var(--brand-error-red);
   --input-error-border-color: rgba(255, 54, 13, 0.5);
   --input-error-spacing: calc(var(--spacer) / 3);
+  --input-padding: 15px 25px;
 
   /* Buttons */
   --button-border-radius: var(--border-radius);

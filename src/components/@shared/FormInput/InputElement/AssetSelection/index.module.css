@@ -29,7 +29,10 @@
 
 .row {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  padding: 0px;
+  gap: 16px;
   border-bottom: 1px solid var(--border-color);
   padding: calc(var(--spacer) / 3) calc(var(--spacer) / 2);
 }
@@ -48,40 +51,114 @@
 .label {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 8px;
   width: 100%;
 }
 
+.labelContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 4px;
+  width: 100%;
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 4px;
+}
+
 .input {
-  min-width: 1.2rem;
-  margin-top: 0;
-  margin-left: 0;
-  margin-right: calc(var(--spacer) / 3);
+  min-width: 16px;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  margin-right: 0;
+  border: 1px solid var(--publish-input-border-color);
+  border-radius: var(--publish-border-radius-sm);
+  background: var(--publish-white);
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.input:checked {
+  border-color: var(--publish-accent);
+  background: var(--publish-accent);
+}
+
+.input:checked::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 9px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -60%) rotate(40deg);
+  border: 2px solid var(--publish-white);
+  border-top: 0;
+  border-left: 0;
+  opacity: 1;
 }
 
 .radio {
-  composes: radio from '@shared/FormInput/InputElement/Radio/index.module.css';
+  composes: input;
+  border-radius: 50%;
+}
+
+.radio:checked::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--publish-white);
+  border-radius: 50%;
+  border: none;
 }
 
 .checkbox {
-  composes: checkbox from '@shared/FormInput/InputElement/Radio/index.module.css';
+  composes: input;
 }
 
 .title {
-  font-size: var(--font-size-small);
-  margin-top: calc(var(--spacer) / 12);
-  margin-bottom: 0;
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .link {
-  display: inline-block;
-  margin-left: calc(var(--spacer) / 8);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
 }
 
 .link svg {
   margin: 0;
-  fill: var(--link-font-color);
-  width: 0.7em;
-  height: 0.7em;
+  fill: var(--publish-primary);
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--publish-primary);
 }
 
 .footer {
@@ -92,27 +169,120 @@
 }
 
 .price {
-  white-space: pre;
-  font-size: calc(var(--font-size-small) / 1.1) !important;
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text);
+  white-space: nowrap;
 }
 
 .price [class*='symbol'] {
-  font-size: calc(var(--font-size-small) / 1.2) !important;
+  font-size: var(--publish-font-size);
+  color: var(--publish-text);
+}
+
+/* Search container with proper layout */
+.searchContainer {
+  margin: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: calc(100% - var(--spacer));
 }
 
 .search {
-  margin: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
-  width: calc(100% - var(--spacer));
+  flex: 1;
+  height: 40px;
+  border: 1px solid rgba(10, 75, 112, 0.5);
+  border-radius: 20px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: rgba(48, 48, 49, 0.7);
+  padding: 0 20px;
+  background: transparent;
+  outline: none;
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.search:focus {
+  border-color: var(--publish-primary);
+  outline: none;
+}
+
+.search::placeholder {
+  color: rgba(48, 48, 49, 0.7);
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+/* Search button container */
+.searchButtonContainer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Search button styling */
+.searchButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 9px 14px;
+  gap: 4px;
+  background: #fdd655;
+  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.searchButton:hover {
+  background: #f3ce4a;
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.searchButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.searchIcon {
+  width: 16px;
+  height: 16px;
+  fill: #0a4b70;
+}
+
+.searchButtonText {
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 22px;
+  text-align: center;
+  color: #0a4b70;
 }
 
 .did {
   padding: 0;
-  /* font-size: var(--font-size-mini); */
-  /* hack to make DotDotDot clamp work in Safari*/
-  font-size: 0.63rem;
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
   display: block;
   text-align: left;
-  color: var(--color-secondary);
+  color: rgba(76, 163, 211, 0.7);
   /* makes sure DotDotDot will kick in */
   overflow-wrap: break-word;
   word-wrap: break-word;

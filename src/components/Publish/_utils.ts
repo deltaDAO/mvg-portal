@@ -629,10 +629,14 @@ export async function transformPublishFormToDdo(
 
   const newServiceCredentials = generateCredentials(credentials)
   const valuesCompute: ComputeEditForm = {
-    allowAllPublishedAlgorithms: values.allowAllPublishedAlgorithms,
+    allowAllPublishedAlgorithms: values.allowAllPublishedAlgorithms
+      ? 'Allow any published algorithms'
+      : 'Allow selected algorithms',
     publisherTrustedAlgorithms: values.publisherTrustedAlgorithms ?? [],
     publisherTrustedAlgorithmPublishers:
-      values.publisherTrustedAlgorithmPublishers
+      values.publisherTrustedAlgorithmPublishers?.length > 0
+        ? 'Allow specific trusted algorithm publishers'
+        : 'Allow any trusted algorithm publishers'
   }
   const newService: Service = {
     id: getHash(datatokenAddress + filesEncrypted),

@@ -145,6 +145,7 @@ export default function ServicesFields(): ReactElement {
           component={Input}
           name="services[0].description.language"
           type="select"
+          selectStyle="serviceLanguage"
           options={languageOptions}
           value={getCurrentLanguageName()}
           onChange={(e) => handleLanguageChange(e.target.value)}

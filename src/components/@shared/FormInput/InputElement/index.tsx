@@ -84,8 +84,13 @@ const InputElement = forwardRef(
     ref: RefObject<HTMLInputElement>
   ): ReactElement => {
     const styleClasses = cx({
-      select: props.selectStyle !== 'publish',
+      select:
+        props.selectStyle !== 'publish' &&
+        props.selectStyle !== 'custom' &&
+        props.selectStyle !== 'serviceLanguage',
       publishSelect: props.selectStyle === 'publish',
+      customSelect: props.selectStyle === 'custom',
+      serviceLanguageSelect: props.selectStyle === 'serviceLanguage',
       [size]: size
     })
 

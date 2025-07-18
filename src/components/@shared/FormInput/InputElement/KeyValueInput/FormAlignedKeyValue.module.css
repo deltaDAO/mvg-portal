@@ -1,0 +1,169 @@
+/* Match the exact structure of PublishConsumerParameters formRow and formColumn */
+.inputRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 40px;
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: var(--spacer);
+}
+
+.inputColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 10px;
+  flex: 1;
+  width: 100%;
+}
+
+/* Right column - same width as "Default Value" field */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 10px;
+  flex: 1;
+  width: 100%;
+}
+
+/* Row for label input and button side by side */
+.labelAndButtonRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Match form input styling */
+.inputColumn :global(input) {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  height: 40px;
+  border: 1px solid var(--publish-border);
+  filter: drop-shadow(1px 4px 8px rgba(0, 0, 0, 0.15));
+  border-radius: 20px;
+  padding: 0px 30px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #303031;
+  background: #ffffff;
+}
+
+/* Label input - takes remaining space after button */
+.labelAndButtonRow :global(input) {
+  box-sizing: border-box !important;
+  width: calc(100% - 82px - 10px) !important; /* 100% - button width - gap */
+  min-width: calc(100% - 82px - 10px) !important;
+  height: 40px;
+  border: 1px solid var(--publish-border);
+  filter: drop-shadow(1px 4px 8px rgba(0, 0, 0, 0.15));
+  border-radius: 20px;
+  padding: 0px 30px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #303031;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+/* Button styling */
+.labelAndButtonRow :global(button) {
+  box-sizing: border-box !important;
+  width: 82px !important;
+  min-width: 82px !important;
+  height: 40px;
+  border-radius: 20px;
+  font-family: 'Helvetica';
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 14px;
+  text-transform: uppercase;
+  cursor: pointer;
+  padding: 0px 20px;
+  flex-shrink: 0;
+}
+
+/* Add button specific styling */
+.labelAndButtonRow :global(.addButton) {
+  background: var(--publish-accent-gradient);
+  color: var(--publish-primary);
+  border: none;
+}
+
+.labelAndButtonRow :global(.addButton):hover {
+  opacity: 0.9;
+}
+
+.labelAndButtonRow :global(.addButton):disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Added pairs styling */
+.pairRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 40px;
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: var(--spacer);
+}
+
+.pairRow .inputColumn :global(input),
+.pairRow .labelAndButtonRow :global(input) {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.pairRow .labelAndButtonRow :global(button) {
+  background: transparent;
+  border: 1px solid var(--publish-border);
+  color: var(--publish-text-secondary);
+}
+
+.pairRow .labelAndButtonRow :global(button):hover {
+  background: rgba(48, 48, 49, 0.05);
+}
+
+/* Error styling */
+.hasError label {
+  color: var(--brand-alert-red);
+}
+
+.hasError .inputColumn :global(input),
+.hasError .labelAndButtonRow :global(input),
+.hasError .inputColumn :global(input):focus,
+.hasError .labelAndButtonRow :global(input):focus {
+  border-color: var(--brand-alert-red) !important;
+}
+
+.error {
+  color: var(--brand-alert-red);
+  font-size: 10px;
+  margin-top: 4px;
+  line-height: 1.2;
+}
+
+.required {
+  font-size: var(--font-size-base);
+  color: var(--input-error-text-color);
+  display: inline-block;
+  margin-left: 0.1rem;
+}
