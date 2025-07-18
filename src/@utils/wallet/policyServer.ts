@@ -25,6 +25,7 @@ export async function requestCredentialPresentation(
     const sessionId = crypto.randomUUID()
 
     const policyServer: PolicyServerInitiateActionData = {
+      sessionId,
       successRedirectUri: ``,
       errorRedirectUri: ``,
       responseRedirectUri: ``,
@@ -33,7 +34,6 @@ export async function requestCredentialPresentation(
 
     const action: PolicyServerInitiateAction = {
       action: PolicyServerActions.INITIATE,
-      sessionId,
       ddo: asset,
       policyServer,
       serviceId,

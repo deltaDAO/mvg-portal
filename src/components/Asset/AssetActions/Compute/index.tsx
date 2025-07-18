@@ -11,9 +11,7 @@ import {
   unitsToAmount,
   ProviderFees,
   UserCustomParameters,
-  getErrorMessage,
-  EscrowContract,
-  ComputeAsset
+  EscrowContract
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
 import Price from '@shared/Price'
@@ -66,6 +64,7 @@ import appConfig, { oceanTokenAddress } from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 import { CredentialDialogProvider } from './CredentialDialogProvider'
+import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
 
 export default function Compute({
   accountId,
@@ -224,7 +223,12 @@ export default function Compute({
         signer,
         selectedComputeEnv,
         selectedResources,
-        svcIndex
+        svcIndex,
+        lookupVerifierSessionId(asset.id, service.id),
+        lookupVerifierSessionId(
+          selectedAlgorithmAsset.id,
+          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id
+        )
       )
       if (
         !initializedProvider ||
@@ -460,6 +464,32 @@ export default function Compute({
         amount: selectedResources[res.id] || res.min
       }))
       let response
+      const policyServerAlgo: PolicyServerInitiateComputeActionData = {
+        sessionId: lookupVerifierSessionId(
+          selectedAlgorithmAsset.id,
+          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id
+        ),
+        serviceId:
+          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id,
+        documentId: selectedAlgorithmAsset.id,
+        successRedirectUri: ``,
+        errorRedirectUri: ``,
+        responseRedirectUri: ``,
+        presentationDefinitionUri: ``
+      }
+      const policyServerDataset: PolicyServerInitiateComputeActionData = {
+        sessionId: lookupVerifierSessionId(asset.id, service.id),
+        serviceId: service.id,
+        documentId: asset.id,
+        successRedirectUri: ``,
+        errorRedirectUri: ``,
+        responseRedirectUri: ``,
+        presentationDefinitionUri: ``
+      }
+      const policiesServer: PolicyServerInitiateComputeActionData[] = [
+        policyServerAlgo,
+        policyServerDataset
+      ]
       if (selectedResources.mode === 'paid') {
         response = await ProviderInstance.computeStart(
           service.serviceEndpoint,
@@ -477,7 +507,10 @@ export default function Compute({
           selectedResources.jobDuration,
           oceanTokenAddress,
           resourceRequests,
-          asset.credentialSubject?.chainId
+          asset.credentialSubject?.chainId,
+          null,
+          null,
+          policiesServer
         )
         console.log('[compute] Compute response:', response)
       } else {
@@ -499,7 +532,10 @@ export default function Compute({
             }
           ],
           algorithm,
-          resourceRequests
+          resourceRequests,
+          null,
+          null,
+          policiesServer
         )
         console.log('[compute] Free compute response:', response)
       }

@@ -36,6 +36,8 @@ export interface SsiWalletContext {
   setSsiWalletCache: (cache: SsiWalletCache) => void
   cachedCredentials: SsiVerifiableCredential[]
   setCachedCredentials: (credentials: SsiVerifiableCredential[]) => void
+  selectedDid: string
+  setSelectedDid: (did: string) => void
 }
 
 const SessionTokenStorage = 'sessionToken'
@@ -62,6 +64,8 @@ export function SsiWalletProvider({
     Record<string, string>
   >({})
 
+  const [selectedDid, setSelectedDid] = useState<string>()
+
   useEffect(() => {
     try {
       const token = localStorage.getItem(SessionTokenStorage)
@@ -86,6 +90,7 @@ export function SsiWalletProvider({
     if (!sessionToken) {
       setSelectedWallet(undefined)
       setSelectedKey(undefined)
+      setSelectedDid(undefined)
     }
     localStorage.setItem(SessionTokenStorage, JSON.stringify(sessionToken))
   }, [sessionToken])
@@ -144,7 +149,9 @@ export function SsiWalletProvider({
           ssiWalletCache,
           setSsiWalletCache,
           cachedCredentials,
-          setCachedCredentials
+          setCachedCredentials,
+          selectedDid,
+          setSelectedDid
         } as SsiWalletContext
       }
     >
