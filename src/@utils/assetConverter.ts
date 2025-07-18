@@ -38,20 +38,7 @@ export async function transformAssetToAssetSelection(
         selectedAlgorithms?.map((a) => `${a.did}|${a.serviceId}`)
       )
 
-      // fetch all accessDetails in one go
-      const cancelTokenSource = axios.CancelToken.source()
       const { services } = asset.credentialSubject
-      const accessDetails = await Promise.all(
-        services.map((s) =>
-          getAccessDetails(
-            asset.credentialSubject.chainId,
-            s,
-            accountId,
-            cancelTokenSource.token
-          )
-        )
-      )
-
       // only loop through those services that appear in selectedAlgorithms
       services.forEach((service, idx) => {
         const key = `${asset.id}|${service.id}`
@@ -63,14 +50,14 @@ export async function transformAssetToAssetSelection(
         )
           return // <-- skip any service that wasn't in selectedAlgorithms
 
-        const priceInfo = getAvailablePrice(accessDetails[idx])
         const assetEntry: AssetSelectionAsset = {
           did: asset.id,
           serviceId: service.id,
           serviceName: service.name,
           name: asset.credentialSubject.metadata.name,
-          price: priceInfo.value,
-          tokenSymbol: priceInfo.tokenSymbol,
+          price:
+            Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
+          tokenSymbol: 'OCEAN',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
