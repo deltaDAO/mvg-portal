@@ -1,3 +1,5 @@
+@import '../../FormInput/index.module.css';
+
 .block {
   position: relative;
   margin-block: var(--sp-4);
@@ -27,6 +29,57 @@
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-bold);
   color: var(--clr-slate-70);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 200px;
+  flex: 1;
+}
+
+.field label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: var(--sp-1);
+}
+
+.fieldContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 180px;
+  flex: 1;
+  align-self: stretch;
+}
+
+.fieldContainer label {
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: 0;
+}
+
+.fieldContainer select {
+  height: 100%;
+  min-height: 40px;
+}
+
+.required {
+  color: var(--input-error-text-color);
+  margin-left: 2px;
+}
+
+.ruleRow .field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.ruleRow .field label {
+  font-size: var(--font-size-small);
+  margin-bottom: var(--sp-1);
 }
 
 .policyRow {
@@ -65,12 +118,12 @@
 .ruleRow {
   display: flex;
   align-items: flex-end;
-  gap: var(--sp-2_5);
+  gap: var(--sp-2);
   margin-bottom: var(--sp-4);
 }
 
 .ruleInput {
-  min-width: 200px;
+  min-width: 180px;
   flex: 1;
 }
 
