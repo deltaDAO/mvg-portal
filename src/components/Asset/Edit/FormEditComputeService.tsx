@@ -10,7 +10,7 @@ import {
 } from '@utils/aquarius'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { SortTermOptions } from '../../../@types/aquarius/SearchQuery'
-import { transformAssetToAssetSelection } from '@utils/assetConverter'
+import { transformAssetToAssetSelectionEdit } from '@utils/assetConverter'
 import { ServiceEditForm } from './_types'
 import content from '../../../../content/pages/editComputeDataset.json'
 import { getFieldContent } from '@utils/form'
@@ -80,7 +80,7 @@ export default function FormEditComputeService({
 
       const query = generateBaseQuery(baseParams)
       const queryResult = await queryMetadata(query, newCancelToken())
-      const algorithmSelectionList = await transformAssetToAssetSelection(
+      const algorithmSelectionList = await transformAssetToAssetSelectionEdit(
         serviceEndpoint,
         queryResult?.results || [],
         accountId,
