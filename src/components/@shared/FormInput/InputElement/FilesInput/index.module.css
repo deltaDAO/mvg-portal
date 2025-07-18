@@ -1,7 +1,3 @@
-.textblock > div > div {
-  margin-bottom: 0;
-}
-
 .textblock > div {
   display: flex;
   flex-direction: column;

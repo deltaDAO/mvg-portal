@@ -84,6 +84,12 @@ body .methodDisplay {
   text-transform: capitalize;
 }
 
+body .methodDisplay.disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .getIcon {
   min-width: 16px;
   min-height: 16px;

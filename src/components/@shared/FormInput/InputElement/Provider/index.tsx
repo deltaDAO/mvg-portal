@@ -123,10 +123,8 @@ export default function CustomProvider(props: InputProps): ReactElement {
         name={`${field.name}.url`}
         isLoading={isLoading}
         handleButtonClick={handleValidation}
-        showDeleteButton
-        onDelete={handleClear}
-        disabled={field?.value?.valid === true}
-        disableButton={field?.value?.valid === true}
+        isValidated={field?.value?.valid === true}
+        onReset={handleClear}
       />
 
       {field?.value?.valid === true ? (

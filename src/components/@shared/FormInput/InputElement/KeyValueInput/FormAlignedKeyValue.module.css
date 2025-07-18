@@ -1,4 +1,3 @@
-/* Match the exact structure of PublishConsumerParameters formRow and formColumn */
 .inputRow {
   display: flex;
   flex-direction: row;
@@ -7,8 +6,6 @@
   padding: 0px;
   gap: 40px;
   width: 100%;
-  min-height: 80px;
-  margin-bottom: var(--spacer);
 }
 
 .inputColumn {
@@ -21,7 +18,6 @@
   width: 100%;
 }
 
-/* Right column - same width as "Default Value" field */
 .rightColumn {
   display: flex;
   flex-direction: column;
@@ -32,7 +28,6 @@
   width: 100%;
 }
 
-/* Row for label input and button side by side */
 .labelAndButtonRow {
   display: flex;
   flex-direction: row;
@@ -41,7 +36,6 @@
   width: 100%;
 }
 
-/* Match form input styling */
 .inputColumn :global(input) {
   box-sizing: border-box !important;
   width: 100% !important;
@@ -60,7 +54,6 @@
   background: #ffffff;
 }
 
-/* Label input - takes remaining space after button */
 .labelAndButtonRow :global(input) {
   box-sizing: border-box !important;
   width: calc(100% - 82px - 10px) !important; /* 100% - button width - gap */
@@ -80,7 +73,6 @@
   flex-shrink: 0;
 }
 
-/* Button styling */
 .labelAndButtonRow :global(button) {
   box-sizing: border-box !important;
   width: 82px !important;
@@ -97,7 +89,6 @@
   flex-shrink: 0;
 }
 
-/* Add button specific styling */
 .labelAndButtonRow :global(.addButton) {
   background: var(--publish-accent-gradient);
   color: var(--publish-primary);
@@ -113,7 +104,6 @@
   cursor: not-allowed;
 }
 
-/* Added pairs styling */
 .pairRow {
   display: flex;
   flex-direction: row;
@@ -122,8 +112,6 @@
   padding: 0px;
   gap: 40px;
   width: 100%;
-  min-height: 80px;
-  margin-bottom: var(--spacer);
 }
 
 .pairRow .inputColumn :global(input),
@@ -142,7 +130,6 @@
   background: rgba(48, 48, 49, 0.05);
 }
 
-/* Error styling */
 .hasError label {
   color: var(--brand-alert-red);
 }

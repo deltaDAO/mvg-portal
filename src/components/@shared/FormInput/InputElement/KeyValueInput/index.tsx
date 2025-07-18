@@ -34,6 +34,7 @@ export default function InputKeyValue({
   value,
   keyPlaceholder = 'key',
   valuePlaceholder = 'value',
+  disabled = false,
   ...props
 }: KeyValueInputProps): ReactElement {
   const { label, help, prominentHelp, form, field } = props
@@ -118,6 +119,7 @@ export default function InputKeyValue({
           placeholder={keyPlaceholder}
           value={`${currentKey}`}
           onChange={handleChange}
+          disabled={disabled}
         />
 
         <InputElement
@@ -126,6 +128,7 @@ export default function InputKeyValue({
           placeholder={valuePlaceholder}
           value={`${currentValue}`}
           onChange={handleChange}
+          disabled={disabled}
         />
 
         <PublishButton
@@ -136,7 +139,7 @@ export default function InputKeyValue({
             e.preventDefault()
             addPair()
           }}
-          disabled={disabledButton}
+          disabled={disabledButton || disabled}
         />
 
         {uniqueKeys && !hasOnlyUniqueKeys && (
@@ -169,7 +172,7 @@ export default function InputKeyValue({
                   e.preventDefault()
                   removePair(i)
                 }}
-                disabled={false}
+                disabled={disabled}
               >
                 remove
               </Button>

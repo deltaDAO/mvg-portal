@@ -2,6 +2,14 @@
   position: relative;
 }
 
+.container > div > div {
+  margin-bottom: var(--sp-8);
+}
+
+.container > div > div:last-of-type {
+  margin-bottom: 0;
+}
+
 .container.hasError * {
   border-color: var(--brand-alert-red);
 }

@@ -12,6 +12,7 @@ export interface MethodInputProps {
   checkUrl?: boolean
   storageType?: string
   hideButton?: boolean
+  disabled?: boolean
 }
 
 export default function MethodInput({
@@ -20,6 +21,7 @@ export default function MethodInput({
   name,
   checkUrl,
   storageType,
+  disabled = false,
   ...props
 }: MethodInputProps): ReactElement {
   const [field, meta] = useField(name)
@@ -37,6 +39,7 @@ export default function MethodInput({
           {...props}
           {...field}
           type="url"
+          disabled={disabled}
         />
 
         <div className={styles.methodDropdownWrapper}>
@@ -52,11 +55,16 @@ export default function MethodInput({
               setMethod(e.currentTarget.value)
               handleButtonClick(e.currentTarget.value)
             }}
+            disabled={disabled}
           >
             <option value="get">GET</option>
             <option value="post">POST</option>
           </select>
-          <div className={styles.methodDisplay}>
+          <div
+            className={`${styles.methodDisplay} ${
+              disabled ? styles.disabled : ''
+            }`}
+          >
             <Download2Icon
               className={
                 methodSelected === 'get' ? styles.getIcon : styles.postIcon

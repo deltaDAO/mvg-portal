@@ -25,6 +25,8 @@ export interface URLInputProps {
   onDelete?: () => void
   disabled?: boolean
   disableButton?: boolean
+  isValidated?: boolean
+  onReset?: () => void
 }
 
 export default function URLInput({
@@ -42,11 +44,17 @@ export default function URLInput({
   onDelete,
   disabled = false,
   disableButton = false,
+  isValidated = false,
+  onReset,
   ...props
 }: URLInputProps): ReactElement {
   const [field, meta] = useField(name)
   const [isButtonDisabled, setIsButtonDisabled] = useState(true)
   const inputValues = (props as any)?.value
+
+  const isInputDisabled = disabled || isValidated
+  const isActionButtonDisabled =
+    isButtonDisabled || isLoading || disableButton || isValidated
 
   // Apply error styling
   const inputClassName = `${styles.input} ${
@@ -73,6 +81,14 @@ export default function URLInput({
     )
   }, [field?.value, meta?.error, inputValues])
 
+  const handleReset = () => {
+    if (onReset) {
+      onReset()
+    } else if (onDelete) {
+      onDelete()
+    }
+  }
+
   return (
     <>
       <InputGroup>
@@ -83,36 +99,41 @@ export default function URLInput({
           type="url"
           placeholder={placeholder}
           data-storage-type={storageType}
-          disabled={disabled}
+          disabled={isInputDisabled}
         />
 
-        {!hideButton &&
-          (submitText === 'Validate' ? (
-            <PublishButton
-              icon="validate"
-              text={submitText}
-              buttonStyle="primary"
-              onClick={(e: React.SyntheticEvent) => {
-                e.preventDefault()
-                handleButtonClick(e, field.value)
-              }}
-              disabled={isButtonDisabled || isLoading || disableButton}
-            />
-          ) : (
-            <Button
-              style={buttonStyle}
-              size="default"
-              onClick={(e: React.SyntheticEvent) => {
-                e.preventDefault()
-                handleButtonClick(e, field.value)
-              }}
-              disabled={isButtonDisabled || disableButton}
-            >
-              {isLoading ? <Loader white /> : submitText}
-            </Button>
-          ))}
+        {!hideButton && (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            {submitText === 'Validate' ? (
+              <PublishButton
+                icon="validate"
+                text={submitText}
+                buttonStyle="primary"
+                onClick={(e: React.SyntheticEvent) => {
+                  e.preventDefault()
+                  handleButtonClick(e, field.value)
+                }}
+                disabled={isActionButtonDisabled}
+              />
+            ) : (
+              <Button
+                style={buttonStyle}
+                size="default"
+                onClick={(e: React.SyntheticEvent) => {
+                  e.preventDefault()
+                  handleButtonClick(e, field.value)
+                }}
+                disabled={isActionButtonDisabled}
+              >
+                {isLoading ? <Loader white /> : submitText}
+              </Button>
+            )}
 
-        {showDeleteButton && onDelete && <DeleteButton onClick={onDelete} />}
+            {(isValidated || showDeleteButton) && (
+              <DeleteButton onClick={handleReset} />
+            )}
+          </div>
+        )}
       </InputGroup>
 
       {!hideError && meta.touched && meta.error && (
