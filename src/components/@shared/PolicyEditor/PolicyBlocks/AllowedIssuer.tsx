@@ -41,9 +41,10 @@ export default function AllowedIssuerPolicyBlock({
   return (
     <div className={styles.block}>
       <div className={styles.header}>
-        <Field
+        <Input
           {...getFieldContent('policy', fields)}
-          component={Input}
+          value="allowed-issuer"
+          disabled
           name={`${name}.requestCredentials[${index}].policies[${innerIndex}].policy`}
           required
         />
