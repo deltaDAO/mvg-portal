@@ -13,6 +13,7 @@
   --font-color-heading: var(--brand-black);
   --font-color-light: var(--brand-grey-light);
   --font-color-label: var(--publish-text-secondary);
+  --font-color-did: var(--clr-did-text);
   --background-body: var(--brand-white);
   --background-body-transparent: rgba(255, 255, 255, 0.8);
   --background-content: var(--brand-white);

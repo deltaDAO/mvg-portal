@@ -1,9 +1,5 @@
 .selection {
   padding: 0;
-  border: 1px solid var(--border-color);
-  background-color: var(--background-highlight);
-  border-radius: var(--border-radius);
-  margin-bottom: calc(var(--spacer) / 2);
   font-size: var(--font-size-small);
   min-height: 200px;
 }
@@ -17,12 +13,10 @@
 }
 
 .scroll {
-  border-top: 1px solid var(--border-color);
   margin-top: calc(var(--spacer) / 4);
   min-height: fit-content;
   max-height: 50vh;
   position: relative;
-  /* smooth overflow scrolling for pre-iOS 13 */
   overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -34,10 +28,10 @@
   padding: 0px;
   gap: 16px;
   border-bottom: 1px solid var(--border-color);
-  padding: calc(var(--spacer) / 3) calc(var(--spacer) / 2);
+  padding: var(--sp-4);
 }
 
-.row:last-child {
+.scroll > .row:last-of-type {
   border-bottom: none;
 }
 
@@ -155,10 +149,8 @@
 
 .link svg {
   margin: 0;
-  fill: var(--publish-primary);
   width: 16px;
   height: 16px;
-  border: 1.5px solid var(--publish-primary);
 }
 
 .footer {
@@ -180,17 +172,15 @@
 
 .price [class*='symbol'] {
   font-size: var(--publish-font-size);
-  color: var(--publish-text);
 }
 
 /* Search container with proper layout */
 .searchContainer {
-  margin: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+  width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  width: calc(100% - var(--spacer));
 }
 
 .search {
@@ -282,7 +272,7 @@
   line-height: var(--publish-line-height-base);
   display: block;
   text-align: left;
-  color: rgba(76, 163, 211, 0.7);
+  color: var(--font-color-did);
   /* makes sure DotDotDot will kick in */
   overflow-wrap: break-word;
   word-wrap: break-word;
