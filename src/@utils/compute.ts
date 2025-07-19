@@ -426,8 +426,9 @@ export async function transformComputeFormToServiceComputeOptions(
         cancelToken
       )
   const publisherTrustedAlgorithmPublishers: string[] =
-    values.publisherTrustedAlgorithmPublishers?.length > 0
-      ? values.publisherTrustedAlgorithmPublishers
+    values.publisherTrustedAlgorithmPublishers &&
+    values.publisherTrustedAlgorithmPublishers.length > 0
+      ? [values.publisherTrustedAlgorithmPublishers]
       : []
 
   const privacy: Compute = {

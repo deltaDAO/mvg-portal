@@ -41,14 +41,16 @@ export interface ServiceEditForm {
   credentials?: CredentialForm
   state?: string
   // compute
-  allowAllPublishedAlgorithms: boolean
+  allowAllPublishedAlgorithms: string
   publisherTrustedAlgorithms: string[]
-  publisherTrustedAlgorithmPublishers: string[]
+  publisherTrustedAlgorithmPublishers: string
+  publisherTrustedAlgorithmPublishersAddresses?: string
 }
 
 // TODO delete
 export interface ComputeEditForm {
-  allowAllPublishedAlgorithms: boolean
+  allowAllPublishedAlgorithms: string
   publisherTrustedAlgorithms: string[]
-  publisherTrustedAlgorithmPublishers: string[]
+  publisherTrustedAlgorithmPublishers: string
+  publisherTrustedAlgorithmPublishersAddresses?: string
 }

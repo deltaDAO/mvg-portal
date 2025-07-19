@@ -1,22 +1,12 @@
+@import '../../FormInput/index.module.css';
+
 .block {
   position: relative;
   margin-block: var(--sp-4);
   display: flex;
   flex-direction: column;
   gap: var(--sp-4);
-  /* padding: var(--sp-6) var(--sp-4); */
-  /* box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15); */
-  /* background: var(--brand-white); */
 }
-
-/* .block::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: var(--line-accent);
-  background: var(--clr-amber);
-  border-radius: 2px 0 0 2px;
-} */
 
 .header {
   display: flex;
@@ -41,6 +31,57 @@
   color: var(--clr-slate-70);
 }
 
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 200px;
+  flex: 1;
+}
+
+.field label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: var(--sp-1);
+}
+
+.fieldContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 180px;
+  flex: 1;
+  align-self: stretch;
+}
+
+.fieldContainer label {
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: 0;
+}
+
+.fieldContainer select {
+  height: 100%;
+  min-height: 40px;
+}
+
+.required {
+  color: var(--input-error-text-color);
+  margin-left: 2px;
+}
+
+.ruleRow .field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.ruleRow .field label {
+  font-size: var(--font-size-small);
+  margin-bottom: var(--sp-1);
+}
+
 .policyRow {
   display: flex;
   align-items: stretch;
@@ -56,10 +97,6 @@
 .policyDelete {
   height: 100%;
   border-radius: 0 20px 20px 0;
-}
-
-.marginBottom {
-  margin-bottom: var(--sp-4);
 }
 
 .argumentRow {
@@ -81,12 +118,12 @@
 .ruleRow {
   display: flex;
   align-items: flex-end;
-  gap: var(--sp-2_5);
+  gap: var(--sp-2);
   margin-bottom: var(--sp-4);
 }
 
 .ruleInput {
-  min-width: 200px;
+  min-width: 180px;
   flex: 1;
 }
 

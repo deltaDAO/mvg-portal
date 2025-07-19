@@ -39,7 +39,7 @@ export default function CustomUrlPolicyBlock({
 
   return (
     <div className={styles.block}>
-      <div className={`${styles.header} ${styles.marginBottom}`}>
+      <div className={`${styles.header}`}>
         <Field
           label="Custom URL Policy Name"
           placeholder="Enter policy name"
@@ -58,7 +58,7 @@ export default function CustomUrlPolicyBlock({
         />
 
         {/* Spacer to prevent overlap between Policy URL and arguments */}
-        <div style={{ marginBottom: '32px' }} />
+        <div style={{ marginBottom: '16px' }} />
 
         {policy.arguments?.map((argument, argIndex) => (
           <div key={argIndex} className={styles.argumentRow}>

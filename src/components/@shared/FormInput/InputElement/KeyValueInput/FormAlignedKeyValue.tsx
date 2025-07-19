@@ -7,7 +7,7 @@ import {
 } from 'react'
 import InputElement from '..'
 import Label from '../../Label'
-import styles from './index.module.css'
+import styles from './FormAlignedKeyValue.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 import Button from '@shared/atoms/Button'
@@ -22,21 +22,20 @@ export interface KeyValuePair {
   value: string
 }
 
-export interface KeyValueInputProps extends Omit<InputProps, 'value'> {
+export interface FormAlignedKeyValueProps extends Omit<InputProps, 'value'> {
   value: KeyValuePair[]
   uniqueKeys?: boolean
   keyPlaceholder?: string
   valuePlaceholder?: string
 }
 
-export default function InputKeyValue({
+export default function FormAlignedKeyValue({
   uniqueKeys = false,
   value,
   keyPlaceholder = 'key',
   valuePlaceholder = 'value',
-  disabled = false,
   ...props
-}: KeyValueInputProps): ReactElement {
+}: FormAlignedKeyValueProps): ReactElement {
   const { label, help, prominentHelp, form, field } = props
 
   const [currentKey, setCurrentKey] = useState('')
@@ -112,70 +111,82 @@ export default function InputKeyValue({
         )}
       </Label>
 
-      <div className={styles.pairsContainer}>
-        <InputElement
-          className={styles.keyInput}
-          name={`${field.name}.key`}
-          placeholder={keyPlaceholder}
-          value={`${currentKey}`}
-          onChange={handleChange}
-          disabled={disabled}
-        />
-
-        <InputElement
-          className={styles.input}
-          name={`${field.name}.value`}
-          placeholder={valuePlaceholder}
-          value={`${currentValue}`}
-          onChange={handleChange}
-          disabled={disabled}
-        />
-
-        <PublishButton
-          icon="add"
-          text="Add"
-          buttonStyle="primary"
-          onClick={(e: React.SyntheticEvent) => {
-            e.preventDefault()
-            addPair()
-          }}
-          disabled={disabledButton || disabled}
-        />
-
-        {uniqueKeys && !hasOnlyUniqueKeys && (
-          <p
-            className={styles.error}
-          >{`The ${keyPlaceholder} field must be unique`}</p>
-        )}
+      {/* Input Row - matches formRow structure exactly */}
+      <div className={styles.inputRow}>
+        {/* Left column - same width as "Required" field */}
+        <div className={styles.inputColumn}>
+          <InputElement
+            className={styles.keyInput}
+            name={`${field.name}.key`}
+            placeholder={keyPlaceholder}
+            value={`${currentKey}`}
+            onChange={handleChange}
+          />
+        </div>
+        {/* Right column - same width as "Default Value" field */}
+        <div className={styles.rightColumn}>
+          <div className={styles.labelAndButtonRow}>
+            <InputElement
+              className={styles.valueInput}
+              name={`${field.name}.value`}
+              placeholder={valuePlaceholder}
+              value={`${currentValue}`}
+              onChange={handleChange}
+            />
+            <PublishButton
+              icon="add"
+              text="Add"
+              buttonStyle="primary"
+              onClick={(e: React.SyntheticEvent) => {
+                e.preventDefault()
+                addPair()
+              }}
+              disabled={disabledButton}
+            />
+          </div>
+        </div>
       </div>
 
+      {uniqueKeys && !hasOnlyUniqueKeys && (
+        <p className={styles.error}>
+          {`The ${keyPlaceholder} field must be unique`}
+        </p>
+      )}
+
+      {/* Added Pairs - matches formRow structure exactly */}
       {pairs.length > 0 &&
         pairs.map((header, i) => {
           return (
-            <div className={styles.pairsAddedContainer} key={`pair_${i}`}>
-              <InputElement
-                name={`pair[${i}].key`}
-                value={`${header.key}`}
-                disabled
-              />
-
-              <InputElement
-                name={`pair[${i}].value`}
-                value={`${header.value}`}
-                disabled
-              />
-
-              <Button
-                style="outlined"
-                size="small"
-                onClick={(e: React.SyntheticEvent) => {
-                  e.preventDefault()
-                  removePair(i)
-                }}
-                disabled={disabled}
-              >
-                remove
-              </Button>
+            <div className={styles.pairRow} key={`pair_${i}`}>
+              {/* Left column - same width as "Required" field */}
+              <div className={styles.inputColumn}>
+                <InputElement
+                  name={`pair[${i}].key`}
+                  value={`${header.key}`}
+                  disabled
+                />
+              </div>
+              {/* Right column - same width as "Default Value" field */}
+              <div className={styles.rightColumn}>
+                <div className={styles.labelAndButtonRow}>
+                  <InputElement
+                    name={`pair[${i}].value`}
+                    value={`${header.value}`}
+                    disabled
+                  />
+                  <Button
+                    style="outlined"
+                    size="small"
+                    onClick={(e: React.SyntheticEvent) => {
+                      e.preventDefault()
+                      removePair(i)
+                    }}
+                    disabled={false}
+                  >
+                    remove
+                  </Button>
+                </div>
+              </div>
             </div>
           )
         })}

@@ -16,6 +16,7 @@ import { checkJson } from '@utils/codemirror'
 import { isGoogleUrl } from '@utils/url/index'
 import isUrl from 'is-url-superb'
 import MethodInput from '../MethodInput'
+import DeleteButton from '@shared/DeleteButton/DeleteButton'
 
 export default function FilesInput(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
@@ -34,6 +35,7 @@ export default function FilesInput(props: InputProps): ReactElement {
   const abi = field.value?.[0]?.abi || undefined
   const headers = field.value?.[0]?.headers || undefined
   const method = field.value?.[0]?.method || 'get'
+  const isValidated = field?.value?.[0]?.valid === true
 
   async function handleValidation(e: React.SyntheticEvent, url: string) {
     // File example 'https://oceanprotocol.com/tech-whitepaper.pdf'
@@ -138,6 +140,7 @@ export default function FilesInput(props: InputProps): ReactElement {
               checkUrl={true}
               handleButtonClick={handleMethod}
               storageType={storageType}
+              disabled={isValidated}
             />
           ) : (
             <UrlInput
@@ -152,15 +155,12 @@ export default function FilesInput(props: InputProps): ReactElement {
               checkUrl={true}
               handleButtonClick={handleValidation}
               storageType={storageType}
-              showDeleteButton={field?.value?.[0]?.valid === true}
-              onDelete={handleClose}
-              disabled={field?.value?.[0]?.valid === true}
-              disableButton={field?.value?.[0]?.valid === true}
+              isValidated={isValidated}
+              onReset={handleClose}
             />
           )}
 
-          {(field?.value?.[0]?.valid === true ||
-            field?.value?.[0]?.type === 'hidden') && (
+          {(isValidated || field?.value?.[0]?.type === 'hidden') && (
             <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
           )}
 
@@ -181,6 +181,30 @@ export default function FilesInput(props: InputProps): ReactElement {
                           {...innerField}
                           name={`${field.name}[0].${innerField.value}`}
                           value={field.value?.[0]?.[innerField.value]}
+                          disabled={isValidated}
+                          render={({ field: formikField, form, meta }: any) =>
+                            innerField.type === 'headers' ? (
+                              <InputKeyValue
+                                {...innerField}
+                                field={formikField}
+                                form={form}
+                                meta={meta}
+                                name={`${field.name}[0].${innerField.value}`}
+                                value={field.value?.[0]?.[innerField.value]}
+                                disabled={isValidated}
+                              />
+                            ) : (
+                              <Input
+                                {...innerField}
+                                field={formikField}
+                                form={form}
+                                meta={meta}
+                                name={`${field.name}[0].${innerField.value}`}
+                                value={field.value?.[0]?.[innerField.value]}
+                                disabled={isValidated}
+                              />
+                            )
+                          }
                         />
                       </>
                     )
@@ -196,22 +220,27 @@ export default function FilesInput(props: InputProps): ReactElement {
                   <Loader white />
                 </Button>
               ) : (
-                <PublishButton
-                  icon="validate"
-                  text={`Submit ${
-                    storageType === 'graphql'
-                      ? 'query'
-                      : storageType === 'smartcontract'
-                      ? 'abi'
-                      : 'URL'
-                  }`}
-                  buttonStyle="gradient"
-                  onClick={(e: React.SyntheticEvent) => {
-                    e.preventDefault()
-                    handleValidation(e, field.value[0].url)
-                  }}
-                  disabled={disabledButton}
-                />
+                <div
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
+                >
+                  <PublishButton
+                    icon="validate"
+                    text={`Submit ${
+                      storageType === 'graphql'
+                        ? 'query'
+                        : storageType === 'smartcontract'
+                        ? 'abi'
+                        : 'URL'
+                    }`}
+                    buttonStyle="gradient"
+                    onClick={(e: React.SyntheticEvent) => {
+                      e.preventDefault()
+                      handleValidation(e, field.value[0].url)
+                    }}
+                    disabled={disabledButton || isValidated}
+                  />
+                  {isValidated && <DeleteButton onClick={handleClose} />}
+                </div>
               )}
             </>
           )}

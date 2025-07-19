@@ -1,22 +1,32 @@
 .pairsContainer {
+  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr 82px;
   gap: calc(var(--spacer) / 4);
-  margin-bottom: var(--spacer);
+  margin-bottom: var(--sp-4);
   position: relative;
   align-items: end;
 }
 
+.pairsContainer:last-child {
+  margin-bottom: 0;
+}
+
 .pairsAddedContainer {
   display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: var(--sp-2_5);
-  margin-bottom: var(--spacer);
+  grid-template-columns: 1fr 1fr 82px;
+  gap: calc(var(--spacer) / 4);
+  margin-bottom: var(--sp-4);
   align-items: end;
 }
 
+.pairsAddedContainer:last-child {
+  margin-bottom: 0;
+}
+
 .pairsAddedContainer > button {
-  min-width: 90px !important;
+  min-width: 82px !important;
+  max-width: 82px !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -63,11 +73,27 @@
   min-width: auto;
 }
 
+.pairsContainer button {
+  max-width: 82px;
+}
+
 .pairsContainer .addButton:hover,
 .pairsContainer .addButton:focus {
   background: var(--publish-accent-gradient);
   transform: none;
   box-shadow: var(--publish-shadow-sm);
+}
+
+.pairsContainer .addButton:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pairsAddedContainer button:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .addButton .addIcon {

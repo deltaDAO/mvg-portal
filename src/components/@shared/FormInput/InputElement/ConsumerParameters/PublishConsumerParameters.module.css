@@ -95,11 +95,11 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  font-family: 'Helvetica';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 14px;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-align: center;
   color: var(--ocean-blue);
   border-radius: 4px;
 }
@@ -126,7 +126,6 @@
   padding: 0px;
   gap: 40px;
   width: 100%;
-  min-height: 80px;
 }
 
 .formColumn {

@@ -2,7 +2,6 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { Field, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
-import stylesIndex from './index.module.css'
 import {
   generateBaseQuery,
   getFilterTerm,
@@ -16,6 +15,8 @@ import content from '../../../../content/pages/editComputeDataset.json'
 import { getFieldContent } from '@utils/form'
 import { useAccount } from 'wagmi'
 import { Compute, PublisherTrustedAlgorithms } from 'src/@types/ddo/Service'
+import SectionContainer from '@shared/SectionContainer/SectionContainer'
+import DeleteButton from '@shared/DeleteButton/DeleteButton'
 
 export default function FormEditComputeService({
   chainId,
@@ -33,38 +34,48 @@ export default function FormEditComputeService({
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
 
   useEffect(() => {
-    if (values.allowAllPublishedAlgorithms) {
+    if (
+      values.allowAllPublishedAlgorithms === 'Allow any published algorithms'
+    ) {
       if (
-        values.publisherTrustedAlgorithmPublishers?.length !== 1 ||
-        values.publisherTrustedAlgorithmPublishers[0] !== '*'
+        values.publisherTrustedAlgorithmPublishers !==
+        'Allow all trusted algorithm publishers'
       ) {
-        setPrevTrustedPublishers(values.publisherTrustedAlgorithmPublishers)
-        setFieldValue('publisherTrustedAlgorithmPublishers', ['*'])
+        setPrevTrustedPublishers([values.publisherTrustedAlgorithmPublishers])
+        setFieldValue(
+          'publisherTrustedAlgorithmPublishers',
+          'Allow all trusted algorithm publishers'
+        )
       }
     } else if (
-      values.publisherTrustedAlgorithmPublishers?.length === 1 &&
-      values.publisherTrustedAlgorithmPublishers[0] === '*' &&
+      values.publisherTrustedAlgorithmPublishers ===
+        'Allow all trusted algorithm publishers' &&
       prevTrustedPublishers
     ) {
       setFieldValue(
         'publisherTrustedAlgorithmPublishers',
-        prevTrustedPublishers
+        prevTrustedPublishers[0] ||
+          'Allow specific trusted algorithm publishers'
       )
     }
   }, [values.allowAllPublishedAlgorithms])
 
   useEffect(() => {
     if (
-      values.publisherTrustedAlgorithmPublishers?.length === 1 &&
-      values.publisherTrustedAlgorithmPublishers[0] === '*' &&
-      !values.allowAllPublishedAlgorithms
+      values.publisherTrustedAlgorithmPublishers ===
+        'Allow all trusted algorithm publishers' &&
+      values.allowAllPublishedAlgorithms !== 'Allow any published algorithms'
     ) {
-      setFieldValue('allowAllPublishedAlgorithms', true)
+      setFieldValue(
+        'allowAllPublishedAlgorithms',
+        'Allow any published algorithms'
+      )
     } else if (
-      values.allowAllPublishedAlgorithms &&
-      values.publisherTrustedAlgorithmPublishers?.[0] !== '*'
+      values.allowAllPublishedAlgorithms === 'Allow any published algorithms' &&
+      values.publisherTrustedAlgorithmPublishers !==
+        'Allow all trusted algorithm publishers'
     ) {
-      setFieldValue('allowAllPublishedAlgorithms', false)
+      setFieldValue('allowAllPublishedAlgorithms', 'Allow selected algorithms')
     }
   }, [values.publisherTrustedAlgorithmPublishers])
 
@@ -101,47 +112,67 @@ export default function FormEditComputeService({
   }, [serviceCompute, getAlgorithmList])
 
   return (
-    <>
-      <header className={stylesIndex.headerForm}>
-        <h3 className={stylesIndex.titleForm}>{content.form.title}</h3>
-        <p className={stylesIndex.descriptionForm}>
-          {content.form.description}
-        </p>
-      </header>
+    <SectionContainer
+      title="Set Allowed Algorithms"
+      help="Only the algorithms selected here will be allowed to run on your dataset. Uncheck all to remove any access to your dataset."
+    >
+      {/* Card 1: Allow Algorithms + Selected Algorithms */}
+      <SectionContainer border>
+        <Field
+          {...getFieldContent('allowAllPublishedAlgorithms', content.form.data)}
+          component={Input}
+          name="allowAllPublishedAlgorithms"
+          selectStyle="publish"
+        />
 
-      <Field
-        {...getFieldContent('publisherTrustedAlgorithms', content.form.data)}
-        component={Input}
-        name="publisherTrustedAlgorithms"
-        options={allAlgorithms}
-        disabled={values.allowAllPublishedAlgorithms}
-      />
+        <Field
+          {...getFieldContent('publisherTrustedAlgorithms', content.form.data)}
+          component={Input}
+          name="publisherTrustedAlgorithms"
+          options={allAlgorithms}
+          disabled={
+            values.allowAllPublishedAlgorithms ===
+            'Allow any published algorithms'
+          }
+        />
+      </SectionContainer>
 
-      <Field
-        {...getFieldContent('allowAllPublishedAlgorithms', content.form.data)}
-        component={Input}
-        name="allowAllPublishedAlgorithms"
-        options={
-          getFieldContent('allowAllPublishedAlgorithms', content.form.data)
-            .options
-        }
-      />
-
-      <Field
-        {...getFieldContent(
-          'publisherTrustedAlgorithmPublishers',
-          content.form.data
-        )}
-        component={Input}
-        name="publisherTrustedAlgorithmPublishers"
-        disabled={values.allowAllPublishedAlgorithms}
-        options={
-          getFieldContent(
+      {/* Card 2: Allow Trusted Algorithm Publishers */}
+      <SectionContainer border>
+        <Field
+          {...getFieldContent(
             'publisherTrustedAlgorithmPublishers',
             content.form.data
-          ).options
-        }
-      />
-    </>
+          )}
+          component={Input}
+          name="publisherTrustedAlgorithmPublishers"
+          selectStyle="publish"
+        />
+
+        {values.publisherTrustedAlgorithmPublishers ===
+          'Allow specific trusted algorithm publishers' && (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+            <Field
+              {...getFieldContent(
+                'publisherTrustedAlgorithmPublishersAddresses',
+                content.form.data
+              )}
+              component={Input}
+              name="publisherTrustedAlgorithmPublishersAddresses"
+              type="text"
+              style={{ flex: 1 }}
+            />
+            <DeleteButton
+              onClick={() =>
+                setFieldValue(
+                  'publisherTrustedAlgorithmPublishersAddresses',
+                  ''
+                )
+              }
+            />
+          </div>
+        )}
+      </SectionContainer>
+    </SectionContainer>
   )
 }

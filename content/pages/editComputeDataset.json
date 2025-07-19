@@ -14,17 +14,32 @@
       },
       {
         "name": "allowAllPublishedAlgorithms",
-        "label": "All Algorithms",
-        "help": "Allow any published algorithm to run on this dataset.",
-        "type": "checkbox",
-        "options": ["Allow any published algorithm"]
+        "label": "Allow Algorithms",
+        "help": "Choose how to allow algorithms to run on this dataset.",
+        "type": "select",
+        "options": [
+          "Allow any published algorithms",
+          "Allow selected algorithms"
+        ],
+        "sortOptions": false
       },
       {
         "name": "publisherTrustedAlgorithmPublishers",
-        "label": "Trusted Algorithm Publishers",
-        "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
+        "label": "Allow Trusted Algorithm Publishers",
         "help": "You can optionally specify the wallet addresses of trusted publishers. Only algorithms published by these addresses will be allowed to run.",
-        "type": "credentials"
+        "type": "select",
+        "options": [
+          "Allow specific trusted algorithm publishers",
+          "Allow all trusted algorithm publishers"
+        ],
+        "sortOptions": false
+      },
+      {
+        "name": "publisherTrustedAlgorithmPublishersAddresses",
+        "label": "Publisher Addresses",
+        "placeholder": "e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa",
+        "help": "Enter the wallet addresses of trusted algorithm publishers.",
+        "type": "text"
       }
     ]
   }

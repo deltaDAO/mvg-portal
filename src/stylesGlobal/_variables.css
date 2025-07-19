@@ -13,6 +13,7 @@
   --font-color-heading: var(--brand-black);
   --font-color-light: var(--brand-grey-light);
   --font-color-label: var(--publish-text-secondary);
+  --font-color-did: var(--clr-did-text);
   --background-body: var(--brand-white);
   --background-body-transparent: rgba(255, 255, 255, 0.8);
   --background-content: var(--brand-white);
@@ -79,6 +80,7 @@
   --input-error-text-color: var(--brand-error-red);
   --input-error-border-color: rgba(255, 54, 13, 0.5);
   --input-error-spacing: calc(var(--spacer) / 3);
+  --input-padding: 15px 25px;
 
   /* Buttons */
   --button-border-radius: var(--border-radius);

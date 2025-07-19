@@ -71,7 +71,7 @@
 }
 
 .tabContent {
-  padding: calc(var(--spacer) / 2) 0;
+  padding: calc(var(--spacer) / 2) 0 0 0;
 }
 
 .tabPanel {

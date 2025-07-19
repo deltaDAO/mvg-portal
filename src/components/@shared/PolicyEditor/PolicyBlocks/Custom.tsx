@@ -6,6 +6,7 @@ import { getFieldContent } from '@utils/form'
 import styles from './Block.module.css'
 import fields from '../editor.json'
 import DeleteButton from '../../DeleteButton/DeleteButton'
+import { credentialFieldOptions } from '../constant/credentialFields'
 
 interface CustomPolicyBlockProps {
   name: string
@@ -14,6 +15,7 @@ interface CustomPolicyBlockProps {
   policy: any
   onDelete: () => void
   onValueChange: () => void
+  credentialType?: string
 }
 
 export default function CustomPolicyBlock({
@@ -22,13 +24,14 @@ export default function CustomPolicyBlock({
   innerIndex,
   policy,
   onDelete,
-  onValueChange
+  onValueChange,
+  credentialType
 }: CustomPolicyBlockProps): ReactElement {
   function newRule() {
     if (!policy.rules) {
       policy.rules = []
     }
-    policy.rules.push({ leftValue: '', operator: '==', rightValue: '' })
+    policy.rules.push({ leftValue: '', operator: '', rightValue: '' })
     onValueChange()
   }
 
@@ -36,6 +39,9 @@ export default function CustomPolicyBlock({
     policy.rules.splice(ruleIndex, 1)
     onValueChange()
   }
+
+  const credentialTypeValue = credentialType || 'id'
+  const options = credentialFieldOptions[credentialTypeValue] || ['id']
 
   return (
     <div className={styles.block}>
@@ -52,12 +58,24 @@ export default function CustomPolicyBlock({
       <div className={styles.content}>
         {policy.rules?.map((rule, ruleIndex) => (
           <div key={ruleIndex} className={styles.ruleRow}>
-            <Field
-              {...getFieldContent('leftValue', fields)}
-              component={Input}
-              name={`${name}.requestCredentials[${index}].policies[${innerIndex}].rules[${ruleIndex}].leftValue`}
-              className={styles.ruleInput}
-            />
+            <div className={styles.fieldContainer}>
+              <label htmlFor={`customPolicy.rules.${index}.leftValue`}>
+                Credential field<span className={styles.required}>*</span>
+              </label>
+              <Field
+                as="select"
+                name={`${name}.requestCredentials[${index}].policies[${innerIndex}].rules[${ruleIndex}].leftValue`}
+                className={styles.ruleInput}
+                required
+              >
+                <option value="">Select field</option>
+                {options.map((field) => (
+                  <option key={field} value={field}>
+                    {field}
+                  </option>
+                ))}
+              </Field>
+            </div>
             <Field
               {...getFieldContent('operator', fields)}
               component={Input}
