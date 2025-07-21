@@ -61,6 +61,14 @@ export default function FormConsumerParameters({
     setMemorizedParameters(defaults)
   }, [])
 
+  useEffect(() => {
+    if (memorizedParameters) {
+      for (const [key, value] of Object.entries(memorizedParameters)) {
+        field.value[key] = value
+      }
+    }
+  }, [memorizedParameters, field.value])
+
   return (
     <div className={styles.container}>
       <Label htmlFor="Input the consumer parameters">
