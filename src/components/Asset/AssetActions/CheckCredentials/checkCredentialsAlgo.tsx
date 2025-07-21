@@ -216,19 +216,34 @@ export function AssetActionCheckCredentialsAlgo({
                 'errorMessage' in result ||
                 result.redirectUri.includes('error')
               ) {
+                console.error(
+                  'Algorithm credential verification failed:',
+                  result
+                )
                 toast.error('Validation was not successful as use presentation')
                 handleResetWalletCache()
               } else {
+                console.log(
+                  'Algorithm credential verification successful, caching session:',
+                  {
+                    assetId: asset.id,
+                    serviceId: service.id,
+                    sessionId: exchangeStateData.sessionId
+                  }
+                )
                 cacheVerifierSessionId(
                   asset.id,
                   service.id,
                   exchangeStateData.sessionId
                 )
+                console.log('Algorithm session cached successfully')
               }
             } catch (error) {
+              console.error('Algorithm credential verification error:', error)
               handleResetWalletCache()
               toast.error('Validation was not successful')
             }
+            console.log('Resetting algorithm component state to Stop')
             setExchangeStateData({
               ...exchangeStateData,
               ...newExchangeStateData()

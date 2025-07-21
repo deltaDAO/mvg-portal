@@ -475,34 +475,46 @@ export default function Download({
             !isOwner &&
             (appConfig.ssiEnabled ? (
               <>
-                {verifierSessionCache &&
-                lookupVerifierSessionId(asset.id, service.id) ? (
-                  <>
-                    <AssetActionBuy asset={asset} />
-                    <Field
-                      component={Input}
-                      name="termsAndConditions"
-                      type="checkbox"
-                      options={['Terms and Conditions']}
-                      prefixes={['I agree to the']}
-                      actions={['/terms']}
-                      disabled={isLoading}
+                {(() => {
+                  const hasSession =
+                    verifierSessionCache &&
+                    lookupVerifierSessionId(asset.id, service.id)
+                  console.log('Download component conditional rendering:', {
+                    ssiEnabled: appConfig.ssiEnabled,
+                    verifierSessionCache: !!verifierSessionCache,
+                    sessionId: lookupVerifierSessionId(asset.id, service.id),
+                    hasSession: !!hasSession,
+                    assetId: asset.id,
+                    serviceId: service.id
+                  })
+                  return hasSession ? (
+                    <>
+                      <AssetActionBuy asset={asset} />
+                      <Field
+                        component={Input}
+                        name="termsAndConditions"
+                        type="checkbox"
+                        options={['Terms and Conditions']}
+                        prefixes={['I agree to the']}
+                        actions={['/terms']}
+                        disabled={isLoading}
+                      />
+                      <Field
+                        component={Input}
+                        name="acceptPublishingLicense"
+                        type="checkbox"
+                        options={['Publishing License']}
+                        prefixes={['I agree the']}
+                        disabled={isLoading}
+                      />
+                    </>
+                  ) : (
+                    <AssetActionCheckCredentials
+                      asset={asset}
+                      service={service}
                     />
-                    <Field
-                      component={Input}
-                      name="acceptPublishingLicense"
-                      type="checkbox"
-                      options={['Publishing License']}
-                      prefixes={['I agree the']}
-                      disabled={isLoading}
-                    />
-                  </>
-                ) : (
-                  <AssetActionCheckCredentials
-                    asset={asset}
-                    service={service}
-                  />
-                )}
+                  )
+                })()}
               </>
             ) : (
               <>

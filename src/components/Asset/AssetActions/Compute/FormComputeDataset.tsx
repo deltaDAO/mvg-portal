@@ -601,26 +601,47 @@ export default function FormStartCompute({
           )}
           <div style={{ textAlign: 'center' }}>
             {appConfig.ssiEnabled && selectedAlgorithmAsset ? (
-              verifierSessionCache &&
-              lookupVerifierSessionId(
-                `${selectedAlgorithmAsset?.id}`,
-                selectedAlgorithmAsset?.credentialSubject?.services?.[
-                  serviceIndex
-                ]?.id
-              ) ? (
-                <PurchaseButton />
-              ) : (
-                <div style={{ marginTop: '60px', marginLeft: '10px' }}>
-                  <AssetActionCheckCredentialsAlgo
-                    asset={selectedAlgorithmAsset}
-                    service={
-                      selectedAlgorithmAsset?.credentialSubject?.services?.[
-                        serviceIndex
-                      ]
-                    }
-                  />
-                </div>
-              )
+              (() => {
+                const hasAlgorithmSession =
+                  verifierSessionCache &&
+                  lookupVerifierSessionId(
+                    `${selectedAlgorithmAsset?.id}`,
+                    selectedAlgorithmAsset?.credentialSubject?.services?.[
+                      serviceIndex
+                    ]?.id
+                  )
+                console.log('FormComputeDataset algorithm credential check:', {
+                  ssiEnabled: appConfig.ssiEnabled,
+                  selectedAlgorithmAsset: !!selectedAlgorithmAsset,
+                  verifierSessionCache: !!verifierSessionCache,
+                  algorithmId: selectedAlgorithmAsset?.id,
+                  serviceId:
+                    selectedAlgorithmAsset?.credentialSubject?.services?.[
+                      serviceIndex
+                    ]?.id,
+                  sessionId: lookupVerifierSessionId(
+                    `${selectedAlgorithmAsset?.id}`,
+                    selectedAlgorithmAsset?.credentialSubject?.services?.[
+                      serviceIndex
+                    ]?.id
+                  ),
+                  hasAlgorithmSession: !!hasAlgorithmSession
+                })
+                return hasAlgorithmSession ? (
+                  <PurchaseButton />
+                ) : (
+                  <div style={{ marginTop: '60px', marginLeft: '10px' }}>
+                    <AssetActionCheckCredentialsAlgo
+                      asset={selectedAlgorithmAsset}
+                      service={
+                        selectedAlgorithmAsset?.credentialSubject?.services?.[
+                          serviceIndex
+                        ]
+                      }
+                    />
+                  </div>
+                )
+              })()
             ) : (
               <PurchaseButton />
             )}

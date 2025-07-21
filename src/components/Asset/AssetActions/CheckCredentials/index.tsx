@@ -21,7 +21,6 @@ import { DidSelector } from '../DidSelector'
 import styles from './index.module.css'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
-import VerifiedPatch from '@images/patch_check.svg'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { useAccount } from 'wagmi'
@@ -54,19 +53,6 @@ function newExchangeStateData(): ExchangeStateData {
     selectedDid: '',
     poliyServerData: undefined
   }
-}
-
-function isCredentialCached(
-  cachedCredentials: SsiVerifiableCredential[],
-  credentialType: string
-): boolean {
-  if (!cachedCredentials) {
-    return false
-  }
-  const credentials = cachedCredentials.map((credential) =>
-    getSsiVerifiableCredentialType(credential)
-  )
-  return credentials.includes(credentialType)
 }
 
 export function AssetActionCheckCredentials({
@@ -247,19 +233,33 @@ export function AssetActionCheckCredentials({
                 'errorMessage' in result ||
                 result.redirectUri.includes('error')
               ) {
+                console.error('Credential verification failed:', result)
                 toast.error('Validation was not successful as use presentation')
                 handleResetWalletCache()
               } else {
+                console.log(
+                  'Credential verification successful, caching session:',
+                  {
+                    assetId: asset.id,
+                    serviceId: service.id,
+                    sessionId: exchangeStateData.sessionId
+                  }
+                )
+                // SUCCESS: Cache the session ID
                 cacheVerifierSessionId(
                   asset.id,
                   service.id,
                   exchangeStateData.sessionId
                 )
+                console.log('Session cached successfully')
               }
             } catch (error) {
+              console.error('Credential verification error:', error)
               handleResetWalletCache()
               toast.error('Validation was not successful')
             }
+            // CRITICAL: Reset state and return to Stop
+            console.log('Resetting component state to Stop')
             setExchangeStateData(newExchangeStateData())
             setCheckCredentialState(CheckCredentialState.Stop)
             break
