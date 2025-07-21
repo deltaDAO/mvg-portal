@@ -60,7 +60,7 @@ export default function AssetSelection({
 
   const [currentPage, setCurrentPage] = useState(1)
 
-  const assetsPerPage = 5
+  const assetsPerPage = 8
 
   const handlePageOnChange = (page: number) => {
     const pageNumber = page + 1

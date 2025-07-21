@@ -31,7 +31,7 @@ export default function AssetComputeSelection({
               <div className={styles.info}>
                 <h3 className={styles.title}>
                   <Dotdotdot clamp={1} tagName="span">
-                    {asset.name}
+                    {asset.name} - {asset.serviceName}
                   </Dotdotdot>
                 </h3>
                 <Dotdotdot clamp={1} tagName="code" className={styles.did}>

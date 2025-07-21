@@ -75,7 +75,6 @@ export function SsiWallet(): ReactElement {
     }
     try {
       const keys = await getWalletKeys(selectedWallet, sessionToken.token)
-      console.log('keys', keys)
       setSsiKey(keys)
       setSelectedKey(selectedKey || keys[0])
     } catch (error) {
