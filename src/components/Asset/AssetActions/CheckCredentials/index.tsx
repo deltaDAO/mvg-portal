@@ -1,5 +1,4 @@
 /* eslint-disable camelcase */
-import Button from '@components/@shared/atoms/Button'
 import { useSsiWallet } from '@context/SsiWallet'
 import { toast } from 'react-toastify'
 import {
@@ -11,10 +10,9 @@ import {
   matchCredentialForPresentationDefinition,
   getWalletDids,
   resolvePresentationRequest,
-  usePresentationRequest,
-  getSsiVerifiableCredentialType
+  usePresentationRequest
 } from '@utils/wallet/ssiWallet'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SsiVerifiableCredential, SsiWalletDid } from 'src/@types/SsiWallet'
 import { VpSelector } from '../VpSelector'
 import { DidSelector } from '../DidSelector'
@@ -86,9 +84,8 @@ export function AssetActionCheckCredentials({
   } = useSsiWallet()
 
   function handleResetWalletCache() {
-    ssiWalletCache.clearCredentials()
-    setCachedCredentials(undefined)
     clearVerifierSessionCache()
+    setCachedCredentials([])
   }
 
   useEffect(() => {
@@ -229,37 +226,24 @@ export function AssetActionCheckCredentials({
                 exchangeStateData.selectedCredentials,
                 sessionToken.token
               )
+
               if (
                 'errorMessage' in result ||
                 result.redirectUri.includes('error')
               ) {
-                console.error('Credential verification failed:', result)
                 toast.error('Validation was not successful as use presentation')
                 handleResetWalletCache()
               } else {
-                console.log(
-                  'Credential verification successful, caching session:',
-                  {
-                    assetId: asset.id,
-                    serviceId: service.id,
-                    sessionId: exchangeStateData.sessionId
-                  }
-                )
-                // SUCCESS: Cache the session ID
                 cacheVerifierSessionId(
                   asset.id,
                   service.id,
                   exchangeStateData.sessionId
                 )
-                console.log('Session cached successfully')
               }
             } catch (error) {
-              console.error('Credential verification error:', error)
               handleResetWalletCache()
               toast.error('Validation was not successful')
             }
-            // CRITICAL: Reset state and return to Stop
-            console.log('Resetting component state to Stop')
             setExchangeStateData(newExchangeStateData())
             setCheckCredentialState(CheckCredentialState.Stop)
             break
@@ -312,7 +296,7 @@ export function AssetActionCheckCredentials({
   }
 
   return (
-    <>
+    <div className={`${styles.panelColumn} ${styles.alignItemsCenter}`}>
       <VpSelector
         setShowDialog={setShowVpDialog}
         showDialog={showVpDialog}
@@ -332,17 +316,20 @@ export function AssetActionCheckCredentials({
         }
         dids={exchangeStateData.dids}
       />
-
-      <button
-        type="button"
-        className={styles.checkCredentialsButton}
-        onClick={() =>
-          setCheckCredentialState(CheckCredentialState.StartCredentialExchange)
-        }
-        disabled={!selectedWallet?.id}
-      >
-        Check Credentials
-      </button>
-    </>
+      <div className={styles.buttonWrapper}>
+        <button
+          type="button"
+          className={styles.checkCredentialsButton}
+          onClick={() =>
+            setCheckCredentialState(
+              CheckCredentialState.StartCredentialExchange
+            )
+          }
+          disabled={!selectedWallet?.id}
+        >
+          Check Credentials
+        </button>
+      </div>
+    </div>
   )
 }

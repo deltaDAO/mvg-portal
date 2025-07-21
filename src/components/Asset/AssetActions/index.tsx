@@ -12,7 +12,6 @@ import styles from './index.module.css'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '@components/Publish/_types'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
-import AssetStats from './AssetStats'
 import { isAddressWhitelisted } from '@utils/ddo'
 import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
@@ -21,20 +20,25 @@ import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import BackSVG from '@images/back.svg'
 import WhitelistIndicator from './Compute/WhitelistIndicator'
-import AssetInteractionPanel from './AssetInteractionPanel'
+import FileSVG from '@images/file.svg'
+import { AssetActionCheckCredentials } from './CheckCredentials'
+import { useSsiWallet } from '@context/SsiWallet'
+import appConfig from 'app.config.cjs'
 
 export default function AssetActions({
   asset,
   service,
   accessDetails,
   serviceIndex,
-  handleBack
+  handleBack,
+  consumableFeedback
 }: {
   asset: AssetExtended
   service: Service
   accessDetails: AccessDetails
   serviceIndex: number
   handleBack: () => void
+  consumableFeedback?: string
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { data: signer } = useSigner()
@@ -44,6 +48,7 @@ export default function AssetActions({
   const { isAssetNetwork } = useAsset()
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
+  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
 
   // TODO: using this for the publish preview works fine, but produces a console warning
   // on asset details page as there is no formik context there:
@@ -181,6 +186,15 @@ export default function AssetActions({
     setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountId, service))
   }, [accountId, asset])
 
+  const hasVerifiedCredentials =
+    verifierSessionCache && lookupVerifierSessionId(asset.id, service.id)
+
+  const priceDisplay =
+    accessDetails.type === 'free'
+      ? 'Free'
+      : `${accessDetails.price || 0} ${accessDetails.baseToken?.symbol || ''}`
+  const salesCount = asset.indexedMetadata?.stats?.[0]?.orders || 0
+
   return (
     <>
       <div className={styles.headerRow}>
@@ -201,15 +215,102 @@ export default function AssetActions({
         )}
       </div>
 
-      <AssetInteractionPanel
-        asset={asset}
-        service={service}
-        accessDetails={accessDetails}
-        serviceIndex={serviceIndex}
-        file={fileMetadata}
-        fileIsLoading={fileIsLoading}
-        isAccountIdWhitelisted={isAccountIdWhitelisted}
-      />
+      <div className={styles.assetInteractionCard}>
+        <div className={styles.cardTopRow}>
+          <div className={styles.fileInfoSection}>
+            <FileSVG width={48} height={60} />
+            <div className={styles.fileDetails}>
+              <div className={styles.fileDetailItem}>
+                <span className={styles.fileDetailLabel}>Type:</span>{' '}
+                {fileMetadata?.type || 'Plain Text'}
+              </div>
+              <div className={styles.fileDetailItem}>
+                <span className={styles.fileDetailLabel}>Size:</span>{' '}
+                {fileMetadata?.contentLength || '5.31 kB'}
+              </div>
+              <div className={styles.fileDetailItem}>
+                <span className={styles.fileDetailLabel}>Access via:</span>{' '}
+                {accessDetails.type === 'free' ? 'URL' : accessDetails.type}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.priceSection}>
+            <div className={styles.priceValue}>{priceDisplay}</div>
+            <div className={styles.salesCount}>
+              {salesCount} sale{salesCount !== 1 ? 's' : ''}
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.actionButtonWrapper}>
+          {appConfig.ssiEnabled ? (
+            <>
+              {hasVerifiedCredentials ? (
+                isCompute ? (
+                  <Compute
+                    accountId={accountId}
+                    signer={signer}
+                    asset={asset}
+                    service={service}
+                    accessDetails={accessDetails}
+                    dtBalance={dtBalance}
+                    isAccountIdWhitelisted={isAccountIdWhitelisted}
+                    file={fileMetadata}
+                    fileIsLoading={fileIsLoading}
+                    consumableFeedback={consumableFeedback}
+                  />
+                ) : (
+                  <Download
+                    accountId={accountId}
+                    signer={signer}
+                    asset={asset}
+                    service={service}
+                    accessDetails={accessDetails}
+                    serviceIndex={serviceIndex}
+                    dtBalance={dtBalance}
+                    isBalanceSufficient={isBalanceSufficient}
+                    isAccountIdWhitelisted={isAccountIdWhitelisted}
+                    file={fileMetadata}
+                    fileIsLoading={fileIsLoading}
+                    consumableFeedback={consumableFeedback}
+                  />
+                )
+              ) : (
+                <AssetActionCheckCredentials asset={asset} service={service} />
+              )}
+            </>
+          ) : isCompute ? (
+            <Compute
+              accountId={accountId}
+              signer={signer}
+              asset={asset}
+              service={service}
+              accessDetails={accessDetails}
+              dtBalance={dtBalance}
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              file={fileMetadata}
+              fileIsLoading={fileIsLoading}
+              consumableFeedback={consumableFeedback}
+            />
+          ) : (
+            <Download
+              accountId={accountId}
+              signer={signer}
+              asset={asset}
+              service={service}
+              accessDetails={accessDetails}
+              serviceIndex={serviceIndex}
+              dtBalance={dtBalance}
+              isBalanceSufficient={isBalanceSufficient}
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              file={fileMetadata}
+              fileIsLoading={fileIsLoading}
+              consumableFeedback={consumableFeedback}
+            />
+          )}
+        </div>
+      </div>
     </>
   )
 }

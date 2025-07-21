@@ -96,14 +96,7 @@ export function SsiWalletProvider({
   }, [sessionToken])
 
   function lookupVerifierSessionId(did: string, serviceId: string): string {
-    const sessionId = verifierSessionCache?.[`${did}_${serviceId}`]
-    console.log('SsiWallet: Looking up verifier session:', {
-      did,
-      serviceId,
-      sessionId,
-      cache: verifierSessionCache
-    })
-    return sessionId
+    return verifierSessionCache?.[`${did}_${serviceId}`]
   }
 
   function lookupVerifierSessionIdSkip(did: string, serviceId: string): string {
@@ -116,28 +109,18 @@ export function SsiWalletProvider({
     sessionId: string,
     skipCheck?: boolean
   ) {
-    console.log('SsiWallet: Caching verifier session:', {
-      did,
-      serviceId,
-      sessionId,
-      skipCheck
-    })
     let storageString = localStorage.getItem(VerifierSessionIdStorage)
     let sessions
     try {
-      sessions = JSON.parse(storageString) as Record<string, string>
-      if (!sessions) {
-        sessions = {}
-      }
-    } catch (error) {
+      sessions = storageString ? JSON.parse(storageString) : {}
+    } catch {
       sessions = {}
     }
-    sessions[`${did}_${serviceId}`] = sessionId
-    sessions[`${did}_${serviceId}_skip`] = skipCheck
+    const key = skipCheck ? `${did}_${serviceId}_skip` : `${did}_${serviceId}`
+    sessions[key] = sessionId
     storageString = JSON.stringify(sessions)
     localStorage.setItem(VerifierSessionIdStorage, storageString)
     setVerifierSessionCache(sessions)
-    console.log('SsiWallet: Session cached successfully, new cache:', sessions)
   }
 
   function clearVerifierSessionCache() {

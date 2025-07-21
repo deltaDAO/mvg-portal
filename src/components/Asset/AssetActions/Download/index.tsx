@@ -330,46 +330,16 @@ export default function Download({
   }
 
   const AssetAction = ({ asset }: { asset: AssetExtended }) => {
-    const { isValid } = useFormikContext()
-    if (isOwner) {
-      return <div> You are the publisher</div>
-    } else
-      return (
-        <div>
-          {isOrderDisabled ? (
-            <Alert
-              className={styles.fieldWarning}
-              state="info"
-              text={`The publisher temporarily disabled ordering for this asset`}
-            />
-          ) : (
-            <>
-              {isUnsupportedPricing ? (
-                <Alert
-                  className={styles.fieldWarning}
-                  state="info"
-                  text={`No pricing schema available for this asset.`}
-                />
-              ) : (
-                <div className={styles.priceWrapper}>
-                  {isPriceLoading ? (
-                    <Loader message="Calculating asset price" />
-                  ) : (
-                    <Price
-                      price={price}
-                      orderPriceAndFees={orderPriceAndFees}
-                      size="large"
-                    />
-                  )}
-                  {!isInPurgatory && isFullPriceLoading && !isOwner && (
-                    <CalculateButton isValid={isValid} />
-                  )}
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      )
+    return (
+      <div className={styles.info}>
+        {isUnsupportedPricing ? (
+          <Alert
+            state="info"
+            text={`No pricing schema available for this asset.`}
+          />
+        ) : null}
+      </div>
+    )
   }
 
   const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
@@ -461,60 +431,40 @@ export default function Download({
       <Form>
         <aside className={styles.consume}>
           <div className={styles.info}>
-            <div className={styles.filewrapper}>
-              <FileIcon
-                file={file}
-                isAccountWhitelisted={isAccountIdWhitelisted}
-                isLoading={fileIsLoading}
-                small
-              />
-            </div>
             <AssetAction asset={asset} />
           </div>
           {!isFullPriceLoading &&
             !isOwner &&
             (appConfig.ssiEnabled ? (
               <>
-                {(() => {
-                  const hasSession =
-                    verifierSessionCache &&
-                    lookupVerifierSessionId(asset.id, service.id)
-                  console.log('Download component conditional rendering:', {
-                    ssiEnabled: appConfig.ssiEnabled,
-                    verifierSessionCache: !!verifierSessionCache,
-                    sessionId: lookupVerifierSessionId(asset.id, service.id),
-                    hasSession: !!hasSession,
-                    assetId: asset.id,
-                    serviceId: service.id
-                  })
-                  return hasSession ? (
-                    <>
-                      <AssetActionBuy asset={asset} />
-                      <Field
-                        component={Input}
-                        name="termsAndConditions"
-                        type="checkbox"
-                        options={['Terms and Conditions']}
-                        prefixes={['I agree to the']}
-                        actions={['/terms']}
-                        disabled={isLoading}
-                      />
-                      <Field
-                        component={Input}
-                        name="acceptPublishingLicense"
-                        type="checkbox"
-                        options={['Publishing License']}
-                        prefixes={['I agree the']}
-                        disabled={isLoading}
-                      />
-                    </>
-                  ) : (
-                    <AssetActionCheckCredentials
-                      asset={asset}
-                      service={service}
+                {verifierSessionCache &&
+                lookupVerifierSessionId(asset.id, service.id) ? (
+                  <>
+                    <AssetActionBuy asset={asset} />
+                    <Field
+                      component={Input}
+                      name="termsAndConditions"
+                      type="checkbox"
+                      options={['Terms and Conditions']}
+                      prefixes={['I agree to the']}
+                      actions={['/terms']}
+                      disabled={isLoading}
                     />
-                  )
-                })()}
+                    <Field
+                      component={Input}
+                      name="acceptPublishingLicense"
+                      type="checkbox"
+                      options={['Publishing License']}
+                      prefixes={['I agree the']}
+                      disabled={isLoading}
+                    />
+                  </>
+                ) : (
+                  <AssetActionCheckCredentials
+                    asset={asset}
+                    service={service}
+                  />
+                )}
               </>
             ) : (
               <>

@@ -5,6 +5,10 @@ import { AssetActionCheckCredentials } from '../CheckCredentials'
 import { FileInfo } from '@oceanprotocol/lib'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import { useSsiWallet } from '@context/SsiWallet'
+import appConfig from 'app.config.cjs'
+import Compute from '../Compute'
+import Download from '../Download'
 
 interface AssetInteractionPanelProps {
   asset: AssetExtended
@@ -14,6 +18,12 @@ interface AssetInteractionPanelProps {
   file: FileInfo
   fileIsLoading: boolean
   isAccountIdWhitelisted: boolean
+  accountId: string
+  signer: any
+  dtBalance: string
+  isBalanceSufficient: boolean
+  isCompute: boolean
+  consumableFeedback?: string
 }
 
 export default function AssetInteractionPanel({
@@ -23,9 +33,20 @@ export default function AssetInteractionPanel({
   serviceIndex,
   file,
   fileIsLoading,
-  isAccountIdWhitelisted
+  isAccountIdWhitelisted,
+  accountId,
+  signer,
+  dtBalance,
+  isBalanceSufficient,
+  isCompute,
+  consumableFeedback
 }: AssetInteractionPanelProps): ReactElement {
-  const price =
+  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
+
+  const hasVerifiedCredentials =
+    verifierSessionCache && lookupVerifierSessionId(asset.id, service.id)
+
+  const priceDisplay =
     accessDetails.type === 'free'
       ? 'Free'
       : `${accessDetails.price || 0} ${accessDetails.baseToken?.symbol || ''}`
@@ -53,7 +74,7 @@ export default function AssetInteractionPanel({
         </div>
 
         <div className={styles.priceSection}>
-          <div className={styles.priceValue}>{price}</div>
+          <div className={styles.priceValue}>{priceDisplay}</div>
           <div className={styles.salesCount}>
             {salesCount} sale{salesCount !== 1 ? 's' : ''}
           </div>
@@ -61,7 +82,69 @@ export default function AssetInteractionPanel({
       </div>
 
       <div className={styles.actionButtonWrapper}>
-        <AssetActionCheckCredentials asset={asset} service={service} />
+        {appConfig.ssiEnabled ? (
+          <>
+            {hasVerifiedCredentials ? (
+              isCompute ? (
+                <Compute
+                  accountId={accountId}
+                  signer={signer}
+                  asset={asset}
+                  service={service}
+                  accessDetails={accessDetails}
+                  dtBalance={dtBalance}
+                  isAccountIdWhitelisted={isAccountIdWhitelisted}
+                  file={file}
+                  fileIsLoading={fileIsLoading}
+                  consumableFeedback={consumableFeedback}
+                />
+              ) : (
+                <Download
+                  accountId={accountId}
+                  signer={signer}
+                  asset={asset}
+                  service={service}
+                  accessDetails={accessDetails}
+                  serviceIndex={serviceIndex}
+                  dtBalance={dtBalance}
+                  isBalanceSufficient={isBalanceSufficient}
+                  isAccountIdWhitelisted={isAccountIdWhitelisted}
+                  file={file}
+                  fileIsLoading={fileIsLoading}
+                />
+              )
+            ) : (
+              <AssetActionCheckCredentials asset={asset} service={service} />
+            )}
+          </>
+        ) : isCompute ? (
+          <Compute
+            accountId={accountId}
+            signer={signer}
+            asset={asset}
+            service={service}
+            accessDetails={accessDetails}
+            dtBalance={dtBalance}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
+            file={file}
+            fileIsLoading={fileIsLoading}
+            consumableFeedback={consumableFeedback}
+          />
+        ) : (
+          <Download
+            accountId={accountId}
+            signer={signer}
+            asset={asset}
+            service={service}
+            accessDetails={accessDetails}
+            serviceIndex={serviceIndex}
+            dtBalance={dtBalance}
+            isBalanceSufficient={isBalanceSufficient}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
+            file={file}
+            fileIsLoading={fileIsLoading}
+          />
+        )}
       </div>
     </div>
   )

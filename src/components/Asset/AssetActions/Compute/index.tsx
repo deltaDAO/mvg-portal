@@ -610,33 +610,6 @@ export default function Compute({
 
   return (
     <>
-      <div
-        className={`${styles.info} ${
-          isUnsupportedPricing ? styles.warning : null
-        }`}
-      >
-        <FileIcon
-          file={file}
-          isAccountWhitelisted={isAccountIdWhitelisted}
-          isLoading={fileIsLoading}
-          small
-        />
-        {isUnsupportedPricing ? (
-          <Alert
-            text={`No pricing schema available for this asset.`}
-            state="info"
-          />
-        ) : (
-          <div className={styles.priceClass}>
-            <Price
-              price={price}
-              orderPriceAndFees={datasetOrderPriceAndFees}
-              size="large"
-            />
-          </div>
-        )}
-      </div>
-
       {isUnsupportedPricing ? null : asset.credentialSubject?.metadata.type ===
         'algorithm' ? (
         <>
@@ -683,90 +656,75 @@ export default function Compute({
         >
           {appConfig.ssiEnabled ? (
             <>
-              {(() => {
-                const hasSession =
-                  verifierSessionCache &&
-                  lookupVerifierSessionId(asset.id, service.id)
-                console.log('Compute component conditional rendering:', {
-                  ssiEnabled: appConfig.ssiEnabled,
-                  verifierSessionCache: !!verifierSessionCache,
-                  sessionId: lookupVerifierSessionId(asset.id, service.id),
-                  hasSession: !!hasSession,
-                  assetId: asset.id,
-                  serviceId: service.id
-                })
-                return hasSession ? (
-                  <CredentialDialogProvider>
-                    <FormStartComputeDataset
-                      asset={asset}
-                      service={service}
-                      accessDetails={accessDetails}
-                      algorithms={algorithmList}
-                      ddoListAlgorithms={ddoAlgorithmList}
-                      selectedAlgorithmAsset={selectedAlgorithmAsset}
-                      setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
-                      isLoading={isOrdering || isRequestingAlgoOrderPrice}
-                      isComputeButtonDisabled={isComputeButtonDisabled}
-                      hasPreviousOrder={!!validOrderTx}
-                      hasDatatoken={hasDatatoken}
-                      dtBalance={dtBalance}
-                      assetTimeout={secondsToString(service.timeout)}
-                      hasPreviousOrderSelectedComputeAsset={
-                        !!validAlgorithmOrderTx
-                      }
-                      hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
-                      isAccountIdWhitelisted={isAccountIdWhitelisted}
-                      datasetSymbol={
-                        accessDetails.baseToken?.symbol ||
-                        (asset.credentialSubject?.chainId === 137
-                          ? 'mOCEAN'
-                          : 'OCEAN')
-                      }
-                      algorithmSymbol={
-                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
-                          ?.baseToken?.symbol ||
-                        (selectedAlgorithmAsset?.credentialSubject?.chainId ===
-                        137
-                          ? 'mOCEAN'
-                          : 'OCEAN')
-                      }
-                      providerFeesSymbol={providerFeesSymbol}
-                      dtSymbolSelectedComputeAsset={
-                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
-                          ?.datatoken.symbol
-                      }
-                      dtBalanceSelectedComputeAsset={algorithmDTBalance}
-                      selectedComputeAssetType="algorithm"
-                      selectedComputeAssetTimeout={secondsToString(
-                        selectedAlgorithmAsset?.credentialSubject?.services[
-                          svcIndex
-                        ]?.timeout
-                      )}
-                      allResourceValues={allResourceValues}
-                      setAllResourceValues={setAllResourceValues}
-                      // lazy comment when removing pricingStepText
-                      stepText={computeStatusText}
-                      isConsumable={isConsumablePrice}
-                      consumableFeedback={consumableFeedback}
-                      datasetOrderPriceAndFees={datasetOrderPriceAndFees}
-                      algoOrderPriceAndFees={algoOrderPriceAndFees}
-                      retry={retry}
-                      onRunInitPriceAndFees={async () => {
-                        await initPriceAndFees()
-                      }}
-                      onCheckAlgoDTBalance={() =>
-                        checkAssetDTBalance(selectedAlgorithmAsset)
-                      }
-                      computeEnvs={computeEnvs}
-                    />
-                  </CredentialDialogProvider>
-                ) : (
-                  <AssetActionCheckCredentials
+              {verifierSessionCache &&
+              lookupVerifierSessionId(asset.id, service.id) ? (
+                <CredentialDialogProvider>
+                  <FormStartComputeDataset
                     asset={asset}
                     service={service}
+                    accessDetails={accessDetails}
+                    algorithms={algorithmList}
+                    ddoListAlgorithms={ddoAlgorithmList}
+                    selectedAlgorithmAsset={selectedAlgorithmAsset}
+                    setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+                    isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                    isComputeButtonDisabled={isComputeButtonDisabled}
+                    hasPreviousOrder={!!validOrderTx}
+                    hasDatatoken={hasDatatoken}
+                    dtBalance={dtBalance}
+                    assetTimeout={secondsToString(service.timeout)}
+                    hasPreviousOrderSelectedComputeAsset={
+                      !!validAlgorithmOrderTx
+                    }
+                    hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+                    isAccountIdWhitelisted={isAccountIdWhitelisted}
+                    datasetSymbol={
+                      accessDetails.baseToken?.symbol ||
+                      (asset.credentialSubject?.chainId === 137
+                        ? 'mOCEAN'
+                        : 'OCEAN')
+                    }
+                    algorithmSymbol={
+                      selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                        ?.baseToken?.symbol ||
+                      (selectedAlgorithmAsset?.credentialSubject?.chainId ===
+                      137
+                        ? 'mOCEAN'
+                        : 'OCEAN')
+                    }
+                    providerFeesSymbol={providerFeesSymbol}
+                    dtSymbolSelectedComputeAsset={
+                      selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                        ?.datatoken.symbol
+                    }
+                    dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                    selectedComputeAssetType="algorithm"
+                    selectedComputeAssetTimeout={secondsToString(
+                      selectedAlgorithmAsset?.credentialSubject?.services[
+                        svcIndex
+                      ]?.timeout
+                    )}
+                    allResourceValues={allResourceValues}
+                    setAllResourceValues={setAllResourceValues}
+                    // lazy comment when removing pricingStepText
+                    stepText={computeStatusText}
+                    isConsumable={isConsumablePrice}
+                    consumableFeedback={consumableFeedback}
+                    datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                    algoOrderPriceAndFees={algoOrderPriceAndFees}
+                    retry={retry}
+                    onRunInitPriceAndFees={async () => {
+                      await initPriceAndFees()
+                    }}
+                    onCheckAlgoDTBalance={() =>
+                      checkAssetDTBalance(selectedAlgorithmAsset)
+                    }
+                    computeEnvs={computeEnvs}
                   />
-                )
-              })()}
+                </CredentialDialogProvider>
+              ) : (
+                <AssetActionCheckCredentials asset={asset} service={service} />
+              )}
             </>
           ) : (
             <CredentialDialogProvider>
@@ -838,12 +796,6 @@ export default function Compute({
           <SuccessConfetti success="Your job started successfully! Watch the progress below or on your profile." />
         )}
       </footer>
-      {accountId && (
-        <WhitelistIndicator
-          accountId={accountId}
-          isAccountIdWhitelisted={isAccountIdWhitelisted}
-        />
-      )}
       {accountId && accessDetails.datatoken && (
         <ComputeHistory
           title="Your Compute Jobs"
