@@ -41,11 +41,16 @@ export default function AllowedIssuerPolicyBlock({
   return (
     <div className={styles.block}>
       <div className={styles.header}>
+        {/* Hidden field to maintain form state */}
+        <Field
+          type="hidden"
+          name={`${name}.requestCredentials[${index}].policies[${innerIndex}].policy`}
+        />
+        {/* Display field - always shows "allowed-issuer" */}
         <Input
           {...getFieldContent('policy', fields)}
           value="allowed-issuer"
           disabled
-          name={`${name}.requestCredentials[${index}].policies[${innerIndex}].policy`}
           required
         />
         <DeleteButton onClick={onDelete} />
