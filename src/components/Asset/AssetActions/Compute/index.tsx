@@ -204,16 +204,21 @@ export default function Compute({
       LoggerInstance.error(error)
     }
   }
-  async function setDatasetPrice(datasetProviderFees: ProviderFees) {
+  async function setDatasetPrice(
+    actualAsset: AssetExtended,
+    actualService: Service,
+    actualAccessDetails: AccessDetails,
+    datasetProviderFees: ProviderFees
+  ) {
     if (
-      accessDetails.addressOrId !== ZERO_ADDRESS &&
-      accessDetails.type !== 'free' &&
+      actualAccessDetails.addressOrId !== ZERO_ADDRESS &&
+      actualAccessDetails.type !== 'free' &&
       datasetProviderFees
     ) {
       const datasetPriceAndFees = await getOrderPriceAndFees(
-        asset,
-        service,
-        accessDetails,
+        actualAsset,
+        actualService,
+        actualAccessDetails,
         accountId || ZERO_ADDRESS,
         signer,
         datasetProviderFees
@@ -289,7 +294,7 @@ export default function Compute({
       const initializedProvider = await initializeProviderForCompute(
         actualDatasetAsset,
         actualDatasetService,
-        accessDetails,
+        actualDatasetAccessDetails,
         actualAlgorithmAsset,
         signer,
         selectedComputeEnv,
@@ -312,6 +317,9 @@ export default function Compute({
         )[0]
       )
       const datasetOrderPriceResponse = await setDatasetPrice(
+        actualDatasetAsset,
+        actualDatasetService,
+        actualDatasetAccessDetails,
         initializedProvider?.datasets?.[0]?.providerFee
       )
       setComputeStatusText(
