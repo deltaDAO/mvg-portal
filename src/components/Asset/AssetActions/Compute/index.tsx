@@ -835,19 +835,21 @@ export default function Compute({
           isAccountIdWhitelisted={isAccountIdWhitelisted}
         />
       )}
-      {accountId && accessDetails.datatoken && (
-        <ComputeHistory
-          title="Your Compute Jobs"
-          refetchJobs={() => setRefetchJobs(!refetchJobs)}
-        >
-          <ComputeJobs
-            minimal
-            jobs={jobs}
-            isLoading={isLoadingJobs}
+      {accountId &&
+        accessDetails.datatoken &&
+        asset.credentialSubject.metadata.type !== 'algorithm' && (
+          <ComputeHistory
+            title="Your Compute Jobs"
             refetchJobs={() => setRefetchJobs(!refetchJobs)}
-          />
-        </ComputeHistory>
-      )}
+          >
+            <ComputeJobs
+              minimal
+              jobs={jobs}
+              isLoading={isLoadingJobs}
+              refetchJobs={() => setRefetchJobs(!refetchJobs)}
+            />
+          </ComputeHistory>
+        )}
     </>
   )
 }

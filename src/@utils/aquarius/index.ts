@@ -329,12 +329,72 @@ export async function getAlgorithmDatasetsForCompute(
     }
   } as BaseQueryParams
 
+  const baseQueryParams2 = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            '*'
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            '*'
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const baseQueryParams3 = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithmPublishers.keyword':
+            '*'
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
   const query = generateBaseQuery(baseQueryParams)
-  const computeDatasets = await queryMetadata(query, cancelToken)
-  if (computeDatasets?.results?.length === 0 || !computeDatasets) return []
+  const query2 = generateBaseQuery(baseQueryParams2)
+  const query3 = generateBaseQuery(baseQueryParams3)
+  const [res1, res2, res3] = await Promise.all([
+    queryMetadata(query, cancelToken),
+    queryMetadata(query2, cancelToken),
+    queryMetadata(query3, cancelToken)
+  ])
+
+  // Combine results and deduplicate by ID
+  const combined = [
+    ...(res1?.results || []),
+    ...(res2?.results || []),
+    ...(res3?.results || [])
+  ]
+
+  const uniqueAssetsMap = new Map<string, any>()
+  combined.forEach((asset) => {
+    if (!uniqueAssetsMap.has(asset.id)) {
+      uniqueAssetsMap.set(asset.id, asset)
+    }
+  })
+
+  const uniqueAssets = Array.from(uniqueAssetsMap.values())
+  console.log('uniqueAssets', uniqueAssets)
   const datasets = await transformAssetToAssetSelection(
     datasetProviderUri,
-    computeDatasets.results,
+    uniqueAssets,
     accountId,
     []
   )
