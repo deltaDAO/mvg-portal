@@ -318,7 +318,6 @@ export async function getComputeJobs(
     cancelToken,
     chainIds
   )
-  console.log('assets', assets, datatokenAddressList)
 
   const providerUrls: string[] = []
   assets?.forEach((asset: Asset) =>

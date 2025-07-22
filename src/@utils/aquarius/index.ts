@@ -391,7 +391,6 @@ export async function getAlgorithmDatasetsForCompute(
   })
 
   const uniqueAssets = Array.from(uniqueAssetsMap.values())
-  console.log('uniqueAssets', uniqueAssets)
   const datasets = await transformAssetToAssetSelection(
     datasetProviderUri,
     uniqueAssets,
