@@ -165,20 +165,21 @@ export default function ServicesFields(): ReactElement {
           name="services[0].algorithmPrivacy"
         />
       ) : (
-        <Field
-          {...getFieldContent('access', content.services.fields)}
-          component={Input}
-          name="services[0].access"
-          options={accessTypeOptions}
-        />
-      )}
-
-      {values.services[0]?.access === 'compute' && (
-        <FormEditComputeService
-          chainId={values?.user?.chainId}
-          serviceEndpoint={values.services[0].providerUrl.url}
-          serviceCompute={values.services[0]?.computeOptions}
-        />
+        <>
+          <Field
+            {...getFieldContent('access', content.services.fields)}
+            component={Input}
+            name="services[0].access"
+            options={accessTypeOptions}
+          />
+          {values.services[0]?.access === 'compute' && (
+            <FormEditComputeService
+              chainId={values?.user?.chainId}
+              serviceEndpoint={values.services[0].providerUrl.url}
+              serviceCompute={values.services[0]?.computeOptions}
+            />
+          )}
+        </>
       )}
 
       <SectionContainer
