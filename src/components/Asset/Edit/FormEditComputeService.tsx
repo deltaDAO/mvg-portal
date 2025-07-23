@@ -151,23 +151,40 @@ export default function FormEditComputeService({
 
         {values.publisherTrustedAlgorithmPublishers ===
           'Allow specific trusted algorithm publishers' && (
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
-            <Field
-              {...getFieldContent(
-                'publisherTrustedAlgorithmPublishersAddresses',
-                content.form.data
-              )}
-              component={Input}
-              name="publisherTrustedAlgorithmPublishersAddresses"
-              type="text"
-              style={{ flex: 1 }}
-            />
+          <div
+            style={{
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'flex-end',
+              width: '100%'
+            }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <Field
+                {...getFieldContent(
+                  'publisherTrustedAlgorithmPublishersAddresses',
+                  content.form.data
+                )}
+                component={Input}
+                name="publisherTrustedAlgorithmPublishersAddresses"
+                type="text"
+                style={{ width: '100%' }}
+                disabled={
+                  values.allowAllPublishedAlgorithms ===
+                  'Allow any published algorithms'
+                }
+              />
+            </div>
             <DeleteButton
               onClick={() =>
                 setFieldValue(
                   'publisherTrustedAlgorithmPublishersAddresses',
                   ''
                 )
+              }
+              disabled={
+                values.allowAllPublishedAlgorithms ===
+                'Allow any published algorithms'
               }
             />
           </div>

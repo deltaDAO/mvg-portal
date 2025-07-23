@@ -108,12 +108,10 @@ export default function ServicesFields(): ReactElement {
     if (appConfig.ssiEnabled) {
       getDefaultPolicies()
         .then((policies) => {
-          setFieldValue('services[0].credentials.vcPolicies', policies)
           setDefaultPolicies(policies)
         })
         .catch((error) => {
           LoggerInstance.error(error)
-          setFieldValue('services[0].credentials.vcPolicies', [])
           setDefaultPolicies([])
         })
     }

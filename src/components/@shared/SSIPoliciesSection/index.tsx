@@ -6,6 +6,12 @@ import SectionContainer from '../SectionContainer/SectionContainer'
 import Input from '@shared/FormInput'
 import appConfig from 'app.config.cjs'
 
+const DEFAULT_TITLE = 'SSI Policies'
+const DEFAULT_HELP =
+  'Self-sovereign identity (SSI) policies define verification requirements for asset consumers. Configure which credentials and verification policies are required to access this asset.'
+const POLICY_EDITOR_HELP =
+  'Self-sovereign identity (SSI) is used verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other).'
+
 interface SSIPoliciesSectionProps {
   defaultPolicies: string[]
   fieldNamePrefix: string
@@ -16,11 +22,22 @@ interface SSIPoliciesSectionProps {
   isAsset?: boolean
 }
 
+/**
+ * SSIPoliciesSection - Manages SSI policy configuration for digital assets
+ *
+ * @param defaultPolicies - Pre-configured policy templates to apply when enabling SSI
+ * @param fieldNamePrefix - Form field path prefix for credential storage
+ * @param title - Section title (defaults to 'SSI Policies')
+ * @param help - Help text for users (defaults to standard SSI description)
+ * @param showEnableCheckbox - Whether to show enable/disable toggle
+ * @param hideDefaultPolicies - Hide default policy options in PolicyEditor
+ * @param isAsset - Whether this is for an asset vs service configuration
+ */
 export default function SSIPoliciesSection({
   defaultPolicies,
   fieldNamePrefix,
-  title = 'SSI Policies',
-  help = 'Self-sovereign identity (SSI) policies define verification requirements for asset consumers. Configure which credentials and verification policies are required to access this asset.',
+  title = DEFAULT_TITLE,
+  help = DEFAULT_HELP,
   showEnableCheckbox = true,
   hideDefaultPolicies = false,
   isAsset = true
@@ -71,6 +88,19 @@ export default function SSIPoliciesSection({
     (credentials as any)?.vpPolicies
   ])
 
+  const handleToggleSSI = () => {
+    const newEnabled = !enabled
+    setEnabled(newEnabled)
+
+    if (newEnabled) {
+      setFieldValue(`${credentialsPath}.vcPolicies`, defaultPolicies)
+    } else {
+      setFieldValue(`${credentialsPath}.requestCredentials`, [])
+      setFieldValue(`${credentialsPath}.vcPolicies`, [])
+      setFieldValue(`${credentialsPath}.vpPolicies`, [])
+    }
+  }
+
   if (!appConfig.ssiEnabled) {
     return null
   }
@@ -84,7 +114,7 @@ export default function SSIPoliciesSection({
           type="checkbox"
           options={['Enable SSI Policies']}
           checked={enabled}
-          onChange={() => setEnabled(!enabled)}
+          onChange={handleToggleSSI}
           hideLabel={true}
         />
       )}
@@ -97,7 +127,7 @@ export default function SSIPoliciesSection({
             }
             name={credentialsPath}
             defaultPolicies={defaultPolicies}
-            help="Self-sovereign identity (SSI) is used verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
+            help={POLICY_EDITOR_HELP}
             isAsset={isAsset}
             buttonStyle="ocean"
             enabledView={true}

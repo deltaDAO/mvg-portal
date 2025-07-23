@@ -182,10 +182,18 @@ function getComputeSettingsInitialValues({
           })
         )
 
+  const publisherTrustedAlgorithmPublishersValue =
+    publisherTrustedAlgorithmPublishers &&
+    publisherTrustedAlgorithmPublishers.length > 0
+      ? 'Allow specific trusted algorithm publishers'
+      : 'Allow all trusted algorithm publishers'
+
   return {
     allowAllPublishedAlgorithms,
     publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm || [],
     publisherTrustedAlgorithmPublishers:
+      publisherTrustedAlgorithmPublishersValue,
+    publisherTrustedAlgorithmPublishersAddresses:
       publisherTrustedAlgorithmPublishers?.join(',') || ''
   }
 }
