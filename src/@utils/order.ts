@@ -343,7 +343,13 @@ export async function handleComputeOrder(
       return tx?.transactionHash
     }
 
-    LoggerInstance.log('[compute] Calling order ...', initializeData)
+    LoggerInstance.log(
+      '[compute] Calling order ...',
+      initializeData,
+      orderPriceAndFees,
+      asset,
+      service
+    )
     const txStartOrder = await order(
       signer,
       asset,
