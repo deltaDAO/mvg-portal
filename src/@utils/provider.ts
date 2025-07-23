@@ -83,7 +83,6 @@ export async function initializeProviderForCompute(
       id: res.id,
       amount: selectedResources?.[res.id] || res.min
     }))
-    console.log('policyServer:', policiesServer)
     return await ProviderInstance.initializeCompute(
       [computeAsset],
       computeAlgo,

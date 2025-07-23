@@ -47,7 +47,6 @@ export async function transformAssetToAssetSelection(
           !matches.has(key)
         )
           return // <-- skip any service that wasn't in selectedAlgorithms
-
         const assetEntry: AssetSelectionAsset = {
           did: asset.id,
           serviceId: service.id,
@@ -60,14 +59,17 @@ export async function transformAssetToAssetSelection(
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
             ? isAddressWhitelisted(asset, accountId, service)
-            : true
+            : true,
+          datetime: asset.indexedMetadata.event.datetime
         }
         // put selected ones up front
         algorithmList.unshift(assetEntry)
       })
     }
   }
-
+  algorithmList.sort((a, b) => {
+    return new Date(b.datetime).getTime() - new Date(a.datetime).getTime()
+  })
   return algorithmList
 }
 

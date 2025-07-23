@@ -25,6 +25,7 @@ export interface AssetSelectionAsset {
   checked: boolean
   symbol: string
   isAccountIdWhitelisted: boolean
+  datetime?: string
 }
 
 export interface PublisherTrustedAlgorithmService {
