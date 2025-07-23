@@ -17,6 +17,9 @@ import { useAccount } from 'wagmi'
 import { Compute, PublisherTrustedAlgorithms } from 'src/@types/ddo/Service'
 import SectionContainer from '@shared/SectionContainer/SectionContainer'
 import DeleteButton from '@shared/DeleteButton/DeleteButton'
+import Button from '@shared/atoms/Button'
+import AddAddress from '@images/add_param.svg'
+import styles from './index.module.css'
 
 export default function FormEditComputeService({
   chainId,
@@ -32,6 +35,63 @@ export default function FormEditComputeService({
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
   const [prevTrustedPublishers, setPrevTrustedPublishers] = useState<string[]>()
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
+  const [addressInputValue, setAddressInputValue] = useState('')
+  const [addressList, setAddressList] = useState<string[]>([])
+  useEffect(() => {
+    if (values.publisherTrustedAlgorithmPublishers === undefined) {
+      setFieldValue(
+        'publisherTrustedAlgorithmPublishers',
+        'Allow specific trusted algorithm publishers'
+      )
+    }
+    if (values.allowAllPublishedAlgorithms === undefined) {
+      setFieldValue('allowAllPublishedAlgorithms', 'Allow selected algorithms')
+    }
+  }, [
+    values.publisherTrustedAlgorithmPublishers,
+    values.allowAllPublishedAlgorithms,
+    setFieldValue
+  ])
+
+  useEffect(() => {
+    const currentAddresses =
+      values.publisherTrustedAlgorithmPublishersAddresses || ''
+    const addresses = currentAddresses
+      .split(',')
+      .map((addr) => addr.trim())
+      .filter((addr) => addr.length > 0)
+    setAddressList(addresses)
+  }, [values.publisherTrustedAlgorithmPublishersAddresses])
+
+  const handleAddAddress = (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!addressInputValue.trim()) {
+      return
+    }
+
+    const newAddress = addressInputValue.trim()
+    if (!addressList.includes(newAddress)) {
+      const updatedAddresses = [...addressList, newAddress]
+      setAddressList(updatedAddresses)
+      setFieldValue(
+        'publisherTrustedAlgorithmPublishersAddresses',
+        updatedAddresses.join(',')
+      )
+      setAddressInputValue('')
+    }
+  }
+
+  const handleDeleteAddress = (addressToDelete: string) => {
+    const updatedAddresses = addressList.filter(
+      (address) => address !== addressToDelete
+    )
+    setAddressList(updatedAddresses)
+    setFieldValue(
+      'publisherTrustedAlgorithmPublishersAddresses',
+      updatedAddresses.join(',')
+    )
+  }
 
   useEffect(() => {
     if (
@@ -147,47 +207,66 @@ export default function FormEditComputeService({
           component={Input}
           name="publisherTrustedAlgorithmPublishers"
           selectStyle="publish"
+          disabled={
+            values.allowAllPublishedAlgorithms ===
+            'Allow any published algorithms'
+          }
         />
 
-        {values.publisherTrustedAlgorithmPublishers ===
-          'Allow specific trusted algorithm publishers' && (
-          <div
-            style={{
-              display: 'flex',
-              gap: '8px',
-              alignItems: 'flex-end',
-              width: '100%'
-            }}
-          >
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <Field
-                {...getFieldContent(
-                  'publisherTrustedAlgorithmPublishersAddresses',
-                  content.form.data
-                )}
-                component={Input}
-                name="publisherTrustedAlgorithmPublishersAddresses"
-                type="text"
-                style={{ width: '100%' }}
+        {(values.publisherTrustedAlgorithmPublishers ===
+          'Allow specific trusted algorithm publishers' ||
+          values.publisherTrustedAlgorithmPublishers === undefined) && (
+          <>
+            <div className={styles.inputContainer}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <input
+                  type="text"
+                  placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
+                  value={addressInputValue}
+                  onChange={(e) => setAddressInputValue(e.target.value)}
+                  disabled={
+                    values.allowAllPublishedAlgorithms ===
+                    'Allow any published algorithms'
+                  }
+                  className={styles.addressInput}
+                />
+              </div>
+              <Button
+                type="button"
+                style="gradient"
+                onClick={handleAddAddress}
                 disabled={
                   values.allowAllPublishedAlgorithms ===
                   'Allow any published algorithms'
                 }
-              />
+                className={styles.addAddressButton}
+              >
+                <AddAddress /> Add
+              </Button>
             </div>
-            <DeleteButton
-              onClick={() =>
-                setFieldValue(
-                  'publisherTrustedAlgorithmPublishersAddresses',
-                  ''
-                )
-              }
-              disabled={
-                values.allowAllPublishedAlgorithms ===
-                'Allow any published algorithms'
-              }
-            />
-          </div>
+
+            {addressList.length > 0 && (
+              <div className={styles.addressListContainer}>
+                {addressList.map((address, index) => (
+                  <div key={index} className={styles.addressItem}>
+                    <input
+                      type="text"
+                      value={address}
+                      disabled
+                      className={styles.addressDisplay}
+                    />
+                    <DeleteButton
+                      onClick={() => handleDeleteAddress(address)}
+                      disabled={
+                        values.allowAllPublishedAlgorithms ===
+                        'Allow any published algorithms'
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
       </SectionContainer>
     </SectionContainer>
