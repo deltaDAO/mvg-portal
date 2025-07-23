@@ -433,7 +433,7 @@ export async function transformComputeFormToServiceComputeOptions(
           .split(',')
           .map((addr) => addr.trim())
           .filter((addr) => addr.length > 0)
-      : []
+      : ['*']
 
   const privacy: Compute = {
     ...currentOptions,

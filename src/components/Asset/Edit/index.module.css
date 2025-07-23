@@ -147,3 +147,7 @@ body .addAddressButton {
 .publisherTrustedAlgorithmPublishersContainer > div {
   gap: var(--sp-2);
 }
+
+.publisherTrustedAlgorithmPublishersInput {
+  margin-bottom: var(--sp-2);
+}

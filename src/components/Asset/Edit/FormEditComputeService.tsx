@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useState, useRef } from 'react'
 import { Field, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -36,6 +36,7 @@ export default function FormEditComputeService({
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
   const [addressInputValue, setAddressInputValue] = useState('')
   const [addressList, setAddressList] = useState<string[]>([])
+  const isUpdatingRef = useRef(false)
 
   const isPublishFormContext = values.services && Array.isArray(values.services)
 
@@ -105,32 +106,72 @@ export default function FormEditComputeService({
   }
 
   useEffect(() => {
+    if (isUpdatingRef.current) return
+
     if (allowAllPublishedAlgorithms === 'Allow any published algorithms') {
       if (
         publisherTrustedAlgorithmPublishers !==
         'Allow all trusted algorithm publishers'
       ) {
+        isUpdatingRef.current = true
         setFieldValue(
           'publisherTrustedAlgorithmPublishers',
           'Allow all trusted algorithm publishers'
         )
+        setTimeout(() => {
+          isUpdatingRef.current = false
+        }, 0)
       }
     } else if (allowAllPublishedAlgorithms === 'Allow selected algorithms') {
       if (
         publisherTrustedAlgorithmPublishers !==
         'Allow specific trusted algorithm publishers'
       ) {
+        isUpdatingRef.current = true
         setFieldValue(
           'publisherTrustedAlgorithmPublishers',
           'Allow specific trusted algorithm publishers'
         )
+        setTimeout(() => {
+          isUpdatingRef.current = false
+        }, 0)
       }
     }
-  }, [
-    allowAllPublishedAlgorithms,
-    publisherTrustedAlgorithmPublishers,
-    setFieldValue
-  ])
+  }, [allowAllPublishedAlgorithms, setFieldValue])
+
+  useEffect(() => {
+    if (isUpdatingRef.current) return
+
+    if (
+      publisherTrustedAlgorithmPublishers ===
+      'Allow all trusted algorithm publishers'
+    ) {
+      if (allowAllPublishedAlgorithms !== 'Allow any published algorithms') {
+        isUpdatingRef.current = true
+        setFieldValue(
+          'allowAllPublishedAlgorithms',
+          'Allow any published algorithms'
+        )
+        setTimeout(() => {
+          isUpdatingRef.current = false
+        }, 0)
+      }
+    } else if (
+      publisherTrustedAlgorithmPublishers ===
+      'Allow specific trusted algorithm publishers'
+    ) {
+      if (allowAllPublishedAlgorithms !== 'Allow selected algorithms') {
+        isUpdatingRef.current = true
+        setFieldValue(
+          'allowAllPublishedAlgorithms',
+          'Allow selected algorithms'
+        )
+        setTimeout(() => {
+          isUpdatingRef.current = false
+        }, 0)
+      }
+    }
+  }, [publisherTrustedAlgorithmPublishers, setFieldValue])
 
   const getAlgorithmList = useCallback(
     async (
@@ -226,6 +267,7 @@ export default function FormEditComputeService({
           component={Input}
           name="publisherTrustedAlgorithmPublishers"
           selectStyle="publish"
+          className={styles.publisherTrustedAlgorithmPublishersInput}
           disabled={
             allowAllPublishedAlgorithms === 'Allow any published algorithms'
           }
