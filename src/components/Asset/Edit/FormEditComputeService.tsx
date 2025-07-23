@@ -33,7 +33,6 @@ export default function FormEditComputeService({
   const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
   const { values, setFieldValue } = useFormikContext<Record<string, any>>()
-  const [prevTrustedPublishers, setPrevTrustedPublishers] = useState<string[]>()
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
   const [addressInputValue, setAddressInputValue] = useState('')
   const [addressList, setAddressList] = useState<string[]>([])
@@ -111,43 +110,27 @@ export default function FormEditComputeService({
         publisherTrustedAlgorithmPublishers !==
         'Allow all trusted algorithm publishers'
       ) {
-        setPrevTrustedPublishers([publisherTrustedAlgorithmPublishers])
         setFieldValue(
           'publisherTrustedAlgorithmPublishers',
           'Allow all trusted algorithm publishers'
         )
       }
-    } else if (
-      publisherTrustedAlgorithmPublishers ===
-        'Allow all trusted algorithm publishers' &&
-      prevTrustedPublishers
-    ) {
-      setFieldValue(
-        'publisherTrustedAlgorithmPublishers',
-        prevTrustedPublishers[0] ||
+    } else if (allowAllPublishedAlgorithms === 'Allow selected algorithms') {
+      if (
+        publisherTrustedAlgorithmPublishers !==
+        'Allow specific trusted algorithm publishers'
+      ) {
+        setFieldValue(
+          'publisherTrustedAlgorithmPublishers',
           'Allow specific trusted algorithm publishers'
-      )
+        )
+      }
     }
-  }, [allowAllPublishedAlgorithms])
-
-  useEffect(() => {
-    if (
-      publisherTrustedAlgorithmPublishers ===
-        'Allow all trusted algorithm publishers' &&
-      allowAllPublishedAlgorithms !== 'Allow any published algorithms'
-    ) {
-      setFieldValue(
-        'allowAllPublishedAlgorithms',
-        'Allow any published algorithms'
-      )
-    } else if (
-      allowAllPublishedAlgorithms === 'Allow any published algorithms' &&
-      publisherTrustedAlgorithmPublishers !==
-        'Allow all trusted algorithm publishers'
-    ) {
-      setFieldValue('allowAllPublishedAlgorithms', 'Allow selected algorithms')
-    }
-  }, [publisherTrustedAlgorithmPublishers])
+  }, [
+    allowAllPublishedAlgorithms,
+    publisherTrustedAlgorithmPublishers,
+    setFieldValue
+  ])
 
   const getAlgorithmList = useCallback(
     async (
@@ -231,7 +214,10 @@ export default function FormEditComputeService({
         />
       </SectionContainer>
 
-      <SectionContainer border>
+      <SectionContainer
+        border
+        className={styles.publisherTrustedAlgorithmPublishersContainer}
+      >
         <Field
           {...getFieldContent(
             'publisherTrustedAlgorithmPublishers',

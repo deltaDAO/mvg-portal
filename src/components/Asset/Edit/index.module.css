@@ -143,3 +143,7 @@ body .addAddressButton {
   align-items: flex-end;
   width: 100%;
 }
+
+.publisherTrustedAlgorithmPublishersContainer > div {
+  gap: var(--sp-2);
+}
