@@ -101,6 +101,10 @@
   --loader-top-border-color: transparent;
   --loader-border-size: var(--border-size);
   --loader-message-color: var(--color-secondary);
+  --loader-ordering-spinner-width: 18px;
+  --loader-ordering-spinner-height: 18px;
+  --loader-ordering-spinner-border-color: rgba(48, 48, 49, 0.5);
+  --loader-ordering-spinner-border-top-color: #0a4b70;
 
   /* Box template */
   --box-template-background: var(--background-content);

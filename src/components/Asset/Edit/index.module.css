@@ -78,7 +78,7 @@
 body .addAddressButton {
   min-height: 40px;
   height: 40px;
-  min-width: 105px;
+  min-width: 105px !important;
   display: flex;
   flex-direction: row;
   justify-content: center;

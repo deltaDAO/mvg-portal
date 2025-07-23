@@ -1,11 +1,10 @@
 import { ReactElement, useEffect, useState } from 'react'
-import FileIcon from '@shared/FileIcon'
-import Price from '@shared/Price'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '../ButtonBuy'
 import { secondsToString } from '@utils/ddo'
 import styles from './index.module.css'
 import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
+import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
 import {
   FileInfo,
   LoggerInstance,
@@ -257,6 +256,15 @@ export default function Download({
     } catch (error) {
       LoggerInstance.error(error)
       setRetry(true)
+      if (
+        error?.message?.includes('user rejected transaction') ||
+        error?.message?.includes('User denied') ||
+        error?.message?.includes('MetaMask Tx Signature: User denied')
+      ) {
+        toast.info('Transaction was cancelled by user')
+        return
+      }
+
       const message = isOwned
         ? 'Failed to download file!'
         : 'An error occurred, please retry. Check console for more information.'
@@ -404,7 +412,7 @@ export default function Download({
             </div>
           )}
 
-        <div style={{ textAlign: 'center' }}>
+        <div className={styles.buttonContainer}>
           {!isInPurgatory && <PurchaseButton isValid={isValid} />}
         </div>
       </div>
@@ -430,9 +438,11 @@ export default function Download({
     >
       <Form>
         <aside className={styles.consume}>
-          <div className={styles.info}>
-            <AssetAction asset={asset} />
-          </div>
+          {isUnsupportedPricing && (
+            <div className={styles.info}>
+              <AssetAction asset={asset} />
+            </div>
+          )}
           {!isFullPriceLoading &&
             !isOwner &&
             (appConfig.ssiEnabled ? (
@@ -440,24 +450,44 @@ export default function Download({
                 {verifierSessionCache &&
                 lookupVerifierSessionId(asset.id, service.id) ? (
                   <>
+                    {accessDetails.type === 'free' && (
+                      <Alert
+                        state="info"
+                        text="This dataset is free to use. Please note that network gas fees still apply, even when using free assets."
+                      />
+                    )}
+                    <FormErrorGroup
+                      errorFields={[
+                        'termsAndConditions',
+                        'acceptPublishingLicense'
+                      ]}
+                    >
+                      <Field
+                        component={Input}
+                        name="termsAndConditions"
+                        type="checkbox"
+                        options={['Terms and Conditions']}
+                        prefixes={['I agree to the']}
+                        actions={['/terms']}
+                        disabled={isLoading}
+                      />
+                      <Field
+                        component={Input}
+                        name="acceptPublishingLicense"
+                        type="checkbox"
+                        options={['Publishing License']}
+                        prefixes={['I agree the']}
+                        disabled={isLoading}
+                      />
+                    </FormErrorGroup>
+                    {isOwned && (
+                      <div>
+                        <SuccessConfetti
+                          success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
+                        />
+                      </div>
+                    )}
                     <AssetActionBuy asset={asset} />
-                    <Field
-                      component={Input}
-                      name="termsAndConditions"
-                      type="checkbox"
-                      options={['Terms and Conditions']}
-                      prefixes={['I agree to the']}
-                      actions={['/terms']}
-                      disabled={isLoading}
-                    />
-                    <Field
-                      component={Input}
-                      name="acceptPublishingLicense"
-                      type="checkbox"
-                      options={['Publishing License']}
-                      prefixes={['I agree the']}
-                      disabled={isLoading}
-                    />
                   </>
                 ) : (
                   <AssetActionCheckCredentials
@@ -468,37 +498,54 @@ export default function Download({
               </>
             ) : (
               <>
+                {accessDetails.type === 'free' && (
+                  <div className={styles.noMarginAlert}>
+                    <Alert
+                      state="info"
+                      text="This dataset is free to use. Please note that network gas fees still apply, even when using free assets."
+                    />
+                  </div>
+                )}
+                <FormErrorGroup
+                  errorFields={[
+                    'termsAndConditions',
+                    'acceptPublishingLicense'
+                  ]}
+                >
+                  <Field
+                    component={Input}
+                    name="termsAndConditions"
+                    type="checkbox"
+                    options={['Terms and Conditions']}
+                    prefixes={['I agree to the']}
+                    actions={['/terms']}
+                    disabled={isLoading}
+                  />
+                  <Field
+                    component={Input}
+                    name="acceptPublishingLicense"
+                    type="checkbox"
+                    options={['Publishing License']}
+                    prefixes={['I agree the']}
+                    disabled={isLoading}
+                  />
+                </FormErrorGroup>
+                {isOwned && (
+                  <div>
+                    <SuccessConfetti
+                      success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
+                    />
+                  </div>
+                )}
                 <AssetActionBuy asset={asset} />
-                <Field
-                  component={Input}
-                  name="termsAndConditions"
-                  type="checkbox"
-                  options={['Terms and Conditions']}
-                  prefixes={['I agree to the']}
-                  actions={['/terms']}
-                  disabled={isLoading}
-                />
-                <Field
-                  component={Input}
-                  name="acceptPublishingLicense"
-                  type="checkbox"
-                  options={['Publishing License']}
-                  prefixes={['I agree the']}
-                  disabled={isLoading}
-                />
               </>
             ))}
-          <div className={styles.consumerParameters}>
-            {/* TODO - */}
-            <ConsumerParameters service={service} isLoading={isLoading} />
-          </div>
-          {isOwned && (
-            <div className={styles.confettiContainer}>
-              <SuccessConfetti
-                success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
-              />
-            </div>
-          )}
+          {service.consumerParameters &&
+            service.consumerParameters.length > 0 && (
+              <div className={styles.consumerParameters}>
+                <ConsumerParameters service={service} isLoading={isLoading} />
+              </div>
+            )}
           {asset.credentialSubject?.metadata?.type === 'algorithm' && (
             <AlgorithmDatasetsListForCompute
               asset={asset}

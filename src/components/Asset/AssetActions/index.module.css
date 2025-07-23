@@ -32,7 +32,7 @@ body .backButton {
 }
 
 .assetInteractionCard {
-  padding: calc(var(--spacer) * 0.5) var(--spacer);
+  padding: 20px;
   border: 1px solid rgba(48, 48, 49, 0.1);
   border-radius: 20px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
@@ -98,4 +98,5 @@ body .backButton {
   display: flex;
   justify-content: flex-start;
   margin-top: calc(var(--spacer) / 2);
+  align-items: flex-start;
 }

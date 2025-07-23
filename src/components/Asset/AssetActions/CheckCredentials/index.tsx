@@ -22,6 +22,7 @@ import { PolicyServerInitiateActionData } from 'src/@types/PolicyServer'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { useAccount } from 'wagmi'
+import Button from '@shared/atoms/Button'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -317,18 +318,18 @@ export function AssetActionCheckCredentials({
         dids={exchangeStateData.dids}
       />
       <div className={styles.buttonWrapper}>
-        <button
+        <Button
           type="button"
-          className={styles.checkCredentialsButton}
           onClick={() =>
             setCheckCredentialState(
               CheckCredentialState.StartCredentialExchange
             )
           }
           disabled={!selectedWallet?.id}
+          style="publish"
         >
           Check Credentials
-        </button>
+        </Button>
       </div>
     </div>
   )

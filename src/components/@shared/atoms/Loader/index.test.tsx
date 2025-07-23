@@ -11,7 +11,7 @@ describe('Loader', () => {
   })
 
   it('renders white', () => {
-    const props: LoaderProps = { white: true }
+    const props: LoaderProps = { variant: 'white' }
     render(<Loader {...props} />)
   })
 })

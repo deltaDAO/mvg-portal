@@ -665,6 +665,16 @@ export default function Compute({
       setIsOrdered(true)
       setRefetchJobs(!refetchJobs)
     } catch (error) {
+      if (
+        error?.message?.includes('user rejected transaction') ||
+        error?.message?.includes('User denied') ||
+        error?.message?.includes('MetaMask Tx Signature: User denied')
+      ) {
+        toast.info('Transaction was cancelled by user')
+        setRetry(true)
+        return
+      }
+
       let message: string
       try {
         message =
@@ -755,6 +765,15 @@ export default function Compute({
       }
       await startJob(userCustomParameters, actualService)
     } catch (error) {
+      if (
+        error?.message?.includes('user rejected transaction') ||
+        error?.message?.includes('User denied') ||
+        error?.message?.includes('MetaMask Tx Signature: User denied')
+      ) {
+        toast.info('Transaction was cancelled by user')
+        return
+      }
+
       toast.error(error.message)
       LoggerInstance.error(error)
     }

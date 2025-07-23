@@ -314,7 +314,7 @@ export function AssetActionCheckCredentialsAlgo({
       <div className={styles.buttonWrapper}>
         <Button
           type="button"
-          style="primary"
+          style="publish"
           onClick={() =>
             setCheckCredentialState(
               CheckCredentialState.StartCredentialExchange

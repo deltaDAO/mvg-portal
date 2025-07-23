@@ -3,23 +3,34 @@ import styles from './index.module.css'
 
 export interface LoaderProps {
   message?: string
-  white?: boolean
-  primary?: boolean
+  variant?: 'white' | 'primary' | 'default'
+  className?: string
+  noMargin?: boolean
 }
 
 export default function Loader({
   message,
-  white,
-  primary
+  variant = 'default',
+  className,
+  noMargin = false
 }: LoaderProps): ReactElement {
   const getLoaderClass = () => {
-    if (white) return styles.white
-    if (primary) return styles.primary
-    return ''
+    switch (variant) {
+      case 'white':
+        return styles.white
+      case 'primary':
+        return styles.primary
+      default:
+        return ''
+    }
   }
 
   return (
-    <div className={styles.loaderWrap}>
+    <div
+      className={`${styles.loaderWrap} ${className || ''} ${
+        noMargin ? '' : styles.marginTop
+      }`}
+    >
       <span className={`${styles.loader} ${getLoaderClass()}`} />
       {message && <span className={styles.message}>{message}</span>}
     </div>

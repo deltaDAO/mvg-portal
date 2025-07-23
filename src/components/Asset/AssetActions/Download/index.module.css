@@ -1,7 +1,8 @@
 .consume {
   width: auto;
-  margin-bottom: calc(var(--spacer) / 2);
-  margin-top: -1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
 }
 
 .info {
@@ -46,8 +47,9 @@
   margin-right: auto;
 }
 
-.confettiContainer {
-  margin-top: calc(var(--spacer) / 2);
+.buttonContainer {
+  display: flex;
+  justify-content: flex-start;
 }
 
 .calculation {
@@ -63,4 +65,8 @@
 
 .calculation .price {
   font-size: var(--font-size-small) !important;
+}
+
+.marginBottom {
+  margin-bottom: var(--sp-8);
 }

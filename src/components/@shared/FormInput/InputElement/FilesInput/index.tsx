@@ -217,7 +217,7 @@ export default function FilesInput(props: InputProps): ReactElement {
                   className={styles.submitButton}
                   disabled={true}
                 >
-                  <Loader white />
+                  <Loader variant="white" />
                 </Button>
               ) : (
                 <div
