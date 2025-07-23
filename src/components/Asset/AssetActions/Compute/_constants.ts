@@ -8,6 +8,7 @@ import { Option } from 'src/@types/ddo/Option'
 
 export interface ComputeDatasetForm {
   algorithm: string
+  dataset?: string
   computeEnv: string
   dataServiceParams: UserCustomParameters
   algoServiceParams: UserCustomParameters
@@ -22,7 +23,7 @@ export function getComputeValidationSchema(
   algoParams: Record<string, string | number | boolean | Option[]>[]
 ) {
   return Yup.object().shape({
-    algorithm: Yup.string().required('Required'),
+    // algorithm: Yup.string().required('Required'),
     computeEnv: Yup.string().required('Required'),
     dataServiceParams:
       getUserCustomParameterValidationSchema(dataServiceParams),

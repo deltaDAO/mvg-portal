@@ -4,7 +4,6 @@ body .deleteButton {
   gap: var(--sp-1);
   height: 40px;
   border-radius: 20px !important;
-  padding: 12px 24px;
   background: transparent;
   color: var(--clr-navy);
   border: 1px solid var(--clr-navy);
@@ -15,16 +14,13 @@ body .deleteButton {
 
 body .deleteButton:hover,
 body .deleteButton:focus {
-  border-color: var(
-    --clr-navy-darker,
-    #001f3f
-  ); /* Fallback color if --clr-navy-darker isn't defined */
+  border-color: var(--clr-navy-darker, #001f3f);
   color: var(--clr-navy-darker, #001f3f);
   cursor: pointer;
   background: transparent;
   fill: var(--clr-navy-darker, #001f3f);
   cursor: pointer;
-  transform: scale(1.02) translateY(-2px);
+  transform: scale(1.02);
   box-shadow: 1px 2px 8px var(--box-shadow-color);
   transition: all 0.3s ease;
 }

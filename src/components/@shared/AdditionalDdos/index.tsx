@@ -53,7 +53,9 @@ export function AdditionalDdosFields(): ReactElement {
           return (
             <SectionContainer key={`${index}`} className={styles.assetCard}>
               <div className={styles.header}>
-                <h3 className={styles.title}>Additional Asset #{index + 1}</h3>
+                <h3 className={styles.title}>
+                  Additional Asset Description #{index + 1}
+                </h3>
               </div>
               <Field
                 {...getFieldContent('ddoType', content.additionalDdos.fields)}

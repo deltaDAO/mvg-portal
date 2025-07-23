@@ -312,7 +312,7 @@ export function PolicyEditor(props): ReactElement {
     const policy: ParameterizedPolicy = {
       type: 'parameterizedPolicy',
       args: [],
-      policy: ''
+      policy: 'allowed-issuer'
     }
     credential?.policies?.push(policy)
     setCredentials(credentials)

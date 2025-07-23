@@ -86,7 +86,7 @@ export default function RelatedAssets(): ReactElement {
               (asset2) => !tagResults?.find((asset1) => asset1.id === asset2.id)
             )
           )
-          setRelatedAssets(bothResults)
+          setRelatedAssets(bothResults?.filter((a) => a.id !== asset.id))
         }
       } catch (error) {
         LoggerInstance.error(error.message)

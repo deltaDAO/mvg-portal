@@ -65,6 +65,8 @@ import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 import { CredentialDialogProvider } from './CredentialDialogProvider'
 import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
+import FormStartComputeAlgo from './FormComputeAlgorithm'
+import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
 
 export default function Compute({
   accountId,
@@ -99,8 +101,12 @@ export default function Compute({
   const [error, setError] = useState<string>()
 
   const [algorithmList, setAlgorithmList] = useState<AssetSelectionAsset[]>()
+  const [datasetList, setDatasetList] = useState<AssetSelectionAsset[]>()
+
   const [ddoAlgorithmList, setDdoAlgorithmList] = useState<Asset[]>()
   const [selectedAlgorithmAsset, setSelectedAlgorithmAsset] =
+    useState<AssetExtended>()
+  const [selectedDatasetAsset, setSelectedDatasetAsset] =
     useState<AssetExtended>()
   const [hasAlgoAssetDatatoken, setHasAlgoAssetDatatoken] = useState<boolean>()
   const [algorithmDTBalance, setAlgorithmDTBalance] = useState<string>()
@@ -132,7 +138,10 @@ export default function Compute({
   const {
     verifierSessionCache,
     lookupVerifierSessionId,
-    lookupVerifierSessionIdSkip
+    lookupVerifierSessionIdSkip,
+    ssiWalletCache,
+    setCachedCredentials,
+    clearVerifierSessionCache
   } = useSsiWallet()
   const [svcIndex, setSvcIndex] = useState(0)
 
@@ -160,6 +169,12 @@ export default function Compute({
       !isConsumableaAlgorithmPrice)
 
   const isUnsupportedPricing = accessDetails.type === 'NOT_SUPPORTED'
+
+  function resetCacheWallet() {
+    ssiWalletCache.clearCredentials()
+    setCachedCredentials(undefined)
+    clearVerifierSessionCache()
+  }
 
   useEffect(() => {
     if (selectedAlgorithmAsset) {
@@ -189,16 +204,21 @@ export default function Compute({
       LoggerInstance.error(error)
     }
   }
-  async function setDatasetPrice(datasetProviderFees: ProviderFees) {
+  async function setDatasetPrice(
+    actualAsset: AssetExtended,
+    actualService: Service,
+    actualAccessDetails: AccessDetails,
+    datasetProviderFees: ProviderFees
+  ) {
     if (
-      accessDetails.addressOrId !== ZERO_ADDRESS &&
-      accessDetails.type !== 'free' &&
+      actualAccessDetails.addressOrId !== ZERO_ADDRESS &&
+      actualAccessDetails.type !== 'free' &&
       datasetProviderFees
     ) {
       const datasetPriceAndFees = await getOrderPriceAndFees(
-        asset,
-        service,
-        accessDetails,
+        actualAsset,
+        actualService,
+        actualAccessDetails,
         accountId || ZERO_ADDRESS,
         signer,
         datasetProviderFees
@@ -211,24 +231,77 @@ export default function Compute({
     }
   }
 
-  async function initPriceAndFees() {
+  async function initPriceAndFees(actualService?: Service) {
     try {
       if (!selectedComputeEnv || !selectedComputeEnv.id || !selectedResources)
         throw new Error(`Error getting compute environment!`)
+      let actualDatasetAsset = asset
+      let actualAlgorithmAsset = selectedAlgorithmAsset
+      let actualAlgoService = service
+      let actualDatasetService = service
+      let actualSvcIndex = svcIndex
+      let actualDatasetAccessDetails = accessDetails
+      let actualAlgoAccessDetails = accessDetails
+
+      if (!selectedAlgorithmAsset && selectedDatasetAsset) {
+        actualDatasetAsset = selectedDatasetAsset
+        actualAlgorithmAsset = asset
+
+        // Find correct algorithm service from asset
+        const algoServiceId = service.id
+        const algoServices = actualAlgorithmAsset.credentialSubject.services
+        const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
+        if (algoIndex === -1) throw new Error('Algorithm serviceId not found.')
+
+        actualAlgoService = algoServices[algoIndex]
+        actualAlgoAccessDetails = actualAlgorithmAsset.accessDetails[algoIndex]
+        actualSvcIndex = algoIndex
+
+        // Now extract dataset service from selectedDatasetAsset
+
+        actualDatasetService = actualService
+        const datasetServices = actualDatasetAsset.credentialSubject.services
+
+        const datasetIndex = datasetServices.findIndex(
+          (s) => s.id === actualDatasetService.id
+        )
+        if (datasetIndex === -1) throw new Error('Dataset serviceId not found.')
+        actualDatasetAccessDetails =
+          actualDatasetAsset.accessDetails[datasetIndex]
+      } else {
+        // Default case (dataset is main asset, algorithm selected)
+        const datasetServiceId = service.id
+        const datasetServices = asset.credentialSubject?.services || []
+        const datasetIndex = datasetServices.findIndex(
+          (s) => s.id === datasetServiceId
+        )
+        if (datasetIndex !== -1)
+          actualDatasetService = datasetServices[datasetIndex]
+
+        const algoServiceId =
+          selectedAlgorithmAsset?.id?.split('|')[1] ||
+          selectedAlgorithmAsset?.credentialSubject?.services?.[svcIndex]?.id
+        const algoServices =
+          selectedAlgorithmAsset?.credentialSubject?.services || []
+        const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
+        if (algoIndex !== -1) {
+          actualAlgoService = algoServices[algoIndex]
+          actualSvcIndex = algoIndex
+          actualAlgoAccessDetails =
+            selectedAlgorithmAsset?.accessDetails[algoIndex]
+        }
+      }
       const initializedProvider = await initializeProviderForCompute(
-        asset,
-        service,
-        accessDetails,
-        selectedAlgorithmAsset,
+        actualDatasetAsset,
+        actualDatasetService,
+        actualDatasetAccessDetails,
+        actualAlgorithmAsset,
         signer,
         selectedComputeEnv,
         selectedResources,
-        svcIndex,
-        lookupVerifierSessionId(asset.id, service.id),
-        lookupVerifierSessionId(
-          selectedAlgorithmAsset.id,
-          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id
-        )
+        actualSvcIndex,
+        lookupVerifierSessionId(actualDatasetAsset.id, actualDatasetService.id),
+        lookupVerifierSessionId(actualAlgorithmAsset.id, actualAlgoService.id)
       )
       if (
         !initializedProvider ||
@@ -240,24 +313,29 @@ export default function Compute({
         getComputeFeedback(
           accessDetails.baseToken?.symbol,
           accessDetails.datatoken?.symbol,
-          asset.credentialSubject?.metadata.type
+          actualDatasetAsset.credentialSubject?.metadata.type
         )[0]
       )
       const datasetOrderPriceResponse = await setDatasetPrice(
+        actualDatasetAsset,
+        actualDatasetService,
+        actualDatasetAccessDetails,
         initializedProvider?.datasets?.[0]?.providerFee
       )
       setComputeStatusText(
         getComputeFeedback(
-          selectedAlgorithmAsset?.accessDetails[svcIndex]?.baseToken?.symbol,
-          selectedAlgorithmAsset?.accessDetails[svcIndex]?.datatoken?.symbol,
-          selectedAlgorithmAsset?.credentialSubject?.metadata?.type
+          actualAlgorithmAsset?.accessDetails?.[actualSvcIndex]?.baseToken
+            ?.symbol,
+          actualAlgorithmAsset?.accessDetails?.[actualSvcIndex]?.datatoken
+            ?.symbol,
+          actualAlgorithmAsset?.credentialSubject?.metadata?.type
         )[0]
       )
       // await setAlgoPrice(initializedProvider?.algorithm?.providerFee)
       const escrow = new EscrowContract(
         ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
         signer,
-        asset.credentialSubject.chainId
+        actualDatasetAsset.credentialSubject.chainId
       )
       const price = BigNumber.from(selectedResources.price)
       const payment = BigNumber.from(initializedProvider.payment.amount)
@@ -275,7 +353,16 @@ export default function Compute({
         '10'
       )
       setInitializedProviderResponse(initializedProvider)
-      return { initializedProvider, datasetOrderPriceResponse, svcIndex }
+      return {
+        initializedProvider,
+        datasetOrderPriceResponse,
+        actualAlgoService,
+        actualDatasetAsset,
+        actualAlgorithmAsset,
+        actualDatasetService,
+        actualAlgoAccessDetails,
+        actualDatasetAccessDetails
+      }
     } catch (error) {
       setError(error.message)
       LoggerInstance.error(`[compute] ${error.message} `)
@@ -291,19 +378,34 @@ export default function Compute({
 
   useEffect(() => {
     if (isUnsupportedPricing) return
-
-    getAlgorithmsForAsset(asset, service, newCancelToken()).then(
-      (algorithmsAssets) => {
-        setDdoAlgorithmList(algorithmsAssets)
-        getAlgorithmAssetSelectionList(
-          service,
-          algorithmsAssets,
-          accountId
-        ).then((algorithmSelectionList) => {
-          setAlgorithmList(algorithmSelectionList)
-        })
-      }
-    )
+    if (asset.credentialSubject?.metadata.type === 'algorithm') {
+      getAlgorithmDatasetsForCompute(
+        asset.id,
+        service.id,
+        service.serviceEndpoint,
+        accountId,
+        asset.credentialSubject?.chainId,
+        newCancelToken()
+      ).then((datasetLists) => {
+        setDatasetList(datasetLists)
+        if (datasetLists && datasetLists.length > 0) {
+          setDatasetList(datasetLists)
+        }
+      })
+    } else {
+      getAlgorithmsForAsset(asset, service, newCancelToken()).then(
+        (algorithmsAssets) => {
+          setDdoAlgorithmList(algorithmsAssets)
+          getAlgorithmAssetSelectionList(
+            service,
+            algorithmsAssets,
+            accountId
+          ).then((algorithmSelectionList) => {
+            setAlgorithmList(algorithmSelectionList)
+          })
+        }
+      )
+    }
   }, [accountId, asset, service, isUnsupportedPricing, newCancelToken])
 
   const initializeComputeEnvironment = useCallback(async () => {
@@ -357,17 +459,21 @@ export default function Compute({
     toast.error(errorMsg)
   }, [error])
 
-  async function setAlgoPrice(algoProviderFees: ProviderFees) {
+  async function setAlgoPrice(
+    algo: AssetExtended,
+    algoService: Service,
+    algoAccessDetails,
+    algoProviderFees: ProviderFees
+  ) {
     if (
-      selectedAlgorithmAsset?.accessDetails?.[0]?.addressOrId !==
-        ZERO_ADDRESS &&
-      selectedAlgorithmAsset?.accessDetails?.[0]?.type !== 'free' &&
+      algoAccessDetails.addressOrId !== ZERO_ADDRESS &&
+      algoAccessDetails?.type !== 'free' &&
       algoProviderFees
     ) {
       const algorithmOrderPriceAndFees = await getOrderPriceAndFees(
-        selectedAlgorithmAsset,
-        selectedAlgorithmAsset.credentialSubject?.services?.[0],
-        selectedAlgorithmAsset.accessDetails?.[0],
+        algo,
+        algoService,
+        algoAccessDetails,
         accountId || ZERO_ADDRESS,
         signer,
         algoProviderFees
@@ -380,57 +486,68 @@ export default function Compute({
     }
   }
 
-  async function startJob(userCustomParameters: {
-    dataServiceParams?: UserCustomParameters
-    algoServiceParams?: UserCustomParameters
-    algoParams?: UserCustomParameters
-  }): Promise<void> {
+  async function startJob(
+    userCustomParameters: {
+      dataServiceParams?: UserCustomParameters
+      algoServiceParams?: UserCustomParameters
+      algoParams?: UserCustomParameters
+    },
+    actualService?: Service
+  ): Promise<void> {
     try {
       setIsOrdering(true)
       setIsOrdered(false)
       setError(undefined)
-
-      const { datasetOrderPriceResponse, initializedProvider, svcIndex } =
-        await initPriceAndFees()
-
+      const {
+        datasetOrderPriceResponse,
+        initializedProvider,
+        actualAlgoService,
+        actualDatasetAsset,
+        actualAlgorithmAsset,
+        actualDatasetService,
+        actualAlgoAccessDetails,
+        actualDatasetAccessDetails
+      } = await initPriceAndFees(actualService)
       const computeAlgorithm: ComputeAlgorithm = {
-        documentId: selectedAlgorithmAsset?.id,
-        serviceId:
-          selectedAlgorithmAsset?.credentialSubject?.services[svcIndex].id,
+        documentId: actualAlgorithmAsset?.id,
+        serviceId: actualAlgoService.id,
         algocustomdata: userCustomParameters?.algoParams,
         userdata: userCustomParameters?.algoServiceParams
       }
 
       const allowed = await isOrderable(
-        asset,
-        service.id,
+        actualDatasetAsset,
+        actualDatasetService.id,
         computeAlgorithm,
-        selectedAlgorithmAsset
+        actualAlgorithmAsset
       )
       if (!allowed) throw new Error('Dataset is not orderable.')
 
       setComputeStatusText(
         getComputeFeedback(
-          selectedAlgorithmAsset.accessDetails?.[0]?.baseToken?.symbol,
-          selectedAlgorithmAsset.accessDetails?.[0]?.datatoken?.symbol,
-          selectedAlgorithmAsset.credentialSubject?.metadata.type
-        )[selectedAlgorithmAsset.accessDetails?.[0]?.type === 'fixed' ? 2 : 3]
+          actualAlgorithmAsset.accessDetails?.[0]?.baseToken?.symbol,
+          actualAlgorithmAsset.accessDetails?.[0]?.datatoken?.symbol,
+          actualAlgorithmAsset.credentialSubject?.metadata.type
+        )[actualAlgorithmAsset.accessDetails?.[0]?.type === 'fixed' ? 2 : 3]
       )
       const algoOrderPriceAndFeesResponse = await setAlgoPrice(
+        actualAlgorithmAsset,
+        actualAlgoService,
+        actualAlgoAccessDetails,
         initializedProviderResponse?.algorithm?.providerFee ||
           initializedProvider?.algorithm?.providerFee
       )
       const algorithmOrderTx = await handleComputeOrder(
         signer,
-        selectedAlgorithmAsset,
-        selectedAlgorithmAsset?.credentialSubject?.services[svcIndex],
-        selectedAlgorithmAsset?.accessDetails[svcIndex],
+        actualAlgorithmAsset,
+        actualAlgoService,
+        actualAlgoAccessDetails,
         algoOrderPriceAndFees || algoOrderPriceAndFeesResponse,
         accountId,
         initializedProviderResponse?.algorithm ||
           initializedProvider?.algorithm,
         hasAlgoAssetDatatoken,
-        lookupVerifierSessionId(asset.id, service.id),
+        lookupVerifierSessionId(actualDatasetAsset.id, actualDatasetService.id),
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
@@ -443,15 +560,15 @@ export default function Compute({
       )
       const datasetOrderTx = await handleComputeOrder(
         signer,
-        asset,
-        service,
-        accessDetails,
+        actualDatasetAsset,
+        actualDatasetService,
+        actualDatasetAccessDetails,
         datasetOrderPriceAndFees || datasetOrderPriceResponse,
         accountId,
         initializedProviderResponse?.datasets[0] ||
           initializedProvider?.datasets[0],
         hasDatatoken,
-        lookupVerifierSessionId(asset.id, service.id),
+        lookupVerifierSessionId(actualDatasetAsset.id, actualDatasetService.id),
         selectedComputeEnv.consumerAddress
       )
       if (!datasetOrderTx) throw new Error('Failed to order dataset.')
@@ -466,21 +583,23 @@ export default function Compute({
       let response
       const policyServerAlgo: PolicyServerInitiateComputeActionData = {
         sessionId: lookupVerifierSessionId(
-          selectedAlgorithmAsset.id,
-          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id
+          actualAlgorithmAsset.id,
+          actualAlgoService.id
         ),
-        serviceId:
-          selectedAlgorithmAsset.credentialSubject?.services[svcIndex].id,
-        documentId: selectedAlgorithmAsset.id,
+        serviceId: actualAlgoService.id,
+        documentId: actualAlgorithmAsset.id,
         successRedirectUri: ``,
         errorRedirectUri: ``,
         responseRedirectUri: ``,
         presentationDefinitionUri: ``
       }
       const policyServerDataset: PolicyServerInitiateComputeActionData = {
-        sessionId: lookupVerifierSessionId(asset.id, service.id),
-        serviceId: service.id,
-        documentId: asset.id,
+        sessionId: lookupVerifierSessionId(
+          actualDatasetAsset.id,
+          actualDatasetService.id
+        ),
+        serviceId: actualDatasetService.id,
+        documentId: actualDatasetAsset.id,
         successRedirectUri: ``,
         errorRedirectUri: ``,
         responseRedirectUri: ``,
@@ -497,8 +616,8 @@ export default function Compute({
           selectedComputeEnv.id,
           [
             {
-              documentId: asset.id,
-              serviceId: service.id,
+              documentId: actualDatasetAsset.id,
+              serviceId: actualDatasetService.id,
               transferTxId: datasetOrderTx,
               userdata: userCustomParameters?.dataServiceParams
             }
@@ -507,7 +626,7 @@ export default function Compute({
           selectedResources.jobDuration,
           oceanTokenAddress,
           resourceRequests,
-          asset.credentialSubject?.chainId,
+          actualDatasetAsset.credentialSubject?.chainId,
           null,
           null,
           policiesServer
@@ -515,10 +634,9 @@ export default function Compute({
         console.log('[compute] Compute response:', response)
       } else {
         const algorithm: ComputeAlgorithm = {
-          documentId: selectedAlgorithmAsset?.id,
-          serviceId:
-            selectedAlgorithmAsset?.credentialSubject?.services[svcIndex].id,
-          meta: selectedAlgorithmAsset?.credentialSubject?.metadata
+          documentId: actualDatasetAsset?.id,
+          serviceId: actualDatasetService.id,
+          meta: actualAlgorithmAsset?.credentialSubject?.metadata
             ?.algorithm as any
         }
         response = await ProviderInstance.freeComputeStart(
@@ -527,8 +645,8 @@ export default function Compute({
           selectedComputeEnv.id,
           [
             {
-              documentId: asset.id,
-              serviceId: service.id
+              documentId: actualDatasetAsset.id,
+              serviceId: actualDatasetService.id
             }
           ],
           algorithm,
@@ -565,43 +683,77 @@ export default function Compute({
 
   const onSubmit = async (values: ComputeDatasetForm) => {
     try {
-      const skip = lookupVerifierSessionIdSkip(asset.id, service.id)
-      if (appConfig.ssiEnabled && !skip) {
-        const result = await checkVerifierSessionId(
-          lookupVerifierSessionId(asset.id, service.id)
+      let actualService = service
+      let actualSvcIndex = svcIndex
+      let actualSelectedDataset = selectedDatasetAsset
+      let actualSelectedAlgorithm = selectedAlgorithmAsset
+
+      // Case: dataset selected, algorithm undefined
+      if (
+        values.dataset &&
+        !values.algorithm &&
+        selectedDatasetAsset &&
+        !selectedAlgorithmAsset
+      ) {
+        const datasetServices = selectedDatasetAsset.credentialSubject.services
+        const datasetServiceId = values.dataset.split('|')[1]
+        const foundIndex = datasetServices.findIndex(
+          (s) => s.id === datasetServiceId
         )
-        if (!result.success) {
-          toast.error('Invalid session')
+
+        if (foundIndex === -1) {
+          toast.error('Invalid dataset serviceId')
           return
         }
+
+        actualService = datasetServices[foundIndex]
+        actualSvcIndex = foundIndex
+
+        // Flip: asset is algorithm, so use dataset for dataServiceParams
+        actualSelectedAlgorithm = asset
+        actualSelectedDataset = selectedDatasetAsset
       }
 
+      const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
+      if (appConfig.ssiEnabled && !skip) {
+        try {
+          const result = await checkVerifierSessionId(
+            lookupVerifierSessionId(asset.id, service.id)
+          )
+          if (!result.success) {
+            toast.error('Invalid session')
+            return
+          }
+        } catch (error) {
+          resetCacheWallet()
+          throw error
+        }
+      }
       if (
-        !values.algorithm ||
+        !(values.algorithm || values.dataset) ||
         !values.computeEnv ||
         !values.termsAndConditions ||
         !values.acceptPublishingLicense
       )
         return
-
       const userCustomParameters = {
         dataServiceParams: parseConsumerParameterValues(
           values?.dataServiceParams,
-          service.consumerParameters
+          actualSelectedDataset?.credentialSubject?.services[actualSvcIndex]
+            ?.consumerParameters
         ),
         algoServiceParams: parseConsumerParameterValues(
           values?.algoServiceParams,
-          selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
-            .consumerParameters
+          actualSelectedAlgorithm?.credentialSubject?.services[svcIndex]
+            ?.consumerParameters
         ),
         algoParams: parseConsumerParameterValues(
           values?.algoParams,
-          selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+          actualSelectedAlgorithm?.credentialSubject?.metadata?.algorithm
             ?.consumerParameters
         )
       }
-
-      await startJob(userCustomParameters)
+      await startJob(userCustomParameters, actualService)
     } catch (error) {
       toast.error(error.message)
       LoggerInstance.error(error)
@@ -612,21 +764,130 @@ export default function Compute({
     <>
       {isUnsupportedPricing ? null : asset.credentialSubject?.metadata.type ===
         'algorithm' ? (
-        <>
-          {service.type === 'compute' && (
-            <Alert
-              text={
-                "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
-              }
-              state="info"
-            />
+        <Formik
+          initialValues={getInitialValues(
+            service,
+            selectedAlgorithmAsset,
+            selectedComputeEnv,
+            termsAndConditions,
+            acceptPublishingLicense
           )}
-          <AlgorithmDatasetsListForCompute
-            asset={asset}
-            service={service}
-            accessDetails={accessDetails}
-          />
-        </>
+          validateOnMount
+          validationSchema={getComputeValidationSchema(
+            service.consumerParameters,
+            selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
+              ?.consumerParameters,
+            selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+              ?.consumerParameters
+          )}
+          onSubmit={(values) => {
+            if (
+              !lookupVerifierSessionId(asset.id, service.id) &&
+              appConfig.ssiEnabled
+            ) {
+              return
+            }
+            onSubmit(values)
+          }}
+        >
+          {appConfig.ssiEnabled ? (
+            <>
+              {verifierSessionCache &&
+              lookupVerifierSessionId(asset.id, service.id) ? (
+                <>
+                  {service.type === 'compute' && (
+                    <Alert
+                      text={
+                        "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
+                      }
+                      state="info"
+                    />
+                  )}
+                  <CredentialDialogProvider>
+                    <FormStartComputeAlgo
+                      asset={asset}
+                      service={service}
+                      accessDetails={accessDetails}
+                      datasets={datasetList}
+                      selectedDatasetAsset={selectedDatasetAsset}
+                      setSelectedDatasetAsset={setSelectedDatasetAsset}
+                      isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                      isComputeButtonDisabled={isComputeButtonDisabled}
+                      hasPreviousOrder={!!validOrderTx}
+                      hasDatatoken={hasDatatoken}
+                      dtBalance={dtBalance}
+                      assetTimeout={secondsToString(service.timeout)}
+                      hasPreviousOrderSelectedComputeAsset={
+                        !!validAlgorithmOrderTx
+                      }
+                      hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+                      isAccountIdWhitelisted={isAccountIdWhitelisted}
+                      datasetSymbol={
+                        accessDetails.baseToken?.symbol ||
+                        (asset.credentialSubject?.chainId === 137
+                          ? 'mOCEAN'
+                          : 'OCEAN')
+                      }
+                      algorithmSymbol={
+                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                          ?.baseToken?.symbol ||
+                        (selectedAlgorithmAsset?.credentialSubject?.chainId ===
+                        137
+                          ? 'mOCEAN'
+                          : 'OCEAN')
+                      }
+                      providerFeesSymbol={providerFeesSymbol}
+                      dtSymbolSelectedComputeAsset={
+                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                          ?.datatoken.symbol
+                      }
+                      dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                      selectedComputeAssetType="algorithm"
+                      selectedComputeAssetTimeout={secondsToString(
+                        selectedAlgorithmAsset?.credentialSubject?.services[
+                          svcIndex
+                        ]?.timeout
+                      )}
+                      allResourceValues={allResourceValues}
+                      setAllResourceValues={setAllResourceValues}
+                      // lazy comment when removing pricingStepText
+                      stepText={computeStatusText}
+                      isConsumable={isConsumablePrice}
+                      consumableFeedback={consumableFeedback}
+                      datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                      algoOrderPriceAndFees={algoOrderPriceAndFees}
+                      retry={retry}
+                      computeEnvs={computeEnvs}
+                    />
+                  </CredentialDialogProvider>
+                  {/* <AlgorithmDatasetsListForCompute
+                    asset={asset}
+                    service={service}
+                    accessDetails={accessDetails}
+                  /> */}
+                </>
+              ) : (
+                <AssetActionCheckCredentials asset={asset} service={service} />
+              )}
+            </>
+          ) : (
+            <>
+              {service.type === 'compute' && (
+                <Alert
+                  text={
+                    "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
+                  }
+                  state="info"
+                />
+              )}
+              <AlgorithmDatasetsListForCompute
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+              />
+            </>
+          )}
+        </Formik>
       ) : (
         <Formik
           initialValues={getInitialValues(
@@ -796,19 +1057,27 @@ export default function Compute({
           <SuccessConfetti success="Your job started successfully! Watch the progress below or on your profile." />
         )}
       </footer>
-      {accountId && accessDetails.datatoken && (
-        <ComputeHistory
-          title="Your Compute Jobs"
-          refetchJobs={() => setRefetchJobs(!refetchJobs)}
-        >
-          <ComputeJobs
-            minimal
-            jobs={jobs}
-            isLoading={isLoadingJobs}
-            refetchJobs={() => setRefetchJobs(!refetchJobs)}
-          />
-        </ComputeHistory>
+      {accountId && (
+        <WhitelistIndicator
+          accountId={accountId}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
+        />
       )}
+      {accountId &&
+        accessDetails.datatoken &&
+        asset.credentialSubject.metadata.type !== 'algorithm' && (
+          <ComputeHistory
+            title="Your Compute Jobs"
+            refetchJobs={() => setRefetchJobs(!refetchJobs)}
+          >
+            <ComputeJobs
+              minimal
+              jobs={jobs}
+              isLoading={isLoadingJobs}
+              refetchJobs={() => setRefetchJobs(!refetchJobs)}
+            />
+          </ComputeHistory>
+        )}
     </>
   )
 }

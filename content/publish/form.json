@@ -395,7 +395,7 @@
     "fields": [
       {
         "name": "additionalCredential",
-        "label": "Additional Description",
+        "label": "Content",
         "placeholder": "{ ... }",
         "help": "Insert an additional description",
         "type": "textarea"

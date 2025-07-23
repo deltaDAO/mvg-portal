@@ -38,10 +38,12 @@ function newExchangeStateData(): ExchangeStateData {
 
 export function AssetActionCheckCredentialsAlgo({
   asset,
-  service
+  service,
+  type
 }: {
   asset: Asset
   service: Service
+  type?: string
 }) {
   const { address: accountId } = useAccount()
 
@@ -320,7 +322,9 @@ export function AssetActionCheckCredentialsAlgo({
           }
           disabled={!selectedWallet?.id}
         >
-          Check Algorithm Credentials
+          {type === 'dataset'
+            ? 'Check Dataset Credentials'
+            : 'Check Algorithm Credentials'}
         </Button>
       </div>
       <div
