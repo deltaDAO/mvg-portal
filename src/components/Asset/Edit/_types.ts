@@ -49,7 +49,7 @@ export interface ServiceEditForm {
 
 // TODO delete
 export interface ComputeEditForm {
-  allowAllPublishedAlgorithms: string
+  allowAllPublishedAlgorithms: boolean
   publisherTrustedAlgorithms: string[]
   publisherTrustedAlgorithmPublishers: string
   publisherTrustedAlgorithmPublishersAddresses?: string

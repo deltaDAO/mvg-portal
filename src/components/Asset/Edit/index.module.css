@@ -86,7 +86,9 @@ body .addAddressButton {
   gap: 4px;
 }
 
-.addAddressButton:hover {
+.addAddressButton:hover,
+.addAddressButton:focus,
+.addAddressButton:focus-visible {
   min-height: 40px;
   height: 40px;
   min-width: 105px;

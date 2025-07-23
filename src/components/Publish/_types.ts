@@ -81,9 +81,10 @@ export interface FormPublishData {
   step5Completed: boolean
   step6Completed: boolean
   submissionPageVisited: boolean
-  allowAllPublishedAlgorithms?: boolean
+  allowAllPublishedAlgorithms?: string
   publisherTrustedAlgorithms?: string[]
   publisherTrustedAlgorithmPublishers?: string[]
+  publisherTrustedAlgorithmPublishersAddresses?: string
 }
 
 export interface StepContent {
