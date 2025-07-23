@@ -41,7 +41,7 @@ export interface ServiceEditForm {
   credentials?: CredentialForm
   state?: string
   // compute
-  allowAllPublishedAlgorithms: string
+  allowAllPublishedAlgorithms: boolean
   publisherTrustedAlgorithms: string[]
   publisherTrustedAlgorithmPublishers: string
   publisherTrustedAlgorithmPublishersAddresses?: string

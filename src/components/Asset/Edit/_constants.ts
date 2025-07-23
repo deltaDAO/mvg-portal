@@ -170,10 +170,9 @@ function getComputeSettingsInitialValues({
   publisherTrustedAlgorithms,
   publisherTrustedAlgorithmPublishers
 }: Compute): ComputeEditForm {
-  const allowAllPublishedAlgorithms =
-    publisherTrustedAlgorithms === null ? 'true' : 'false'
+  const allowAllPublishedAlgorithms = publisherTrustedAlgorithms === null
   const publisherTrustedAlgorithmsForForm =
-    allowAllPublishedAlgorithms === 'true'
+    allowAllPublishedAlgorithms === true
       ? null
       : publisherTrustedAlgorithms.map((algo) =>
           JSON.stringify({
