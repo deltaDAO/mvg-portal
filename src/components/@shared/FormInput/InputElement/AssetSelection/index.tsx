@@ -1,10 +1,8 @@
 import { ChangeEvent, useEffect, useState } from 'react'
-import Dotdotdot from 'react-dotdotdot'
 import slugify from 'slugify'
 import PriceUnit from '@shared/Price/PriceUnit'
 import External from '@images/external.svg'
 import SearchIcon from '@images/search.svg'
-import InputElement from '@shared/FormInput/InputElement'
 import Loader from '@shared/atoms/Loader'
 import Tooltip from '@components/@shared/atoms/Tooltip'
 import WhitelistIndicator from '@components/Asset/AssetActions/Compute/WhitelistIndicator'
@@ -158,15 +156,7 @@ export default function AssetSelection({
                   <div className={styles.labelContent}>
                     <div className={styles.titleRow}>
                       <h3 className={styles.title}>
-                        <Dotdotdot
-                          clamp={1}
-                          tagName="span"
-                          className={cx({
-                            disabled: !asset.isAccountIdWhitelisted
-                          })}
-                        >
-                          {asset.name} - {asset.serviceName}
-                        </Dotdotdot>
+                        {asset.name} - {asset.serviceName}
                         <a
                           className={styles.link}
                           href={`/asset/${asset.did}`}
@@ -177,17 +167,7 @@ export default function AssetSelection({
                         </a>
                       </h3>
                     </div>
-
-                    <Dotdotdot
-                      clamp={1}
-                      tagName="code"
-                      className={cx({
-                        did: true,
-                        disabled: !asset.isAccountIdWhitelisted
-                      })}
-                    >
-                      {asset.symbol} | {asset.did}
-                    </Dotdotdot>
+                    {asset.symbol} | {asset.did}
                   </div>
 
                   <PriceUnit

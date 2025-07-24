@@ -96,6 +96,7 @@ body .backButton {
 
 .actionButtonWrapper {
   display: flex;
+  flex-direction: column;
   justify-content: flex-start;
   margin-top: calc(var(--spacer) / 2);
   align-items: flex-start;

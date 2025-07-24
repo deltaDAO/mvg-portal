@@ -1076,12 +1076,6 @@ export default function Compute({
           <SuccessConfetti success="Your job started successfully! Watch the progress below or on your profile." />
         )}
       </footer>
-      {accountId && (
-        <WhitelistIndicator
-          accountId={accountId}
-          isAccountIdWhitelisted={isAccountIdWhitelisted}
-        />
-      )}
       {accountId &&
         accessDetails.datatoken &&
         asset.credentialSubject.metadata.type !== 'algorithm' && (
