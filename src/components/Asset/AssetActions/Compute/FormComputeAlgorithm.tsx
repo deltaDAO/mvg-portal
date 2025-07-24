@@ -543,9 +543,13 @@ export default function FormStartComputeAlgo({
               <Row
                 hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
                 hasDatatoken={hasDatatokenSelectedComputeAsset}
-                price={new Decimal(algoOrderPrice || accessDetails.price || 0)
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .toString()}
+                price={
+                  accessDetails?.validOrderTx
+                    ? '0'
+                    : new Decimal(algoOrderPrice || accessDetails?.price || 0)
+                        .toDecimalPlaces(MAX_DECIMALS)
+                        .toString()
+                }
                 timeout={selectedComputeAssetTimeout}
                 symbol={algorithmSymbol}
                 type="ALGORITHM"
