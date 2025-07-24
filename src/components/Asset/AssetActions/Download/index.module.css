@@ -5,6 +5,10 @@
   gap: var(--sp-8);
 }
 
+.consume :global([class*='FormInput_field']) {
+  margin-bottom: 0;
+}
+
 .info {
   display: flex;
   width: auto;
