@@ -86,7 +86,9 @@ body .addAddressButton {
   gap: 4px;
 }
 
-.addAddressButton:hover {
+.addAddressButton:hover,
+.addAddressButton:focus,
+.addAddressButton:focus-visible {
   min-height: 40px;
   height: 40px;
   min-width: 105px;
@@ -140,4 +142,12 @@ body .addAddressButton {
   gap: var(--sp-2);
   align-items: flex-end;
   width: 100%;
+}
+
+.publisherTrustedAlgorithmPublishersContainer > div {
+  gap: var(--sp-2);
+}
+
+.publisherTrustedAlgorithmPublishersInput {
+  margin-bottom: var(--sp-2);
 }

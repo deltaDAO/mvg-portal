@@ -15,7 +15,7 @@
   gap: calc(var(--sp-4) / 2);
 }
 
-.header > div:first-child {
+body .header div {
   flex: 1;
 }
 
