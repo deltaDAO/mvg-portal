@@ -205,6 +205,64 @@ export function PolicyEditor(props): ReactElement {
     'signature_sd-jwt-vc': false
   })
 
+  useEffect(() => {
+    if (enabledView) {
+      const hasCurrentPolicies =
+        credentials?.requestCredentials?.length > 0 ||
+        credentials?.vcPolicies?.length > 0 ||
+        credentials?.vpPolicies?.length > 0
+
+      setEnabled(hasCurrentPolicies)
+    }
+
+    if (!credentials?.vpPolicies?.length) return
+
+    const { vpPolicies } = credentials
+    let hasAdvancedFeatures = false
+    let hasHolderBinding = false
+    let hasPresentationDefinition = false
+    let minCredsValue = '1'
+    let maxCredsValue = '1'
+    let hasMinLimit = false
+    let hasMaxLimit = false
+
+    vpPolicies.forEach((policy) => {
+      if (policy?.type === 'staticVpPolicy') {
+        if (policy.name === 'holder-binding') {
+          hasHolderBinding = true
+          hasAdvancedFeatures = true
+        } else if (policy.name === 'presentation-definition') {
+          hasPresentationDefinition = true
+          hasAdvancedFeatures = true
+        }
+      } else if (policy?.type === 'argumentVpPolicy') {
+        hasAdvancedFeatures = true
+        if (policy.policy === 'minimum-credentials') {
+          hasMinLimit = true
+          minCredsValue = policy.args || '1'
+        } else if (policy.policy === 'maximum-credentials') {
+          hasMaxLimit = true
+          maxCredsValue = policy.args || '1'
+        }
+      }
+    })
+
+    if (hasAdvancedFeatures) {
+      setEditAdvancedFeatures(true)
+      setHolderBinding(hasHolderBinding)
+      setRequireAllTypes(hasPresentationDefinition)
+      setLimitMinCredentials(hasMinLimit)
+      setLimitMaxCredentials(hasMaxLimit)
+      setMinimumCredentials(minCredsValue)
+      setMaximumCredentials(maxCredsValue)
+    }
+  }, [
+    enabledView,
+    credentials?.requestCredentials,
+    credentials?.vcPolicies,
+    credentials?.vpPolicies
+  ])
+
   const allPolicies = [
     'signature',
     'not-before',
