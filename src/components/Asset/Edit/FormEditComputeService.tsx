@@ -21,6 +21,18 @@ import Button from '@shared/atoms/Button'
 import AddAddress from '@images/add_param.svg'
 import styles from './index.module.css'
 
+const ALLOW_ANY_PUBLISHED_ALGORITHMS = 'Allow any published algorithms'
+const ALLOW_SELECTED_ALGORITHMS = 'Allow selected algorithms'
+const ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS =
+  'Allow all trusted algorithm publishers'
+const ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS =
+  'Allow specific trusted algorithm publishers'
+
+const isAllowAnyPublishedAlgorithms = (value: string) =>
+  value === ALLOW_ANY_PUBLISHED_ALGORITHMS
+const isAllowAllTrustedAlgorithmPublishers = (value: string) =>
+  value === ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS
+
 export default function FormEditComputeService({
   chainId,
   serviceEndpoint,
@@ -52,12 +64,12 @@ export default function FormEditComputeService({
 
   useEffect(() => {
     if (allowAllPublishedAlgorithms === undefined) {
-      setFieldValue('allowAllPublishedAlgorithms', 'Allow selected algorithms')
+      setFieldValue('allowAllPublishedAlgorithms', ALLOW_SELECTED_ALGORITHMS)
     }
     if (publisherTrustedAlgorithmPublishers === undefined) {
       setFieldValue(
         'publisherTrustedAlgorithmPublishers',
-        'Allow specific trusted algorithm publishers'
+        ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
       )
     }
   }, [
@@ -108,29 +120,30 @@ export default function FormEditComputeService({
   useEffect(() => {
     if (isUpdatingRef.current) return
 
-    if (allowAllPublishedAlgorithms === 'Allow any published algorithms') {
+    if (isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)) {
       if (
-        publisherTrustedAlgorithmPublishers !==
-        'Allow all trusted algorithm publishers'
+        !isAllowAllTrustedAlgorithmPublishers(
+          publisherTrustedAlgorithmPublishers
+        )
       ) {
         isUpdatingRef.current = true
         setFieldValue(
           'publisherTrustedAlgorithmPublishers',
-          'Allow all trusted algorithm publishers'
+          ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS
         )
         setTimeout(() => {
           isUpdatingRef.current = false
         }, 0)
       }
-    } else if (allowAllPublishedAlgorithms === 'Allow selected algorithms') {
+    } else if (allowAllPublishedAlgorithms === ALLOW_SELECTED_ALGORITHMS) {
       if (
         publisherTrustedAlgorithmPublishers !==
-        'Allow specific trusted algorithm publishers'
+        ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
       ) {
         isUpdatingRef.current = true
         setFieldValue(
           'publisherTrustedAlgorithmPublishers',
-          'Allow specific trusted algorithm publishers'
+          ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
         )
         setTimeout(() => {
           isUpdatingRef.current = false
@@ -143,14 +156,13 @@ export default function FormEditComputeService({
     if (isUpdatingRef.current) return
 
     if (
-      publisherTrustedAlgorithmPublishers ===
-      'Allow all trusted algorithm publishers'
+      isAllowAllTrustedAlgorithmPublishers(publisherTrustedAlgorithmPublishers)
     ) {
-      if (allowAllPublishedAlgorithms !== 'Allow any published algorithms') {
+      if (!isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)) {
         isUpdatingRef.current = true
         setFieldValue(
           'allowAllPublishedAlgorithms',
-          'Allow any published algorithms'
+          ALLOW_ANY_PUBLISHED_ALGORITHMS
         )
         setTimeout(() => {
           isUpdatingRef.current = false
@@ -158,14 +170,11 @@ export default function FormEditComputeService({
       }
     } else if (
       publisherTrustedAlgorithmPublishers ===
-      'Allow specific trusted algorithm publishers'
+      ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
     ) {
-      if (allowAllPublishedAlgorithms !== 'Allow selected algorithms') {
+      if (allowAllPublishedAlgorithms !== ALLOW_SELECTED_ALGORITHMS) {
         isUpdatingRef.current = true
-        setFieldValue(
-          'allowAllPublishedAlgorithms',
-          'Allow selected algorithms'
-        )
+        setFieldValue('allowAllPublishedAlgorithms', ALLOW_SELECTED_ALGORITHMS)
         setTimeout(() => {
           isUpdatingRef.current = false
         }, 0)
@@ -249,9 +258,7 @@ export default function FormEditComputeService({
           component={Input}
           name="publisherTrustedAlgorithms"
           options={allAlgorithms}
-          disabled={
-            allowAllPublishedAlgorithms === 'Allow any published algorithms'
-          }
+          disabled={isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)}
         />
       </SectionContainer>
 
@@ -268,13 +275,11 @@ export default function FormEditComputeService({
           name="publisherTrustedAlgorithmPublishers"
           selectStyle="publish"
           className={styles.publisherTrustedAlgorithmPublishersInput}
-          disabled={
-            allowAllPublishedAlgorithms === 'Allow any published algorithms'
-          }
+          disabled={isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)}
         />
 
         {(publisherTrustedAlgorithmPublishers ===
-          'Allow specific trusted algorithm publishers' ||
+          ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS ||
           publisherTrustedAlgorithmPublishers === undefined) && (
           <>
             <div className={styles.inputContainer}>
@@ -284,10 +289,9 @@ export default function FormEditComputeService({
                   placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
                   value={addressInputValue}
                   onChange={(e) => setAddressInputValue(e.target.value)}
-                  disabled={
-                    allowAllPublishedAlgorithms ===
-                    'Allow any published algorithms'
-                  }
+                  disabled={isAllowAnyPublishedAlgorithms(
+                    allowAllPublishedAlgorithms
+                  )}
                   className={styles.addressInput}
                 />
               </div>
@@ -295,10 +299,9 @@ export default function FormEditComputeService({
                 type="button"
                 style="gradient"
                 onClick={handleAddAddress}
-                disabled={
-                  allowAllPublishedAlgorithms ===
-                  'Allow any published algorithms'
-                }
+                disabled={isAllowAnyPublishedAlgorithms(
+                  allowAllPublishedAlgorithms
+                )}
                 className={styles.addAddressButton}
               >
                 <AddAddress /> Add
@@ -317,10 +320,9 @@ export default function FormEditComputeService({
                     />
                     <DeleteButton
                       onClick={() => handleDeleteAddress(address)}
-                      disabled={
-                        allowAllPublishedAlgorithms ===
-                        'Allow any published algorithms'
-                      }
+                      disabled={isAllowAnyPublishedAlgorithms(
+                        allowAllPublishedAlgorithms
+                      )}
                     />
                   </div>
                 ))}
