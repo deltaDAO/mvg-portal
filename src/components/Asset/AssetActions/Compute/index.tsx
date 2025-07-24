@@ -877,6 +877,9 @@ export default function Compute({
                       algoOrderPriceAndFees={algoOrderPriceAndFees}
                       retry={retry}
                       computeEnvs={computeEnvs}
+                      jobs={jobs}
+                      isLoadingJobs={isLoadingJobs}
+                      refetchJobs={() => setRefetchJobs(!refetchJobs)}
                     />
                   </CredentialDialogProvider>
                   {/* <AlgorithmDatasetsListForCompute
@@ -1000,6 +1003,9 @@ export default function Compute({
                       checkAssetDTBalance(selectedAlgorithmAsset)
                     }
                     computeEnvs={computeEnvs}
+                    jobs={jobs}
+                    isLoadingJobs={isLoadingJobs}
+                    refetchJobs={() => setRefetchJobs(!refetchJobs)}
                   />
                 </CredentialDialogProvider>
               ) : (
@@ -1065,32 +1071,19 @@ export default function Compute({
                   checkAssetDTBalance(selectedAlgorithmAsset)
                 }
                 computeEnvs={computeEnvs}
+                jobs={jobs}
+                isLoadingJobs={isLoadingJobs}
+                refetchJobs={() => setRefetchJobs(!refetchJobs)}
               />
             </CredentialDialogProvider>
           )}
         </Formik>
       )}
-
       <footer className={styles.feedback}>
         {isOrdered && (
           <SuccessConfetti success="Your job started successfully! Watch the progress below or on your profile." />
         )}
       </footer>
-      {accountId &&
-        accessDetails.datatoken &&
-        asset.credentialSubject.metadata.type !== 'algorithm' && (
-          <ComputeHistory
-            title="Your Compute Jobs"
-            refetchJobs={() => setRefetchJobs(!refetchJobs)}
-          >
-            <ComputeJobs
-              minimal
-              jobs={jobs}
-              isLoading={isLoadingJobs}
-              refetchJobs={() => setRefetchJobs(!refetchJobs)}
-            />
-          </ComputeHistory>
-        )}
     </>
   )
 }

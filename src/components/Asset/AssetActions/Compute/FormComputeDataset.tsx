@@ -27,6 +27,8 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { ResourceType } from 'src/@types/ResourceType'
 import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
+import ComputeHistory from './History'
+import ComputeJobs from '../../../Profile/History/ComputeJobs'
 
 export default function FormStartCompute({
   asset,
@@ -64,7 +66,10 @@ export default function FormStartCompute({
   onRunInitPriceAndFees,
   onCheckAlgoDTBalance,
   allResourceValues,
-  setAllResourceValues
+  setAllResourceValues,
+  jobs,
+  isLoadingJobs,
+  refetchJobs
 }: {
   asset: AssetExtended
   service: Service
@@ -108,6 +113,9 @@ export default function FormStartCompute({
       [envId: string]: ResourceType
     }>
   >
+  jobs?: any[]
+  isLoadingJobs?: boolean
+  refetchJobs?: () => void
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -687,6 +695,20 @@ export default function FormStartCompute({
           svcIndex={serviceIndex}
         />
       )}
+
+      {/* Compute Jobs Section */}
+      {accountId &&
+        accessDetails.datatoken &&
+        asset.credentialSubject.metadata.type !== 'algorithm' && (
+          <ComputeHistory title="Your Compute Jobs" refetchJobs={refetchJobs}>
+            <ComputeJobs
+              minimal
+              jobs={jobs || []}
+              isLoading={isLoadingJobs || false}
+              refetchJobs={refetchJobs}
+            />
+          </ComputeHistory>
+        )}
 
       {/* {isFullPriceLoading ? (
         <CalculateButton />

@@ -1,7 +1,8 @@
 import { ReactElement, ReactNode, useState } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './History.module.css'
-import Caret from '@images/caret.svg'
+import EyeOpen from '@images/eye.svg'
+import EyeClosed from '@images/eye-disabled.svg'
 
 export default function ComputeHistory({
   title,
@@ -30,7 +31,15 @@ export default function ComputeHistory({
           onClick={handleClick}
           className={styles.toggle}
         >
-          {open ? 'Hide' : 'Show'} <Caret />
+          {open ? (
+            <>
+              <EyeClosed /> Hide
+            </>
+          ) : (
+            <>
+              <EyeOpen /> Show
+            </>
+          )}
         </Button>
       </h3>
       {open === true && children}
