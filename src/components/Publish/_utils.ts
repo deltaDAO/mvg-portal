@@ -365,7 +365,9 @@ export function stringifyCredentialPolicies(credentials: Credential) {
 }
 
 export function generateCredentials(
-  updatedCredentials: CredentialForm
+  updatedCredentials: CredentialForm,
+  isServiceCredentials: boolean = false,
+  mainCredentials?: CredentialForm
 ): Credential {
   const newCredentials: Credential = {
     allow: [],
@@ -389,29 +391,37 @@ export function generateCredentials(
         }
       )
 
-    const vpPolicies: VP[] = updatedCredentials?.vpPolicies?.map(
-      (credential: VpPolicyType) => {
-        let policy: VP
-        switch (credential.type) {
-          case 'staticVpPolicy':
-            policy = credential.name
-            break
-          case 'argumentVpPolicy':
-            policy = {
-              policy: credential.policy,
-              args: parseInt(credential.args)
-            }
-            break
-        }
-        return policy
-      }
-    )
+    // Only create vpPolicies for service credentials if main credentials don't have them
+    const shouldCreateVpPolicies =
+      !isServiceCredentials || !mainCredentials?.vpPolicies?.length
+    const vpPolicies: VP[] = shouldCreateVpPolicies
+      ? updatedCredentials?.vpPolicies?.map((credential: VpPolicyType) => {
+          let policy: VP
+          switch (credential.type) {
+            case 'staticVpPolicy':
+              policy = credential.name
+              break
+            case 'argumentVpPolicy':
+              policy = {
+                policy: credential.policy,
+                args: parseInt(credential.args)
+              }
+              break
+          }
+          return policy
+        })
+      : []
+
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
       (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
       (vpPolicies?.length ?? 0) > 0
 
-    if (hasAny) {
+    // For service credentials, skip creating SSI policy entry if main credentials have vpPolicies
+    const shouldCreateSsiPolicy =
+      !isServiceCredentials || !mainCredentials?.vpPolicies?.length
+
+    if (hasAny && shouldCreateSsiPolicy) {
       const newAllowList: CredentialPolicyBased = {
         type: 'SSIpolicy',
         values: []
@@ -627,7 +637,11 @@ export async function transformPublishFormToDdo(
     files[0].valid &&
     (await getEncryptedFiles(file, chainId, providerUrl.url))
 
-  const newServiceCredentials = generateCredentials(credentials)
+  const newServiceCredentials = generateCredentials(
+    credentials,
+    true,
+    values.credentials
+  )
   const valuesCompute: ComputeEditForm = {
     allowAllPublishedAlgorithms:
       values.allowAllPublishedAlgorithms === 'Allow any published algorithms',
@@ -672,7 +686,7 @@ export async function transformPublishFormToDdo(
       )
     })
   }
-  const newCredentials = generateCredentials(values.credentials)
+  const newCredentials = generateCredentials(values.credentials, false)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newDdo: any = {
