@@ -35,64 +35,67 @@ export function parseConsumerParameterValues(
 }
 
 export default function ConsumerParameters({
-  service,
+  services,
   selectedAlgorithmAsset,
   isLoading,
   svcIndex
 }: {
-  service: Service
+  services: Service[]
   selectedAlgorithmAsset?: AssetExtended
   isLoading?: boolean
   svcIndex?: number
 }): ReactElement {
   const [tabs, setTabs] = useState<TabsItem[]>([])
   const [tabIndex, setTabIndex] = useState(0)
+
   const updateTabs = useCallback(() => {
-    const tabs = []
-    if (service.consumerParameters?.length > 0) {
-      tabs.push({
-        title: 'Data Service',
-        content: (
-          <FormConsumerParameters
-            name="dataServiceParams"
-            parameters={service.consumerParameters}
-            disabled={isLoading}
-          />
-        )
-      })
-    }
-    // TODO -
-    if (
-      selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
-        ?.consumerParameters?.length > 0
-    ) {
+    const tabs: TabsItem[] = []
+
+    // Dataset Services Tabs
+    services?.forEach((service, index) => {
+      if (service.consumerParameters?.length > 0) {
+        tabs.push({
+          title: `Dataset ${index + 1} Params`,
+          content: (
+            <FormConsumerParameters
+              name={`datasetParams_${index}`}
+              parameters={service.consumerParameters}
+              disabled={isLoading}
+            />
+          )
+        })
+      }
+    })
+
+    // Algo Service Tab
+    const algoSvc =
+      selectedAlgorithmAsset?.credentialSubject?.services?.[svcIndex || 0]
+
+    if (algoSvc?.consumerParameters?.length > 0) {
       tabs.push({
         title: 'Algo Service',
         content: (
           <FormConsumerParameters
             name="algoServiceParams"
-            parameters={
-              selectedAlgorithmAsset.credentialSubject?.services[svcIndex]
-                .consumerParameters
-            }
+            parameters={algoSvc.consumerParameters}
             disabled={isLoading}
           />
         )
       })
     }
-    if (
+
+    // Algo Params Tab (from metadata.algorithm.consumerParameters)
+    const algoParams =
       selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
-        ?.consumerParameters?.length
-    ) {
+        ?.consumerParameters
+
+    if (algoParams?.length > 0) {
       tabs.push({
         title: 'Algo Params',
         content: (
           <FormConsumerParameters
             name="algoParams"
-            parameters={
-              selectedAlgorithmAsset.credentialSubject?.metadata?.algorithm
-                .consumerParameters
-            }
+            parameters={algoParams}
             disabled={isLoading}
           />
         )
@@ -100,7 +103,7 @@ export default function ConsumerParameters({
     }
 
     return tabs
-  }, [selectedAlgorithmAsset, service, isLoading])
+  }, [services, selectedAlgorithmAsset, svcIndex, isLoading])
 
   useEffect(() => {
     setTabs(updateTabs())

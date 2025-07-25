@@ -14,29 +14,43 @@ import { Asset as AssetType } from 'src/@types/Asset'
 function Asset({
   title,
   symbol,
-  did
+  did,
+  serviceId
 }: {
   title: string
   symbol: string
   did: string
+  serviceId?: string
 }) {
   return (
-    <div className={styles.asset}>
-      <h3 className={styles.assetTitle}>
-        {title}{' '}
-        <a
-          className={styles.assetLink}
-          href={`/asset/${did}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <External />
-        </a>
-      </h3>
-      <p className={styles.assetMeta}>
-        <span className={styles.assetMeta}> {`${symbol} | `}</span>
-        <code className={styles.assetMeta}>{did}</code>
-      </p>
+    <div className={styles.assetBox}>
+      <div className={styles.assetHeader}>
+        <h3 className={styles.assetTitle}>
+          {title}{' '}
+          <a
+            className={styles.assetLink}
+            href={`/asset/${did}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <External />
+          </a>
+        </h3>
+      </div>
+      <div className={styles.assetMetaBlock}>
+        <span className={styles.assetLabel}>Symbol:</span>
+        <code className={styles.assetCode}>{symbol}</code>
+      </div>
+      <div className={styles.assetMetaBlock}>
+        <span className={styles.assetLabel}>DID:</span>
+        <code className={styles.assetCode}>{did}</code>
+      </div>
+      {serviceId && (
+        <div className={styles.assetMetaBlock}>
+          <span className={styles.assetLabel}>Service ID:</span>
+          <code className={styles.assetCode}>{serviceId}</code>
+        </div>
+      )}
     </div>
   )
 }
@@ -47,8 +61,9 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
 
   const [algoName, setAlgoName] = useState<string>()
   const [algoDtSymbol, setAlgoDtSymbol] = useState<string>()
-  const [assetName, setAssetName] = useState<string>()
-  const [assetDtSymbol, setAssetDtSymbol] = useState<string>()
+  const [datasetAssets, setDatasetAssets] = useState<
+    { ddo: AssetType; serviceId?: string }[]
+  >([])
 
   useEffect(() => {
     async function getAlgoMetadata() {
@@ -63,32 +78,46 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
     }
 
     async function getAssetsMetadata() {
-      if (job.assets) {
-        const ddo = (await getAsset(
-          job.assets[0].documentId,
-          newCancelToken()
-        )) as AssetType
-        setAssetDtSymbol(ddo.indexedMetadata.stats[0].symbol)
-        setAssetName(ddo?.credentialSubject.metadata.name)
+      if (job.assets && job.assets.length > 0) {
+        const allAssets = await Promise.all(
+          job.assets.map(async (asset) => {
+            const ddo = (await getAsset(
+              asset.documentId,
+              newCancelToken()
+            )) as AssetType
+            return { ddo, serviceId: asset.serviceId }
+          })
+        )
+        setDatasetAssets(allAssets)
       }
     }
 
     getAlgoMetadata()
     getAssetsMetadata()
-  }, [appConfig.metadataCacheUri, job.algorithm, newCancelToken])
+  }, [appConfig.metadataCacheUri, job.algorithm, job.assets, newCancelToken])
 
   return (
     <>
-      <Asset
-        title={assetName}
-        symbol={assetDtSymbol}
-        did={job.assets ? job.assets[0].documentId : job.jobId}
-      />
-      <Asset
-        title={algoName}
-        symbol={algoDtSymbol}
-        did={job.algorithm.documentId}
-      />
+      <h3 className={styles.sectionLabel}>Input Datasets</h3>
+      <div className={styles.assetListBox}>
+        {datasetAssets.map(({ ddo, serviceId }) => (
+          <Asset
+            key={ddo.id}
+            title={ddo.credentialSubject.metadata.name}
+            symbol={ddo.indexedMetadata.stats[0].symbol}
+            did={ddo.id}
+            serviceId={serviceId}
+          />
+        ))}
+      </div>
+      <h3 className={styles.sectionLabel}>Algorithm</h3>
+      <div className={styles.assetListBox}>
+        <Asset
+          title={algoName}
+          symbol={algoDtSymbol}
+          did={job.algorithm.documentId}
+        />
+      </div>
     </>
   )
 }

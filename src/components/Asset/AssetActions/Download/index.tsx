@@ -528,7 +528,7 @@ export default function Download({
             ))}
           <div className={styles.consumerParameters}>
             {/* TODO - */}
-            <ConsumerParameters service={service} isLoading={isLoading} />
+            <ConsumerParameters services={[service]} isLoading={isLoading} />
           </div>
           {isOwned && (
             <div className={styles.confettiContainer}>

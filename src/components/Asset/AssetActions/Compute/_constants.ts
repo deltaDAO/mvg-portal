@@ -8,7 +8,7 @@ import { Option } from 'src/@types/ddo/Option'
 
 export interface ComputeDatasetForm {
   algorithm: string
-  dataset?: string
+  dataset?: string[]
   computeEnv: string
   dataServiceParams: UserCustomParameters
   algoServiceParams: UserCustomParameters
