@@ -33,11 +33,6 @@ export function AdditionalDdosFields(): ReactElement {
     await setFieldValue('additionalDdos', values.additionalDdos)
   }
 
-  if (!values.additionalDdos || values.additionalDdos.length === 0) {
-    const emptyDdo: FormAdditionalDdo = { data: '', type: '' }
-    setFieldValue('additionalDdos', [emptyDdo])
-  }
-
   const displayDdos = values.additionalDdos || []
 
   return (
