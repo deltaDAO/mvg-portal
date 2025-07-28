@@ -28,8 +28,6 @@ import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
 import AlgorithmDatasetsListForComputeSelection from './AlgorithmDatasetsListForComputeSelection'
 import { getAsset } from '@utils/aquarius'
-import ComputeHistory from './History'
-import ComputeJobs from '../../../Profile/History/ComputeJobs'
 
 export default function FormStartComputeAlgo({
   asset,
@@ -64,10 +62,7 @@ export default function FormStartComputeAlgo({
   validUntil,
   retry,
   allResourceValues,
-  setAllResourceValues,
-  jobs,
-  isLoadingJobs,
-  refetchJobs
+  setAllResourceValues
 }: {
   asset: AssetExtended
   service: Service
@@ -108,9 +103,6 @@ export default function FormStartComputeAlgo({
       [envId: string]: ResourceType
     }>
   >
-  jobs?: any[]
-  isLoadingJobs?: boolean
-  refetchJobs?: () => void
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -652,20 +644,6 @@ export default function FormStartComputeAlgo({
           svcIndex={serviceIndex}
         />
       )}
-
-      {/* Compute Jobs Section */}
-      {accountId &&
-        accessDetails.datatoken &&
-        asset.credentialSubject.metadata.type !== 'algorithm' && (
-          <ComputeHistory title="Your Compute Jobs" refetchJobs={refetchJobs}>
-            <ComputeJobs
-              minimal
-              jobs={jobs || []}
-              isLoading={isLoadingJobs || false}
-              refetchJobs={refetchJobs}
-            />
-          </ComputeHistory>
-        )}
 
       {/* {isFullPriceLoading ? (
         <CalculateButton />

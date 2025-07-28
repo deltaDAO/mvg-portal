@@ -29,6 +29,7 @@ import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
 import ComputeHistory from './History'
 import ComputeJobs from '../../../Profile/History/ComputeJobs'
+import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
 
 export default function FormStartCompute({
   asset,
@@ -560,9 +561,9 @@ export default function FormStartCompute({
                 price={new Decimal(consumeMarketOrderFee)
                   .mul(
                     new Decimal(datasetOrderPrice || accessDetails.price || 0)
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
                   )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
                   .toString()} // consume market order fee fee amount
                 symbol={datasetSymbol}
                 type={`CONSUME MARKET ORDER FEE DATASET (${consumeMarketOrderFee}%)`}
@@ -577,9 +578,9 @@ export default function FormStartCompute({
                           ?.price ||
                         0
                     )
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
                   )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
                   .toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
                 type={`CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketOrderFee}%)`}
@@ -636,7 +637,35 @@ export default function FormStartCompute({
                   hasAlgorithmSession: !!hasAlgorithmSession
                 })
                 return hasAlgorithmSession ? (
-                  <PurchaseButton />
+                  <>
+                    <FormErrorGroup
+                      errorFields={[
+                        'termsAndConditions',
+                        'acceptPublishingLicense'
+                      ]}
+                    >
+                      <Field
+                        component={Input}
+                        name="termsAndConditions"
+                        type="checkbox"
+                        options={['Terms and Conditions']}
+                        prefixes={['I agree to the']}
+                        actions={['/terms']}
+                        disabled={isLoading}
+                        hideLabel={true}
+                      />
+                      <Field
+                        component={Input}
+                        name="acceptPublishingLicense"
+                        type="checkbox"
+                        options={['Publishing License']}
+                        prefixes={['I agree the']}
+                        disabled={isLoading}
+                        hideLabel={true}
+                      />
+                    </FormErrorGroup>
+                    <PurchaseButton />
+                  </>
                 ) : (
                   <div style={{ marginTop: '60px', marginLeft: '10px' }}>
                     <AssetActionCheckCredentialsAlgo
@@ -651,7 +680,35 @@ export default function FormStartCompute({
                 )
               })()
             ) : (
-              <PurchaseButton />
+              <>
+                <FormErrorGroup
+                  errorFields={[
+                    'termsAndConditions',
+                    'acceptPublishingLicense'
+                  ]}
+                >
+                  <Field
+                    component={Input}
+                    name="termsAndConditions"
+                    type="checkbox"
+                    options={['Terms and Conditions']}
+                    prefixes={['I agree to the']}
+                    actions={['/terms']}
+                    disabled={isLoading}
+                    hideLabel={true}
+                  />
+                  <Field
+                    component={Input}
+                    name="acceptPublishingLicense"
+                    type="checkbox"
+                    options={['Publishing License']}
+                    prefixes={['I agree the']}
+                    disabled={isLoading}
+                    hideLabel={true}
+                  />
+                </FormErrorGroup>
+                <PurchaseButton />
+              </>
             )}
           </div>
         </>
@@ -715,23 +772,6 @@ export default function FormStartCompute({
       ) : ( */}
       <>
         <AssetActionBuy asset={asset} />
-        <Field
-          component={Input}
-          name="termsAndConditions"
-          type="checkbox"
-          options={['Terms and Conditions']}
-          prefixes={['I agree to the']}
-          actions={['/terms']}
-          disabled={isLoading}
-        />
-        <Field
-          component={Input}
-          name="acceptPublishingLicense"
-          type="checkbox"
-          options={['Publishing License']}
-          prefixes={['I agree the']}
-          disabled={isLoading}
-        />
       </>
     </Form>
   )

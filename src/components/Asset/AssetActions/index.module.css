@@ -101,3 +101,7 @@ body .backButton {
   margin-top: calc(var(--spacer) / 2);
   align-items: flex-start;
 }
+
+.actionButtonWrapper form {
+  width: 100%;
+}

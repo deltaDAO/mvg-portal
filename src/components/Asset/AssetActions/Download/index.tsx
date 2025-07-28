@@ -1,16 +1,22 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { useAsset } from '@context/Asset'
-import ButtonBuy from '../ButtonBuy'
-import { secondsToString } from '@utils/ddo'
-import styles from './index.module.css'
-import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
-import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
+import { Field, Form, Formik, useFormikContext } from 'formik'
+import { useAccount } from 'wagmi'
+import { Signer } from 'ethers'
+import { toast } from 'react-toastify'
+import Decimal from 'decimal.js'
+
 import {
   FileInfo,
   LoggerInstance,
-  UserCustomParameters,
-  ZERO_ADDRESS
+  ZERO_ADDRESS,
+  UserCustomParameters
 } from '@oceanprotocol/lib'
+
+import { useAsset } from '@context/Asset'
+import { useSsiWallet } from '@context/SsiWallet'
+import { useIsMounted } from '@hooks/useIsMounted'
+import useNetworkMetadata from '@hooks/useNetworkMetadata'
+
 import { order } from '@utils/order'
 import { downloadFile } from '@utils/provider'
 import { getOrderFeedback } from '@utils/feedback'
@@ -18,33 +24,33 @@ import {
   getAvailablePrice,
   getOrderPriceAndFees
 } from '@utils/accessDetailsAndPricing'
-import { toast } from 'react-toastify'
-import { useIsMounted } from '@hooks/useIsMounted'
+import { secondsToString } from '@utils/ddo'
+import { MAX_DECIMALS } from '@utils/constants'
+import { checkVerifierSessionId } from '@utils/wallet/policyServer'
+
+import Input from '@shared/FormInput'
+import Button from '@shared/atoms/Button'
 import Alert from '@shared/atoms/Alert'
-import Loader from '@shared/atoms/Loader'
-import { useAccount } from 'wagmi'
-import useNetworkMetadata from '@hooks/useNetworkMetadata'
+import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
+import SuccessConfetti from '@components/@shared/SuccessConfetti'
+import ButtonBuy from '../ButtonBuy'
+import CalculateButtonBuy from '../CalculateButtonBuy'
+import { AssetActionCheckCredentials } from '../CheckCredentials'
 import ConsumerParameters, {
   parseConsumerParameterValues
 } from '../ConsumerParameters'
-import { Field, Form, Formik, useFormikContext } from 'formik'
-import { getDownloadValidationSchema } from './_validation'
-import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
-import WhitelistIndicator from '../Compute/WhitelistIndicator'
-import { Signer } from 'ethers'
-import SuccessConfetti from '@components/@shared/SuccessConfetti'
-import Input from '@components/@shared/FormInput'
-import CalculateButtonBuy from '../CalculateButtonBuy'
-import Decimal from 'decimal.js'
-import { MAX_DECIMALS } from '@utils/constants'
-import appConfig, { consumeMarketFixedSwapFee } from 'app.config.cjs'
+import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import { Row } from '../Row'
+
+import { AssetPrice } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { AssetPrice } from 'src/@types/Asset'
-import { useSsiWallet } from '@context/SsiWallet'
-import { checkVerifierSessionId } from '@utils/wallet/policyServer'
-import { AssetActionCheckCredentials } from '../CheckCredentials'
+
+import appConfig, { consumeMarketFixedSwapFee } from 'app.config.cjs'
+import styles from './index.module.css'
+
+import { getDownloadValidationSchema } from './_validation'
+import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
 
 export default function Download({
   accountId,
@@ -53,7 +59,6 @@ export default function Download({
   service,
   accessDetails,
   serviceIndex,
-  file,
   isBalanceSufficient,
   dtBalance,
   isAccountIdWhitelisted,
@@ -89,10 +94,12 @@ export default function Download({
   const [isOwned, setIsOwned] = useState(false)
   const [isOwner, setIsOwner] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')
-  const [isOrderDisabled, setIsOrderDisabled] = useState(false)
+
   const [orderPriceAndFees, setOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
+  const [credentialCheckComplete, setCredentialCheckComplete] =
+    useState<boolean>(false)
 
   const {
     verifierSessionCache,
@@ -100,14 +107,24 @@ export default function Download({
     lookupVerifierSessionIdSkip
   } = useSsiWallet()
 
+  useEffect(() => {
+    const hasValidSession =
+      verifierSessionCache && lookupVerifierSessionId(asset.id, service.id)
+    if (hasValidSession && !credentialCheckComplete) {
+      setCredentialCheckComplete(true)
+    }
+  }, [
+    verifierSessionCache,
+    asset.id,
+    service.id,
+    credentialCheckComplete,
+    lookupVerifierSessionId
+  ])
+
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
     accessDetails.type === 'NOT_SUPPORTED' ||
     (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
-
-  useEffect(() => {
-    Number(asset.indexedMetadata.nft.state) === 4 && setIsOrderDisabled(true)
-  }, [asset.indexedMetadata.nft.state])
 
   useEffect(() => {
     if (asset?.indexedMetadata?.event?.from === accountId) {
@@ -159,12 +176,6 @@ export default function Download({
     orderPriceAndFees,
     service
   ])
-
-  useEffect(() => {
-    if (isOwned) {
-      setIsFullPriceLoading(false)
-    }
-  }, [isOwned])
 
   useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
@@ -350,8 +361,9 @@ export default function Download({
     )
   }
 
-  const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
+  const AssetActionBuy = () => {
     const { isValid } = useFormikContext()
+
     return (
       <div style={{ textAlign: 'left', marginTop: '2%' }}>
         {!isPriceLoading &&
@@ -412,6 +424,30 @@ export default function Download({
             </div>
           )}
 
+        <FormErrorGroup
+          errorFields={['termsAndConditions', 'acceptPublishingLicense']}
+        >
+          <Field
+            component={Input}
+            name="termsAndConditions"
+            type="checkbox"
+            options={['Terms and Conditions']}
+            prefixes={['I agree to the']}
+            actions={['/terms']}
+            disabled={isLoading}
+            hideLabel={true}
+          />
+          <Field
+            component={Input}
+            name="acceptPublishingLicense"
+            type="checkbox"
+            options={['Publishing License']}
+            prefixes={['I agree the']}
+            disabled={isLoading}
+            hideLabel={true}
+          />
+        </FormErrorGroup>
+
         <div className={styles.buttonContainer}>
           {!isInPurgatory && <PurchaseButton isValid={isValid} />}
         </div>
@@ -443,58 +479,55 @@ export default function Download({
               <AssetAction asset={asset} />
             </div>
           )}
-          {!isFullPriceLoading &&
-            !isOwner &&
-            (appConfig.ssiEnabled ? (
+          {!isOwner &&
+            (isFullPriceLoading ? (
               <>
-                {verifierSessionCache &&
-                lookupVerifierSessionId(asset.id, service.id) ? (
-                  <>
-                    {accessDetails.type === 'free' && (
-                      <Alert
-                        state="info"
-                        text="This dataset is free to use. Please note that network gas fees still apply, even when using free assets."
-                      />
-                    )}
-                    <FormErrorGroup
-                      errorFields={[
-                        'termsAndConditions',
-                        'acceptPublishingLicense'
-                      ]}
-                    >
-                      <Field
-                        component={Input}
-                        name="termsAndConditions"
-                        type="checkbox"
-                        options={['Terms and Conditions']}
-                        prefixes={['I agree to the']}
-                        actions={['/terms']}
-                        disabled={isLoading}
-                      />
-                      <Field
-                        component={Input}
-                        name="acceptPublishingLicense"
-                        type="checkbox"
-                        options={['Publishing License']}
-                        prefixes={['I agree the']}
-                        disabled={isLoading}
-                      />
-                    </FormErrorGroup>
-                    {isOwned && (
-                      <div>
-                        <SuccessConfetti
-                          success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
+                <CalculateButton isValid={true} />
+              </>
+            ) : appConfig.ssiEnabled ? (
+              <>
+                {(() => {
+                  const hasValidSession =
+                    verifierSessionCache &&
+                    lookupVerifierSessionId(asset.id, service.id)
+                  return hasValidSession ? (
+                    <>
+                      {accessDetails.type === 'free' && (
+                        <Alert
+                          state="info"
+                          text="This dataset is free to use. Please note that network gas fees still apply, even when using free assets."
                         />
-                      </div>
-                    )}
-                    <AssetActionBuy asset={asset} />
-                  </>
-                ) : (
-                  <AssetActionCheckCredentials
-                    asset={asset}
-                    service={service}
-                  />
-                )}
+                      )}
+                      {isOwned && (
+                        <div>
+                          <SuccessConfetti
+                            success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
+                          />
+                        </div>
+                      )}
+                      <AssetActionBuy />
+                    </>
+                  ) : (
+                    <>
+                      <AssetActionCheckCredentials
+                        asset={asset}
+                        service={service}
+                      />
+                      {credentialCheckComplete && (
+                        <div style={{ marginTop: '10px', textAlign: 'center' }}>
+                          <Button
+                            type="button"
+                            style="primary"
+                            size="small"
+                            onClick={() => window.location.reload()}
+                          >
+                            Refresh to Show Download Button
+                          </Button>
+                        </div>
+                      )}
+                    </>
+                  )
+                })()}
               </>
             ) : (
               <>
@@ -506,30 +539,6 @@ export default function Download({
                     />
                   </div>
                 )}
-                <FormErrorGroup
-                  errorFields={[
-                    'termsAndConditions',
-                    'acceptPublishingLicense'
-                  ]}
-                >
-                  <Field
-                    component={Input}
-                    name="termsAndConditions"
-                    type="checkbox"
-                    options={['Terms and Conditions']}
-                    prefixes={['I agree to the']}
-                    actions={['/terms']}
-                    disabled={isLoading}
-                  />
-                  <Field
-                    component={Input}
-                    name="acceptPublishingLicense"
-                    type="checkbox"
-                    options={['Publishing License']}
-                    prefixes={['I agree the']}
-                    disabled={isLoading}
-                  />
-                </FormErrorGroup>
                 {isOwned && (
                   <div>
                     <SuccessConfetti
@@ -537,7 +546,7 @@ export default function Download({
                     />
                   </div>
                 )}
-                <AssetActionBuy asset={asset} />
+                <AssetActionBuy />
               </>
             ))}
           {service.consumerParameters &&

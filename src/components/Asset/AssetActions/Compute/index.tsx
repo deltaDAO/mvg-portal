@@ -35,8 +35,6 @@ import {
 } from '@utils/compute'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import AlgorithmDatasetsListForCompute from './AlgorithmDatasetsListForCompute'
-import ComputeHistory from './History'
-import ComputeJobs from '../../../Profile/History/ComputeJobs'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { Decimal } from 'decimal.js'
 import {
@@ -877,9 +875,6 @@ export default function Compute({
                       algoOrderPriceAndFees={algoOrderPriceAndFees}
                       retry={retry}
                       computeEnvs={computeEnvs}
-                      jobs={jobs}
-                      isLoadingJobs={isLoadingJobs}
-                      refetchJobs={() => setRefetchJobs(!refetchJobs)}
                     />
                   </CredentialDialogProvider>
                   {/* <AlgorithmDatasetsListForCompute
