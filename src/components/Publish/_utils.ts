@@ -313,16 +313,7 @@ export function parseCredentialPolicies(credentials: Credential) {
           }
         )
 
-        value.vp_policies = value.vp_policies
-          .map((policy) => {
-            try {
-              return JSON.parse(policy)
-            } catch (error) {
-              LoggerInstance.error(error)
-              return null
-            }
-          })
-          .filter((policy) => !!policy)
+        value.vp_policies = value.vp_policies ?? []
         return value
       })
     }
@@ -355,8 +346,7 @@ export function stringifyCredentialPolicies(credentials: Credential) {
           }
         )
 
-        value.vp_policies =
-          value.vp_policies?.map((policy) => JSON.stringify(policy)) ?? []
+        value.vp_policies = value.vp_policies ?? []
         return value
       })
     }
@@ -391,19 +381,16 @@ export function generateCredentials(
 
     const vpPolicies: VP[] = updatedCredentials?.vpPolicies?.map(
       (credential: VpPolicyType) => {
-        let policy: VP
+        let policyResult: VP
         switch (credential.type) {
           case 'staticVpPolicy':
-            policy = credential.name
+            policyResult = credential.name
             break
           case 'argumentVpPolicy':
-            policy = {
-              policy: credential.policy,
-              args: parseInt(credential.args)
-            }
+            policyResult = credential.policy
             break
         }
-        return policy
+        return policyResult
       }
     )
     const hasAny =

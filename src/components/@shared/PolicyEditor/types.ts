@@ -70,6 +70,7 @@ export interface CredentialForm {
   requestCredentials?: RequestCredentialForm[]
   vpPolicies?: VpPolicyType[]
   vcPolicies?: string[]
+  enabled?: boolean
 }
 
 export interface PolicyEditorProps {
