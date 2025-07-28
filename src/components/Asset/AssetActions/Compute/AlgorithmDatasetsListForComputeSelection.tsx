@@ -10,7 +10,7 @@ import { useFormikContext } from 'formik'
 import Pagination from '@components/@shared/Pagination'
 
 type FormValues = {
-  dataset: string // now stores `${did}|${serviceId}`
+  dataset: string[]
 }
 
 const ASSETS_PER_PAGE = 5
@@ -48,9 +48,12 @@ export default function AlgorithmDatasetsListForComputeSelection({
       setDatasetsForCompute(datasets)
 
       // Auto-select first if nothing is selected
-      if (datasets.length > 0 && !values.dataset) {
+      if (
+        datasets.length > 0 &&
+        (!values.dataset || values.dataset.length === 0)
+      ) {
         const firstCombined = `${datasets[0].did}|${datasets[0].serviceId}`
-        setFieldValue('dataset', firstCombined)
+        setFieldValue('dataset', [firstCombined])
       }
     }
 
@@ -86,11 +89,23 @@ export default function AlgorithmDatasetsListForComputeSelection({
             return (
               <label key={combinedValue} className={styles.radioItem}>
                 <input
-                  type="radio"
+                  type="checkbox"
                   name="dataset"
                   value={combinedValue}
-                  checked={values.dataset === combinedValue}
-                  onChange={() => setFieldValue('dataset', combinedValue)}
+                  checked={values.dataset.includes(combinedValue)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setFieldValue('dataset', [
+                        ...values.dataset,
+                        combinedValue
+                      ])
+                    } else {
+                      setFieldValue(
+                        'dataset',
+                        values.dataset.filter((val) => val !== combinedValue)
+                      )
+                    }
+                  }}
                 />
                 <div>
                   <div style={{ fontWeight: 600 }}>
@@ -108,6 +123,11 @@ export default function AlgorithmDatasetsListForComputeSelection({
           })}
         </div>
       )}
+
+      <div className={styles.selectedInfo}>
+        {values.dataset?.length} dataset
+        {values.dataset?.length !== 1 ? 's' : ''} selected
+      </div>
 
       {totalPages > 1 && (
         <Pagination

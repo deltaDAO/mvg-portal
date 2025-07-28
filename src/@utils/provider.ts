@@ -27,6 +27,76 @@ import {
   PolicyServerInitiateComputeActionData
 } from 'src/@types/PolicyServer'
 
+export async function initializeProviderForComputeMulti(
+  datasets: {
+    asset: AssetExtended
+    service: Service
+    accessDetails: AccessDetails
+    sessionId: string
+  }[],
+  algorithm: AssetExtended,
+  algoSessionId: string,
+  accountId: Signer,
+  computeEnv: ComputeEnvironment,
+  selectedResources: ResourceType,
+  svcIndexAlgo: number
+) {
+  const computeAssets = datasets.map(({ asset, service, accessDetails }) => ({
+    documentId: asset.id,
+    serviceId: service.id,
+    transferTxId: accessDetails.validOrderTx
+  }))
+
+  const computeAlgo: ComputeAlgorithm = {
+    documentId: algorithm.id,
+    serviceId: algorithm.credentialSubject.services[svcIndexAlgo].id,
+    transferTxId: algorithm.accessDetails[svcIndexAlgo].validOrderTx
+  }
+
+  const policiesServer: PolicyServerInitiateComputeActionData[] = [
+    ...datasets.map(({ asset, service, sessionId }) => ({
+      documentId: asset.id,
+      serviceId: service.id,
+      sessionId,
+      successRedirectUri: '',
+      errorRedirectUri: '',
+      responseRedirectUri: '',
+      presentationDefinitionUri: ''
+    })),
+    {
+      documentId: algorithm.id,
+      serviceId: algorithm.credentialSubject.services[svcIndexAlgo].id,
+      sessionId: algoSessionId,
+      successRedirectUri: '',
+      errorRedirectUri: '',
+      responseRedirectUri: '',
+      presentationDefinitionUri: ''
+    }
+  ]
+
+  const validUntil = getValidUntilTime(
+    selectedResources.jobDuration,
+    datasets[0].service.timeout,
+    algorithm.credentialSubject.services[svcIndexAlgo].timeout
+  )
+
+  return await ProviderInstance.initializeCompute(
+    computeAssets,
+    computeAlgo,
+    computeEnv.id,
+    oceanTokenAddress,
+    validUntil,
+    customProviderUrl || datasets[0].service.serviceEndpoint,
+    accountId,
+    computeEnv.resources.map((res) => ({
+      id: res.id,
+      amount: selectedResources?.[res.id] || res.min
+    })),
+    datasets[0].asset.credentialSubject.chainId,
+    policiesServer
+  )
+}
+
 export async function initializeProviderForCompute(
   dataset: AssetExtended,
   datasetService: Service,

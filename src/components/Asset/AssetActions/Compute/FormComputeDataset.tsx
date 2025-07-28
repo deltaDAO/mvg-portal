@@ -746,7 +746,7 @@ export default function FormStartCompute({
       ))}
       {asset && selectedAlgorithmAsset && (
         <ConsumerParameters
-          service={service}
+          services={[service]}
           selectedAlgorithmAsset={selectedAlgorithmAsset}
           isLoading={isLoading}
           svcIndex={serviceIndex}

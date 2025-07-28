@@ -355,8 +355,7 @@ export function stringifyCredentialPolicies(credentials: Credential) {
           }
         )
 
-        value.vp_policies =
-          value.vp_policies?.map((policy) => JSON.stringify(policy)) ?? []
+        value.vp_policies = value.vp_policies ?? []
         return value
       })
     }

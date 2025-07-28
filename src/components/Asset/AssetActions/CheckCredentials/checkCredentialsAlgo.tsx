@@ -39,14 +39,15 @@ function newExchangeStateData(): ExchangeStateData {
 export function AssetActionCheckCredentialsAlgo({
   asset,
   service,
-  type
+  type,
+  onVerified
 }: {
   asset: Asset
   service: Service
   type?: string
+  onVerified?: () => void
 }) {
   const { address: accountId } = useAccount()
-
   const {
     checkCredentialState,
     setCheckCredentialState,
@@ -71,9 +72,6 @@ export function AssetActionCheckCredentialsAlgo({
 
   function handleResetWalletCache() {
     setCheckCredentialState(CheckCredentialState.Stop)
-    // ssiWalletCache.clearCredentials()
-    // setCachedCredentials(undefined)
-    // clearVerifierSessionCache()
   }
 
   useEffect(() => {
@@ -103,8 +101,10 @@ export function AssetActionCheckCredentialsAlgo({
                 (presentationResult.openid4vc as any).redirectUri
               )
               cacheVerifierSessionId(asset.id, service.id, id, true)
+              onVerified?.()
               break
             }
+
             exchangeStateData.openid4vp = presentationResult.openid4vc
             exchangeStateData.poliyServerData =
               presentationResult.policyServerData
@@ -154,7 +154,6 @@ export function AssetActionCheckCredentialsAlgo({
               if (exchangeStateData.verifiableCredentials.length > 0) {
                 setShowVpDialog(true)
               } else {
-                // toast.info('No more credentials found in your ssi wallet')
                 setCheckCredentialState(CheckCredentialState.ReadDids)
               }
             } else {
@@ -162,6 +161,7 @@ export function AssetActionCheckCredentialsAlgo({
               exchangeStateData.selectedCredentials = resultCachedCredentials
               setCheckCredentialState(CheckCredentialState.ReadDids)
             }
+
             setExchangeStateData({ ...exchangeStateData })
             break
           }
@@ -181,10 +181,10 @@ export function AssetActionCheckCredentialsAlgo({
               setCheckCredentialState(CheckCredentialState.Stop)
               break
             }
+
             ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
-            if (selectedCredentials.length > 0) {
-              setCachedCredentials(selectedCredentials)
-            }
+            setCachedCredentials(selectedCredentials)
+
             exchangeStateData.dids = await getWalletDids(
               selectedWallet.id,
               sessionToken.token
@@ -238,7 +238,7 @@ export function AssetActionCheckCredentialsAlgo({
                   service.id,
                   exchangeStateData.sessionId
                 )
-                console.log('Algorithm session cached successfully')
+                onVerified?.() // ✅ Verification successful → move to next
               }
             } catch (error) {
               console.error('Algorithm credential verification error:', error)
@@ -264,14 +264,14 @@ export function AssetActionCheckCredentialsAlgo({
         console.log(error)
         toast.error(
           error?.message
-            ? `SSI credential validation was not succesful: ${error.message}`
+            ? `SSI credential validation was not successful: ${error.message}`
             : 'An error occurred during SSI credential validation. Please check the console'
         )
         handleResetWalletCache()
       }
     }
+
     handleCredentialExchange()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkCredentialState])
 
   function handleAcceptCredentialSelection(selectedCredentials: any[]) {
@@ -311,7 +311,7 @@ export function AssetActionCheckCredentialsAlgo({
           dids={exchangeStateData.dids}
         />
       )}
-      <div className={styles.buttonWrapper}>
+      <div className={styles.buttonWrapperAlgo}>
         <Button
           type="button"
           style="publish"
@@ -323,7 +323,7 @@ export function AssetActionCheckCredentialsAlgo({
           disabled={!selectedWallet?.id}
         >
           {type === 'dataset'
-            ? 'Check Dataset Credentials'
+            ? `Check Dataset Credentials for ${service.name}`
             : 'Check Algorithm Credentials'}
         </Button>
       </div>

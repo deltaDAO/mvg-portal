@@ -44,7 +44,7 @@ import {
 import { getComputeFeedback } from '@utils/feedback'
 import {
   getComputeEnvironments,
-  initializeProviderForCompute
+  initializeProviderForComputeMulti
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
 import { getDummySigner } from '@utils/wallet'
@@ -104,8 +104,9 @@ export default function Compute({
   const [ddoAlgorithmList, setDdoAlgorithmList] = useState<Asset[]>()
   const [selectedAlgorithmAsset, setSelectedAlgorithmAsset] =
     useState<AssetExtended>()
-  const [selectedDatasetAsset, setSelectedDatasetAsset] =
-    useState<AssetExtended>()
+  const [selectedDatasetAsset, setSelectedDatasetAsset] = useState<
+    AssetExtended[]
+  >([])
   const [hasAlgoAssetDatatoken, setHasAlgoAssetDatatoken] = useState<boolean>()
   const [algorithmDTBalance, setAlgorithmDTBalance] = useState<string>()
 
@@ -229,137 +230,130 @@ export default function Compute({
     }
   }
 
-  async function initPriceAndFees(actualService?: Service) {
+  async function initPriceAndFees(
+    datasetServices?: { asset: AssetExtended; service: Service }[]
+  ) {
     try {
       if (!selectedComputeEnv || !selectedComputeEnv.id || !selectedResources)
         throw new Error(`Error getting compute environment!`)
-      let actualDatasetAsset = asset
-      let actualAlgorithmAsset = selectedAlgorithmAsset
+
+      const actualDatasetAssets: AssetExtended[] = selectedDatasetAsset.length
+        ? selectedDatasetAsset
+        : [asset]
+
+      const actualAlgorithmAsset = selectedAlgorithmAsset || asset
       let actualAlgoService = service
-      let actualDatasetService = service
       let actualSvcIndex = svcIndex
-      let actualDatasetAccessDetails = accessDetails
       let actualAlgoAccessDetails = accessDetails
 
-      if (!selectedAlgorithmAsset && selectedDatasetAsset) {
-        actualDatasetAsset = selectedDatasetAsset
-        actualAlgorithmAsset = asset
+      const algoServiceId =
+        selectedAlgorithmAsset?.id?.split('|')[1] ||
+        selectedAlgorithmAsset?.credentialSubject?.services?.[svcIndex]?.id ||
+        service.id
 
-        // Find correct algorithm service from asset
-        const algoServiceId = service.id
-        const algoServices = actualAlgorithmAsset.credentialSubject.services
-        const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
-        if (algoIndex === -1) throw new Error('Algorithm serviceId not found.')
+      const algoServices = actualAlgorithmAsset.credentialSubject.services || []
+      const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
+      if (algoIndex === -1) throw new Error('Algorithm serviceId not found.')
 
-        actualAlgoService = algoServices[algoIndex]
-        actualAlgoAccessDetails = actualAlgorithmAsset.accessDetails[algoIndex]
-        actualSvcIndex = algoIndex
+      actualAlgoService = algoServices[algoIndex]
+      actualSvcIndex = algoIndex
+      actualAlgoAccessDetails = actualAlgorithmAsset.accessDetails[algoIndex]
 
-        // Now extract dataset service from selectedDatasetAsset
-
-        actualDatasetService = actualService
-        const datasetServices = actualDatasetAsset.credentialSubject.services
-
-        const datasetIndex = datasetServices.findIndex(
-          (s) => s.id === actualDatasetService.id
+      const datasetsForProvider = datasetServices.map(({ asset, service }) => {
+        const datasetIndex = asset.credentialSubject.services.findIndex(
+          (s) => s.id === service.id
         )
-        if (datasetIndex === -1) throw new Error('Dataset serviceId not found.')
-        actualDatasetAccessDetails =
-          actualDatasetAsset.accessDetails[datasetIndex]
-      } else {
-        // Default case (dataset is main asset, algorithm selected)
-        const datasetServiceId = service.id
-        const datasetServices = asset.credentialSubject?.services || []
-        const datasetIndex = datasetServices.findIndex(
-          (s) => s.id === datasetServiceId
-        )
-        if (datasetIndex !== -1)
-          actualDatasetService = datasetServices[datasetIndex]
+        if (datasetIndex === -1)
+          throw new Error(`ServiceId ${service.id} not found in ${asset.id}`)
 
-        const algoServiceId =
-          selectedAlgorithmAsset?.id?.split('|')[1] ||
-          selectedAlgorithmAsset?.credentialSubject?.services?.[svcIndex]?.id
-        const algoServices =
-          selectedAlgorithmAsset?.credentialSubject?.services || []
-        const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
-        if (algoIndex !== -1) {
-          actualAlgoService = algoServices[algoIndex]
-          actualSvcIndex = algoIndex
-          actualAlgoAccessDetails =
-            selectedAlgorithmAsset?.accessDetails[algoIndex]
+        return {
+          asset,
+          service,
+          accessDetails: asset.accessDetails[datasetIndex],
+          sessionId: lookupVerifierSessionId(asset.id, service.id)
         }
-      }
-      const initializedProvider = await initializeProviderForCompute(
-        actualDatasetAsset,
-        actualDatasetService,
-        actualDatasetAccessDetails,
+      })
+
+      const algoSessionId = lookupVerifierSessionId(
+        actualAlgorithmAsset.id,
+        actualAlgoService.id
+      )
+
+      const initializedProvider = await initializeProviderForComputeMulti(
+        datasetsForProvider,
         actualAlgorithmAsset,
+        algoSessionId,
         signer,
         selectedComputeEnv,
         selectedResources,
-        actualSvcIndex,
-        lookupVerifierSessionId(actualDatasetAsset.id, actualDatasetService.id),
-        lookupVerifierSessionId(actualAlgorithmAsset.id, actualAlgoService.id)
+        actualSvcIndex
       )
-      if (
-        !initializedProvider ||
-        !initializedProvider?.datasets ||
-        !initializedProvider?.algorithm
+
+      if (!initializedProvider)
+        throw new Error('Error initializing provider for compute job')
+
+      const datasetResponses = await Promise.all(
+        datasetsForProvider.map(
+          async ({ asset, service, accessDetails }, i) => {
+            const datasetOrderPriceResponse = await setDatasetPrice(
+              asset,
+              service,
+              accessDetails,
+              initializedProvider.datasets?.[i]?.providerFee
+            )
+
+            const escrow = new EscrowContract(
+              ethers.utils.getAddress(
+                initializedProvider.payment.escrowAddress
+              ),
+              signer,
+              asset.credentialSubject.chainId
+            )
+
+            const price = BigNumber.from(selectedResources.price)
+            const payment = BigNumber.from(initializedProvider.payment.amount)
+
+            const amountToDeposit = price
+              .mul(BigNumber.from(10).pow(18))
+              .add(payment)
+              .toString()
+
+            await escrow.verifyFundsForEscrowPayment(
+              oceanTokenAddress,
+              selectedComputeEnv.consumerAddress,
+              await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
+              initializedProvider.payment.amount.toString(),
+              initializedProvider.payment.minLockSeconds.toString(),
+              '10'
+            )
+
+            return {
+              actualDatasetAsset: asset,
+              actualDatasetService: service,
+              actualDatasetAccessDetails: accessDetails,
+              datasetOrderPriceResponse,
+              initializedProvider
+            }
+          }
+        )
       )
-        throw new Error(`Error initializing provider for the compute job!`)
+
       setComputeStatusText(
         getComputeFeedback(
-          accessDetails.baseToken?.symbol,
-          accessDetails.datatoken?.symbol,
-          actualDatasetAsset.credentialSubject?.metadata.type
-        )[0]
-      )
-      const datasetOrderPriceResponse = await setDatasetPrice(
-        actualDatasetAsset,
-        actualDatasetService,
-        actualDatasetAccessDetails,
-        initializedProvider?.datasets?.[0]?.providerFee
-      )
-      setComputeStatusText(
-        getComputeFeedback(
-          actualAlgorithmAsset?.accessDetails?.[actualSvcIndex]?.baseToken
-            ?.symbol,
-          actualAlgorithmAsset?.accessDetails?.[actualSvcIndex]?.datatoken
-            ?.symbol,
+          actualAlgoAccessDetails?.baseToken?.symbol,
+          actualAlgoAccessDetails?.datatoken?.symbol,
           actualAlgorithmAsset?.credentialSubject?.metadata?.type
         )[0]
       )
-      // await setAlgoPrice(initializedProvider?.algorithm?.providerFee)
-      const escrow = new EscrowContract(
-        ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
-        signer,
-        actualDatasetAsset.credentialSubject.chainId
-      )
-      const price = BigNumber.from(selectedResources.price)
-      const payment = BigNumber.from(initializedProvider.payment.amount)
 
-      const amountToDeposit = price
-        .mul(BigNumber.from(10).pow(18))
-        .add(payment)
-        .toString()
-      await escrow.verifyFundsForEscrowPayment(
-        oceanTokenAddress,
-        selectedComputeEnv.consumerAddress,
-        await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
-        initializedProvider.payment.amount.toString(),
-        initializedProvider.payment.minLockSeconds.toString(),
-        '10'
-      )
       setInitializedProviderResponse(initializedProvider)
+
       return {
-        initializedProvider,
-        datasetOrderPriceResponse,
-        actualAlgoService,
-        actualDatasetAsset,
+        datasetResponses,
         actualAlgorithmAsset,
-        actualDatasetService,
+        actualAlgoService,
         actualAlgoAccessDetails,
-        actualDatasetAccessDetails
+        actualSvcIndex
       }
     } catch (error) {
       setError(error.message)
@@ -490,22 +484,21 @@ export default function Compute({
       algoServiceParams?: UserCustomParameters
       algoParams?: UserCustomParameters
     },
-    actualService?: Service
+    datasetServices?: { asset: AssetExtended; service: Service }[]
   ): Promise<void> {
     try {
       setIsOrdering(true)
       setIsOrdered(false)
       setError(undefined)
+
       const {
-        datasetOrderPriceResponse,
-        initializedProvider,
-        actualAlgoService,
-        actualDatasetAsset,
+        datasetResponses,
         actualAlgorithmAsset,
-        actualDatasetService,
+        actualAlgoService,
         actualAlgoAccessDetails,
-        actualDatasetAccessDetails
-      } = await initPriceAndFees(actualService)
+        actualSvcIndex
+      } = await initPriceAndFees(datasetServices)
+
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
         serviceId: actualAlgoService.id,
@@ -513,28 +506,35 @@ export default function Compute({
         userdata: userCustomParameters?.algoServiceParams
       }
 
-      const allowed = await isOrderable(
-        actualDatasetAsset,
-        actualDatasetService.id,
-        computeAlgorithm,
-        actualAlgorithmAsset
-      )
-      if (!allowed) throw new Error('Dataset is not orderable.')
+      // Check isOrderable for all datasets
+      for (const ds of datasetResponses) {
+        const allowed = await isOrderable(
+          ds.actualDatasetAsset,
+          ds.actualDatasetService.id,
+          computeAlgorithm,
+          actualAlgorithmAsset
+        )
+        if (!allowed)
+          throw new Error(
+            `Dataset ${ds.actualDatasetAsset.id} is not orderable.`
+          )
+      }
 
       setComputeStatusText(
         getComputeFeedback(
-          actualAlgorithmAsset.accessDetails?.[0]?.baseToken?.symbol,
-          actualAlgorithmAsset.accessDetails?.[0]?.datatoken?.symbol,
+          actualAlgoAccessDetails?.baseToken?.symbol,
+          actualAlgoAccessDetails?.datatoken?.symbol,
           actualAlgorithmAsset.credentialSubject?.metadata.type
-        )[actualAlgorithmAsset.accessDetails?.[0]?.type === 'fixed' ? 2 : 3]
+        )[actualAlgoAccessDetails?.type === 'fixed' ? 2 : 3]
       )
+
       const algoOrderPriceAndFeesResponse = await setAlgoPrice(
         actualAlgorithmAsset,
         actualAlgoService,
         actualAlgoAccessDetails,
-        initializedProviderResponse?.algorithm?.providerFee ||
-          initializedProvider?.algorithm?.providerFee
+        initializedProviderResponse?.algorithm?.providerFee
       )
+
       const algorithmOrderTx = await handleComputeOrder(
         signer,
         actualAlgorithmAsset,
@@ -542,43 +542,68 @@ export default function Compute({
         actualAlgoAccessDetails,
         algoOrderPriceAndFees || algoOrderPriceAndFeesResponse,
         accountId,
-        initializedProviderResponse?.algorithm ||
-          initializedProvider?.algorithm,
+        initializedProviderResponse?.algorithm,
         hasAlgoAssetDatatoken,
-        lookupVerifierSessionId(actualDatasetAsset.id, actualDatasetService.id),
+        lookupVerifierSessionId(
+          datasetResponses[0].actualDatasetAsset.id,
+          datasetResponses[0].actualDatasetService.id
+        ),
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
-      setComputeStatusText(
-        getComputeFeedback(
-          accessDetails.baseToken?.symbol,
-          accessDetails.datatoken?.symbol,
-          asset.credentialSubject?.metadata.type
-        )[accessDetails.type === 'fixed' ? 2 : 3]
-      )
-      const datasetOrderTx = await handleComputeOrder(
-        signer,
-        actualDatasetAsset,
-        actualDatasetService,
-        actualDatasetAccessDetails,
-        datasetOrderPriceAndFees || datasetOrderPriceResponse,
-        accountId,
-        initializedProviderResponse?.datasets[0] ||
-          initializedProvider?.datasets[0],
-        hasDatatoken,
-        lookupVerifierSessionId(actualDatasetAsset.id, actualDatasetService.id),
-        selectedComputeEnv.consumerAddress
-      )
-      if (!datasetOrderTx) throw new Error('Failed to order dataset.')
 
-      LoggerInstance.log('[compute] Starting compute job.')
-      computeAlgorithm.transferTxId = algorithmOrderTx
+      const datasetInputs = []
+      const policyDatasets: PolicyServerInitiateComputeActionData[] = []
+
+      for (const ds of datasetResponses) {
+        const datasetOrderTx = await handleComputeOrder(
+          signer,
+          ds.actualDatasetAsset,
+          ds.actualDatasetService,
+          ds.actualDatasetAccessDetails,
+          datasetOrderPriceAndFees || ds.datasetOrderPriceResponse,
+          accountId,
+          ds.initializedProvider.datasets[0],
+          hasDatatoken,
+          lookupVerifierSessionId(
+            ds.actualDatasetAsset.id,
+            ds.actualDatasetService.id
+          ),
+          selectedComputeEnv.consumerAddress
+        )
+        if (!datasetOrderTx)
+          throw new Error(
+            `Failed to order dataset ${ds.actualDatasetAsset.id}.`
+          )
+
+        datasetInputs.push({
+          documentId: ds.actualDatasetAsset.id,
+          serviceId: ds.actualDatasetService.id,
+          transferTxId: datasetOrderTx,
+          userdata: userCustomParameters?.dataServiceParams
+        })
+
+        policyDatasets.push({
+          sessionId: lookupVerifierSessionId(
+            ds.actualDatasetAsset.id,
+            ds.actualDatasetService.id
+          ),
+          serviceId: ds.actualDatasetService.id,
+          documentId: ds.actualDatasetAsset.id,
+          successRedirectUri: '',
+          errorRedirectUri: '',
+          responseRedirectUri: '',
+          presentationDefinitionUri: ''
+        })
+      }
+
       setComputeStatusText(getComputeFeedback()[4])
+
       const resourceRequests = selectedComputeEnv.resources.map((res) => ({
         id: res.id,
         amount: selectedResources[res.id] || res.min
       }))
-      let response
+
       const policyServerAlgo: PolicyServerInitiateComputeActionData = {
         sessionId: lookupVerifierSessionId(
           actualAlgorithmAsset.id,
@@ -586,80 +611,59 @@ export default function Compute({
         ),
         serviceId: actualAlgoService.id,
         documentId: actualAlgorithmAsset.id,
-        successRedirectUri: ``,
-        errorRedirectUri: ``,
-        responseRedirectUri: ``,
-        presentationDefinitionUri: ``
+        successRedirectUri: '',
+        errorRedirectUri: '',
+        responseRedirectUri: '',
+        presentationDefinitionUri: ''
       }
-      const policyServerDataset: PolicyServerInitiateComputeActionData = {
-        sessionId: lookupVerifierSessionId(
-          actualDatasetAsset.id,
-          actualDatasetService.id
-        ),
-        serviceId: actualDatasetService.id,
-        documentId: actualDatasetAsset.id,
-        successRedirectUri: ``,
-        errorRedirectUri: ``,
-        responseRedirectUri: ``,
-        presentationDefinitionUri: ``
-      }
-      const policiesServer: PolicyServerInitiateComputeActionData[] = [
-        policyServerAlgo,
-        policyServerDataset
-      ]
+
+      const policiesServer = [policyServerAlgo, ...policyDatasets]
+
+      let response
       if (selectedResources.mode === 'paid') {
         response = await ProviderInstance.computeStart(
           service.serviceEndpoint,
           signer,
           selectedComputeEnv.id,
-          [
-            {
-              documentId: actualDatasetAsset.id,
-              serviceId: actualDatasetService.id,
-              transferTxId: datasetOrderTx,
-              userdata: userCustomParameters?.dataServiceParams
-            }
-          ],
-          computeAlgorithm,
+          datasetInputs,
+          { ...computeAlgorithm, transferTxId: algorithmOrderTx },
           selectedResources.jobDuration,
           oceanTokenAddress,
           resourceRequests,
-          actualDatasetAsset.credentialSubject?.chainId,
+          datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
           null,
           null,
           policiesServer
         )
-        console.log('[compute] Compute response:', response)
       } else {
         const algorithm: ComputeAlgorithm = {
-          documentId: actualDatasetAsset?.id,
-          serviceId: actualDatasetService.id,
-          meta: actualAlgorithmAsset?.credentialSubject?.metadata
+          documentId: actualAlgorithmAsset.id,
+          serviceId: actualAlgoService.id,
+          meta: actualAlgorithmAsset.credentialSubject?.metadata
             ?.algorithm as any
         }
+
         response = await ProviderInstance.freeComputeStart(
           service.serviceEndpoint,
           signer,
           selectedComputeEnv.id,
-          [
-            {
-              documentId: actualDatasetAsset.id,
-              serviceId: actualDatasetService.id
-            }
-          ],
+          datasetInputs.map(({ documentId, serviceId }) => ({
+            documentId,
+            serviceId
+          })),
           algorithm,
           resourceRequests,
           null,
           null,
           policiesServer
         )
-        console.log('[compute] Free compute response:', response)
       }
-      if (!response) {
+
+      if (!response)
         throw new Error(
-          'Failed to start compute job, check console for more details'
+          'Failed to start compute job, check console for more details.'
         )
-      }
+
       setIsOrdered(true)
       setRefetchJobs(!refetchJobs)
     } catch (error) {
@@ -691,38 +695,8 @@ export default function Compute({
 
   const onSubmit = async (values: ComputeDatasetForm) => {
     try {
-      let actualService = service
-      let actualSvcIndex = svcIndex
-      let actualSelectedDataset = selectedDatasetAsset
-      let actualSelectedAlgorithm = selectedAlgorithmAsset
-
-      // Case: dataset selected, algorithm undefined
-      if (
-        values.dataset &&
-        !values.algorithm &&
-        selectedDatasetAsset &&
-        !selectedAlgorithmAsset
-      ) {
-        const datasetServices = selectedDatasetAsset.credentialSubject.services
-        const datasetServiceId = values.dataset.split('|')[1]
-        const foundIndex = datasetServices.findIndex(
-          (s) => s.id === datasetServiceId
-        )
-
-        if (foundIndex === -1) {
-          toast.error('Invalid dataset serviceId')
-          return
-        }
-
-        actualService = datasetServices[foundIndex]
-        actualSvcIndex = foundIndex
-
-        // Flip: asset is algorithm, so use dataset for dataServiceParams
-        actualSelectedAlgorithm = asset
-        actualSelectedDataset = selectedDatasetAsset
-      }
-
       const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
+
       if (appConfig.ssiEnabled && !skip) {
         try {
           const result = await checkVerifierSessionId(
@@ -737,17 +711,34 @@ export default function Compute({
           throw error
         }
       }
+
       if (
         !(values.algorithm || values.dataset) ||
         !values.computeEnv ||
         !values.termsAndConditions ||
         !values.acceptPublishingLicense
-      )
+      ) {
+        toast.error('Please complete all required fields.')
         return
+      }
+
+      let actualSelectedDataset: AssetExtended[] = []
+      let actualSelectedAlgorithm: AssetExtended = selectedAlgorithmAsset
+
+      // Case: dataset selected, algorithm undefined (algo is main asset)
+      if (asset.credentialSubject.metadata.type === 'algorithm') {
+        actualSelectedAlgorithm = asset
+        if (selectedDatasetAsset && Array.isArray(selectedDatasetAsset)) {
+          actualSelectedDataset = selectedDatasetAsset
+        }
+      } else {
+        actualSelectedDataset = [asset]
+      }
+
       const userCustomParameters = {
         dataServiceParams: parseConsumerParameterValues(
           values?.dataServiceParams,
-          actualSelectedDataset?.credentialSubject?.services[actualSvcIndex]
+          actualSelectedDataset[0]?.credentialSubject?.services?.[0]
             ?.consumerParameters
         ),
         algoServiceParams: parseConsumerParameterValues(
@@ -761,7 +752,26 @@ export default function Compute({
             ?.consumerParameters
         )
       }
-      await startJob(userCustomParameters, actualService)
+
+      const datasetServices: { asset: AssetExtended; service: Service }[] =
+        actualSelectedDataset.map((ds, i) => {
+          const datasetEntry = values.dataset?.[i]
+          const selectedServiceId = datasetEntry?.includes('|')
+            ? datasetEntry.split('|')[1]
+            : ds.credentialSubject.services?.[0]?.id
+
+          const selectedService =
+            ds.credentialSubject.services.find(
+              (s) => s.id === selectedServiceId
+            ) || ds.credentialSubject.services?.[0]
+
+          return {
+            asset: ds,
+            service: selectedService
+          }
+        })
+
+      await startJob(userCustomParameters, datasetServices)
     } catch (error) {
       if (
         error?.message?.includes('user rejected transaction') ||

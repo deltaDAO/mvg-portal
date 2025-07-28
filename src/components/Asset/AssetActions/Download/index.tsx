@@ -549,12 +549,17 @@ export default function Download({
                 <AssetActionBuy />
               </>
             ))}
-          {service.consumerParameters &&
-            service.consumerParameters.length > 0 && (
-              <div className={styles.consumerParameters}>
-                <ConsumerParameters service={service} isLoading={isLoading} />
-              </div>
-            )}
+          <div className={styles.consumerParameters}>
+            {/* TODO - */}
+            <ConsumerParameters services={[service]} isLoading={isLoading} />
+          </div>
+          {isOwned && (
+            <div className={styles.confettiContainer}>
+              <SuccessConfetti
+                success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
+              />
+            </div>
+          )}
           {asset.credentialSubject?.metadata?.type === 'algorithm' && (
             <AlgorithmDatasetsListForCompute
               asset={asset}
