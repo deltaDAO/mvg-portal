@@ -68,8 +68,8 @@ export default function FormStartComputeAlgo({
   service: Service
   accessDetails: AccessDetails
   datasets: AssetSelectionAsset[]
-  selectedDatasetAsset: AssetExtended
-  setSelectedDatasetAsset: React.Dispatch<React.SetStateAction<AssetExtended>>
+  selectedDatasetAsset: AssetExtended[]
+  setSelectedDatasetAsset: React.Dispatch<React.SetStateAction<AssetExtended[]>>
   isLoading: boolean
   isComputeButtonDisabled: boolean
   hasPreviousOrder: boolean
@@ -106,7 +106,7 @@ export default function FormStartComputeAlgo({
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
-  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
+  const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const {
@@ -120,56 +120,88 @@ export default function FormStartComputeAlgo({
     accessDetails.price
   )
 
-  const [datasetOrderPrice, setDatasetOrderPrice] = useState(
-    selectedDatasetAsset?.accessDetails?.[0]?.price
-  )
+  const [datasetOrderPrice, setDatasetOrderPrice] = useState('0')
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const selectedResources = allResourceValues?.[values.computeEnv]
   const c2dPrice = selectedResources?.price
+  const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
+  const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
+  const verifiedCount = selectedDatasetAsset.filter((asset) => {
+    const svc = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
+    return lookupVerifierSessionId?.(asset.id, svc?.id)
+  }).length
 
-  async function getDatasetAsset(dataset: string): Promise<{
-    datasetAsset: AssetExtended | null
-    serviceIndexDataset: number | null
+  const allVerified = selectedDatasetAsset.every((asset) => {
+    const service = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
+    return lookupVerifierSessionId?.(asset.id, service?.id)
+  })
+
+  useEffect(() => {
+    if (!asset || !service?.id || !asset.credentialSubject?.services?.length)
+      return
+
+    const index = asset.credentialSubject.services.findIndex(
+      (svc) => svc.id === service.id
+    )
+
+    if (index !== -1) setServiceIndex(index)
+  }, [asset, service])
+
+  async function getDatasetAssets(datasets: string[]): Promise<{
+    assets: AssetExtended[]
+    services: Service[]
   }> {
-    const [datasetId, serviceId] = dataset.split('|')
+    const newCancelTokenInstance = newCancelToken()
+    const servicesCollected: Service[] = []
 
-    try {
-      const asset = await getAsset(datasetId, newCancelToken())
+    const assets = await Promise.all(
+      datasets.map(async (item) => {
+        const [datasetId, serviceId] = item.split('|')
 
-      if (!asset || !asset.credentialSubject?.services?.length) {
-        return { datasetAsset: null, serviceIndexDataset: null }
-      }
+        try {
+          const asset = await getAsset(datasetId, newCancelTokenInstance)
+          if (!asset || !asset.credentialSubject?.services?.length) return null
 
-      const accessDetailsList = await Promise.all(
-        asset.credentialSubject.services.map((service) =>
-          getAccessDetails(
-            asset.credentialSubject.chainId,
-            service,
-            accountId,
-            newCancelToken()
+          const serviceIndex = asset.credentialSubject.services.findIndex(
+            (svc: any) => svc.id === serviceId
           )
-        )
-      )
-      const serviceIndexCal = asset.credentialSubject.services.findIndex(
-        (svc: any) => svc.id === serviceId
-      )
-      setServiceIndex(serviceIndexCal)
 
-      const extendedAsset: AssetExtended = {
-        ...asset,
-        accessDetails: accessDetailsList,
-        serviceIndex: serviceIndexCal !== -1 ? serviceIndexCal : null
-      }
+          const accessDetailsList = await Promise.all(
+            asset.credentialSubject.services.map((service) =>
+              getAccessDetails(
+                asset.credentialSubject.chainId,
+                service,
+                accountId,
+                newCancelTokenInstance
+              )
+            )
+          )
 
-      return {
-        datasetAsset: extendedAsset,
-        serviceIndexDataset: serviceIndexCal !== -1 ? serviceIndexCal : null
-      }
-    } catch (error) {
-      console.error('Error in getDatasetAsset:', error)
-      return { datasetAsset: null, serviceIndexDataset: null }
+          const extendedAsset: AssetExtended = {
+            ...asset,
+            accessDetails: accessDetailsList,
+            serviceIndex: serviceIndex !== -1 ? serviceIndex : null
+          }
+
+          if (serviceIndex !== -1) {
+            servicesCollected.push(
+              asset.credentialSubject.services[serviceIndex]
+            )
+          }
+
+          return extendedAsset
+        } catch (error) {
+          console.error(`Error processing dataset ${datasetId}:`, error)
+          return null
+        }
+      })
+    )
+
+    return {
+      assets: assets.filter(Boolean) as AssetExtended[],
+      services: servicesCollected
     }
   }
 
@@ -198,31 +230,14 @@ export default function FormStartComputeAlgo({
   useEffect(() => {
     if (!values.dataset || !isConsumable) return
 
-    async function fetchDatasetAssetExtended() {
-      // TODO test this type override
-      const { datasetAsset, serviceIndexDataset } = await getDatasetAsset(
-        values.dataset
-      )
-      const datasetAccessDetails = await Promise.all(
-        datasetAsset.credentialSubject?.services.map((service) =>
-          getAccessDetails(
-            datasetAsset.credentialSubject?.chainId,
-            service,
-            accountId,
-            newCancelToken()
-          )
-        )
-      )
-      const extendedAlgoAsset: AssetExtended = {
-        ...datasetAsset,
-        accessDetails: datasetAccessDetails,
-        serviceIndex: serviceIndexDataset
-      }
-      setSelectedDatasetAsset(extendedAlgoAsset)
+    async function fetchDatasetAssetsExtended() {
+      const { assets, services } = await getDatasetAssets(values.dataset)
+      setSelectedDatasetAsset(assets)
+      setAllDatasetServices(services)
     }
-    fetchDatasetAssetExtended()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.dataset, accountId, isConsumable, setSelectedDatasetAsset])
+
+    fetchDatasetAssetsExtended()
+  }, [values.dataset, accountId, isConsumable])
 
   useEffect(() => {
     if (!values.computeEnv || !computeEnvs) return
@@ -261,51 +276,58 @@ export default function FormStartComputeAlgo({
   // Set price for calculation output
   //
   useEffect(() => {
-    if (
-      !asset?.accessDetails ||
-      !selectedDatasetAsset?.accessDetails?.length ||
-      selectedDatasetAsset?.accessDetails?.length < serviceIndex + 1
-    )
-      return
+    if (!asset?.accessDetails || !selectedDatasetAsset?.length) return
+
     setAlgoOrderPrice(algoOrderPriceAndFees?.price || accessDetails.price)
-    const details = selectedDatasetAsset.accessDetails[serviceIndex]
-    if (details?.validOrderTx) {
-      setDatasetOrderPrice('0')
-    } else {
-      setDatasetOrderPrice(
-        selectedDatasetAsset?.accessDetails[serviceIndex]?.price
-      )
-    }
 
     const totalPrices: totalPriceMap[] = []
-    // Always use resources price for C2D (provider) part
+
+    let datasetPrice = new Decimal(0)
+    let datasetFee = new Decimal(0)
+    let datasetOrderPriceSum = new Decimal(0) // nou
+
+    selectedDatasetAsset.forEach((dataset) => {
+      const index = dataset.serviceIndex || 0
+      const details = dataset.accessDetails?.[index]
+
+      const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
+      const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
+      const fee = new Decimal(consumeMarketOrderFee).mul(price).div(100)
+
+      datasetPrice = datasetPrice.add(price)
+      datasetFee = datasetFee.add(fee)
+
+      datasetOrderPriceSum = datasetOrderPriceSum.add(price)
+    })
+
+    setDatasetOrderPrice(
+      datasetOrderPriceSum.toDecimalPlaces(MAX_DECIMALS).toString()
+    )
+
+    const priceDataset = datasetPrice
+    const feeDataset = datasetFee
+
     const priceAlgo =
       !algoOrderPrice || hasPreviousOrder || hasDatatoken
         ? new Decimal(0)
         : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
 
-    const rawPrice = details?.validOrderTx ? 0 : details?.price
-    // wrap in Decimal and round to your MAX_DECIMALS
-    const priceDataset = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
+    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
+
     const priceC2D =
       c2dPrice !== undefined
         ? new Decimal(c2dPrice).toDecimalPlaces(MAX_DECIMALS)
         : new Decimal(0)
 
-    // Now use priceC2D everywhere you'd use providerFees
-    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
     const feeC2D = new Decimal(consumeMarketOrderFee).mul(priceC2D).div(100)
-    const feeDataset = new Decimal(consumeMarketOrderFee)
-      .mul(priceDataset)
-      .div(100)
 
-    // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
       let sum = priceC2D.add(priceAlgo).add(feeC2D).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
       })
+
       if (algorithmSymbol === datasetSymbol) {
         sum = sum.add(priceDataset).add(feeDataset)
         totalPrices[0].value = sum.toDecimalPlaces(MAX_DECIMALS).toString()
@@ -363,8 +385,8 @@ export default function FormStartComputeAlgo({
         })
       }
     }
+
     setTotalPrices(totalPrices)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceIndex, selectedDatasetAsset])
 
   useEffect(() => {
@@ -416,7 +438,10 @@ export default function FormStartComputeAlgo({
           !isValid ||
           !isBalanceSufficient ||
           !isAssetNetwork ||
-          !selectedDatasetAsset?.accessDetails?.[0]?.isPurchasable ||
+          !selectedDatasetAsset?.every(
+            (asset) =>
+              asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
+          ) ||
           !isAccountIdWhitelisted
         }
         hasPreviousOrder={hasPreviousOrder}
@@ -500,22 +525,31 @@ export default function FormStartComputeAlgo({
               <Row
                 price={new Decimal(
                   datasetOrderPrice ||
-                    selectedDatasetAsset?.accessDetails[serviceIndex]?.price ||
-                    0
+                    selectedDatasetAsset
+                      ?.map((a) =>
+                        Number(
+                          a.accessDetails?.[a.serviceIndex || 0]?.price || 0
+                        )
+                      )
+                      .reduce((acc, val) => acc + val, 0)
                 )
                   .toDecimalPlaces(MAX_DECIMALS)
                   .toString()}
                 timeout={assetTimeout}
                 symbol={datasetSymbol}
-                type="DATASET"
+                type="DATASETS"
               />
 
               <Row
                 hasPreviousOrder={hasPreviousOrderSelectedComputeAsset}
                 hasDatatoken={hasDatatokenSelectedComputeAsset}
-                price={new Decimal(algoOrderPrice || accessDetails.price || 0)
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .toString()}
+                price={
+                  accessDetails?.validOrderTx
+                    ? '0'
+                    : new Decimal(algoOrderPrice || accessDetails?.price || 0)
+                        .toDecimalPlaces(MAX_DECIMALS)
+                        .toString()
+                }
                 timeout={selectedComputeAssetTimeout}
                 symbol={algorithmSymbol}
                 type="ALGORITHM"
@@ -534,19 +568,21 @@ export default function FormStartComputeAlgo({
                 price={new Decimal(consumeMarketOrderFee)
                   .mul(
                     new Decimal(
-                      datasetOrderPrice ||
-                        selectedDatasetAsset?.accessDetails[serviceIndex]
-                          ?.price ||
-                        0
+                      selectedDatasetAsset
+                        ?.map((a) =>
+                          Number(
+                            a.accessDetails?.[a.serviceIndex || 0]?.price || 0
+                          )
+                        )
+                        .reduce((acc, val) => acc + val, 0)
                     )
                   )
                   .toDecimalPlaces(MAX_DECIMALS)
                   .div(100)
-                  .toString()} // consume market order fee fee amount
+                  .toString()}
                 symbol={datasetSymbol}
-                type={`CONSUME MARKET ORDER FEE DATASET (${consumeMarketOrderFee}%)`}
+                type={`CONSUME MARKET ORDER FEE DATASETS (${consumeMarketOrderFee}%)`}
               />
-
               <Row
                 price={new Decimal(consumeMarketOrderFee)
                   .mul(new Decimal(algoOrderPrice || accessDetails.price || 0))
@@ -580,32 +616,46 @@ export default function FormStartComputeAlgo({
             </div>
           )}
           <div style={{ textAlign: 'center' }}>
-            {appConfig.ssiEnabled && selectedDatasetAsset ? (
-              (() => {
-                const hasVerifierSession =
-                  verifierSessionCache &&
-                  lookupVerifierSessionId(
-                    `${selectedDatasetAsset?.id}`,
-                    selectedDatasetAsset?.credentialSubject?.services?.[
-                      serviceIndex
-                    ]?.id
-                  )
-                return hasVerifierSession ? (
-                  <PurchaseButton />
-                ) : (
-                  <div style={{ marginTop: '60px', marginLeft: '10px' }}>
-                    <AssetActionCheckCredentialsAlgo
-                      asset={selectedDatasetAsset}
-                      service={
-                        selectedDatasetAsset?.credentialSubject?.services?.[
-                          serviceIndex
+            {appConfig.ssiEnabled && selectedDatasetAsset?.length > 0 ? (
+              <>
+                <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                  {verifiedCount} of {selectedDatasetAsset.length} datasets
+                  verified
+                </div>
+
+                <div style={{ marginTop: '60px', marginLeft: '10px' }}>
+                  {allVerified ? (
+                    <PurchaseButton />
+                  ) : (
+                    selectedDatasetAsset.map((asset, i) => {
+                      const service =
+                        asset.credentialSubject?.services?.[
+                          asset.serviceIndex || 0
                         ]
+                      const isVerified = lookupVerifierSessionId?.(
+                        asset.id,
+                        service?.id
+                      )
+
+                      if (!isVerified && i === datasetVerificationIndex) {
+                        return (
+                          <AssetActionCheckCredentialsAlgo
+                            key={asset.id}
+                            asset={asset}
+                            service={service}
+                            type="dataset"
+                            onVerified={() =>
+                              setDatasetVerificationIndex(i + 1)
+                            }
+                          />
+                        )
                       }
-                      type={'dataset'}
-                    />
-                  </div>
-                )
-              })()
+
+                      return null
+                    })
+                  )}
+                </div>
+              </>
             ) : (
               <PurchaseButton />
             )}
@@ -638,16 +688,13 @@ export default function FormStartComputeAlgo({
       />
       {asset && selectedDatasetAsset && (
         <ConsumerParameters
-          service={service}
-          selectedAlgorithmAsset={selectedDatasetAsset}
+          services={allDatasetServices}
+          selectedAlgorithmAsset={asset}
           isLoading={isLoading}
           svcIndex={serviceIndex}
         />
       )}
 
-      {/* {isFullPriceLoading ? (
-        <CalculateButton />
-      ) : ( */}
       <>
         <AssetActionBuy asset={asset} />
         <Field
