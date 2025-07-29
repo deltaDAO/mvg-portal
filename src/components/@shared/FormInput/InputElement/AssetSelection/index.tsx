@@ -44,6 +44,7 @@ export default function AssetSelection({
   multiple,
   disabled,
   accountId,
+  priceOnRight,
   ...props
 }: {
   assets: AssetSelectionAsset[]
@@ -51,6 +52,7 @@ export default function AssetSelection({
   multiple?: boolean
   disabled?: boolean
   accountId?: string
+  priceOnRight?: boolean
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
   const [filteredAssets, setFilteredAssets] = useState<AssetSelectionAsset[]>(
@@ -149,7 +151,10 @@ export default function AssetSelection({
                   })}
                 />
                 <label
-                  className={styles.label}
+                  className={cx({
+                    label: true,
+                    priceOnRight
+                  })}
                   htmlFor={slugify(asset.serviceId)}
                   title={asset.name}
                 >
@@ -170,29 +175,34 @@ export default function AssetSelection({
                     {asset.symbol} | {asset.did}
                   </div>
 
-                  <PriceUnit
-                    price={asset.price}
-                    size="small"
-                    className={cx({
-                      price: true,
-                      disabled: !asset.isAccountIdWhitelisted
-                    })}
-                    symbol={asset.tokenSymbol}
-                  />
+                  <div className={styles.priceContainer}>
+                    <PriceUnit
+                      price={asset.price}
+                      size="small"
+                      className={cx({
+                        price: true,
+                        disabled: !asset.isAccountIdWhitelisted
+                      })}
+                      symbol={asset.tokenSymbol}
+                    />
 
-                  {!asset.isAccountIdWhitelisted && (
-                    <Tooltip
-                      content={
-                        <WhitelistIndicator
-                          accountId={accountId || userAccount}
-                          isAccountIdWhitelisted={false}
-                          minimal
+                    {!asset.isAccountIdWhitelisted && (
+                      <Tooltip
+                        content={
+                          <WhitelistIndicator
+                            accountId={accountId || userAccount}
+                            isAccountIdWhitelisted={false}
+                            minimal
+                          />
+                        }
+                      >
+                        <Badge
+                          isValid={false}
+                          verifiedService="Access denied"
                         />
-                      }
-                    >
-                      <Badge isValid={false} verifiedService="Access denied" />
-                    </Tooltip>
-                  )}
+                      </Tooltip>
+                    )}
+                  </div>
                 </label>
               </div>
             ))}

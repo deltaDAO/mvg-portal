@@ -35,32 +35,6 @@
   margin-bottom: 0;
 }
 
-/* Publish-specific overrides for FormInput components */
-.container.publish input:not([type='checkbox']):not([type='radio']),
-.container.publish textarea {
-  border: var(--publish-input-border-size) solid
-    var(--publish-input-border-color);
-  border-radius: var(--publish-input-border-radius);
-  padding: var(--publish-input-padding);
-  font-family: var(--publish-font-family);
-  font-weight: var(--publish-font-weight-normal);
-  width: 100%;
-}
-
-.container.publish input:focus:not([type='checkbox']):not([type='radio']),
-.container.publish select:focus,
-.container.publish textarea:focus {
-  border-color: var(--publish-primary);
-  box-shadow: 0 0 0 2px rgba(10, 75, 112, 0.2);
-  outline: none;
-}
-
-.container.publish input::placeholder,
-.container.publish textarea::placeholder {
-  font-family: var(--publish-font-family);
-  font-weight: var(--publish-font-weight-normal);
-}
-
 /* Override FormInput labels */
 .container.publish label {
   font-family: var(--publish-font-family);

@@ -1,0 +1,91 @@
+{
+  "selectAlgorithm": {
+    "title": "Select Algorithm",
+    "fields": [
+      {
+        "name": "algorithm",
+        "label": "Algorithm",
+        "type": "assetSelection",
+        "help": "Select an algorithm to run on the dataset",
+        "required": true
+      }
+    ]
+  },
+  "selectEnvironment": {
+    "title": "Select C2D Environment",
+    "fields": [
+      {
+        "name": "environment",
+        "label": "C2D Environment",
+        "type": "environmentSelection",
+        "help": "Select a Compute-to-Data environment for your job",
+        "required": true
+      }
+    ]
+  },
+  "configureEnvironment": {
+    "title": "C2D Environment Configuration",
+    "fields": [
+      {
+        "name": "cpu",
+        "label": "CPU",
+        "type": "number",
+        "placeholder": "4",
+        "help": "Number of CPU cores",
+        "required": true
+      },
+      {
+        "name": "gpu",
+        "label": "GPU",
+        "type": "number",
+        "placeholder": "0",
+        "help": "Number of GPU units",
+        "required": true
+      },
+      {
+        "name": "ram",
+        "label": "RAM",
+        "type": "number",
+        "placeholder": "8",
+        "help": "RAM in GB",
+        "required": true
+      },
+      {
+        "name": "disk",
+        "label": "Disk",
+        "type": "number",
+        "placeholder": "100",
+        "help": "Disk space in GB",
+        "required": true
+      },
+      {
+        "name": "environmentData",
+        "label": "C2D Environment Data",
+        "type": "textarea",
+        "placeholder": "Additional configuration data",
+        "help": "Additional configuration for the compute environment",
+        "required": false
+      }
+    ]
+  },
+  "review": {
+    "title": "Review",
+    "fields": [
+      {
+        "name": "makeAvailable",
+        "label": "Make available compute in project",
+        "type": "checkbox",
+        "options": ["Make available compute in project"],
+        "required": false
+      },
+      {
+        "name": "description",
+        "label": "Description",
+        "type": "textarea",
+        "placeholder": "Describe your compute job",
+        "help": "Optional description of your compute job",
+        "required": false
+      }
+    ]
+  }
+}

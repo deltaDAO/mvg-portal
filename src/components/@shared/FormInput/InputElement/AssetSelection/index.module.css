@@ -51,6 +51,24 @@
   width: 100%;
 }
 
+.label.priceOnRight {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.label.priceOnRight .labelContent {
+  flex: 1;
+}
+
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
 .labelContent {
   display: flex;
   flex-direction: column;

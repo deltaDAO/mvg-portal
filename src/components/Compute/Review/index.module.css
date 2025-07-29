@@ -1,0 +1,63 @@
+.container {
+  padding: 2rem;
+}
+
+.reviewSection {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+}
+
+.reviewItem {
+  margin-bottom: 1rem;
+}
+
+.reviewItem label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.reviewItem input[type='checkbox'] {
+  margin-right: 0.5rem;
+}
+
+.reviewDetails {
+  margin: 1rem 0;
+}
+
+.detailItem {
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background: var(--color-background-highlight);
+  border-radius: 4px;
+}
+
+.detailItem ul {
+  margin: 0.5rem 0 0 1rem;
+  padding: 0;
+}
+
+.detailItem li {
+  margin-bottom: 0.25rem;
+}
+
+.descriptionItem {
+  margin-top: 1rem;
+}
+
+.descriptionItem label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.descriptionItem textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 1rem;
+  resize: vertical;
+}

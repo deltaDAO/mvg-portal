@@ -23,6 +23,7 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
 import MetaInfo from './MetaMain/MetaInfo'
 import EditIcon from '@images/edit.svg'
+import { useRouter } from 'next/router'
 
 export default function AssetContent({
   asset
@@ -41,11 +42,29 @@ export default function AssetContent({
   const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
   const [jsonInvoice, setJsonInvoice] = useState(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [showCompute, setShowCompute] = useState(false)
+  const router = useRouter()
 
   const availableServices =
     asset.credentialSubject?.services?.filter(
       (service) => service.state === 0
     ) || []
+
+  // Find compute service
+  const computeServiceIndex = asset.credentialSubject?.services?.findIndex(
+    (service) => service.type === 'compute'
+  )
+
+  function handleComputeWizard() {
+    router.push(`/asset/${asset.id}/compute/1`)
+  }
+
+  function handleComputeClick() {
+    if (computeServiceIndex !== undefined && computeServiceIndex >= 0) {
+      setSelectedService(computeServiceIndex)
+      setShowCompute(true)
+    }
+  }
 
   async function handleGeneratePdf(id: string, tx: string) {
     try {
@@ -203,6 +222,22 @@ export default function AssetContent({
                             />
                           ))}
                         </div>
+
+                        {/* Quick Compute Button */}
+                        {computeServiceIndex !== undefined &&
+                          computeServiceIndex >= 0 && (
+                            <div className={styles.quickCompute}>
+                              <Button onClick={handleComputeClick}>
+                                🚀 Quick Compute
+                              </Button>
+                              <Button
+                                onClick={handleComputeWizard}
+                                style="text"
+                              >
+                                📋 Compute Wizard
+                              </Button>
+                            </div>
+                          )}
                       </div>
                     ) : (
                       <h4>No services are currently available.</h4>

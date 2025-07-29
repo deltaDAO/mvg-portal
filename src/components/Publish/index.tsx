@@ -12,6 +12,7 @@ import PageHeader from '@shared/Page/PageHeader'
 import Title from './Title'
 import styles from './index.module.css'
 import Actions from './Actions'
+import WizardActions from '@shared/WizardActions'
 import Debug from './Debug'
 import Navigation from './Navigation'
 import { Steps } from './Steps'
@@ -286,10 +287,10 @@ export default function PublishPage({
         await handleSubmit(values)
       }}
     >
-      {({ values }) => (
+      {(formikContext) => (
         <>
           <PageHeader
-            title={<Title networkId={values.user.chainId} />}
+            title={<Title networkId={formikContext.values.user.chainId} />}
             description={content.description}
             isExtended
           />
@@ -297,7 +298,15 @@ export default function PublishPage({
             <Navigation />
             <ContainerForm style="publish">
               <Steps feedback={feedback} />
-              <Actions scrollToRef={scrollToRef} did={did} />
+              <WizardActions
+                navigationType="query"
+                basePath="/publish"
+                totalSteps={7}
+                submitButtonText="Submit"
+                showSuccessConfetti={true}
+                scrollToRef={scrollToRef}
+                formikContext={formikContext}
+              />
             </ContainerForm>
           </Form>
           {debug && <Debug />}

@@ -1,0 +1,12 @@
+.container {
+  padding: 2rem;
+}
+
+.form {
+  width: 100%;
+}
+
+.error {
+  color: red;
+  margin: 1rem 0;
+}

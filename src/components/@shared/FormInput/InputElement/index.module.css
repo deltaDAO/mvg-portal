@@ -1,15 +1,16 @@
 .input {
   font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
   color: var(--input-font-color);
-  border: var(--input-border-size) solid var(--input-border-color);
-  box-shadow: var(--input-box-shadow);
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  box-shadow: none;
   width: 100%;
   background: var(--background-content);
-  padding: var(--input-padding);
+  padding: var(--publish-input-padding);
   margin: 0;
-  border-radius: var(--input-border-radius);
+  border-radius: var(--publish-input-border-radius);
   transition: 0.2s ease-out;
   height: auto;
   min-width: 0;
@@ -18,16 +19,16 @@
 }
 
 .input:focus {
-  border-color: var(--font-color-text);
-  box-shadow: none;
+  border-color: var(--publish-primary);
+  box-shadow: 0 0 0 2px rgba(10, 75, 112, 0.2);
   outline: 0;
 }
 
 .input::placeholder {
-  font-family: var(--font-family-base);
+  font-family: var(--publish-font-family);
   font-size: var(--font-size-base);
   color: var(--input-placeholder-font-color);
-  font-weight: var(--font-weight-base);
+  font-weight: var(--publish-font-weight-normal);
   transition: 0.2s ease-out;
   opacity: 0.7;
 }

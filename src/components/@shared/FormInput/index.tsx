@@ -98,6 +98,7 @@ export interface InputProps {
       [envId: string]: ResourceType
     }>
   >
+  priceOnRight?: boolean
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {
