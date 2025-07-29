@@ -1,14 +1,17 @@
 import { FormikContextType, useFormikContext } from 'formik'
 import React, { ReactElement, useEffect } from 'react'
 import { useRouter } from 'next/router'
-import { FormComputeData } from '../_types'
-import { wizardSteps } from '../_constants'
+import { FormComputeData, StepContent } from '../_types'
 import { useProgressBar } from '../../../@hooks/useProgressBar'
 import { useComputeStepCompletion } from '../../../@hooks/useComputeStepCompletion'
 import styles from './index.module.css'
 import CheckmarkIcon from '@images/checkmark.svg'
 
-export default function Navigation(): ReactElement {
+export default function Navigation({
+  steps
+}: {
+  steps: StepContent[]
+}): ReactElement {
   const router = useRouter()
   const { values, setFieldValue }: FormikContextType<FormComputeData> =
     useFormikContext()
@@ -34,16 +37,16 @@ export default function Navigation(): ReactElement {
     const stepIndex = pathSegments.findIndex((segment) => segment === 'compute')
     if (stepIndex !== -1 && pathSegments[stepIndex + 1]) {
       const stepParam: number = parseInt(pathSegments[stepIndex + 1])
-      if (!isNaN(stepParam) && stepParam <= wizardSteps.length) {
+      if (!isNaN(stepParam) && stepParam <= steps.length) {
         step = stepParam
       }
     }
     setFieldValue('user.stepCurrent', step)
-  }, [router.asPath, setFieldValue])
+  }, [router.asPath, setFieldValue, steps.length])
 
   const currentStep = values.user.stepCurrent
-  const lastCompletedStep = getLastCompletedStep(wizardSteps.length)
-  const progressTargetIdx = Math.min(lastCompletedStep + 1, wizardSteps.length)
+  const lastCompletedStep = getLastCompletedStep(steps.length)
+  const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)
 
   const { stepRefs, stepsRowRef, progressBarWidth } = useProgressBar({
     progressTargetIdx
@@ -57,7 +60,7 @@ export default function Navigation(): ReactElement {
           style={{ width: `${progressBarWidth}px` }}
           aria-hidden="true"
         />
-        {wizardSteps.map((step) => {
+        {steps.map((step) => {
           const isActive = step.step === currentStep
           const isCompleted = getSuccessClass(step.step)
           return (

@@ -4,7 +4,7 @@ import SelectEnvironment from './SelectEnvironment'
 import ConfigureEnvironment from './ConfigureEnvironment'
 import Review from './Review'
 
-export const wizardSteps: StepContent[] = [
+export const datasetSteps: StepContent[] = [
   {
     step: 1,
     title: 'Select Algorithm',
@@ -20,11 +20,24 @@ export const wizardSteps: StepContent[] = [
     title: 'C2D Environment Configuration',
     component: <ConfigureEnvironment />
   },
+  { step: 4, title: 'Review', component: <Review /> }
+]
+
+export const algorithmSteps: StepContent[] = [
+  { step: 1, title: 'Select Datasets', component: <div>Step 1</div> },
+  { step: 2, title: 'Select Services', component: <div>Step 2</div> },
   {
-    step: 4,
-    title: 'Review',
-    component: <Review />
-  }
+    step: 3,
+    title: 'Preview Selected Datasets & Services',
+    component: <div>Step 3</div>
+  },
+  { step: 4, title: 'Select C2D Environment', component: <div>Step 4</div> },
+  {
+    step: 5,
+    title: 'C2D Environment Configuration',
+    component: <div>Step 5</div>
+  },
+  { step: 6, title: 'Review', component: <div>Step 6</div> }
 ]
 
 export const initialValues: FormComputeData = {

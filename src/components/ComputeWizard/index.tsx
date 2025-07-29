@@ -20,7 +20,7 @@ import Steps from './Steps'
 import { useUserPreferences } from '@context/UserPreferences'
 import { validationSchema } from './_validation'
 import ContainerForm from '../@shared/atoms/ContainerForm'
-import { initialValues } from './_constants'
+import { initialValues, algorithmSteps, datasetSteps } from './_constants'
 
 export default function ComputeWizard({
   content
@@ -37,10 +37,9 @@ export default function ComputeWizard({
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>()
   console.log('asset data ', asset?.credentialSubject.metadata.type)
-  let totalSteps = 4
-  if (asset?.credentialSubject.metadata.type === 'algorith') {
-    totalSteps = 6
-  }
+  const isAlgorithm = asset?.credentialSubject.metadata.type === 'algorithm'
+  const steps = isAlgorithm ? algorithmSteps : datasetSteps
+  const totalSteps = steps.length
 
   useEffect(() => {
     if (!asset || !accountId) return
@@ -124,9 +123,13 @@ export default function ComputeWizard({
         <>
           <PageHeader title={<Title asset={asset} />} isExtended />
           <Form className={styles.form}>
-            <Navigation />
+            <Navigation steps={steps} />
             <ContainerForm style="publish">
-              <Steps algorithms={algorithms} computeEnvs={computeEnvs} />
+              <Steps
+                algorithms={algorithms}
+                computeEnvs={computeEnvs}
+                isAlgorithm={isAlgorithm}
+              />{' '}
               <WizardActions
                 navigationType="path"
                 basePath={`/asset/${asset?.id}/compute`}
