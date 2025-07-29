@@ -90,7 +90,7 @@ export default function FormConsumerParameters({
                 options={getParameterOptions(param)}
                 size="small"
                 type={param.type === 'boolean' ? 'select' : param.type}
-                value={field.value[param.name]}
+                value={field.value?.[param.name]}
               />
             </div>
           ) : (
