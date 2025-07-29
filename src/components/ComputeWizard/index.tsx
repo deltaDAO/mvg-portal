@@ -36,6 +36,7 @@ export default function ComputeWizard({
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>()
+  console.log('asset - testing ', asset)
 
   useEffect(() => {
     if (!asset || !accountId) return
