@@ -36,7 +36,11 @@ export default function ComputeWizard({
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>()
-  console.log('asset - testing ', asset)
+  console.log('asset data ', asset?.credentialSubject.metadata.type)
+  let totalSteps = 4
+  if (asset?.credentialSubject.metadata.type === 'algorith') {
+    totalSteps = 6
+  }
 
   useEffect(() => {
     if (!asset || !accountId) return
@@ -126,7 +130,7 @@ export default function ComputeWizard({
               <WizardActions
                 navigationType="path"
                 basePath={`/asset/${asset?.id}/compute`}
-                totalSteps={4}
+                totalSteps={totalSteps}
                 submitButtonText="Buy Dataset"
                 showSuccessConfetti={false}
                 formikContext={formikContext}
