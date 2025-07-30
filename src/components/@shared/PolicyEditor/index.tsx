@@ -188,7 +188,7 @@ export function PolicyEditor(props): ReactElement {
     hideDefaultPolicies = false
   }: PolicyEditorProps = props
 
-  const [enabled, setEnabled] = useState(enabledView)
+  const [enabled, setEnabled] = useState(credentials.enabled || enabledView)
   const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(false)
   const [holderBinding, setHolderBinding] = useState(true)
   const [requireAllTypes, setRequireAllTypes] = useState(true)
@@ -196,6 +196,7 @@ export function PolicyEditor(props): ReactElement {
   const [limitMaxCredentials, setLimitMaxCredentials] = useState(false)
   const [minimumCredentials, setMinimumCredentials] = useState('1')
   const [limitMinCredentials, setLimitMinCredentials] = useState(false)
+  const [hasUserSetEnabled, setHasUserSetEnabled] = useState(false)
 
   const [defaultPolicyStates, setDefaultPolicyStates] = useState({
     'not-before': !hideDefaultPolicies,
@@ -326,13 +327,80 @@ export function PolicyEditor(props): ReactElement {
     }
   }, [enabled, editAdvancedFeatures])
 
+  useEffect(() => {
+    const hasExistingCredentials =
+      (credentials.vpPolicies && credentials.vpPolicies.length > 0) ||
+      (credentials.requestCredentials &&
+        credentials.requestCredentials.length > 0) ||
+      (credentials.vcPolicies && credentials.vcPolicies.length > 0)
+
+    if (hasExistingCredentials && !credentials.enabled && !hasUserSetEnabled) {
+      setEnabled(true)
+      setCredentials({ ...credentials, enabled: true })
+    }
+
+    if (!credentials.vpPolicies || credentials.vpPolicies.length === 0) return
+
+    const hasHolderBinding = credentials.vpPolicies.some(
+      (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+    )
+    if (hasHolderBinding) {
+      setHolderBinding(true)
+      setEditAdvancedFeatures(true)
+    }
+
+    const hasPresentationDefinition = credentials.vpPolicies.some(
+      (p) =>
+        p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+    )
+    if (hasPresentationDefinition) {
+      setRequireAllTypes(true)
+      setEditAdvancedFeatures(true)
+    }
+
+    const minCredsPolicy = credentials.vpPolicies.find(
+      (p) =>
+        p?.type === 'argumentVpPolicy' && p?.policy === 'minimum-credentials'
+    )
+    if (minCredsPolicy && minCredsPolicy.type === 'argumentVpPolicy') {
+      setLimitMinCredentials(true)
+      setMinimumCredentials(minCredsPolicy.args.toString())
+      setEditAdvancedFeatures(true)
+    }
+
+    const maxCredsPolicy = credentials.vpPolicies.find(
+      (p) =>
+        p?.type === 'argumentVpPolicy' && p?.policy === 'maximum-credentials'
+    )
+    if (maxCredsPolicy && maxCredsPolicy.type === 'argumentVpPolicy') {
+      setLimitMaxCredentials(true)
+      setMaximumCredentials(maxCredsPolicy.args.toString())
+      setEditAdvancedFeatures(true)
+    }
+  }, [
+    credentials.vpPolicies,
+    credentials.requestCredentials,
+    credentials.vcPolicies,
+    credentials.enabled,
+    hasUserSetEnabled
+  ])
+
   function handlePolicyEditorToggle(value: boolean) {
+    setHasUserSetEnabled(true)
     if (!value) {
       const updatedCredentials = {
         ...credentials,
+        enabled: false,
         requestCredentials: [],
-        vcPolicies: credentials.vcPolicies?.slice(0, 3) || [],
+        vcPolicies: [],
         vpPolicies: []
+      }
+      setCredentials(updatedCredentials)
+      setEditAdvancedFeatures(false)
+    } else {
+      const updatedCredentials = {
+        ...credentials,
+        enabled: true
       }
       setCredentials(updatedCredentials)
     }
@@ -351,8 +419,12 @@ export function PolicyEditor(props): ReactElement {
   }
 
   function handleDeleteRequestCredential(index: number) {
-    credentials.requestCredentials.splice(index, 1)
-    setCredentials(credentials)
+    const updatedRequestCredentials = [...credentials.requestCredentials]
+    updatedRequestCredentials.splice(index, 1)
+    setCredentials({
+      ...credentials,
+      requestCredentials: updatedRequestCredentials
+    })
   }
 
   function handleNewStaticCustomPolicy(credential: RequestCredentialForm) {
@@ -360,8 +432,9 @@ export function PolicyEditor(props): ReactElement {
       type: 'staticPolicy',
       name: ''
     }
-    credential?.policies?.push(policy)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || []), policy]
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleNewParameterizedCustomPolicy(
@@ -372,8 +445,9 @@ export function PolicyEditor(props): ReactElement {
       args: [],
       policy: 'allowed-issuer'
     }
-    credential?.policies?.push(policy)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || []), policy]
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleNewCustomUrlPolicy(credential: RequestCredentialForm) {
@@ -383,8 +457,9 @@ export function PolicyEditor(props): ReactElement {
       policyUrl: '',
       name: ''
     }
-    credential?.policies?.push(policy)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || []), policy]
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleNewCustomPolicy(credential: RequestCredentialForm) {
@@ -394,39 +469,19 @@ export function PolicyEditor(props): ReactElement {
       name: '',
       rules: []
     }
-    credential?.policies?.push(policy)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || []), policy]
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleDeleteCustomPolicy(
     credential: RequestCredentialForm,
     index: number
   ) {
-    credential?.policies?.splice(index, 1)
-    setCredentials(credentials)
-  }
-
-  function handleNewStaticPolicy() {
-    credentials?.vcPolicies?.push('')
-    setCredentials(credentials)
-  }
-
-  function handleDeleteStaticPolicy(index: number) {
-    credentials.vcPolicies.splice(index, 1)
-    setCredentials(credentials)
-  }
-
-  const staticPolicyLabel = (index: number) => {
-    const field = { ...getFieldContent('staticPolicy', fields) }
-    if (index < filteredDefaultPolicies?.length) {
-      field.label = `Default ${field.label}`
-    }
-    return field
-  }
-
-  function handleDeleteVpPolicy(index: number) {
-    credentials.vpPolicies.splice(index, 1)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || [])]
+    updatedPolicies.splice(index, 1)
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleHolderBindingToggle() {
@@ -490,7 +545,15 @@ export function PolicyEditor(props): ReactElement {
   }
 
   useEffect(() => {
-    if (!enabled || !editAdvancedFeatures) return
+    if (!enabled) return
+
+    if (!editAdvancedFeatures) {
+      if (credentials.vpPolicies !== undefined) {
+        const { vpPolicies, ...credentialsWithoutVpPolicies } = credentials
+        setCredentials(credentialsWithoutVpPolicies)
+      }
+      return
+    }
 
     const updatedVpPolicies = [...(credentials.vpPolicies || [])]
 
@@ -561,6 +624,34 @@ export function PolicyEditor(props): ReactElement {
     minimumCredentials,
     maximumCredentials
   ])
+
+  useEffect(() => {
+    if (!editAdvancedFeatures) {
+      setHolderBinding(true)
+      setRequireAllTypes(true)
+      setMaximumCredentials('1')
+      setLimitMaxCredentials(false)
+      setMinimumCredentials('1')
+      setLimitMinCredentials(false)
+    }
+  }, [editAdvancedFeatures])
+
+  useEffect(() => {
+    if (!enabled) return
+
+    const selectedPolicies = Object.entries(defaultPolicyStates)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([policyName, _]) => policyName)
+
+    const currentVcPolicies = credentials.vcPolicies || []
+
+    if (
+      JSON.stringify(selectedPolicies.sort()) !==
+      JSON.stringify(currentVcPolicies.sort())
+    ) {
+      setCredentials({ ...credentials, vcPolicies: selectedPolicies })
+    }
+  }, [defaultPolicyStates, enabled])
 
   const ssiContent = enabled && (
     <>
