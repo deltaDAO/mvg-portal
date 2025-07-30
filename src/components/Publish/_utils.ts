@@ -71,6 +71,12 @@ import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { CancelToken } from 'axios'
 import { ComputeEditForm } from '@components/Asset/Edit/_types'
 
+function cleanupVpPolicies(value: any): void {
+  if (!value.vp_policies || value.vp_policies.length === 0) {
+    delete value.vp_policies
+  }
+}
+
 function makeDid(nftAddress: string, chainId: string): string {
   return (
     'did:ope:' +
@@ -313,16 +319,7 @@ export function parseCredentialPolicies(credentials: Credential) {
           }
         )
 
-        value.vp_policies = value.vp_policies
-          .map((policy) => {
-            try {
-              return JSON.parse(policy)
-            } catch (error) {
-              LoggerInstance.error(error)
-              return null
-            }
-          })
-          .filter((policy) => !!policy)
+        cleanupVpPolicies(value)
         return value
       })
     }
@@ -355,7 +352,7 @@ export function stringifyCredentialPolicies(credentials: Credential) {
           }
         )
 
-        value.vp_policies = value.vp_policies ?? []
+        cleanupVpPolicies(value)
         return value
       })
     }
@@ -390,35 +387,34 @@ export function generateCredentials(
         }
       )
 
-    // Only create vpPolicies for service credentials if main credentials don't have them
     const shouldCreateVpPolicies =
       !isServiceCredentials || !mainCredentials?.vpPolicies?.length
-    const vpPolicies: VP[] = shouldCreateVpPolicies
-      ? updatedCredentials?.vpPolicies?.map((credential: VpPolicyType) => {
-          let policy: VP
-          switch (credential.type) {
-            case 'staticVpPolicy':
-              policy = credential.name
-              break
-            case 'argumentVpPolicy':
-              policy = {
-                policy: credential.policy,
-                args: parseInt(credential.args)
-              }
-              break
-          }
-          return policy
-        })
-      : []
+    const vpPolicies: VP[] =
+      shouldCreateVpPolicies && updatedCredentials?.vpPolicies?.length > 0
+        ? updatedCredentials.vpPolicies.map((credential: VpPolicyType) => {
+            let policy: VP
+            switch (credential.type) {
+              case 'staticVpPolicy':
+                policy = credential.name
+                break
+              case 'argumentVpPolicy':
+                policy = {
+                  policy: credential.policy,
+                  args: parseInt(credential.args)
+                }
+                break
+            }
+            return policy
+          })
+        : []
+
+    const shouldCreateSsiPolicy =
+      !isServiceCredentials || !mainCredentials?.vpPolicies?.length
 
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
       (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
       (vpPolicies?.length ?? 0) > 0
-
-    // For service credentials, skip creating SSI policy entry if main credentials have vpPolicies
-    const shouldCreateSsiPolicy =
-      !isServiceCredentials || !mainCredentials?.vpPolicies?.length
 
     if (hasAny && shouldCreateSsiPolicy) {
       const newAllowList: CredentialPolicyBased = {
@@ -431,10 +427,7 @@ export function generateCredentials(
       if (requestCredentials?.length > 0) {
         entry.request_credentials = requestCredentials
       }
-      if (
-        updatedCredentials?.vcPolicies?.length > 0 &&
-        requestCredentials?.length > 0
-      ) {
+      if (updatedCredentials?.vcPolicies?.length > 0) {
         entry.vc_policies = updatedCredentials.vcPolicies
       }
       if (vpPolicies?.length > 0) {

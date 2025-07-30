@@ -154,6 +154,15 @@ export default function Actions({
     return false
   }
 
+  const hasSSIButNoCredentialRequests = () => {
+    const isSSIEnabled = values.credentials?.enabled === true
+
+    return (
+      isSSIEnabled &&
+      (values.credentials?.requestCredentials?.length ?? 0) === 0
+    )
+  }
+
   const isContinueDisabled =
     (values.user.stepCurrent === 1 &&
       (errors.metadata !== undefined ||
@@ -164,7 +173,8 @@ export default function Actions({
     (values.user.stepCurrent === 2 &&
       (!values.step1Completed ||
         errors.credentials !== undefined ||
-        !hasValidAllowAddress())) ||
+        !hasValidAllowAddress() ||
+        hasSSIButNoCredentialRequests())) ||
     (values.user.stepCurrent === 3 &&
       (!values.step1Completed ||
         !values.step2Completed ||

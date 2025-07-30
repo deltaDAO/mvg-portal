@@ -34,6 +34,8 @@ export default function SSIPoliciesSection({
     const newEnabled = !enabled
     setEnabled(newEnabled)
 
+    setFieldValue('credentials.enabled', newEnabled)
+
     if (newEnabled) {
       setFieldValue('credentials.vcPolicies', defaultPolicies)
     } else {
