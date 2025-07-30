@@ -13,6 +13,10 @@
 }
 
 .scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
   margin-top: calc(var(--spacer) / 4);
   min-height: fit-content;
   max-height: 50vh;
@@ -27,12 +31,13 @@
   align-items: center;
   padding: 0px;
   gap: 16px;
-  border-bottom: 1px solid var(--border-color);
   padding: var(--sp-4);
 }
 
-.scroll > .row:last-of-type {
-  border-bottom: none;
+.row:hover {
+  background: var(--publish-background-hover);
+  border-radius: var(--publish-border-radius);
+  cursor: pointer;
 }
 
 .content {
@@ -78,6 +83,14 @@
   width: 100%;
 }
 
+.didContainer {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  color: var(--clr-did-text);
+}
+
 .titleRow {
   display: flex;
   flex-direction: row;
@@ -92,7 +105,7 @@
   height: 16px;
   margin: 0;
   margin-right: 0;
-  border: 1px solid var(--publish-input-border-color);
+  border: 1px solid var(--publish-accent);
   border-radius: var(--publish-border-radius-sm);
   background: var(--publish-white);
   cursor: pointer;
@@ -198,14 +211,13 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 10px;
 }
 
 .search {
   flex: 1;
   height: 40px;
-  border: 1px solid rgba(10, 75, 112, 0.5);
-  border-radius: 20px;
+  border: 0;
+  border-radius: var(--publish-border-radius) 0 0 var(--publish-border-radius);
   font-family: 'Helvetica';
   font-style: normal;
   font-weight: 400;
@@ -248,7 +260,7 @@
   gap: 4px;
   background: #fdd655;
   box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
+  border-radius: 0 var(--publish-border-radius) var(--publish-border-radius) 0;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease;

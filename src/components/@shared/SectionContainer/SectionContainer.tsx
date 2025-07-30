@@ -6,7 +6,7 @@ import Markdown from '@shared/Markdown'
 interface SectionContainerProps {
   title?: string
   children: ReactNode
-  className?: string
+  classNames?: string
   required?: boolean
   gap?: string
   help?: string
@@ -18,7 +18,7 @@ interface SectionContainerProps {
 export default function SectionContainer({
   title,
   children,
-  className,
+  classNames,
   required = false,
   gap,
   help,
@@ -30,8 +30,7 @@ export default function SectionContainer({
     styles.container,
     variant && styles[variant],
     border && styles.border,
-    title && styles.borderNavy,
-    className
+    title && styles.borderNavy
   ]
     .filter(Boolean)
     .join(' ')
@@ -46,7 +45,7 @@ export default function SectionContainer({
         </div>
       )}
       <div
-        className={styles.content}
+        className={`${styles.content} ${classNames}`}
         style={{
           gap: gap || undefined,
           padding: padding || undefined

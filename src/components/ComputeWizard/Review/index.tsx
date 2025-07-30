@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import { useFormikContext, Field } from 'formik'
 import Input from '@shared/FormInput'
+import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
 import styles from './index.module.css'
 
@@ -9,7 +10,7 @@ export default function Review(): ReactElement {
 
   return (
     <div className={styles.container}>
-      <h2>Review and Purchase</h2>
+      <StepTitle title="Review and Purchase" />
       <p>Review your compute job configuration</p>
 
       <div className={styles.reviewSection}>

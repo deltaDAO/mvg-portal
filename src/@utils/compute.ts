@@ -17,7 +17,10 @@ import {
 import { getServiceById } from './ddo'
 import { SortTermOptions } from '../@types/aquarius/SearchQuery'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
-import { transformAssetToAssetSelection } from './assetConverter'
+import {
+  transformAssetToAssetSelection,
+  transformAssetToAssetSelectionForComputeWizard
+} from './assetConverter'
 import { ComputeEditForm } from '../components/Asset/Edit/_types'
 import { getFileDidInfo } from './provider'
 import { toast } from 'react-toastify'
@@ -228,6 +231,28 @@ export async function getAlgorithmAssetSelectionList(
       accountId,
       service.compute.publisherTrustedAlgorithms
     )
+  }
+  return algorithmSelectionList
+}
+
+export async function getAlgorithmAssetSelectionListForComputeWizard(
+  service: Service,
+  algorithms: Asset[],
+  accountId: string
+): Promise<AssetSelectionAsset[]> {
+  if (!algorithms || algorithms?.length === 0) return []
+
+  let algorithmSelectionList: AssetSelectionAsset[]
+  if (!service.compute) {
+    algorithmSelectionList = []
+  } else {
+    algorithmSelectionList =
+      await transformAssetToAssetSelectionForComputeWizard(
+        service?.serviceEndpoint,
+        algorithms,
+        accountId,
+        service.compute.publisherTrustedAlgorithms
+      )
   }
   return algorithmSelectionList
 }

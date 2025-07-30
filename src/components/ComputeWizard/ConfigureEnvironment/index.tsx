@@ -2,6 +2,7 @@ import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { Datatoken } from '@oceanprotocol/lib'
 import { useNetwork, useSigner } from 'wagmi'
+import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
 import styles from './index.module.css'
 
@@ -59,7 +60,7 @@ export default function ConfigureEnvironment(): ReactElement {
   if (!values.computeEnv) {
     return (
       <div className={styles.container}>
-        <h2>C2D Environment Configuration</h2>
+        <StepTitle title="C2D Environment Configuration" />
         <p>Please select an environment first</p>
       </div>
     )
@@ -183,7 +184,7 @@ export default function ConfigureEnvironment(): ReactElement {
 
   return (
     <div className={styles.container}>
-      <h2>C2D Environment Configuration</h2>
+      <StepTitle title="C2D Environment Configuration" />
 
       {/* Free Compute Resources Section */}
       <div className={styles.resourceSection}>

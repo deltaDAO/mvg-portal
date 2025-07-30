@@ -2,6 +2,7 @@ import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { useAccount } from 'wagmi'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
+import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
 import styles from './index.module.css'
 
@@ -31,7 +32,7 @@ export default function SelectEnvironment({
 
   return (
     <div className={styles.container}>
-      <h2>Select C2D Environment</h2>
+      <StepTitle title="Select C2D Environment" />
       <p>Choose a compute environment for your job</p>
 
       <div style={{ background: '#f0f0f0', padding: '10px', margin: '10px 0' }}>

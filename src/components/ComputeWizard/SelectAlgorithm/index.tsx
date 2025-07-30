@@ -1,10 +1,9 @@
 import { ReactElement } from 'react'
 import { useFormikContext, Field } from 'formik'
 import { useAccount } from 'wagmi'
-import { useRouter } from 'next/router'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import Input from '@shared/FormInput'
-import Button from '@shared/atoms/Button'
+import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
 import styles from './index.module.css'
 
@@ -16,11 +15,11 @@ export default function SelectAlgorithm({
   algorithms
 }: SelectAlgorithmProps): ReactElement {
   const { address: accountId } = useAccount()
-  const { values } = useFormikContext<FormComputeData>()
+  const { values, setFieldValue } = useFormikContext<FormComputeData>()
 
   return (
-    <div className={styles.container}>
-      <h2>Select Algorithm</h2>
+    <>
+      <StepTitle title="Select Algorithm" />
 
       <div className={styles.algorithmSelection}>
         <Field
@@ -32,8 +31,9 @@ export default function SelectAlgorithm({
           selected={values.algorithm}
           disabled={false}
           priceOnRight={true}
+          variant="compute"
         />
       </div>
-    </div>
+    </>
   )
 }

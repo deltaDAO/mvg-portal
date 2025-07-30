@@ -172,7 +172,9 @@ export default function AssetSelection({
                         </a>
                       </h3>
                     </div>
-                    {asset.symbol} | {asset.did}
+                    <div className={styles.didContainer}>
+                      {asset.symbol} | {asset.did}
+                    </div>
                   </div>
 
                   <div className={styles.priceContainer}>

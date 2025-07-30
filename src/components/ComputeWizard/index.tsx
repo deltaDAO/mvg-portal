@@ -6,7 +6,7 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import {
   getAlgorithmsForAsset,
-  getAlgorithmAssetSelectionList
+  getAlgorithmAssetSelectionListForComputeWizard
 } from '@utils/compute'
 import { getComputeEnvironments } from '@utils/provider'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
@@ -21,6 +21,7 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { validationSchema } from './_validation'
 import ContainerForm from '../@shared/atoms/ContainerForm'
 import { initialValues, algorithmSteps, datasetSteps } from './_constants'
+import SectionContainer from '../@shared/SectionContainer/SectionContainer'
 
 export default function ComputeWizard({
   content
@@ -65,11 +66,12 @@ export default function ComputeWizard({
           newCancelToken()
         )
 
-        const algorithmSelectionList = await getAlgorithmAssetSelectionList(
-          computeService,
-          algorithmsAssets,
-          accountId
-        )
+        const algorithmSelectionList =
+          await getAlgorithmAssetSelectionListForComputeWizard(
+            computeService,
+            algorithmsAssets,
+            accountId
+          )
 
         const environments = await getComputeEnvironments(
           computeService.serviceEndpoint,
@@ -120,16 +122,16 @@ export default function ComputeWizard({
       }}
     >
       {(formikContext) => (
-        <>
-          <PageHeader title={<Title asset={asset} />} isExtended />
+        <div className={styles.containerOuter}>
+          <PageHeader title={<Title asset={asset} />} />
           <Form className={styles.form}>
             <Navigation steps={steps} />
-            <ContainerForm style="publish">
+            <SectionContainer classNames={styles.container}>
               <Steps
                 algorithms={algorithms}
                 computeEnvs={computeEnvs}
                 isAlgorithm={isAlgorithm}
-              />{' '}
+              />
               <WizardActions
                 navigationType="path"
                 basePath={`/asset/${asset?.id}/compute`}
@@ -139,12 +141,12 @@ export default function ComputeWizard({
                 formikContext={formikContext}
                 rightAlignFirstStep={false}
               />
-            </ContainerForm>
+            </SectionContainer>
           </Form>
           {debug && (
             <div>Debug: {JSON.stringify(formikContext.values, null, 2)}</div>
           )}
-        </>
+        </div>
       )}
     </Formik>
   )
