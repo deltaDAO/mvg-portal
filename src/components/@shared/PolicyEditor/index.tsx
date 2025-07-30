@@ -419,8 +419,12 @@ export function PolicyEditor(props): ReactElement {
   }
 
   function handleDeleteRequestCredential(index: number) {
-    credentials.requestCredentials.splice(index, 1)
-    setCredentials(credentials)
+    const updatedRequestCredentials = [...credentials.requestCredentials]
+    updatedRequestCredentials.splice(index, 1)
+    setCredentials({
+      ...credentials,
+      requestCredentials: updatedRequestCredentials
+    })
   }
 
   function handleNewStaticCustomPolicy(credential: RequestCredentialForm) {
@@ -428,8 +432,9 @@ export function PolicyEditor(props): ReactElement {
       type: 'staticPolicy',
       name: ''
     }
-    credential?.policies?.push(policy)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || []), policy]
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleNewParameterizedCustomPolicy(
@@ -440,8 +445,9 @@ export function PolicyEditor(props): ReactElement {
       args: [],
       policy: 'allowed-issuer'
     }
-    credential?.policies?.push(policy)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || []), policy]
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleNewCustomUrlPolicy(credential: RequestCredentialForm) {
@@ -451,8 +457,9 @@ export function PolicyEditor(props): ReactElement {
       policyUrl: '',
       name: ''
     }
-    credential?.policies?.push(policy)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || []), policy]
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleNewCustomPolicy(credential: RequestCredentialForm) {
@@ -462,39 +469,19 @@ export function PolicyEditor(props): ReactElement {
       name: '',
       rules: []
     }
-    credential?.policies?.push(policy)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || []), policy]
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleDeleteCustomPolicy(
     credential: RequestCredentialForm,
     index: number
   ) {
-    credential?.policies?.splice(index, 1)
-    setCredentials(credentials)
-  }
-
-  function handleNewStaticPolicy() {
-    credentials?.vcPolicies?.push('')
-    setCredentials(credentials)
-  }
-
-  function handleDeleteStaticPolicy(index: number) {
-    credentials.vcPolicies.splice(index, 1)
-    setCredentials(credentials)
-  }
-
-  const staticPolicyLabel = (index: number) => {
-    const field = { ...getFieldContent('staticPolicy', fields) }
-    if (index < filteredDefaultPolicies?.length) {
-      field.label = `Default ${field.label}`
-    }
-    return field
-  }
-
-  function handleDeleteVpPolicy(index: number) {
-    credentials.vpPolicies.splice(index, 1)
-    setCredentials(credentials)
+    const updatedPolicies = [...(credential?.policies || [])]
+    updatedPolicies.splice(index, 1)
+    credential.policies = updatedPolicies
+    setCredentials({ ...credentials })
   }
 
   function handleHolderBindingToggle() {
@@ -558,7 +545,15 @@ export function PolicyEditor(props): ReactElement {
   }
 
   useEffect(() => {
-    if (!enabled || !editAdvancedFeatures) return
+    if (!enabled) return
+
+    if (!editAdvancedFeatures) {
+      if (credentials.vpPolicies !== undefined) {
+        const { vpPolicies, ...credentialsWithoutVpPolicies } = credentials
+        setCredentials(credentialsWithoutVpPolicies)
+      }
+      return
+    }
 
     const updatedVpPolicies = [...(credentials.vpPolicies || [])]
 
@@ -629,6 +624,34 @@ export function PolicyEditor(props): ReactElement {
     minimumCredentials,
     maximumCredentials
   ])
+
+  useEffect(() => {
+    if (!editAdvancedFeatures) {
+      setHolderBinding(true)
+      setRequireAllTypes(true)
+      setMaximumCredentials('1')
+      setLimitMaxCredentials(false)
+      setMinimumCredentials('1')
+      setLimitMinCredentials(false)
+    }
+  }, [editAdvancedFeatures])
+
+  useEffect(() => {
+    if (!enabled) return
+
+    const selectedPolicies = Object.entries(defaultPolicyStates)
+      .filter(([_, isSelected]) => isSelected)
+      .map(([policyName, _]) => policyName)
+
+    const currentVcPolicies = credentials.vcPolicies || []
+
+    if (
+      JSON.stringify(selectedPolicies.sort()) !==
+      JSON.stringify(currentVcPolicies.sort())
+    ) {
+      setCredentials({ ...credentials, vcPolicies: selectedPolicies })
+    }
+  }, [defaultPolicyStates, enabled])
 
   const ssiContent = enabled && (
     <>
