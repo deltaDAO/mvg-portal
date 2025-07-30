@@ -15,7 +15,7 @@ export default function SelectAlgorithm({
   algorithms
 }: SelectAlgorithmProps): ReactElement {
   const { address: accountId } = useAccount()
-  const { values, setFieldValue } = useFormikContext<FormComputeData>()
+  const { values } = useFormikContext<FormComputeData>()
 
   return (
     <>
