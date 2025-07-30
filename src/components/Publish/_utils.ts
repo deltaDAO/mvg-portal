@@ -313,16 +313,7 @@ export function parseCredentialPolicies(credentials: Credential) {
           }
         )
 
-        value.vp_policies = value.vp_policies
-          .map((policy) => {
-            try {
-              return JSON.parse(policy)
-            } catch (error) {
-              LoggerInstance.error(error)
-              return null
-            }
-          })
-          .filter((policy) => !!policy)
+        value.vp_policies = value.vp_policies ?? []
         return value
       })
     }
@@ -410,7 +401,6 @@ export function generateCredentials(
           return policy
         })
       : []
-
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
       (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
