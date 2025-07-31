@@ -15,16 +15,13 @@ import { isAddress } from 'ethers/lib/utils.js'
 import isUrl from 'is-url-superb'
 
 function isValidUrl(url: string): boolean {
-  // Early return for empty/null URLs
   if (!url?.trim()) return false
 
-  // Check protocol first (faster than isUrl)
   const trimmedUrl = url.trim()
   if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
     return false
   }
 
-  // Only run expensive isUrl check if protocol is valid
   return isUrl(trimmedUrl)
 }
 
