@@ -92,7 +92,7 @@ export default function Results({
 
   return (
     <div className={styles.results}>
-      <h4 className={styles.title}>Results</h4>
+      <div className={styles.title}>Results</div>
       {isFinished ? (
         <ul>
           {job.results &&

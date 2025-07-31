@@ -24,6 +24,7 @@ import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
 import MetaInfo from './MetaMain/MetaInfo'
 import EditIcon from '@images/edit.svg'
 import { useRouter } from 'next/router'
+import ComputeJobs from '@components/@shared/ComputeJobs'
 
 export default function AssetContent({
   asset
@@ -189,6 +190,7 @@ export default function AssetContent({
             <MetaFull ddo={asset} />
             {debug === true && <DebugOutput title="DDO" output={asset} />}
           </div>
+          <ComputeJobs />
         </div>
 
         <div className={styles.actions}>
