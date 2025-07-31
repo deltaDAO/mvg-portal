@@ -6,6 +6,8 @@ import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelecti
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { datasetSteps, algorithmSteps } from './_constants'
 import SelectAlgorithm from './SelectAlgorithm'
+import SelectServices from './SelectServices'
+import PreviewSelectedServices from './PreviewSelectedServices'
 import SelectEnvironment from './SelectEnvironment'
 import ConfigureEnvironment from './ConfigureEnvironment'
 import Review from './Review'
@@ -53,9 +55,9 @@ export default function Steps({
     case 1:
       return steps[0].component
     case 2:
-      return steps[1].component
+      return <SelectServices />
     case 3:
-      return steps[2].component
+      return <PreviewSelectedServices />
     case 4:
       return steps[3].component
     case 5:
