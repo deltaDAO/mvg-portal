@@ -126,7 +126,25 @@ const validationRequestCredentials = {
       }),
       policyUrl: Yup.string().when('type', {
         is: 'customUrlPolicy',
-        then: (shema) => shema.required('Required')
+        then: (shema) =>
+          shema
+            .required('Required')
+            .test('isValidUrl', 'Invalid URL format', (value) => {
+              if (!value) return false
+              const trimmedValue = value.trim()
+              if (
+                !trimmedValue.startsWith('http://') &&
+                !trimmedValue.startsWith('https://')
+              ) {
+                return false
+              }
+              try {
+                const url = new URL(trimmedValue)
+                return url.protocol === 'http:' || url.protocol === 'https:'
+              } catch {
+                return false
+              }
+            })
       }),
       arguments: Yup.array()
         .when('type', {
