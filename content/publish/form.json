@@ -43,7 +43,7 @@
       },
       {
         "name": "license",
-        "label": "File",
+        "label": "URL",
         "placeholder": "e.g. https://file.com/license.json",
         "help": "A SPDX identifier of the license applicable to this service.",
         "type": "files",

@@ -118,7 +118,7 @@
           {
             "value": "url",
             "title": "URL",
-            "label": "File",
+            "label": "URL",
             "placeholder": "e.g. https://file.com/license.json",
             "help": "A SPDX identifier of the license applicable to this service.",
             "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",

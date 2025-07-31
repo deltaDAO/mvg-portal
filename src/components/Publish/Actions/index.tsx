@@ -12,6 +12,21 @@ import Info from '@images/info.svg'
 import Loader from '@shared/atoms/Loader'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { isAddress } from 'ethers/lib/utils.js'
+import isUrl from 'is-url-superb'
+
+function isValidUrl(url: string): boolean {
+  // Early return for empty/null URLs
+  if (!url?.trim()) return false
+
+  // Check protocol first (faster than isUrl)
+  const trimmedUrl = url.trim()
+  if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
+    return false
+  }
+
+  // Only run expensive isUrl check if protocol is valid
+  return isUrl(trimmedUrl)
+}
 
 export default function Actions({
   scrollToRef,
@@ -48,76 +63,59 @@ export default function Actions({
   function handleNext(e: FormEvent) {
     e.preventDefault()
 
-    if (values.user.stepCurrent === 1) setFieldValue('step1Completed', true)
-    if (values.user.stepCurrent === 2) setFieldValue('step2Completed', true)
-    if (values.user.stepCurrent === 3) setFieldValue('step3Completed', true)
-    if (values.user.stepCurrent === 4) setFieldValue('step4Completed', true)
-    if (values.user.stepCurrent === 5) setFieldValue('step5Completed', true)
-    if (values.user.stepCurrent === 6) {
-      setFieldValue('step6Completed', true)
-      setFieldValue('previewPageVisited', true)
+    const { stepCurrent } = values.user
+    const stepCompletions = {
+      1: ['step1Completed'],
+      2: ['step2Completed'],
+      3: ['step3Completed'],
+      4: ['step4Completed'],
+      5: ['step5Completed'],
+      6: ['step6Completed', 'previewPageVisited'],
+      7: ['submissionPageVisited']
     }
-    if (values.user.stepCurrent === 7)
-      setFieldValue('submissionPageVisited', true)
+
+    const fieldsToSet = stepCompletions[stepCurrent] || []
+    fieldsToSet.forEach((field) => setFieldValue(field, true))
 
     if (values.user.stepCurrent === 2) {
-      const typedAllowValue = values.credentials.allowInputValue?.trim()
-      if (
-        typedAllowValue &&
-        typedAllowValue.length >= 40 &&
-        typedAllowValue.startsWith('0x')
-      ) {
+      const processAddress = (
+        inputValue: string,
+        fieldName: 'allow' | 'deny'
+      ) => {
+        const trimmedValue = inputValue?.trim()
+        if (
+          !trimmedValue ||
+          trimmedValue.length < 40 ||
+          !trimmedValue.startsWith('0x')
+        ) {
+          return
+        }
+
         try {
-          const isValidAddress = isAddress(typedAllowValue)
-          if (isValidAddress) {
-            const lowerCaseAddress = typedAllowValue.toLowerCase()
-            const currentAllowList = values.credentials.allow || []
-            if (!currentAllowList.includes(lowerCaseAddress)) {
+          if (isAddress(trimmedValue)) {
+            const lowerCaseAddress = trimmedValue.toLowerCase()
+            const currentList = values.credentials[fieldName] || []
+
+            if (!currentList.includes(lowerCaseAddress)) {
               console.log(
-                'Auto-committing typed allow address before navigation:',
+                `Auto-committing typed ${fieldName} address before navigation:`,
                 lowerCaseAddress
               )
-              const newAllowList = [...currentAllowList, lowerCaseAddress]
-              setFieldValue('credentials.allow', newAllowList)
-              setFieldValue('credentials.allowInputValue', '')
+              const newList = [...currentList, lowerCaseAddress]
+              setFieldValue(`credentials.${fieldName}`, newList)
+              setFieldValue(`credentials.${fieldName}InputValue`, '')
             }
           }
         } catch (error) {
           console.log(
-            'Allow address validation error during auto-commit:',
+            `${fieldName} address validation error during auto-commit:`,
             error
           )
         }
       }
 
-      const typedDenyValue = values.credentials.denyInputValue?.trim()
-      if (
-        typedDenyValue &&
-        typedDenyValue.length >= 40 &&
-        typedDenyValue.startsWith('0x')
-      ) {
-        try {
-          const isValidAddress = isAddress(typedDenyValue)
-          if (isValidAddress) {
-            const lowerCaseAddress = typedDenyValue.toLowerCase()
-            const currentDenyList = values.credentials.deny || []
-            if (!currentDenyList.includes(lowerCaseAddress)) {
-              console.log(
-                'Auto-committing typed deny address before navigation:',
-                lowerCaseAddress
-              )
-              const newDenyList = [...currentDenyList, lowerCaseAddress]
-              setFieldValue('credentials.deny', newDenyList)
-              setFieldValue('credentials.denyInputValue', '')
-            }
-          }
-        } catch (error) {
-          console.log(
-            'Deny address validation error during auto-commit:',
-            error
-          )
-        }
-      }
+      processAddress(values.credentials.allowInputValue, 'allow')
+      processAddress(values.credentials.denyInputValue, 'deny')
     }
 
     handleAction('next')
@@ -129,25 +127,21 @@ export default function Actions({
   }
 
   const hasValidAllowAddress = () => {
-    if (values.credentials.allow && values.credentials.allow.length > 0) {
-      return true
-    }
+    // Check existing allow list
+    if (values.credentials.allow?.length > 0) return true
 
     const typedValue = values.credentials.allowInputValue?.trim()
-    if (typedValue) {
-      if (typedValue === '*') {
-        return true
-      }
+    if (!typedValue) return false
 
-      if (typedValue.length >= 40 && typedValue.startsWith('0x')) {
-        try {
-          const isValidAddress = isAddress(typedValue)
-          if (isValidAddress) {
-            return true
-          }
-        } catch (error) {
-          console.log('Allow address validation error:', error)
-        }
+    // Check for wildcard
+    if (typedValue === '*') return true
+
+    // Check for valid address
+    if (typedValue.length >= 40 && typedValue.startsWith('0x')) {
+      try {
+        return isAddress(typedValue)
+      } catch (error) {
+        console.log('Allow address validation error:', error)
       }
     }
 
@@ -155,52 +149,105 @@ export default function Actions({
   }
 
   const hasSSIButNoCredentialRequests = () => {
-    const isSSIEnabled = values.credentials?.enabled === true
+    // Early return if SSI not enabled
+    if (!values.credentials?.enabled) return false
 
-    return (
-      isSSIEnabled &&
-      (values.credentials?.requestCredentials?.length ?? 0) === 0
-    )
+    const requestCredentials = values.credentials?.requestCredentials
+    // Early return if no credential requests
+    if (!requestCredentials?.length) return true
+
+    // Check for invalid policies with early returns
+    return requestCredentials.some((credential) => {
+      const policies = credential?.policies
+      if (!policies?.length) return false
+
+      return policies.some((policy) => {
+        if (!policy?.type) return false
+
+        switch (policy.type) {
+          case 'staticPolicy':
+            return !policy.name?.trim()
+          case 'parameterizedPolicy':
+            return !policy.args?.length
+          case 'customUrlPolicy': {
+            return (
+              !policy.name?.trim() ||
+              !policy.policyUrl?.trim() ||
+              !isValidUrl(policy.policyUrl) ||
+              !policy.arguments?.length ||
+              policy.arguments.some(
+                (arg) => !arg.name?.trim() || !arg.value?.trim()
+              )
+            )
+          }
+          case 'customPolicy': {
+            return (
+              !policy.name?.trim() ||
+              !policy.rules?.length ||
+              policy.rules.some(
+                (rule) =>
+                  !rule.leftValue?.trim() ||
+                  !rule.rightValue?.trim() ||
+                  !rule.operator?.trim()
+              )
+            )
+          }
+          default:
+            return false
+        }
+      })
+    })
   }
 
-  const isContinueDisabled =
-    (values.user.stepCurrent === 1 &&
-      (errors.metadata !== undefined ||
+  const isContinueDisabled = (() => {
+    const { stepCurrent } = values.user
+    const {
+      step1Completed,
+      step2Completed,
+      step3Completed,
+      step4Completed,
+      step5Completed
+    } = values
+
+    const stepValidations = {
+      1: () =>
+        errors.metadata !== undefined ||
         (values.metadata.licenseTypeSelection === 'URL' &&
           !values.metadata.licenseUrl?.[0]?.valid) ||
         (values.metadata.licenseTypeSelection === 'Upload license file' &&
-          !values.metadata.uploadedLicense))) ||
-    (values.user.stepCurrent === 2 &&
-      (!values.step1Completed ||
+          !values.metadata.uploadedLicense),
+      2: () =>
+        !step1Completed ||
         errors.credentials !== undefined ||
         !hasValidAllowAddress() ||
-        hasSSIButNoCredentialRequests())) ||
-    (values.user.stepCurrent === 3 &&
-      (!values.step1Completed ||
-        !values.step2Completed ||
-        errors.services !== undefined)) ||
-    (values.user.stepCurrent === 4 &&
-      (!values.step1Completed ||
-        !values.step2Completed ||
-        !values.step3Completed ||
-        errors.pricing !== undefined)) ||
-    (values.user.stepCurrent === 5 &&
-      (!values.step1Completed ||
-        !values.step2Completed ||
-        !values.step3Completed ||
-        !values.step4Completed ||
-        errors.additionalDdos !== undefined)) ||
-    (values.user.stepCurrent === 6 &&
-      (!values.step1Completed ||
-        !values.step2Completed ||
-        !values.step3Completed ||
-        !values.step4Completed ||
-        !values.step5Completed))
+        hasSSIButNoCredentialRequests(),
+      3: () =>
+        !step1Completed || !step2Completed || errors.services !== undefined,
+      4: () =>
+        !step1Completed ||
+        !step2Completed ||
+        !step3Completed ||
+        errors.pricing !== undefined,
+      5: () =>
+        !step1Completed ||
+        !step2Completed ||
+        !step3Completed ||
+        !step4Completed ||
+        errors.additionalDdos !== undefined,
+      6: () =>
+        !step1Completed ||
+        !step2Completed ||
+        !step3Completed ||
+        !step4Completed ||
+        !step5Completed
+    }
 
-  const hasSubmitError =
-    values.feedback?.[1].status === 'error' ||
-    values.feedback?.[2].status === 'error' ||
-    values.feedback?.[3].status === 'error'
+    return stepValidations[stepCurrent]?.() || false
+  })()
+
+  const hasSubmitError = [1, 2, 3].some(
+    (index) => values.feedback?.[index]?.status === 'error'
+  )
 
   const isMetadataPage = values.user.stepCurrent === 1
   const actionsClassName = isMetadataPage ? styles.actionsRight : styles.actions
