@@ -106,7 +106,7 @@ export const initialValues: FormPublishData = {
         deny: [],
         requestCredentials: [],
         vcPolicies: [],
-        vpPolicies: []
+        enabled: false
       }
     }
   ],
@@ -123,7 +123,7 @@ export const initialValues: FormPublishData = {
     deny: [],
     requestCredentials: [],
     vcPolicies: [],
-    vpPolicies: []
+    enabled: false
   },
   accessPolicyPageVisited: false,
   previewPageVisited: false

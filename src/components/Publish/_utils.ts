@@ -312,8 +312,6 @@ export function parseCredentialPolicies(credentials: Credential) {
             return requestCredentials
           }
         )
-
-        value.vp_policies = value.vp_policies ?? []
         return value
       })
     }
@@ -345,8 +343,6 @@ export function stringifyCredentialPolicies(credentials: Credential) {
             return requestCredentials
           }
         )
-
-        value.vp_policies = value.vp_policies ?? []
         return value
       })
     }
