@@ -11,6 +11,7 @@ import { getAsset } from '@utils/aquarius'
 import { Asset as AssetType } from 'src/@types/Asset'
 import External from '@images/external.svg'
 import CloseIcon from '@images/closeIcon.svg'
+import useIsMobile from '@hooks/useIsMobile'
 
 function Asset({
   title,
@@ -120,6 +121,7 @@ export default function Details({
   job: ComputeJobMetaData
 }): ReactElement {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const isMobile = useIsMobile()
 
   return (
     <>
@@ -171,8 +173,24 @@ export default function Details({
                   }
                 />
               )}
-              <MetaItem title="Job ID" content={<code>{job.jobId}</code>} />
+              <span className={styles.jobDID}>
+                <MetaItem
+                  title="Job ID"
+                  content={
+                    <code>
+                      {isMobile ? `${job.jobId.slice(0, 20)}...` : job.jobId}
+                    </code>
+                  }
+                />
+              </span>
             </div>
+            <button
+              className={styles.mobileCloseButton}
+              onClick={() => setIsDialogOpen(false)}
+              aria-label="Close Dialog"
+            >
+              Close
+            </button>
           </div>
         </dialog>
       )}

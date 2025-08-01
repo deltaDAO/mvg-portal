@@ -118,20 +118,28 @@
 
 .closeIconAbsolute {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 1rem;
+  right: 1rem;
   cursor: pointer;
   width: 28px;
   height: 28px;
   fill: #0f172a;
   transition: transform 0.2s ease;
-  margin-top: 1rem;
-  margin-right: 1.8rem;
+  z-index: 9999;
 }
 
 .closeIconAbsolute:hover {
   transform: scale(1.1);
   fill: #004b9e;
+}
+
+@media (max-width: 768px) {
+  .closeIconAbsolute {
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 24px;
+    height: 24px;
+  }
 }
 
 /* Meta info section */
@@ -141,4 +149,46 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
+}
+
+.mobileCloseButton {
+  display: none;
+}
+.jobDID {
+}
+
+@media (max-width: 768px) {
+  .mobileCloseButton {
+    display: block;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    border: none;
+    z-index: 10000;
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 8px 20px;
+    width: 79px;
+    height: 40px;
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 114%;
+    text-align: center;
+    color: #0a4b70;
+    box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+    background: rgba(48, 48, 49, 0.12);
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+  }
+
+  .mobileCloseButton:hover {
+    background-color: #003c5e;
+    color: white;
+  }
+  .jobDID {
+    font-size: 14px;
+    overflow-wrap: break-word;
+    word-break: break-all;
+  }
 }
