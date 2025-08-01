@@ -23,6 +23,7 @@ import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { useAccount } from 'wagmi'
 import Button from '@shared/atoms/Button'
+import appConfig from 'app.config.cjs'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -61,6 +62,7 @@ export function AssetActionCheckCredentials({
   asset: Asset
   service: Service
 }) {
+  console.log('AssetActionCheckCredentials component rendered')
   const { address: accountId } = useAccount()
 
   const [checkCredentialState, setCheckCredentialState] =
@@ -89,16 +91,52 @@ export function AssetActionCheckCredentials({
     setCachedCredentials([])
   }
 
+  // Debug logging for SSI wallet state
   useEffect(() => {
+    console.log('SSI Wallet Debug State:')
+    console.log('- selectedWallet:', selectedWallet)
+    console.log('- sessionToken:', sessionToken)
+    console.log('- checkCredentialState:', checkCredentialState)
+    console.log('- appConfig.ssiEnabled:', appConfig.ssiEnabled)
+  }, [selectedWallet, sessionToken, checkCredentialState])
+
+  // Test useEffect to see if useEffect works at all
+  useEffect(() => {
+    console.log(
+      'TEST: useEffect is working, checkCredentialState changed to:',
+      checkCredentialState
+    )
+  }, [checkCredentialState])
+
+  useEffect(() => {
+    console.log(
+      'useEffect triggered with checkCredentialState:',
+      checkCredentialState
+    )
     async function handleCredentialExchange() {
       try {
+        console.log(
+          'handleCredentialExchange called with state:',
+          checkCredentialState
+        )
         switch (checkCredentialState) {
           case CheckCredentialState.StartCredentialExchange: {
-            const presentationResult = await requestCredentialPresentation(
-              asset,
-              accountId,
-              service.id
-            )
+            console.log('Starting credential presentation request...')
+            console.log('Asset:', asset)
+            console.log('AccountId:', accountId)
+            console.log('Service ID:', service.id)
+            let presentationResult
+            try {
+              presentationResult = await requestCredentialPresentation(
+                asset,
+                accountId,
+                service.id
+              )
+              console.log('Presentation result:', presentationResult)
+            } catch (error) {
+              console.error('Error in requestCredentialPresentation:', error)
+              throw error
+            }
             if (
               presentationResult.openid4vc &&
               typeof presentationResult.openid4vc === 'object' &&
@@ -113,6 +151,16 @@ export function AssetActionCheckCredentials({
               cacheVerifierSessionId(asset.id, service.id, id, true)
               break
             }
+
+            // Check if we have a valid presentation result
+            if (!presentationResult || !presentationResult.openid4vc) {
+              console.error('No presentation result or openid4vc URL received')
+              console.log('Full presentation result:', presentationResult)
+              toast.error('No credential requirements found for this asset')
+              setCheckCredentialState(CheckCredentialState.Stop)
+              break
+            }
+
             exchangeStateData.openid4vp = presentationResult.openid4vc
             exchangeStateData.poliyServerData =
               presentationResult.policyServerData
@@ -282,7 +330,14 @@ export function AssetActionCheckCredentials({
 
       toast.error('An error occurred')
     })
-  }, [checkCredentialState])
+  }, [
+    checkCredentialState,
+    asset,
+    accountId,
+    service.id,
+    selectedWallet,
+    sessionToken
+  ])
 
   function handleAcceptCredentialSelection(selectedCredential: string[]) {
     exchangeStateData.selectedCredentials = selectedCredential
@@ -320,11 +375,15 @@ export function AssetActionCheckCredentials({
       <div className={styles.buttonWrapper}>
         <Button
           type="button"
-          onClick={() =>
+          onClick={() => {
+            console.log('Check Credentials button clicked')
+            console.log('selectedWallet:', selectedWallet)
+            console.log('selectedWallet?.id:', selectedWallet?.id)
+            console.log('checkCredentialState:', checkCredentialState)
             setCheckCredentialState(
               CheckCredentialState.StartCredentialExchange
             )
-          }
+          }}
           disabled={!selectedWallet?.id}
           style="publish"
         >

@@ -128,9 +128,9 @@ export default function ConfigureEnvironment(): ReactElement {
         className={styles.resourceRow}
       >
         <div className={styles.resourceLabel}>{label}</div>
-        <div className={styles.resourceControls}>
-          <div className={styles.minSection}>
-            <span className={styles.minLabel}>min</span>
+        <div className={styles.sliderSection}>
+          <span className={styles.minLabel}>min</span>
+          <div className={styles.sliderContainer}>
             <input
               type="range"
               min={minValue}
@@ -145,39 +145,34 @@ export default function ConfigureEnvironment(): ReactElement {
               }
               className={styles.customSlider}
             />
+            <div className={styles.sliderLine}></div>
           </div>
-          <div className={styles.maxSection}>
-            <span className={styles.maxLabel}>max</span>
+          <span className={styles.maxLabel}>max</span>
+        </div>
+        <div className={styles.inputSection}>
+          <input
+            type="text"
+            value={currentValue}
+            onChange={(e) =>
+              updateResource(resourceId as any, Number(e.target.value), isFree)
+            }
+            className={`${styles.input} ${styles.inputSmall}`}
+            placeholder="value..."
+          />
+          <span className={styles.unit}>{unit}</span>
+        </div>
+        {!isFree && (
+          <div className={styles.resourcePriceSection}>
+            <span className={styles.priceLabel}>price per time unit</span>
             <input
               type="text"
-              value={currentValue}
-              onChange={(e) =>
-                updateResource(
-                  resourceId as any,
-                  Number(e.target.value),
-                  isFree
-                )
-              }
-              className={styles.maxInput}
+              className={`${styles.input} ${styles.inputSmall}`}
               placeholder="value..."
+              readOnly
+              value={fee?.prices?.find((p) => p.id === resourceId)?.price || 0}
             />
-            <span className={styles.unit}>{unit}</span>
           </div>
-          {!isFree && (
-            <div className={styles.resourcePriceSection}>
-              <span className={styles.priceLabel}>price per time unit</span>
-              <input
-                type="text"
-                className={styles.resourcePriceInput}
-                placeholder="value..."
-                readOnly
-                value={
-                  fee?.prices?.find((p) => p.id === resourceId)?.price || 0
-                }
-              />
-            </div>
-          )}
-        </div>
+        )}
       </div>
     )
   }
@@ -202,10 +197,10 @@ export default function ConfigureEnvironment(): ReactElement {
         </div>
 
         <div className={styles.resourceContent}>
-          {renderResourceRow('cpu', 'CPU', '', true)}
+          {renderResourceRow('cpu', 'CPU', 'Units', true)}
           {renderResourceRow('ram', 'RAM', 'MB', true)}
           {renderResourceRow('disk', 'DISK', 'MB', true)}
-          {renderResourceRow('jobDuration', 'JOB DURATION', 'minutes', true)}
+          {renderResourceRow('jobDuration', 'JOB DURATION', 'Minutes', true)}
         </div>
       </div>
 
@@ -226,9 +221,9 @@ export default function ConfigureEnvironment(): ReactElement {
 
         <div className={styles.resourceContent}>
           {renderResourceRow('cpu', 'CPU', '', false)}
-          {renderResourceRow('ram', 'RAM', 'MB', false)}
-          {renderResourceRow('disk', 'DISK', 'MB', false)}
-          {renderResourceRow('jobDuration', 'JOB DURATION', 'minutes', false)}
+          {renderResourceRow('ram', 'RAM', '', false)}
+          {renderResourceRow('disk', 'DISK', '', false)}
+          {renderResourceRow('jobDuration', 'JOB DURATION', '', true)}
         </div>
       </div>
 
@@ -240,7 +235,7 @@ export default function ConfigureEnvironment(): ReactElement {
             type="text"
             value={calculatePrice()}
             readOnly
-            className={styles.priceInput}
+            className={`${styles.input} ${styles.inputLarge}`}
             placeholder="0"
           />
           <div className={styles.priceInfo}>
