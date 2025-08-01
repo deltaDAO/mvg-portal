@@ -355,7 +355,7 @@ export default function Compute({
         actualAlgorithmAsset,
         actualAlgoService,
         actualAlgoAccessDetails,
-        actualSvcIndex
+        initializedProvider
       }
     } catch (error) {
       setError(error.message)
@@ -498,7 +498,7 @@ export default function Compute({
         actualAlgorithmAsset,
         actualAlgoService,
         actualAlgoAccessDetails,
-        actualSvcIndex
+        initializedProvider
       } = await initPriceAndFees(datasetServices)
 
       const computeAlgorithm: ComputeAlgorithm = {
@@ -534,9 +534,9 @@ export default function Compute({
         actualAlgorithmAsset,
         actualAlgoService,
         actualAlgoAccessDetails,
-        initializedProviderResponse?.algorithm?.providerFee
+        initializedProvider?.algorithm?.providerFee ||
+          initializedProviderResponse?.algorithm?.providerFee
       )
-
       const algorithmOrderTx = await handleComputeOrder(
         signer,
         actualAlgorithmAsset,
@@ -544,7 +544,8 @@ export default function Compute({
         actualAlgoAccessDetails,
         algoOrderPriceAndFees || algoOrderPriceAndFeesResponse,
         accountId,
-        initializedProviderResponse?.algorithm,
+        initializedProvider?.algorithm ||
+          initializedProviderResponse?.algorithm,
         hasAlgoAssetDatatoken,
         lookupVerifierSessionId(
           datasetResponses[0].actualDatasetAsset.id,

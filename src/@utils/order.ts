@@ -34,14 +34,33 @@ async function initializeProvider(
 ): Promise<ProviderInitialize> {
   if (providerFees) return
   try {
-    const provider = await ProviderInstance.initialize(
-      asset.id,
-      service.id,
-      0,
-      accountId,
-      customProviderUrl || service.serviceEndpoint
+    const command = {
+      documentId: asset.id,
+      serviceId: service.id,
+      consumerAddress: accountId,
+      policyServer: {
+        sessionId: '',
+        successRedirectUri: '',
+        errorRedirectUri: '',
+        responseRedirectUri: '',
+        presentationDefinitionUri: ''
+      }
+    }
+    const initializePs = await ProviderInstance.initializePSVerification(
+      customProviderUrl || service.serviceEndpoint,
+      command
     )
-    return provider
+    if (initializePs?.success) {
+      const provider = await ProviderInstance.initialize(
+        asset.id,
+        service.id,
+        0,
+        accountId,
+        customProviderUrl || service.serviceEndpoint
+      )
+      return provider
+    }
+    throw new Error(`Provider initialization failed: ${initializePs.error}`)
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.log('[Initialize Provider] Error:', message)
@@ -301,6 +320,12 @@ export async function handleComputeOrder(
     // are to be paid
     if (accessDetails.validOrderTx) {
       return accessDetails.validOrderTx
+    }
+    if (!initializeData) {
+      LoggerInstance.log(
+        '[compute] No initializeData found, returning valid order tx'
+      )
+      throw new Error('No initializeData found, please try again.')
     }
     if (initializeData?.validOrder && !initializeData.providerFee) {
       LoggerInstance.log(

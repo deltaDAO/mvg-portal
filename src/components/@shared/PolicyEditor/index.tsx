@@ -193,8 +193,17 @@ export function PolicyEditor(props): ReactElement {
   const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(
     credentials.advancedFeaturesEnabled || false
   )
-  const [holderBinding, setHolderBinding] = useState(true)
-  const [requireAllTypes, setRequireAllTypes] = useState(true)
+  const [holderBinding, setHolderBinding] = useState(
+    credentials.vpPolicies?.some(
+      (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+    ) ?? true
+  )
+  const [requireAllTypes, setRequireAllTypes] = useState(
+    credentials.vpPolicies?.some(
+      (p) =>
+        p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+    ) ?? true
+  )
   const [maximumCredentials, setMaximumCredentials] = useState('1')
   const [limitMaxCredentials, setLimitMaxCredentials] = useState(false)
   const [minimumCredentials, setMinimumCredentials] = useState('1')
@@ -245,7 +254,10 @@ export function PolicyEditor(props): ReactElement {
     if (hasHolderBinding) {
       console.log('Setting holderBinding to true')
       setHolderBinding(true)
-      setEditAdvancedFeatures(true)
+      // Only set editAdvancedFeatures to true if user hasn't manually disabled it
+      if (!hasUserSetEnabled || editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+      }
     }
 
     const hasPresentationDefinition = vpPolicies.some(
@@ -255,7 +267,10 @@ export function PolicyEditor(props): ReactElement {
     if (hasPresentationDefinition) {
       console.log('Setting requireAllTypes to true')
       setRequireAllTypes(true)
-      setEditAdvancedFeatures(true)
+      // Only set editAdvancedFeatures to true if user hasn't manually disabled it
+      if (!hasUserSetEnabled || editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+      }
     }
 
     const minCredsPolicy = vpPolicies.find(
@@ -271,7 +286,10 @@ export function PolicyEditor(props): ReactElement {
       )
       setLimitMinCredentials(true)
       setMinimumCredentials(minCredsPolicy.args || '1')
-      setEditAdvancedFeatures(true)
+      // Only set editAdvancedFeatures to true if user hasn't manually disabled it
+      if (!hasUserSetEnabled || editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+      }
     }
 
     const maxCredsPolicy = vpPolicies.find(
@@ -287,9 +305,12 @@ export function PolicyEditor(props): ReactElement {
       )
       setLimitMaxCredentials(true)
       setMaximumCredentials(maxCredsPolicy.args || '1')
-      setEditAdvancedFeatures(true)
+      // Only set editAdvancedFeatures to true if user hasn't manually disabled it
+      if (!hasUserSetEnabled || editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+      }
     }
-  }, [credentials])
+  }, [credentials, hasUserSetEnabled, editAdvancedFeatures])
 
   const allPolicies = [
     'signature',
@@ -326,7 +347,17 @@ export function PolicyEditor(props): ReactElement {
         credentials.requestCredentials.length > 0) ||
       (credentials.vcPolicies && credentials.vcPolicies.length > 0)
 
-    if (hasExistingCredentials && !credentials.enabled && !hasUserSetEnabled) {
+    const hasOnlyDefaultVcPolicies =
+      credentials.vcPolicies?.length > 0 &&
+      !credentials.vpPolicies?.length &&
+      !credentials.requestCredentials?.length
+
+    if (
+      hasExistingCredentials &&
+      !hasOnlyDefaultVcPolicies &&
+      !credentials.enabled &&
+      !hasUserSetEnabled
+    ) {
       setEnabled(true)
       setCredentials({ ...credentials, enabled: true })
     }
@@ -348,7 +379,10 @@ export function PolicyEditor(props): ReactElement {
     )
     setHolderBinding(hasHolderBinding)
     if (hasHolderBinding) {
-      setEditAdvancedFeatures(true)
+      // Only set editAdvancedFeatures to true if user hasn't manually disabled it
+      if (!hasUserSetEnabled || editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+      }
     }
 
     const hasPresentationDefinition = credentials.vpPolicies.some(
@@ -357,7 +391,10 @@ export function PolicyEditor(props): ReactElement {
     )
     setRequireAllTypes(hasPresentationDefinition)
     if (hasPresentationDefinition) {
-      setEditAdvancedFeatures(true)
+      // Only set editAdvancedFeatures to true if user hasn't manually disabled it
+      if (!hasUserSetEnabled || editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+      }
     }
 
     const minCredsPolicy = credentials.vpPolicies.find(
@@ -367,7 +404,10 @@ export function PolicyEditor(props): ReactElement {
     if (minCredsPolicy && minCredsPolicy.type === 'argumentVpPolicy') {
       setLimitMinCredentials(true)
       setMinimumCredentials(minCredsPolicy.args.toString())
-      setEditAdvancedFeatures(true)
+      // Only set editAdvancedFeatures to true if user hasn't manually disabled it
+      if (!hasUserSetEnabled || editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+      }
     }
 
     const maxCredsPolicy = credentials.vpPolicies.find(
@@ -377,9 +417,12 @@ export function PolicyEditor(props): ReactElement {
     if (maxCredsPolicy && maxCredsPolicy.type === 'argumentVpPolicy') {
       setLimitMaxCredentials(true)
       setMaximumCredentials(maxCredsPolicy.args.toString())
-      setEditAdvancedFeatures(true)
+      // Only set editAdvancedFeatures to true if user hasn't manually disabled it
+      if (!hasUserSetEnabled || editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+      }
     }
-  }, [credentials.enabled, hasUserSetEnabled])
+  }, [credentials.enabled, hasUserSetEnabled, editAdvancedFeatures])
 
   function handlePolicyEditorToggle(value: boolean) {
     setHasUserSetEnabled(true)
@@ -396,7 +439,11 @@ export function PolicyEditor(props): ReactElement {
     } else {
       const updatedCredentials = {
         ...credentials,
-        enabled: true
+        enabled: true,
+        vcPolicies: defaultPolicies || []
+      }
+      if (credentials.vpPolicies?.length) {
+        updatedCredentials.vpPolicies = credentials.vpPolicies
       }
       setCredentials(updatedCredentials)
     }
@@ -585,7 +632,55 @@ export function PolicyEditor(props): ReactElement {
 
     let changed = false
 
-    // Handle minimum
+    if (holderBinding) {
+      const exists = updatedVpPolicies.some(
+        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'holder-binding'
+        })
+        changed = true
+      }
+    } else {
+      const filtered = updatedVpPolicies.filter(
+        (p) => !(p?.type === 'staticVpPolicy' && p?.name === 'holder-binding')
+      )
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
+    if (requireAllTypes) {
+      const exists = updatedVpPolicies.some(
+        (p) =>
+          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'presentation-definition'
+        })
+        changed = true
+      }
+    } else {
+      const filtered = updatedVpPolicies.filter(
+        (p) =>
+          !(
+            p?.type === 'staticVpPolicy' &&
+            p?.name === 'presentation-definition'
+          )
+      )
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
     if (limitMinCredentials) {
       upsertPolicy('minimum-credentials', minimumCredentials)
       changed = true
@@ -824,6 +919,17 @@ export function PolicyEditor(props): ReactElement {
                 const newValue = !editAdvancedFeatures
                 setHasUserSetEnabled(true)
                 setEditAdvancedFeatures(newValue)
+
+                // Reset to initial values when re-enabling advanced features
+                if (newValue) {
+                  setHolderBinding(true)
+                  setRequireAllTypes(true)
+                  setLimitMinCredentials(false)
+                  setLimitMaxCredentials(false)
+                  setMinimumCredentials('1')
+                  setMaximumCredentials('1')
+                }
+
                 setCredentials({
                   ...credentials,
                   advancedFeaturesEnabled: newValue
