@@ -37,7 +37,6 @@ export default function ComputeWizard({
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string>()
-  console.log('asset data ', asset?.credentialSubject.metadata.type)
   const isAlgorithm = asset?.credentialSubject.metadata.type === 'algorithm'
   const steps = isAlgorithm ? algorithmSteps : datasetSteps
   const totalSteps = steps.length
