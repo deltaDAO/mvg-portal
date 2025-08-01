@@ -32,7 +32,7 @@
     "@oceanprotocol/art": "^3.2.0",
     "@oceanprotocol/contracts": "^2.2.1",
     "@oceanprotocol/ddo-js": "^0.1.1",
-    "@oceanprotocol/lib": "^4.3.1",
+    "@oceanprotocol/lib": "^4.3.3",
     "@oceanprotocol/typographies": "^0.1.0",
     "@oceanprotocol/use-dark-mode": "^2.4.3",
     "@pinata/sdk": "^2.1.0",
