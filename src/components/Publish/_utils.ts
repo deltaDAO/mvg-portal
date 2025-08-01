@@ -387,29 +387,29 @@ export function generateCredentials(
         }
       )
 
-    const shouldCreateVpPolicies =
-      !isServiceCredentials || !mainCredentials?.vpPolicies?.length
-    const vpPolicies: VP[] =
-      shouldCreateVpPolicies && updatedCredentials?.vpPolicies?.length > 0
-        ? updatedCredentials.vpPolicies.map((credential: VpPolicyType) => {
-            let policy: VP
-            switch (credential.type) {
-              case 'staticVpPolicy':
-                policy = credential.name
-                break
-              case 'argumentVpPolicy':
-                policy = {
-                  policy: credential.policy,
-                  args: parseInt(credential.args)
-                }
-                break
-            }
-            return policy
-          })
-        : []
+    const shouldCreateVpPolicies = updatedCredentials?.vpPolicies?.length > 0
+    const vpPolicies: VP[] = shouldCreateVpPolicies
+      ? updatedCredentials.vpPolicies.map((credential: VpPolicyType) => {
+          let policy: VP
+          switch (credential.type) {
+            case 'staticVpPolicy':
+              policy = credential.name
+              break
+            case 'argumentVpPolicy':
+              policy = {
+                policy: credential.policy,
+                args: parseInt(credential.args)
+              }
+              break
+          }
+          return policy
+        })
+      : []
 
     const shouldCreateSsiPolicy =
-      !isServiceCredentials || !mainCredentials?.vpPolicies?.length
+      updatedCredentials?.vpPolicies?.length > 0 ||
+      updatedCredentials?.requestCredentials?.length > 0 ||
+      updatedCredentials?.vcPolicies?.length > 0
 
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||

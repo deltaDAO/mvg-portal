@@ -81,16 +81,27 @@ export default function SSIPoliciesSection({
       (credentials as any)?.vcPolicies?.length > 0 ||
       (credentials as any)?.vpPolicies?.length > 0
 
-    setEnabled(hasCurrentPolicies)
+    const isManuallyEnabled = (credentials as any)?.enabled === true
+
+    if (hasCurrentPolicies && !isManuallyEnabled) {
+      setEnabled(true)
+    } else if (isManuallyEnabled) {
+      setEnabled(true)
+    } else {
+      setEnabled(false)
+    }
   }, [
     (credentials as any)?.requestCredentials,
     (credentials as any)?.vcPolicies,
-    (credentials as any)?.vpPolicies
+    (credentials as any)?.vpPolicies,
+    (credentials as any)?.enabled
   ])
 
   const handleToggleSSI = () => {
     const newEnabled = !enabled
     setEnabled(newEnabled)
+
+    setFieldValue(`${credentialsPath}.enabled`, newEnabled)
 
     if (newEnabled) {
       setFieldValue(`${credentialsPath}.vcPolicies`, defaultPolicies)

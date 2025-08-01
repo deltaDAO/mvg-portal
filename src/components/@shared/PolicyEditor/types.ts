@@ -73,6 +73,7 @@ export interface CredentialForm {
   vpPolicies?: VpPolicyType[]
   vcPolicies?: string[]
   enabled?: boolean
+  advancedFeaturesEnabled?: boolean
 }
 
 export interface PolicyEditorProps {

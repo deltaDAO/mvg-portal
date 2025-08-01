@@ -6,6 +6,7 @@ import styles from './index.module.css'
 import Input from '../FormInput'
 import Button from '../atoms/Button'
 import {
+  ArgumentVpPolicy,
   CustomPolicy,
   CustomUrlPolicy,
   ParameterizedPolicy,
@@ -189,7 +190,9 @@ export function PolicyEditor(props): ReactElement {
   }: PolicyEditorProps = props
 
   const [enabled, setEnabled] = useState(credentials.enabled || enabledView)
-  const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(false)
+  const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(
+    credentials.advancedFeaturesEnabled || false
+  )
   const [holderBinding, setHolderBinding] = useState(true)
   const [requireAllTypes, setRequireAllTypes] = useState(true)
   const [maximumCredentials, setMaximumCredentials] = useState('1')
@@ -208,61 +211,85 @@ export function PolicyEditor(props): ReactElement {
 
   useEffect(() => {
     if (enabledView) {
+      setEnabled(true)
+    } else {
       const hasCurrentPolicies =
         credentials?.requestCredentials?.length > 0 ||
         credentials?.vcPolicies?.length > 0 ||
         credentials?.vpPolicies?.length > 0
-
       setEnabled(hasCurrentPolicies)
-    }
-
-    if (!credentials?.vpPolicies?.length) return
-
-    const { vpPolicies } = credentials
-    let hasAdvancedFeatures = false
-    let hasHolderBinding = false
-    let hasPresentationDefinition = false
-    let minCredsValue = '1'
-    let maxCredsValue = '1'
-    let hasMinLimit = false
-    let hasMaxLimit = false
-
-    vpPolicies.forEach((policy) => {
-      if (policy?.type === 'staticVpPolicy') {
-        if (policy.name === 'holder-binding') {
-          hasHolderBinding = true
-          hasAdvancedFeatures = true
-        } else if (policy.name === 'presentation-definition') {
-          hasPresentationDefinition = true
-          hasAdvancedFeatures = true
-        }
-      } else if (policy?.type === 'argumentVpPolicy') {
-        hasAdvancedFeatures = true
-        if (policy.policy === 'minimum-credentials') {
-          hasMinLimit = true
-          minCredsValue = policy.args || '1'
-        } else if (policy.policy === 'maximum-credentials') {
-          hasMaxLimit = true
-          maxCredsValue = policy.args || '1'
-        }
-      }
-    })
-
-    if (hasAdvancedFeatures) {
-      setEditAdvancedFeatures(true)
-      setHolderBinding(hasHolderBinding)
-      setRequireAllTypes(hasPresentationDefinition)
-      setLimitMinCredentials(hasMinLimit)
-      setLimitMaxCredentials(hasMaxLimit)
-      setMinimumCredentials(minCredsValue)
-      setMaximumCredentials(maxCredsValue)
     }
   }, [
     enabledView,
-    credentials?.requestCredentials,
-    credentials?.vcPolicies,
-    credentials?.vpPolicies
+    credentials?.requestCredentials?.length,
+    credentials?.vcPolicies?.length,
+    credentials?.vpPolicies?.length
   ])
+
+  useEffect(() => {
+    console.log(
+      'Initialization useEffect running with credentials:',
+      credentials
+    )
+    if (!credentials?.vpPolicies?.length) {
+      console.log('No vpPolicies found, returning early')
+      return
+    }
+
+    const { vpPolicies } = credentials
+    console.log('Found vpPolicies:', vpPolicies)
+
+    const hasHolderBinding = vpPolicies.some(
+      (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+    )
+    if (hasHolderBinding) {
+      console.log('Setting holderBinding to true')
+      setHolderBinding(true)
+      setEditAdvancedFeatures(true)
+    }
+
+    const hasPresentationDefinition = vpPolicies.some(
+      (p) =>
+        p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+    )
+    if (hasPresentationDefinition) {
+      console.log('Setting requireAllTypes to true')
+      setRequireAllTypes(true)
+      setEditAdvancedFeatures(true)
+    }
+
+    const minCredsPolicy = vpPolicies.find(
+      (p) =>
+        p?.type === 'argumentVpPolicy' && p?.policy === 'minimum-credentials'
+    ) as ArgumentVpPolicy | undefined
+    if (minCredsPolicy) {
+      console.log(
+        'Found minCredsPolicy:',
+        minCredsPolicy,
+        'args:',
+        minCredsPolicy.args
+      )
+      setLimitMinCredentials(true)
+      setMinimumCredentials(minCredsPolicy.args || '1')
+      setEditAdvancedFeatures(true)
+    }
+
+    const maxCredsPolicy = vpPolicies.find(
+      (p) =>
+        p?.type === 'argumentVpPolicy' && p?.policy === 'maximum-credentials'
+    ) as ArgumentVpPolicy | undefined
+    if (maxCredsPolicy) {
+      console.log(
+        'Found maxCredsPolicy:',
+        maxCredsPolicy,
+        'args:',
+        maxCredsPolicy.args
+      )
+      setLimitMaxCredentials(true)
+      setMaximumCredentials(maxCredsPolicy.args || '1')
+      setEditAdvancedFeatures(true)
+    }
+  }, [credentials])
 
   const allPolicies = [
     'signature',
@@ -293,41 +320,6 @@ export function PolicyEditor(props): ReactElement {
   )
 
   useEffect(() => {
-    if (!enabled || !editAdvancedFeatures) return
-
-    const updatedVpPolicies = [...(credentials.vpPolicies || [])]
-    let changed = false
-
-    if (
-      holderBinding &&
-      !updatedVpPolicies.some(
-        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
-      )
-    ) {
-      updatedVpPolicies.push({ type: 'staticVpPolicy', name: 'holder-binding' })
-      changed = true
-    }
-
-    if (
-      requireAllTypes &&
-      !updatedVpPolicies.some(
-        (p) =>
-          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
-      )
-    ) {
-      updatedVpPolicies.push({
-        type: 'staticVpPolicy',
-        name: 'presentation-definition'
-      })
-      changed = true
-    }
-
-    if (changed) {
-      setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
-    }
-  }, [enabled, editAdvancedFeatures])
-
-  useEffect(() => {
     const hasExistingCredentials =
       (credentials.vpPolicies && credentials.vpPolicies.length > 0) ||
       (credentials.requestCredentials &&
@@ -339,13 +331,23 @@ export function PolicyEditor(props): ReactElement {
       setCredentials({ ...credentials, enabled: true })
     }
 
-    if (!credentials.vpPolicies || credentials.vpPolicies.length === 0) return
+    if (editAdvancedFeatures) {
+      setHasUserSetEnabled(true)
+    }
+
+    if (!credentials.vpPolicies || credentials.vpPolicies.length === 0) {
+      if (hasUserSetEnabled && editAdvancedFeatures) {
+        setEditAdvancedFeatures(true)
+        setHasUserSetEnabled(true)
+      }
+      return
+    }
 
     const hasHolderBinding = credentials.vpPolicies.some(
       (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
     )
+    setHolderBinding(hasHolderBinding)
     if (hasHolderBinding) {
-      setHolderBinding(true)
       setEditAdvancedFeatures(true)
     }
 
@@ -353,8 +355,8 @@ export function PolicyEditor(props): ReactElement {
       (p) =>
         p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
     )
+    setRequireAllTypes(hasPresentationDefinition)
     if (hasPresentationDefinition) {
-      setRequireAllTypes(true)
       setEditAdvancedFeatures(true)
     }
 
@@ -377,13 +379,7 @@ export function PolicyEditor(props): ReactElement {
       setMaximumCredentials(maxCredsPolicy.args.toString())
       setEditAdvancedFeatures(true)
     }
-  }, [
-    credentials.vpPolicies,
-    credentials.requestCredentials,
-    credentials.vcPolicies,
-    credentials.enabled,
-    hasUserSetEnabled
-  ])
+  }, [credentials.enabled, hasUserSetEnabled])
 
   function handlePolicyEditorToggle(value: boolean) {
     setHasUserSetEnabled(true)
@@ -487,6 +483,7 @@ export function PolicyEditor(props): ReactElement {
   function handleHolderBindingToggle() {
     const newValue = !holderBinding
 
+    setHasUserSetEnabled(true)
     setHolderBinding(newValue)
 
     const updatedVpPolicies = [...credentials.vpPolicies]
@@ -514,6 +511,7 @@ export function PolicyEditor(props): ReactElement {
 
   function handlePresentationDefinitionToggle() {
     const newValue = !requireAllTypes
+    setHasUserSetEnabled(true)
     setRequireAllTypes(newValue)
 
     const updatedVpPolicies = [...credentials.vpPolicies]
@@ -613,6 +611,55 @@ export function PolicyEditor(props): ReactElement {
       }
     }
 
+    if (holderBinding) {
+      const exists = updatedVpPolicies.some(
+        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'holder-binding'
+        })
+        changed = true
+      }
+    } else {
+      const filtered = updatedVpPolicies.filter(
+        (p) => !(p?.type === 'staticVpPolicy' && p?.name === 'holder-binding')
+      )
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
+    if (requireAllTypes) {
+      const exists = updatedVpPolicies.some(
+        (p) =>
+          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'presentation-definition'
+        })
+        changed = true
+      }
+    } else {
+      const filtered = updatedVpPolicies.filter(
+        (p) =>
+          !(
+            p?.type === 'staticVpPolicy' &&
+            p?.name === 'presentation-definition'
+          )
+      )
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
     if (changed) {
       setCredentials({ ...credentials, vpPolicies: updatedVpPolicies })
     }
@@ -621,20 +668,11 @@ export function PolicyEditor(props): ReactElement {
     editAdvancedFeatures,
     limitMinCredentials,
     limitMaxCredentials,
+    holderBinding,
+    requireAllTypes,
     minimumCredentials,
     maximumCredentials
   ])
-
-  useEffect(() => {
-    if (!editAdvancedFeatures) {
-      setHolderBinding(true)
-      setRequireAllTypes(true)
-      setMaximumCredentials('1')
-      setLimitMaxCredentials(false)
-      setMinimumCredentials('1')
-      setLimitMinCredentials(false)
-    }
-  }, [editAdvancedFeatures])
 
   useEffect(() => {
     if (!enabled) return
@@ -782,7 +820,15 @@ export function PolicyEditor(props): ReactElement {
               type="checkbox"
               options={['Edit Advanced SSI Policy Features']}
               checked={editAdvancedFeatures}
-              onChange={() => setEditAdvancedFeatures(!editAdvancedFeatures)}
+              onChange={() => {
+                const newValue = !editAdvancedFeatures
+                setHasUserSetEnabled(true)
+                setEditAdvancedFeatures(newValue)
+                setCredentials({
+                  ...credentials,
+                  advancedFeaturesEnabled: newValue
+                })
+              }}
               hideLabel={true}
               className={styles.advancedOptionsCheckbox}
             />
