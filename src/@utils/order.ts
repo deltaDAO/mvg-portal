@@ -321,6 +321,12 @@ export async function handleComputeOrder(
     if (accessDetails.validOrderTx) {
       return accessDetails.validOrderTx
     }
+    if (!initializeData) {
+      LoggerInstance.log(
+        '[compute] No initializeData found, returning valid order tx'
+      )
+      throw new Error('No initializeData found, please try again.')
+    }
     if (initializeData?.validOrder && !initializeData.providerFee) {
       LoggerInstance.log(
         '[compute] Has valid order: ',
