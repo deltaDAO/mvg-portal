@@ -161,6 +161,7 @@ export default function Details({
                   />
                 }
               />
+
               {job.dateFinished && (
                 <MetaItem
                   title="Finished"
@@ -173,16 +174,36 @@ export default function Details({
                   }
                 />
               )}
-              <span className={styles.jobDID}>
-                <MetaItem
-                  title="Job ID"
-                  content={
-                    <code>
-                      {isMobile ? `${job.jobId.slice(0, 20)}...` : job.jobId}
-                    </code>
-                  }
-                />
-              </span>
+
+              {job.dateFinished ? (
+                // When finished date exists, show JobDID on new line
+                <div style={{ flexBasis: '100%' }}>
+                  <span className={styles.jobDID}>
+                    <MetaItem
+                      title="Job ID"
+                      content={
+                        <code>
+                          {isMobile
+                            ? `${job.jobId.slice(0, 20)}...`
+                            : job.jobId}
+                        </code>
+                      }
+                    />
+                  </span>
+                </div>
+              ) : (
+                // Else show it in same row
+                <span className={styles.jobDID}>
+                  <MetaItem
+                    title="Job ID"
+                    content={
+                      <code>
+                        {isMobile ? `${job.jobId.slice(0, 20)}...` : job.jobId}
+                      </code>
+                    }
+                  />
+                </span>
+              )}
             </div>
             <button
               className={styles.mobileCloseButton}

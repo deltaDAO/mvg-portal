@@ -10,7 +10,6 @@
 
 .assetBox {
   background: white;
-  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -190,5 +189,6 @@
     font-size: 14px;
     overflow-wrap: break-word;
     word-break: break-all;
+    margin-top: 0.5rem;
   }
 }

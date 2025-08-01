@@ -5,7 +5,6 @@
   height: 165px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;
-  padding: 1rem;
   margin-top: 1.5rem;
 }
 
@@ -26,13 +25,25 @@
   margin-bottom: 0.5rem;
 }
 
+.alert {
+  display: flex;
+  flex-direction: row;
+}
+.rightAlert {
+  margin-top: 1rem;
+  width: 4px;
+  background: #fdd655;
+}
+
 .help {
   width: 222px;
   height: 34px;
   margin-top: 1rem;
   background: #fff6d1;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  color: #4a4a4a;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 129%;
+  color: #000;
 }

@@ -121,3 +121,18 @@
   line-height: 117%;
   color: #303031;
 }
+.sales {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  border-top: 1px solid rgba(48, 48, 49, 0.1);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #303031;
+  text-align: center; /* Center text horizontally */
+  padding-top: 1rem;
+}
+.salesTag {
+  color: #00adb2;
+}

@@ -121,7 +121,12 @@ export default function Results({
       ) : (
         <p> Waiting for results...</p>
       )}
-      <FormHelp className={styles.help}>{content.compute.storage}</FormHelp>
+      <div className={styles.alert}>
+        <div className={styles.rightAlert}></div>
+        <div>
+          <FormHelp className={styles.help}>{content.compute.storage}</FormHelp>
+        </div>
+      </div>
     </div>
   )
 }

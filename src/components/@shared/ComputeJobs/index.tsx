@@ -7,6 +7,7 @@ import Time from '@shared/atoms/Time'
 import Details from '@components/Profile/History/ComputeJobs/Details'
 import FinishedIcon from '@images/finished.svg'
 import InProgress from '@images/InProgress.svg'
+import { useProfile } from '@context/Profile/index'
 
 const ComputeJobs = () => {
   const [showDetails, setShowDetails] = useState<string | null>(null)
@@ -15,6 +16,7 @@ const ComputeJobs = () => {
   const [error, setError] = useState<string | null>(null)
   const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
+  const { sales } = useProfile()
 
   useEffect(() => {
     const fetchComputeJobs = async () => {
@@ -115,6 +117,9 @@ const ComputeJobs = () => {
             </div>
           )
         })}
+      </div>
+      <div className={styles.sales}>
+        {sales} <span className={styles.salesTag}>Sales</span>
       </div>
     </div>
   )
