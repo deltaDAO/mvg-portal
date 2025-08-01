@@ -1,8 +1,8 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import cs from 'classnames'
 import slugify from 'slugify'
 import PriceUnit from '@shared/Price/PriceUnit'
 import External from '@images/external.svg'
-import SearchIcon from '@images/search.svg'
 import Loader from '@shared/atoms/Loader'
 import Tooltip from '@components/@shared/atoms/Tooltip'
 import WhitelistIndicator from '@components/Asset/AssetActions/Compute/WhitelistIndicator'
@@ -11,6 +11,7 @@ import styles from './index.module.css'
 import classNames from 'classnames/bind'
 import Pagination from '@components/@shared/Pagination'
 import { useAccount } from 'wagmi'
+import SearchSection from '@shared/SearchSection'
 
 const cx = classNames.bind(styles)
 
@@ -100,34 +101,13 @@ export default function AssetSelection({
     multiple ? styles.checkbox : styles.radio
   }`
 
-  function handleSearchInput(e: ChangeEvent<HTMLInputElement>) {
-    setSearchValue(e.target.value)
-    setCurrentPage(1)
-  }
-
   return (
-    <div className={styleClassesWrapper}>
-      <div className={styles.searchContainer}>
-        <input
-          type="search"
-          name="search"
-          placeholder="Search by title, datatoken, or DID..."
-          value={searchValue}
-          onChange={handleSearchInput}
-          className={styles.search}
-          disabled={disabled}
-        />
-        <div className={styles.searchButtonContainer}>
-          <button
-            type="button"
-            className={styles.searchButton}
-            disabled={disabled}
-          >
-            <SearchIcon className={styles.searchIcon} />
-            <span className={styles.searchButtonText}>Search</span>
-          </button>
-        </div>
-      </div>
+    <div className={cs(styles.root, styleClassesWrapper)}>
+      <SearchSection
+        value={searchValue}
+        onChange={setSearchValue}
+        disabled={disabled}
+      />
       <div className={styles.scroll}>
         {!assets ? (
           <Loader />

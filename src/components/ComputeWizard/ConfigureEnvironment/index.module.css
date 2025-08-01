@@ -42,16 +42,17 @@
   width: 18px;
   height: 18px;
   border-radius: 100px;
-  border: 1px solid var(--publish-primary);
+  border: 1px solid var(--publish-accent);
   cursor: pointer;
   position: relative;
   background: var(--publish-white);
   appearance: none;
   -webkit-appearance: none;
+  margin: 0;
 }
 
 .radioButton:checked {
-  background: var(--publish-primary);
+  background: var(--publish-accent);
 }
 
 .radioButton:checked::after {
@@ -110,18 +111,8 @@
   flex-shrink: 0;
 }
 
-.resourceControls {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0;
-  gap: 8px;
-  width: 525px;
-  flex-shrink: 0;
-}
-
-/* Min Section */
-.minSection {
+/* Slider Section */
+.sliderSection {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -129,6 +120,16 @@
   gap: 8px;
   width: 259px;
   height: 14px;
+  flex-shrink: 0;
+}
+
+/* Input Section */
+.inputSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -144,9 +145,28 @@
   flex-shrink: 0;
 }
 
+.sliderContainer {
+  position: relative;
+  width: 200px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sliderLine {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: #e5e5e5;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
 body .customSlider {
   width: 200px;
-  height: 2px;
+  height: 16px;
   background: transparent;
   outline: none;
   -webkit-appearance: none;
@@ -157,18 +177,18 @@ body .customSlider {
   padding: 0;
   margin: 0;
   position: relative;
+  z-index: 2;
   flex-shrink: 0;
 }
 
 .customSlider::-webkit-slider-track {
   width: 200px;
   height: 2px;
-  background: #e5e5e5;
+  background: transparent;
   border: none;
   border-radius: 1px;
   outline: none;
   box-shadow: none;
-  margin-top: 0;
 }
 
 .customSlider::-webkit-slider-thumb {
@@ -182,7 +202,6 @@ body .customSlider {
   border: none;
   outline: none;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-top: -7px;
   transition: all 0.2s ease;
 }
 
@@ -195,7 +214,7 @@ body .customSlider {
 .customSlider::-moz-range-track {
   width: 200px;
   height: 2px;
-  background: #e5e5e5;
+  background: transparent;
   border: none;
   border-radius: 1px;
   outline: none;
@@ -223,7 +242,7 @@ body .customSlider {
 .customSlider::-ms-track {
   width: 200px;
   height: 2px;
-  background: #e5e5e5;
+  background: transparent;
   border: none;
   border-radius: 1px;
   outline: none;
@@ -249,16 +268,6 @@ body .customSlider {
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
-/* Max Section */
-.maxSection {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 0;
-  gap: 8px;
-  flex-shrink: 0;
-}
-
 .maxLabel {
   width: 23px;
   height: 14px;
@@ -271,10 +280,8 @@ body .customSlider {
   flex-shrink: 0;
 }
 
-.maxInput {
+body .input {
   box-sizing: border-box;
-  width: 60px;
-  height: 24px;
   border: 1px solid var(--publish-border);
   filter: drop-shadow(var(--publish-shadow));
   border-radius: var(--publish-border-radius);
@@ -282,17 +289,36 @@ body .customSlider {
   font-family: var(--font-family-base);
   font-style: normal;
   font-weight: var(--publish-font-weight-normal);
-  font-size: 12px;
-  line-height: 14px;
   color: var(--publish-text-secondary);
   text-align: center;
-  padding: 0;
+  padding: 8px 16px;
   flex-shrink: 0;
 }
 
-.maxInput:focus {
+.input:focus {
   outline: none;
   border-color: var(--publish-primary);
+}
+
+/* Input size variants */
+body .inputSmall {
+  width: 80px;
+  height: 24px;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.inputLarge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 30px;
+  gap: 10px;
+  width: 200px;
+  height: 40px;
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--publish-text);
 }
 
 .unit {
@@ -328,30 +354,6 @@ body .customSlider {
   line-height: 14px;
   color: var(--publish-text-secondary);
   flex-shrink: 0;
-}
-
-.resourcePriceInput {
-  box-sizing: border-box;
-  width: 60px;
-  height: 24px;
-  border: 1px solid var(--publish-border);
-  filter: drop-shadow(var(--publish-shadow));
-  border-radius: var(--publish-border-radius);
-  background: var(--publish-white);
-  font-family: var(--font-family-base);
-  font-style: normal;
-  font-weight: var(--publish-font-weight-normal);
-  font-size: 12px;
-  line-height: 14px;
-  color: var(--publish-text-secondary);
-  text-align: center;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.resourcePriceInput:focus {
-  outline: none;
-  border-color: var(--publish-primary);
 }
 
 /* Paid section specific styling */
@@ -391,33 +393,6 @@ body .customSlider {
   gap: 24px;
   width: 100%;
   height: 66px;
-}
-
-.priceInput {
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding: 12px 30px;
-  gap: 10px;
-  width: 200px;
-  height: 40px;
-  border: 1px solid var(--publish-border);
-  filter: drop-shadow(var(--publish-shadow));
-  border-radius: var(--publish-border-radius);
-  background: var(--publish-white);
-  font-family: var(--font-family-base);
-  font-style: normal;
-  font-weight: var(--publish-font-weight-normal);
-  font-size: 16px;
-  line-height: 16px;
-  color: var(--publish-text);
-  text-align: center;
-}
-
-.priceInput:focus {
-  outline: none;
-  border-color: var(--publish-primary);
 }
 
 .priceInfo {

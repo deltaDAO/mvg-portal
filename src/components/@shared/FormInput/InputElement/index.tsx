@@ -8,6 +8,9 @@ import BoxSelection, { BoxSelectionOption } from './BoxSelection'
 import Datatoken from './Datatoken'
 import classNames from 'classnames/bind'
 import AssetSelection, { AssetSelectionAsset } from './AssetSelection'
+import EnvironmentSelection, {
+  EnvironmentSelectionEnvironment
+} from './EnvironmentSelection'
 import Nft from './Nft'
 import InputRadio from './Radio'
 import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
@@ -200,6 +203,15 @@ const InputElement = forwardRef(
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
             accountId={accountId}
+            {...field}
+            {...props}
+          />
+        )
+
+      case 'environmentSelection':
+        return (
+          <EnvironmentSelection
+            environments={options as EnvironmentSelectionEnvironment[]}
             {...field}
             {...props}
           />
