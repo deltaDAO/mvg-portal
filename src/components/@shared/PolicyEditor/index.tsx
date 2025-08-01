@@ -530,7 +530,17 @@ export function PolicyEditor(props): ReactElement {
         credentials.requestCredentials.length > 0) ||
       (credentials.vcPolicies && credentials.vcPolicies.length > 0)
 
-    if (hasExistingCredentials && !credentials.enabled && !hasUserSetEnabled) {
+    const hasOnlyDefaultVcPolicies =
+      credentials.vcPolicies?.length > 0 &&
+      !credentials.vpPolicies?.length &&
+      !credentials.requestCredentials?.length
+
+    if (
+      hasExistingCredentials &&
+      !hasOnlyDefaultVcPolicies &&
+      !credentials.enabled &&
+      !hasUserSetEnabled
+    ) {
       setEnabled(true)
       setCredentials({ ...credentials, enabled: true })
     }
@@ -596,7 +606,11 @@ export function PolicyEditor(props): ReactElement {
     } else {
       const updatedCredentials = {
         ...credentials,
-        enabled: true
+        enabled: true,
+        vcPolicies: defaultPolicies || []
+      }
+      if (credentials.vpPolicies?.length) {
+        updatedCredentials.vpPolicies = credentials.vpPolicies
       }
       setCredentials(updatedCredentials)
     }
@@ -754,7 +768,21 @@ export function PolicyEditor(props): ReactElement {
   }
 
   useEffect(() => {
-    if (!enabled || !editAdvancedFeatures) return
+    if (!enabled) return
+
+    if (!editAdvancedFeatures) {
+      if (credentials.vpPolicies?.length) {
+        const { vpPolicies, ...credentialsWithoutVpPolicies } = credentials
+        setCredentials(credentialsWithoutVpPolicies)
+      }
+      setHolderBinding(true)
+      setRequireAllTypes(true)
+      setLimitMinCredentials(false)
+      setLimitMaxCredentials(false)
+      setMinimumCredentials('1')
+      setMaximumCredentials('1')
+      return
+    }
 
     const updatedVpPolicies = [...(credentials.vpPolicies || [])]
 
@@ -788,7 +816,55 @@ export function PolicyEditor(props): ReactElement {
 
     let changed = false
 
-    // Handle minimum
+    if (holderBinding) {
+      const exists = updatedVpPolicies.some(
+        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'holder-binding'
+        })
+        changed = true
+      }
+    } else {
+      const filtered = updatedVpPolicies.filter(
+        (p) => !(p?.type === 'staticVpPolicy' && p?.name === 'holder-binding')
+      )
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
+    if (requireAllTypes) {
+      const exists = updatedVpPolicies.some(
+        (p) =>
+          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
+      )
+      if (!exists) {
+        updatedVpPolicies.push({
+          type: 'staticVpPolicy',
+          name: 'presentation-definition'
+        })
+        changed = true
+      }
+    } else {
+      const filtered = updatedVpPolicies.filter(
+        (p) =>
+          !(
+            p?.type === 'staticVpPolicy' &&
+            p?.name === 'presentation-definition'
+          )
+      )
+      if (filtered.length !== updatedVpPolicies.length) {
+        updatedVpPolicies.length = 0
+        updatedVpPolicies.push(...filtered)
+        changed = true
+      }
+    }
+
     if (limitMinCredentials) {
       upsertPolicy('minimum-credentials', minimumCredentials)
       changed = true
