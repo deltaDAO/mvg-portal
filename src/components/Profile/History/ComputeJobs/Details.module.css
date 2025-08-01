@@ -63,10 +63,10 @@
 }
 
 .assetLink svg {
-  margin-top: 0.24rem;
+  margin-top: 0.1rem;
   margin-left: 0.55rem;
-  width: 0.85em;
-  height: 0.85em;
+  width: 1em;
+  height: 1em;
 }
 
 .assetLabel {
