@@ -155,7 +155,11 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
       className={`${styles.dialogBorder} ${styles.dialogWidth}`}
     >
       <div className={`${styles.panelColumn} ${styles.width100p}`}>
-        <h3>Verifiable Credentials to present</h3>
+        <div className={styles.vptitle}>Verifiable Credentials to present</div>
+        {/* dynamic datat has to fetch here */}
+        <div className={styles.dataInfo}>
+          Asset: Dataset 1, Service: Service 1
+        </div>
 
         {(() => {
           const minCreds = (assetAllowCredentials as any)

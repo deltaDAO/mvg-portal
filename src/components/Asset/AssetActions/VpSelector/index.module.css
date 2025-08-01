@@ -30,24 +30,19 @@
 
 .dialogBorder {
   border: 1px solid rgba(48, 48, 49, 0.3);
+  background: #fff;
   border-radius: 10px;
-  padding: var(--publish-spacing-lg);
-  background: var(--publish-white);
+  padding: 40px;
+  width: 808px;
 }
 
 .dialogWidth {
   width: 60%;
 }
 
-@media (max-width: 1900px) {
-  .dialogWidth {
-    width: 80%;
-  }
-}
-
 @media (max-width: 1024px) {
   .dialogWidth {
-    width: 100%;
+    width: 80%;
   }
 }
 
@@ -57,6 +52,22 @@
   font-size: var(--publish-font-size-lg);
   color: var(--publish-text);
   margin-bottom: var(--sp-8);
+}
+.vptitle {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 108%;
+  color: #0a4b70;
+  margin-bottom: 1rem;
+}
+.dataInfo {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 111%;
+  color: rgba(48, 48, 49, 0.7);
+  margin-bottom: 1.5rem;
 }
 
 .dialogBorder span {
@@ -136,10 +147,11 @@
 }
 
 .credentialName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  color: #303031;
   font-family: var(--publish-font-family);
-  font-weight: var(--publish-font-weight-bold);
-  font-size: var(--publish-font-size);
-  color: var(--publish-text);
   display: flex;
   justify-content: flex-start;
 }
@@ -187,11 +199,13 @@
   box-shadow: var(--publish-shadow-sm);
   background: var(--publish-accent-gradient);
   border: none;
-  font-family: var(--publish-font-family);
-  font-weight: var(--publish-font-weight-bold);
-  font-size: var(--publish-font-size);
-  color: var(--publish-primary);
   cursor: pointer;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-align: center;
+  color: #0a4b70;
 }
 
 .abortButton {
@@ -202,16 +216,18 @@
   box-shadow: var(--publish-shadow-sm);
   background: var(--clr-slate-12);
   border: none;
-  font-family: var(--publish-font-family);
-  font-weight: var(--publish-font-weight-bold);
-  font-size: var(--publish-font-size);
-  color: var(--publish-text);
   cursor: pointer;
   margin-left: var(--publish-spacing-sm);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-align: center;
+  color: #0a4b70;
 }
 
 .panelRow:last-child {
-  justify-content: center;
+  justify-content: end;
   gap: var(--sp-4);
   margin-top: var(--publish-spacing-lg);
 }

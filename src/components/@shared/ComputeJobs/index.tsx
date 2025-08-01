@@ -32,10 +32,6 @@ const ComputeJobs = () => {
         const response = await getAllComputeJobs(accountId, newCancelToken())
 
         if (response?.computeJobs) {
-          console.log(
-            'Successfully fetched compute jobs:',
-            JSON.stringify(response.computeJobs, null, 2)
-          )
           setJobs(response.computeJobs)
         } else {
           console.warn('No compute jobs found in response')
@@ -93,7 +89,6 @@ const ComputeJobs = () => {
           const dateFinishedMs = job.dateFinished
             ? Number(job.dateFinished) * 1000
             : null
-          console.log('Debug - dateFinishedMs:', dateFinishedMs)
 
           return (
             <div key={job.jobId} className={styles.jobRow}>

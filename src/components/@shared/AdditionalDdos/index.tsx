@@ -46,7 +46,7 @@ export function AdditionalDdosFields(): ReactElement {
         {displayDdos.map((ddo, index) => {
           const canDelete = displayDdos.length > 0
           return (
-            <SectionContainer key={`${index}`} className={styles.assetCard}>
+            <SectionContainer key={`${index}`} classNames={styles.assetCard}>
               <div className={styles.header}>
                 <h3 className={styles.title}>
                   Additional Asset Description #{index + 1}
