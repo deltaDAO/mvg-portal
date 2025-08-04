@@ -9,14 +9,17 @@ import SelectAlgorithm from './SelectAlgorithm'
 import SelectServices from './SelectServices'
 import PreviewSelectedServices from './PreviewSelectedServices'
 import SelectEnvironment from './SelectEnvironment'
+import SelectDataset from './SelectDataset'
 import ConfigureEnvironment from './ConfigureEnvironment'
 import Review from './Review'
 
 export default function Steps({
+  datasets,
   algorithms,
   computeEnvs,
   isAlgorithm
 }: {
+  datasets?: AssetSelectionAsset[]
   algorithms: AssetSelectionAsset[]
   computeEnvs: ComputeEnvironment[]
   isAlgorithm: boolean
@@ -53,15 +56,15 @@ export default function Steps({
   // For algorithm flow
   switch (currentStep) {
     case 1:
-      return steps[0].component
+      return <SelectDataset />
     case 2:
       return <SelectServices />
     case 3:
       return <PreviewSelectedServices />
     case 4:
-      return steps[3].component
+      return <SelectEnvironment computeEnvs={computeEnvs} />
     case 5:
-      return steps[4].component
+      return <ConfigureEnvironment />
     case 6:
       return steps[5].component
     default:

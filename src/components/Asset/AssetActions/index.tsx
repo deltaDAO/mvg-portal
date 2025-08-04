@@ -24,6 +24,7 @@ import FileSVG from '@images/file.svg'
 import { AssetActionCheckCredentials } from './CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import appConfig from 'app.config.cjs'
+import ComputeWizard from '@components/ComputeWizard'
 
 export default function AssetActions({
   asset,
@@ -248,7 +249,7 @@ export default function AssetActions({
             <>
               {hasVerifiedCredentials ? (
                 isCompute ? (
-                  <Compute
+                  <ComputeWizard
                     accountId={accountId}
                     signer={signer}
                     asset={asset}
@@ -281,7 +282,7 @@ export default function AssetActions({
               )}
             </>
           ) : isCompute ? (
-            <Compute
+            <ComputeWizard
               accountId={accountId}
               signer={signer}
               asset={asset}

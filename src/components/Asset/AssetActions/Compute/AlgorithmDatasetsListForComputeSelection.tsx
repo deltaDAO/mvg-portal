@@ -46,6 +46,7 @@ export default function AlgorithmDatasetsListForComputeSelection({
         newCancelToken()
       )
       setDatasetsForCompute(datasets)
+      console.log('Dataset list for algo...', JSON.stringify(datasets, null, 2))
 
       // Auto-select first if nothing is selected
       if (
