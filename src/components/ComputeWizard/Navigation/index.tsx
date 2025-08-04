@@ -1,6 +1,5 @@
 import { FormikContextType, useFormikContext } from 'formik'
-import React, { ReactElement, useEffect } from 'react'
-import { useRouter } from 'next/router'
+import React, { ReactElement } from 'react'
 import { FormComputeData, StepContent } from '../_types'
 import { useProgressBar } from '../../../@hooks/useProgressBar'
 import { useComputeStepCompletion } from '../../../@hooks/useComputeStepCompletion'
@@ -12,37 +11,8 @@ export default function Navigation({
 }: {
   steps: StepContent[]
 }): ReactElement {
-  const router = useRouter()
-  const { values, setFieldValue }: FormikContextType<FormComputeData> =
-    useFormikContext()
-
+  const { values }: FormikContextType<FormComputeData> = useFormikContext()
   const { getSuccessClass, getLastCompletedStep } = useComputeStepCompletion()
-
-  function handleStepClick(step: number) {
-    const { did } = router.query
-    router.push(`/asset/${did}/compute/${step}`)
-  }
-
-  function handleKeyDown(event: React.KeyboardEvent, step: number) {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault()
-      handleStepClick(step)
-    }
-  }
-
-  useEffect(() => {
-    let step = 1
-    // Extract step from path for compute flow
-    const pathSegments = router.asPath.split('/')
-    const stepIndex = pathSegments.findIndex((segment) => segment === 'compute')
-    if (stepIndex !== -1 && pathSegments[stepIndex + 1]) {
-      const stepParam: number = parseInt(pathSegments[stepIndex + 1])
-      if (!isNaN(stepParam) && stepParam <= steps.length) {
-        step = stepParam
-      }
-    }
-    setFieldValue('user.stepCurrent', step)
-  }, [router.asPath, setFieldValue, steps.length])
 
   const currentStep = values.user.stepCurrent
   const lastCompletedStep = getLastCompletedStep(steps.length)
@@ -69,8 +39,6 @@ export default function Navigation({
               className={`${styles.step} ${
                 isActive ? styles.activeStep : styles.inactiveStep
               }`}
-              onClick={() => handleStepClick(step.step)}
-              onKeyDown={(e) => handleKeyDown(e, step.step)}
               role="button"
               tabIndex={0}
               aria-current={isActive ? 'step' : undefined}

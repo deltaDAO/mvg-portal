@@ -2,52 +2,37 @@ import { FormEvent, ReactElement, RefObject } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
-import { useRouter } from 'next/router'
 import Loader from '@shared/atoms/Loader'
 
 interface WizardActionsProps {
-  navigationType: 'query' | 'path'
-  basePath: string
   totalSteps: number
   submitButtonText: string
   continueButtonText?: string
   showSuccessConfetti?: boolean
   scrollToRef?: RefObject<any>
-  did?: string
   isContinueDisabled?: boolean
   formikContext: FormikContextType<any>
   rightAlignFirstStep?: boolean
 }
 
 export default function WizardActions({
-  navigationType,
-  basePath,
   totalSteps,
   submitButtonText,
   continueButtonText = 'Continue',
   showSuccessConfetti = false,
   scrollToRef,
-  did,
   isContinueDisabled = false,
   formikContext,
   rightAlignFirstStep = true
 }: WizardActionsProps): ReactElement {
-  const router = useRouter()
   const { values, errors, isValid, isSubmitting, setFieldValue } = formikContext
 
   function handleAction(action: string) {
     const currentStep: number = values.user.stepCurrent
+    const newStep = action === 'next' ? currentStep + 1 : currentStep - 1
 
-    if (navigationType === 'query') {
-      // Publish-style navigation with query parameters
-      router.push({
-        pathname: basePath,
-        query: { step: currentStep + (action === 'next' ? +1 : -1) }
-      })
-    } else {
-      // Compute-style navigation with path parameters
-      const newStep = currentStep + (action === 'next' ? +1 : -1)
-      router.push(`${basePath}/${newStep}`)
+    if (newStep >= 1 && newStep <= totalSteps) {
+      setFieldValue('user.stepCurrent', newStep)
     }
 
     if (scrollToRef?.current) {
@@ -58,7 +43,7 @@ export default function WizardActions({
   function handleNext(e: FormEvent) {
     e.preventDefault()
 
-    // Set step completion flags (Publish-specific logic)
+    // Set step completion flags
     if (values.user.stepCurrent === 1) setFieldValue('step1Completed', true)
     if (values.user.stepCurrent === 2) setFieldValue('step2Completed', true)
     if (values.user.stepCurrent === 3) setFieldValue('step3Completed', true)
@@ -68,8 +53,9 @@ export default function WizardActions({
       setFieldValue('step6Completed', true)
       setFieldValue('previewPageVisited', true)
     }
-    if (values.user.stepCurrent === 7)
+    if (values.user.stepCurrent === 7) {
       setFieldValue('submissionPageVisited', true)
+    }
 
     handleAction('next')
   }

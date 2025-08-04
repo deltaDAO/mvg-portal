@@ -12,17 +12,108 @@ import SelectEnvironment from './SelectEnvironment'
 import SelectDataset from './SelectDataset'
 import ConfigureEnvironment from './ConfigureEnvironment'
 import Review from './Review'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from 'src/@types/ddo/Service'
+import { ResourceType } from 'src/@types/ResourceType'
+import { Asset } from 'src/@types/Asset'
 
 export default function Steps({
+  asset,
+  service,
+  accessDetails,
   datasets,
-  algorithms,
+  selectedDatasetAsset,
+  setSelectedAlgorithmAsset,
+  setSelectedDatasetAsset,
+  isLoading,
+  isComputeButtonDisabled,
+  hasPreviousOrder,
+  hasDatatoken,
+  dtBalance,
+  assetTimeout,
+  hasPreviousOrderSelectedComputeAsset,
+  hasDatatokenSelectedComputeAsset,
+  isAccountIdWhitelisted,
+  datasetSymbol,
+  algorithmSymbol,
+  providerFeesSymbol,
+  dtSymbolSelectedComputeAsset,
+  dtBalanceSelectedComputeAsset,
+  selectedComputeAssetType,
+  selectedComputeAssetTimeout,
   computeEnvs,
-  isAlgorithm
+  stepText,
+  isConsumable,
+  consumableFeedback,
+  datasetOrderPriceAndFees,
+  algoOrderPriceAndFees,
+  providerFeeAmount,
+  validUntil,
+  retry,
+  allResourceValues,
+  isAlgorithm,
+  algorithms,
+  onRunInitPriceAndFees,
+  setAllResourceValues,
+  onCheckAlgoDTBalance,
+  jobs,
+  isLoadingJobs,
+  refetchJobs
 }: {
+  asset: AssetExtended
+  service: Service
+  accessDetails: AccessDetails
   datasets?: AssetSelectionAsset[]
-  algorithms: AssetSelectionAsset[]
+  algorithms?: AssetSelectionAsset[]
+  selectedDatasetAsset?: AssetExtended[]
+  ddoListAlgorithms?: Asset[]
+  selectedAlgorithmAsset?: AssetExtended
+  setSelectedAlgorithmAsset?: React.Dispatch<
+    React.SetStateAction<AssetExtended>
+  >
+
+  setSelectedDatasetAsset?: React.Dispatch<
+    React.SetStateAction<AssetExtended[]>
+  >
+  isLoading: boolean
+  isComputeButtonDisabled: boolean
+  hasPreviousOrder: boolean
+  hasDatatoken: boolean
+  dtBalance: string
+  assetTimeout: string
+  hasPreviousOrderSelectedComputeAsset?: boolean
+  hasDatatokenSelectedComputeAsset?: boolean
+  isAccountIdWhitelisted?: boolean
+  datasetSymbol?: string
+  algorithmSymbol?: string
+  providerFeesSymbol?: string
+  dtSymbolSelectedComputeAsset?: string
+  dtBalanceSelectedComputeAsset?: string
+  selectedComputeAssetType?: string
+  selectedComputeAssetTimeout?: string
   computeEnvs: ComputeEnvironment[]
-  isAlgorithm: boolean
+  stepText: string
+  isConsumable: boolean
+  consumableFeedback: string
+  datasetOrderPriceAndFees?: OrderPriceAndFees
+  algoOrderPriceAndFees?: OrderPriceAndFees
+  providerFeeAmount?: string
+  validUntil?: string
+  retry: boolean
+  isAlgorithm?: boolean
+  allResourceValues?: {
+    [envId: string]: ResourceType
+  }
+  onRunInitPriceAndFees?: () => Promise<any>
+  onCheckAlgoDTBalance?: () => Promise<void>
+  setAllResourceValues?: React.Dispatch<
+    React.SetStateAction<{
+      [envId: string]: ResourceType
+    }>
+  >
+  jobs?: any[]
+  isLoadingJobs?: boolean
+  refetchJobs?: () => void
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
