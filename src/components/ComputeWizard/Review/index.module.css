@@ -2,98 +2,106 @@
   padding: 0;
 }
 
+.titleContainer {
+  margin-bottom: var(--sp-8);
+}
+
+.contentContainer {
+  margin: 0 auto;
+  max-width: 716px;
+}
+
 .container h2 {
   font-size: 24px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 2rem;
+  margin-bottom: var(--sp-8);
 }
 
-.reviewContent {
+.pricingBreakdown {
   background: #fff;
-  padding: 2rem;
   border-radius: 8px;
-  margin-bottom: 2rem;
-}
 
-.reviewRow {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 0;
+  flex-direction: column;
+  gap: var(--sp-4);
 }
 
-.reviewLabel {
+.pricingRow {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
+  justify-content: flex-start;
+  align-items: flex-start;
+  min-height: 38px;
 }
 
-.checkCredentialsBtn {
-  background: #fdd655;
-  color: #333;
-  padding: 4px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
+.itemInfo {
+  flex: 1;
 }
 
-.reviewValue {
+.priceInfo {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: flex-end;
   text-align: right;
+}
+
+.itemName {
+  font-weight: 500;
+  color: var(--publish-text);
+}
+
+.serviceName {
+  font-weight: 400;
+  color: var(--publish-text-secondary);
+  margin-left: 1rem;
 }
 
 .price {
   font-size: 16px;
   font-weight: 600;
-  color: #00a8cc;
+  line-height: 117%;
+}
+
+.priceNumber {
+  color: var(--publish-text);
+}
+
+.priceSymbol {
+  color: var(--clr-teal);
 }
 
 .duration {
   font-size: 12px;
-  color: #00a8cc;
+  color: var(--clr-teal);
 }
 
 .totalSection {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  padding: 1.5rem 0;
+  gap: var(--sp-2);
+
+  padding: var(--sp-4) 0;
   margin-top: 1rem;
   border-top: 2px solid #f0f0f0;
+  font-size: 14px;
 }
 
 .totalLabel {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-weight: 700;
+  color: var(--publish-text);
 }
 
 .totalValue {
-  font-size: 20px;
   font-weight: 700;
-  color: #333;
 }
 
-.actionsSection {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.5rem 0;
-  margin-top: 1rem;
-  border-top: 1px solid #f0f0f0;
+.totalValueNumber {
+  color: var(--publish-text);
 }
 
-.actionsSection button {
-  min-width: 120px;
+.totalValueSymbol {
+  color: var(--clr-teal);
 }
 
 .termsSection {

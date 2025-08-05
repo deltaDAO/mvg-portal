@@ -55,12 +55,13 @@ export const initialValues: FormComputeData = {
     accountId: ''
   },
   algorithm: null,
+  dataset: [], // Added for algorithm flow
   computeEnv: null,
-  cpu: 4,
+  cpu: 0,
   gpu: 0,
-  ram: 8,
-  disk: 100,
-  jobDuration: 3600,
+  ram: 0,
+  disk: 0,
+  jobDuration: 0,
   environmentData: '',
   makeAvailable: false,
   description: '',
@@ -69,15 +70,20 @@ export const initialValues: FormComputeData = {
   step1Completed: false,
   step2Completed: false,
   step3Completed: false,
-  step4Completed: false
+  step4Completed: false,
+  // Added fields required by onSubmit
+  dataServiceParams: {},
+  algoServiceParams: {},
+  algoParams: {},
+  // These will be populated dynamically
+  datasets: [],
+  algorithmDetails: null,
+  computeResources: null,
+  marketFees: null,
+  totalPrice: '0'
 }
 
 export interface ComputeDatasetForm {
-  user: {
-    stepCurrent: number
-    accountId: string
-    chainId: number
-  }
   algorithm: string
   dataset?: string[]
   computeEnv: string
@@ -118,11 +124,6 @@ export function getInitialValues(
   acceptPublishingLicense?: boolean
 ): ComputeDatasetForm {
   return {
-    user: {
-      stepCurrent: 1,
-      chainId: 100,
-      accountId: ''
-    },
     algorithm: selectedAlgorithmAsset?.id,
     computeEnv: selectedComputeEnv?.id,
     dataServiceParams: getDefaultValues(service.consumerParameters),

@@ -15,7 +15,7 @@ import content from '../../../../content/purgatory.json'
 import Button from '@shared/atoms/Button'
 import RelatedAssets from '../RelatedAssets'
 import Web3Feedback from '@components/@shared/Web3Feedback'
-import { useAccount } from 'wagmi'
+import { useAccount, useSigner } from 'wagmi'
 import { decodePublish } from '@utils/invoice/publishInvoice'
 import ServiceCard from './ServiceCard'
 import { getPdf } from '@utils/invoice/createInvoice'
@@ -25,6 +25,7 @@ import MetaInfo from './MetaMain/MetaInfo'
 import EditIcon from '@images/edit.svg'
 import { useRouter } from 'next/router'
 import ComputeJobs from '@components/@shared/ComputeJobs'
+import ComputeWizard from '@components/ComputeWizard'
 
 export default function AssetContent({
   asset
@@ -33,6 +34,7 @@ export default function AssetContent({
 }): ReactElement {
   const { isInPurgatory, purgatoryData, isOwner, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
+  const { data: signer } = useSigner()
   const { allowExternalContent, debug } = useUserPreferences()
   const [receipts, setReceipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
@@ -44,6 +46,11 @@ export default function AssetContent({
   const [jsonInvoice, setJsonInvoice] = useState(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [showCompute, setShowCompute] = useState(false)
+  const [showComputeWizard, setShowComputeWizard] = useState(false)
+  const [dtBalance, setDtBalance] = useState<string>('0')
+  const [fileMetadata, setFileMetadata] = useState<any>(null)
+  const [isAccountIdWhitelisted, setIsAccountIdWhitelisted] =
+    useState<boolean>(false)
   const router = useRouter()
 
   const availableServices =
@@ -220,7 +227,14 @@ export default function AssetContent({
                               key={service.id}
                               service={service}
                               accessDetails={asset.accessDetails[index]}
-                              onClick={() => setSelectedService(index)}
+                              onClick={() => {
+                                if (service.type === 'compute') {
+                                  setShowComputeWizard(true)
+                                  setSelectedService(index)
+                                } else {
+                                  setSelectedService(index)
+                                }
+                              }}
                             />
                           ))}
                         </div>
@@ -354,6 +368,35 @@ export default function AssetContent({
         </div>
       </article>
       <RelatedAssets />
+
+      {/* ComputeWizard Full-Page Overlay */}
+      {showComputeWizard && selectedService !== undefined && (
+        <div className={styles.computeWizardOverlay}>
+          <div className={styles.computeWizardContainer}>
+            <div className={styles.computeWizardHeader}>
+              <button
+                className={styles.closeButton}
+                onClick={() => {
+                  setShowComputeWizard(false)
+                  setSelectedService(undefined)
+                }}
+              >
+                ✕ Close
+              </button>
+            </div>
+            <ComputeWizard
+              asset={asset}
+              service={asset.credentialSubject?.services[selectedService]}
+              accessDetails={asset.accessDetails[selectedService]}
+              accountId={accountId}
+              signer={signer}
+              dtBalance={dtBalance || '0'}
+              file={fileMetadata}
+              isAccountIdWhitelisted={isAccountIdWhitelisted || false}
+            />
+          </div>
+        </div>
+      )}
     </>
   )
 }

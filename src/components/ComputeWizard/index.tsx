@@ -80,6 +80,7 @@ import SectionContainer from '../@shared/SectionContainer/SectionContainer'
 import { AssetExtended } from 'src/@types/AssetExtended'
 // import { AssetExtended } from '../../../../@types/AssetExtended'
 import { Service } from 'src/@types/ddo/Service'
+import Loader from '@shared/atoms/Loader'
 export default function ComputeWizard({
   accountId,
   signer,
@@ -200,7 +201,7 @@ export default function ComputeWizard({
       !hasAlgoAssetDatatoken &&
       !isConsumableaAlgorithmPrice)
 
-  const isUnsupportedPricing = accessDetails.type === 'NOT_SUPPORTED'
+  const isUnsupportedPricing = accessDetails?.type === 'NOT_SUPPORTED'
 
   function resetCacheWallet() {
     ssiWalletCache.clearCredentials()
@@ -893,7 +894,7 @@ export default function ComputeWizard({
   if (isLoading) {
     return (
       <div className={styles.container}>
-        <h2>Loading compute wizard...</h2>
+        <Loader message="Loading compute wizard..." />
       </div>
     )
   }
