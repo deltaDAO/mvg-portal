@@ -73,6 +73,11 @@ export const initialValues: FormComputeData = {
 }
 
 export interface ComputeDatasetForm {
+  user: {
+    stepCurrent: number
+    accountId: string
+    chainId: number
+  }
   algorithm: string
   dataset?: string[]
   computeEnv: string
@@ -113,6 +118,11 @@ export function getInitialValues(
   acceptPublishingLicense?: boolean
 ): ComputeDatasetForm {
   return {
+    user: {
+      stepCurrent: 1,
+      chainId: 100,
+      accountId: ''
+    },
     algorithm: selectedAlgorithmAsset?.id,
     computeEnv: selectedComputeEnv?.id,
     dataServiceParams: getDefaultValues(service.consumerParameters),

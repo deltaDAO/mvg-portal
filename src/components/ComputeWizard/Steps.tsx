@@ -1,6 +1,6 @@
 import { ReactElement, useEffect } from 'react'
 import { useFormikContext } from 'formik'
-import { FormComputeData } from './_types'
+import { ComputeDatasetForm } from './_constants'
 import { useAccount, useNetwork } from 'wagmi'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
@@ -117,7 +117,7 @@ export default function Steps({
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
-  const { values, setFieldValue } = useFormikContext<FormComputeData>()
+  const { values, setFieldValue } = useFormikContext<ComputeDatasetForm>()
 
   useEffect(() => {
     if (!chain?.id || !accountId) return
@@ -128,9 +128,26 @@ export default function Steps({
   const currentStep = values.user.stepCurrent
   const steps = isAlgorithm ? algorithmSteps : datasetSteps
 
+  console.log(
+    'Steps component - currentStep:',
+    currentStep,
+    'isAlgorithm:',
+    isAlgorithm,
+    'values.user:',
+    values.user,
+    'step type:',
+    typeof currentStep
+  )
+
   // For dataset flow
   if (!isAlgorithm) {
-    switch (currentStep) {
+    console.log(
+      'Dataset flow - currentStep:',
+      currentStep,
+      'type:',
+      typeof currentStep
+    )
+    switch (Number(currentStep)) {
       case 1:
         return <SelectAlgorithm algorithms={algorithms} />
       case 2:
@@ -140,12 +157,19 @@ export default function Steps({
       case 4:
         return <Review />
       default:
-        return <div>Invalid step</div>
+        console.log('Dataset flow - no matching case for step:', currentStep)
+        return <div>Invalid step: {currentStep}</div>
     }
   }
 
   // For algorithm flow
-  switch (currentStep) {
+  console.log(
+    'Algorithm flow - currentStep:',
+    currentStep,
+    'type:',
+    typeof currentStep
+  )
+  switch (Number(currentStep)) {
     case 1:
       return <SelectDataset />
     case 2:
@@ -159,6 +183,7 @@ export default function Steps({
     case 6:
       return steps[5].component
     default:
-      return <div>Invalid step</div>
+      console.log('Algorithm flow - no matching case for step:', currentStep)
+      return <div>Invalid step: {currentStep}</div>
   }
 }

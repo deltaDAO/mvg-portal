@@ -194,7 +194,7 @@ export async function getAlgorithmsForAsset(
   token: CancelToken
 ): Promise<Asset[]> {
   if (
-    !service.compute ||
+    !service?.compute ||
     (service.compute.publisherTrustedAlgorithms?.length === 0 &&
       service.compute.publisherTrustedAlgorithmPublishers?.length === 0)
   ) {

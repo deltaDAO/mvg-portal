@@ -1,6 +1,7 @@
 import { FormikContextType, useFormikContext } from 'formik'
 import React, { ReactElement } from 'react'
-import { FormComputeData, StepContent } from '../_types'
+import { StepContent } from '../_types'
+import { ComputeDatasetForm } from '../_constants'
 import { useProgressBar } from '../../../@hooks/useProgressBar'
 import { useComputeStepCompletion } from '../../../@hooks/useComputeStepCompletion'
 import styles from './index.module.css'
@@ -11,7 +12,8 @@ export default function Navigation({
 }: {
   steps: StepContent[]
 }): ReactElement {
-  const { values }: FormikContextType<FormComputeData> = useFormikContext()
+  const { values, setFieldValue }: FormikContextType<ComputeDatasetForm> =
+    useFormikContext()
   const { getSuccessClass, getLastCompletedStep } = useComputeStepCompletion()
 
   const currentStep = values.user.stepCurrent
@@ -21,6 +23,11 @@ export default function Navigation({
   const { stepRefs, stepsRowRef, progressBarWidth } = useProgressBar({
     progressTargetIdx
   })
+
+  const handleStepClick = (stepNumber: number) => {
+    console.log('Navigation - step clicked:', stepNumber)
+    setFieldValue('user.stepCurrent', stepNumber)
+  }
 
   return (
     <nav className={styles.navigation}>
@@ -41,6 +48,13 @@ export default function Navigation({
               }`}
               role="button"
               tabIndex={0}
+              onClick={() => handleStepClick(step.step)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleStepClick(step.step)
+                }
+              }}
               aria-current={isActive ? 'step' : undefined}
               aria-label={`Step ${step.step}: ${step.title}${
                 isCompleted ? ' (completed)' : ''
