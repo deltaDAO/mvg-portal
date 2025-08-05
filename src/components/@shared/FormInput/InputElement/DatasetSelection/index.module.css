@@ -58,6 +58,18 @@
   color: var(--publish-text);
   margin: 0;
 }
+.price {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  color: #303031;
+}
+.priceUnit {
+  color: #00adb2;
+}
 
 .envId {
   font-family: var(--font-family);
@@ -139,4 +151,11 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+
+.network {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 10px;
+  color: rgba(48, 48, 49, 0.7);
 }

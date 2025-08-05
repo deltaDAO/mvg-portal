@@ -6,10 +6,17 @@ import styles from './index.module.css'
 import SearchSection from '@shared/SearchSection'
 import StatusTag from '../../../atoms/StatusTag'
 import Button from '../../../atoms/Button'
+import NetworkName from '@shared/NetworkName'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 
 export interface DatasetSelectionDataset extends AssetSelectionAsset {
   checked: boolean
+}
+
+const asset: any = {
+  credentialSubject: {
+    chainId: 11155111
+  }
 }
 
 // Mock data for testing
@@ -142,8 +149,23 @@ export default function DatasetSelection({
                         {truncateDid(dataset.did)}
                       </div>
                     </div>
+                    <div>
+                      <NetworkName
+                        networkId={asset?.credentialSubject?.chainId}
+                        className={styles.network}
+                      />
+                      <div className={styles.price}>
+                        {dataset?.price && Number(dataset.price) > 0 ? (
+                          <>
+                            {dataset.price}
+                            <span className={styles.priceUnit}> OCEAN</span>
+                          </>
+                        ) : (
+                          <span className={styles.priceUnit}> FREE</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-
                   <div className={styles.cardContent}>
                     <p className={styles.description}>
                       {dataset.name || 'Testing Dataset name.'}
