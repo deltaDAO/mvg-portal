@@ -2,9 +2,13 @@ import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { useAccount } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
+import { useCancelToken } from '@hooks/useCancelToken'
 import DatasetSelection from '@shared/FormInput/InputElement/DatasetSelection'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
+import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
 import { FormComputeData } from '../_types'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
 import styles from './index.module.css'
 
 type FormValues = {
@@ -70,11 +74,40 @@ const computeDatasets: DatasetSelectionDataset[] = [
   }
 ]
 
-export default function SelectDataset(): ReactElement {
+export default function SelectDataset({
+  asset,
+  service,
+  accessDetails
+}: {
+  asset: AssetExtended
+  service: Service
+  accessDetails: AccessDetails
+}): ReactElement {
   const { address: accountId } = useAccount()
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [selectedDatasetIds, setSelectedDatasetIds] = useState<string[]>([])
+  const newCancelToken = useCancelToken()
+  const [datasetsForCompute, setDatasetsForCompute] =
+    useState<AssetSelectionAsset[]>()
   console.log('Compute values, ', values)
+
+  useEffect(() => {
+    if (!accessDetails.type) return
+
+    async function getDatasetsAllowedForCompute() {
+      const datasets = await getAlgorithmDatasetsForCompute(
+        asset.id,
+        service.id,
+        service.serviceEndpoint,
+        accountId,
+        asset.credentialSubject?.chainId,
+        newCancelToken()
+      )
+      setDatasetsForCompute(datasets)
+    }
+    asset.credentialSubject?.metadata.type === 'algorithm' &&
+      getDatasetsAllowedForCompute()
+  }, [accessDetails, accountId, asset, newCancelToken, service])
 
   // useEffect(() => {
   //   // Initialize from form values if needed
@@ -91,11 +124,10 @@ export default function SelectDataset(): ReactElement {
 
     setSelectedDatasetIds(updatedDatasetIds)
 
-    const selectedDatasets = computeDatasets?.filter((env) =>
+    const selectedDatasets = datasetsForCompute?.filter((env) =>
       updatedDatasetIds.includes(env.did)
     )
-    setFieldValue('computeEnv', selectedDatasets)
-    // ✅ Console log selected datasets
+    setFieldValue('dataset', selectedDatasets)
     console.log('Selected datasets:', selectedDatasets)
   }
 
@@ -104,6 +136,8 @@ export default function SelectDataset(): ReactElement {
       <StepTitle title="Select Datasets" />
       <div className={styles.environmentSelection}>
         <DatasetSelection
+          asset={asset}
+          datasets={datasetsForCompute}
           selected={selectedDatasetIds}
           onChange={handleDatasetSelect}
         />

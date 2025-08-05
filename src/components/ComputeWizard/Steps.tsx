@@ -172,7 +172,13 @@ export default function Steps({
   )
   switch (currentStep) {
     case 1:
-      return <SelectDataset />
+      return (
+        <SelectDataset
+          asset={asset}
+          service={service}
+          accessDetails={accessDetails}
+        />
+      )
     case 2:
       return <SelectServices />
     case 3:
