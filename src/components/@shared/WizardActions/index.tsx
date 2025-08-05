@@ -10,6 +10,7 @@ interface WizardActionsProps {
   continueButtonText?: string
   showSuccessConfetti?: boolean
   scrollToRef?: RefObject<any>
+  formikContext: FormikContextType<any>
   isContinueDisabled?: boolean
   rightAlignFirstStep?: boolean
 }
@@ -20,11 +21,11 @@ export default function WizardActions({
   continueButtonText = 'Continue',
   showSuccessConfetti = false,
   scrollToRef,
+  formikContext,
   isContinueDisabled = false,
   rightAlignFirstStep = true
 }: WizardActionsProps): ReactElement {
-  const { values, errors, isValid, isSubmitting, setFieldValue } =
-    useFormikContext()
+  const { values, errors, isValid, isSubmitting, setFieldValue } = formikContext
 
   function handleAction(action: string) {
     const currentStep: number = values.user.stepCurrent

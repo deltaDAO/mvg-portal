@@ -1,10 +1,8 @@
 import { ReactElement, useEffect } from 'react'
-import { useFormikContext } from 'formik'
-import { ComputeDatasetForm } from './_constants'
 import { useAccount, useNetwork } from 'wagmi'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
-import { datasetSteps, algorithmSteps } from './_constants'
+import { datasetSteps, algorithmSteps } from './_constants' // Updated import
 import SelectAlgorithm from './SelectAlgorithm'
 import SelectServices from './SelectServices'
 import PreviewSelectedServices from './PreviewSelectedServices'
@@ -16,6 +14,7 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { Service } from 'src/@types/ddo/Service'
 import { ResourceType } from 'src/@types/ResourceType'
 import { Asset } from 'src/@types/Asset'
+import { FormComputeData, StepContent } from './_types'
 
 export default function Steps({
   asset,
@@ -58,7 +57,9 @@ export default function Steps({
   onCheckAlgoDTBalance,
   jobs,
   isLoadingJobs,
-  refetchJobs
+  refetchJobs,
+  formikValues, // Updated type below
+  setFieldValue
 }: {
   asset: AssetExtended
   service: Service
@@ -71,7 +72,6 @@ export default function Steps({
   setSelectedAlgorithmAsset?: React.Dispatch<
     React.SetStateAction<AssetExtended>
   >
-
   setSelectedDatasetAsset?: React.Dispatch<
     React.SetStateAction<AssetExtended[]>
   >
@@ -114,10 +114,11 @@ export default function Steps({
   jobs?: any[]
   isLoadingJobs?: boolean
   refetchJobs?: () => void
+  formikValues: FormComputeData // Updated to FormComputeData
+  setFieldValue: (field: string, value: any) => void
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
-  const { values, setFieldValue } = useFormikContext<ComputeDatasetForm>()
 
   useEffect(() => {
     if (!chain?.id || !accountId) return
@@ -125,7 +126,7 @@ export default function Steps({
     setFieldValue('user.accountId', accountId)
   }, [chain?.id, accountId, setFieldValue])
 
-  const currentStep = values.user.stepCurrent
+  const currentStep = formikValues?.user?.stepCurrent ?? 1
   const steps = isAlgorithm ? algorithmSteps : datasetSteps
 
   console.log(
@@ -134,7 +135,7 @@ export default function Steps({
     'isAlgorithm:',
     isAlgorithm,
     'values.user:',
-    values.user,
+    formikValues.user,
     'step type:',
     typeof currentStep
   )
@@ -147,7 +148,7 @@ export default function Steps({
       'type:',
       typeof currentStep
     )
-    switch (Number(currentStep)) {
+    switch (currentStep) {
       case 1:
         return <SelectAlgorithm algorithms={algorithms} />
       case 2:
@@ -169,7 +170,7 @@ export default function Steps({
     'type:',
     typeof currentStep
   )
-  switch (Number(currentStep)) {
+  switch (currentStep) {
     case 1:
       return <SelectDataset />
     case 2:
@@ -181,7 +182,7 @@ export default function Steps({
     case 5:
       return <ConfigureEnvironment />
     case 6:
-      return steps[5].component
+      return <Review />
     default:
       console.log('Algorithm flow - no matching case for step:', currentStep)
       return <div>Invalid step: {currentStep}</div>

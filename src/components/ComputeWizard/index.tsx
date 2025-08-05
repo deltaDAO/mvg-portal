@@ -26,7 +26,6 @@ import {
   algorithmSteps,
   datasetSteps
 } from './_constants'
-import { FormComputeData } from './_types'
 // import FormStartComputeDataset from './FormComputeDataset'
 import styles from './index.module.css'
 import SuccessConfetti from '@shared/SuccessConfetti'
@@ -56,8 +55,7 @@ import { getDummySigner } from '@utils/wallet'
 import WhitelistIndicator from '../Asset/AssetActions/Compute/WhitelistIndicator'
 import { parseConsumerParameterValues } from '../Asset/AssetActions/ConsumerParameters'
 import { BigNumber, ethers, Signer } from 'ethers'
-import { useAccount, useSigner } from 'wagmi'
-import { useAsset } from '@context/Asset'
+import { useAccount } from 'wagmi'
 import { Asset, AssetPrice } from 'src/@types/Asset'
 import { AssetActionCheckCredentials } from '../Asset/AssetActions/CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
@@ -83,58 +81,39 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 // import { AssetExtended } from '../../../../@types/AssetExtended'
 import { Service } from 'src/@types/ddo/Service'
 export default function ComputeWizard({
-  accountId: propAccountId,
-  signer: propSigner,
-  asset: propAsset,
-  service: propService,
-  accessDetails: propAccessDetails,
-  dtBalance: propDtBalance,
-  file: propFile,
-  isAccountIdWhitelisted: propIsAccountIdWhitelisted,
-  fileIsLoading: propFileIsLoading,
-  consumableFeedback: propConsumableFeedback,
-  content
+  accountId,
+  signer,
+  asset,
+  service,
+  accessDetails,
+  dtBalance,
+  file,
+  isAccountIdWhitelisted,
+  fileIsLoading,
+  consumableFeedback
 }: {
-  accountId?: string
-  signer?: Signer
-  asset?: AssetExtended
-  service?: Service
-  accessDetails?: AccessDetails
-  dtBalance?: string
-  file?: FileInfo
-  isAccountIdWhitelisted?: boolean
+  accountId: string
+  signer: Signer
+  asset: AssetExtended
+  service: Service
+  accessDetails: AccessDetails
+  dtBalance: string
+  file: FileInfo
+  isAccountIdWhitelisted: boolean
   fileIsLoading?: boolean
   consumableFeedback?: string
-  content?: any
+  onClick?: () => void
 }): ReactElement {
   const { debug } = useUserPreferences()
-
-  // Get data from context if props are not provided
-  const { asset: contextAsset } = useAsset()
-  const { address: contextAccountId } = useAccount()
-  const { data: contextSigner } = useSigner()
-
-  // Use props if provided, otherwise use context
-  const asset = propAsset || contextAsset
-  const accountId = propAccountId || contextAccountId
-  const signer = propSigner || contextSigner
-  const dtBalance = propDtBalance || '0'
-  const file = propFile
-  const isAccountIdWhitelisted = propIsAccountIdWhitelisted || false
-  const consumableFeedback = propConsumableFeedback
-
-  // Derive service and accessDetails from asset if not provided
-  const service = propService || asset?.credentialSubject?.services?.[0]
-  const accessDetails = propAccessDetails || asset?.accessDetails?.[0]
-
   console.log('accountId  ', accountId)
   console.log('signer  ', signer)
   console.log('asset  ', asset)
   console.log('accessDetails  ', accessDetails)
-  console.log('file  ', propFile)
-  console.log('dtBalance  ', propDtBalance)
+  console.log('file  ', file)
+  console.log('dtBalance  ', dtBalance)
   console.log('service  ', service)
-
+  // const { asset } = useAsset()
+  // const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
 
   const [algorithms, setAlgorithms] = useState<AssetSelectionAsset[]>([])
@@ -210,9 +189,7 @@ export default function ComputeWizard({
     ? allResourceValues[selectedEnvId]
     : undefined
 
-  const price: AssetPrice = accessDetails
-    ? getAvailablePrice(accessDetails)
-    : { value: 0, tokenSymbol: undefined, tokenAddress: undefined }
+  const price: AssetPrice = getAvailablePrice(accessDetails)
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
@@ -223,7 +200,7 @@ export default function ComputeWizard({
       !hasAlgoAssetDatatoken &&
       !isConsumableaAlgorithmPrice)
 
-  const isUnsupportedPricing = accessDetails?.type === 'NOT_SUPPORTED'
+  const isUnsupportedPricing = accessDetails.type === 'NOT_SUPPORTED'
 
   function resetCacheWallet() {
     ssiWalletCache.clearCredentials()
@@ -425,7 +402,7 @@ export default function ComputeWizard({
   }, [accessDetails, accountId, isUnsupportedPricing])
 
   useEffect(() => {
-    if (isUnsupportedPricing || !asset) return
+    if (isUnsupportedPricing) return
     if (asset.credentialSubject?.metadata.type === 'algorithm') {
       getAlgorithmDatasetsForCompute(
         asset.id,
@@ -457,7 +434,6 @@ export default function ComputeWizard({
   }, [accountId, asset, service, isUnsupportedPricing, newCancelToken])
 
   const initializeComputeEnvironment = useCallback(async () => {
-    if (!asset || !service) return
     const computeEnvs = await getComputeEnvironments(
       service.serviceEndpoint,
       asset.credentialSubject?.chainId
@@ -471,13 +447,7 @@ export default function ComputeWizard({
 
   const fetchJobs = useCallback(
     async (type: string) => {
-      if (
-        !chainIds ||
-        chainIds.length === 0 ||
-        !accountId ||
-        !asset ||
-        !service
-      ) {
+      if (!chainIds || chainIds.length === 0 || !accountId) {
         return
       }
 
@@ -937,15 +907,6 @@ export default function ComputeWizard({
     )
   }
 
-  // Check if we have the required data
-  if (!asset || !service || !accessDetails) {
-    return (
-      <div className={styles.container}>
-        <p>Loading asset data...</p>
-      </div>
-    )
-  }
-
   return (
     <Formik
       initialValues={initialValues}
@@ -959,6 +920,11 @@ export default function ComputeWizard({
         <div className={styles.containerOuter}>
           <PageHeader title={<Title asset={asset} />} />
           <Form className={styles.form}>
+            <Navigation
+              steps={steps}
+              values={formikContext.values} // Add values prop
+              setFieldValue={formikContext.setFieldValue}
+            />
             <SectionContainer classNames={styles.container}>
               {isUnsupportedPricing ? null : asset.credentialSubject?.metadata
                   .type === 'algorithm' ? (
@@ -989,121 +955,167 @@ export default function ComputeWizard({
                     onSubmit(values)
                   }}
                 >
-                  {appConfig.ssiEnabled ? (
+                  {({ values: innerValues }) => (
                     <>
-                      {verifierSessionCache &&
-                      lookupVerifierSessionId(asset.id, service.id) ? (
+                      {appConfig.ssiEnabled ? (
                         <>
-                          {service.type === 'compute' && (
-                            <Alert
-                              text={
-                                "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
-                              }
-                              state="info"
-                            />
-                          )}
-                          <CredentialDialogProvider>
-                            <Steps
-                              asset={asset}
-                              service={service}
-                              accessDetails={accessDetails}
-                              datasets={datasetList}
-                              selectedDatasetAsset={selectedDatasetAsset}
-                              setSelectedDatasetAsset={setSelectedDatasetAsset}
-                              isLoading={
-                                isOrdering || isRequestingAlgoOrderPrice
-                              }
-                              isComputeButtonDisabled={isComputeButtonDisabled}
-                              hasPreviousOrder={!!validOrderTx}
-                              hasDatatoken={hasDatatoken}
-                              dtBalance={dtBalance}
-                              assetTimeout={secondsToString(service.timeout)}
-                              hasPreviousOrderSelectedComputeAsset={
-                                !!validAlgorithmOrderTx
-                              }
-                              hasDatatokenSelectedComputeAsset={
-                                hasAlgoAssetDatatoken
-                              }
-                              isAccountIdWhitelisted={isAccountIdWhitelisted}
-                              datasetSymbol={
-                                accessDetails.baseToken?.symbol ||
-                                (asset.credentialSubject?.chainId === 137
-                                  ? 'mOCEAN'
-                                  : 'OCEAN')
-                              }
-                              algorithmSymbol={
-                                selectedAlgorithmAsset?.accessDetails?.[
-                                  svcIndex
-                                ]?.baseToken?.symbol ||
-                                (selectedAlgorithmAsset?.credentialSubject
-                                  ?.chainId === 137
-                                  ? 'mOCEAN'
-                                  : 'OCEAN')
-                              }
-                              providerFeesSymbol={providerFeesSymbol}
-                              dtSymbolSelectedComputeAsset={
-                                selectedAlgorithmAsset?.accessDetails?.[
-                                  svcIndex
-                                ]?.datatoken.symbol
-                              }
-                              dtBalanceSelectedComputeAsset={algorithmDTBalance}
-                              selectedComputeAssetType="algorithm"
-                              selectedComputeAssetTimeout={secondsToString(
-                                selectedAlgorithmAsset?.credentialSubject
-                                  ?.services[svcIndex]?.timeout
+                          {verifierSessionCache &&
+                          lookupVerifierSessionId(asset.id, service.id) ? (
+                            <>
+                              {service.type === 'compute' && (
+                                <Alert
+                                  text={
+                                    "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
+                                  }
+                                  state="info"
+                                />
                               )}
-                              allResourceValues={allResourceValues}
-                              setAllResourceValues={setAllResourceValues}
-                              // lazy comment when removing pricingStepText
-                              stepText={computeStatusText}
-                              isConsumable={isConsumablePrice}
-                              consumableFeedback={consumableFeedback}
-                              datasetOrderPriceAndFees={
-                                datasetOrderPriceAndFees
-                              }
-                              algoOrderPriceAndFees={algoOrderPriceAndFees}
-                              retry={retry}
-                              onRunInitPriceAndFees={async () => {
-                                await initPriceAndFees()
-                              }}
-                              onCheckAlgoDTBalance={() =>
-                                checkAssetDTBalance(selectedAlgorithmAsset)
-                              }
-                              computeEnvs={computeEnvs}
-                              jobs={jobs}
-                              isLoadingJobs={isLoadingJobs}
-                              refetchJobs={() => setRefetchJobs(!refetchJobs)}
-                              isAlgorithm={isAlgorithm}
-                            />
-                          </CredentialDialogProvider>
-                          {/* <AlgorithmDatasetsListForCompute
+                              <CredentialDialogProvider>
+                                <Steps
                                   asset={asset}
                                   service={service}
                                   accessDetails={accessDetails}
-                                /> */}
+                                  datasets={datasetList}
+                                  selectedDatasetAsset={selectedDatasetAsset}
+                                  setSelectedDatasetAsset={
+                                    setSelectedDatasetAsset
+                                  }
+                                  isLoading={
+                                    isOrdering || isRequestingAlgoOrderPrice
+                                  }
+                                  isComputeButtonDisabled={
+                                    isComputeButtonDisabled
+                                  }
+                                  hasPreviousOrder={!!validOrderTx}
+                                  hasDatatoken={hasDatatoken}
+                                  dtBalance={dtBalance}
+                                  assetTimeout={secondsToString(
+                                    service.timeout
+                                  )}
+                                  hasPreviousOrderSelectedComputeAsset={
+                                    !!validAlgorithmOrderTx
+                                  }
+                                  hasDatatokenSelectedComputeAsset={
+                                    hasAlgoAssetDatatoken
+                                  }
+                                  isAccountIdWhitelisted={
+                                    isAccountIdWhitelisted
+                                  }
+                                  datasetSymbol={
+                                    accessDetails.baseToken?.symbol ||
+                                    (asset.credentialSubject?.chainId === 137
+                                      ? 'mOCEAN'
+                                      : 'OCEAN')
+                                  }
+                                  algorithmSymbol={
+                                    selectedAlgorithmAsset?.accessDetails?.[
+                                      svcIndex
+                                    ]?.baseToken?.symbol ||
+                                    (selectedAlgorithmAsset?.credentialSubject
+                                      ?.chainId === 137
+                                      ? 'mOCEAN'
+                                      : 'OCEAN')
+                                  }
+                                  providerFeesSymbol={providerFeesSymbol}
+                                  dtSymbolSelectedComputeAsset={
+                                    selectedAlgorithmAsset?.accessDetails?.[
+                                      svcIndex
+                                    ]?.datatoken.symbol
+                                  }
+                                  dtBalanceSelectedComputeAsset={
+                                    algorithmDTBalance
+                                  }
+                                  selectedComputeAssetType="algorithm"
+                                  selectedComputeAssetTimeout={secondsToString(
+                                    selectedAlgorithmAsset?.credentialSubject
+                                      ?.services[svcIndex]?.timeout
+                                  )}
+                                  allResourceValues={allResourceValues}
+                                  setAllResourceValues={setAllResourceValues}
+                                  stepText={computeStatusText}
+                                  isConsumable={isConsumablePrice}
+                                  consumableFeedback={consumableFeedback}
+                                  datasetOrderPriceAndFees={
+                                    datasetOrderPriceAndFees
+                                  }
+                                  algoOrderPriceAndFees={algoOrderPriceAndFees}
+                                  retry={retry}
+                                  computeEnvs={computeEnvs}
+                                  isAlgorithm={isAlgorithm}
+                                  formikValues={formikContext.values} // Pass outer formik values
+                                  setFieldValue={formikContext.setFieldValue} // Pass outer setFieldValue
+                                />
+                              </CredentialDialogProvider>
+                            </>
+                          ) : (
+                            <AssetActionCheckCredentials
+                              asset={asset}
+                              service={service}
+                            />
+                          )}
                         </>
                       ) : (
-                        <AssetActionCheckCredentials
-                          asset={asset}
-                          service={service}
-                        />
+                        <CredentialDialogProvider>
+                          <Steps
+                            asset={asset}
+                            service={service}
+                            accessDetails={accessDetails}
+                            datasets={datasetList}
+                            selectedDatasetAsset={selectedDatasetAsset}
+                            setSelectedDatasetAsset={setSelectedDatasetAsset}
+                            isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                            isComputeButtonDisabled={isComputeButtonDisabled}
+                            hasPreviousOrder={!!validOrderTx}
+                            hasDatatoken={hasDatatoken}
+                            dtBalance={dtBalance}
+                            assetTimeout={secondsToString(service.timeout)}
+                            hasPreviousOrderSelectedComputeAsset={
+                              !!validAlgorithmOrderTx
+                            }
+                            hasDatatokenSelectedComputeAsset={
+                              hasAlgoAssetDatatoken
+                            }
+                            isAccountIdWhitelisted={isAccountIdWhitelisted}
+                            datasetSymbol={
+                              accessDetails.baseToken?.symbol ||
+                              (asset.credentialSubject?.chainId === 137
+                                ? 'mOCEAN'
+                                : 'OCEAN')
+                            }
+                            algorithmSymbol={
+                              selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                                ?.baseToken?.symbol ||
+                              (selectedAlgorithmAsset?.credentialSubject
+                                ?.chainId === 137
+                                ? 'mOCEAN'
+                                : 'OCEAN')
+                            }
+                            providerFeesSymbol={providerFeesSymbol}
+                            dtSymbolSelectedComputeAsset={
+                              selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                                ?.datatoken.symbol
+                            }
+                            dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                            selectedComputeAssetType="algorithm"
+                            selectedComputeAssetTimeout={secondsToString(
+                              selectedAlgorithmAsset?.credentialSubject
+                                ?.services[svcIndex]?.timeout
+                            )}
+                            allResourceValues={allResourceValues}
+                            setAllResourceValues={setAllResourceValues}
+                            stepText={computeStatusText}
+                            isConsumable={isConsumablePrice}
+                            consumableFeedback={consumableFeedback}
+                            datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                            algoOrderPriceAndFees={algoOrderPriceAndFees}
+                            retry={retry}
+                            computeEnvs={computeEnvs}
+                            isAlgorithm={isAlgorithm}
+                            formikValues={formikContext.values} // Pass outer formik values
+                            setFieldValue={formikContext.setFieldValue} // Pass outer setFieldValue
+                          />
+                        </CredentialDialogProvider>
                       )}
-                    </>
-                  ) : (
-                    <>
-                      {/* {service.type === 'compute' && (
-                        <Alert
-                          text={
-                            "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
-                          }
-                          state="info"
-                        />
-                      )}
-                      <AlgorithmDatasetsListForCompute
-                        asset={asset}
-                        service={service}
-                        accessDetails={accessDetails}
-                      /> */}
                     </>
                   )}
                 </Formik>
@@ -1135,85 +1147,184 @@ export default function ComputeWizard({
                     onSubmit(values)
                   }}
                 >
-                  <CredentialDialogProvider>
-                    <Navigation steps={steps} />
-                    <Steps
-                      asset={asset}
-                      service={service}
-                      accessDetails={accessDetails}
-                      datasets={datasetList}
-                      algorithms={algorithmList}
-                      ddoListAlgorithms={ddoAlgorithmList}
-                      selectedAlgorithmAsset={selectedAlgorithmAsset}
-                      selectedDatasetAsset={selectedDatasetAsset}
-                      setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
-                      setSelectedDatasetAsset={setSelectedDatasetAsset}
-                      isLoading={isOrdering || isRequestingAlgoOrderPrice}
-                      isComputeButtonDisabled={isComputeButtonDisabled}
-                      hasPreviousOrder={!!validOrderTx}
-                      hasDatatoken={hasDatatoken}
-                      dtBalance={dtBalance}
-                      assetTimeout={secondsToString(service.timeout)}
-                      hasPreviousOrderSelectedComputeAsset={
-                        !!validAlgorithmOrderTx
-                      }
-                      hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
-                      isAccountIdWhitelisted={isAccountIdWhitelisted}
-                      datasetSymbol={
-                        accessDetails.baseToken?.symbol ||
-                        (asset.credentialSubject?.chainId === 137
-                          ? 'mOCEAN'
-                          : 'OCEAN')
-                      }
-                      algorithmSymbol={
-                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
-                          ?.baseToken?.symbol ||
-                        (selectedAlgorithmAsset?.credentialSubject?.chainId ===
-                        137
-                          ? 'mOCEAN'
-                          : 'OCEAN')
-                      }
-                      providerFeesSymbol={providerFeesSymbol}
-                      dtSymbolSelectedComputeAsset={
-                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
-                          ?.datatoken.symbol
-                      }
-                      dtBalanceSelectedComputeAsset={algorithmDTBalance}
-                      selectedComputeAssetType="algorithm"
-                      selectedComputeAssetTimeout={secondsToString(
-                        selectedAlgorithmAsset?.credentialSubject?.services[
-                          svcIndex
-                        ]?.timeout
+                  {({ values: innerValues }) => (
+                    <>
+                      {appConfig.ssiEnabled ? (
+                        <>
+                          {verifierSessionCache &&
+                          lookupVerifierSessionId(asset.id, service.id) ? (
+                            <CredentialDialogProvider>
+                              <Steps
+                                asset={asset}
+                                service={service}
+                                accessDetails={accessDetails}
+                                algorithms={algorithmList}
+                                ddoListAlgorithms={ddoAlgorithmList}
+                                selectedAlgorithmAsset={selectedAlgorithmAsset}
+                                setSelectedAlgorithmAsset={
+                                  setSelectedAlgorithmAsset
+                                }
+                                isLoading={
+                                  isOrdering || isRequestingAlgoOrderPrice
+                                }
+                                isComputeButtonDisabled={
+                                  isComputeButtonDisabled
+                                }
+                                hasPreviousOrder={!!validOrderTx}
+                                hasDatatoken={hasDatatoken}
+                                dtBalance={dtBalance}
+                                assetTimeout={secondsToString(service.timeout)}
+                                hasPreviousOrderSelectedComputeAsset={
+                                  !!validAlgorithmOrderTx
+                                }
+                                hasDatatokenSelectedComputeAsset={
+                                  hasAlgoAssetDatatoken
+                                }
+                                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                                datasetSymbol={
+                                  accessDetails.baseToken?.symbol ||
+                                  (asset.credentialSubject?.chainId === 137
+                                    ? 'mOCEAN'
+                                    : 'OCEAN')
+                                }
+                                algorithmSymbol={
+                                  selectedAlgorithmAsset?.accessDetails?.[
+                                    svcIndex
+                                  ]?.baseToken?.symbol ||
+                                  (selectedAlgorithmAsset?.credentialSubject
+                                    ?.chainId === 137
+                                    ? 'mOCEAN'
+                                    : 'OCEAN')
+                                }
+                                providerFeesSymbol={providerFeesSymbol}
+                                dtSymbolSelectedComputeAsset={
+                                  selectedAlgorithmAsset?.accessDetails?.[
+                                    svcIndex
+                                  ]?.datatoken.symbol
+                                }
+                                dtBalanceSelectedComputeAsset={
+                                  algorithmDTBalance
+                                }
+                                selectedComputeAssetType="algorithm"
+                                selectedComputeAssetTimeout={secondsToString(
+                                  selectedAlgorithmAsset?.credentialSubject
+                                    ?.services[svcIndex]?.timeout
+                                )}
+                                allResourceValues={allResourceValues}
+                                setAllResourceValues={setAllResourceValues}
+                                stepText={computeStatusText}
+                                isConsumable={isConsumablePrice}
+                                consumableFeedback={consumableFeedback}
+                                datasetOrderPriceAndFees={
+                                  datasetOrderPriceAndFees
+                                }
+                                algoOrderPriceAndFees={algoOrderPriceAndFees}
+                                retry={retry}
+                                onRunInitPriceAndFees={async () => {
+                                  await initPriceAndFees()
+                                }}
+                                onCheckAlgoDTBalance={() =>
+                                  checkAssetDTBalance(selectedAlgorithmAsset)
+                                }
+                                computeEnvs={computeEnvs}
+                                jobs={jobs}
+                                isLoadingJobs={isLoadingJobs}
+                                refetchJobs={() => setRefetchJobs(!refetchJobs)}
+                                formikValues={formikContext.values} // Pass outer formik values
+                                setFieldValue={formikContext.setFieldValue} // Pass outer setFieldValue
+                              />
+                            </CredentialDialogProvider>
+                          ) : (
+                            <AssetActionCheckCredentials
+                              asset={asset}
+                              service={service}
+                            />
+                          )}
+                        </>
+                      ) : (
+                        <CredentialDialogProvider>
+                          <Steps
+                            asset={asset}
+                            service={service}
+                            accessDetails={accessDetails}
+                            algorithms={algorithmList}
+                            ddoListAlgorithms={ddoAlgorithmList}
+                            selectedAlgorithmAsset={selectedAlgorithmAsset}
+                            setSelectedAlgorithmAsset={
+                              setSelectedAlgorithmAsset
+                            }
+                            isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                            isComputeButtonDisabled={isComputeButtonDisabled}
+                            hasPreviousOrder={!!validOrderTx}
+                            hasDatatoken={hasDatatoken}
+                            dtBalance={dtBalance}
+                            assetTimeout={secondsToString(service.timeout)}
+                            hasPreviousOrderSelectedComputeAsset={
+                              !!validAlgorithmOrderTx
+                            }
+                            hasDatatokenSelectedComputeAsset={
+                              hasAlgoAssetDatatoken
+                            }
+                            isAccountIdWhitelisted={isAccountIdWhitelisted}
+                            datasetSymbol={
+                              accessDetails.baseToken?.symbol ||
+                              (asset.credentialSubject?.chainId === 137
+                                ? 'mOCEAN'
+                                : 'OCEAN')
+                            }
+                            algorithmSymbol={
+                              selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                                ?.baseToken?.symbol ||
+                              (selectedAlgorithmAsset?.credentialSubject
+                                ?.chainId === 137
+                                ? 'mOCEAN'
+                                : 'OCEAN')
+                            }
+                            providerFeesSymbol={providerFeesSymbol}
+                            dtSymbolSelectedComputeAsset={
+                              selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                                ?.datatoken.symbol
+                            }
+                            dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                            selectedComputeAssetType="algorithm"
+                            selectedComputeAssetTimeout={secondsToString(
+                              selectedAlgorithmAsset?.credentialSubject
+                                ?.services[svcIndex]?.timeout
+                            )}
+                            allResourceValues={allResourceValues}
+                            setAllResourceValues={setAllResourceValues}
+                            stepText={computeStatusText}
+                            isConsumable={isConsumablePrice}
+                            consumableFeedback={consumableFeedback}
+                            datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                            algoOrderPriceAndFees={algoOrderPriceAndFees}
+                            retry={retry}
+                            onRunInitPriceAndFees={async () => {
+                              await initPriceAndFees()
+                            }}
+                            onCheckAlgoDTBalance={() =>
+                              checkAssetDTBalance(selectedAlgorithmAsset)
+                            }
+                            computeEnvs={computeEnvs}
+                            jobs={jobs}
+                            isLoadingJobs={isLoadingJobs}
+                            refetchJobs={() => setRefetchJobs(!refetchJobs)}
+                            formikValues={formikContext.values} // Pass outer formik values
+                            setFieldValue={formikContext.setFieldValue} // Pass outer setFieldValue
+                          />
+                        </CredentialDialogProvider>
                       )}
-                      allResourceValues={allResourceValues}
-                      setAllResourceValues={setAllResourceValues}
-                      // lazy comment when removing pricingStepText
-                      stepText={computeStatusText}
-                      isConsumable={isConsumablePrice}
-                      consumableFeedback={consumableFeedback}
-                      datasetOrderPriceAndFees={datasetOrderPriceAndFees}
-                      algoOrderPriceAndFees={algoOrderPriceAndFees}
-                      retry={retry}
-                      onRunInitPriceAndFees={async () => {
-                        await initPriceAndFees()
-                      }}
-                      onCheckAlgoDTBalance={() =>
-                        checkAssetDTBalance(selectedAlgorithmAsset)
-                      }
-                      computeEnvs={computeEnvs}
-                      jobs={jobs}
-                      isLoadingJobs={isLoadingJobs}
-                      refetchJobs={() => setRefetchJobs(!refetchJobs)}
-                    />
-                    <WizardActions
-                      totalSteps={totalSteps}
-                      submitButtonText="Buy Dataset"
-                      showSuccessConfetti={false}
-                      rightAlignFirstStep={false}
-                    />
-                  </CredentialDialogProvider>
+                    </>
+                  )}
                 </Formik>
               )}
+              <WizardActions
+                totalSteps={totalSteps}
+                submitButtonText="Buy Dataset"
+                showSuccessConfetti={false}
+                rightAlignFirstStep={false}
+                formikContext={formikContext}
+              />
             </SectionContainer>
           </Form>
           {debug && (

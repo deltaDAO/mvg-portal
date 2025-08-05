@@ -1,19 +1,19 @@
-import { FormikContextType, useFormikContext } from 'formik'
 import React, { ReactElement } from 'react'
-import { StepContent } from '../_types'
-import { ComputeDatasetForm } from '../_constants'
+import { StepContent, FormComputeData } from '../_types' // Updated import to include FormComputeData
 import { useProgressBar } from '../../../@hooks/useProgressBar'
 import { useComputeStepCompletion } from '../../../@hooks/useComputeStepCompletion'
 import styles from './index.module.css'
 import CheckmarkIcon from '@images/checkmark.svg'
 
 export default function Navigation({
-  steps
+  steps,
+  values, // Add new prop
+  setFieldValue
 }: {
   steps: StepContent[]
+  values: FormComputeData // New prop type
+  setFieldValue: (field: string, value: any) => void
 }): ReactElement {
-  const { values, setFieldValue }: FormikContextType<ComputeDatasetForm> =
-    useFormikContext()
   const { getSuccessClass, getLastCompletedStep } = useComputeStepCompletion()
 
   const currentStep = values.user.stepCurrent
