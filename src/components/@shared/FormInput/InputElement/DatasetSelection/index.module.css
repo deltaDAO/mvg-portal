@@ -1,6 +1,7 @@
 .root {
   padding: 0;
   min-height: 200px;
+  max-height: 600px;
 
   display: flex;
   flex-direction: column;
@@ -12,7 +13,9 @@
   flex-direction: column;
   gap: 16px;
   margin-top: calc(var(--spacer) / 4);
-  min-height: fit-content;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
 .datasetCard {
