@@ -24,15 +24,13 @@ export default function DatasetSelection({
   onChange
 }: {
   asset?: AssetExtended
-  datasets?: DatasetSelectionDataset[]
+  datasets?: any[]
   selected?: string[]
   disabled?: boolean
   onChange?: (value: string) => void
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
-  const [filteredDatasets, setfilteredDatasets] = useState<
-    DatasetSelectionDataset[]
-  >([])
+  const [filteredDatasets, setfilteredDatasets] = useState<any[]>([])
 
   useEffect(() => {
     const realDatasets = datasets && Array.isArray(datasets) ? datasets : []
@@ -81,7 +79,7 @@ export default function DatasetSelection({
                 >
                   <div className={styles.cardHeader}>
                     <div className={styles.titleSection}>
-                      <h3 className={styles.title}>Dataset {index + 1}</h3>
+                      <h3 className={styles.title}>{dataset.name}</h3>
                       <div className={styles.envId}>
                         {truncateDid(dataset.did)}
                       </div>
@@ -92,9 +90,10 @@ export default function DatasetSelection({
                         className={styles.network}
                       />
                       <div className={styles.price}>
-                        {dataset?.price && Number(dataset.price) > 0 ? (
+                        {dataset?.datasetPrice &&
+                        Number(dataset.datasetPrice) > 0 ? (
                           <>
-                            {dataset.price}
+                            {dataset.datasetPrice}
                             <span className={styles.priceUnit}> OCEAN</span>
                           </>
                         ) : (

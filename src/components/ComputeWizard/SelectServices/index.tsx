@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './index.module.css'
 import MinimizeIcon from '@images/minimize.svg'
 import ExpandIcon from '@images/expand.svg'
+import { useFormikContext } from 'formik'
 
 interface Service {
   id: string
@@ -22,157 +23,107 @@ interface Dataset {
   expanded?: boolean
   checked?: boolean
 }
+type FormValues = {
+  dataset: string[]
+}
 
 const ServiceSelector = () => {
-  const [datasets, setDatasets] = useState<Dataset[]>([
-    {
-      id: '1',
-      name: 'Dataset 1',
-      expanded: true,
-      checked: true,
-      services: [
-        {
-          id: '1-1',
-          name: 'Service 1',
-          title: 'Service 1',
-          description: 'Test data set with SSI credentials',
-          type: 'Access',
-          duration: 'Forever',
-          price: '1',
-          symbol: 'OCEAN',
-          checked: true
-        },
-        {
-          id: '1-2',
-          name: 'Service 2',
-          title: 'Service 2',
-          description: 'Another test service',
-          type: 'Access',
-          duration: 'Forever',
-          price: '2',
-          symbol: 'OCEAN',
-          checked: false
-        }
-      ]
-    },
-    {
-      id: '2',
-      name: 'Dataset 2',
-      expanded: false,
-      checked: false,
-      services: [
-        {
-          id: '2-1',
-          name: 'Service 1',
-          title: 'Service 1',
-          description: 'Test data set with SSI credentials',
-          type: 'Access',
-          duration: 'Forever',
-          price: '1',
-          symbol: 'OCEAN',
-          checked: true
-        },
-        {
-          id: '2-2',
-          name: 'Service 2',
-          title: 'Service 2',
-          description: 'Another test service',
-          type: 'Access',
-          duration: 'Forever',
-          price: '2',
-          symbol: 'OCEAN',
-          checked: false
-        }
-      ]
-    },
-    {
-      id: '3',
-      name: 'Dataset 3',
-      expanded: false,
-      checked: false,
-      services: [
-        {
-          id: '3-1',
-          name: 'Service 1',
-          title: 'title 1',
-          description: 'Test data set with SSI credentials',
-          type: 'Access',
-          duration: 'Forever',
-          price: '1',
-          symbol: 'OCEAN',
-          checked: true
-        },
-        {
-          id: '3-2',
-          name: 'Service 2',
-          title: 'Service 2',
-          description: 'Another test service',
-          type: 'Access',
-          duration: 'Forever',
-          price: '2',
-          symbol: 'OCEAN',
-          checked: false
-        }
-      ]
-    }
-  ])
+  const { values, setFieldValue } = useFormikContext<FormValues>()
+  const [datasets, setDatasets] = useState<Dataset[]>([])
+  console.log('Form values', values)
+
+  // Normalize incoming Formik values → local state
+  useEffect(() => {
+    if (!values.dataset || datasets.length > 0) return // only initialize once
+
+    const normalized = values.dataset.map((d: any) => ({
+      id: d.did,
+      name: d.name,
+      expanded: d.expanded ?? false,
+      checked: d.checked ?? false,
+      services: d.services.map((s: any) => ({
+        id: s.serviceId,
+        name: s.serviceName || 'Unnamed Service',
+        title: s.serviceName || 'Unnamed Service',
+        description: s.description || 'No description available',
+        type: s.type || 'Access',
+        duration: s.duration || 'Forever',
+        price: String(s.price ?? d.datasetPrice ?? 0),
+        symbol: s.tokenSymbol || 'OCEAN',
+        checked: s.checked ?? false
+      }))
+    }))
+
+    setDatasets(normalized)
+  }, [values.dataset])
+
+  // Helper: push current datasets state → Formik
+  const syncWithFormik = (updated: Dataset[]) => {
+    const selectedDatasets = updated
+      .map((d) => ({
+        ...d,
+        services: d.services.filter((s) => s.checked)
+      }))
+      .filter((d) => d.services.length > 0) // keep only datasets with selected services
+
+    setFieldValue('dataset', selectedDatasets)
+  }
 
   const toggleDataset = (datasetId: string) => {
-    setDatasets(
-      datasets.map((dataset) =>
-        dataset.id === datasetId
-          ? { ...dataset, expanded: !dataset.expanded }
-          : dataset
-      )
+    const updated = datasets.map((dataset) =>
+      dataset.id === datasetId
+        ? { ...dataset, expanded: !dataset.expanded }
+        : dataset
     )
+    setDatasets(updated)
+    syncWithFormik(updated)
   }
 
   const toggleDatasetCheckbox = (datasetId: string) => {
-    setDatasets(
-      datasets.map((dataset) => {
-        if (dataset.id === datasetId) {
-          const newCheckedState = !dataset.checked
-          return {
-            ...dataset,
-            checked: newCheckedState,
-            services: dataset.services.map((service) => ({
-              ...service,
-              checked: newCheckedState
-            }))
-          }
+    const updated = datasets.map((dataset) => {
+      if (dataset.id === datasetId) {
+        const newCheckedState = !dataset.checked
+        return {
+          ...dataset,
+          checked: newCheckedState,
+          services: dataset.services.map((service) => ({
+            ...service,
+            checked: newCheckedState
+          }))
         }
-        return dataset
-      })
-    )
+      }
+      return dataset
+    })
+    setDatasets(updated)
+    syncWithFormik(updated)
   }
 
   const toggleService = (datasetId: string, serviceId: string) => {
-    setDatasets(
-      datasets.map((dataset) => {
-        if (dataset.id === datasetId) {
-          const updatedServices = dataset.services.map((service) =>
-            service.id === serviceId
-              ? { ...service, checked: !service.checked }
-              : service
-          )
+    const updated = datasets.map((dataset) => {
+      if (dataset.id === datasetId) {
+        const updatedServices = dataset.services.map((service) =>
+          service.id === serviceId
+            ? { ...service, checked: !service.checked }
+            : service
+        )
 
-          // Update dataset checked state based on services
-          const allServicesChecked = updatedServices.every((s) => s.checked)
-          const someServicesChecked = updatedServices.some((s) => s.checked)
+        const allServicesChecked = updatedServices.every((s) => s.checked)
+        const someServicesChecked = updatedServices.some((s) => s.checked)
 
-          return {
-            ...dataset,
-            services: updatedServices,
-            checked: allServicesChecked
-              ? true
-              : someServicesChecked
-              ? undefined
-              : false
-          }
+        return {
+          ...dataset,
+          services: updatedServices,
+          checked: allServicesChecked
+            ? true
+            : someServicesChecked
+            ? undefined
+            : false
         }
-        return dataset
-      })
-    )
+      }
+      return dataset
+    })
+    setDatasets(updated)
+    syncWithFormik(updated)
   }
 
   return (
@@ -241,8 +192,8 @@ const ServiceSelector = () => {
                         onClick={(e) => e.stopPropagation()}
                       />
                     </div>
-                    <div className={styles.servicesColumn}>{service.name}</div>
-                    <div className={styles.titleColumn}>{service.title}</div>
+                    <div className={styles.servicesColumn}>{service.title}</div>
+                    <div className={styles.titleColumn}>{service.name}</div>
                     <div className={styles.descriptionColumn}>
                       {service.description}
                     </div>

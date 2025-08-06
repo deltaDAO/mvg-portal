@@ -19,61 +19,6 @@ export interface DatasetSelectionDataset extends AssetSelectionAsset {
   checked: boolean
 }
 
-const computeDatasets: DatasetSelectionDataset[] = [
-  {
-    did: 'did:ope:b222d270b0cfaa3c7d4af2742796d6a6be74818c2da5e6da08c9c467929942ad',
-    serviceId:
-      'cc92d6a28bc24305b258b0237019fddeaa20bf39177f65bb2802e6e602a8fde2',
-    serviceName: 'Service 1 ',
-    name: 'Test dataset for new initializeCompute - 1',
-    price: 1,
-    tokenSymbol: 'OCEAN',
-    checked: false,
-    symbol: 'OEAT',
-    isAccountIdWhitelisted: true,
-    datetime: '2025-08-01T07:34:24.000Z'
-  },
-  {
-    did: 'did:ope:f44ae0bf1220d07d457545233e542b69581ec36077e6b2a7f82096b46886e147',
-    serviceId:
-      '5533d30fa2f30d319263f4dbd9253eff4d3d5ea30c4cd96157a3d0792f62c394',
-    serviceName: 'Service for algo',
-    name: 'Test compute algo asset',
-    price: 0,
-    tokenSymbol: 'OCEAN',
-    checked: false,
-    symbol: 'OEAT',
-    isAccountIdWhitelisted: true,
-    datetime: '2025-07-31T06:31:12.000Z'
-  },
-  {
-    did: 'did:ope:4d4333724cc1c56c91aec1d3c8bd4c22e9a5a6d0e71f15318fcc5c284280b710',
-    serviceId:
-      '80bed21c32d107b0c31f911dddb867a985cb59c26b43f0bdd721aa165d4afcd0',
-    serviceName: 'Service 2.1',
-    name: 'Test dataset for multiple datasets C2D - 2',
-    price: 3,
-    tokenSymbol: 'OCEAN',
-    checked: false,
-    symbol: 'OEAT',
-    isAccountIdWhitelisted: true,
-    datetime: '2025-07-25T08:18:48.000Z'
-  },
-  {
-    did: 'did:ope:574e91d81980cb0e9f585e3f35ed2a24d9a6ea7da5fb304808ec0045053e2592',
-    serviceId:
-      '153d7d9586a28598d59d0eef4c7da7ef56fadd98367b49ecaac7437f8ea19d20',
-    serviceName: 'Service 2',
-    name: 'Test dataset for C2D with multiple files',
-    price: 3,
-    tokenSymbol: 'OCEAN',
-    checked: false,
-    symbol: 'OEAT',
-    isAccountIdWhitelisted: true,
-    datetime: '2025-07-24T14:07:48.000Z'
-  }
-]
-
 export default function SelectDataset({
   asset,
   service,
@@ -87,9 +32,42 @@ export default function SelectDataset({
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [selectedDatasetIds, setSelectedDatasetIds] = useState<string[]>([])
   const newCancelToken = useCancelToken()
-  const [datasetsForCompute, setDatasetsForCompute] =
-    useState<AssetSelectionAsset[]>()
-  console.log('Compute values, ', values)
+  const [datasetsForCompute, setDatasetsForCompute] = useState<any[]>()
+
+  function transformDatasets(
+    datasets: AssetSelectionAsset[],
+    selectedIds: string[] = []
+  ): any[] {
+    const grouped: Record<string, any> = {}
+
+    for (const ds of datasets) {
+      if (!grouped[ds.did]) {
+        grouped[ds.did] = {
+          did: ds.did,
+          name: ds.name,
+          symbol: ds.symbol,
+          datasetPrice: 0,
+          expanded: selectedIds.includes(ds.did),
+          checked: selectedIds.includes(ds.did),
+          services: []
+        }
+      }
+
+      grouped[ds.did].services.push({
+        serviceId: ds.serviceId,
+        serviceName: ds.serviceName,
+        price: ds.price,
+        tokenSymbol: ds.tokenSymbol,
+        checked: ds.checked,
+        isAccountIdWhitelisted: ds.isAccountIdWhitelisted,
+        datetime: ds.datetime
+      })
+
+      grouped[ds.did].datasetPrice += ds.price
+    }
+
+    return Object.values(grouped)
+  }
 
   useEffect(() => {
     if (!accessDetails.type) return
@@ -103,10 +81,14 @@ export default function SelectDataset({
         asset.credentialSubject?.chainId,
         newCancelToken()
       )
-      setDatasetsForCompute(datasets)
+
+      const groupedDatasets = transformDatasets(datasets)
+      setDatasetsForCompute(groupedDatasets)
     }
-    asset.credentialSubject?.metadata.type === 'algorithm' &&
+
+    if (asset.credentialSubject?.metadata.type === 'algorithm') {
       getDatasetsAllowedForCompute()
+    }
   }, [accessDetails, accountId, asset, newCancelToken, service])
 
   // useEffect(() => {
@@ -117,18 +99,25 @@ export default function SelectDataset({
   //   }
   // }, [values.dataset])
 
-  const handleDatasetSelect = (datasetId: string) => {
-    const updatedDatasetIds = selectedDatasetIds.includes(datasetId)
-      ? selectedDatasetIds.filter((id) => id !== datasetId)
-      : [...selectedDatasetIds, datasetId]
+  const handleDatasetSelect = (did: string) => {
+    const updatedDatasetIds = selectedDatasetIds.includes(did)
+      ? selectedDatasetIds.filter((id) => id !== did)
+      : [...selectedDatasetIds, did]
 
     setSelectedDatasetIds(updatedDatasetIds)
 
-    const selectedDatasets = datasetsForCompute?.filter((env) =>
-      updatedDatasetIds.includes(env.did)
+    const updatedDatasets = datasetsForCompute?.map((ds) => ({
+      ...ds,
+      checked: updatedDatasetIds.includes(ds.did),
+      expanded: updatedDatasetIds.includes(ds.did)
+    }))
+    setDatasetsForCompute(updatedDatasets)
+
+    const selectedDatasets = updatedDatasets?.filter((ds) =>
+      updatedDatasetIds.includes(ds.did)
     )
+
     setFieldValue('dataset', selectedDatasets)
-    console.log('Selected datasets:', selectedDatasets)
   }
 
   return (
