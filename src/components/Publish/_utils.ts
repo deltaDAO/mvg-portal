@@ -374,19 +374,20 @@ export function generateCredentials(
           }
         }
       )
-
     const vpPolicies: VP[] = updatedCredentials?.vpPolicies?.map(
       (credential: VpPolicyType) => {
-        let policyResult: VP
-        switch (credential.type) {
-          case 'staticVpPolicy':
-            policyResult = credential.name
-            break
-          case 'argumentVpPolicy':
-            policyResult = credential.policy
-            break
+        if (credential.type === 'staticVpPolicy') {
+          return { policy: credential.name }
         }
-        return policyResult
+
+        if (credential.type === 'argumentVpPolicy') {
+          return {
+            policy: credential.policy,
+            args: String(credential.args)
+          }
+        }
+
+        return null
       }
     )
     const hasAny =
@@ -621,7 +622,6 @@ export async function transformPublishFormToDdo(
     })
   }
   const newCredentials = generateCredentials(values.credentials)
-
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newDdo: any = {
     '@context': ['https://www.w3.org/ns/credentials/v2'],
