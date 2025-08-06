@@ -6,7 +6,7 @@ interface Service {
   id: string
   name: string
   title: string
-  description: string
+  serviceDescription: string
   type: string
   duration: string
 }
@@ -25,7 +25,6 @@ interface FormValues {
 const PreviewSelectedServices = () => {
   const { values } = useFormikContext<FormValues>()
   const [selectedDatasets, setSelectedDatasets] = useState<any[]>([])
-  console.log('Form values', values)
 
   // Normalize incoming Formik values → local state
   useEffect(() => {
@@ -34,13 +33,14 @@ const PreviewSelectedServices = () => {
     const normalized = values.dataset.map((d: any) => ({
       id: d.id,
       name: d.name,
+      description: d.description,
       expanded: d.expanded ?? false,
       checked: d.checked ?? false,
       services: d.services.map((s: any) => ({
         id: s.id,
         name: s.name || 'Unnamed Service',
         title: s.name || 'Unnamed Service',
-        description: s.description || 'No description available',
+        serviceDescription: s.serviceDescription || 'No description available',
         type: s.type || 'Access',
         duration: s.duration || 'Forever',
         price: String(s.price ?? d.datasetPrice ?? 0),
@@ -138,7 +138,8 @@ const PreviewSelectedServices = () => {
               <h2 className={styles.datasetName}>{dataset.name}</h2>
               <p className={styles.datasetAddress}>{dataset.id}</p>
               <p className={styles.datasetDescription}>
-                {dataset.description || 'Not available'}{' '}
+                {dataset.description.slice(0, 40)}
+                {dataset.description.length > 40 ? '...' : ''}{' '}
               </p>
             </div>
 
@@ -149,7 +150,8 @@ const PreviewSelectedServices = () => {
                     <h3 className={styles.serviceName}>{service.name}</h3>
                   </div>
                   <p className={styles.serviceDescription}>
-                    {service.description}
+                    {service.serviceDescription.slice(0, 40)}
+                    {service.serviceDescription.length > 40 ? '...' : ''}
                   </p>
                   <div className={styles.serviceDetails}>
                     <p>
@@ -158,7 +160,12 @@ const PreviewSelectedServices = () => {
                   </div>
                   <div className={styles.serviceDetails}>
                     <p>
-                      <strong>Access duration:</strong> {service.duration}
+                      <strong>Access duration:</strong>{' '}
+                      {Number(service.duration) === 0
+                        ? 'Forever'
+                        : `${Math.floor(
+                            Number(service.duration) / (60 * 60 * 24)
+                          )} days`}
                     </p>
                   </div>
                 </div>

@@ -8,7 +8,7 @@ interface Service {
   id: string
   name: string
   title: string
-  description: string
+  serviceDescription: string
   type: string
   duration: string
   price: string
@@ -19,6 +19,7 @@ interface Service {
 interface Dataset {
   id: string
   name: string
+  description: string
   services: Service[]
   expanded?: boolean
   checked?: boolean
@@ -30,7 +31,6 @@ type FormValues = {
 const ServiceSelector = () => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [datasets, setDatasets] = useState<Dataset[]>([])
-  console.log('Form values', values)
 
   // Normalize incoming Formik values → local state
   useEffect(() => {
@@ -39,15 +39,16 @@ const ServiceSelector = () => {
     const normalized = values.dataset.map((d: any) => ({
       id: d.did,
       name: d.name,
+      description: d.description,
       expanded: d.expanded ?? false,
       checked: d.checked ?? false,
       services: d.services.map((s: any) => ({
         id: s.serviceId,
         name: s.serviceName || 'Unnamed Service',
-        title: s.serviceName || 'Unnamed Service',
-        description: s.description || 'No description available',
-        type: s.type || 'Access',
-        duration: s.duration || 'Forever',
+        title: s.serviceType || 'Unnamed Service',
+        serviceDescription: s.serviceDescription || 'No description available',
+        type: s.serviceType || 'Access',
+        duration: s.serviceDuration || 'Forever',
         price: String(s.price ?? d.datasetPrice ?? 0),
         symbol: s.tokenSymbol || 'OCEAN',
         checked: s.checked ?? false
@@ -192,14 +193,22 @@ const ServiceSelector = () => {
                         onClick={(e) => e.stopPropagation()}
                       />
                     </div>
-                    <div className={styles.servicesColumn}>{service.title}</div>
-                    <div className={styles.titleColumn}>{service.name}</div>
+                    <div className={styles.servicesColumn}>
+                      {service.name.slice(0, 15)}
+                      {service.name.length > 15 ? '...' : ''}
+                    </div>
+                    <div className={styles.titleColumn}>{service.title}</div>
                     <div className={styles.descriptionColumn}>
-                      {service.description}
+                      {service.serviceDescription.slice(0, 15)}
+                      {service.serviceDescription.length > 15 ? '...' : ''}
                     </div>
                     <div className={styles.typeColumn}>{service.type}</div>
                     <div className={styles.durationColumn}>
-                      {service.duration}
+                      {Number(service.duration) === 0
+                        ? 'Forever'
+                        : `${Math.floor(
+                            Number(service.duration) / (60 * 60 * 24)
+                          )} days`}
                     </div>
                     <div className={styles.priceColumn}>
                       {service.price}{' '}

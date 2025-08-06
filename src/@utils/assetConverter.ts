@@ -78,9 +78,9 @@ export async function transformAssetToAssetSelectionDataset(
   accountId: string,
   selectedAlgorithms?: PublisherTrustedAlgorithmService[],
   allow?: boolean
-): Promise<AssetSelectionAsset[]> {
+): Promise<any[]> {
   if (!assets) return []
-  const algorithmList: AssetSelectionAsset[] = []
+  const algorithmList: any[] = []
   for (const asset of assets) {
     const algoService =
       getServiceByName(asset, 'compute') || getServiceByName(asset, 'access')
@@ -113,10 +113,15 @@ export async function transformAssetToAssetSelectionDataset(
           !matches.has(key)
         )
           return // <-- skip any service that wasn't in selectedAlgorithms
-        const assetEntry: AssetSelectionAsset = {
+        const assetEntry: any = {
           did: asset.id,
+          description:
+            asset.credentialSubject.metadata.description?.['@value'] || '',
           serviceId: service.id,
           serviceName: service.name,
+          serviceDescription: service.description?.['@value'] || '',
+          ServiceType: service.type,
+          serviceDuration: service.timeout,
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,

@@ -104,7 +104,13 @@ export default function DatasetSelection({
                   </div>
                   <div className={styles.cardContent}>
                     <p className={styles.description}>
-                      {dataset.name || 'Testing Dataset name.'}
+                      {(
+                        dataset.description || 'No description available.'
+                      ).slice(0, 30)}
+                      {(dataset.description || 'No description available.')
+                        .length > 30
+                        ? '...'
+                        : ''}
                     </p>
 
                     <div className={styles.cardActions}>

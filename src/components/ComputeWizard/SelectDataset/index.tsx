@@ -5,7 +5,7 @@ import StepTitle from '@shared/StepTitle'
 import { useCancelToken } from '@hooks/useCancelToken'
 import DatasetSelection from '@shared/FormInput/InputElement/DatasetSelection'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
-import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
+import { getAlgorithmDatasetsForComputeSelection } from '@utils/aquarius'
 import { FormComputeData } from '../_types'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
@@ -47,6 +47,7 @@ export default function SelectDataset({
           name: ds.name,
           symbol: ds.symbol,
           datasetPrice: 0,
+          description: ds.description,
           expanded: selectedIds.includes(ds.did),
           checked: selectedIds.includes(ds.did),
           services: []
@@ -56,6 +57,9 @@ export default function SelectDataset({
       grouped[ds.did].services.push({
         serviceId: ds.serviceId,
         serviceName: ds.serviceName,
+        serviceDescription: ds.serviceDescription,
+        serviceDuration: ds.serviceDuration,
+        serviceType: ds.serviceType,
         price: ds.price,
         tokenSymbol: ds.tokenSymbol,
         checked: ds.checked,
@@ -73,7 +77,7 @@ export default function SelectDataset({
     if (!accessDetails.type) return
 
     async function getDatasetsAllowedForCompute() {
-      const datasets = await getAlgorithmDatasetsForCompute(
+      const datasets = await getAlgorithmDatasetsForComputeSelection(
         asset.id,
         service.id,
         service.serviceEndpoint,

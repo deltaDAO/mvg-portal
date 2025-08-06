@@ -126,6 +126,9 @@
   font-weight: 400;
   color: var(--publish-text-secondary);
   margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .cardActions {
