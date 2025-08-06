@@ -382,37 +382,28 @@ export function generateCredentials(
           }
         }
       )
+    const vpPolicies: VP[] = updatedCredentials?.vpPolicies?.map(
+      (credential: VpPolicyType) => {
+        if (credential.type === 'staticVpPolicy') {
+          return { policy: credential.name }
+        }
 
-    const shouldCreateVpPolicies =
-      !isServiceCredentials || !mainCredentials?.vpPolicies?.length
-    const vpPolicies: VP[] =
-      shouldCreateVpPolicies && updatedCredentials?.vpPolicies?.length > 0
-        ? updatedCredentials.vpPolicies.map((credential: VpPolicyType) => {
-            let policy: VP
-            switch (credential.type) {
-              case 'staticVpPolicy':
-                policy = credential.name
-                break
-              case 'argumentVpPolicy':
-                policy = {
-                  policy: credential.policy,
-                  args: parseInt(credential.args)
-                }
-                break
-            }
-            return policy
-          })
-        : []
+        if (credential.type === 'argumentVpPolicy') {
+          return {
+            policy: credential.policy,
+            args: String(credential.args)
+          }
+        }
 
-    const shouldCreateSsiPolicy =
-      !isServiceCredentials || !mainCredentials?.vpPolicies?.length
-
+        return null
+      }
+    )
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
       (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
       (vpPolicies?.length ?? 0) > 0
 
-    if (hasAny && shouldCreateSsiPolicy) {
+    if (hasAny) {
       const newAllowList: CredentialPolicyBased = {
         type: 'SSIpolicy',
         values: []
@@ -674,8 +665,7 @@ export async function transformPublishFormToDdo(
       )
     })
   }
-  const newCredentials = generateCredentials(values.credentials, false)
-
+  const newCredentials = generateCredentials(values.credentials)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newDdo: any = {
     '@context': ['https://www.w3.org/ns/credentials/v2'],
