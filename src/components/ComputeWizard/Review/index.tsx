@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import { useFormikContext, Field } from 'formik'
 import Input from '@shared/FormInput'
 import StepTitle from '@shared/StepTitle'
@@ -7,6 +7,10 @@ import DatasetItem from './DatasetItem'
 import PriceDisplay from './PriceDisplay'
 import PricingRow from './PricingRow'
 import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
+import { AssetActionCheckCredentials } from '../../Asset/AssetActions/CheckCredentials'
+import { AssetActionCheckCredentialsAlgo } from '../../Asset/AssetActions/CheckCredentials/checkCredentialsAlgo'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from 'src/@types/ddo/Service'
 import styles from './index.module.css'
 
 interface ReviewProps {
@@ -15,6 +19,9 @@ interface ReviewProps {
   algoOrderPrice?: string
   c2dPrice?: string
   isRequestingPrice?: boolean
+  asset?: AssetExtended
+  service?: Service
+  isAlgorithm?: boolean
 }
 
 export default function Review({
@@ -22,13 +29,16 @@ export default function Review({
   datasetOrderPrice = '0',
   algoOrderPrice = '0',
   c2dPrice = '0',
-  isRequestingPrice = false
+  isRequestingPrice = false,
+  asset,
+  service,
+  isAlgorithm = false
 }: ReviewProps): ReactElement {
   const { values } = useFormikContext<FormComputeData>()
+  const [showCredentialsCheck, setShowCredentialsCheck] = useState(false)
 
   const handleCheckCredentials = (datasetId: string) => {
-    // TODO: Implement credential checking logic
-    console.log('Checking credentials for dataset:', datasetId)
+    setShowCredentialsCheck(true)
   }
 
   const formatDuration = (seconds: number): string => {
@@ -63,6 +73,34 @@ export default function Review({
     { name: 'CONSUME MARKET ORDER FEE ALGORITHM (0%)', value: '0' },
     { name: 'CONSUME MARKET ORDER FEE C2C (0%)', value: '0' }
   ]
+
+  // Show credentials check if needed
+  if (showCredentialsCheck && asset && service) {
+    return (
+      <div className={styles.credentialsOverlay}>
+        <div className={styles.credentialsContainer}>
+          <div className={styles.credentialsHeader}>
+            <h3>Verify Credentials</h3>
+            <button
+              className={styles.closeButton}
+              onClick={() => setShowCredentialsCheck(false)}
+            >
+              ✕ Close
+            </button>
+          </div>
+          {isAlgorithm ? (
+            <AssetActionCheckCredentialsAlgo
+              asset={asset}
+              service={service}
+              onVerified={() => setShowCredentialsCheck(false)}
+            />
+          ) : (
+            <AssetActionCheckCredentials asset={asset} service={service} />
+          )}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.container}>
