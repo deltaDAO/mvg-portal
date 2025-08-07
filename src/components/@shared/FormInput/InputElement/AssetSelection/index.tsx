@@ -67,6 +67,13 @@ export default function AssetSelection({
 
   const [currentPage, setCurrentPage] = useState(1)
 
+  console.log(
+    'AssetSelection - selected prop:',
+    selected,
+    'type:',
+    typeof selected
+  )
+
   const assetsPerPage = 8
 
   const handlePageOnChange = (page: number) => {

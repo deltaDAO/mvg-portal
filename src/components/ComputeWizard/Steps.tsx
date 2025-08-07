@@ -15,6 +15,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { ResourceType } from 'src/@types/ResourceType'
 import { Asset } from 'src/@types/Asset'
 import { FormComputeData, StepContent } from './_types'
+import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 
 export default function Steps({
   asset,
@@ -156,7 +157,20 @@ export default function Steps({
       case 3:
         return <ConfigureEnvironment />
       case 4:
-        return <Review />
+        return (
+          <CredentialDialogProvider>
+            <Review
+              asset={asset}
+              service={service}
+              isAlgorithm={isAlgorithm}
+              totalPrices={[]}
+              datasetOrderPrice="0"
+              algoOrderPrice="0"
+              c2dPrice="0"
+              isRequestingPrice={false}
+            />
+          </CredentialDialogProvider>
+        )
       default:
         console.log('Dataset flow - no matching case for step:', currentStep)
         return <div>Invalid step: {currentStep}</div>
@@ -188,7 +202,20 @@ export default function Steps({
     case 5:
       return <ConfigureEnvironment />
     case 6:
-      return <Review />
+      return (
+        <CredentialDialogProvider>
+          <Review
+            asset={asset}
+            service={service}
+            isAlgorithm={isAlgorithm}
+            totalPrices={[]}
+            datasetOrderPrice="0"
+            algoOrderPrice="0"
+            c2dPrice="0"
+            isRequestingPrice={false}
+          />
+        </CredentialDialogProvider>
+      )
     default:
       console.log('Algorithm flow - no matching case for step:', currentStep)
       return <div>Invalid step: {currentStep}</div>

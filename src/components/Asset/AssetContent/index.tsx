@@ -63,10 +63,6 @@ export default function AssetContent({
     (service) => service.type === 'compute'
   )
 
-  function handleComputeWizard() {
-    router.push(`/asset/${asset.id}/compute/1`)
-  }
-
   function handleComputeClick() {
     if (computeServiceIndex !== undefined && computeServiceIndex >= 0) {
       setSelectedService(computeServiceIndex)
@@ -247,7 +243,10 @@ export default function AssetContent({
                                 🚀 Quick Compute
                               </Button>
                               <Button
-                                onClick={handleComputeWizard}
+                                onClick={() => {
+                                  setShowComputeWizard(true)
+                                  setSelectedService(computeServiceIndex)
+                                }}
                                 style="text"
                               >
                                 📋 Compute Wizard

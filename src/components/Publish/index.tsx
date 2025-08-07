@@ -12,7 +12,6 @@ import PageHeader from '@shared/Page/PageHeader'
 import Title from './Title'
 import styles from './index.module.css'
 import Actions from './Actions'
-import WizardActions from '@shared/WizardActions'
 import Debug from './Debug'
 import Navigation from './Navigation'
 import { Steps } from './Steps'
@@ -298,15 +297,7 @@ export default function PublishPage({
             <Navigation />
             <ContainerForm style="publish">
               <Steps feedback={feedback} />
-              <WizardActions
-                navigationType="query"
-                basePath="/publish"
-                totalSteps={7}
-                submitButtonText="Submit"
-                showSuccessConfetti={true}
-                scrollToRef={scrollToRef}
-                formikContext={formikContext}
-              />
+              <Actions scrollToRef={scrollToRef} did={did} />
             </ContainerForm>
           </Form>
           {debug && <Debug />}
