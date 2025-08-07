@@ -8,8 +8,9 @@ import Details from '@components/Profile/History/ComputeJobs/Details'
 import FinishedIcon from '@images/finished.svg'
 import InProgress from '@images/InProgress.svg'
 import { useProfile } from '@context/Profile/index'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
-const ComputeJobs = () => {
+const ComputeJobs = ({ asset }: { asset?: AssetExtended }) => {
   const [showDetails, setShowDetails] = useState<string | null>(null)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -29,12 +30,26 @@ const ComputeJobs = () => {
       try {
         setIsLoading(true)
         setError(null)
-        console.log('Fetching compute jobs for account:', accountId)
-
         const response = await getAllComputeJobs(accountId, newCancelToken())
 
         if (response?.computeJobs) {
-          setJobs(response.computeJobs)
+          const allJobs = response.computeJobs
+          const matchingJobs = Object.entries(allJobs)
+            .filter(([jobId, job]: any) => {
+              if (!job.assets || !Array.isArray(job.assets)) {
+                console.warn(`Job ${jobId} has no assets array.`)
+                return false
+              }
+
+              const hasMatch = job.assets.some((assetObj: any) => {
+                return assetObj.documentId === asset?.id
+              })
+
+              return hasMatch
+            })
+            .map(([_, job]) => job)
+
+          setJobs(matchingJobs)
         } else {
           console.warn('No compute jobs found in response')
           setJobs([])
@@ -118,9 +133,9 @@ const ComputeJobs = () => {
           )
         })}
       </div>
-      <div className={styles.sales}>
+      {/* <div className={styles.sales}>
         {sales} <span className={styles.salesTag}>Sales</span>
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -197,7 +197,7 @@ export default function AssetContent({
             <MetaFull ddo={asset} />
             {debug === true && <DebugOutput title="DDO" output={asset} />}
           </div>
-          <ComputeJobs />
+          <ComputeJobs asset={asset} />
         </div>
 
         <div className={styles.actions}>
