@@ -19,6 +19,8 @@ export interface AssetSelectionAsset {
   did: string
   serviceId: string
   serviceName: string
+  description?: string
+  serviceDescription?: string
   name: string
   price: number
   tokenSymbol: string
@@ -26,6 +28,8 @@ export interface AssetSelectionAsset {
   symbol: string
   isAccountIdWhitelisted: boolean
   datetime?: string
+  serviceDuration?: number
+  serviceType?: string
 }
 
 export interface PublisherTrustedAlgorithmService {
