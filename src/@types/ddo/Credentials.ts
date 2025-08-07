@@ -27,7 +27,7 @@ export interface PolicyValue {
 
 export interface VPValue {
   policy: string
-  args: number
+  args?: number | string
 }
 
 export type VC = string

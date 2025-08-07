@@ -386,31 +386,27 @@ export function generateCredentials(
           }
         }
       )
+    const vpPolicies: VP[] = updatedCredentials?.vpPolicies?.map(
+      (credential: VpPolicyType) => {
+        if (credential.type === 'staticVpPolicy') {
+          return { policy: credential.name }
+        }
 
-    const shouldCreateVpPolicies = updatedCredentials?.vpPolicies?.length > 0
-    const vpPolicies: VP[] = shouldCreateVpPolicies
-      ? updatedCredentials.vpPolicies.map((credential: VpPolicyType) => {
-          let policy: VP
-          switch (credential.type) {
-            case 'staticVpPolicy':
-              policy = credential.name
-              break
-            case 'argumentVpPolicy':
-              policy = {
-                policy: credential.policy,
-                args: parseInt(credential.args)
-              }
-              break
+        if (credential.type === 'argumentVpPolicy') {
+          return {
+            policy: credential.policy,
+            args: String(credential.args)
           }
-          return policy
-        })
-      : []
+        }
+
+        return null
+      }
+    )
 
     const shouldCreateSsiPolicy =
       updatedCredentials?.vpPolicies?.length > 0 ||
       updatedCredentials?.requestCredentials?.length > 0 ||
       updatedCredentials?.vcPolicies?.length > 0
-
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
       (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
@@ -678,8 +674,7 @@ export async function transformPublishFormToDdo(
       )
     })
   }
-  const newCredentials = generateCredentials(values.credentials, false)
-
+  const newCredentials = generateCredentials(values.credentials)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const newDdo: any = {
     '@context': ['https://www.w3.org/ns/credentials/v2'],
