@@ -33,7 +33,25 @@ const validationRequestCredentials = {
       }),
       policyUrl: Yup.string().when('type', {
         is: 'customUrlPolicy',
-        then: (shema) => shema.required('Required')
+        then: (shema) =>
+          shema
+            .required('Required')
+            .test('isValidUrl', 'Invalid URL format', (value) => {
+              if (!value) return false
+              const trimmedValue = value.trim()
+              if (
+                !trimmedValue.startsWith('http://') &&
+                !trimmedValue.startsWith('https://')
+              ) {
+                return false
+              }
+              try {
+                const url = new URL(trimmedValue)
+                return url.protocol === 'http:' || url.protocol === 'https:'
+              } catch {
+                return false
+              }
+            })
       }),
       arguments: Yup.array()
         .when('type', {
@@ -132,15 +150,19 @@ export const metadataValidationSchema = Yup.object().shape({
   licenseUrl: Yup.array().when('useRemoteLicense', {
     is: false,
     then: Yup.array().test('urlTest', (array, context) => {
-      if (!array) {
+      if (!array || !array[0]) {
         return context.createError({ message: `Need a valid url` })
       }
-      const { url, valid } = array?.[0] as {
+      const { url, valid } = array[0] as {
         url: string
         type: 'url'
         valid: boolean
       }
-      if (!url || url?.length === 0 || !valid) {
+      if (!url || url.length === 0) {
+        return context.createError({ message: `Need a valid url` })
+      }
+      // Only check valid flag if validation has been attempted (valid is not undefined)
+      if (valid !== undefined && !valid) {
         return context.createError({ message: `Need a valid url` })
       }
       return true

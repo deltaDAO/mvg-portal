@@ -67,10 +67,13 @@ export type VpPolicyType = StaticVpPolicy | ArgumentVpPolicy
 export interface CredentialForm {
   allow?: string[]
   deny?: string[]
+  allowInputValue?: string
+  denyInputValue?: string
   requestCredentials?: RequestCredentialForm[]
   vpPolicies?: VpPolicyType[]
   vcPolicies?: string[]
   enabled?: boolean
+  advancedFeaturesEnabled?: boolean
 }
 
 export interface PolicyEditorProps {
@@ -82,4 +85,6 @@ export interface PolicyEditorProps {
   defaultPolicies?: string[]
   enabledView?: boolean
   isAsset?: boolean
+  buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
+  hideDefaultPolicies?: boolean
 }

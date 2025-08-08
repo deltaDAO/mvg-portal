@@ -12,6 +12,7 @@ interface InputRadioProps extends InputHTMLAttributes<HTMLInputElement> {
   prefixes?: string[]
   postfixes?: string[]
   actions?: string[]
+  variant?: 'default' | 'publish'
 }
 
 export default function InputRadio({
@@ -20,6 +21,7 @@ export default function InputRadio({
   prefixes,
   postfixes,
   actions,
+  variant = 'default',
   ...props
 }: InputRadioProps): ReactElement {
   return (
@@ -29,7 +31,9 @@ export default function InputRadio({
           <div className={styles.radioWrap} key={index}>
             <input
               {...props}
-              className={styles[props.type]}
+              className={`${styles[props.type]} ${
+                variant === 'publish' ? styles.publishRadio : ''
+              }`}
               id={slugify(option)}
             />
             <label

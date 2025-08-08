@@ -171,19 +171,29 @@ function getComputeSettingsInitialValues({
   publisherTrustedAlgorithmPublishers
 }: Compute): ComputeEditForm {
   const allowAllPublishedAlgorithms = publisherTrustedAlgorithms === null
-  const publisherTrustedAlgorithmsForForm = allowAllPublishedAlgorithms
-    ? null
-    : publisherTrustedAlgorithms.map((algo) =>
-        JSON.stringify({
-          algoDid: algo.did,
-          serviceId: algo.serviceId
-        })
-      )
+  const publisherTrustedAlgorithmsForForm =
+    allowAllPublishedAlgorithms === true
+      ? null
+      : publisherTrustedAlgorithms.map((algo) =>
+          JSON.stringify({
+            algoDid: algo.did,
+            serviceId: algo.serviceId
+          })
+        )
+
+  const publisherTrustedAlgorithmPublishersValue =
+    publisherTrustedAlgorithmPublishers &&
+    publisherTrustedAlgorithmPublishers.length > 0
+      ? 'Allow specific trusted algorithm publishers'
+      : 'Allow all trusted algorithm publishers'
 
   return {
     allowAllPublishedAlgorithms,
     publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm || [],
-    publisherTrustedAlgorithmPublishers
+    publisherTrustedAlgorithmPublishers:
+      publisherTrustedAlgorithmPublishersValue,
+    publisherTrustedAlgorithmPublishersAddresses:
+      publisherTrustedAlgorithmPublishers?.join(',') || ''
   }
 }
 

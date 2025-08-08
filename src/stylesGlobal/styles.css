@@ -38,7 +38,8 @@ body {
 
 a {
   text-decoration: none;
-  color: var(--link-font-color);
+  /* color: var(--link-font-color); */
+  color: rgba(76, 163, 211, 0.7);
   transition: 0.2s ease-out;
 }
 
@@ -167,4 +168,32 @@ table th {
 /* prevent background scrolling */
 .ReactModal__Body--open {
   overflow: hidden;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='number'],
+input[type='url'],
+select,
+textarea {
+  height: 40px;
+  border: 1px solid rgba(10, 75, 112, 0.5);
+  border-radius: 20px;
+  padding: 15px 25px;
+  background: white;
+}
+
+input[type='text']:focus-visible,
+input[type='email']:focus-visible,
+input[type='password']:focus-visible,
+input[type='number']:focus-visible,
+input[type='url']:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 1px solid rgba(10, 75, 112, 0.4);
+}
+
+select {
+  appearance: none;
 }

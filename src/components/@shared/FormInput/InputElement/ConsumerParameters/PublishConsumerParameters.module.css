@@ -1,0 +1,273 @@
+.container {
+  background: #ffffff;
+  border: 1px solid rgba(48, 48, 49, 0.2);
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0px 0 24px 0;
+}
+
+.tabsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  width: 100%;
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0;
+}
+
+.tab {
+  box-sizing: border-box;
+  width: 100%;
+  height: 64px;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(48, 48, 49, 0.2);
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: none;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  text-transform: uppercase;
+  color: #303031;
+  padding-left: 30px;
+}
+
+.tab:first-child {
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+}
+
+.tab:hover {
+  background: rgba(48, 48, 49, 0.02);
+}
+
+.activeTab {
+  box-sizing: border-box;
+  width: 100%;
+  height: 64px;
+  background: #ffffff;
+  flex: none;
+  order: 0;
+  flex-grow: 0;
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: none;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  text-transform: uppercase;
+  color: #303031;
+  padding-left: 30px;
+}
+
+.deleteButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 4px 8px;
+  gap: 4px;
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-family-base);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-align: center;
+  color: var(--ocean-blue);
+  border-radius: 4px;
+}
+
+.deleteButton:hover {
+  background: rgba(76, 163, 211, 0.1);
+}
+
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 32px;
+  width: 100%;
+  padding: 24px 24px 16px 24px;
+}
+
+.formRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 40px;
+  width: 100%;
+}
+
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0px;
+  gap: 10px;
+  flex: 1;
+  width: 100%;
+}
+
+/* Target all form elements within formColumn more specifically */
+.formColumn > :global(*) {
+  width: 100% !important;
+}
+
+.formColumn :global(.field) {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+}
+
+.formColumn :global(label) {
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--publish-text-secondary);
+}
+
+.formColumn :global(input),
+.formColumn :global(select),
+.formColumn :global(textarea) {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  height: 40px;
+  border: 1px solid var(--publish-border);
+  filter: drop-shadow(1px 4px 8px rgba(0, 0, 0, 0.15));
+  border-radius: 20px;
+  padding: 0px 30px;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  color: #303031;
+  background: #ffffff;
+}
+
+.formColumn :global(select) {
+  padding-right: 3rem !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: linear-gradient(45deg, transparent 50%, #303031 50%),
+    linear-gradient(135deg, #303031 50%, transparent 50%) !important;
+  background-position: calc(100% - 30px) calc(1rem + 5px),
+    calc(100% - 25px) calc(1rem + 5px) !important;
+  background-size: 5px 5px, 5px 5px !important;
+  background-repeat: no-repeat !important;
+  background-color: #ffffff !important;
+}
+
+.formColumn :global(div) {
+  width: 100% !important;
+}
+
+/* Ensure error messages have proper spacing */
+.formColumn :global(.error) {
+  margin-top: 4px;
+  min-height: 16px;
+  line-height: 1.2;
+}
+
+/* Ensure form fields have enough space for error messages */
+.formColumn :global(.field) {
+  width: 100% !important;
+  margin-bottom: 0 !important;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+}
+
+.fullWidthInput {
+  width: 100% !important;
+}
+
+.fullWidthInput :global(input),
+.fullWidthInput :global(select),
+.fullWidthInput :global(textarea) {
+  width: 100% !important;
+  min-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.formColumnFull {
+  width: 100%;
+}
+
+.addButtonContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  margin-top: 16px;
+}
+
+.addButton {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 9px 14px;
+  gap: 4px;
+  width: fit-content;
+  height: 32px;
+  background: linear-gradient(
+      115.97deg,
+      #1f2c50 0%,
+      rgba(10, 75, 112, 0.8) 27.47%,
+      rgba(10, 75, 112, 0.7) 43.49%,
+      rgba(10, 75, 112, 0.8) 55.43%,
+      #1e2e52 100%
+    ),
+    #64ace0;
+  box-shadow: 1px 2px 8px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 14px;
+  text-align: center;
+  color: #ffffff;
+}
+
+.addButton:hover {
+  opacity: 0.9;
+}

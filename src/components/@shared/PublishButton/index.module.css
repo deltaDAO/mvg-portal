@@ -1,0 +1,23 @@
+.publishButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.icon path {
+  fill: currentColor;
+}
+
+.text {
+  display: block;
+  line-height: 1;
+}

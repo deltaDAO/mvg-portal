@@ -21,6 +21,8 @@ import ServiceCard from './ServiceCard'
 import { getPdf } from '@utils/invoice/createInvoice'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
+import MetaInfo from './MetaMain/MetaInfo'
+import EditIcon from '@images/edit.svg'
 
 export default function AssetContent({
   asset
@@ -38,6 +40,7 @@ export default function AssetContent({
   const [pdfUrl, setPdfUrl] = useState(null)
   const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
   const [jsonInvoice, setJsonInvoice] = useState(null)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
   const availableServices =
     asset.credentialSubject?.services?.filter(
@@ -97,23 +100,40 @@ export default function AssetContent({
     setNftPublisher(publisher)
   }, [receipts])
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        isDropdownOpen &&
+        !(event.target as Element).closest(`.${styles.invoiceDropdown}`)
+      ) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isDropdownOpen])
+
   const isDescriptionIsString =
     typeof asset.credentialSubject?.metadata?.description === 'string'
   return (
     <>
-      <div className={styles.networkWrap}>
-        <NetworkName
-          networkId={asset.credentialSubject?.chainId}
-          className={styles.network}
-        />
-      </div>
-
       <article className={styles.grid}>
         <div>
-          <div className={styles.content}>
+          <div className={styles.metaMenu}>
+            {' '}
             <MetaMain asset={asset} nftPublisher={nftPublisher} />
-            <h3>{asset.credentialSubject?.metadata?.name || ''}</h3>
             <Bookmark did={asset.id} />
+          </div>
+          <div className={styles.content}>
+            <div className={styles.publisherInfo}>
+              <MetaInfo asset={asset} nftPublisher={nftPublisher} />
+            </div>
+            <span className={styles.assetName}>
+              {asset.credentialSubject?.metadata?.name || ''}
+            </span>
             {isInPurgatory === true ? (
               <Alert
                 title={content.asset.title}
@@ -153,6 +173,15 @@ export default function AssetContent({
         </div>
 
         <div className={styles.actions}>
+          <NetworkName
+            networkId={asset.credentialSubject?.chainId}
+            className={styles.network}
+          />
+          <Web3Feedback
+            networkId={asset.credentialSubject?.chainId}
+            accountId={accountId}
+            isAssetNetwork={isAssetNetwork}
+          />
           {!asset.accessDetails ? (
             <p>Loading access details...</p>
           ) : (
@@ -160,10 +189,10 @@ export default function AssetContent({
               {asset?.indexedMetadata?.nft?.state === 0 ? (
                 selectedService === undefined ? (
                   <>
-                    <h3>Available services:</h3>
+                    {/* <h3> Available Assets:</h3> */}
                     {availableServices.length > 0 ? (
-                      <>
-                        <h4>Please select one of the following:</h4>
+                      <div className={styles.serviceDisplay}>
+                        <h4>Choose service to see Price:</h4>
                         <div className={styles.servicesGrid}>
                           {availableServices.map((service, index) => (
                             <ServiceCard
@@ -174,7 +203,7 @@ export default function AssetContent({
                             />
                           ))}
                         </div>
-                      </>
+                      </div>
                     ) : (
                       <h4>No services are currently available.</h4>
                     )}
@@ -198,81 +227,96 @@ export default function AssetContent({
             </>
           )}
           {isOwner && isAssetNetwork && (
-            <div className={styles.ownerActions}>
-              <Button style="text" size="small" to={`/asset/${asset.id}/edit`}>
+            <div className={styles.ownerButtonsContainer}>
+              <a href={`/asset/${asset.id}/edit`} className={styles.editButton}>
+                <EditIcon className={styles.editIcon} />
                 Edit Asset
-              </Button>
+              </a>
+
+              <div
+                className={`${styles.invoiceDropdown} ${
+                  isDropdownOpen ? styles.open : ''
+                }`}
+              >
+                <button
+                  className={styles.invoiceButton}
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                >
+                  Generate Publish Invoice
+                  <div className={styles.dropdownArrow} />
+                </button>
+
+                <div className={styles.dropdownMenu}>
+                  {pdfUrl ? (
+                    <a
+                      href={URL.createObjectURL(pdfUrl)}
+                      download={`${asset.id}.pdf`}
+                      className={styles.dropdownItem}
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Download PDF
+                    </a>
+                  ) : (
+                    <button
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        handleGeneratePdf(
+                          asset.id,
+                          asset.indexedMetadata?.event.txid
+                        )
+                        setIsDropdownOpen(false)
+                      }}
+                      disabled={loadingInvoice}
+                    >
+                      {loadingInvoice ? (
+                        <span className={styles.loadingText}>
+                          Generating PDF...
+                        </span>
+                      ) : (
+                        'Generate PDF'
+                      )}
+                    </button>
+                  )}
+
+                  {jsonInvoice ? (
+                    <a
+                      href={`data:text/json;charset=utf-8,${encodeURIComponent(
+                        JSON.stringify(jsonInvoice)
+                      )}`}
+                      download={`${asset.id}.json`}
+                      className={styles.dropdownItem}
+                      onClick={() => setIsDropdownOpen(false)}
+                    >
+                      Download JSON
+                    </a>
+                  ) : (
+                    <button
+                      className={styles.dropdownItem}
+                      onClick={() => {
+                        handleGenerateJson(
+                          asset.id,
+                          asset.indexedMetadata?.event.txid
+                        )
+                        setIsDropdownOpen(false)
+                      }}
+                      disabled={loadingInvoiceJson}
+                    >
+                      {loadingInvoiceJson ? (
+                        <span className={styles.loadingText}>
+                          Generating JSON...
+                        </span>
+                      ) : (
+                        'Generate JSON'
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
           )}
-
-          {isOwner && isAssetNetwork && (
-            <div className={styles.ownerActions}>
-              {pdfUrl ? (
-                <a
-                  href={URL.createObjectURL(pdfUrl)}
-                  download={`${asset.id}.pdf`}
-                >
-                  Download Publish Invoice PDF
-                </a>
-              ) : (
-                <Button
-                  style="text"
-                  size="small"
-                  onClick={() =>
-                    handleGeneratePdf(
-                      asset.id,
-                      asset.indexedMetadata?.event.txid
-                    )
-                  }
-                  disabled={loadingInvoice}
-                >
-                  {loadingInvoice
-                    ? 'Generating invoice PDF...'
-                    : 'Generate Publish Invoice PDF'}
-                </Button>
-              )}
-            </div>
-          )}
-
-          {isOwner && isAssetNetwork && (
-            <div className={styles.ownerActions}>
-              {jsonInvoice ? (
-                <a
-                  href={`data:text/json;charset=utf-8,${encodeURIComponent(
-                    JSON.stringify(jsonInvoice)
-                  )}`}
-                  download={`${asset.id}.json`}
-                >
-                  Download Publish Invoice JSON
-                </a>
-              ) : (
-                <Button
-                  style="text"
-                  size="small"
-                  onClick={() =>
-                    handleGenerateJson(
-                      asset.id,
-                      asset.indexedMetadata?.event.txid
-                    )
-                  }
-                  disabled={loadingInvoiceJson}
-                >
-                  {loadingInvoiceJson
-                    ? 'Generating invoice JSON...'
-                    : 'Generate Publish Invoice JSON'}
-                </Button>
-              )}
-            </div>
-          )}
-
-          <Web3Feedback
-            networkId={asset.credentialSubject?.chainId}
-            accountId={accountId}
-            isAssetNetwork={isAssetNetwork}
-          />
-          <RelatedAssets />
         </div>
       </article>
+      <RelatedAssets />
     </>
   )
 }

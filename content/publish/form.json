@@ -43,26 +43,20 @@
       },
       {
         "name": "license",
-        "label": "License",
-        "prominentHelp": false,
-        "type": "tabs",
-        "fields": [
-          {
-            "value": "url",
-            "title": "URL",
-            "label": "File",
-            "placeholder": "e.g. https://file.com/license.json",
-            "help": "A SPDX identifier of the license applicable to this service.",
-            "type": "files",
-            "required": true
-          }
-        ]
+        "label": "URL",
+        "placeholder": "e.g. https://file.com/license.json",
+        "help": "A SPDX identifier of the license applicable to this service.",
+        "type": "files",
+        "required": true
       },
       {
         "name": "licenseTypeSelection",
-        "label": "Use Remote License",
-        "type": "checkbox",
-        "options": ["Select if you want to upload a license file"]
+        "label": "License Type",
+        "type": "select",
+        "placeholder": "Please select an option",
+        "options": ["URL", "Upload license file"],
+        "required": true,
+        "hideLabel": true
       },
       {
         "name": "accessTermsAndConditions",
@@ -78,6 +72,7 @@
         "label": "Docker Image",
         "help": "Please select an image to run your algorithm.",
         "type": "boxSelection",
+        "size": "mini",
         "options": [
           "populated from algorithmContainerPresets in Publish/_constants"
         ],
@@ -88,7 +83,6 @@
         "label": "Custom Docker Image",
         "placeholder": "e.g. oceanprotocol/algo_dockers:node-vibrant or quay.io/startx/mariadb",
         "help": "Provide the name and the tag of a public Docker hub image or the custom image if you have it hosted in a 3rd party repository",
-        "type": "container",
         "required": true
       },
       {
@@ -192,6 +186,7 @@
       {
         "name": "files",
         "label": "File",
+        "hideLabel": true,
         "prominentHelp": false,
         "type": "tabs",
         "fields": [
@@ -278,21 +273,10 @@
       {
         "name": "links",
         "label": "Sample file",
+        "placeholder": "e.g. https://file.com/file.json",
+        "help": "This URL will be stored encrypted after publishing. Please make sure that the endpoint is accessible over the internet and is not protected by a firewall or by credentials.",
         "prominentHelp": false,
-        "type": "tabs",
-        "fields": [
-          {
-            "value": "url",
-            "title": "URL",
-            "label": "File",
-            "placeholder": "e.g. https://file.com/file.json",
-            "help": "This URL will be stored encrypted after publishing. **Please make sure that the endpoint is accessible over the internet and is not protected by a firewall or by credentials.**",
-            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
-            "prominentHelp": true,
-            "type": "files",
-            "required": false
-          }
-        ],
+        "type": "files",
         "required": false
       },
       {
@@ -324,17 +308,32 @@
       },
       {
         "name": "allowAllPublishedAlgorithms",
-        "label": "All Algorithms",
-        "help": "Allow any published algorithm to run on this dataset.",
-        "type": "checkbox",
-        "options": ["Allow any published algorithm"]
+        "label": "Allow Algorithms",
+        "help": "Choose how to allow algorithms to run on this dataset.",
+        "type": "select",
+        "options": [
+          "Allow any published algorithms",
+          "Allow selected algorithms"
+        ],
+        "sortOptions": false
       },
       {
         "name": "publisherTrustedAlgorithmPublishers",
-        "label": "Trusted Algorithm Publishers",
-        "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
+        "label": "Allow Trusted Algorithm Publishers",
         "help": "You can optionally specify the wallet addresses of trusted publishers. Only algorithms published by these addresses will be allowed to run.",
-        "type": "credentials"
+        "type": "select",
+        "options": [
+          "Allow specific trusted algorithm publishers",
+          "Allow all trusted algorithm publishers"
+        ],
+        "sortOptions": false
+      },
+      {
+        "name": "publisherTrustedAlgorithmPublishersAddresses",
+        "label": "Publisher Addresses",
+        "placeholder": "e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa",
+        "help": "Enter the wallet addresses of trusted algorithm publishers.",
+        "type": "text"
       },
       {
         "name": "timeout",
@@ -367,7 +366,7 @@
         "type": "textarea",
         "help": "Please enter the service description",
         "placeholder": "{ ... }",
-        "required": false
+        "required": true
       },
       {
         "name": "direction",
@@ -392,10 +391,11 @@
   },
   "additionalDdos": {
     "title": "Additional Asset Descriptions",
+    "help": "Additional Asset Descriptions are used to provide additional information about the asset. They are displayed in the asset description section.",
     "fields": [
       {
         "name": "additionalCredential",
-        "label": "Additional Description",
+        "label": "Content",
         "placeholder": "{ ... }",
         "help": "Insert an additional description",
         "type": "textarea"
@@ -415,7 +415,7 @@
         "name": "allow",
         "label": "Allow ETH Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by clicking “add all”.",
+        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by clicking \"add all\".",
         "type": "credentials",
         "required": false
       },
@@ -423,7 +423,7 @@
         "name": "deny",
         "label": "Deny ETH Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by clicking “add all”.",
+        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by clicking \"add all\".",
         "type": "credentials"
       }
     ]

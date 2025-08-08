@@ -54,3 +54,7 @@
   border-bottom: none;
   margin-bottom: 0;
 }
+
+.preferencesDetails input[type='checkbox'] + label {
+  font-weight: 700;
+}

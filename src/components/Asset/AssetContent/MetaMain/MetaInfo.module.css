@@ -1,5 +1,10 @@
 .wrapper {
-  padding: calc(var(--spacer) / 2);
+  padding: calc(var(--spacer) / 2) 0;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: var(--publish-text-secondary);
 }
 
 .assetType {
@@ -11,7 +16,7 @@
 
 .byline {
   display: inline-block;
-  font-size: var(--font-size-small);
+  text-transform: none;
 }
 
 .updated {

@@ -1,6 +1,7 @@
 import { useField } from 'formik'
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
 import Button from '../../../atoms/Button'
+import PublishButton from '../../../PublishButton'
 import styles from './index.module.css'
 import { isAddress } from 'ethers/lib/utils.js'
 import { toast } from 'react-toastify'
@@ -8,10 +9,15 @@ import InputGroup from '../../InputGroup'
 import InputElement from '..'
 import { InputProps } from '../..'
 
-export default function Credentials(props: InputProps) {
+interface CredentialProps extends InputProps {
+  buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
+}
+
+export default function Credentials(props: CredentialProps) {
   const [field, meta, helpers] = useField(props.name)
   const [addressList, setAddressList] = useState<string[]>(field.value || [])
   const [value, setValue] = useState('')
+  const { buttonStyle = 'ocean' } = props
 
   const hasWildcard = addressList.includes('*')
 
@@ -69,18 +75,22 @@ export default function Credentials(props: InputProps) {
           }
           disabled={hasWildcard}
         />
-        <Button
-          style="primary"
-          size="small"
+        <PublishButton
+          icon="add"
+          text="ADD"
+          buttonStyle="primary"
           onClick={handleAddValue}
           disabled={hasWildcard}
-        >
-          Add
-        </Button>
+          type="button"
+        />
         {!hasWildcard && (
-          <Button style="primary" size="small" onClick={handleAddAll}>
-            Add All
-          </Button>
+          <PublishButton
+            icon="add"
+            text="ADD ALL"
+            buttonStyle="primary"
+            onClick={handleAddAll}
+            type="button"
+          />
         )}
       </InputGroup>
 
@@ -95,7 +105,7 @@ export default function Credentials(props: InputProps) {
                   disabled
                 />
                 <Button
-                  style="primary"
+                  style={buttonStyle}
                   size="small"
                   onClick={(e: React.SyntheticEvent) => {
                     e.preventDefault()

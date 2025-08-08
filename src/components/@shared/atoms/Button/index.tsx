@@ -13,8 +13,16 @@ export interface ButtonProps {
   disabled?: boolean
   to?: string
   name?: string
-  size?: 'small'
-  style?: 'primary' | 'ghost' | 'text'
+  size?: 'small' | 'default'
+  style?:
+    | 'primary'
+    | 'ghost'
+    | 'text'
+    | 'publish'
+    | 'ocean'
+    | 'gradient'
+    | 'delete'
+    | 'outlined'
   type?: 'submit' | 'button'
   download?: boolean
   target?: string
@@ -38,7 +46,13 @@ export default function Button({
     primary: style === 'primary',
     ghost: style === 'ghost',
     text: style === 'text',
+    publish: style === 'publish',
+    ocean: style === 'ocean',
+    gradient: style === 'gradient',
+    delete: style === 'delete',
+    outlined: style === 'outlined',
     small: size === 'small',
+    default: size === 'default',
     [className]: className
   })
 

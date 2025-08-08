@@ -4,6 +4,7 @@ import { FormPublishData } from '../_types'
 import FormHelp from '@shared/FormInput/Help'
 import Price from './Price'
 import styles from './index.module.css'
+import Alert from '../../@shared/atoms/Alert'
 
 export default function Free({ content }: { content: any }): ReactElement {
   // connect with Form state, use for conditional field rendering
@@ -23,7 +24,7 @@ export default function Free({ content }: { content: any }): ReactElement {
 
   return (
     <>
-      <FormHelp>{content.info}</FormHelp>
+      <Alert>{content.info}</Alert>
       <h4 className={styles.title}>Price</h4>
       <Price content={content} />
     </>

@@ -11,6 +11,7 @@ import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
 import Time from '../atoms/Time'
 import Loader from '../atoms/Loader'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import Alert from '../atoms/Alert'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
@@ -125,12 +126,12 @@ export default function AssetList({
     <Loader />
   ) : (
     <>
-      {showAssetViewSelector && (
+      {/* {showAssetViewSelector && (
         <AssetViewSelector
           activeAssetView={activeAssetView}
           setActiveAssetView={setActiveAssetView}
         />
-      )}
+      )} */}
       <div className={styleClasses}>
         {assets?.length > 0 && assets[0] !== undefined ? (
           <>
@@ -161,7 +162,7 @@ export default function AssetList({
               })}
           </>
         ) : (
-          <div className={styles.empty}>No results found</div>
+          <Alert warning>No results found</Alert>
         )}
       </div>
       {showPagination && (

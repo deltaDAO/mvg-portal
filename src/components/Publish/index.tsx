@@ -26,6 +26,7 @@ import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
 import { ethers } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
+import ContainerForm from '../@shared/atoms/ContainerForm'
 
 export default function PublishPage({
   content
@@ -279,6 +280,7 @@ export default function PublishPage({
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
+      enableReinitialize={true}
       onSubmit={async (values) => {
         // kick off publishing
         await handleSubmit(values)
@@ -289,11 +291,14 @@ export default function PublishPage({
           <PageHeader
             title={<Title networkId={values.user.chainId} />}
             description={content.description}
+            isExtended
           />
           <Form className={styles.form} ref={scrollToRef}>
             <Navigation />
-            <Steps feedback={feedback} />
-            <Actions scrollToRef={scrollToRef} did={did} />
+            <ContainerForm style="publish">
+              <Steps feedback={feedback} />
+              <Actions scrollToRef={scrollToRef} did={did} />
+            </ContainerForm>
           </Form>
           {debug && <Debug />}
         </>

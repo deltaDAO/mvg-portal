@@ -71,6 +71,12 @@ import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { CancelToken } from 'axios'
 import { ComputeEditForm } from '@components/Asset/Edit/_types'
 
+function cleanupVpPolicies(value: any): void {
+  if (!value.vp_policies || value.vp_policies.length === 0) {
+    delete value.vp_policies
+  }
+}
+
 function makeDid(nftAddress: string, chainId: string): string {
   return (
     'did:ope:' +
@@ -312,6 +318,8 @@ export function parseCredentialPolicies(credentials: Credential) {
             return requestCredentials
           }
         )
+
+        cleanupVpPolicies(value)
         return value
       })
     }
@@ -343,6 +351,8 @@ export function stringifyCredentialPolicies(credentials: Credential) {
             return requestCredentials
           }
         )
+
+        cleanupVpPolicies(value)
         return value
       })
     }
@@ -351,7 +361,9 @@ export function stringifyCredentialPolicies(credentials: Credential) {
 }
 
 export function generateCredentials(
-  updatedCredentials: CredentialForm
+  updatedCredentials: CredentialForm,
+  isServiceCredentials: boolean = false,
+  mainCredentials?: CredentialForm
 ): Credential {
   const newCredentials: Credential = {
     allow: [],
@@ -390,12 +402,17 @@ export function generateCredentials(
         return null
       }
     )
+
+    const shouldCreateSsiPolicy =
+      updatedCredentials?.vpPolicies?.length > 0 ||
+      updatedCredentials?.requestCredentials?.length > 0 ||
+      updatedCredentials?.vcPolicies?.length > 0
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
       (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
       (vpPolicies?.length ?? 0) > 0
 
-    if (hasAny) {
+    if (hasAny && shouldCreateSsiPolicy) {
       const newAllowList: CredentialPolicyBased = {
         type: 'SSIpolicy',
         values: []
@@ -406,10 +423,7 @@ export function generateCredentials(
       if (requestCredentials?.length > 0) {
         entry.request_credentials = requestCredentials
       }
-      if (
-        updatedCredentials?.vcPolicies?.length > 0 &&
-        requestCredentials?.length > 0
-      ) {
+      if (updatedCredentials?.vcPolicies?.length > 0) {
         entry.vc_policies = updatedCredentials.vcPolicies
       }
       if (vpPolicies?.length > 0) {
@@ -454,6 +468,17 @@ export function generateCredentials(
   return newCredentials
 }
 
+function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Omit<T, K> {
+  const clone = { ...obj }
+  for (const key of keys) {
+    delete clone[key]
+  }
+  return clone
+}
+
 export async function transformPublishFormToDdo(
   values: FormPublishData,
   // Those 2 are only passed during actual publishing process
@@ -462,7 +487,19 @@ export async function transformPublishFormToDdo(
   nftAddress?: string,
   cancelToken?: CancelToken
 ): Promise<Asset> {
-  const { metadata, services, user } = values
+  // Omit UI-only step completion flags
+  const safeValues = omit(values, [
+    'step1Completed',
+    'step2Completed',
+    'step3Completed',
+    'step4Completed',
+    'step5Completed',
+    'step6Completed',
+    'previewPageVisited',
+    'submissionPageVisited'
+  ])
+
+  const { metadata, services, user } = safeValues
   const { chainId, accountId } = user
   const {
     type,
@@ -501,7 +538,10 @@ export async function transformPublishFormToDdo(
     : undefined
 
   let license: License
-  if (!values.metadata.useRemoteLicense && values.metadata.licenseUrl[0]) {
+  if (
+    values.metadata.licenseTypeSelection === 'URL' &&
+    values.metadata.licenseUrl[0]
+  ) {
     license = {
       name: values.metadata.licenseUrl[0].url,
       licenseDocuments: [
@@ -533,9 +573,10 @@ export async function transformPublishFormToDdo(
     },
     tags: transformTags(tags),
     author,
-    license: values.metadata.useRemoteLicense
-      ? values.metadata.uploadedLicense
-      : license,
+    license:
+      values.metadata.licenseTypeSelection === 'Upload license file'
+        ? values.metadata.uploadedLicense
+        : license,
     links: convertLinks(linksTransformed),
     additionalInformation: {
       termsAndConditions
@@ -584,12 +625,24 @@ export async function transformPublishFormToDdo(
     files[0].valid &&
     (await getEncryptedFiles(file, chainId, providerUrl.url))
 
-  const newServiceCredentials = generateCredentials(credentials)
+  const newServiceCredentials = generateCredentials(
+    credentials,
+    true,
+    values.credentials
+  )
   const valuesCompute: ComputeEditForm = {
-    allowAllPublishedAlgorithms: values.allowAllPublishedAlgorithms,
+    allowAllPublishedAlgorithms:
+      values.allowAllPublishedAlgorithms === 'Allow any published algorithms',
     publisherTrustedAlgorithms: values.publisherTrustedAlgorithms ?? [],
     publisherTrustedAlgorithmPublishers:
-      values.publisherTrustedAlgorithmPublishers
+      (typeof values.publisherTrustedAlgorithmPublishers === 'string' &&
+        values.publisherTrustedAlgorithmPublishers ===
+          'Allow specific trusted algorithm publishers') ||
+      Array.isArray(values.publisherTrustedAlgorithmPublishers)
+        ? 'Allow specific trusted algorithm publishers'
+        : 'Allow all trusted algorithm publishers',
+    publisherTrustedAlgorithmPublishersAddresses:
+      values.publisherTrustedAlgorithmPublishersAddresses || ''
   }
   const newService: Service = {
     id: getHash(datatokenAddress + filesEncrypted),

@@ -101,8 +101,12 @@ export default function DebugEditService({
 
   return (
     <>
-      <DebugOutput title="Collected Form Values" output={valuePreview} />
-      <DebugOutput title="Transformed Service Values" output={updatedService} />
+      <DebugOutput title="Collected Form Values" output={valuePreview} large />
+      <DebugOutput
+        title="Transformed Service Values"
+        output={updatedService}
+        large
+      />
     </>
   )
 }

@@ -1,0 +1,41 @@
+.accessPoliciesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+/* SSI Policies section styling */
+.accessPoliciesContainer :global(.editorPanel) {
+  background: var(--color-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: calc(var(--spacer) * 1.5);
+  margin-bottom: var(--spacer);
+}
+
+/* Checkbox styling for SSI sections */
+.accessPoliciesContainer :global(.checkboxLabel) {
+  display: flex;
+  align-items: center;
+  gap: var(--spacer);
+  margin-bottom: calc(var(--spacer) * 0.75);
+  font-size: var(--font-size-base);
+  color: var(--font-color-text);
+}
+
+.accessPoliciesContainer :global(.checkboxLabel input[type='checkbox']) {
+  width: 1.2rem;
+  height: 1.2rem;
+  margin: 0;
+  accent-color: var(--ocean-blue);
+}
+
+/* Advanced features section */
+.accessPoliciesContainer :global(.editorLabel) {
+  font-weight: var(--font-weight-bold);
+  color: var(--font-color-heading);
+  margin-bottom: var(--spacer);
+  display: flex;
+  align-items: center;
+  gap: var(--spacer);
+}

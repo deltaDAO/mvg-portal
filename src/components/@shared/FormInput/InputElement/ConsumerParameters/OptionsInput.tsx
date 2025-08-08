@@ -3,12 +3,12 @@ import { FormPublishData } from '@components/Publish/_types'
 import classNames from 'classnames/bind'
 import { ErrorMessage, Field, useFormikContext } from 'formik'
 import { getObjectPropertyByPath } from '@utils/index'
-import InputKeyValue, { KeyValueInputProps } from '../KeyValueInput'
+import FormAlignedKeyValue from '../KeyValueInput/FormAlignedKeyValue'
 import styles from './OptionsInput.module.css'
 
 const cx = classNames.bind(styles)
 
-export default function OptionsInput(props: KeyValueInputProps): ReactElement {
+export default function OptionsInput(props: any): ReactElement {
   const { errors, touched } = useFormikContext<FormPublishData>()
 
   const hasError = (): boolean =>
@@ -20,7 +20,7 @@ export default function OptionsInput(props: KeyValueInputProps): ReactElement {
     <div className={cx({ container: true, hasError: hasError() })}>
       <Field
         {...props}
-        component={InputKeyValue}
+        component={FormAlignedKeyValue}
         uniqueKeys
         keyPlaceholder="value"
         valuePlaceholder="label"

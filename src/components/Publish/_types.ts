@@ -57,11 +57,12 @@ export interface FormPublishData {
     dockerImageCustomChecksum?: string
     usesConsumerParameters?: boolean
     consumerParameters?: FormConsumerParameter[]
+    dataSubjectConsent?: boolean
     service?: {
       usesConsumerParameters?: boolean
       consumerParameters?: FormConsumerParameter[]
     }
-    useRemoteLicense: boolean
+    licenseTypeSelection?: string
     licenseUrl: FileInfo[]
     uploadedLicense: License
   }
@@ -73,9 +74,17 @@ export interface FormPublishData {
   previewPageVisited: boolean
   credentials: CredentialForm
   accessPolicyPageVisited: boolean
-  allowAllPublishedAlgorithms?: boolean
+  step1Completed: boolean
+  step2Completed: boolean
+  step3Completed: boolean
+  step4Completed: boolean
+  step5Completed: boolean
+  step6Completed: boolean
+  submissionPageVisited: boolean
+  allowAllPublishedAlgorithms?: string
   publisherTrustedAlgorithms?: string[]
   publisherTrustedAlgorithmPublishers?: string[]
+  publisherTrustedAlgorithmPublishersAddresses?: string
 }
 
 export interface StepContent {

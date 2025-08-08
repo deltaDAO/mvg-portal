@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding-left: calc(var(--spacer) / 2);
   justify-content: center;
 }
 
@@ -12,7 +11,13 @@
 }
 
 .owner {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 157%;
+  color: var(--clr-slate-50);
   display: block;
+  margin-left: var(--spacer);
 }
 
 .addWrap {

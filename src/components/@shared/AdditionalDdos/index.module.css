@@ -1,18 +1,29 @@
-.inputLine {
+.container {
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
+  gap: var(--sp-4);
 }
 
-.newDdoBtn {
-  margin-bottom: calc(var(--spacer) / 1.5);
-}
-
-.ddoField {
+.assetCard {
   width: 100%;
-  margin-bottom: -40px;
 }
 
-.deleteBtn {
-  margin-bottom: 40px;
+.deleteButtonContainer {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: var(--sp-2);
+}
+
+.createButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-2);
+}
+
+.title {
+  font-size: var(--publish-font-size-lg);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+  font-weight: 700;
+  margin: 0;
 }

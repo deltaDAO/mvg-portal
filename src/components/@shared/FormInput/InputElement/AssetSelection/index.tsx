@@ -3,6 +3,7 @@ import Dotdotdot from 'react-dotdotdot'
 import slugify from 'slugify'
 import PriceUnit from '@shared/Price/PriceUnit'
 import External from '@images/external.svg'
+import SearchIcon from '@images/search.svg'
 import InputElement from '@shared/FormInput/InputElement'
 import Loader from '@shared/atoms/Loader'
 import Tooltip from '@components/@shared/atoms/Tooltip'
@@ -106,16 +107,27 @@ export default function AssetSelection({
 
   return (
     <div className={styleClassesWrapper}>
-      <InputElement
-        type="search"
-        name="search"
-        size="small"
-        placeholder="Search by title, datatoken, or DID..."
-        value={searchValue}
-        onChange={handleSearchInput}
-        className={styles.search}
-        disabled={disabled}
-      />
+      <div className={styles.searchContainer}>
+        <input
+          type="search"
+          name="search"
+          placeholder="Search by title, datatoken, or DID..."
+          value={searchValue}
+          onChange={handleSearchInput}
+          className={styles.search}
+          disabled={disabled}
+        />
+        <div className={styles.searchButtonContainer}>
+          <button
+            type="button"
+            className={styles.searchButton}
+            disabled={disabled}
+          >
+            <SearchIcon className={styles.searchIcon} />
+            <span className={styles.searchButtonText}>Search</span>
+          </button>
+        </div>
+      </div>
       <div className={styles.scroll}>
         {!assets ? (
           <Loader />
@@ -143,36 +155,41 @@ export default function AssetSelection({
                   htmlFor={slugify(asset.serviceId)}
                   title={asset.name}
                 >
-                  <h3 className={styles.title}>
+                  <div className={styles.labelContent}>
+                    <div className={styles.titleRow}>
+                      <h3 className={styles.title}>
+                        <Dotdotdot
+                          clamp={1}
+                          tagName="span"
+                          className={cx({
+                            disabled: !asset.isAccountIdWhitelisted
+                          })}
+                        >
+                          {asset.name} - {asset.serviceName}
+                        </Dotdotdot>
+                        <a
+                          className={styles.link}
+                          href={`/asset/${asset.did}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <External />
+                        </a>
+                      </h3>
+                    </div>
+
                     <Dotdotdot
                       clamp={1}
-                      tagName="span"
+                      tagName="code"
                       className={cx({
+                        did: true,
                         disabled: !asset.isAccountIdWhitelisted
                       })}
                     >
-                      {asset.name} - {asset.serviceName}
+                      {asset.symbol} | {asset.did}
                     </Dotdotdot>
-                    <a
-                      className={styles.link}
-                      href={`/asset/${asset.did}`}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <External />
-                    </a>
-                  </h3>
+                  </div>
 
-                  <Dotdotdot
-                    clamp={1}
-                    tagName="code"
-                    className={cx({
-                      did: true,
-                      disabled: !asset.isAccountIdWhitelisted
-                    })}
-                  >
-                    {asset.symbol} | {asset.did}
-                  </Dotdotdot>
                   <PriceUnit
                     price={asset.price}
                     size="small"
@@ -182,6 +199,7 @@ export default function AssetSelection({
                     })}
                     symbol={asset.tokenSymbol}
                   />
+
                   {!asset.isAccountIdWhitelisted && (
                     <Tooltip
                       content={

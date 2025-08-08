@@ -5,7 +5,8 @@
   --brand-blue: #014f86;
   --brand-blue-light: #2a6f97;
   --brand-blue-lighter: #61a5c2;
-  --brand-red: #b32a61;
+  --brand-red: #ff360d;
+  --brand-red-bright: #ff360d;
 
   --brand-gradient: linear-gradient(
     to right bottom,
@@ -19,9 +20,10 @@
   --brand-grey-dimmed: #f5f5f5;
 
   --brand-alert-green: #5fb359;
-  --brand-alert-red: #d80606;
+  --brand-alert-red: #ff360d;
   --brand-alert-orange: #b35f36;
   --brand-alert-yellow: #eac146;
+  --brand-error-red: #f00;
 
   /* Ocean brand color variables */
   --ocean-white: #ffffff;
@@ -29,6 +31,7 @@
   --ocean-pink: #ff4092;
   --ocean-purple: #7b1173;
   --ocean-violet: #e000cf;
+  --ocean-blue: #4ca3d3;
 
   --ocean-grey-darker: #201f1f;
   --ocean-grey-dark: #303030;
@@ -36,6 +39,60 @@
   --ocean-grey-light: #8b98a9;
   --ocean-grey-lighter: #e2e2e2;
   --ocean-grey-dimmed: #f7f7f7;
+  --ocean-orange-color: #fdd655;
 
   --ocean-gradient: linear-gradient(to right bottom, #7b1173, #ff4092);
+
+  /* Publish page design system - Figma colors */
+  --publish-primary: #0a4b70;
+  --publish-accent: #fdd655;
+  --publish-text: #303031;
+  --publish-text-secondary: rgba(48, 48, 49, 0.7);
+  --publish-border: rgba(10, 75, 112, 0.5);
+  --publish-border-error: rgba(255, 54, 13, 0.5);
+  --publish-neutral: #757575;
+  --publish-white: #ffffff;
+
+  /* Publish gradients */
+  --publish-primary-gradient: linear-gradient(
+      115.97deg,
+      #1f2c50 0%,
+      rgba(10, 75, 112, 0.8) 27.47%,
+      rgba(10, 75, 112, 0.7) 43.49%,
+      rgba(10, 75, 112, 0.8) 55.43%,
+      #1e2e52 100%
+    ),
+    #64ace0;
+  --publish-accent-gradient: linear-gradient(
+      115.97deg,
+      #fdd655 0%,
+      rgba(253, 214, 85, 0.8) 27.47%,
+      rgba(253, 214, 85, 0.7) 43.49%,
+      rgba(253, 214, 85, 0.8) 55.43%,
+      #fdd655 100%
+    ),
+    linear-gradient(0deg, #fdd655, #fdd655), #ffffff;
+  --publish-nft-gradient: linear-gradient(
+      115.97deg,
+      #1f2c50 0%,
+      rgba(10, 75, 112, 0.8) 27.47%,
+      rgba(10, 75, 112, 0.7) 43.49%,
+      rgba(10, 75, 112, 0.8) 55.43%,
+      #1e2e52 100%
+    ),
+    #64ace0;
+
+  /* Publish background colors */
+  --publish-background-highlight: rgba(253, 214, 85, 0.15);
+  --publish-background-neutral: rgba(48, 48, 49, 0.02);
+  --publish-background-subtle: rgba(48, 48, 49, 0.08);
+
+  /* Additional colors for PolicyEditor */
+  --clr-navy: #0a4b70;
+  --clr-amber: #fdd655;
+  --clr-error: #ff360d;
+  --clr-slate-70: rgba(48, 48, 49, 0.7);
+  --clr-slate-50: rgba(48, 48, 49, 0.5);
+  --clr-slate-12: rgba(48, 48, 49, 0.12);
+  --clr-did-text: rgba(76, 163, 211, 0.7);
 }

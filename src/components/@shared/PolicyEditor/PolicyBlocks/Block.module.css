@@ -1,0 +1,155 @@
+@import '../../FormInput/index.module.css';
+
+.block {
+  position: relative;
+  margin-block: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: calc(var(--sp-4) / 2);
+}
+
+body .header div {
+  flex: 1;
+}
+
+.content {
+  padding-left: var(--sp-4);
+  border-left: 3px solid var(--publish-accent);
+  margin-left: calc(var(--sp-4) + 3px);
+}
+
+.label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  min-width: 200px;
+  flex: 1;
+}
+
+.field label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: var(--sp-1);
+}
+
+.fieldContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-1);
+  min-width: 180px;
+  flex: 1;
+  align-self: stretch;
+}
+
+.fieldContainer label {
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: 0;
+}
+
+.fieldContainer select {
+  height: 100%;
+  min-height: 40px;
+}
+
+.required {
+  color: var(--input-error-text-color);
+  margin-left: 2px;
+}
+
+.ruleRow .field {
+  flex: 1;
+  min-width: 200px;
+}
+
+.ruleRow .field label {
+  font-size: var(--font-size-small);
+  margin-bottom: var(--sp-1);
+}
+
+.policyRow {
+  display: flex;
+  align-items: stretch;
+}
+
+.policyInput {
+  flex: 1;
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--clr-navy) 50%, white);
+  border-radius: 20px 0 0 20px;
+}
+
+.policyDelete {
+  height: 100%;
+  border-radius: 0 20px 20px 0;
+}
+
+.argumentRow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-2_5);
+  margin-bottom: var(--sp-4);
+}
+
+.argumentInput {
+  min-width: 200px;
+  flex: 1;
+}
+
+.newArgument {
+  margin-top: var(--sp-2_5);
+}
+
+.ruleRow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-4);
+}
+
+.ruleInput {
+  min-width: 180px;
+  flex: 1;
+}
+
+.operatorInput {
+  min-width: 80px;
+  flex: 0 0 auto;
+}
+
+.deleteArgument {
+  margin-top: calc(var(--sp-4) * 1.4);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: calc(var(--sp-4) / 4);
+}
+
+.deleteArgument > svg {
+  margin: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.fullWidth > div:first-child {
+  flex: 1;
+}

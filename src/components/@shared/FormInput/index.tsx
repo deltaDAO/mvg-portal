@@ -7,6 +7,7 @@ import {
   useEffect,
   useState
 } from 'react'
+import cs from 'classnames'
 import InputElement from './InputElement'
 import Label from './Label'
 import styles from './index.module.css'
@@ -17,9 +18,13 @@ import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 import FormHelp from './Help'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
-import { BoxSelectionOption } from '@shared/FormInput/InputElement/BoxSelection'
+import {
+  BoxSelectionOption,
+  BoxSelectionSize
+} from '@shared/FormInput/InputElement/BoxSelection'
 import { getObjectPropertyByPath } from '@utils/index'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
+import ErrorSVG from '@images/circle_error.svg'
 import { ResourceType } from 'src/@types/ResourceType'
 
 const cx = classNames.bind(styles)
@@ -73,13 +78,18 @@ export interface InputProps {
   postfixes?: string[]
   step?: string
   defaultChecked?: boolean
-  size?: 'mini' | 'small' | 'large' | 'default'
+  size?: 'mini' | 'small' | 'large' | 'default' | 'medium'
+  selectStyle?: 'default' | 'publish' | 'custom' | 'serviceLanguage'
   className?: string
   checked?: boolean
   disclaimer?: string
   disclaimerValues?: string[]
   accountId?: string
   actions?: string[]
+  hideLabel?: boolean
+  buttonStyle?: 'primary' | 'ghost' | 'text' | 'publish' | 'ocean'
+  variant?: 'default' | 'publish'
+  centerError?: boolean
   allResourceValues?: {
     [envId: string]: ResourceType
   }
@@ -114,7 +124,8 @@ export default function Input(props: Partial<InputProps>): ReactElement {
     form,
     field,
     disclaimer,
-    disclaimerValues
+    disclaimerValues,
+    centerError
   } = props
 
   const isFormikField = typeof field !== 'undefined'
@@ -144,23 +155,39 @@ export default function Input(props: Partial<InputProps>): ReactElement {
 
   return (
     <div className={styleClasses}>
-      <Label htmlFor={props.name}>
-        {label}
-        {props.required && (
-          <span title="Required" className={styles.required}>
-            *
-          </span>
-        )}
-        {help && !prominentHelp && (
-          <Tooltip content={<Markdown text={help} />} />
-        )}
-      </Label>
+      {!props.hideLabel && (
+        <Label htmlFor={props.name}>
+          {label}
+          {props.required && (
+            <span title="Required" className={styles.required}>
+              *
+            </span>
+          )}
+          {help && !prominentHelp && (
+            <Tooltip content={<Markdown text={help} />} />
+          )}
+        </Label>
+      )}
       <InputElement size={size} {...field} {...props} />
       {help && prominentHelp && <FormHelp>{help}</FormHelp>}
 
       {field?.name !== 'files' && isFormikField && hasFormikError && (
-        <div className={styles.error}>
-          <ErrorMessage name={field.name} />
+        <div
+          className={cs(styles.error, { [styles.centerError]: centerError })}
+        >
+          {centerError && <ErrorSVG className={styles.errorIcon} />}
+          <ErrorMessage name={field.name}>
+            {(msg) => {
+              if (typeof msg === 'string') {
+                return msg
+              } else if (Array.isArray(msg) && msg[0]?.url) {
+                return msg[0].url
+              } else if (msg && typeof msg === 'object' && msg.url) {
+                return msg.url
+              }
+              return String(msg)
+            }}
+          </ErrorMessage>
         </div>
       )}
 

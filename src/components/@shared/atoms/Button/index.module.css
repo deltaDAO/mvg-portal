@@ -10,10 +10,9 @@
   font-size: var(--font-size-base);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
-  text-transform: uppercase;
   border-radius: var(--button-border-radius);
   transition: 0.2s ease-out;
-  color: var(--button-font-color);
+  color: var(--publish-primary);
   background: var(--button-background);
   box-shadow: 0 9px 18px 0 rgba(0, 0, 0, 0.1);
   user-select: none;
@@ -73,6 +72,121 @@
   min-width: auto;
 }
 
+body .publish {
+  min-width: auto;
+  background: var(--publish-accent);
+  color: var(--publish-primary);
+  border-radius: var(--publish-input-border-radius) !important;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size-base);
+  line-height: var(--publish-line-height-base);
+  box-shadow: var(--publish-shadow);
+  text-transform: none;
+  transition: all 0.3s ease;
+}
+
+body .publish:hover,
+body .publish:focus {
+  transform: translate3d(0, -0.05rem, 0);
+  box-shadow: var(--publish-shadow-lg);
+  background: #facf5a;
+  color: #0a4b70;
+  transition: all 0.3s ease;
+}
+
+.publish:active {
+  transform: none;
+  box-shadow: var(--publish-shadow-sm);
+}
+
+.ocean,
+.ocean:hover,
+.ocean:focus,
+.ocean:active {
+  background: var(--ocean-blue);
+  color: var(--color-white);
+  border: 1px solid var(--ocean-blue);
+  border-radius: var(--border-radius);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  letter-spacing: 0.02rem;
+  transition: all 0.2s ease;
+  min-width: auto;
+}
+
+.ocean:hover,
+.ocean:focus {
+  background: var(--ocean-blue-dark, #2f5a7a);
+  border-color: var(--ocean-blue-dark, #2f5a7a);
+  transform: translate3d(0, -0.05rem, 0);
+  box-shadow: 0 6px 18px 0 rgba(75, 163, 211, 0.3);
+}
+
+.ocean:active {
+  transform: none;
+  box-shadow: 0 2px 8px 0 rgba(75, 163, 211, 0.3);
+}
+
+.gradient,
+.gradient:hover,
+.gradient:focus,
+.gradient:active {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 9px 14px;
+  gap: 4px;
+  width: fit-content;
+  height: 32px;
+  background: var(--publish-primary-gradient);
+  box-shadow: 1px 2px 8px var(--box-shadow-color);
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 14px;
+  text-align: center;
+  color: #ffffff;
+  text-transform: none;
+  min-width: unset;
+}
+
+.gradient:hover {
+  opacity: 0.9;
+}
+
+.button.outlined,
+.button.outlined:hover,
+.button.outlined:focus,
+.button.outlined:active {
+  border: 1px solid var(--publish-primary);
+  border-radius: var(--publish-input-border-radius);
+  padding: 9px 14px;
+  box-shadow: var(--publish-shadow-sm);
+  background: transparent;
+  font-family: var(--font-family-base);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: 114%;
+  text-align: center;
+  color: var(--publish-primary);
+  text-transform: none;
+  min-width: unset;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.button.outlined:hover {
+  opacity: 0.8;
+  transform: translate3d(0, -1px, 0);
+}
+
 /* Size Modifiers */
 .small {
   font-size: var(--font-size-small);
@@ -81,4 +195,43 @@
 
 .text.small {
   padding: 0;
+}
+
+.gradient {
+  background: var(--publish-primary-gradient);
+  color: var(--brand-white);
+  border: none;
+  border-radius: 20px;
+}
+
+.gradient:hover,
+.gradient:focus {
+  background: var(--publish-primary-gradient);
+  opacity: 0.9;
+}
+
+.outlined,
+.ghost {
+  background: transparent;
+  color: var(--clr-navy);
+  border: 1px solid var(--clr-navy);
+  border-radius: 20px;
+  padding: var(--sp-2_5) var(--sp-4);
+  box-shadow: var(--shadow-md);
+}
+
+.outlined:hover,
+.outlined:focus,
+.ghost:hover,
+.ghost:focus {
+  background: rgba(10, 75, 112, 0.05);
+}
+
+/* Specific padding overrides for Upload File and View Asset buttons */
+.button.publish.marginRight2 {
+  padding: 14px 20px;
+}
+
+:global(.action) .button.publish {
+  padding: 14px 20px;
 }

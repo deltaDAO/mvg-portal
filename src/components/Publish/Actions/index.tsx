@@ -11,6 +11,19 @@ import AvailableNetworks from '@components/Publish/AvailableNetworks'
 import Info from '@images/info.svg'
 import Loader from '@shared/atoms/Loader'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
+import { isAddress } from 'ethers/lib/utils.js'
+import isUrl from 'is-url-superb'
+
+function isValidUrl(url: string): boolean {
+  if (!url?.trim()) return false
+
+  const trimmedUrl = url.trim()
+  if (!trimmedUrl.startsWith('http://') && !trimmedUrl.startsWith('https://')) {
+    return false
+  }
+
+  return isUrl(trimmedUrl)
+}
 
 export default function Actions({
   scrollToRef,
@@ -25,7 +38,8 @@ export default function Actions({
     values,
     errors,
     isValid,
-    isSubmitting
+    isSubmitting,
+    setFieldValue
   }: FormikContextType<FormPublishData> = useFormikContext()
   // async function handleActivation(e: FormEvent<HTMLButtonElement>) {
   //   // prevent accidentially submitting a form the button might be in
@@ -45,6 +59,62 @@ export default function Actions({
 
   function handleNext(e: FormEvent) {
     e.preventDefault()
+
+    const { stepCurrent } = values.user
+    const stepCompletions = {
+      1: ['step1Completed'],
+      2: ['step2Completed'],
+      3: ['step3Completed'],
+      4: ['step4Completed'],
+      5: ['step5Completed'],
+      6: ['step6Completed', 'previewPageVisited'],
+      7: ['submissionPageVisited']
+    }
+
+    const fieldsToSet = stepCompletions[stepCurrent] || []
+    fieldsToSet.forEach((field) => setFieldValue(field, true))
+
+    if (values.user.stepCurrent === 2) {
+      const processAddress = (
+        inputValue: string,
+        fieldName: 'allow' | 'deny'
+      ) => {
+        const trimmedValue = inputValue?.trim()
+        if (
+          !trimmedValue ||
+          trimmedValue.length < 40 ||
+          !trimmedValue.startsWith('0x')
+        ) {
+          return
+        }
+
+        try {
+          if (isAddress(trimmedValue)) {
+            const lowerCaseAddress = trimmedValue.toLowerCase()
+            const currentList = values.credentials[fieldName] || []
+
+            if (!currentList.includes(lowerCaseAddress)) {
+              console.log(
+                `Auto-committing typed ${fieldName} address before navigation:`,
+                lowerCaseAddress
+              )
+              const newList = [...currentList, lowerCaseAddress]
+              setFieldValue(`credentials.${fieldName}`, newList)
+              setFieldValue(`credentials.${fieldName}InputValue`, '')
+            }
+          }
+        } catch (error) {
+          console.log(
+            `${fieldName} address validation error during auto-commit:`,
+            error
+          )
+        }
+      }
+
+      processAddress(values.credentials.allowInputValue, 'allow')
+      processAddress(values.credentials.denyInputValue, 'deny')
+    }
+
     handleAction('next')
   }
 
@@ -53,27 +123,139 @@ export default function Actions({
     handleAction('prev')
   }
 
-  const isContinueDisabled =
-    (values.user.stepCurrent === 1 && errors.metadata !== undefined) ||
-    (values.user.stepCurrent === 2 && errors.credentials !== undefined) ||
-    (values.user.stepCurrent === 2 &&
-      (!values.credentials.allow || values.credentials.allow.length < 1)) ||
-    (values.user.stepCurrent === 3 && errors.services !== undefined) ||
-    (values.user.stepCurrent === 4 && errors.pricing !== undefined) ||
-    (values.user.stepCurrent === 5 && errors.additionalDdos !== undefined)
+  const hasValidAllowAddress = () => {
+    // Check existing allow list
+    if (values.credentials.allow?.length > 0) return true
 
-  const hasSubmitError =
-    values.feedback?.[1].status === 'error' ||
-    values.feedback?.[2].status === 'error' ||
-    values.feedback?.[3].status === 'error'
+    const typedValue = values.credentials.allowInputValue?.trim()
+    if (!typedValue) return false
+
+    // Check for wildcard
+    if (typedValue === '*') return true
+
+    // Check for valid address
+    if (typedValue.length >= 40 && typedValue.startsWith('0x')) {
+      try {
+        return isAddress(typedValue)
+      } catch (error) {
+        console.log('Allow address validation error:', error)
+      }
+    }
+
+    return false
+  }
+
+  const hasSSIButNoCredentialRequests = () => {
+    // Early return if SSI not enabled
+    if (!values.credentials?.enabled) return false
+
+    const requestCredentials = values.credentials?.requestCredentials
+    // Early return if no credential requests
+    if (!requestCredentials?.length) return true
+
+    // Check for invalid policies with early returns
+    return requestCredentials.some((credential) => {
+      const policies = credential?.policies
+      if (!policies?.length) return false
+
+      return policies.some((policy) => {
+        if (!policy?.type) return false
+
+        switch (policy.type) {
+          case 'staticPolicy':
+            return !policy.name?.trim()
+          case 'parameterizedPolicy':
+            return !policy.args?.length
+          case 'customUrlPolicy': {
+            return (
+              !policy.name?.trim() ||
+              !policy.policyUrl?.trim() ||
+              !isValidUrl(policy.policyUrl) ||
+              !policy.arguments?.length ||
+              policy.arguments.some(
+                (arg) => !arg.name?.trim() || !arg.value?.trim()
+              )
+            )
+          }
+          case 'customPolicy': {
+            return (
+              !policy.name?.trim() ||
+              !policy.rules?.length ||
+              policy.rules.some(
+                (rule) =>
+                  !rule.leftValue?.trim() ||
+                  !rule.rightValue?.trim() ||
+                  !rule.operator?.trim()
+              )
+            )
+          }
+          default:
+            return false
+        }
+      })
+    })
+  }
+
+  const isContinueDisabled = (() => {
+    const { stepCurrent } = values.user
+    const {
+      step1Completed,
+      step2Completed,
+      step3Completed,
+      step4Completed,
+      step5Completed
+    } = values
+
+    const stepValidations = {
+      1: () =>
+        errors.metadata !== undefined ||
+        (values.metadata.licenseTypeSelection === 'URL' &&
+          !values.metadata.licenseUrl?.[0]?.valid) ||
+        (values.metadata.licenseTypeSelection === 'Upload license file' &&
+          !values.metadata.uploadedLicense),
+      2: () =>
+        !step1Completed ||
+        errors.credentials !== undefined ||
+        !hasValidAllowAddress() ||
+        hasSSIButNoCredentialRequests(),
+      3: () =>
+        !step1Completed || !step2Completed || errors.services !== undefined,
+      4: () =>
+        !step1Completed ||
+        !step2Completed ||
+        !step3Completed ||
+        errors.pricing !== undefined,
+      5: () =>
+        !step1Completed ||
+        !step2Completed ||
+        !step3Completed ||
+        !step4Completed ||
+        errors.additionalDdos !== undefined,
+      6: () =>
+        !step1Completed ||
+        !step2Completed ||
+        !step3Completed ||
+        !step4Completed ||
+        !step5Completed
+    }
+
+    return stepValidations[stepCurrent]?.() || false
+  })()
+
+  const hasSubmitError = [1, 2, 3].some(
+    (index) => values.feedback?.[index]?.status === 'error'
+  )
+
+  const isMetadataPage = values.user.stepCurrent === 1
+  const actionsClassName = isMetadataPage ? styles.actionsRight : styles.actions
 
   return (
-    <footer className={styles.actions}>
+    <footer className={actionsClassName}>
       {did ? (
         <SuccessConfetti
           success="Successfully published!"
           action={
-            <Button style="primary" to={`/asset/${did}`}>
+            <Button style="publish" to={`/asset/${did}`}>
               View Asset
             </Button>
           }
@@ -88,7 +270,7 @@ export default function Actions({
 
           {values.user.stepCurrent < wizardSteps.length ? (
             <Button
-              style="primary"
+              style="publish"
               onClick={handleNext}
               disabled={isContinueDisabled}
             >
@@ -103,7 +285,7 @@ export default function Actions({
             <Tooltip content={<AvailableNetworks />}>
               <Button
                 type="submit"
-                style="primary"
+                style="publish"
                 disabled
                 className={styles.infoButton}
               >
@@ -113,11 +295,11 @@ export default function Actions({
           ) : (
             <Button
               type="submit"
-              style="primary"
+              style="publish"
               disabled={isSubmitting || !isValid}
             >
               {isSubmitting ? (
-                <Loader white />
+                <Loader primary />
               ) : hasSubmitError ? (
                 'Retry'
               ) : (

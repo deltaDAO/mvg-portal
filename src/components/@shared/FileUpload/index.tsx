@@ -2,17 +2,20 @@ import { ReactElement, useState } from 'react'
 import { FileItem } from '@utils/fileItem'
 import styles from './index.module.css'
 import crypto from 'crypto'
+import Button from '@shared/atoms/Button'
 
 export interface FileUploadProps {
   fileName?: string
   buttonLabel: string
   setFileItem: (fileItem: FileItem, onError: () => void) => void
+  buttonStyle?: 'default' | 'publish'
 }
 
 export function FileUpload({
   buttonLabel,
   setFileItem,
-  fileName
+  fileName,
+  buttonStyle = 'default'
 }: FileUploadProps): ReactElement {
   const [uploadFileName, setUploadFileName] = useState('')
 
@@ -67,6 +70,10 @@ export function FileUpload({
     }
   }
 
+  function handleButtonClick() {
+    document.getElementById('file-upload')?.click()
+  }
+
   return (
     <div>
       <input
@@ -75,13 +82,16 @@ export function FileUpload({
         style={{ display: 'none' }}
         onChange={handleChange}
       />
-      <label
-        htmlFor="file-upload"
-        className={`${styles.button} ${styles.marginRight2} ${styles.marginBottom4}`}
+      <Button
+        style={buttonStyle === 'default' ? 'primary' : buttonStyle}
+        onClick={handleButtonClick}
+        className={`${styles.marginRight2}`}
       >
         {buttonLabel}
-      </label>
-      {fileNameLabel()}
+      </Button>
+      {fileNameLabel() && (
+        <div className={styles.fileName}>{fileNameLabel()}</div>
+      )}
     </div>
   )
 }

@@ -91,8 +91,12 @@ export default function DebugEditMetadata({
 
   return (
     <>
-      <DebugOutput title="Collected Form Values" output={valuePreview} />
-      <DebugOutput title="Transformed Asset Values" output={updatedAsset} />
+      <DebugOutput title="Collected Form Values" output={valuePreview} large />
+      <DebugOutput
+        title="Transformed Asset Values"
+        output={updatedAsset}
+        large
+      />
     </>
   )
 }

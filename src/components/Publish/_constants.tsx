@@ -68,21 +68,29 @@ export const initialValues: FormPublishData = {
     accountId: ''
   },
   metadata: {
-    nft: { name: '', symbol: '', description: '', image_data: '' },
+    nft: {
+      name: '',
+      symbol: '',
+      description: '',
+      image_data: '',
+      external_url: ''
+    },
     transferable: true,
-    type: 'dataset',
+    type: 'dataset' as 'dataset' | 'algorithm',
     name: '',
-    author: '',
     description: '',
-    tags: [],
+    author: '',
     termsAndConditions: false,
     dockerImage: '',
     dockerImageCustom: '',
     dockerImageCustomTag: '',
     dockerImageCustomEntrypoint: '',
+    dockerImageCustomChecksum: '',
+    tags: [],
     usesConsumerParameters: false,
     consumerParameters: [],
-    useRemoteLicense: false,
+    dataSubjectConsent: false,
+    licenseTypeSelection: '',
     licenseUrl: [{ url: '', type: 'url' }],
     uploadedLicense: undefined
   },
@@ -121,11 +129,20 @@ export const initialValues: FormPublishData = {
   credentials: {
     allow: [],
     deny: [],
+    allowInputValue: '',
+    denyInputValue: '',
     requestCredentials: [],
     vcPolicies: [],
     enabled: false
   },
   accessPolicyPageVisited: false,
+  step1Completed: false,
+  step2Completed: false,
+  step3Completed: false,
+  step4Completed: false,
+  step5Completed: false,
+  step6Completed: false,
+  submissionPageVisited: false,
   previewPageVisited: false
 }
 

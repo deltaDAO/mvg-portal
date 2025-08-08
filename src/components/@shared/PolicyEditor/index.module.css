@@ -1,3 +1,9 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+
 .policyAutocomplete {
   margin-bottom: calc(var(--spacer) / 1.5);
 }
@@ -10,14 +16,7 @@
 .editorPanel {
   display: flex;
   flex-direction: column;
-  background: var(--box-template-background);
-  border-radius: var(--box-template-border-radius);
-  border: var(--box-template-border-size) solid var(--box-template-border-color);
-  box-shadow: var(--box-template-box-shadow);
-  padding-left: calc(var(--spacer) / 1.5);
-  padding-right: calc(var(--spacer) / 1.5);
-  padding-top: calc(var(--spacer) / 1.5);
-  padding-bottom: 0;
+  align-items: center;
 }
 
 .paddingLeft3em {
@@ -53,12 +52,12 @@
   align-items: end;
 }
 
-.alignItemsEnd {
+.alignItemsCenter {
   align-items: center;
 }
 
 .marginBottomZero {
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
 }
 
 .marginBottom4em {
@@ -194,6 +193,264 @@
   border: 1px solid #ccc;
 }
 
+/* Default policies section styling */
+.defaultPoliciesSection {
+  background: rgba(253, 214, 85, 0.1);
+  border: 1px solid var(--clr-amber);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-6);
+  margin-bottom: var(--sp-6);
+}
+
+.defaultPoliciesTitle {
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: var(--sp-4);
+}
+
+.defaultPoliciesList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-4);
+}
+
+.defaultPolicyItem {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2_5);
+}
+
+.policyLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2_5);
+  font-size: var(--font-size-base);
+  color: var(--clr-slate-70);
+  cursor: pointer;
+}
+
+.checkbox {
+  composes: input from '@shared/FormInput/InputElement/index.module.css';
+  position: relative;
+  padding: 0;
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -2px;
+  border-radius: 2px;
+}
+
+.checkbox:focus {
+  box-shadow: 0 0 0 var(--input-selected-background);
+}
+
+.checkbox::after {
+  content: '';
+  display: block;
+  left: 0;
+  top: 0;
+  position: absolute;
+  opacity: 0;
+  transition: transform 0.3s ease-out, opacity 0.2s;
+  width: 6px;
+  height: 9px;
+  border: 2px solid var(--input-background);
+  border-top: 0;
+  border-left: 0;
+  left: 5px;
+  top: 2px;
+  transform: rotate(40deg);
+}
+
+.checkbox:checked {
+  border-color: var(--input-selected-background);
+  background: var(--input-selected-background);
+}
+
+.checkbox:checked::after {
+  opacity: 1;
+}
+
+.policyName {
+  font-weight: var(--font-weight-base);
+}
+
+.infoIcon {
+  color: var(--clr-navy);
+  font-size: var(--font-size-small);
+}
+
+.marginCenter {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.credentialCards {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--sp-6);
+}
+
+.marginY16px {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.input,
+.selectDropdown {
+  border-radius: var(--radius-xl);
+  height: 48px;
+  border: 1px solid #d1d5db;
+}
+
+.policiesRow {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.label {
+  font-weight: 600;
+  color: var(--clr-slate-70);
+}
+
+.addPolicyContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2_5);
+}
+
+.policyTypeSelect {
+  min-width: 200px;
+  height: 40px;
+  border: 1px solid var(--publish-border);
+  border-radius: 20px;
+  padding: 12px 30px;
+  background: var(--brand-white);
+  appearance: none;
+  background-image: url('../../../@images/chevron_down.svg');
+  background-position: calc(100% - 15px) center;
+  background-size: 12px 12px;
+  background-repeat: no-repeat;
+}
+
+.addPolicy {
+  height: 40px;
+  border-radius: 20px;
+  padding: 12px 24px;
+}
+
+.dropdownButtonWrapper {
+  position: relative;
+}
+
+body .addPolicyDropdown {
+  border-radius: 20px;
+  padding: 9px 16px;
+  width: 124px;
+  height: 32px;
+  box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+  background: linear-gradient(45deg, transparent 50%, #ffffff 50%),
+    linear-gradient(135deg, #ffffff 50%, transparent 50%),
+    linear-gradient(
+      135deg,
+      #1f2c50 0%,
+      rgba(10, 75, 112, 0.8) 27.47%,
+      rgba(10, 75, 112, 0.7) 43.49%,
+      rgba(10, 75, 112, 0.8) 55.43%,
+      #1e2e52 100%
+    ) !important;
+  background-position: calc(100% - 15px) calc(50% + 2px),
+    calc(100% - 10px) calc(50% + 2px), 0 0 !important;
+  background-size: 5px 5px, 5px 5px, 100% 100% !important;
+  background-repeat: no-repeat !important;
+  border: none;
+  cursor: pointer;
+  font-family: 'Helvetica';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 14px;
+  text-align: center;
+  color: #ffffff;
+  text-transform: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+body .addPolicyDropdown option {
+  background: #ffffff;
+  color: #303031;
+  font-family: 'Helvetica';
+  font-weight: 400;
+  padding: 8px 12px;
+}
+
+.addPolicyDropdown:hover {
+  opacity: 0.9;
+}
+
+.noPolicies {
+  color: var(--publish-text-secondary);
+  text-align: left;
+  font-size: var(--font-size-mini);
+}
+
+.input,
+.selectDropdown {
+  min-width: 200px;
+  height: 40px;
+  border: 1px solid var(--publish-border);
+  border-radius: 20px;
+  padding: 12px 30px;
+  background: var(--brand-white);
+}
+
+body .advancedOptionsCheckbox {
+  font-weight: 400;
+}
+
+.checkboxWithTooltip {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--sp-2_5);
+}
+
+.checkboxWithTooltip > div > div {
+  margin-top: 0;
+}
+
+.policyMenu {
+  background: white;
+  border: 1px solid var(--publish-border);
+  border-radius: 8px;
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
+  z-index: 1000;
+}
+
+.policyOption {
+  padding: 12px 16px;
+  font-family: 'Helvetica';
+  font-size: 14px;
+  color: #303031;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(10, 75, 112, 0.1);
+}
+
+.policyOption:last-child {
+  border-bottom: none;
+}
+
+.policyOption:hover {
+  background: rgba(10, 75, 112, 0.05);
+}
+
 .select {
   width: 100%;
   height: 43px;
@@ -209,8 +466,3 @@
   box-sizing: border-box;
   margin-bottom: 46px;
 }
-
-/* .select:focus {
-  outline: none;
-  border-color: var(--brand-primary);
-} */
