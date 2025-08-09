@@ -8,7 +8,16 @@ module.exports = {
   featured: [
     {
       title:
-        'Processing soil analysis reports using Generative AI for data extraction and integration',
+        'Monitoring and certifying environmental sustainability in pig farming',
+      assets: [
+        // NetPig - Environmental Sustainability Report Generator
+        'did:op:f0f0e7de07529aac4907a619c53dc6884ccb01cadd2666174216cd1a3f94f426',
+        // CEP - Environment and Comfort - 2021 S1
+        'did:op:75afadb65591ca977344fa598c2b42c0ca5c7e8620b7c8bf47533e8f222d7997'
+      ]
+    },
+    {
+      title: 'Soil tests data integration and sharing using Generative AI',
       assets: [
         // GenAI Soil Analysis PDF Report Data Extractor
         'did:op:d1349e0239c432b1fb598abc082b9484859ba04618f4b28a34c16fc3e3012685',
@@ -17,7 +26,7 @@ module.exports = {
       ]
     },
     {
-      title: 'AI-based Animal Well-being Assessment without Images Leakage',
+      title: 'Computer Vision for animal well-being in the pig sector',
       assets: [
         // Mask R-CNN segmentation & Tracking
         'did:op:60d977086cc8e499b996c3a50e1f2f57c023e25b77db58b394beb70b10fdfd21',
@@ -27,7 +36,7 @@ module.exports = {
     },
     {
       title:
-        'Precision Pig Feeding Semantic Data Integration and Sovereign Data Pooling',
+        'Precision livestock farming data sharing, integration and exploitation',
       assets: [
         // CEP's CSV Data Mapper and Semantic Data Pooler
         'did:op:ffa62c4e6306d24c68d3a0f0825804045abb91f27a12f5452403cf6b804ca519',
