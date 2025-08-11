@@ -128,6 +128,7 @@ export default function FormStartCompute({
     setFieldValue,
     values
   }: FormikContextType<ComputeDatasetForm> = useFormikContext()
+  console.log('Field values ', values)
   const { isAssetNetwork } = useAsset() // TODO - is this needed?
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(

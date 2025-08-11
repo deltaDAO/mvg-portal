@@ -10,13 +10,13 @@ interface Service {
   title: string
   serviceDescription: string
   type: string
-  duration: string
+  duration: string | number
   price: string
   symbol: string
   checked?: boolean
 }
 
-interface Dataset {
+export interface Dataset {
   id: string
   name: string
   description: string

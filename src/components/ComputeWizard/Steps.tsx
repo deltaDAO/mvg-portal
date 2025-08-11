@@ -16,6 +16,7 @@ import { ResourceType } from 'src/@types/ResourceType'
 import { Asset } from 'src/@types/Asset'
 import { FormComputeData, StepContent } from './_types'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
+import ButtonBuy from '../Asset/AssetActions/ButtonBuy'
 
 export default function Steps({
   asset,
@@ -140,6 +141,13 @@ export default function Steps({
     'step type:',
     typeof currentStep
   )
+  const reviewBuy: any = {
+    isBalanceSufficient: true,
+    isValid: true,
+    isAssetNetwork: true,
+    isSupportedOceanNetwork: true,
+    isConnected: true
+  }
 
   // For dataset flow
   if (!isAlgorithm) {
@@ -168,6 +176,43 @@ export default function Steps({
               algoOrderPrice="0"
               c2dPrice="0"
               isRequestingPrice={false}
+              accessDetails={accessDetails}
+              datasets={datasets}
+              selectedDatasetAsset={selectedDatasetAsset}
+              setSelectedDatasetAsset={setSelectedDatasetAsset}
+              isLoading={isLoading}
+              isComputeButtonDisabled={isComputeButtonDisabled}
+              hasPreviousOrder={hasPreviousOrder}
+              hasDatatoken={hasDatatoken}
+              dtBalance={dtBalance}
+              assetTimeout={assetTimeout}
+              hasPreviousOrderSelectedComputeAsset={
+                hasPreviousOrderSelectedComputeAsset
+              }
+              hasDatatokenSelectedComputeAsset={
+                hasDatatokenSelectedComputeAsset
+              }
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              datasetSymbol={
+                accessDetails.baseToken?.symbol ||
+                (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+              }
+              algorithmSymbol={algorithmSymbol}
+              providerFeesSymbol={providerFeesSymbol}
+              dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+              dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+              selectedComputeAssetType="algorithm"
+              selectedComputeAssetTimeout={selectedComputeAssetTimeout}
+              allResourceValues={allResourceValues}
+              setAllResourceValues={setAllResourceValues}
+              // lazy comment when removing pricingStepText
+              stepText={stepText}
+              isConsumable={isConsumable}
+              consumableFeedback={consumableFeedback}
+              datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+              algoOrderPriceAndFees={algoOrderPriceAndFees}
+              retry={retry}
+              computeEnvs={computeEnvs}
             />
           </CredentialDialogProvider>
         )
@@ -213,6 +258,83 @@ export default function Steps({
             algoOrderPrice="0"
             c2dPrice="0"
             isRequestingPrice={false}
+            accessDetails={accessDetails}
+            datasets={datasets}
+            selectedDatasetAsset={selectedDatasetAsset}
+            setSelectedDatasetAsset={setSelectedDatasetAsset}
+            isLoading={isLoading}
+            isComputeButtonDisabled={isComputeButtonDisabled}
+            hasPreviousOrder={hasPreviousOrder}
+            hasDatatoken={hasDatatoken}
+            dtBalance={dtBalance}
+            assetTimeout={assetTimeout}
+            hasPreviousOrderSelectedComputeAsset={
+              hasPreviousOrderSelectedComputeAsset
+            }
+            hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
+            datasetSymbol={
+              accessDetails.baseToken?.symbol ||
+              (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+            }
+            algorithmSymbol={algorithmSymbol}
+            providerFeesSymbol={providerFeesSymbol}
+            dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+            dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+            selectedComputeAssetType="algorithm"
+            selectedComputeAssetTimeout={selectedComputeAssetTimeout}
+            allResourceValues={allResourceValues}
+            setAllResourceValues={setAllResourceValues}
+            // lazy comment when removing pricingStepText
+            stepText={stepText}
+            isConsumable={isConsumable}
+            consumableFeedback={consumableFeedback}
+            datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+            algoOrderPriceAndFees={algoOrderPriceAndFees}
+            retry={retry}
+            computeEnvs={computeEnvs}
+          />
+          <ButtonBuy
+            action="compute"
+            disabled={
+              isComputeButtonDisabled ||
+              !reviewBuy.isValid ||
+              !reviewBuy.isBalanceSufficient ||
+              !reviewBuy.isAssetNetwork ||
+              !selectedDatasetAsset?.every(
+                (asset) =>
+                  asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
+              ) ||
+              !isAccountIdWhitelisted
+            }
+            hasPreviousOrder={hasPreviousOrder}
+            hasDatatoken={hasDatatoken}
+            btSymbol={accessDetails.baseToken?.symbol}
+            dtSymbol={accessDetails.datatoken?.symbol}
+            dtBalance={dtBalance}
+            assetTimeout={assetTimeout}
+            assetType={asset.credentialSubject?.metadata.type}
+            hasPreviousOrderSelectedComputeAsset={
+              hasPreviousOrderSelectedComputeAsset
+            }
+            hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
+            dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+            dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+            selectedComputeAssetType={selectedComputeAssetType}
+            stepText={stepText}
+            isLoading={isLoading}
+            type="submit"
+            priceType={accessDetails.type}
+            algorithmPriceType={asset?.accessDetails?.[0]?.type}
+            isBalanceSufficient={reviewBuy.isBalanceSufficient}
+            isConsumable={isConsumable}
+            consumableFeedback={consumableFeedback}
+            isAlgorithmConsumable={asset?.accessDetails?.[0]?.isPurchasable}
+            isSupportedOceanNetwork={reviewBuy.isSupportedOceanNetwork}
+            hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
+            retry={retry}
+            isAccountConnected={reviewBuy.isConnected}
+            computeWizard={true}
           />
         </CredentialDialogProvider>
       )

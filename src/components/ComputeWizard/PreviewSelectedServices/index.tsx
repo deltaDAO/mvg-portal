@@ -8,15 +8,20 @@ interface Service {
   title: string
   serviceDescription: string
   type: string
-  duration: string
+  duration: string | number
+  price: string
+  symbol: string
+  checked?: boolean
 }
 
 interface Dataset {
   id: string
   name: string
-  address: string
+  datasetPrice?: string
   description: string
   services: Service[]
+  expanded?: boolean
+  checked?: boolean
 }
 interface FormValues {
   dataset: Dataset[]
@@ -30,7 +35,7 @@ const PreviewSelectedServices = () => {
   useEffect(() => {
     if (!values.dataset || selectedDatasets.length > 0) return // only initialize once
 
-    const normalized = values.dataset.map((d: any) => ({
+    const normalized = values.dataset.map((d: Dataset) => ({
       id: d.id,
       name: d.name,
       description: d.description,

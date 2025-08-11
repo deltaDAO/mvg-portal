@@ -28,7 +28,7 @@ export const datasetSteps: StepContent[] = [
     title: 'C2D Environment Configuration',
     component: <ConfigureEnvironment />
   },
-  { step: 4, title: 'Review', component: <Review /> }
+  { step: 4, title: 'Review', component: <div /> }
 ]
 
 export const algorithmSteps: StepContent[] = [

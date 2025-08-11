@@ -1,4 +1,5 @@
 import { ReactElement } from 'react'
+import type { Dataset } from './SelectServices'
 
 export interface FormComputeData {
   user: {
@@ -7,7 +8,7 @@ export interface FormComputeData {
     chainId: number
   }
   algorithm: any
-  dataset?: string[] // Added for algorithm flow - array of dataset IDs
+  dataset?: any // Added for algorithm flow - array of dataset IDs
   computeEnv: any
   cpu: number
   gpu: number

@@ -88,22 +88,13 @@ export default function WizardActions({
           Back
         </Button>
       )}
-
-      {!isLastStep ? (
+      {!isLastStep && (
         <Button
           style="publish"
           onClick={handleNext}
           disabled={isContinueDisabled}
         >
           {continueButtonText}
-        </Button>
-      ) : (
-        <Button
-          type="submit"
-          style="publish"
-          disabled={isSubmitting || !isValid}
-        >
-          {isSubmitting ? <Loader variant="primary" /> : submitButtonText}
         </Button>
       )}
     </footer>

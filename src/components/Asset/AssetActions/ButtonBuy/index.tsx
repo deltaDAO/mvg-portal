@@ -33,6 +33,7 @@ export interface ButtonBuyProps {
   isAccountConnected?: boolean
   hasProviderFee?: boolean
   retry?: boolean
+  computeWizard?: boolean
 }
 
 function getConsumeHelpText(
@@ -186,7 +187,8 @@ export default function ButtonBuy({
   hasProviderFee,
   retry,
   isSupportedOceanNetwork,
-  isAccountConnected
+  isAccountConnected,
+  computeWizard
 }: ButtonBuyProps): ReactElement {
   const buttonText = retry
     ? 'Retry'
@@ -284,7 +286,9 @@ export default function ButtonBuy({
             {action === 'download' && priceType === 'free' && <Download2SVG />}
             {buttonText}
           </Button>
-          {message() && <div className={styles.help}>{message()}</div>}
+          {!computeWizard && message() && (
+            <div className={styles.help}>{message()}</div>
+          )}
         </>
       )}
     </div>

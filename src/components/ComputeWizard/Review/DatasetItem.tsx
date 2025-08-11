@@ -3,26 +3,13 @@ import Button from '@shared/atoms/Button'
 import CircleCheckIcon from '@images/circle_check.svg'
 import styles from './DatasetItem.module.css'
 
-interface DatasetItemProps {
-  dataset: {
-    id: string
-    name: string
-    services: Array<{
-      id: string
-      name: string
-      price: string
-      duration: string
-    }>
-    credentialsStatus: 'pending' | 'valid' | 'invalid'
-    credentialsValidUntil?: Date
-  }
-  onCheckCredentials: (datasetId: string) => void
-}
-
 export default function DatasetItem({
   dataset,
   onCheckCredentials
-}: DatasetItemProps): ReactElement {
+}: {
+  dataset?: any
+  onCheckCredentials: (datasetId: string) => void
+}): ReactElement {
   const handleCredentialCheck = () => {
     onCheckCredentials(dataset.id)
   }
