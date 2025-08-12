@@ -3,6 +3,7 @@ import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
 import Loader from '@shared/atoms/Loader'
+import { FormComputeData } from '@components/ComputeWizard/_types'
 
 interface WizardActionsProps {
   totalSteps: number
@@ -10,7 +11,7 @@ interface WizardActionsProps {
   continueButtonText?: string
   showSuccessConfetti?: boolean
   scrollToRef?: RefObject<any>
-  formikContext: FormikContextType<any>
+  formikContext?: FormikContextType<any>
   isContinueDisabled?: boolean
   rightAlignFirstStep?: boolean
 }
@@ -25,8 +26,13 @@ export default function WizardActions({
   isContinueDisabled = false,
   rightAlignFirstStep = true
 }: WizardActionsProps): ReactElement {
-  const { values, errors, isValid, isSubmitting, setFieldValue, submitForm } =
-    formikContext
+  const {
+    values,
+    errors,
+    isValid,
+    isSubmitting,
+    setFieldValue
+  }: FormikContextType<FormComputeData> = useFormikContext()
 
   function handleAction(action: string) {
     const currentStep: number = values.user.stepCurrent
@@ -76,10 +82,6 @@ export default function WizardActions({
     handleAction('prev')
   }
 
-  function handleSubmitClick(e: FormEvent) {
-    submitForm() // Trigger Formik's submitForm to call the onSubmit handler
-  }
-
   const currentStep = values.user.stepCurrent
   const isLastStep = currentStep === totalSteps
   const isFirstStep = currentStep === 1
@@ -102,12 +104,7 @@ export default function WizardActions({
           {continueButtonText}
         </Button>
       ) : (
-        <Button
-          type="button"
-          style="publish"
-          onClick={submitForm} // directly call Formik's submitForm
-          disabled={isSubmitting}
-        >
+        <Button type="submit" style="publish" disabled={false}>
           {isSubmitting ? <Loader variant="primary" /> : submitButtonText}
         </Button>
       )}

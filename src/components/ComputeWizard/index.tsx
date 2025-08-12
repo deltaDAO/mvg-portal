@@ -921,11 +921,7 @@ export default function ComputeWizard({
         <div className={styles.containerOuter}>
           <PageHeader title={<Title asset={asset} />} />
           <Form className={styles.form}>
-            <Navigation
-              steps={steps}
-              values={formikContext.values} // Add values prop
-              setFieldValue={formikContext.setFieldValue}
-            />
+            <Navigation steps={steps} />
             <SectionContainer classNames={styles.container}>
               {isUnsupportedPricing ? null : asset.credentialSubject?.metadata
                   .type === 'algorithm' ? (
@@ -1137,7 +1133,6 @@ export default function ComputeWizard({
                 submitButtonText="Buy Dataset"
                 showSuccessConfetti={false}
                 rightAlignFirstStep={false}
-                formikContext={formikContext}
               />
             </SectionContainer>
           </Form>

@@ -17,6 +17,7 @@ import { Asset } from 'src/@types/Asset'
 import { FormComputeData, StepContent } from './_types'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 import ButtonBuy from '../Asset/AssetActions/ButtonBuy'
+import { useFormikContext } from 'formik'
 
 export default function Steps({
   asset,
@@ -116,11 +117,12 @@ export default function Steps({
   jobs?: any[]
   isLoadingJobs?: boolean
   refetchJobs?: () => void
-  formikValues: FormComputeData // Updated to FormComputeData
+  formikValues?: FormComputeData // Updated to FormComputeData
   setFieldValue: (field: string, value: any) => void
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
+  const { values } = useFormikContext<FormComputeData>()
 
   useEffect(() => {
     if (!chain?.id || !accountId) return
@@ -128,7 +130,7 @@ export default function Steps({
     setFieldValue('user.accountId', accountId)
   }, [chain?.id, accountId, setFieldValue])
 
-  const currentStep = formikValues?.user?.stepCurrent ?? 1
+  const currentStep = values?.user?.stepCurrent ?? 1
   const steps = isAlgorithm ? algorithmSteps : datasetSteps
 
   console.log(
@@ -137,7 +139,7 @@ export default function Steps({
     'isAlgorithm:',
     isAlgorithm,
     'values.user:',
-    formikValues.user,
+    values.user,
     'step type:',
     typeof currentStep
   )
@@ -294,7 +296,7 @@ export default function Steps({
             retry={retry}
             computeEnvs={computeEnvs}
           />
-          <ButtonBuy
+          {/* <ButtonBuy
             action="compute"
             disabled={
               isComputeButtonDisabled ||
@@ -335,7 +337,7 @@ export default function Steps({
             retry={retry}
             isAccountConnected={reviewBuy.isConnected}
             computeWizard={true}
-          />
+          /> */}
         </CredentialDialogProvider>
       )
     default:
