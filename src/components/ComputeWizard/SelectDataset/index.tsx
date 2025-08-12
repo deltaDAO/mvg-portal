@@ -121,7 +121,7 @@ export default function SelectDataset({
       updatedDatasetIds.includes(ds.did)
     )
 
-    setFieldValue('dataset', selectedDatasets)
+    setFieldValue('datasets', selectedDatasets)
   }
 
   return (

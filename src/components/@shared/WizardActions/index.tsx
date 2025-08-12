@@ -25,7 +25,8 @@ export default function WizardActions({
   isContinueDisabled = false,
   rightAlignFirstStep = true
 }: WizardActionsProps): ReactElement {
-  const { values, errors, isValid, isSubmitting, setFieldValue } = formikContext
+  const { values, errors, isValid, isSubmitting, setFieldValue, submitForm } =
+    formikContext
 
   function handleAction(action: string) {
     const currentStep: number = values.user.stepCurrent
@@ -75,6 +76,10 @@ export default function WizardActions({
     handleAction('prev')
   }
 
+  function handleSubmitClick(e: FormEvent) {
+    submitForm() // Trigger Formik's submitForm to call the onSubmit handler
+  }
+
   const currentStep = values.user.stepCurrent
   const isLastStep = currentStep === totalSteps
   const isFirstStep = currentStep === 1
@@ -88,13 +93,22 @@ export default function WizardActions({
           Back
         </Button>
       )}
-      {!isLastStep && (
+      {!isLastStep ? (
         <Button
           style="publish"
           onClick={handleNext}
           disabled={isContinueDisabled}
         >
           {continueButtonText}
+        </Button>
+      ) : (
+        <Button
+          type="button"
+          style="publish"
+          onClick={submitForm} // directly call Formik's submitForm
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? <Loader variant="primary" /> : submitButtonText}
         </Button>
       )}
     </footer>

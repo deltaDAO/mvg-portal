@@ -157,7 +157,9 @@ export default function Review({
     const service = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
     return lookupVerifierSessionId?.(asset.id, service?.id)
   })
-  const selectedDatasets: any = values?.dataset
+  const selectedDatasets = Array.isArray(values?.datasets)
+    ? values.datasets
+    : []
 
   const handleCheckCredentials = (datasetId: string) => {
     setShowCredentialsCheck(true)

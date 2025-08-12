@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import type { Dataset } from './SelectServices'
+import { UserCustomParameters } from '@oceanprotocol/lib'
 
 export interface FormComputeData {
   user: {
@@ -9,7 +10,7 @@ export interface FormComputeData {
   }
   algorithm: any
   dataset?: any // Added for algorithm flow - array of dataset IDs
-  computeEnv: any
+  computeEnv?: any
   cpu: number
   gpu: number
   ram: number
@@ -25,9 +26,9 @@ export interface FormComputeData {
   step3Completed: boolean
   step4Completed: boolean
   // Added fields required by onSubmit function
-  dataServiceParams?: any // UserCustomParameters - will be properly typed later
-  algoServiceParams?: any // UserCustomParameters - will be properly typed later
-  algoParams?: any // UserCustomParameters - will be properly typed later
+  dataServiceParams?: UserCustomParameters // UserCustomParameters - will be properly typed later
+  algoServiceParams?: UserCustomParameters // UserCustomParameters - will be properly typed later
+  algoParams?: UserCustomParameters // UserCustomParameters - will be properly typed later
   // New fields for multi-dataset support
   datasets?: Array<{
     id: string

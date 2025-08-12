@@ -24,24 +24,25 @@ interface Dataset {
   checked?: boolean
 }
 interface FormValues {
-  dataset: Dataset[]
+  datasets: Dataset[]
+  dataset: string[]
 }
 
 const PreviewSelectedServices = () => {
-  const { values } = useFormikContext<FormValues>()
+  const { values, setFieldValue } = useFormikContext<FormValues>()
   const [selectedDatasets, setSelectedDatasets] = useState<any[]>([])
 
   // Normalize incoming Formik values → local state
   useEffect(() => {
-    if (!values.dataset || selectedDatasets.length > 0) return // only initialize once
+    if (!values.datasets || selectedDatasets.length > 0) return // only initialize once
 
-    const normalized = values.dataset.map((d: Dataset) => ({
+    const normalized = values.datasets.map((d) => ({
       id: d.id,
       name: d.name,
       description: d.description,
       expanded: d.expanded ?? false,
       checked: d.checked ?? false,
-      services: d.services.map((s: any) => ({
+      services: (d.services ?? []).map((s) => ({
         id: s.id,
         name: s.name || 'Unnamed Service',
         title: s.name || 'Unnamed Service',
@@ -55,82 +56,14 @@ const PreviewSelectedServices = () => {
     }))
 
     setSelectedDatasets(normalized)
-  }, [values.dataset])
-  // const selectedDatasets: Dataset[] = [
-  //   {
-  //     id: '1',
-  //     name: 'Dataset 1',
-  //     address: '0x5C56...8f24',
-  //     description: 'FIWARE is an open-source...',
-  //     services: [
-  //       {
-  //         id: '1-1',
-  //         name: 'Service 1',
-  //         title: 'Service 1',
-  //         description: 'No description',
-  //         type: 'Access',
-  //         duration: 'Forever'
-  //       },
-  //       {
-  //         id: '1-2',
-  //         name: 'Service 2',
-  //         title: 'Service 2',
-  //         description: 'No description',
-  //         type: 'Access',
-  //         duration: 'Forever'
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     id: '1',
-  //     name: 'Dataset 2',
-  //     address: '0x5C56...8f24',
-  //     description: 'FIWARE is an open-source...',
-  //     services: [
-  //       {
-  //         id: '1-1',
-  //         name: 'Service 1',
-  //         title: 'Service 1',
-  //         description: 'No description',
-  //         type: 'Access',
-  //         duration: 'Forever'
-  //       },
-  //       {
-  //         id: '1-2',
-  //         name: 'Service 2',
-  //         title: 'Service 2',
-  //         description: 'No description',
-  //         type: 'Access',
-  //         duration: 'Forever'
-  //       }
-  //     ]
-  //   },
-  //   {
-  //     id: '1',
-  //     name: 'Dataset 3',
-  //     address: '0x5C56...8f24',
-  //     description: 'FIWARE is an open-source.',
-  //     services: [
-  //       {
-  //         id: '1-1',
-  //         name: 'Service 1',
-  //         title: 'Service 1',
-  //         description: 'No description',
-  //         type: 'Access',
-  //         duration: 'Forever'
-  //       },
-  //       {
-  //         id: '1-2',
-  //         name: 'Service 2',
-  //         title: 'Service 2',
-  //         description: 'No description',
-  //         type: 'Access',
-  //         duration: 'Forever'
-  //       }
-  //     ]
-  //   }
-  //   // Add more datasets as needed
-  // ]
+
+    // Build dataset array in "datasetId|serviceId" format
+    const datasetIdServicePairs: string[] = normalized.flatMap((d) =>
+      (d.services ?? []).filter((s) => s.checked).map((s) => `${d.id}|${s.id}`)
+    )
+
+    setFieldValue('dataset', datasetIdServicePairs)
+  }, [values.datasets, selectedDatasets.length, setFieldValue])
 
   return (
     <div className={styles.container}>

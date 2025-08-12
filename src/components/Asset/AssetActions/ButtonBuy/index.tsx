@@ -190,6 +190,7 @@ export default function ButtonBuy({
   isAccountConnected,
   computeWizard
 }: ButtonBuyProps): ReactElement {
+  console.log('Buy button is pressed ')
   const buttonText = retry
     ? 'Retry'
     : action === 'download'

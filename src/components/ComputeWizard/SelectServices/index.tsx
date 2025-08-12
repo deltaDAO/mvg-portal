@@ -25,7 +25,8 @@ export interface Dataset {
   checked?: boolean
 }
 type FormValues = {
-  dataset: string[]
+  datasets?: string[]
+  dataset?: string[]
 }
 
 const ServiceSelector = () => {
@@ -34,9 +35,9 @@ const ServiceSelector = () => {
 
   // Normalize incoming Formik values → local state
   useEffect(() => {
-    if (!values.dataset || datasets.length > 0) return // only initialize once
+    if (!values.datasets || datasets.length > 0) return // only initialize once
 
-    const normalized = values.dataset.map((d: any) => ({
+    const normalized = values.datasets.map((d: any) => ({
       id: d.did,
       name: d.name,
       description: d.description,
@@ -56,7 +57,7 @@ const ServiceSelector = () => {
     }))
 
     setDatasets(normalized)
-  }, [values.dataset])
+  }, [values.datasets])
 
   // Helper: push current datasets state → Formik
   const syncWithFormik = (updated: Dataset[]) => {
@@ -67,7 +68,7 @@ const ServiceSelector = () => {
       }))
       .filter((d) => d.services.length > 0) // keep only datasets with selected services
 
-    setFieldValue('dataset', selectedDatasets)
+    setFieldValue('datasets', selectedDatasets)
   }
 
   const toggleDataset = (datasetId: string) => {

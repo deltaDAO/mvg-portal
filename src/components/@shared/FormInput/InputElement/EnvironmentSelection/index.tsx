@@ -82,7 +82,7 @@ export default function EnvironmentSelection({
     // Combine real environments with mock data
     const realEnvs =
       environments && Array.isArray(environments) ? environments : []
-    const allEnvironments = [...realEnvs, ...mockEnvironments]
+    const allEnvironments = [...realEnvs]
 
     if (!allEnvironments || allEnvironments.length === 0) {
       setFilteredEnvironments([])
