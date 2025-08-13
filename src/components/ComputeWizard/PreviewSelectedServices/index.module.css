@@ -1,9 +1,9 @@
 .container {
   font-family: Arial, sans-serif;
   max-width: 1200px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   padding: 20px;
-  width: 1080px;
+  /* width: 1080px; */
   padding-left: 0;
 }
 
@@ -22,7 +22,7 @@
   background: #fff;
   max-height: 500px;
   overflow-y: auto;
-  width: 1090px;
+  max-width: 1090px;
 }
 
 /* Custom scrollbar */
@@ -56,7 +56,7 @@
 .datasetHeader {
   border-radius: 20px;
   padding: 24px;
-  width: 1052px;
+  max-width: 1052px;
   height: 119px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: rgba(10, 75, 112, 0.04);
@@ -95,7 +95,7 @@
 .serviceItem {
   border-radius: 20px;
   padding: 24px;
-  width: 1000px;
+  max-width: 1000px;
   height: 145px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;

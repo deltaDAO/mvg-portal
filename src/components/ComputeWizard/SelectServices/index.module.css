@@ -1,9 +1,9 @@
 .container {
   font-family: Arial, sans-serif;
   max-width: 1200px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
   padding: 20px;
-  width: 1080px;
+  /* width: 1080px; */
 }
 
 .title {
@@ -17,7 +17,7 @@
   border: 1px solid rgba(48, 48, 49, 0.1);
   border-radius: 20px;
   padding: 20px;
-  width: 1080px;
+  max-width: 1080px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;
 }
@@ -44,7 +44,7 @@
   border-bottom: 1px solid rgba(48, 48, 49, 0.2);
   border-top: 1px solid rgba(48, 48, 49, 0.2);
   padding: 16px 0px 16px 0px;
-  width: 1040px;
+  max-width: 1040px;
   margin-top: 1rem;
 }
 
