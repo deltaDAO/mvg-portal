@@ -318,6 +318,8 @@ export function parseCredentialPolicies(credentials: Credential) {
             return requestCredentials
           }
         )
+
+        cleanupVpPolicies(value)
         return value
       })
     }
@@ -349,6 +351,8 @@ export function stringifyCredentialPolicies(credentials: Credential) {
             return requestCredentials
           }
         )
+
+        cleanupVpPolicies(value)
         return value
       })
     }
@@ -398,6 +402,7 @@ export function generateCredentials(
         return null
       }
     )
+
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
       (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
