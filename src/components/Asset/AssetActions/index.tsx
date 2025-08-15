@@ -24,7 +24,8 @@ import FileSVG from '@images/file.svg'
 import { AssetActionCheckCredentials } from './CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import appConfig from 'app.config.cjs'
-import ComputeWizard from '@components/ComputeWizard'
+import ComputeWizard from '@components/DatasetComputeWizard'
+import AlgorithmComputeWizard from '@components/AlgorithmComputeWizard'
 
 export default function AssetActions({
   asset,
@@ -249,18 +250,34 @@ export default function AssetActions({
             <>
               {hasVerifiedCredentials ? (
                 isCompute ? (
-                  <ComputeWizard
-                    accountId={accountId}
-                    signer={signer}
-                    asset={asset}
-                    service={service}
-                    accessDetails={accessDetails}
-                    dtBalance={dtBalance}
-                    isAccountIdWhitelisted={isAccountIdWhitelisted}
-                    file={fileMetadata}
-                    fileIsLoading={fileIsLoading}
-                    consumableFeedback={consumableFeedback}
-                  />
+                  asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
+                    <AlgorithmComputeWizard
+                      accountId={accountId}
+                      signer={signer}
+                      asset={asset}
+                      service={service}
+                      accessDetails={accessDetails}
+                      dtBalance={dtBalance}
+                      isAccountIdWhitelisted={isAccountIdWhitelisted}
+                      file={fileMetadata}
+                      fileIsLoading={fileIsLoading}
+                      consumableFeedback={consumableFeedback}
+                      // add any algorithm-specific props here
+                    />
+                  ) : (
+                    <ComputeWizard
+                      accountId={accountId}
+                      signer={signer}
+                      asset={asset}
+                      service={service}
+                      accessDetails={accessDetails}
+                      dtBalance={dtBalance}
+                      isAccountIdWhitelisted={isAccountIdWhitelisted}
+                      file={fileMetadata}
+                      fileIsLoading={fileIsLoading}
+                      consumableFeedback={consumableFeedback}
+                    />
+                  )
                 ) : (
                   <Download
                     accountId={accountId}
@@ -282,18 +299,34 @@ export default function AssetActions({
               )}
             </>
           ) : isCompute ? (
-            <ComputeWizard
-              accountId={accountId}
-              signer={signer}
-              asset={asset}
-              service={service}
-              accessDetails={accessDetails}
-              dtBalance={dtBalance}
-              isAccountIdWhitelisted={isAccountIdWhitelisted}
-              file={fileMetadata}
-              fileIsLoading={fileIsLoading}
-              consumableFeedback={consumableFeedback}
-            />
+            asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
+              <AlgorithmComputeWizard
+                accountId={accountId}
+                signer={signer}
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                dtBalance={dtBalance}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                file={fileMetadata}
+                fileIsLoading={fileIsLoading}
+                consumableFeedback={consumableFeedback}
+                // add any algorithm-specific props here
+              />
+            ) : (
+              <ComputeWizard
+                accountId={accountId}
+                signer={signer}
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                dtBalance={dtBalance}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                file={fileMetadata}
+                fileIsLoading={fileIsLoading}
+                consumableFeedback={consumableFeedback}
+              />
+            )
           ) : (
             <Download
               accountId={accountId}

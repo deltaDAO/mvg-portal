@@ -430,6 +430,8 @@ export default function FormStartComputeAlgo({
   ])
 
   const PurchaseButton = () => {
+    console.log('purchase is called! ')
+
     return (
       <ButtonBuy
         action="compute"

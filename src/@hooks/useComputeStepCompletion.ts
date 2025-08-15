@@ -1,26 +1,58 @@
 import { useFormikContext } from 'formik'
 import { FormComputeData } from '../components/ComputeWizard/_types'
 
-export function useComputeStepCompletion() {
+export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
   const { values, errors } = useFormikContext<FormComputeData>()
 
-  function getSuccessClass(step: number) {
-    const isSuccessAlgorithm =
-      values.algorithm !== null && values.algorithm !== undefined
-    const isSuccessEnvironment =
-      values.computeEnv !== null && values.computeEnv !== undefined
-    const isSuccessConfiguration =
-      values.cpu > 0 && values.ram > 0 && values.disk > 0 && values.gpu >= 0
-    const isSuccessReview =
-      values.step4Completed && values.algorithm && values.computeEnv
+  function getSuccessClass(step: number): boolean {
+    const environmentSelected = Boolean(values.computeEnv)
+    const configSet =
+      Number(values.cpu) > 0 &&
+      Number(values.ram) > 0 &&
+      Number(values.disk) > 0 &&
+      Number(values.gpu) >= 0 &&
+      Number(values.jobDuration) > 0
+    const agreementsChecked = Boolean(
+      values.termsAndConditions && values.acceptPublishingLicense
+    )
 
-    const isSuccess =
-      (step === 1 && isSuccessAlgorithm) ||
-      (step === 2 && isSuccessEnvironment) ||
-      (step === 3 && isSuccessConfiguration) ||
-      (step === 4 && isSuccessReview)
+    if (isAlgorithmFlow) {
+      // 6-step algorithm flow: mark each step completed only when its dedicated flag is set
+      switch (step) {
+        case 1:
+          return Boolean(values.step1Completed)
+        case 2:
+          return Boolean(values.step2Completed)
+        case 3:
+          return Boolean(values.step3Completed)
+        case 4:
+          return Boolean(values.step4Completed)
+        case 5:
+          return Boolean(
+            (values as unknown as { step5Completed?: boolean })?.step5Completed
+          )
+        case 6:
+          return Boolean(
+            (values as unknown as { step6Completed?: boolean })?.step6Completed
+          )
+        default:
+          return false
+      }
+    }
 
-    return isSuccess
+    // 4-step dataset flow
+    switch (step) {
+      case 1:
+        return Boolean(values.step1Completed || values.algorithm)
+      case 2:
+        return environmentSelected
+      case 3:
+        return configSet
+      case 4:
+        return environmentSelected && configSet && agreementsChecked
+      default:
+        return false
+    }
   }
 
   function getLastCompletedStep(totalSteps: number) {

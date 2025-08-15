@@ -72,6 +72,7 @@ export async function transformAssetToAssetSelection(
   })
   return algorithmList
 }
+
 export async function transformAssetToAssetSelectionDataset(
   datasetProviderEndpoint: string,
   assets: Asset[],

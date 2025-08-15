@@ -406,7 +406,7 @@ export default function Review({
         disk,
         jobDuration,
         price: 0,
-        mode: allResourceValues[selectedEnv.id]?.mode
+        mode: 'paid'
       }
 
       setAllResourceValues((prev) => ({
@@ -704,15 +704,16 @@ export default function Review({
       <ButtonBuy
         action="compute"
         disabled={
-          isComputeButtonDisabled ||
-          !isValid ||
-          !isBalanceSufficient ||
-          !isAssetNetwork ||
-          !selectedDatasetAsset?.every(
-            (asset) =>
-              asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
-          ) ||
-          !isAccountIdWhitelisted
+          false
+          // isComputeButtonDisabled ||
+          // !isValid ||
+          // !isBalanceSufficient ||
+          // !isAssetNetwork ||
+          // !selectedDatasetAsset?.every(
+          //   (asset) =>
+          //     asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
+          // ) ||
+          // !isAccountIdWhitelisted
         }
         hasPreviousOrder={hasPreviousOrder}
         hasDatatoken={hasDatatoken}
@@ -875,6 +876,7 @@ export default function Review({
             />
           </FormErrorGroup>
         </div>
+        <PurchaseButton />
       </div>
     </div>
   )

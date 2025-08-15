@@ -29,6 +29,7 @@ export default function DatasetSelection({
   disabled?: boolean
   onChange?: (value: string) => void
 }): JSX.Element {
+  console.log('Dataset lsit ', datasets)
   const [searchValue, setSearchValue] = useState('')
   const [filteredDatasets, setfilteredDatasets] = useState<any[]>([])
 

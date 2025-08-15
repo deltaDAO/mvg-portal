@@ -25,7 +25,7 @@ import MetaInfo from './MetaMain/MetaInfo'
 import EditIcon from '@images/edit.svg'
 import { useRouter } from 'next/router'
 import ComputeJobs from '@components/@shared/ComputeJobs'
-import ComputeWizard from '@components/ComputeWizard'
+import ComputeWizard from '@components/DatasetComputeWizard'
 
 export default function AssetContent({
   asset
@@ -223,14 +223,7 @@ export default function AssetContent({
                               key={service.id}
                               service={service}
                               accessDetails={asset.accessDetails[index]}
-                              onClick={() => {
-                                if (service.type === 'compute') {
-                                  setShowComputeWizard(true)
-                                  setSelectedService(index)
-                                } else {
-                                  setSelectedService(index)
-                                }
-                              }}
+                              onClick={() => setSelectedService(index)}
                             />
                           ))}
                         </div>
@@ -369,7 +362,7 @@ export default function AssetContent({
       <RelatedAssets />
 
       {/* ComputeWizard Full-Page Overlay */}
-      {showComputeWizard && selectedService !== undefined && (
+      {/* {showComputeWizard && selectedService !== undefined && (
         <div className={styles.computeWizardOverlay}>
           <div className={styles.computeWizardContainer}>
             <div className={styles.computeWizardHeader}>
@@ -395,7 +388,7 @@ export default function AssetContent({
             />
           </div>
         </div>
-      )}
+      )} */}
     </>
   )
 }

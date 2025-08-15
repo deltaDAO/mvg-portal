@@ -133,109 +133,16 @@ export default function Steps({
   }, [chain?.id, accountId, setFieldValue])
 
   const currentStep = values?.user?.stepCurrent ?? 1
-  const steps = isAlgorithm ? algorithmSteps : datasetSteps
 
   console.log(
     'Steps component - currentStep:',
     currentStep,
-    'isAlgorithm:',
-    isAlgorithm,
     'values.user:',
     values.user,
     'step type:',
     typeof currentStep
   )
-  const reviewBuy: any = {
-    isBalanceSufficient: true,
-    isValid: true,
-    isAssetNetwork: true,
-    isSupportedOceanNetwork: true,
-    isConnected: true
-  }
 
-  // For dataset flow
-  if (!isAlgorithm) {
-    console.log(
-      'Dataset flow - currentStep:',
-      currentStep,
-      'type:',
-      typeof currentStep
-    )
-    switch (currentStep) {
-      case 1:
-        return <SelectAlgorithm algorithms={algorithms} />
-      case 2:
-        return <SelectEnvironment computeEnvs={computeEnvs} />
-      case 3:
-        return <ConfigureEnvironment />
-      case 4:
-        return (
-          <CredentialDialogProvider>
-            <Review
-              asset={asset}
-              service={service}
-              isAlgorithm={isAlgorithm}
-              totalPrices={[]}
-              datasetOrderPrice="0"
-              algoOrderPrice="0"
-              c2dPrice="0"
-              isRequestingPrice={false}
-              accessDetails={accessDetails}
-              datasets={datasets}
-              selectedDatasetAsset={selectedDatasetAsset}
-              selectedAlgorithmAsset={selectedAlgorithmAsset}
-              setSelectedDatasetAsset={setSelectedDatasetAsset}
-              setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
-              isLoading={isLoading}
-              isComputeButtonDisabled={isComputeButtonDisabled}
-              hasPreviousOrder={hasPreviousOrder}
-              hasDatatoken={hasDatatoken}
-              dtBalance={dtBalance}
-              ddoListAlgorithms={ddoListAlgorithms}
-              assetTimeout={assetTimeout}
-              hasPreviousOrderSelectedComputeAsset={
-                hasPreviousOrderSelectedComputeAsset
-              }
-              hasDatatokenSelectedComputeAsset={
-                hasDatatokenSelectedComputeAsset
-              }
-              isAccountIdWhitelisted={isAccountIdWhitelisted}
-              datasetSymbol={
-                accessDetails.baseToken?.symbol ||
-                (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
-              }
-              algorithmSymbol={algorithmSymbol}
-              providerFeesSymbol={providerFeesSymbol}
-              dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
-              dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
-              selectedComputeAssetType="algorithm"
-              selectedComputeAssetTimeout={selectedComputeAssetTimeout}
-              allResourceValues={allResourceValues}
-              setAllResourceValues={setAllResourceValues}
-              // lazy comment when removing pricingStepText
-              stepText={stepText}
-              isConsumable={isConsumable}
-              consumableFeedback={consumableFeedback}
-              datasetOrderPriceAndFees={datasetOrderPriceAndFees}
-              algoOrderPriceAndFees={algoOrderPriceAndFees}
-              retry={retry}
-              computeEnvs={computeEnvs}
-            />
-          </CredentialDialogProvider>
-        )
-      default:
-        console.log('Dataset flow - no matching case for step:', currentStep)
-        return <div>Invalid step: {currentStep}</div>
-    }
-  }
-
-  // For algorithm flow
-  console.log(
-    'Algorithm flow - currentStep:',
-    currentStep,
-    'type:',
-    typeof currentStep
-  )
   switch (currentStep) {
     case 1:
       return (

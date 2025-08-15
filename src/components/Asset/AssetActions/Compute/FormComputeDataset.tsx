@@ -253,7 +253,7 @@ export default function FormStartCompute({
         disk,
         jobDuration,
         price: 0,
-        mode: allResourceValues[selectedEnv.id].mode
+        mode: 'paid'
       }
 
       setAllResourceValues((prev) => ({
