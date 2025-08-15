@@ -1,6 +1,5 @@
 .actions {
   composes: box from '@shared/atoms/Box.module.css';
-
   max-width: 35rem;
   margin: auto;
   padding: var(--spacer) calc(var(--spacer) / 1.5);
@@ -21,7 +20,6 @@ body .backButton {
   align-items: center;
   gap: var(--sp-1) !important;
   padding: 4px 8px !important;
-
   line-height: 117% !important;
 }
 
@@ -104,4 +102,42 @@ body .backButton {
 
 .actionButtonWrapper form {
   width: 100%;
+}
+
+.computeButton {
+  width: 100%;
+}
+
+.computePopup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.computePopupContent {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  width: 90%;
+  max-width: 1350px;
+  max-height: 98vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
 }

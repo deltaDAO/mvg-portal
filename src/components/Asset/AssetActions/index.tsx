@@ -51,6 +51,7 @@ export default function AssetActions({
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
   const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
+  const [isComputePopupOpen, setIsComputePopupOpen] = useState<boolean>(false)
 
   // TODO: using this for the publish preview works fine, but produces a console warning
   // on asset details page as there is no formik context there:
@@ -197,6 +198,13 @@ export default function AssetActions({
       : `${accessDetails.price || 0} ${accessDetails.baseToken?.symbol || ''}`
   const salesCount = asset.indexedMetadata?.stats?.[0]?.orders || 0
 
+  const handleComputeClick = () => {
+    setIsComputePopupOpen(true)
+  }
+
+  const closeComputePopup = () => {
+    setIsComputePopupOpen(false)
+  }
   return (
     <>
       <div className={styles.headerRow}>
@@ -250,34 +258,13 @@ export default function AssetActions({
             <>
               {hasVerifiedCredentials ? (
                 isCompute ? (
-                  asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
-                    <AlgorithmComputeWizard
-                      accountId={accountId}
-                      signer={signer}
-                      asset={asset}
-                      service={service}
-                      accessDetails={accessDetails}
-                      dtBalance={dtBalance}
-                      isAccountIdWhitelisted={isAccountIdWhitelisted}
-                      file={fileMetadata}
-                      fileIsLoading={fileIsLoading}
-                      consumableFeedback={consumableFeedback}
-                      // add any algorithm-specific props here
-                    />
-                  ) : (
-                    <ComputeWizard
-                      accountId={accountId}
-                      signer={signer}
-                      asset={asset}
-                      service={service}
-                      accessDetails={accessDetails}
-                      dtBalance={dtBalance}
-                      isAccountIdWhitelisted={isAccountIdWhitelisted}
-                      file={fileMetadata}
-                      fileIsLoading={fileIsLoading}
-                      consumableFeedback={consumableFeedback}
-                    />
-                  )
+                  <Button
+                    style="primary"
+                    onClick={handleComputeClick}
+                    className={styles.computeButton}
+                  >
+                    Start Compute
+                  </Button>
                 ) : (
                   <Download
                     accountId={accountId}
@@ -299,34 +286,13 @@ export default function AssetActions({
               )}
             </>
           ) : isCompute ? (
-            asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
-              <AlgorithmComputeWizard
-                accountId={accountId}
-                signer={signer}
-                asset={asset}
-                service={service}
-                accessDetails={accessDetails}
-                dtBalance={dtBalance}
-                isAccountIdWhitelisted={isAccountIdWhitelisted}
-                file={fileMetadata}
-                fileIsLoading={fileIsLoading}
-                consumableFeedback={consumableFeedback}
-                // add any algorithm-specific props here
-              />
-            ) : (
-              <ComputeWizard
-                accountId={accountId}
-                signer={signer}
-                asset={asset}
-                service={service}
-                accessDetails={accessDetails}
-                dtBalance={dtBalance}
-                isAccountIdWhitelisted={isAccountIdWhitelisted}
-                file={fileMetadata}
-                fileIsLoading={fileIsLoading}
-                consumableFeedback={consumableFeedback}
-              />
-            )
+            <Button
+              style="primary"
+              onClick={handleComputeClick}
+              className={styles.computeButton}
+            >
+              Start Compute
+            </Button>
           ) : (
             <Download
               accountId={accountId}
@@ -345,6 +311,58 @@ export default function AssetActions({
           )}
         </div>
       </div>
+
+      {isCompute && isComputePopupOpen && (
+        <div className={styles.computePopup}>
+          <div className={styles.computePopupContent}>
+            <Button
+              // style="icon"
+              className={styles.closeButton}
+              onClick={closeComputePopup}
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M18 6L6 18M6 6l12 12"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </svg>
+            </Button>
+            {asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
+              <AlgorithmComputeWizard
+                accountId={accountId}
+                signer={signer}
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                dtBalance={dtBalance}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                file={fileMetadata}
+                fileIsLoading={fileIsLoading}
+                consumableFeedback={consumableFeedback}
+              />
+            ) : (
+              <ComputeWizard
+                accountId={accountId}
+                signer={signer}
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                dtBalance={dtBalance}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                file={fileMetadata}
+                fileIsLoading={fileIsLoading}
+                consumableFeedback={consumableFeedback}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }
