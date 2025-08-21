@@ -57,10 +57,12 @@ function newExchangeStateData(): ExchangeStateData {
 
 export function AssetActionCheckCredentials({
   asset,
-  service
+  service,
+  onVerified
 }: {
   asset: Asset
   service: Service
+  onVerified?: () => void
 }) {
   console.log('AssetActionCheckCredentials component rendered')
   const { address: accountId } = useAccount()
@@ -149,6 +151,7 @@ export function AssetActionCheckCredentials({
                 (presentationResult.openid4vc as any).redirectUri
               )
               cacheVerifierSessionId(asset.id, service.id, id, true)
+              onVerified?.()
               break
             }
 
@@ -288,6 +291,7 @@ export function AssetActionCheckCredentials({
                   service.id,
                   exchangeStateData.sessionId
                 )
+                onVerified?.()
               }
             } catch (error) {
               handleResetWalletCache()
