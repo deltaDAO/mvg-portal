@@ -85,10 +85,13 @@ const InputElement = forwardRef(
           !sortOptions && sortOptions === false
             ? options
             : (options as string[] | InputProps[]).sort(
-                (a: string | InputProps, b: string | InputProps) =>
-                  typeof a !== 'string' && typeof b !== 'string'
-                    ? (a.label as string).localeCompare(b.label as string)
-                    : (a as string).localeCompare(b as string)
+                (a: string | InputProps, b: string | InputProps) => {
+                  const aString =
+                    typeof a !== 'string' ? (a.label as string) : (a as string)
+                  const bString =
+                    typeof b !== 'string' ? (b.label as string) : (b as string)
+                  return aString.localeCompare(bString)
+                }
               )
         return (
           <select
