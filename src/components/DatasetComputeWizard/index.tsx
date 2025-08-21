@@ -1070,6 +1070,10 @@ export default function ComputeWizard({
                 submitButtonText="Buy Dataset"
                 showSuccessConfetti={false}
                 rightAlignFirstStep={false}
+                isContinueDisabled={
+                  formikContext.values.user.stepCurrent === 1 &&
+                  !formikContext.values.algorithm
+                }
               />
             </SectionContainer>
           </Form>
