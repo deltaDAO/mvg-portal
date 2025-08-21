@@ -19,14 +19,16 @@ export function parseConsumerParameterValues(
       (param) => param.name === userCustomParameterKey
     )
 
-    Object.assign(parsedValues, {
-      [userCustomParameterKey]:
-        type === 'select' && userCustomParameterValue === ''
-          ? undefined
-          : type === 'boolean'
-          ? userCustomParameterValue === 'true'
-          : userCustomParameterValue
-    })
+    if (userCustomParameterValue) {
+      Object.assign(parsedValues, {
+        [userCustomParameterKey]:
+          type === 'select' && userCustomParameterValue === ''
+            ? undefined
+            : type === 'boolean'
+            ? userCustomParameterValue === 'true'
+            : userCustomParameterValue
+      })
+    }
   })
 
   return parsedValues
