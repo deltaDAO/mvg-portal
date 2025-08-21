@@ -34,7 +34,7 @@ const PreviewSelectedServices = () => {
 
   // Normalize incoming Formik values → local state
   useEffect(() => {
-    if (!values.datasets || selectedDatasets.length > 0) return // only initialize once
+    if (!values.datasets) return
 
     const normalized = values.datasets.map((d) => ({
       id: d.id,
@@ -63,7 +63,7 @@ const PreviewSelectedServices = () => {
     )
 
     setFieldValue('dataset', datasetIdServicePairs)
-  }, [values.datasets, selectedDatasets.length, setFieldValue])
+  }, [values.datasets, setFieldValue])
 
   return (
     <div className={styles.container}>

@@ -158,7 +158,11 @@ export default function Review({
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
-  const selectedResources = allResourceValues?.[values.computeEnv]
+  const envKey =
+    typeof values.computeEnv === 'string'
+      ? (values.computeEnv as unknown as string)
+      : values.computeEnv?.id
+  const selectedResources = envKey ? allResourceValues?.[envKey] : undefined
   const c2dPrice = selectedResources?.price
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)
@@ -225,9 +229,9 @@ export default function Review({
   // Pre-select computeEnv and/or algo if there is only one available option
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
-      const { id } = computeEnvs[0]
-      console.log('Compute env id ', id)
-      setFieldValue('computeEnv', id, true)
+      const selectedEnv = computeEnvs[0]
+      console.log('Compute env id ', selectedEnv?.id)
+      setFieldValue('computeEnv', selectedEnv, true)
     }
     if (
       algorithms?.length === 1 &&
@@ -282,9 +286,12 @@ export default function Review({
     console.log('I am in select Env!!!! ')
     if (!values.computeEnv || !computeEnvs) return
 
-    const selectedEnv = computeEnvs.find(
-      (env) => env.id === values.computeEnv.id
-    )
+    const currentEnvId =
+      typeof values.computeEnv === 'string'
+        ? (values.computeEnv as unknown as string)
+        : values.computeEnv?.id
+
+    const selectedEnv = computeEnvs.find((env) => env.id === currentEnvId)
     console.log('Selected env get ', selectedEnv)
     if (!selectedEnv) return
     console.log('I am in select Env passed!!!! ')
@@ -446,7 +453,13 @@ export default function Review({
     const priceChecks = [...totalPrices]
 
     // Add C2D price if not already included in totalPrices
-    const c2dPrice = allResourceValues?.[values.computeEnv]?.price
+    const currentEnvKey =
+      typeof values.computeEnv === 'string'
+        ? (values.computeEnv as unknown as string)
+        : values.computeEnv?.id
+    const c2dPrice = currentEnvKey
+      ? allResourceValues?.[currentEnvKey]?.price
+      : undefined
     const c2dSymbol = providerFeesSymbol
     // Only add if price > 0 and not present in totalPrices already (optional check)
     if (

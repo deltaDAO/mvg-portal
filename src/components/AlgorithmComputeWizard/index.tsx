@@ -14,8 +14,8 @@ import {
   EscrowContract
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
-import Price from '@shared/Price'
-import FileIcon from '@shared/FileIcon'
+// import Price from '@shared/Price'
+// import FileIcon from '@shared/FileIcon'
 import Alert from '@shared/atoms/Alert'
 import { Formik, Form } from 'formik'
 import {
@@ -43,7 +43,8 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { Decimal } from 'decimal.js'
 import {
   getAvailablePrice,
-  getOrderPriceAndFees
+  getOrderPriceAndFees,
+  getAccessDetails
 } from '@utils/accessDetailsAndPricing'
 import { getComputeFeedback } from '@utils/feedback'
 import {
@@ -52,7 +53,7 @@ import {
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
 import { getDummySigner } from '@utils/wallet'
-import WhitelistIndicator from '../Asset/AssetActions/Compute/WhitelistIndicator'
+// import WhitelistIndicator from '../Asset/AssetActions/Compute/WhitelistIndicator'
 import { parseConsumerParameterValues } from '../Asset/AssetActions/ConsumerParameters'
 import { BigNumber, ethers, Signer } from 'ethers'
 import { useAccount } from 'wagmi'
@@ -66,16 +67,16 @@ import { handleComputeOrder } from '@utils/order'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
 // import FormStartComputeAlgo from './FormComputeAlgorithm'
-import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
+import { getAlgorithmDatasetsForCompute, getAsset } from '@utils/aquarius'
 
 import PageHeader from '@shared/Page/PageHeader'
 import Title from './Title'
-import Actions from './Actions'
+// import Actions from './Actions'
 import WizardActions from '@shared/WizardActions'
 import Navigation from './Navigation'
 import Steps from './Steps'
 import { validationSchema } from './_validation'
-import ContainerForm from '../@shared/atoms/ContainerForm'
+// import ContainerForm from '../@shared/atoms/ContainerForm'
 import SectionContainer from '../@shared/SectionContainer/SectionContainer'
 import { AssetExtended } from 'src/@types/AssetExtended'
 // import { AssetExtended } from '../../../../@types/AssetExtended'
@@ -107,13 +108,13 @@ export default function ComputeWizard({
   onClick?: () => void
 }): ReactElement {
   const { debug } = useUserPreferences()
-  console.log('accountId  ', accountId)
-  console.log('signer  ', signer)
-  console.log('asset  ', asset)
-  console.log('accessDetails  ', accessDetails)
-  console.log('file  ', file)
-  console.log('dtBalance  ', dtBalance)
-  console.log('service  ', service)
+  // console.log('accountId  ', accountId)
+  // console.log('signer  ', signer)
+  // console.log('asset  ', asset)
+  // console.log('accessDetails  ', accessDetails)
+  // console.log('file  ', file)
+  // console.log('dtBalance  ', dtBalance)
+  // console.log('service  ', service)
   // const { asset } = useAsset()
   // const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
@@ -530,13 +531,19 @@ export default function ComputeWizard({
       setIsOrdered(false)
       setError(undefined)
 
+      const initResult = await initPriceAndFees(datasetServices)
+      if (!initResult) {
+        throw new Error(
+          'Initialize compute failed. Check credentials and selections and try again.'
+        )
+      }
       const {
         datasetResponses,
         actualAlgorithmAsset,
         actualAlgoService,
         actualAlgoAccessDetails,
         initializedProvider
-      } = await initPriceAndFees(datasetServices)
+      } = initResult
 
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
@@ -546,7 +553,7 @@ export default function ComputeWizard({
       }
 
       // Check isOrderable for all datasets
-      for (const ds of datasetResponses) {
+      for (const ds of datasetResponses || []) {
         const allowed = await isOrderable(
           ds.actualDatasetAsset,
           ds.actualDatasetService.id,
@@ -584,10 +591,7 @@ export default function ComputeWizard({
         initializedProvider?.algorithm ||
           initializedProviderResponse?.algorithm,
         hasAlgoAssetDatatoken,
-        lookupVerifierSessionId(
-          datasetResponses[0].actualDatasetAsset.id,
-          datasetResponses[0].actualDatasetService.id
-        ),
+        lookupVerifierSessionId(actualAlgorithmAsset.id, actualAlgoService.id),
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
@@ -595,6 +599,11 @@ export default function ComputeWizard({
       const datasetInputs = []
       const policyDatasets: PolicyServerInitiateComputeActionData[] = []
 
+      if (!datasetResponses || datasetResponses.length === 0) {
+        throw new Error(
+          'No dataset responses returned from initialize. Select at least one dataset and verify credentials.'
+        )
+      }
       for (const ds of datasetResponses) {
         const datasetOrderTx = await handleComputeOrder(
           signer,
@@ -734,7 +743,20 @@ export default function ComputeWizard({
   }
 
   const onSubmit = async (values: FormComputeData) => {
-    console.log('calling on submit!!!!!!!!!')
+    console.log(
+      '🔍 AlgorithmComputeWizard onSubmit called with values:',
+      values
+    )
+    console.log('🔍 Asset type:', asset.credentialSubject.metadata.type)
+    console.log('🔍 Values algorithm:', values.algorithm)
+    console.log('🔍 Values dataset:', values.dataset)
+    console.log('🔍 Values computeEnv:', values.computeEnv)
+    console.log('🔍 Values termsAndConditions:', values.termsAndConditions)
+    console.log(
+      '🔍 Values acceptPublishingLicense:',
+      values.acceptPublishingLicense
+    )
+
     try {
       const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
 
@@ -754,27 +776,60 @@ export default function ComputeWizard({
       }
 
       if (
-        !(values.algorithm || values.dataset) ||
         !values.computeEnv ||
         !values.termsAndConditions ||
         !values.acceptPublishingLicense
       ) {
+        console.log('🔍 Form validation failed:')
+        console.log('🔍 - ComputeEnv check:', !values.computeEnv)
+        console.log('🔍 - Terms check:', !values.termsAndConditions)
+        console.log('🔍 - License check:', !values.acceptPublishingLicense)
         toast.error('Please complete all required fields.')
         return
       }
 
-      let actualSelectedDataset: AssetExtended[] = []
-      let actualSelectedAlgorithm: AssetExtended = selectedAlgorithmAsset
+      // Check if compute environment is properly configured with resources
+      if (!selectedComputeEnv || !selectedResources) {
+        console.log('🔍 Compute environment validation failed:')
+        console.log('🔍 - selectedComputeEnv:', selectedComputeEnv)
+        console.log('🔍 - selectedResources:', selectedResources)
+        toast.error(
+          'Please configure the compute environment resources before proceeding.'
+        )
+        return
+      }
 
-      // Case: dataset selected, algorithm undefined (algo is main asset)
+      // For AlgorithmComputeWizard, we need at least one dataset selected
+      if (
+        asset.credentialSubject.metadata.type === 'algorithm' &&
+        (!values.dataset || values.dataset.length === 0)
+      ) {
+        console.log('🔍 Dataset validation failed: No datasets selected')
+        toast.error(
+          'Please select at least one dataset to run against the algorithm.'
+        )
+        return
+      }
+
+      console.log('🔍 Form validation passed, proceeding with compute job...')
+
+      let actualSelectedDataset: AssetExtended[] = []
+      let actualSelectedAlgorithm: AssetExtended
+
+      // Case: algorithm wizard (main asset is algorithm)
       if (asset.credentialSubject.metadata.type === 'algorithm') {
-        actualSelectedAlgorithm = asset
+        actualSelectedAlgorithm = asset // Main asset is the algorithm
         if (selectedDatasetAsset && Array.isArray(selectedDatasetAsset)) {
           actualSelectedDataset = selectedDatasetAsset
         }
       } else {
+        // Case: dataset wizard (main asset is dataset, algorithm is selected)
+        actualSelectedAlgorithm = selectedAlgorithmAsset
         actualSelectedDataset = [asset]
       }
+
+      console.log('🔍 Actual selected algorithm:', actualSelectedAlgorithm)
+      console.log('🔍 Actual selected datasets:', actualSelectedDataset)
 
       const userCustomParameters = {
         dataServiceParams: parseConsumerParameterValues(
@@ -794,23 +849,77 @@ export default function ComputeWizard({
         )
       }
 
-      const datasetServices: { asset: AssetExtended; service: Service }[] =
-        actualSelectedDataset.map((ds, i) => {
+      let datasetServices: { asset: AssetExtended; service: Service }[] = []
+
+      const datasetPairs = (values.dataset || []) as string[]
+      if (
+        (!actualSelectedDataset || actualSelectedDataset.length === 0) &&
+        datasetPairs.length > 0
+      ) {
+        const built = await Promise.all(
+          datasetPairs.map(async (pair) => {
+            const [did, serviceId] = pair.split('|')
+            const dsAsset = (await getAsset(
+              did,
+              newCancelToken()
+            )) as AssetExtended
+            if (!dsAsset || !dsAsset.credentialSubject?.services?.length) {
+              throw new Error(`Dataset ${did} not found or has no services`)
+            }
+
+            const accessDetailsList = await Promise.all(
+              dsAsset.credentialSubject.services.map((svc) =>
+                getAccessDetails(
+                  dsAsset.credentialSubject.chainId,
+                  svc,
+                  accountId || ZERO_ADDRESS,
+                  newCancelToken()
+                )
+              )
+            )
+
+            const serviceIndex = dsAsset.credentialSubject.services.findIndex(
+              (s: any) => s.id === serviceId
+            )
+
+            const extended: AssetExtended = {
+              ...(dsAsset as any),
+              accessDetails: accessDetailsList,
+              serviceIndex: serviceIndex !== -1 ? serviceIndex : 0
+            }
+
+            const selectedService =
+              dsAsset.credentialSubject.services[
+                serviceIndex !== -1 ? serviceIndex : 0
+              ]
+
+            return { asset: extended, service: selectedService as Service }
+          })
+        )
+        datasetServices = built
+      } else {
+        datasetServices = actualSelectedDataset.map((ds, i) => {
           const datasetEntry = values.dataset?.[i]
           const selectedServiceId = datasetEntry?.includes('|')
             ? datasetEntry.split('|')[1]
             : ds.credentialSubject.services?.[0]?.id
-
           const selectedService =
             ds.credentialSubject.services.find(
               (s) => s.id === selectedServiceId
             ) || ds.credentialSubject.services?.[0]
-
-          return {
-            asset: ds,
-            service: selectedService
-          }
+          return { asset: ds, service: selectedService }
         })
+      }
+
+      if (!datasetServices || datasetServices.length === 0) {
+        toast.error('Please select at least one dataset service to run.')
+        return
+      }
+
+      console.log('🔍 About to call startJob with:', {
+        userCustomParameters,
+        datasetServices
+      })
 
       await startJob(userCustomParameters, datasetServices)
     } catch (error) {
@@ -920,7 +1029,7 @@ export default function ComputeWizard({
       validationSchema={validationSchema}
       enableReinitialize={true}
       onSubmit={async (values) => {
-        console.log('Form submitted:', values)
+        console.log('🔍 Formik onSubmit triggered with values:', values)
         await onSubmit(values)
       }}
     >

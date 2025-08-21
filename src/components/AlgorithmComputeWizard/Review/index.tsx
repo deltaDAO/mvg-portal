@@ -32,6 +32,8 @@ import type { Dataset } from '../SelectServices'
 import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
+import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
+type CredentialTarget = { did: string; serviceId?: string } | null
 interface ReviewProps {
   totalPrices?: { value: string; symbol: string }[]
   datasetOrderPrice?: string
@@ -158,7 +160,8 @@ export default function Review({
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
-  const selectedResources = allResourceValues?.[values.computeEnv]
+  const selectedEnvId = values?.computeEnv?.id
+  const selectedResources = allResourceValues?.[selectedEnvId as any]
   const c2dPrice = selectedResources?.price
   const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
   const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
@@ -166,12 +169,17 @@ export default function Review({
     const svc = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
     return lookupVerifierSessionId?.(asset.id, svc?.id)
   }).length
-  console.log('Field values ', values)
+  // Debug: current form state minimal
+  console.log('[Review] form init', {
+    step: values?.user?.stepCurrent,
+    computeEnv: values?.computeEnv?.id,
+    datasetsCount: Array.isArray(values?.datasets) ? values.datasets.length : 0
+  })
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
     accessDetails.price
   )
-  console.log('Field values ', values)
+  // remove noisy duplicate logs
   // const allVerified = selectedDatasetAsset?.every((asset) => {
   //   const service = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
   //   return lookupVerifierSessionId?.(asset.id, service?.id)
@@ -180,8 +188,97 @@ export default function Review({
     ? values.datasets
     : []
 
-  const handleCheckCredentials = (datasetId: string) => {
+  const [credentialCheckTarget, setCredentialCheckTarget] =
+    useState<CredentialTarget>(null)
+
+  const handleCheckCredentials = (datasetId: string, serviceId?: string) => {
+    console.log('[Review] handleCheckCredentials called', {
+      datasetId,
+      serviceId
+    })
+    setCredentialCheckTarget({ did: datasetId, serviceId })
     setShowCredentialsCheck(true)
+  }
+
+  function DatasetCredentialsOverlay({
+    did,
+    serviceId
+  }: {
+    did: string
+    serviceId?: string
+  }) {
+    const [targetAsset, setTargetAsset] = useState<AssetExtended | null>(null)
+    const [targetService, setTargetService] = useState<Service | null>(null)
+
+    useEffect(() => {
+      let cancelled = false
+      async function load() {
+        try {
+          console.log('[Review] Overlay load start', { did, serviceId })
+          const assetObj = await getAsset(did, newCancelToken())
+          if (!assetObj) return
+
+          // Resolve selected serviceId from form values.dataset first (authoritative)
+          const datasetPair = (values?.dataset || []).find(
+            (pair: string) =>
+              typeof pair === 'string' && pair.startsWith(`${did}|`)
+          )
+          const selectedSvcIdFromPairs = datasetPair
+            ? datasetPair.split('|')[1]
+            : undefined
+          // Fallback to any checked service in values.datasets
+          const ds = (selectedDatasets || []).find((d: any) => d.id === did)
+          const selectedSvcId =
+            serviceId ||
+            selectedSvcIdFromPairs ||
+            ds?.services?.find((s: any) => s.checked)?.id
+          console.log('[Review] Overlay service resolution', {
+            datasetPair,
+            selectedSvcIdFromPairs,
+            selectedSvcId
+          })
+          const svc =
+            assetObj?.credentialSubject?.services?.find(
+              (s: any) => s.id === selectedSvcId
+            ) || assetObj?.credentialSubject?.services?.[0]
+
+          if (!cancelled) {
+            setTargetAsset(assetObj as any)
+            setTargetService(svc as any)
+            console.log('[Review] Overlay target ready', {
+              targetServiceId: (svc as any)?.id
+            })
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+      load()
+      return () => {
+        cancelled = true
+      }
+    }, [did, serviceId])
+
+    if (!targetAsset || !targetService) {
+      return <div>Loading...</div>
+    }
+    return (
+      <CredentialDialogProvider>
+        <AssetActionCheckCredentialsAlgo
+          asset={targetAsset}
+          service={targetService}
+          type="dataset"
+          onVerified={() => {
+            console.log('[Review] Credentials verified', {
+              did,
+              serviceId: targetService?.id
+            })
+            setShowCredentialsCheck(false)
+            setCredentialCheckTarget(null)
+          }}
+        />
+      </CredentialDialogProvider>
+    )
   }
 
   const formatDuration = (seconds: number): string => {
@@ -320,8 +417,7 @@ export default function Review({
   // Pre-select computeEnv and/or dataset if there is only one available option
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
-      const { id } = computeEnvs[0]
-      setFieldValue('computeEnv', id, true)
+      setFieldValue('computeEnv', computeEnvs[0], true)
     }
     if (
       datasets?.length === 1 &&
@@ -384,10 +480,10 @@ export default function Review({
   // }, [values.dataset, accountId, isConsumable])
 
   useEffect(() => {
-    if (!values.computeEnv || !computeEnvs) return
+    if (!values.computeEnv) return
 
-    const selectedEnv = computeEnvs.find((env) => env.id === values.computeEnv)
-    if (!selectedEnv) return
+    const selectedEnv = values.computeEnv
+    if (!selectedEnv?.id) return
 
     // if not already initialized, set default resource values
     if (!allResourceValues[selectedEnv.id]) {
@@ -414,7 +510,7 @@ export default function Review({
         [selectedEnv.id]: newRes
       }))
     }
-  }, [values.computeEnv, computeEnvs])
+  }, [values.computeEnv])
 
   //
   // Set price for calculation output
@@ -662,16 +758,15 @@ export default function Review({
     const priceChecks = [...totalPrices]
 
     // Add C2D price if not already included in totalPrices
-    const c2dPrice = allResourceValues?.[values.computeEnv]?.price
+    const c2d = allResourceValues?.[selectedEnvId as any]?.price
     const c2dSymbol = providerFeesSymbol
-    // Only add if price > 0 and not present in totalPrices already (optional check)
     if (
-      c2dPrice &&
+      c2d &&
       !totalPrices.some(
-        (p) => p.symbol === c2dSymbol && p.value === c2dPrice.toString()
+        (p) => p.symbol === c2dSymbol && p.value === c2d.toString()
       )
     ) {
-      priceChecks.push({ value: c2dPrice.toString(), symbol: c2dSymbol })
+      priceChecks.push({ value: c2d.toString(), symbol: c2dSymbol })
     }
 
     let sufficient = true
@@ -694,27 +789,38 @@ export default function Review({
     providerFeesSymbol,
     totalPrices,
     allResourceValues,
-    values.computeEnv
+    selectedEnvId
   ])
 
   const PurchaseButton = () => {
     console.log('purchase is called! ')
 
+    const isDisabled =
+      isComputeButtonDisabled ||
+      !isValid ||
+      !isBalanceSufficient ||
+      !isAssetNetwork ||
+      !selectedDatasetAsset?.every(
+        (asset) => asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
+      ) ||
+      !isAccountIdWhitelisted
+
+    console.log('🔍 PurchaseButton disabled state:', {
+      isDisabled,
+      isComputeButtonDisabled,
+      isValid,
+      isBalanceSufficient,
+      isAssetNetwork,
+      selectedDatasetAssetPurchasable: selectedDatasetAsset?.every(
+        (asset) => asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
+      ),
+      isAccountIdWhitelisted
+    })
+
     return (
       <ButtonBuy
         action="compute"
-        disabled={
-          false
-          // isComputeButtonDisabled ||
-          // !isValid ||
-          // !isBalanceSufficient ||
-          // !isAssetNetwork ||
-          // !selectedDatasetAsset?.every(
-          //   (asset) =>
-          //     asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
-          // ) ||
-          // !isAccountIdWhitelisted
-        }
+        disabled={isDisabled}
         hasPreviousOrder={hasPreviousOrder}
         hasDatatoken={hasDatatoken}
         btSymbol={accessDetails.baseToken?.symbol}
@@ -746,33 +852,7 @@ export default function Review({
     )
   }
 
-  // Show credentials check if needed
-  if (showCredentialsCheck && asset && service) {
-    return (
-      <div className={styles.credentialsOverlay}>
-        <div className={styles.credentialsContainer}>
-          <div className={styles.credentialsHeader}>
-            <h3>Verify Credentials</h3>
-            <button
-              className={styles.closeButton}
-              onClick={() => setShowCredentialsCheck(false)}
-            >
-              ✕ Close
-            </button>
-          </div>
-          {isAlgorithm ? (
-            <AssetActionCheckCredentialsAlgo
-              asset={asset}
-              service={service}
-              onVerified={() => setShowCredentialsCheck(false)}
-            />
-          ) : (
-            <AssetActionCheckCredentials asset={asset} service={service} />
-          )}
-        </div>
-      </div>
-    )
-  }
+  // Overlay will render above base content instead of replacing it
 
   return (
     <div className={styles.container}>
@@ -782,16 +862,12 @@ export default function Review({
 
       <div className={styles.contentContainer}>
         <div className={styles.pricingBreakdown}>
-          {/* Datasets */}
+          {/* Datasets (title only, no price) */}
           {selectedDatasets?.map((dataset) => (
             <div key={dataset.id} className={styles.pricingRow}>
               <div className={styles.itemInfo}>
-                <DatasetItem
-                  dataset={dataset}
-                  onCheckCredentials={handleCheckCredentials}
-                />
+                <DatasetItem dataset={dataset} />
               </div>
-              <PriceDisplay value="1" />
             </div>
           ))}
 
@@ -804,6 +880,11 @@ export default function Review({
                 value={service.price}
                 duration={service.duration}
                 isService={true}
+                actionLabel="Check credentials"
+                onAction={() => handleCheckCredentials(dataset.id, service.id)}
+                actionDisabled={Boolean(
+                  lookupVerifierSessionId?.(dataset.id, service.id)
+                )}
               />
             ))
           )}
@@ -815,6 +896,16 @@ export default function Review({
               itemName={item.name}
               value={item.value}
               duration={item.duration}
+              actionLabel={
+                item.name === 'ALGORITHM'
+                  ? 'Check algorithm credentials'
+                  : undefined
+              }
+              onAction={
+                item.name === 'ALGORITHM'
+                  ? () => setShowCredentialsCheck(true)
+                  : undefined
+              }
             />
           ))}
 
@@ -878,6 +969,44 @@ export default function Review({
         </div>
         <PurchaseButton />
       </div>
+
+      {showCredentialsCheck && (
+        <div className={styles.credentialsOverlay}>
+          <div className={styles.credentialsContainer}>
+            <div className={styles.credentialsHeader}>
+              <h3>Verify Credentials</h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => {
+                  console.log('[Review] Credentials overlay closed')
+                  setShowCredentialsCheck(false)
+                  setCredentialCheckTarget(null)
+                }}
+              >
+                ✕ Close
+              </button>
+            </div>
+            {credentialCheckTarget ? (
+              <DatasetCredentialsOverlay
+                did={credentialCheckTarget.did}
+                serviceId={credentialCheckTarget.serviceId}
+              />
+            ) : isAlgorithm ? (
+              <AssetActionCheckCredentialsAlgo
+                asset={asset}
+                service={service}
+                onVerified={() => setShowCredentialsCheck(false)}
+              />
+            ) : (
+              <AssetActionCheckCredentials
+                asset={asset}
+                service={service}
+                onVerified={() => setShowCredentialsCheck(false)}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
