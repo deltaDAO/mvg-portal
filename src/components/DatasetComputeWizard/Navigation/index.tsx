@@ -13,9 +13,11 @@ export default function Navigation({
   values?: FormComputeData // New prop type
   setFieldValue?: (field: string, value: any) => void
 }): ReactElement {
-  const { getSuccessClass, getLastCompletedStep } = useComputeStepCompletion()
   const { values, setFieldValue }: FormikContextType<FormComputeData> =
     useFormikContext()
+  const isAlgorithmFlow = false // Dataset flow is not algorithm flow
+  const { getSuccessClass, getLastCompletedStep } =
+    useComputeStepCompletion(isAlgorithmFlow)
   const currentStep = values.user.stepCurrent
   const lastCompletedStep = getLastCompletedStep(steps.length)
   const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)

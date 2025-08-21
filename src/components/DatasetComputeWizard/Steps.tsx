@@ -4,10 +4,9 @@ import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelecti
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { datasetSteps, algorithmSteps } from './_constants' // Updated import
 import SelectAlgorithm from './SelectAlgorithm'
-import SelectServices from './SelectServices'
-import PreviewSelectedServices from './PreviewSelectedServices'
+import SelectAlgorithmServices from './SelectAlgorithmServices'
+import PreviewAlgorithmDataset from './PreviewAlgorithmDataset'
 import SelectEnvironment from './SelectEnvironment'
-import SelectDataset from './SelectDataset'
 import ConfigureEnvironment from './ConfigureEnvironment'
 import Review from './Review'
 import { AssetExtended } from 'src/@types/AssetExtended'
@@ -59,7 +58,9 @@ export default function Steps({
   jobs,
   isLoadingJobs,
   refetchJobs, // Updated type below
-  setFieldValue
+  setFieldValue,
+  isAlgorithm,
+  formikValues
 }: {
   asset: AssetExtended
   service: Service
@@ -132,19 +133,55 @@ export default function Steps({
   console.log(
     'Steps component - currentStep:',
     currentStep,
+    'isAlgorithm:',
+    isAlgorithm,
     'values.user:',
-    values.user,
+    formikValues.user,
     'step type:',
     typeof currentStep
+  )
+  console.log('🚀 ~ Steps ~ selectedAlgorithmAsset:', selectedAlgorithmAsset)
+  console.log(
+    '🚀 ~ Steps ~ selectedAlgorithmAsset?.credentialSubject?.services:',
+    selectedAlgorithmAsset?.credentialSubject?.services
+  )
+  console.log(
+    '🚀 ~ Steps ~ selectedAlgorithmAsset?.credentialSubject?.metadata:',
+    selectedAlgorithmAsset?.credentialSubject?.metadata
+  )
+  console.log(
+    '🔍 ~ Steps ~ Selected Algorithm:',
+    selectedAlgorithmAsset?.credentialSubject?.metadata?.name || 'No name'
+  )
+  console.log(
+    '🔍 ~ Steps ~ Selected Algorithm Services:',
+    selectedAlgorithmAsset?.credentialSubject?.services?.map((s) => ({
+      id: s.id,
+      name: s.name,
+      type: s.type
+    })) || 'No services'
   )
   switch (currentStep) {
     case 1:
       return <SelectAlgorithm algorithms={algorithms} />
     case 2:
-      return <SelectEnvironment computeEnvs={computeEnvs} />
+      return (
+        <SelectAlgorithmServices
+          selectedAlgorithmAsset={selectedAlgorithmAsset}
+          ddoListAlgorithms={ddoListAlgorithms}
+        />
+      )
     case 3:
-      return <ConfigureEnvironment />
+      return (
+        <PreviewAlgorithmDataset
+          selectedAlgorithmAsset={selectedAlgorithmAsset}
+        />
+      )
     case 4:
+      return <SelectEnvironment computeEnvs={computeEnvs} />
+    case 5:
+      return <ConfigureEnvironment />
+    case 6:
       return (
         <CredentialDialogProvider>
           <Review

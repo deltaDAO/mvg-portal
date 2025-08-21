@@ -1,5 +1,7 @@
 import { FormComputeData, StepContent } from './_types'
 import SelectAlgorithm from './SelectAlgorithm'
+import SelectAlgorithmServices from './SelectAlgorithmServices'
+import PreviewAlgorithmDataset from './PreviewAlgorithmDataset'
 import SelectEnvironment from './SelectEnvironment'
 import ConfigureEnvironment from './ConfigureEnvironment'
 import Review from './Review'
@@ -20,15 +22,25 @@ export const datasetSteps: StepContent[] = [
   },
   {
     step: 2,
+    title: 'Select Algorithm Services',
+    component: <SelectAlgorithmServices />
+  },
+  {
+    step: 3,
+    title: 'Preview Algorithm & Dataset',
+    component: <PreviewAlgorithmDataset />
+  },
+  {
+    step: 4,
     title: 'Select C2D Environment',
     component: <SelectEnvironment computeEnvs={[]} />
   },
   {
-    step: 3,
+    step: 5,
     title: 'C2D Environment Configuration',
     component: <ConfigureEnvironment />
   },
-  { step: 4, title: 'Review', component: <div /> }
+  { step: 6, title: 'Review', component: <Review /> }
 ]
 
 export const algorithmSteps: StepContent[] = [
@@ -71,12 +83,15 @@ export const initialValues: FormComputeData = {
   step2Completed: false,
   step3Completed: false,
   step4Completed: false,
+  step5Completed: false,
+  step6Completed: false,
   // Added fields required by onSubmit
   dataServiceParams: {},
   algoServiceParams: {},
   algoParams: {},
   // These will be populated dynamically
   datasets: [],
+  algorithmServices: [],
   algorithmDetails: null,
   computeResources: null,
   marketFees: null,

@@ -29,6 +29,8 @@ export const validationSchema: Yup.SchemaOf<FormComputeData> = Yup.object()
     step1Completed: Yup.boolean(),
     step2Completed: Yup.boolean(),
     step3Completed: Yup.boolean(),
-    step4Completed: Yup.boolean()
+    step4Completed: Yup.boolean(),
+    step5Completed: Yup.boolean(),
+    step6Completed: Yup.boolean()
   })
   .required()
