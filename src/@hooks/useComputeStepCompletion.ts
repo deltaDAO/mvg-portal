@@ -40,16 +40,28 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
       }
     }
 
-    // 4-step dataset flow
+    // 6-step dataset flow: mark each step completed only when its dedicated flag is set
     switch (step) {
       case 1:
         return Boolean(values.step1Completed || values.algorithm)
       case 2:
-        return environmentSelected
+        return Boolean(
+          values.step2Completed || values.algorithmServices?.length
+        )
       case 3:
-        return configSet
+        return Boolean(values.step3Completed)
       case 4:
-        return environmentSelected && configSet && agreementsChecked
+        return Boolean(values.step4Completed || environmentSelected)
+      case 5:
+        return Boolean(
+          (values as unknown as { step5Completed?: boolean })?.step5Completed ||
+            configSet
+        )
+      case 6:
+        return Boolean(
+          (values as unknown as { step6Completed?: boolean })?.step6Completed ||
+            (environmentSelected && configSet && agreementsChecked)
+        )
       default:
         return false
     }

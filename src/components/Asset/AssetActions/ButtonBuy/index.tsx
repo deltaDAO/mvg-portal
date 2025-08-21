@@ -25,7 +25,7 @@ export interface ButtonBuyProps {
   isLoading?: boolean
   onClick?: (e: FormEvent<HTMLButtonElement>) => void
   stepText?: string
-  type?: 'submit'
+  type?: 'submit' | 'button'
   priceType?: string
   algorithmPriceType?: string
   isAlgorithmConsumable?: boolean

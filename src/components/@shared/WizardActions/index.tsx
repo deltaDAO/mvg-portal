@@ -1,4 +1,4 @@
-import { FormEvent, ReactElement, RefObject } from 'react'
+import React, { FormEvent, ReactElement, RefObject } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
@@ -29,10 +29,67 @@ export default function WizardActions({
   const {
     values,
     errors,
-    isValid,
     isSubmitting,
     setFieldValue
   }: FormikContextType<FormComputeData> = useFormikContext()
+
+  React.useEffect(() => {
+    const flow = totalSteps === 6 ? 'algorithm' : 'dataset'
+    const datasetCount = Array.isArray(values?.dataset)
+      ? values.dataset.length
+      : 0
+    const environmentSelected = Boolean(values?.computeEnv)
+    const configSet =
+      Number(values?.cpu) > 0 &&
+      Number(values?.ram) > 0 &&
+      Number(values?.disk) > 0 &&
+      Number(values?.jobDuration) > 0
+    const agreementsChecked = Boolean(
+      values?.termsAndConditions && values?.acceptPublishingLicense
+    )
+    const wizardComplete = Boolean(
+      (flow === 'algorithm' ? datasetCount > 0 : Boolean(values?.algorithm)) &&
+        environmentSelected &&
+        configSet &&
+        agreementsChecked
+    )
+
+    const state = {
+      flow,
+      currentStep: values?.user?.stepCurrent,
+      completedFlags: {
+        step1Completed: values?.step1Completed,
+        step2Completed: values?.step2Completed,
+        step3Completed: values?.step3Completed,
+        step4Completed: values?.step4Completed,
+        step5Completed: (values as unknown as { step5Completed?: boolean })
+          ?.step5Completed,
+        step6Completed: (values as unknown as { step6Completed?: boolean })
+          ?.step6Completed
+      },
+      selections: {
+        algorithm: values?.algorithm,
+        dataset: values?.dataset,
+        datasetCount
+      },
+      environment: values?.computeEnv,
+      resources: {
+        cpu: values?.cpu,
+        ram: values?.ram,
+        disk: values?.disk,
+        jobDuration: values?.jobDuration
+      },
+      agreements: {
+        termsAndConditions: values?.termsAndConditions,
+        acceptPublishingLicense: values?.acceptPublishingLicense
+      },
+      validationErrors: errors,
+      wizardComplete,
+      nextButtonDisabled: isContinueDisabled
+    }
+
+    console.log('Wizard state', state)
+  }, [values, errors, isContinueDisabled, totalSteps])
 
   function handleAction(action: string) {
     const currentStep: number = values.user.stepCurrent
