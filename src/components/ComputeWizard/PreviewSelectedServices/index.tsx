@@ -28,7 +28,11 @@ interface FormValues {
   dataset: string[]
 }
 
-const PreviewSelectedServices = () => {
+const PreviewSelectedServices = ({
+  setOuterFieldValue
+}: {
+  setOuterFieldValue?: (field: string, value: any) => void
+}) => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [selectedDatasets, setSelectedDatasets] = useState<any[]>([])
 
@@ -63,6 +67,8 @@ const PreviewSelectedServices = () => {
     )
 
     setFieldValue('dataset', datasetIdServicePairs)
+    setOuterFieldValue && setOuterFieldValue('dataset', datasetIdServicePairs)
+    setOuterFieldValue && setOuterFieldValue('datasets', normalized)
   }, [values.datasets, selectedDatasets.length, setFieldValue])
 
   return (

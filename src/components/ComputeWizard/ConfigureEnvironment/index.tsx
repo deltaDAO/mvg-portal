@@ -1,6 +1,6 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
-import { Datatoken } from '@oceanprotocol/lib'
+import { Datatoken, ComputeEnvironment } from '@oceanprotocol/lib'
 import { useNetwork, useSigner } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
@@ -13,7 +13,11 @@ interface ResourceValues {
   jobDuration: number
 }
 
-export default function ConfigureEnvironment(): ReactElement {
+export default function ConfigureEnvironment({
+  setOuterFieldValue
+}: {
+  setOuterFieldValue?: (field: string, value: unknown) => void
+}): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const { chain } = useNetwork()
   const { data: signer } = useSigner()
@@ -36,7 +40,6 @@ export default function ConfigureEnvironment(): ReactElement {
     jobDuration: values.jobDuration || 3600
   })
 
-  const formatMB = (bytes: number) => Math.floor(bytes / 1_000_000)
   const formatMinutes = (seconds: number) => Math.floor(seconds / 60)
 
   const fetchSymbol = async (address: string) => {
@@ -55,7 +58,13 @@ export default function ConfigureEnvironment(): ReactElement {
     setFieldValue('ram', currentValues.ram)
     setFieldValue('disk', currentValues.disk)
     setFieldValue('jobDuration', currentValues.jobDuration)
-  }, [mode, freeValues, paidValues, setFieldValue])
+    // Mirror to the outer wizard Formik so completion logic sees the updates
+    setOuterFieldValue && setOuterFieldValue('cpu', currentValues.cpu)
+    setOuterFieldValue && setOuterFieldValue('ram', currentValues.ram)
+    setOuterFieldValue && setOuterFieldValue('disk', currentValues.disk)
+    setOuterFieldValue &&
+      setOuterFieldValue('jobDuration', currentValues.jobDuration)
+  }, [mode, freeValues, paidValues, setFieldValue, setOuterFieldValue])
 
   if (!values.computeEnv) {
     return (
@@ -66,25 +75,32 @@ export default function ConfigureEnvironment(): ReactElement {
     )
   }
 
-  const env = values.computeEnv
+  // Resolve env object from form (object preferred; support id string)
+  const env: ComputeEnvironment | undefined =
+    typeof values.computeEnv === 'string'
+      ? undefined
+      : (values.computeEnv as ComputeEnvironment)
   const chainId = chain?.id?.toString() || '11155111'
-  const fee = env.fees?.[chainId]?.[0]
-  const freeAvailable = !!env.free
+  const fee = env?.fees?.[chainId]?.[0]
   const tokenAddress = fee?.feeToken
-  const tokenSymbol = symbolMap[tokenAddress] || '...'
 
   if (tokenAddress) fetchSymbol(tokenAddress)
 
-  const getLimits = (id: string, isFree: boolean) => {
-    const resourceLimits = isFree ? env.free?.resources : env.resources
-    return resourceLimits?.find((r) => r.id === id) ?? { max: 0, min: 0 }
+  type ResourceId = 'cpu' | 'ram' | 'disk' | 'jobDuration'
+
+  const getLimits = (id: ResourceId, isFree: boolean) => {
+    const resourceLimits = isFree ? env?.free?.resources : env?.resources
+    const res = resourceLimits?.find(
+      (r: { id: string; min: number; max: number }) => r.id === id
+    )
+    // normalize to { minValue, maxValue } expected by renderer
+    return {
+      minValue: res?.min ?? 0,
+      maxValue: res?.max ?? 0
+    }
   }
 
-  const updateResource = (
-    type: 'cpu' | 'ram' | 'disk' | 'jobDuration',
-    value: number,
-    isFree: boolean
-  ) => {
+  const updateResource = (type: ResourceId, value: number, isFree: boolean) => {
     if (isFree) {
       setFreeValues((prev) => ({ ...prev, [type]: value }))
     } else {
@@ -112,7 +128,7 @@ export default function ConfigureEnvironment(): ReactElement {
   }
 
   const renderResourceRow = (
-    resourceId: string,
+    resourceId: ResourceId,
     label: string,
     unit: string,
     isFree: boolean
@@ -137,11 +153,7 @@ export default function ConfigureEnvironment(): ReactElement {
               max={maxValue}
               value={currentValue}
               onChange={(e) =>
-                updateResource(
-                  resourceId as any,
-                  Number(e.target.value),
-                  isFree
-                )
+                updateResource(resourceId, Number(e.target.value), isFree)
               }
               className={styles.customSlider}
             />
@@ -154,7 +166,7 @@ export default function ConfigureEnvironment(): ReactElement {
             type="text"
             value={currentValue}
             onChange={(e) =>
-              updateResource(resourceId as any, Number(e.target.value), isFree)
+              updateResource(resourceId, Number(e.target.value), isFree)
             }
             className={`${styles.input} ${styles.inputSmall}`}
             placeholder="value..."

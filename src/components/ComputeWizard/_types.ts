@@ -25,6 +25,8 @@ export interface FormComputeData {
   step2Completed: boolean
   step3Completed: boolean
   step4Completed: boolean
+  step5Completed?: boolean
+  step6Completed?: boolean
   // Added fields required by onSubmit function
   dataServiceParams?: UserCustomParameters // UserCustomParameters - will be properly typed later
   algoServiceParams?: UserCustomParameters // UserCustomParameters - will be properly typed later
@@ -58,6 +60,18 @@ export interface FormComputeData {
     c2d: string
   }
   totalPrice?: string
+  // New field for algorithm services in dataset flow
+  algorithmServices?: Array<{
+    id: string
+    name: string
+    title: string
+    serviceDescription: string
+    type: string
+    duration: string | number
+    price: string
+    symbol: string
+    checked?: boolean
+  }>
 }
 
 export interface StepContent {

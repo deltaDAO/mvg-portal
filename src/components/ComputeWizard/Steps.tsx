@@ -17,7 +17,6 @@ import { Asset } from 'src/@types/Asset'
 import { FormComputeData, StepContent } from './_types'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 import ButtonBuy from '../Asset/AssetActions/ButtonBuy'
-import { useFormikContext } from 'formik'
 
 export default function Steps({
   asset,
@@ -43,7 +42,6 @@ export default function Steps({
   dtSymbolSelectedComputeAsset,
   dtBalanceSelectedComputeAsset,
   selectedComputeAssetType,
-  ddoListAlgorithms,
   selectedComputeAssetTimeout,
   computeEnvs,
   stepText,
@@ -64,7 +62,9 @@ export default function Steps({
   isLoadingJobs,
   refetchJobs,
   formikValues, // Updated type below
-  setFieldValue
+  setFieldValue,
+  onComputeClick,
+  ddoListAlgorithms
 }: {
   asset: AssetExtended
   service: Service
@@ -119,12 +119,12 @@ export default function Steps({
   jobs?: any[]
   isLoadingJobs?: boolean
   refetchJobs?: () => void
-  formikValues?: FormComputeData // Updated to FormComputeData
+  formikValues: FormComputeData // Updated to FormComputeData
   setFieldValue: (field: string, value: any) => void
+  onComputeClick?: () => void
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
-  const { values } = useFormikContext<FormComputeData>()
 
   useEffect(() => {
     if (!chain?.id || !accountId) return
@@ -132,8 +132,8 @@ export default function Steps({
     setFieldValue('user.accountId', accountId)
   }, [chain?.id, accountId, setFieldValue])
 
-  const currentStep = values?.user?.stepCurrent ?? 1
-  const steps = isAlgorithm ? algorithmSteps : datasetSteps
+  const currentStep = formikValues?.user?.stepCurrent ?? 1
+  // const steps = isAlgorithm ? algorithmSteps : datasetSteps
 
   console.log(
     'Steps component - currentStep:',
@@ -141,7 +141,7 @@ export default function Steps({
     'isAlgorithm:',
     isAlgorithm,
     'values.user:',
-    values.user,
+    formikValues.user,
     'step type:',
     typeof currentStep
   )
@@ -152,6 +152,20 @@ export default function Steps({
     isSupportedOceanNetwork: true,
     isConnected: true
   }
+
+  // Enable compute button when wizard is complete (for testing run)
+  const wizardComplete = Boolean(
+    (isAlgorithm
+      ? (formikValues?.dataset?.length || 0) > 0
+      : Boolean(formikValues?.algorithm)) &&
+      Boolean(formikValues?.computeEnv) &&
+      Number(formikValues?.cpu) > 0 &&
+      Number(formikValues?.ram) > 0 &&
+      Number(formikValues?.disk) > 0 &&
+      Number(formikValues?.jobDuration) > 0 &&
+      Boolean(formikValues?.termsAndConditions) &&
+      Boolean(formikValues?.acceptPublishingLicense)
+  )
 
   // For dataset flow
   if (!isAlgorithm) {
@@ -165,9 +179,14 @@ export default function Steps({
       case 1:
         return <SelectAlgorithm algorithms={algorithms} />
       case 2:
-        return <SelectEnvironment computeEnvs={computeEnvs} />
+        return (
+          <SelectEnvironment
+            computeEnvs={computeEnvs}
+            setOuterFieldValue={setFieldValue}
+          />
+        )
       case 3:
-        return <ConfigureEnvironment />
+        return <ConfigureEnvironment setOuterFieldValue={setFieldValue} />
       case 4:
         return (
           <CredentialDialogProvider>
@@ -182,16 +201,16 @@ export default function Steps({
               isRequestingPrice={false}
               accessDetails={accessDetails}
               datasets={datasets}
-              selectedDatasetAsset={selectedDatasetAsset}
+              ddoListAlgorithms={ddoListAlgorithms}
               selectedAlgorithmAsset={selectedAlgorithmAsset}
-              setSelectedDatasetAsset={setSelectedDatasetAsset}
               setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+              selectedDatasetAsset={selectedDatasetAsset}
+              setSelectedDatasetAsset={setSelectedDatasetAsset}
               isLoading={isLoading}
               isComputeButtonDisabled={isComputeButtonDisabled}
               hasPreviousOrder={hasPreviousOrder}
               hasDatatoken={hasDatatoken}
               dtBalance={dtBalance}
-              ddoListAlgorithms={ddoListAlgorithms}
               assetTimeout={assetTimeout}
               hasPreviousOrderSelectedComputeAsset={
                 hasPreviousOrderSelectedComputeAsset
@@ -248,11 +267,16 @@ export default function Steps({
     case 2:
       return <SelectServices />
     case 3:
-      return <PreviewSelectedServices />
+      return <PreviewSelectedServices setOuterFieldValue={setFieldValue} />
     case 4:
-      return <SelectEnvironment computeEnvs={computeEnvs} />
+      return (
+        <SelectEnvironment
+          computeEnvs={computeEnvs}
+          setOuterFieldValue={setFieldValue}
+        />
+      )
     case 5:
-      return <ConfigureEnvironment />
+      return <ConfigureEnvironment setOuterFieldValue={setFieldValue} />
     case 6:
       return (
         <CredentialDialogProvider>
@@ -300,20 +324,11 @@ export default function Steps({
             algoOrderPriceAndFees={algoOrderPriceAndFees}
             retry={retry}
             computeEnvs={computeEnvs}
+            setOuterFieldValue={setFieldValue}
           />
-          {/* <ButtonBuy
+          <ButtonBuy
             action="compute"
-            disabled={
-              isComputeButtonDisabled ||
-              !reviewBuy.isValid ||
-              !reviewBuy.isBalanceSufficient ||
-              !reviewBuy.isAssetNetwork ||
-              !selectedDatasetAsset?.every(
-                (asset) =>
-                  asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
-              ) ||
-              !isAccountIdWhitelisted
-            }
+            disabled={!wizardComplete}
             hasPreviousOrder={hasPreviousOrder}
             hasDatatoken={hasDatatoken}
             btSymbol={accessDetails.baseToken?.symbol}
@@ -330,7 +345,8 @@ export default function Steps({
             selectedComputeAssetType={selectedComputeAssetType}
             stepText={stepText}
             isLoading={isLoading}
-            type="submit"
+            type="button"
+            onClick={() => onComputeClick && onComputeClick()}
             priceType={accessDetails.type}
             algorithmPriceType={asset?.accessDetails?.[0]?.type}
             isBalanceSufficient={reviewBuy.isBalanceSufficient}
@@ -342,7 +358,7 @@ export default function Steps({
             retry={retry}
             isAccountConnected={reviewBuy.isConnected}
             computeWizard={true}
-          /> */}
+          />
         </CredentialDialogProvider>
       )
     default:

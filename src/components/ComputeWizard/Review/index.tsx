@@ -4,6 +4,7 @@ import Input from '@shared/FormInput'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
 import DatasetItem from './DatasetItem'
+import ConnectedIcon from '@images/connected.svg'
 import PriceDisplay from './PriceDisplay'
 import PricingRow from './PricingRow'
 import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
@@ -29,9 +30,9 @@ import appConfig, { consumeMarketOrderFee } from 'app.config.cjs'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import type { Dataset } from '../SelectServices'
-import { Asset } from 'src/@types/Asset'
-import { useAsset } from '@context/Asset'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
+import { useAsset } from '@context/Asset'
+import { Asset } from 'src/@types/Asset'
 interface ReviewProps {
   totalPrices?: { value: string; symbol: string }[]
   datasetOrderPrice?: string
@@ -53,9 +54,10 @@ export default function Review({
   isAlgorithm = false,
   accessDetails,
   datasets,
-  selectedDatasetAsset,
-  setSelectedDatasetAsset,
   selectedAlgorithmAsset,
+  selectedDatasetAsset,
+  ddoListAlgorithms,
+  setSelectedDatasetAsset,
   setSelectedAlgorithmAsset,
   isLoading,
   isComputeButtonDisabled,
@@ -83,19 +85,17 @@ export default function Review({
   validUntil,
   retry,
   allResourceValues,
-  ddoListAlgorithms,
-  setAllResourceValues
+  setAllResourceValues,
+  setOuterFieldValue
 }: {
   asset: AssetExtended
   service: Service
   accessDetails: AccessDetails
   datasets: AssetSelectionAsset[]
-  selectedDatasetAsset?: AssetExtended[]
-  ddoListAlgorithms?: Asset[]
-  setSelectedDatasetAsset?: React.Dispatch<
-    React.SetStateAction<AssetExtended[]>
-  >
+  selectedDatasetAsset: AssetExtended[]
   selectedAlgorithmAsset?: AssetExtended
+  ddoListAlgorithms?: Asset[]
+  setSelectedDatasetAsset: React.Dispatch<React.SetStateAction<AssetExtended[]>>
   setSelectedAlgorithmAsset?: React.Dispatch<
     React.SetStateAction<AssetExtended>
   >
@@ -132,6 +132,7 @@ export default function Review({
       [envId: string]: ResourceType
     }>
   >
+  setOuterFieldValue?: (field: string, value: any) => void
   totalPrices?: { value: string; symbol: string }[]
   datasetOrderPrice?: string
   algoOrderPrice?: string
@@ -216,6 +217,20 @@ export default function Review({
     { name: 'CONSUME MARKET ORDER FEE ALGORITHM (0%)', value: '0' },
     { name: 'CONSUME MARKET ORDER FEE C2C (0%)', value: '0' }
   ]
+
+  // Mirror agreements to outer wizard form so gating/UI can read them
+  useEffect(() => {
+    setOuterFieldValue &&
+      setOuterFieldValue('termsAndConditions', values?.termsAndConditions)
+  }, [values?.termsAndConditions, setOuterFieldValue])
+
+  useEffect(() => {
+    setOuterFieldValue &&
+      setOuterFieldValue(
+        'acceptPublishingLicense',
+        values?.acceptPublishingLicense
+      )
+  }, [values?.acceptPublishingLicense, setOuterFieldValue])
 
   // imorted code
   useEffect(() => {
@@ -781,30 +796,56 @@ export default function Review({
 
       <div className={styles.contentContainer}>
         <div className={styles.pricingBreakdown}>
-          {/* Datasets */}
-          {selectedDatasets?.map((dataset) => (
-            <div key={dataset.id} className={styles.pricingRow}>
-              <div className={styles.itemInfo}>
-                <DatasetItem
-                  dataset={dataset}
-                  onCheckCredentials={handleCheckCredentials}
-                />
+          {/* Datasets with verification tags */}
+          {selectedDatasets?.map((dataset) => {
+            const allServicesVerified = dataset.services?.every((svc) =>
+              lookupVerifierSessionId?.(dataset.id, svc.id)
+            )
+            return (
+              <div key={dataset.id} className={styles.pricingRow}>
+                <div className={styles.itemInfo}>
+                  <div
+                    style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                  >
+                    <DatasetItem
+                      dataset={dataset}
+                      onCheckCredentials={handleCheckCredentials}
+                    />
+                    {allServicesVerified && (
+                      <span title="Verified">
+                        <ConnectedIcon width={16} height={16} />
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <PriceDisplay value="1" />
               </div>
-              <PriceDisplay value="1" />
-            </div>
-          ))}
+            )
+          })}
 
-          {/* Dataset Services */}
+          {/* Dataset Services with verification tag per service */}
           {selectedDatasets?.map((dataset) =>
-            dataset.services.map((service) => (
-              <PricingRow
-                key={`${dataset.id}-${service.id}`}
-                itemName={service.name}
-                value={service.price}
-                duration={service.duration}
-                isService={true}
-              />
-            ))
+            dataset.services.map((service) => {
+              const verified = lookupVerifierSessionId?.(dataset.id, service.id)
+              return (
+                <div
+                  key={`${dataset.id}-${service.id}`}
+                  style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                >
+                  <PricingRow
+                    itemName={service.name}
+                    value={service.price}
+                    duration={service.duration}
+                    isService={true}
+                  />
+                  {verified && (
+                    <span title="Verified">
+                      <ConnectedIcon width={14} height={14} />
+                    </span>
+                  )}
+                </div>
+              )
+            })
           )}
 
           {/* Compute Items */}
