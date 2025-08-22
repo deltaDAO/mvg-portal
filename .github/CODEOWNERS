@@ -1,1 +1,12 @@
-* @moritzkirstein @oceanByte @Abrom8
+# Base ownership of the codebase
+* @deltaDAO/frontend
+
+# The following content related files are additionaly owned by the qa team
+# File to manage portal whitelists and featured assets
+address.config.js @deltaDAO/qa @deltaDAO/frontend
+# File to manage address resolution
+pontusxAddresses.json @deltaDAO/qa @deltaDAO/frontend
+# Directory including .md and .json files to manage displayed content
+/content/ @deltaDAO/qa @deltaDAO/frontend
+# Directory managing publicly hosted images
+/public/images/ @deltaDAO/qa @deltaDAO/frontend

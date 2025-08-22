@@ -9,10 +9,12 @@ import CoinSelect from './CoinSelect'
 
 export default function Price({
   approvedBaseTokens,
-  content
+  content,
+  displayTokenConversion
 }: {
   approvedBaseTokens?: TokenInfo[]
   content?: any
+  displayTokenConversion?: boolean
 }): ReactElement {
   const [field, meta] = useField('pricing.price')
 
@@ -48,11 +50,13 @@ export default function Price({
               />
               <Error meta={meta} />
             </div>
-            <div className={styles.datatoken}>
-              <h4>
-                = <strong>1</strong> {dataTokenOptions.symbol}
-              </h4>
-            </div>
+            {displayTokenConversion && (
+              <div className={styles.datatoken}>
+                <h4>
+                  = <strong>1</strong> {dataTokenOptions.symbol}
+                </h4>
+              </div>
+            )}
           </div>
         </>
       )}

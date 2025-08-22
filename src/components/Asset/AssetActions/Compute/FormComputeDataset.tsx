@@ -19,6 +19,8 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import TermsAndConditionsCheckbox from '../TermsAndConditionsCheckbox'
+import { useMarketMetadata } from '@context/MarketMetadata'
 
 export default function FormStartCompute({
   algorithms,
@@ -44,7 +46,8 @@ export default function FormStartCompute({
   selectedComputeAssetTimeout,
   computeEnvs,
   setSelectedComputeEnv,
-  setTermsAndConditions,
+  setAssetTermsAndConditions,
+  setPortalTermsAndConditions,
   stepText,
   isConsumable,
   consumableFeedback,
@@ -52,7 +55,8 @@ export default function FormStartCompute({
   algoOrderPriceAndFees,
   providerFeeAmount,
   validUntil,
-  retry
+  retry,
+  license
 }: {
   algorithms: AssetSelectionAsset[]
   ddoListAlgorithms: Asset[]
@@ -79,7 +83,8 @@ export default function FormStartCompute({
   setSelectedComputeEnv: React.Dispatch<
     React.SetStateAction<ComputeEnvironment>
   >
-  setTermsAndConditions: React.Dispatch<React.SetStateAction<boolean>>
+  setAssetTermsAndConditions: React.Dispatch<React.SetStateAction<boolean>>
+  setPortalTermsAndConditions: React.Dispatch<React.SetStateAction<boolean>>
   stepText: string
   isConsumable: boolean
   consumableFeedback: string
@@ -88,6 +93,7 @@ export default function FormStartCompute({
   providerFeeAmount?: string
   validUntil?: string
   retry: boolean
+  license: string
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -103,6 +109,8 @@ export default function FormStartCompute({
     values
   }: FormikContextType<ComputeDatasetForm> = useFormikContext()
   const { asset, isAssetNetwork } = useAsset()
+
+  const { appConfig } = useMarketMetadata()
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState(
     asset?.accessDetails?.price
@@ -389,12 +397,24 @@ export default function FormStartCompute({
         retry={retry}
         isAccountConnected={isConnected}
       />
-      <Field
-        {...content.form.termsAndConditions}
-        component={Input}
+      <TermsAndConditionsCheckbox
+        {...content.form.portalTermsAndConditions}
+        licenses={[appConfig.defaultTermsAndConditionsUrl]}
         disabled={isLoading}
         onChange={() =>
-          setTermsAndConditions((termsAndConditions) => !termsAndConditions)
+          setPortalTermsAndConditions(
+            (portalTermsAndConditions) => !portalTermsAndConditions
+          )
+        }
+      />
+      <TermsAndConditionsCheckbox
+        {...content.form.assetTermsAndConditions}
+        licenses={[license]}
+        disabled={isLoading}
+        onChange={() =>
+          setAssetTermsAndConditions(
+            (assetTermsAndConditions) => !assetTermsAndConditions
+          )
         }
       />
     </Form>

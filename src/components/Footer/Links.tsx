@@ -39,7 +39,10 @@ export default function Links(): ReactElement {
             Imprint
           </Button>
           <Button to={privacyPolicySlug} className={styles.link}>
-            Privacy
+            Privacy Policy
+          </Button>
+          <Button to="/cookies/en" className={styles.link}>
+            Cookie Policy
           </Button>
           {appConfig.privacyPreferenceCenter === 'true' && (
             <Button

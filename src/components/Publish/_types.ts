@@ -4,10 +4,14 @@ import { ReactElement } from 'react'
 import { ServiceCredential } from 'src/@types/gaia-x/2210/ServiceCredential'
 import { GaiaXInformation2210 } from '../../@types/gaia-x/2210/GXInformation'
 
+export enum SAAS_PAYMENT_MODE {
+  SUBSCRIPTION = 'Subscription',
+  PAY_PER_USE = 'Pay per use'
+}
+
 export interface FormPublishService {
   files: FileInfo[]
   links?: FileInfo[]
-  timeout: string
   dataTokenOptions: { name: string; symbol: string }
   access: 'Download' | 'Compute' | string
   providerUrl: { url: string; valid: boolean; custom: boolean }
@@ -15,8 +19,6 @@ export interface FormPublishService {
   computeOptions?: ServiceComputeOptions
   usesConsumerParameters?: boolean
   consumerParameters?: FormConsumerParameter[]
-  allow?: string[]
-  deny?: string[]
 }
 
 export interface FormPublishData {
@@ -39,6 +41,7 @@ export interface FormPublishData {
       PIIInformation?: GaiaXInformation2210['PIIInformation']
       serviceSD?: ServiceCredential
     }
+    saas: { paymentMode?: SAAS_PAYMENT_MODE }
     license?: string
     tags?: string[]
     dockerImage?: string
@@ -54,6 +57,11 @@ export interface FormPublishData {
     }
   }
   services: FormPublishService[]
+  policies: {
+    timeout: string
+    allow?: string[]
+    deny?: string[]
+  }
   pricing: PricePublishOptions
   feedback?: PublishFeedback
 }

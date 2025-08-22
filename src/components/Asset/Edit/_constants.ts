@@ -47,7 +47,8 @@ export function getInitialValues(
       termsAndConditions: metadata?.additionalInformation?.gaiaXInformation
         ?.termsAndConditions || [{ url: '' }]
     },
-    license: metadata?.license
+    license: metadata?.license,
+    saas: metadata?.additionalInformation?.saas || {}
   }
 }
 

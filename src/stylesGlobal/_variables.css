@@ -48,6 +48,7 @@
   --menu-link-font-weight-active: var(--font-weight-bold);
   --menu-caret-size: var(--font-size-small);
   --menu-caret-fill-color: var(--color-primary);
+  --menu-caret-active-fill-color: var(--color-primary);
   --menu-network-badge-font-color: var(--brand-white);
 
   /* Footer */
@@ -58,7 +59,7 @@
 
   /* Homepage */
   --home-brand-logo-size-width: 22rem;
-  --home-brand-logo-size-height: 4rem;
+  --home-brand-logo-size-height: 6rem;
   --home-gaia-x-logo-size-width: 9rem;
   --home-gaia-x-logo-size-height: 5rem;
 
@@ -67,6 +68,7 @@
   --input-placeholder-font-color: var(--brand-grey);
   --input-disabled-font-color: var(--font-color-light);
   --input-border-color: var(--brand-grey-lighter);
+  --input-checkbox-border-color: var(--brand-grey-light);
   --input-border-size: var(--border-size-sm);
   --input-border-radius: var(--border-radius);
   --input-background: var(--brand-white);
@@ -85,8 +87,12 @@
   --button-active-background: var(--font-color-light);
   --button-primary-font-color: var(--brand-white);
   --button-primary-background: var(--brand-gradient);
+  --button-primary-border-color: var(--brand-black);
+  --button-primary-hover-background: var(--color-primary);
+  --button-primary-hover-border-color: var(--color-primary);
   --button-ghost-font-color: var(--color-primary);
   --button-ghost-background: var(--brand-white);
+  --button-ghost-hover-background: var(--brand-red-dark);
   --button-text-font-color: var(--color-highlight);
 
   /* Loading spinner */

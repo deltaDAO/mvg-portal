@@ -30,3 +30,15 @@ svg.caret {
 [aria-expanded='true'] .caret {
   transform: rotate(180deg);
 }
+
+[aria-expanded='true'] .menuItem,
+[aria-expanded='true'] .caret,
+[aria-expanded='true'] svg.caret {
+  fill: var(--menu-caret-active-fill-color);
+  color: var(--menu-caret-active-fill-color);
+}
+
+[aria-expanded='true'] .menuItem:after {
+  transform: scaleX(1);
+  background: var(--menu-font-color-hover);
+}

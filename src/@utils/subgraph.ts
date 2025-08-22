@@ -5,6 +5,8 @@ import { getOceanConfig } from './ocean'
 import { OrdersData_orders as OrdersData } from '../@types/subgraph/OrdersData'
 import { OpcFeesQuery as OpcFeesData } from '../@types/subgraph/OpcFeesQuery'
 import appConfig from '../../app.config'
+import { chains } from '../../chains.config'
+import { ethers } from 'ethers'
 
 const UserTokenOrders = gql`
   query OrdersData($user: String!) {
@@ -181,12 +183,23 @@ export async function getOpcsApprovedTokens(
     if (!Object.keys(tokenAddressesEUROe).includes(chainId.toString()))
       return approvedTokens
 
-    return approvedTokens.includes(
-      (token) => token.address === tokenAddressesEUROe[chainId]
+    const oceanTokenAddress = chains.find(
+      (chain) => chain.chainId === chainId
+    )?.oceanTokenAddress
+    const approvedTokensWithoutOcean = approvedTokens.filter(
+      (token) =>
+        ethers.utils.getAddress(token.address) !==
+        ethers.utils.getAddress(oceanTokenAddress)
     )
-      ? approvedTokens
+
+    return approvedTokensWithoutOcean.includes(
+      (token) =>
+        ethers.utils.getAddress(token.address) ===
+        ethers.utils.getAddress(tokenAddressesEUROe[chainId])
+    )
+      ? approvedTokensWithoutOcean
       : [
-          ...approvedTokens,
+          ...approvedTokensWithoutOcean,
           {
             address: tokenAddressesEUROe[chainId],
             // TODO: revert once decimals changed to 6 on pontus-x

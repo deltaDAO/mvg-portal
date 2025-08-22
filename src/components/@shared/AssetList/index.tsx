@@ -12,7 +12,6 @@ import Time from '../atoms/Time'
 import Loader from '../atoms/Loader'
 import NetworkName from '../NetworkName'
 import { useUserPreferences } from '../../../@context/UserPreferences'
-import { ChainDoesNotSupportMulticallError } from 'wagmi'
 
 const networkColumn: TableOceanColumn<AssetExtended> = {
   name: 'Network',
@@ -47,9 +46,9 @@ const tableColumns: TableOceanColumn<AssetExtended>[] = [
       return (
         <AssetType
           className={styles.typeLabel}
-          type={metadata.additionalInformation?.saas ? 'saas' : metadata.type}
+          type={metadata?.additionalInformation?.saas ? 'saas' : metadata.type}
           accessType={
-            metadata.additionalInformation?.saas ? 'saas' : accessType
+            metadata?.additionalInformation?.saas ? 'saas' : accessType
           }
         />
       )

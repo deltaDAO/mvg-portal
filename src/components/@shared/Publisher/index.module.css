@@ -1,6 +1,10 @@
 .publisher {
+  max-width: 100%;
   margin: 0;
   margin-right: 1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 @media (min-width: 32rem) {

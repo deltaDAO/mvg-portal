@@ -30,8 +30,10 @@ export default function AddNetwork({
       </span>
 
       <span className={AddTokenStyles.text}>
-        {'Add '}
-        <span className={AddTokenStyles.symbol}>{networkName}</span>
+        {'Connect to '}
+        <span className={`${AddTokenStyles.symbol} ${styles.networkName}`}>
+          {networkName}
+        </span>
       </span>
     </Button>
   )

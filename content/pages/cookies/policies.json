@@ -1,0 +1,16 @@
+{
+  "policies": [
+    {
+      "policyLangTag": "en",
+      "language": "English",
+      "date": "2025-06-03",
+      "params": {
+        "languageLabel": "Language",
+        "languageHelp": "Language of the cookie policy",
+        "updated": "Last updated on",
+        "dateFormat": "MMMM dd, yyyy."
+      }
+    }
+  ],
+  "slug": "/cookies"
+}

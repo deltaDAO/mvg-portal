@@ -1,5 +1,5 @@
 import SearchBar from '@components/Header/SearchBar'
-import BrandLogo from '@images/brand-logo.svg'
+import BrandLogo from '@images/pontusx_logo_horizontal.svg'
 import GaiaXLogo from '@images/gaia-x-logo.svg'
 import Markdown from '@shared/Markdown'
 import classNames from 'classnames/bind'

@@ -17,6 +17,9 @@ const getReceipts = gql`
       id
       nft {
         address
+        owner {
+          id
+        }
       }
       tx
       timestamp

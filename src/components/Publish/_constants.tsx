@@ -1,8 +1,9 @@
-import { allowFixedPricing, defaultAccessTerms } from '../../../app.config'
+import { allowFixedPricing, customProviderUrl } from '../../../app.config'
 import {
   FormPublishData,
   MetadataAlgorithmContainer,
   PublishFeedback,
+  SAAS_PAYMENT_MODE,
   StepContent
 } from './_types'
 import content from '../../../content/publish/form.json'
@@ -13,6 +14,7 @@ import Preview from './Preview'
 import Submission from './Submission'
 import { ServiceComputeOptions } from '@oceanprotocol/lib'
 import contentFeedback from '../../../content/publish/feedback.json'
+import PoliciesFields from './Policies'
 
 export const wizardSteps: StepContent[] = [
   {
@@ -27,16 +29,21 @@ export const wizardSteps: StepContent[] = [
   },
   {
     step: 3,
+    title: content.policies.title,
+    component: <PoliciesFields />
+  },
+  {
+    step: 4,
     title: content.pricing.title,
     component: <PricingFields />
   },
   {
-    step: 4,
+    step: 5,
     title: content.preview.title,
     component: <Preview />
   },
   {
-    step: 5,
+    step: 6,
     title: content.submission.title,
     component: <Submission />
   }
@@ -80,6 +87,9 @@ export const initialValues: FormPublishData = {
       containsPII: false,
       PIIInformation: undefined,
       serviceSD: { url: '' }
+    },
+    saas: {
+      paymentMode: SAAS_PAYMENT_MODE.SUBSCRIPTION
     }
   },
   services: [
@@ -87,20 +97,22 @@ export const initialValues: FormPublishData = {
       files: [{ url: '', type: 'url' }],
       links: [{ url: '', type: 'url' }],
       dataTokenOptions: { name: '', symbol: '' },
-      timeout: '',
       access: 'access',
       providerUrl: {
-        url: 'https://provider.test.pontus-x.eu',
+        url: customProviderUrl,
         valid: true,
         custom: false
       },
       computeOptions,
       usesConsumerParameters: false,
-      consumerParameters: [],
-      allow: [],
-      deny: []
+      consumerParameters: []
     }
   ],
+  policies: {
+    timeout: '',
+    allow: [],
+    deny: []
+  },
   pricing: {
     baseToken: { address: '', name: '', symbol: 'EUROe', decimals: 6 },
     price: 0,

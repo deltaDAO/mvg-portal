@@ -7,3 +7,7 @@
   padding: 1px;
   fill: var(--color-primary);
 }
+
+.networkName {
+  text-transform: uppercase;
+}

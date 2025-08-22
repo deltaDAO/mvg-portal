@@ -5,3 +5,7 @@
   margin: auto;
   padding: var(--spacer) calc(var(--spacer) / 1.5);
 }
+
+.termsAndConditionsCheckbox {
+  margin-bottom: 0;
+}

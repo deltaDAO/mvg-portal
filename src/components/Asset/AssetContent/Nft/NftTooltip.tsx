@@ -1,11 +1,11 @@
-import Copy from '@shared/atoms/Copy'
 import External from '@images/external.svg'
-import ExplorerLink from '@shared/ExplorerLink'
-import { NftMetadata } from '@utils/nft'
-import { ReactElement } from 'react'
-import styles from './NftTooltip.module.css'
+import Copy from '@shared/atoms/Copy'
 import explorerLinkStyles from '@shared/ExplorerLink/index.module.css'
+import { NftMetadata } from '@utils/nft'
 import { accountTruncate } from '@utils/wallet'
+import { ReactElement } from 'react'
+import ExplorerTokenLink from '../../../@shared/ExplorerLink/ExplorerTokenLink'
+import styles from './NftTooltip.module.css'
 
 // Supported OpenSea networks:
 // https://support.opensea.io/hc/en-us/articles/4404027708051-Which-blockchains-does-OpenSea-support-
@@ -16,14 +16,12 @@ export default function NftTooltip({
   nft,
   nftImage,
   address,
-  chainId,
-  isBlockscoutExplorer
+  chainId
 }: {
   nft: NftMetadata
   nftImage: string
   address: string
   chainId: number
-  isBlockscoutExplorer: boolean
 }): ReactElement {
   const openSeaSupported = openSeaNetworks
     .concat(openSeaTestNetworks)
@@ -51,14 +49,9 @@ export default function NftTooltip({
         )}
         <div className={styles.links}>
           {address && (
-            <ExplorerLink
-              networkId={chainId}
-              path={
-                isBlockscoutExplorer ? `tokens/${address}` : `token/${address}`
-              }
-            >
+            <ExplorerTokenLink networkId={chainId} tokenAddress={address}>
               View on Explorer
-            </ExplorerLink>
+            </ExplorerTokenLink>
           )}
 
           {openSeaSupported && address && (

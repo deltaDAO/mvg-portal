@@ -4,6 +4,7 @@ import content from '../../../../content/onboarding/index.json'
 import Container from '../atoms/Container'
 import Markdown from '../Markdown'
 import LightBulb from '@images/lightBulb.svg'
+import HideButton from './HideButton'
 
 interface OnboardingHeaderData {
   title: string
@@ -22,6 +23,9 @@ export default function Header(): ReactElement {
         <Markdown text={body} className={styles.paragraph} />
       </div>
       <LightBulb />
+      <div className={styles.hideButtonContainer}>
+        <HideButton />
+      </div>
     </Container>
   )
 }

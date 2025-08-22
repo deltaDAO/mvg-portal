@@ -68,49 +68,54 @@ export default function ServicesFields(): ReactElement {
           name="services[0].algorithmPrivacy"
         />
       ) : (
-        <>
-          <Field
-            {...getFieldContent('access', content.services.fields)}
-            component={Input}
-            name="services[0].access"
-            options={accessTypeOptions}
-          />
-        </>
+        values.services[0]?.files[0]?.type !== 'saas' && (
+          <>
+            <Field
+              {...getFieldContent('access', content.services.fields)}
+              component={Input}
+              name="services[0].access"
+              options={accessTypeOptions}
+            />
+          </>
+        )
       )}
       <Field
         {...getFieldContent('providerUrl', content.services.fields)}
         component={Input}
         name="services[0].providerUrl"
       />
-      <Field
-        {...getFieldContent('files', content.services.fields)}
-        component={Input}
-        name="services[0].files"
-      />
-      <Field
-        {...getFieldContent('links', content.services.fields)}
-        component={Input}
-        name="services[0].links"
-      />
-      <Field
-        {...getFieldContent('timeout', content.services.fields)}
-        component={Input}
-        name="services[0].timeout"
-      />
+      {values.services[0]?.files[0]?.type === 'saas' ? (
+        <>
+          <Field
+            {...getFieldContent('redirectUrl', content.services.fields)}
+            component={Input}
+            name="services[0].files[0].url"
+          />
+          <Field
+            {...getFieldContent('paymentMode', content.services.fields)}
+            component={Input}
+            name="metadata.saas.paymentMode"
+          />
+        </>
+      ) : (
+        <Field
+          {...getFieldContent('files', content.services.fields)}
+          component={Input}
+          name="services[0].files"
+        />
+      )}
+      {values.services[0]?.files[0]?.type !== 'saas' && (
+        <Field
+          {...getFieldContent('links', content.services.fields)}
+          component={Input}
+          name="services[0].links"
+        />
+      )}
+
       <Field
         {...getFieldContent('usesConsumerParameters', content.services.fields)}
         component={Input}
         name="services[0].usesConsumerParameters"
-      />
-      <Field
-        {...getFieldContent('allow', content.services.fields)}
-        component={Input}
-        name="services[0].allow"
-      />
-      <Field
-        {...getFieldContent('deny', content.services.fields)}
-        component={Input}
-        name="services[0].deny"
       />
       {values.services[0].usesConsumerParameters && (
         <Field
@@ -122,23 +127,6 @@ export default function ServicesFields(): ReactElement {
           name="services[0].consumerParameters"
         />
       )}
-
-      {/*
-       Licensing and Terms
-      */}
-      <Field
-        {...getFieldContent('license', content.metadata.fields)}
-        component={Input}
-        name="metadata.license"
-      />
-      <Field
-        {...getFieldContent(
-          'accessTermsAndConditions',
-          content.metadata.fields
-        )}
-        component={Input}
-        name="metadata.gaiaXInformation.termsAndConditions"
-      />
     </>
   )
 }

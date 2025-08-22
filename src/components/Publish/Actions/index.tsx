@@ -56,7 +56,8 @@ export default function Actions({
   const isContinueDisabled =
     (values.user.stepCurrent === 1 && errors.metadata !== undefined) ||
     (values.user.stepCurrent === 2 && errors.services !== undefined) ||
-    (values.user.stepCurrent === 3 && errors.pricing !== undefined)
+    (values.user.stepCurrent === 3 && errors.policies !== undefined) ||
+    (values.user.stepCurrent === 4 && errors.pricing !== undefined)
 
   const hasSubmitError =
     values.feedback?.[1].status === 'error' ||
@@ -77,7 +78,11 @@ export default function Actions({
       ) : (
         <>
           {values.user.stepCurrent > 1 && (
-            <Button onClick={handlePrevious} disabled={isSubmitting}>
+            <Button
+              style="text"
+              onClick={handlePrevious}
+              disabled={isSubmitting}
+            >
               Back
             </Button>
           )}
@@ -112,13 +117,7 @@ export default function Actions({
               style="primary"
               disabled={isSubmitting || !isValid}
             >
-              {isSubmitting ? (
-                <Loader white />
-              ) : hasSubmitError ? (
-                'Retry'
-              ) : (
-                'Submit'
-              )}
+              {isSubmitting ? <Loader /> : hasSubmitError ? 'Retry' : 'Submit'}
             </Button>
           )}
         </>

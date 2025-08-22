@@ -21,13 +21,13 @@ export default function Automation(): ReactElement {
     useState<boolean>(false)
 
   useEffect(() => {
-    balance.approved &&
+    balance?.approved &&
       setHasZeroERC20TokenBalances(
-        Object.keys(balance.approved)?.filter(
+        Object.keys(balance?.approved)?.filter(
           (token) => Number(balance.approved[token]) <= 0
         ).length > 0
       )
-    setHasZeroNetworkTokenBalance(Number(balance.native.balance) <= 0)
+    setHasZeroNetworkTokenBalance(Number(balance?.native.balance) <= 0)
   }, [balance])
 
   const wrapperClasses = cx({

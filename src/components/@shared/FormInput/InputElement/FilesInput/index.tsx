@@ -33,6 +33,7 @@ export default function FilesInput(props: InputProps): ReactElement {
   const abi = field.value[0].abi || undefined
   const headers = field.value[0].headers || undefined
   const method = field.value[0].method || undefined
+  const [paymentModeField] = useField(`${props.fieldFormPrefix}.paymentMode`)
 
   async function handleValidation(e: React.SyntheticEvent, url: string) {
     // File example 'https://oceanprotocol.com/tech-whitepaper.pdf'
@@ -102,17 +103,18 @@ export default function FilesInput(props: InputProps): ReactElement {
   function handleClose() {
     helpers.setTouched(false)
     helpers.setValue([
-      { url: '', type: storageType === 'hidden' ? 'ipfs' : storageType }
+      { url: '', type: storageType === 'hidden' ? 'url' : storageType }
     ])
   }
 
   useEffect(() => {
-    storageType === 'graphql' && setDisabledButton(!providerUrl || !query)
+    if (storageType === 'graphql') setDisabledButton(!providerUrl || !query)
 
-    storageType === 'smartcontract' &&
+    if (storageType === 'smartcontract')
       setDisabledButton(!providerUrl || !abi || !checkJson(abi))
 
-    storageType === 'url' && setDisabledButton(!providerUrl)
+    if (storageType === 'url' || storageType === 'saas')
+      setDisabledButton(!providerUrl)
 
     if (meta.error?.length > 0) {
       const { url } = meta.error[0] as unknown as FileInfo
@@ -143,7 +145,9 @@ export default function FilesInput(props: InputProps): ReactElement {
               name={`${field.name}[0].url`}
               isLoading={isLoading}
               hideButton={
-                storageType === 'graphql' || storageType === 'smartcontract'
+                storageType === 'graphql' ||
+                storageType === 'smartcontract' ||
+                storageType === 'saas'
               }
               checkUrl={true}
               handleButtonClick={handleValidation}
@@ -157,43 +161,49 @@ export default function FilesInput(props: InputProps): ReactElement {
                 {props.innerFields &&
                   props.innerFields.map((innerField: any, i: number) => {
                     return (
-                      <>
-                        <Field
-                          key={i}
-                          component={
-                            innerField.type === 'headers'
-                              ? InputKeyValue
-                              : Input
-                          }
-                          {...innerField}
-                          name={`${field.name}[0].${innerField.value}`}
-                          value={field.value[0][innerField.value]}
-                        />
-                      </>
+                      <Field
+                        key={i}
+                        component={
+                          innerField.type === 'headers' ? InputKeyValue : Input
+                        }
+                        {...innerField}
+                        name={
+                          storageType === 'saas'
+                            ? `${props.fieldFormPrefix}.${innerField.value}`
+                            : `${field.name}[0].${innerField.value}`
+                        }
+                        value={
+                          storageType === 'saas'
+                            ? paymentModeField.value
+                            : field.value[0][innerField.value]
+                        }
+                      />
                     )
                   })}
               </div>
 
-              <Button
-                style="primary"
-                onClick={(e: React.SyntheticEvent) => {
-                  e.preventDefault()
-                  handleValidation(e, field.value[0].url)
-                }}
-                disabled={disabledButton}
-              >
-                {isLoading ? (
-                  <Loader />
-                ) : (
-                  `submit ${
-                    storageType === 'graphql'
-                      ? 'query'
-                      : storageType === 'smartcontract'
-                      ? 'abi'
-                      : 'url'
-                  }`
-                )}
-              </Button>
+              {storageType !== 'saas' && (
+                <Button
+                  style="primary"
+                  onClick={(e: React.SyntheticEvent) => {
+                    e.preventDefault()
+                    handleValidation(e, field.value[0].url)
+                  }}
+                  disabled={disabledButton}
+                >
+                  {isLoading ? (
+                    <Loader />
+                  ) : (
+                    `submit ${
+                      storageType === 'graphql'
+                        ? 'query'
+                        : storageType === 'smartcontract'
+                        ? 'abi'
+                        : 'url'
+                    }`
+                  )}
+                </Button>
+              )}
             </>
           )}
         </>

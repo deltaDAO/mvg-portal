@@ -1,3 +1,5 @@
+import { AUTOMATION_MODES } from '@context/Automation/AutomationProvider'
+
 export interface OpcFee {
   chainId: number
   swapNotApprovedFee: string
@@ -27,15 +29,21 @@ export interface AppConfig {
     classNameLight: string
     storageKey: string
   }
-  defaultAccessTerms: string
+  defaultTermsAndConditionsUrl: string
   purgatoryUrl: string
   dockerHubProxyUrl: string
   automationConfig: {
+    enableAutomation: string
     networkTokenFundDefaultValue: string
     erc20ApprovalDefaultValue: string
     roughTxGasEstimate: number
+    defaultMode: AUTOMATION_MODES
   }
   showPreviewAlert: string
+  contractingProvider: {
+    enable: boolean
+    endpoint: string
+  }
   networkAlertConfig: {
     // Refresh interval for network status - 30 sec
     refreshInterval: number
@@ -46,6 +54,10 @@ export interface AppConfig {
       [chainId: number]: string
     }
   }
+  faucet: {
+    baseUri: string
+  }
+  showOnboardingModuleByDefault: boolean
 }
 export interface SiteContent {
   siteTitle: string
@@ -73,7 +85,10 @@ export interface SiteContent {
       }[]
     }[]
   }[]
-  announcement: string
+  announcement: {
+    text: string
+    state: 'success' | 'warning' | 'error'
+  }
   devPreviewAnnouncement: string
   warning: {
     ctd: string

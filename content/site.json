@@ -3,7 +3,7 @@
   "siteTagline": "Streamlined interoperability across digital service ecosystems.",
   "siteUrl": "https://portal.pontus-x.eu",
   "siteImage": "/share.png",
-  "copyright": "All Rights Reserved. Powered by [Gaia-X](https://gaia-x.eu/) and [Ocean Protocol](https://oceanprotocol.com). Built by [deltaDAO](https://delta-dao.com).",
+  "copyright": "All Rights Reserved. Powered by [Gaia-X](https://gaia-x.eu/), [Oasis](https://oasisprotocol.org/) and [Ocean Enterprise](https://www.oceanenterprise.io/). Built by [deltaDAO](https://delta-dao.com).",
   "menu": [
     {
       "name": "Catalogue",
@@ -17,6 +17,11 @@
       "name": "Verify",
       "link": "/verify"
     },
+    {
+      "name": "Faucet",
+      "link": "/faucet"
+    },
+
     {
       "name": "Log",
       "link": "https://explorer.pontus-x.eu/"
@@ -42,9 +47,25 @@
         },
         {
           "name": "COOPERANTS",
-          "link": "https://cooperants.pontus-x.eu/",
+          "link": "https://federator.cooperants.info/marketplace",
           "description": "Gaia-X Lighthouse COOPERANTS is the collaborative alliance in the Aeronautics and space sector that solves pressing digital collaboration problems by creating a common data space.",
           "image": "cooperants-logo.webp",
+          "category": "manufacturing",
+          "isLive": true
+        },
+        {
+          "name": "ACCURATE",
+          "link": "https://accurate.pontus-x.eu",
+          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
+          "image": "accurate-logo.webp",
+          "category": "manufacturing",
+          "isLive": true
+        },
+        {
+          "name": "Flex4Res",
+          "link": "https://flex4res.pontus-x.eu/",
+          "description": "The Flex4Res lighthouse stands for Data spaces for FLEXible production lines and supply chains FOR RESilient manufacturing. Flex4Res develops an open platform for secure and sovereign data exchange",
+          "image": "flex4res-logo.webp",
           "category": "manufacturing",
           "isLive": true
         },
@@ -57,11 +78,43 @@
           "isLive": true
         },
         {
-          "name": "Service-Meister",
-          "link": "https://servicemeister.pontus-x.eu/",
-          "description": "An AI-based Service Ecosystem for Technical Service in the Age of Industry 4.0.",
-          "image": "service-meister-logo.webp",
+          "name": "Pontus-X Main Portal",
+          "link": "https://portal.main.pontus-x.eu/",
+          "description": "With deltaDAO's data and AI Marketplace, you have the freedom to decide how your data and AI services are offered.",
+          "image": "pontusx_deltadao.webp",
+          "category": "general",
+          "isLive": true
+        },
+        {
+          "name": "AgrospAI",
+          "link": "https://agrospai.udl.cat/",
+          "description": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services.",
+          "image": "agrospai-logo.webp",
+          "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "beebucket",
+          "link": "https://daseen.pontus-x.eu/",
+          "description": "The beebucket portal features access to the Extended Dataset Profile Service (EDPS) and Dataset Search Engine (daseen).",
+          "image": "beebucket.webp",
           "category": "AI",
+          "isLive": true
+        },
+        {
+          "name": "Clio-X",
+          "link": "https://www.cliox.org/",
+          "description": "ClioX is a new kind of privacy-first platform—built by and for researchers, archivists, and cultural institutions.",
+          "image": "cliox.webp",
+          "category": "Research",
+          "isLive": true
+        },
+        {
+          "name": "Future Engineering Network (FEN)",
+          "link": "https://fen.pontus-x.eu/",
+          "description": "The Future Engineering Network, a project of Fraunhofer IAO, will focus on the data economy. To help companies explore data-driven business models.",
+          "image": "FEN_logo.webp",
+          "category": "industry 4.0",
           "isLive": true
         },
         {
@@ -73,65 +126,69 @@
           "isLive": true
         },
         {
-          "name": "Flex4Res",
-          "link": "https://flex4res.pontus-x.eu/",
-          "description": "Flex4Res stands for Data spaces for FLEXible production lines and supply chains FOR RESilient manufacturing. Flex4Res develops an open platform for secure and sovereign data exchange",
-          "image": "flex4res-logo.webp",
-          "category": "manufacturing",
+          "name": "FIWARE",
+          "link": "https://fiware-marketplace-a4eqd.ondigitalocean.app/",
+          "description": "A curated framework of Open Source Platform components to accelerate the development of Smart Solutions.",
+          "image": "logo-fiware-full.webp",
+          "category": "smart city",
           "isLive": true
         },
         {
-          "name": "Future Mobility Marketplace",
-          "link": "https://marketplace.future-mobility-alliance.org/",
-          "description": "Find or publish datasets and AI algorithms for solving challenges in mobility.",
-          "image": "fmdm-logo.webp",
-          "category": "mobility",
-          "isLive": true
-        },
-        {
-          "name": "EnergySHR",
-          "link": "https://www.energyshr.nl/",
-          "description": "A platform for sharing (SHR) datasets and AI algorithms that contribute to solving challenges of the energy transition.",
-          "image": "energy-shr-logo.webp",
-          "category": "energy",
-          "isLive": true
-        },
-        {
-          "name": "UdL Research Data Space",
-          "link": "https://dataspace.angliru.udl.cat/",
-          "description": "An open research platform following the FAIR guiding principles of findability, accessibility, interoperability and reusability, while guaranteeing data sovereignty.",
-          "image": "udl-logo.webp",
+          "name": "Polish Agriculture Data Space",
+          "link": "https://dataspaces.psnc.pl/",
+          "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
+          "image": "PSNC.webp",
           "category": "agriculture",
           "isLive": true
         },
         {
-          "name": "Under Construction: ACCURATE",
-          "link": "https://ec.europa.eu/info/funding-tenders/opportunities/portal/screen/how-to-participate/org-details/999999999/project/101138269/program/43108390/details",
-          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
-          "image": "accurate-logo.webp",
-          "category": "manufacturing",
-          "isLive": false
+          "name": "Open Dataspace Lab",
+          "link": "https://www.opendataspacelab.eu/",
+          "description": "Open Dataspace Lab connects supply and demand for all types of data and AI algorithms.",
+          "image": "odl-logo.webp",
+          "category": "general",
+          "isLive": true
         },
         {
-          "name": "deltaDAO AI marketplace",
-          "link": "https://market.delta-dao.com/",
-          "description": "With deltaDAO's AI Marketplace, you have the freedom to decide how your AI service is offered. By keeping your AI private, you retain full control and do not disclose your valuable IP.",
-          "image": "deltadao-logo.webp",
+          "name": "Car Repair 4.0",
+          "link": "https://portal.autowerkstatt40.org/",
+          "description": "Car Repair 4.0 develops a hub infrastructure that connects car workshops to Gaia-X ecosystems and enables AI-supported fault tracking.",
+          "image": "carrepair40.webp",
           "category": "AI",
-          "isLive": false
+          "isLive": true
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "subItems": [
+        {
+          "name": "Documentation",
+          "link": "https://docs.pontus-x.eu/"
+        },
+        {
+          "name": "Landing Page",
+          "link": "https://www.pontus-x.eu/"
+        },
+        {
+          "name": "nautilus",
+          "link": "https://nautilus.delta-dao.com/"
         }
       ]
     }
   ],
-  "announcement": "",
+  "announcement": {
+    "text": "We are currently conducting a survey on future features. Every participation helps us to improve Pontus-X. Click to take part in the [Pontus-X Onboarding Survey](https://deltadao.limesurvey.net/484573).",
+    "state": "success"
+  },
   "devPreviewAnnouncement": "You are visiting the SITE-TITLE-PLACEHOLDER Developer Preview. Please note that some functionalities are in beta and may not work as expected. Visit the [SITE-TITLE-PLACEHOLDER portal](SITE-LINK-PLACEHOLDER) instead.",
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in alpha phase."
   },
   "footer": {
-    "subtitle": "data economy solutions - GDPR compliant",
+    "subtitle": "Transforming Data Act Compliance into Scalable Monetization Opportunities",
     "copyright": "Built by [deltaDAO](https://delta-dao.com)",
-    "privacyTitle": "Privacy",
+    "privacyTitle": "Legal",
     "content": [
       {
         "title": "External",

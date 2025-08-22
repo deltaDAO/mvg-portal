@@ -12,6 +12,7 @@ import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
 import Automation from './UserPreferences/Automation'
+import NetworkMenu from './NetworkMenu'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -75,8 +76,11 @@ export default function Menu(): ReactElement {
       <div className={styles.actions}>
         <SearchButton />
         {appConfig.chainIdsSupported.length > 1 && <Networks />}
+        <NetworkMenu />
         <Wallet />
-        <Automation />
+        {appConfig.automationConfig.enableAutomation === 'true' && (
+          <Automation />
+        )}
         <UserPreferences />
       </div>
     </nav>

@@ -1,7 +1,0 @@
-{
-  "title": "Get some test tokens",
-  "subtitle": "To publish or consume the assets in the portal you'll need some GX and OCEAN test tokens to spend",
-  "body": "To request some tokens, you'll need to authorize a specific address.\n\n You can find all the necessary information by visiting the GEN-X Faucet.",
-  "image": "/images/onboarding/claim_tokens.png",
-  "buttonLabel": "Visit GEN-X Faucet"
-}

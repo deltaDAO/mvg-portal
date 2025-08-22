@@ -1,5 +1,6 @@
 {
   "subtitle": "Quick start guide",
   "title": "First Time Visiting?",
-  "body": "Before interacting with all the portal functionalities, you'll have to ensure you have the correct setup (wallet, testnet, tokens).\n\n We can help you jump-start the process!"
+  "body": "Before interacting with all the portal functionalities, you'll have to ensure you have the correct setup (wallet, testnet, tokens).\n\n We can help you jump-start the process!",
+  "hideHint": "### Hide onboarding guide\n   You can reactivate the Onboarding Guide at any time in the settings."
 }

@@ -16,6 +16,7 @@ export function testLinks(isEdit?: boolean) {
         validField = true
         break
       case 'url':
+      case 'saas':
       case 'graphql':
         validField = isUrl(value?.toString() || '')
         // if we're in publish, the field must be valid

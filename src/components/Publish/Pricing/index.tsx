@@ -43,7 +43,8 @@ export default function PricingFields(): ReactElement {
 
   // Switch type value upon tab change
   function handleTabChange(tabName: string) {
-    const type = tabName.toLowerCase()
+    const type =
+      tabName.toLowerCase() === 'priced' ? 'fixed' : tabName.toLowerCase()
     setFieldValue('pricing.type', type)
     setFieldValue('pricing.price', 0)
     setFieldValue('pricing.freeAgreement', false)

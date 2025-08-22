@@ -15,7 +15,7 @@ module.exports = {
 
   complianceUri:
     process.env.NEXT_PUBLIC_COMPLIANCE_URI ||
-    'https://compliance.lab.gaia-x.eu',
+    'https://www.delta-dao.com/compliance',
 
   complianceApiVersion:
     process.env.NEXT_PUBLIC_COMPLIANCE_API_VERSION || '2210',
@@ -73,11 +73,10 @@ module.exports = {
   // is used to create and show a privacy preference center / cookie banner
   // To learn more about how to configure and use this, please refer to the readme
   privacyPreferenceCenter:
-    process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'true',
+    process.env.NEXT_PUBLIC_PRIVACY_PREFERENCE_CENTER || 'false',
 
   // Default terms to be used for service offerings made on this marketplace
-  defaultAccessTerms:
-    'https://raw.githubusercontent.com/deltaDAO/mvg-portal/v4/content/pages/terms.md',
+  defaultTermsAndConditionsUrl: 'https://portal.pontus-x.eu/terms',
 
   // Purgatory URI, leave as an empty string to disable the API call
   purgatoryUrl: process.env.NEXT_PUBLIC_PURGATORY_URI || '',
@@ -88,13 +87,20 @@ module.exports = {
     'https://dockerhub-proxy.delta-dao.com',
 
   automationConfig: {
+    enableAutomation: process.env.NEXT_PUBLIC_ENABLE_AUTOMATION || 'true',
     networkTokenFundDefaultValue: '2',
     erc20ApprovalDefaultValue: '50',
-    roughTxGasEstimate: 0.02
+    roughTxGasEstimate: 0.02,
+    defaultMode: 'simple'
   },
 
   // Display alert banner for the developer preview deployment
   showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false',
+
+  contractingProvider: {
+    enable: true,
+    endpoint: 'https://contracting.demo.delta-dao.com'
+  },
 
   networkAlertConfig: {
     // Refresh interval for network status - 30 sec
@@ -103,7 +109,21 @@ module.exports = {
     errorMargin: 10,
     // Map chainIds to their respective status endpoints
     statusEndpoints: {
-      100: 'https://status.genx.delta-dao.com/api/check-blocks'
+      32456: 'https://status.dev.pontus-x.eu/'
     }
-  }
+  },
+
+  faucet: {
+    baseUri: 'https://faucet.api.pontus-x.eu'
+  },
+
+  showOnboardingModuleByDefault:
+    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'true',
+
+  allowedGaiaXRegistryDomains: [
+    'https://registry.gaia-x.eu/v2206',
+    'https://registry.lab.gaia-x.eu/v2206'
+  ],
+
+  plausibleDataDomain: 'portal.pontus-x.eu'
 }

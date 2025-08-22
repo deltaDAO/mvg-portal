@@ -157,7 +157,9 @@ export function generateBaseQuery(
                   ? [getFilterTerm('nft.state', 5)]
                   : []),
                 getDynamicPricingMustNot(),
-                ...(baseQueryParams.showSaas === false ? [saasFieldExists] : [])
+                ...(baseQueryParams.showSaas === false && isMetadataTypeSelected
+                  ? [saasFieldExists]
+                  : [])
               ]
             }
           }
@@ -369,13 +371,15 @@ export async function getAlgorithmDatasetsForCompute(
   const baseQueryParams = {
     chainIds: [datasetChainId],
     nestedQuery: {
-      must: {
-        match_phrase: {
-          'services.compute.publisherTrustedAlgorithms.did': {
-            query: algorithmId
+      must: [
+        {
+          match_phrase: {
+            'services.compute.publisherTrustedAlgorithms.did': {
+              query: algorithmId
+            }
           }
         }
-      }
+      ]
     },
     sortOptions: {
       sortBy: SortTermOptions.Created,

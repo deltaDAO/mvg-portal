@@ -15,6 +15,7 @@ import useBalance from '@hooks/useBalance'
 import ImportWallet from './Steps/ImportWallet'
 import AutomationWalletState from './Steps/AutomationWalletState'
 import { getSupportedChainIds } from '../../../../chains.config'
+import Faucet from './Steps/Faucet'
 
 export interface OnboardingStep {
   title: string
@@ -31,6 +32,7 @@ const steps = [
   { shortLabel: 'Tokens', component: <ImportCustomTokens /> },
   { shortLabel: 'Import', component: <ImportWallet /> },
   { shortLabel: 'Automation', component: <AutomationWalletState /> },
+  { shortLabel: 'Faucet', component: <Faucet /> },
   { shortLabel: 'Ready', component: <Ready /> }
 ]
 

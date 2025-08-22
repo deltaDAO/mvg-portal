@@ -1,0 +1,17 @@
+{
+  "title": "Pontus-X Faucet",
+  "description": "Request tokens for the Pontus-X Networks",
+  "buttonLabel": "Get Tokens",
+  "card": {
+    "cardTitle": "Welcome to the Pontus-X Faucet",
+    "cardDescription": "A faucet is a service that provides free tokens for testing purposes. Known accounts can request 10 EUROe fee tokens and 1000 EUROe payment tokens to use on the Pontus-X network. These tokens are available every 12 hours.",
+    "cardExplainerTitle": "How to Request Tokens",
+    "cardExplainerFirstStep": "Ensure you have a web3 wallet (e.g. MetaMask) connected.",
+    "cardExplainerSecondStep": "Your wallet address will be automatically detected and displayed below.",
+    "cardExplainerThirdStep": "Click the button to request your free tokens.",
+    "cardExplainerFourthStep": "Wait for a few seconds while the request is processed.",
+    "cardExplainerFithStep": "You will receive a confirmation once the tokens are successfully sent to your address.",
+    "cardNetworkAddress": "Your Pontus-X address",
+    "cardNetwork": "Connected Network"
+  }
+}

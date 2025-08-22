@@ -25,6 +25,7 @@
   display: inline-block;
   vertical-align: middle;
   margin-top: -2px;
+  border-color: var(--input-checkbox-border-color);
 }
 
 .radio:focus,

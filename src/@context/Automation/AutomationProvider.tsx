@@ -45,7 +45,7 @@ const AutomationContext = createContext({} as AutomationProviderValue)
 // Provider
 function AutomationProvider({ children }) {
   const { getApprovedTokenBalances } = useBalance()
-  const { approvedBaseTokens } = useMarketMetadata()
+  const { approvedBaseTokens, appConfig } = useMarketMetadata()
   const { automationWalletJSON, setAutomationWalletJSON } = useUserPreferences()
 
   const [autoWallet, setAutoWallet] = useState<Wallet>()
@@ -207,30 +207,36 @@ function AutomationProvider({ children }) {
   )
 
   return (
-    <AutomationContext.Provider
-      value={{
-        autoWallet,
-        autoWalletAddress,
-        balance,
-        isAutomationEnabled,
-        isLoading,
-        decryptPercentage,
-        hasValidEncryptedWallet,
-        setIsAutomationEnabled,
-        updateBalance,
-        deleteCurrentAutomationWallet,
-        importAutomationWallet,
-        decryptAutomationWallet
-      }}
-    >
-      {children}
-      <DeleteAutomationModal
-        hasDeleteRequest={hasDeleteRequest}
-        setHasDeleteRequest={setHasDeleteRequest}
-        disabled={isLoading}
-        onDeleteConfirm={() => removeAutomationWalletAndCleanup()}
-      />
-    </AutomationContext.Provider>
+    <>
+      {appConfig.automationConfig.enableAutomation === 'true' ? (
+        <AutomationContext.Provider
+          value={{
+            autoWallet,
+            autoWalletAddress,
+            balance,
+            isAutomationEnabled,
+            isLoading,
+            decryptPercentage,
+            hasValidEncryptedWallet,
+            setIsAutomationEnabled,
+            updateBalance,
+            deleteCurrentAutomationWallet,
+            importAutomationWallet,
+            decryptAutomationWallet
+          }}
+        >
+          {children}
+          <DeleteAutomationModal
+            hasDeleteRequest={hasDeleteRequest}
+            setHasDeleteRequest={setHasDeleteRequest}
+            disabled={isLoading}
+            onDeleteConfirm={() => removeAutomationWalletAndCleanup()}
+          />
+        </AutomationContext.Provider>
+      ) : (
+        <>{children}</>
+      )}
+    </>
   )
 }
 

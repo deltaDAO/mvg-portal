@@ -12,12 +12,12 @@
 
 .banner.warning {
   background-color: var(--brand-alert-yellow);
-  color: var(--brand-white);
+  color: var(--brand-black);
 }
 
 .banner.success {
   background-color: var(--brand-alert-green);
-  color: var(--brand-white);
+  color: var(--brand-black);
 }
 
 .banner > div {

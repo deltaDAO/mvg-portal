@@ -43,7 +43,7 @@ export default function Tooltip(props: TippyProps): ReactElement {
     <Tippy
       interactive
       interactiveBorder={5}
-      zIndex={3}
+      zIndex={6}
       trigger={trigger || 'mouseenter focus'}
       disabled={disabled || null}
       placement={placement || 'auto'}
