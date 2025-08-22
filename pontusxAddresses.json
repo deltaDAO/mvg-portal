@@ -706,5 +706,10 @@
   "0x7bbceba47d20d657b2a706329c0617262d5a2e17": "JDS GmbH",
   "0xb0747287c71Bc3d376531856b6d346697A3DD233": "Galicia Supercomputing Center (CESGA)",
   "0x38B7c70DE4283e9ebD11eCEFf1Be74858d43D001": "Dunavnet Limited",
-  "0xc619bfc77c52d36bf10e1429a146a7d435504f3c": "AllUnity GmbH"
+  "0xb1e31cd85b1fe8b3a21c9d10e1567ec987599809": "Cartagena Parking Sensor Data",
+  "0x7266cb767d7c8a627f074ed763660881c7d5e32b": "Cartagena Air Quality Data",
+  "0x15450500f46aa57d0f0f9b0e0a649a96a0301ae9": "Cartagena Noise Levels Data",
+  "0xab4eeb199b2d35cdced01d82426cd18907033d1d": "Cartagena Weather Data",
+  "0x33a89336a8f49687f42e1c5fc565f54c46a9984a": "Water Level Kiel Fjord",
+  "0x083c47124016d928159f45580abde3682a8f6cda": "GeoJSON Coastline German Baltic Sea"
 }
