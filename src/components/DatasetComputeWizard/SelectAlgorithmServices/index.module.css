@@ -160,3 +160,15 @@
 .expandedIcon svg {
   transform: rotate(180deg);
 }
+
+@media screen and (min-width: 600px) and (max-width: 1028px) {
+  .header {
+    font-size: 8px;
+  }
+  .service {
+    font-size: 6px;
+  }
+  .algorithmName {
+    font-size: 8px;
+  }
+}

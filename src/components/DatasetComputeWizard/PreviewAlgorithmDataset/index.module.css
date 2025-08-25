@@ -176,3 +176,40 @@
   color: rgba(48, 48, 49, 0.7);
   line-height: 1.5;
 }
+@media screen and (min-width: 600px) and (max-width: 1028px) {
+  .algorithmAddress {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30ch;
+    display: block;
+  }
+
+  .serviceDescription,
+  .algorithmDescription {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30ch;
+    display: block;
+  }
+}
+
+@media screen and (min-width: 200px) and (max-width: 599px) {
+  .algorithmAddress {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20ch;
+    display: block;
+  }
+
+  .serviceDescription,
+  .algorithmDescription {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20ch;
+    display: block;
+  }
+}

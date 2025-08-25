@@ -146,3 +146,41 @@
   font-size: 14px;
   color: #303031;
 }
+
+@media screen and (min-width: 600px) and (max-width: 1028px) {
+  .datasetAddress {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30ch;
+    display: block;
+  }
+
+  .serviceDescription,
+  .datasetDescription {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30ch;
+    display: block;
+  }
+}
+
+@media screen and (min-width: 200px) and (max-width: 599px) {
+  .datasetAddress {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20ch;
+    display: block;
+  }
+
+  .serviceDescription,
+  .datasetDescription {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20ch;
+    display: block;
+  }
+}
