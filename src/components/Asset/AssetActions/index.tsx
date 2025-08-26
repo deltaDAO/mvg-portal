@@ -255,36 +255,32 @@ export default function AssetActions({
 
         <div className={styles.actionButtonWrapper}>
           {appConfig.ssiEnabled ? (
-            <>
-              {hasVerifiedCredentials ? (
-                isCompute ? (
-                  <Button
-                    style="primary"
-                    onClick={handleComputeClick}
-                    className={styles.computeButton}
-                  >
-                    Start Compute
-                  </Button>
-                ) : (
-                  <Download
-                    accountId={accountId}
-                    signer={signer}
-                    asset={asset}
-                    service={service}
-                    accessDetails={accessDetails}
-                    serviceIndex={serviceIndex}
-                    dtBalance={dtBalance}
-                    isBalanceSufficient={isBalanceSufficient}
-                    isAccountIdWhitelisted={isAccountIdWhitelisted}
-                    file={fileMetadata}
-                    fileIsLoading={fileIsLoading}
-                    consumableFeedback={consumableFeedback}
-                  />
-                )
-              ) : (
-                <AssetActionCheckCredentials asset={asset} service={service} />
-              )}
-            </>
+            isCompute ? (
+              <Button
+                style="primary"
+                onClick={handleComputeClick}
+                className={styles.computeButton}
+              >
+                Start Compute
+              </Button>
+            ) : hasVerifiedCredentials ? (
+              <Download
+                accountId={accountId}
+                signer={signer}
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                serviceIndex={serviceIndex}
+                dtBalance={dtBalance}
+                isBalanceSufficient={isBalanceSufficient}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                file={fileMetadata}
+                fileIsLoading={fileIsLoading}
+                consumableFeedback={consumableFeedback}
+              />
+            ) : (
+              <AssetActionCheckCredentials asset={asset} service={service} />
+            )
           ) : isCompute ? (
             <Button
               style="primary"

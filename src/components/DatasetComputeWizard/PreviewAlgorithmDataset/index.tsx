@@ -2,6 +2,8 @@ import styles from './index.module.css'
 import { useEffect, useState } from 'react'
 import { useFormikContext } from 'formik'
 import StepTitle from '@shared/StepTitle'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from 'src/@types/ddo/Service'
 
 interface AlgorithmService {
   id: string
@@ -29,23 +31,71 @@ interface FormValues {
   algorithmServices?: AlgorithmService[]
 }
 
-const PreviewAlgorithmDataset = () => {
+const PreviewAlgorithmDataset = ({
+  selectedAlgorithmAsset
+}: {
+  selectedAlgorithmAsset?: AssetExtended
+}) => {
   const { values } = useFormikContext<FormValues>()
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm | null>(
     null
   )
 
-  // Initialize from form values if needed
-  useEffect(() => {
-    if (!values.algorithm || selectedAlgorithm) return
+  // Helper to extract plain string from LanguageValueObject
+  const extractString = (
+    value: string | { '@value': string } | undefined
+  ): string => {
+    if (typeof value === 'string') return value
+    if (value && typeof value === 'object' && '@value' in value)
+      return value['@value']
+    return ''
+  }
 
-    // Parse the algorithm selection to get services
+  // Initialize from selectedAlgorithmAsset if provided, otherwise from form value
+  useEffect(() => {
+    if (selectedAlgorithm) return
+
+    if (selectedAlgorithmAsset) {
+      const algorithmServices: AlgorithmService[] =
+        selectedAlgorithmAsset.credentialSubject?.services?.map(
+          (service: Service) => ({
+            id: service.id,
+            name: extractString(service.name) || service.type,
+            title: extractString(service.name) || service.type,
+            serviceDescription:
+              extractString(service.description) ||
+              `Service for ${service.type}`,
+            type: service.type,
+            duration: service.timeout || 0,
+            price: '0',
+            symbol: 'OCEAN',
+            checked: true
+          })
+        ) || []
+
+      setSelectedAlgorithm({
+        id: selectedAlgorithmAsset.id,
+        name:
+          extractString(
+            selectedAlgorithmAsset.credentialSubject?.metadata?.name
+          ) || 'Selected Algorithm',
+        description:
+          extractString(
+            selectedAlgorithmAsset.credentialSubject?.metadata?.description
+          ) || 'Algorithm services for compute',
+        expanded: true,
+        checked: true,
+        services: algorithmServices
+      })
+      return
+    }
+
+    if (!values.algorithm) return
+
     try {
       const parsed = JSON.parse(values.algorithm)
       const algorithmId = parsed?.algoDid || values.algorithm
 
-      // For now, we'll create a placeholder structure
-      // In a real implementation, you'd fetch the actual algorithm services
       setSelectedAlgorithm({
         id: algorithmId,
         name: 'Selected Algorithm',
@@ -67,9 +117,9 @@ const PreviewAlgorithmDataset = () => {
         ]
       })
     } catch (e) {
-      console.log('Algorithm not in JSON format, using as-is')
+      // ignore
     }
-  }, [values.algorithm, selectedAlgorithm])
+  }, [values.algorithm, selectedAlgorithm, selectedAlgorithmAsset])
 
   if (!selectedAlgorithm) {
     return (

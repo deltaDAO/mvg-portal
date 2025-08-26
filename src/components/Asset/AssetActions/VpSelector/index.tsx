@@ -126,10 +126,28 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
     if (showDialog) {
       const array = new Array(ssiVerifiableCredentials?.length || 0).fill(false)
       setSelections(array)
-
-      selectorDialog.current.showModal()
+      console.log('[VpSelector] opening dialog', {
+        creds: ssiVerifiableCredentials?.map(
+          (c) => c?.parsedDocument?.id || c?.id
+        ),
+        count: ssiVerifiableCredentials?.length || 0
+      })
+      try {
+        // Use non-modal dialog to avoid nested modal conflicts inside wizard overlays
+        selectorDialog.current.show()
+        console.log('[VpSelector] show() called', {
+          isOpen: selectorDialog.current?.open
+        })
+      } catch (e) {
+        console.error('[VpSelector] show error', e)
+      }
     } else {
-      selectorDialog.current.close()
+      console.log('[VpSelector] closing dialog')
+      try {
+        selectorDialog.current.close()
+      } catch (e) {
+        console.error('[VpSelector] close error', e)
+      }
     }
   }, [showDialog])
 
@@ -203,10 +221,15 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         </div>
 
         <div className={styles.panelRow}>
-          <button className={styles.abortButton} onClick={handleAbortSelection}>
+          <button
+            type="button"
+            className={styles.abortButton}
+            onClick={handleAbortSelection}
+          >
             Close
           </button>
           <button
+            type="button"
             className={styles.acceptButton}
             onClick={handleAcceptSelection}
           >

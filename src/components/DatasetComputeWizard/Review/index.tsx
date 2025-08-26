@@ -15,6 +15,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
+import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import { ComputeDatasetForm } from '../_constants'
 import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
@@ -156,6 +157,9 @@ export default function Review({
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
   )
   const [serviceIndex, setServiceIndex] = useState(0)
+  const [showDatasetCredentialsCheck, setShowDatasetCredentialsCheck] =
+    useState(false)
+  const [showCredentialsCheck, setShowCredentialsCheck] = useState(false)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const envKey =
@@ -563,6 +567,22 @@ export default function Review({
             ))
           )} */}
 
+          {/* Dataset service (per-service) */}
+          {service && (
+            <PricingRow
+              key={`DATASET-${service.id}`}
+              itemName={service.name}
+              value={datasetOrderPrice || accessDetails?.price || '0'}
+              duration={formatDuration(service.timeout || 0)}
+              isService
+              actionLabel="Check credentials"
+              onAction={() => setShowDatasetCredentialsCheck(true)}
+              actionDisabled={Boolean(
+                lookupVerifierSessionId?.(asset?.id, service.id)
+              )}
+            />
+          )}
+
           {/* Compute Items */}
           {computeItems.map((item) => (
             <PricingRow
@@ -570,6 +590,28 @@ export default function Review({
               itemName={item.name}
               value={item.value}
               duration={item.duration}
+              actionLabel={
+                item.name === 'ALGORITHM'
+                  ? 'Check algorithm credentials'
+                  : undefined
+              }
+              onAction={
+                item.name === 'ALGORITHM'
+                  ? () => setShowCredentialsCheck(true)
+                  : undefined
+              }
+              actionDisabled={
+                item.name === 'ALGORITHM' && selectedAlgorithmAsset?.id
+                  ? Boolean(
+                      lookupVerifierSessionId?.(
+                        selectedAlgorithmAsset.id,
+                        selectedAlgorithmAsset?.credentialSubject?.services?.[
+                          serviceIndex
+                        ]?.id
+                      )
+                    )
+                  : false
+              }
             />
           ))}
 
@@ -633,6 +675,54 @@ export default function Review({
         </div>
         <PurchaseButton />
       </div>
+      {showCredentialsCheck && selectedAlgorithmAsset && (
+        <div className={styles.credentialsOverlay}>
+          <div className={styles.credentialsContainer}>
+            <div className={styles.credentialsHeader}>
+              <h3>Verify Algorithm Credentials</h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowCredentialsCheck(false)}
+              >
+                ✕ Close
+              </button>
+            </div>
+            <CredentialDialogProvider>
+              <AssetActionCheckCredentialsAlgo
+                asset={selectedAlgorithmAsset as any}
+                service={
+                  (selectedAlgorithmAsset as any)?.credentialSubject
+                    ?.services?.[serviceIndex]
+                }
+                onVerified={() => setShowCredentialsCheck(false)}
+              />
+            </CredentialDialogProvider>
+          </div>
+        </div>
+      )}
+
+      {showDatasetCredentialsCheck && asset && service && (
+        <div className={styles.credentialsOverlay}>
+          <div className={styles.credentialsContainer}>
+            <div className={styles.credentialsHeader}>
+              <h3>Verify Dataset Credentials</h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowDatasetCredentialsCheck(false)}
+              >
+                ✕ Close
+              </button>
+            </div>
+            <CredentialDialogProvider>
+              <AssetActionCheckCredentials
+                asset={asset as any}
+                service={service as any}
+                onVerified={() => setShowDatasetCredentialsCheck(false)}
+              />
+            </CredentialDialogProvider>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

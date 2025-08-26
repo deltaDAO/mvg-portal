@@ -227,25 +227,6 @@ export default function AssetContent({
                             />
                           ))}
                         </div>
-
-                        {/* Quick Compute Button */}
-                        {computeServiceIndex !== undefined &&
-                          computeServiceIndex >= 0 && (
-                            <div className={styles.quickCompute}>
-                              <Button onClick={handleComputeClick}>
-                                🚀 Quick Compute
-                              </Button>
-                              <Button
-                                onClick={() => {
-                                  setShowComputeWizard(true)
-                                  setSelectedService(computeServiceIndex)
-                                }}
-                                style="text"
-                              >
-                                📋 Compute Wizard
-                              </Button>
-                            </div>
-                          )}
                       </div>
                     ) : (
                       <h4>No services are currently available.</h4>

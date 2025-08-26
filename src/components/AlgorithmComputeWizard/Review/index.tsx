@@ -906,6 +906,18 @@ export default function Review({
                   ? () => setShowCredentialsCheck(true)
                   : undefined
               }
+              actionDisabled={
+                item.name === 'ALGORITHM' && selectedAlgorithmAsset?.id
+                  ? Boolean(
+                      lookupVerifierSessionId?.(
+                        selectedAlgorithmAsset.id,
+                        selectedAlgorithmAsset?.credentialSubject?.services?.[
+                          serviceIndex
+                        ]?.id
+                      )
+                    )
+                  : false
+              }
             />
           ))}
 
