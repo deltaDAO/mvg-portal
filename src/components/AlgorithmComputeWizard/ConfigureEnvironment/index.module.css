@@ -477,3 +477,173 @@ body .inputSmall {
 .actions button:last-child:hover {
   background: var(--publish-primary-hover);
 }
+/* Tablet View (768px – 1024px) */
+@media screen and (max-width: 1024px) {
+  .container {
+    max-width: 95%;
+    gap: 24px;
+  }
+
+  .resourceRow {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px;
+    height: auto;
+  }
+
+  .resourceLabel {
+    width: 90px;
+    font-size: 13px;
+  }
+
+  .sliderSection {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .sliderContainer {
+    width: 100%;
+  }
+
+  .inputSection {
+    flex: 0 0 auto;
+  }
+
+  .inputSmall {
+    width: 70px;
+  }
+
+  .resourcePriceSection {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .priceLabel {
+    width: auto;
+    font-size: 12px;
+  }
+
+  .priceSection {
+    gap: 16px;
+    height: auto;
+  }
+
+  .priceDisplay {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  .priceInfo {
+    flex: 1 1 100%;
+    padding: 8px 12px;
+  }
+
+  .actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .actions button {
+    flex: 1 1 auto;
+    min-width: 140px;
+  }
+}
+
+/* Mobile View (up to 767px) */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+    gap: 20px;
+  }
+
+  .container h2 {
+    font-size: var(--publish-font-size-lg);
+    text-align: center;
+  }
+
+  .resourceRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    height: auto;
+  }
+
+  .resourceLabel {
+    width: 100%;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .sliderSection {
+    width: 100%;
+  }
+
+  .sliderContainer {
+    width: 100%;
+  }
+
+  .inputSection {
+    width: 100%;
+  }
+
+  .inputSmall {
+    width: 100%;
+    text-align: left;
+  }
+
+  .resourcePriceSection {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .priceSection {
+    gap: 16px;
+    height: auto;
+  }
+
+  .priceDisplay {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    height: auto;
+  }
+
+  .priceInfo {
+    width: 100%;
+    padding: 8px 12px;
+  }
+
+  .priceInfo span {
+    font-size: 12px;
+    line-height: 16px;
+    width: 100%;
+    position: relative;
+    left: 0;
+    top: 0;
+  }
+
+  .inputLarge {
+    width: 100%;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}
