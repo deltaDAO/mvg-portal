@@ -233,9 +233,8 @@ export default function Review({
   // Pre-select computeEnv and/or algo if there is only one available option
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
-      const selectedEnv = computeEnvs[0]
-      console.log('Compute env id ', selectedEnv?.id)
-      setFieldValue('computeEnv', selectedEnv, true)
+      const { id } = computeEnvs[0]
+      setFieldValue('computeEnv', id, true)
     }
     if (
       algorithms?.length === 1 &&
@@ -316,7 +315,7 @@ export default function Review({
         disk,
         jobDuration,
         price: 0,
-        mode: 'paid'
+        mode: 'free' // need to make it dynamic
       }
 
       setAllResourceValues((prev) => ({
@@ -457,13 +456,7 @@ export default function Review({
     const priceChecks = [...totalPrices]
 
     // Add C2D price if not already included in totalPrices
-    const currentEnvKey =
-      typeof values.computeEnv === 'string'
-        ? (values.computeEnv as unknown as string)
-        : values.computeEnv?.id
-    const c2dPrice = currentEnvKey
-      ? allResourceValues?.[currentEnvKey]?.price
-      : undefined
+    const c2dPrice = allResourceValues?.[values.computeEnv]?.price
     const c2dSymbol = providerFeesSymbol
     // Only add if price > 0 and not present in totalPrices already (optional check)
     if (

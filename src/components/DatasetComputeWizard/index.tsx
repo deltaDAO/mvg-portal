@@ -182,11 +182,8 @@ export default function ComputeWizard({
   const [allResourceValues, setAllResourceValues] = useState<{
     [envId: string]: ResourceType
   }>({})
-  console.log('selectedAlgorithmAsset ', selectedAlgorithmAsset)
-  console.log('allResourceValues ', allResourceValues)
 
   const selectedEnvId = Object.keys(allResourceValues)[0]
-  console.log('Selected Env id ', selectedEnvId)
   const selectedComputeEnv = computeEnvs?.find(
     (env) => env.id === selectedEnvId
   )
@@ -269,20 +266,10 @@ export default function ComputeWizard({
   }
 
   async function initPriceAndFees(
-    datasetServices?: { asset: AssetExtended; service: Service }[],
-    selectedComputeEnvParam?: ComputeEnvironment,
-    selectedResourcesParam?: ResourceType
+    datasetServices?: { asset: AssetExtended; service: Service }[]
   ) {
     try {
-      console.log('calling on initPriceAndFees!!!!!!!!! 1')
-      console.log(
-        'calling on initPriceAndFees selectedComputeEnv',
-        selectedComputeEnv
-      )
-      const resolvedComputeEnv = selectedComputeEnvParam || selectedComputeEnv
-      const resolvedResources = selectedResourcesParam || selectedResources
-
-      if (!resolvedComputeEnv || !resolvedComputeEnv.id || !resolvedResources)
+      if (!selectedComputeEnv || !selectedComputeEnv.id || !selectedResources)
         throw new Error(`Error getting compute environment!`)
 
       const actualDatasetAssets: AssetExtended[] = selectedDatasetAsset.length
@@ -321,20 +308,19 @@ export default function ComputeWizard({
           sessionId: lookupVerifierSessionId(asset.id, service.id)
         }
       })
-      console.log('calling on initPriceAndFees!!!!!!!!! 2')
 
       const algoSessionId = lookupVerifierSessionId(
         actualAlgorithmAsset.id,
         actualAlgoService.id
       )
-      console.log('calling on initPriceAndFees!!!!!!!!! 3')
+
       const initializedProvider = await initializeProviderForComputeMulti(
         datasetsForProvider,
         actualAlgorithmAsset,
         algoSessionId,
         signer,
-        resolvedComputeEnv,
-        resolvedResources,
+        selectedComputeEnv,
+        selectedResources,
         actualSvcIndex
       )
 
@@ -359,7 +345,7 @@ export default function ComputeWizard({
               asset.credentialSubject.chainId
             )
 
-            const price = BigNumber.from(resolvedResources.price)
+            const price = BigNumber.from(selectedResources.price)
             const payment = BigNumber.from(initializedProvider.payment.amount)
 
             const amountToDeposit = price
@@ -369,7 +355,7 @@ export default function ComputeWizard({
 
             await escrow.verifyFundsForEscrowPayment(
               oceanTokenAddress,
-              resolvedComputeEnv.consumerAddress,
+              selectedComputeEnv.consumerAddress,
               await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
               initializedProvider.payment.amount.toString(),
               initializedProvider.payment.minLockSeconds.toString(),
@@ -533,28 +519,12 @@ export default function ComputeWizard({
       algoServiceParams?: UserCustomParameters
       algoParams?: UserCustomParameters
     },
-    datasetServices?: { asset: AssetExtended; service: Service }[],
-    selectedComputeEnvParam?: ComputeEnvironment,
-    selectedResourcesParam?: ResourceType
+    datasetServices?: { asset: AssetExtended; service: Service }[]
   ): Promise<void> {
-    console.log('in start job !!!!!!!!! 1')
-
     try {
       setIsOrdering(true)
       setIsOrdered(false)
       setError(undefined)
-
-      const initResult = await initPriceAndFees(
-        datasetServices,
-        selectedComputeEnvParam,
-        selectedResourcesParam
-      )
-
-      if (!initResult || !initResult.datasetResponses) {
-        throw new Error(
-          'Initialization failed, no dataset responses. Check credentials and compute env.'
-        )
-      }
 
       const {
         datasetResponses,
@@ -562,7 +532,7 @@ export default function ComputeWizard({
         actualAlgoService,
         actualAlgoAccessDetails,
         initializedProvider
-      } = initResult
+      } = await initPriceAndFees(datasetServices)
 
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
@@ -614,7 +584,7 @@ export default function ComputeWizard({
           datasetResponses[0].actualDatasetAsset.id,
           datasetResponses[0].actualDatasetService.id
         ),
-        (selectedComputeEnvParam || selectedComputeEnv).consumerAddress
+        selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
 
@@ -635,7 +605,7 @@ export default function ComputeWizard({
             ds.actualDatasetAsset.id,
             ds.actualDatasetService.id
           ),
-          (selectedComputeEnvParam || selectedComputeEnv).consumerAddress
+          selectedComputeEnv.consumerAddress
         )
         if (!datasetOrderTx)
           throw new Error(
@@ -665,12 +635,9 @@ export default function ComputeWizard({
 
       setComputeStatusText(getComputeFeedback()[4])
 
-      const resolvedComputeEnv = selectedComputeEnvParam || selectedComputeEnv
-      const resolvedResources = selectedResourcesParam || selectedResources
-
-      const resourceRequests = resolvedComputeEnv.resources.map((res) => ({
+      const resourceRequests = selectedComputeEnv.resources.map((res) => ({
         id: res.id,
-        amount: resolvedResources[res.id] || res.min
+        amount: selectedResources[res.id] || res.min
       }))
 
       const policyServerAlgo: PolicyServerInitiateComputeActionData = {
@@ -689,14 +656,14 @@ export default function ComputeWizard({
       const policiesServer = [policyServerAlgo, ...policyDatasets]
 
       let response
-      if (resolvedResources.mode === 'paid') {
+      if (selectedResources.mode === 'paid') {
         response = await ProviderInstance.computeStart(
           service.serviceEndpoint,
           signer,
-          resolvedComputeEnv.id,
+          selectedComputeEnv.id,
           datasetInputs,
           { ...computeAlgorithm, transferTxId: algorithmOrderTx },
-          resolvedResources.jobDuration,
+          selectedResources.jobDuration,
           oceanTokenAddress,
           resourceRequests,
           datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
@@ -715,7 +682,7 @@ export default function ComputeWizard({
         response = await ProviderInstance.freeComputeStart(
           service.serviceEndpoint,
           signer,
-          resolvedComputeEnv.id,
+          selectedComputeEnv.id,
           datasetInputs.map(({ documentId, serviceId }) => ({
             documentId,
             serviceId
@@ -763,7 +730,6 @@ export default function ComputeWizard({
   }
 
   const onSubmit = async (values: FormComputeData) => {
-    console.log('calling on submit!!!!!!!!!')
     try {
       const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
 
@@ -781,7 +747,6 @@ export default function ComputeWizard({
           throw error
         }
       }
-      console.log('calling on submit!!!!!!!!! 2')
 
       if (
         !(values.algorithm || values.dataset) ||
@@ -823,7 +788,6 @@ export default function ComputeWizard({
             ?.consumerParameters
         )
       }
-      console.log('calling on submit!!!!!!!!! 3')
 
       const datasetServices: { asset: AssetExtended; service: Service }[] =
         actualSelectedDataset.map((ds, i) => {
@@ -843,27 +807,7 @@ export default function ComputeWizard({
           }
         })
 
-      // Resolve compute env and resources from form values
-      const envKey =
-        typeof values.computeEnv === 'string'
-          ? (values.computeEnv as unknown as string)
-          : values.computeEnv?.id
-      const resolvedEnv = computeEnvs?.find((e) => e.id === envKey)
-      const resolvedResources = envKey ? allResourceValues?.[envKey] : undefined
-
-      if (!resolvedEnv || !resolvedEnv.id || !resolvedResources) {
-        toast.error(
-          'Please select a compute environment and configure resources before starting.'
-        )
-        return
-      }
-
-      await startJob(
-        userCustomParameters,
-        datasetServices,
-        resolvedEnv,
-        resolvedResources
-      )
+      await startJob(userCustomParameters, datasetServices)
     } catch (error) {
       if (
         error?.message?.includes('user rejected transaction') ||
