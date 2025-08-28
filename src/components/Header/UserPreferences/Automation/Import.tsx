@@ -16,7 +16,12 @@ export default function Import(): ReactElement {
     try {
       const json = JSON.parse(content)
 
-      if (!json?.address || !json?.id || !json?.version || !json?.crypto)
+      if (
+        !json?.address ||
+        !json?.id ||
+        !json?.version ||
+        !(json?.crypto || json?.Crypto)
+      )
         return false
     } catch (e) {
       return false
