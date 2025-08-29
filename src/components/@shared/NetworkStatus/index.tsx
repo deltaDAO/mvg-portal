@@ -52,22 +52,24 @@ export default function NetworkStatus({
     },
     [networkAlertConfig, chain]
   )
+  // TODO network status endpoint has been deprecated, enable once replacement is in place
+  // consider https://testnet.nexus.oasis.io/v1/pontusxtest/status for testnet
+  // https://testnet.nexus.oasis.io/v1/pontusxdev/status for devnet
+  // useEffect(() => {
+  //   if (!chain?.id) return
 
-  useEffect(() => {
-    if (!chain?.id) return
+  //   fetchNetworkStatus(chain?.id)
 
-    fetchNetworkStatus(chain?.id)
+  //   // init periodic refresh for network status
+  //   const networkStatusInterval = setInterval(
+  //     () => fetchNetworkStatus(chain?.id),
+  //     networkAlertConfig.refreshInterval
+  //   )
 
-    // init periodic refresh for network status
-    const networkStatusInterval = setInterval(
-      () => fetchNetworkStatus(chain?.id),
-      networkAlertConfig.refreshInterval
-    )
-
-    return () => {
-      clearInterval(networkStatusInterval)
-    }
-  }, [chain, fetchNetworkStatus])
+  //   return () => {
+  //     clearInterval(networkStatusInterval)
+  //   }
+  // }, [chain, fetchNetworkStatus])
 
   return (
     showNetworkAlert && (

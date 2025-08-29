@@ -16,13 +16,20 @@ jest.mock('../../../@context/Asset', () => ({
   useAsset: () => ({ asset })
 }))
 
-jest.mock('wagmi', () => ({
-  useNetwork: () => ({ network }),
-  useSwitchNetwork: () => ({ switchNetwork: () => jest.fn() }),
-  useProvider: () => jest.fn(),
-  createClient: () => jest.fn(),
-  configureChains: () => jest.fn()
-}))
+jest.mock('wagmi', () => {
+  // Get the original wagmi module to also include Connector
+  const originalModule = jest.requireActual('wagmi')
+
+  return {
+    ...originalModule,
+    // override specific hooks
+    useNetwork: () => ({ network }),
+    useSwitchNetwork: () => ({ switchNetwork: () => jest.fn() }),
+    useProvider: () => jest.fn(),
+    createClient: () => jest.fn(),
+    configureChains: () => jest.fn()
+  }
+})
 
 jest.mock('../../@context/SearchBarStatus', () => ({
   useSearchBarStatus: () => searchBarStatus

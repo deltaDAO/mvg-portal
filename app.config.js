@@ -120,6 +120,9 @@ module.exports = {
   showOnboardingModuleByDefault:
     process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'true',
 
+  // hides MetaMask Connect Wallet button
+  hideMetaMaskLogin: process.env.NEXT_PUBLIC_HIDE_METAMASK_LOGIN || 'false',
+
   allowedGaiaXRegistryDomains: [
     'https://registry.gaia-x.eu/v2206',
     'https://registry.lab.gaia-x.eu/v2206'

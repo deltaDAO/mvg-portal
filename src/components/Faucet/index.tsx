@@ -87,7 +87,11 @@ const FaucetPage = (): ReactElement => {
   const faucetTokenRequest = useCallback(async () => {
     setIsRequestingTokens(true)
     try {
-      const hashes = await requestTokens(accountAddress, signMessageData)
+      const hashes = await requestTokens(
+        accountAddress,
+        signMessageData,
+        chain.id
+      )
       toast.success(`Successfully requested test tokens: ${hashes.join(', ')}`)
       setMessage(
         'Tokens successfully requested. It can take up to 30 seconds until tokens show up in your wallet.'
