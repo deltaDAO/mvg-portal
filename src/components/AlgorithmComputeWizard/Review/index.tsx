@@ -156,7 +156,8 @@ export default function Review({
       accessDetails.price ??
       null
   )
-
+  const [showDatasetCredentialsCheck, setShowDatasetCredentialsCheck] =
+    useState(false)
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
@@ -314,7 +315,11 @@ export default function Review({
     { name: 'CONSUME MARKET ORDER FEE C2C (0%)', value: '0' }
   ]
 
-  // imorted code
+  const allVerified = selectedDatasetAsset.every((asset) => {
+    const service = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
+    return lookupVerifierSessionId?.(asset.id, service?.id)
+  })
+
   useEffect(() => {
     if (!asset || !service?.id || !asset.credentialSubject?.services?.length)
       return
@@ -325,93 +330,61 @@ export default function Review({
 
     if (index !== -1) setServiceIndex(index)
   }, [asset, service])
-  // async function getDatasetAssets(datasets: Dataset[]): Promise<{
-  //   assets: AssetExtended[]
-  //   services: Service[]
-  // }> {
-  //   const newCancelTokenInstance = newCancelToken()
-  //   const servicesCollected: Service[] = []
 
-  //   const assets = await Promise.all(
-  //     datasets.map(async (item) => {
-  //       const [datasetId] = item.id
-  //       const [serviceId] = item.services[0].id
+  async function getDatasetAssets(datasets: string[]): Promise<{
+    assets: AssetExtended[]
+    services: Service[]
+  }> {
+    const newCancelTokenInstance = newCancelToken()
+    const servicesCollected: Service[] = []
 
-  //       try {
-  //         const asset = await getAsset(datasetId, newCancelTokenInstance)
-  //         if (!asset || !asset.credentialSubject?.services?.length) return null
+    const assets = await Promise.all(
+      datasets.map(async (item) => {
+        const [datasetId, serviceId] = item.split('|')
 
-  //         const serviceIndex = asset.credentialSubject.services.findIndex(
-  //           (svc: any) => svc.id === serviceId
-  //         )
+        try {
+          const asset = await getAsset(datasetId, newCancelTokenInstance)
+          if (!asset || !asset.credentialSubject?.services?.length) return null
 
-  //         const accessDetailsList = await Promise.all(
-  //           asset.credentialSubject.services.map((service) =>
-  //             getAccessDetails(
-  //               asset.credentialSubject.chainId,
-  //               service,
-  //               accountId,
-  //               newCancelTokenInstance
-  //             )
-  //           )
-  //         )
-
-  //         const extendedAsset: AssetExtended = {
-  //           ...asset,
-  //           accessDetails: accessDetailsList,
-  //           serviceIndex: serviceIndex !== -1 ? serviceIndex : null
-  //         }
-
-  //         if (serviceIndex !== -1) {
-  //           servicesCollected.push(
-  //             asset.credentialSubject.services[serviceIndex]
-  //           )
-  //         }
-
-  //         return extendedAsset
-  //       } catch (error) {
-  //         console.error(`Error processing dataset ${datasetId}:`, error)
-  //         return null
-  //       }
-  //     })
-  //   )
-
-  //   return {
-  //     assets: assets.filter(Boolean) as AssetExtended[],
-  //     services: servicesCollected
-  //   }
-  // }
-
-  function getAlgorithmAsset(algo: string): {
-    algorithmAsset: AssetExtended | null
-    serviceIndexAlgo: number | null
-  } {
-    let algorithmId: string
-    let serviceId: string = ''
-    try {
-      const parsed = JSON.parse(algo)
-      algorithmId = parsed?.algoDid || algo
-      serviceId = parsed?.serviceId || ''
-    } catch (e) {
-      algorithmId = algo
-    }
-
-    let assetDdo: AssetExtended | null = null
-    let serviceIndexAlgo: number | null = null
-
-    ddoListAlgorithms.forEach((ddo: Asset) => {
-      if (ddo.id === algorithmId) {
-        assetDdo = ddo
-        if (serviceId && ddo.credentialSubject?.services) {
-          const index = ddo.credentialSubject.services.findIndex(
+          const serviceIndex = asset.credentialSubject.services.findIndex(
             (svc: any) => svc.id === serviceId
           )
-          serviceIndexAlgo = index !== -1 ? index : null
-        }
-      }
-    })
 
-    return { algorithmAsset: assetDdo, serviceIndexAlgo }
+          const accessDetailsList = await Promise.all(
+            asset.credentialSubject.services.map((service) =>
+              getAccessDetails(
+                asset.credentialSubject.chainId,
+                service,
+                accountId,
+                newCancelTokenInstance
+              )
+            )
+          )
+
+          const extendedAsset: AssetExtended = {
+            ...asset,
+            accessDetails: accessDetailsList,
+            serviceIndex: serviceIndex !== -1 ? serviceIndex : null
+          }
+
+          if (serviceIndex !== -1) {
+            servicesCollected.push(
+              asset.credentialSubject.services[serviceIndex]
+            )
+          }
+
+          return extendedAsset
+        } catch (error) {
+          console.error(`Error processing dataset ${datasetId}:`, error)
+          return null
+        }
+      })
+    )
+
+    return {
+      assets: assets.filter(Boolean) as AssetExtended[],
+      services: servicesCollected
+    }
   }
 
   // Pre-select computeEnv and/or dataset if there is only one available option
@@ -435,49 +408,16 @@ export default function Review({
     values.computeEnv
   ])
   useEffect(() => {
-    if (!values.algorithm || !isConsumable) return
+    if (!values.dataset || !isConsumable) return
 
-    async function fetchAlgorithmAssetExtended() {
-      // TODO test this type override
-      const { algorithmAsset, serviceIndexAlgo } = getAlgorithmAsset(
-        values.algorithm
-      )
-      if (serviceIndexAlgo) {
-        setServiceIndex(serviceIndexAlgo)
-      }
-      const algoAccessDetails = await Promise.all(
-        algorithmAsset.credentialSubject?.services.map((service) =>
-          getAccessDetails(
-            algorithmAsset.credentialSubject?.chainId,
-            service,
-            accountId,
-            newCancelToken()
-          )
-        )
-      )
-
-      const extendedAlgoAsset: AssetExtended = {
-        ...algorithmAsset,
-        accessDetails: algoAccessDetails,
-        serviceIndex: serviceIndexAlgo
-      }
-      setSelectedAlgorithmAsset(extendedAlgoAsset)
+    async function fetchDatasetAssetsExtended() {
+      const { assets, services } = await getDatasetAssets(values.dataset)
+      setSelectedDatasetAsset(assets)
+      setAllDatasetServices(services)
     }
-    fetchAlgorithmAssetExtended()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.algorithm, accountId, isConsumable, setSelectedAlgorithmAsset])
 
-  // useEffect(() => {
-  //   if (!values.dataset || !isConsumable) return
-
-  //   async function fetchDatasetAssetsExtended() {
-  //     const { assets, services } = await getDatasetAssets(values.dataset)
-  //     setSelectedDatasetAsset(assets)
-  //     setAllDatasetServices(services)
-  //   }
-
-  //   fetchDatasetAssetsExtended()
-  // }, [values.dataset, accountId, isConsumable])
+    fetchDatasetAssetsExtended()
+  }, [values.dataset, accountId, isConsumable])
 
   useEffect(() => {
     if (!values.computeEnv) return
@@ -502,7 +442,7 @@ export default function Review({
         disk,
         jobDuration,
         price: 0,
-        mode: 'paid'
+        mode: 'free'
       }
 
       setAllResourceValues((prev) => ({
@@ -516,7 +456,6 @@ export default function Review({
   // Set price for calculation output
   //
   useEffect(() => {
-    if (!isAlgorithm) return
     if (!asset?.accessDetails || !selectedDatasetAsset?.length) return
 
     setAlgoOrderPrice(algoOrderPriceAndFees?.price || accessDetails.price)
@@ -527,7 +466,7 @@ export default function Review({
     let datasetFee = new Decimal(0)
     let datasetOrderPriceSum = new Decimal(0) // nou
 
-    selectedDatasetAsset?.forEach((dataset) => {
+    selectedDatasetAsset.forEach((dataset) => {
       const index = dataset.serviceIndex || 0
       const details = dataset.accessDetails?.[index]
 
@@ -631,142 +570,20 @@ export default function Review({
   }, [serviceIndex, selectedDatasetAsset])
 
   useEffect(() => {
-    if (isAlgorithm) return
-    if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails?.length)
-      return
-
-    setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
-    const details = selectedAlgorithmAsset.accessDetails[serviceIndex]
-    if (details?.validOrderTx) {
-      setAlgoOrderPrice('0')
-    } else {
-      setAlgoOrderPrice(algoOrderPriceAndFees?.price)
-    }
-
-    const totalPrices: totalPriceMap[] = []
-
-    // Always use resources price for C2D (provider) part
-    const priceDataset =
-      !datasetOrderPrice || hasPreviousOrder || hasDatatoken
-        ? new Decimal(0)
-        : new Decimal(datasetOrderPrice).toDecimalPlaces(MAX_DECIMALS)
-    const rawPrice = details?.validOrderTx ? 0 : details?.price
-
-    // wrap in Decimal and round to your MAX_DECIMALS
-    const priceAlgo = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
-
-    const priceC2D =
-      c2dPrice !== undefined
-        ? new Decimal(c2dPrice).toDecimalPlaces(MAX_DECIMALS)
-        : new Decimal(0)
-
-    // Now use priceC2D everywhere you'd use providerFees
-    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
-    const feeC2D = new Decimal(consumeMarketOrderFee).mul(priceC2D).div(100)
-    const feeDataset = new Decimal(consumeMarketOrderFee)
-      .mul(priceDataset)
-      .div(100)
-
-    // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
-    if (algorithmSymbol === providerFeesSymbol) {
-      let sum = priceC2D.add(priceAlgo).add(feeC2D).add(feeAlgo)
-      totalPrices.push({
-        value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
-        symbol: algorithmSymbol
-      })
-      if (algorithmSymbol === datasetSymbol) {
-        sum = sum.add(priceDataset).add(feeDataset)
-        totalPrices[0].value = sum.toDecimalPlaces(MAX_DECIMALS).toString()
-      } else {
-        totalPrices.push({
-          value: priceDataset
-            .add(feeDataset)
-            .toDecimalPlaces(MAX_DECIMALS)
-            .toString(),
-          symbol: datasetSymbol
-        })
-      }
-    } else {
-      if (datasetSymbol === providerFeesSymbol) {
-        const sum = priceC2D.add(priceDataset).add(feeC2D).add(feeDataset)
-        totalPrices.push({
-          value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
-          symbol: datasetSymbol
-        })
-        totalPrices.push({
-          value: priceAlgo
-            .add(feeAlgo)
-            .toDecimalPlaces(MAX_DECIMALS)
-            .toString(),
-          symbol: algorithmSymbol
-        })
-      } else if (datasetSymbol === algorithmSymbol) {
-        const sum = priceAlgo.add(priceDataset).add(feeAlgo).add(feeDataset)
-        totalPrices.push({
-          value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
-          symbol: algorithmSymbol
-        })
-        totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
-          symbol: providerFeesSymbol
-        })
-      } else {
-        totalPrices.push({
-          value: priceDataset
-            .add(feeDataset)
-            .toDecimalPlaces(MAX_DECIMALS)
-            .toString(),
-          symbol: datasetSymbol
-        })
-        totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
-          symbol: providerFeesSymbol
-        })
-        totalPrices.push({
-          value: priceAlgo
-            .add(feeAlgo)
-            .toDecimalPlaces(MAX_DECIMALS)
-            .toString(),
-          symbol: algorithmSymbol
-        })
-      }
-    }
-
-    setTotalPrices(totalPrices)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    asset,
-    hasPreviousOrder,
-    hasDatatoken,
-    hasPreviousOrderSelectedComputeAsset,
-    hasDatatokenSelectedComputeAsset,
-    datasetOrderPriceAndFees,
-    algoOrderPriceAndFees,
-    isAssetNetwork,
-    selectedAlgorithmAsset,
-    datasetOrderPrice,
-    algoOrderPrice,
-    algorithmSymbol,
-    datasetSymbol,
-    providerFeesSymbol,
-    values.computeEnv, // Add this!
-    allResourceValues // Add this!
-  ])
-
-  useEffect(() => {
     // Copy totalPrices so you don't mutate the original array
     const priceChecks = [...totalPrices]
 
     // Add C2D price if not already included in totalPrices
-    const c2d = allResourceValues?.[selectedEnvId as any]?.price
+    const c2dPrice = allResourceValues?.[values.computeEnv]?.price
     const c2dSymbol = providerFeesSymbol
+    // Only add if price > 0 and not present in totalPrices already (optional check)
     if (
-      c2d &&
+      c2dPrice &&
       !totalPrices.some(
-        (p) => p.symbol === c2dSymbol && p.value === c2d.toString()
+        (p) => p.symbol === c2dSymbol && p.value === c2dPrice.toString()
       )
     ) {
-      priceChecks.push({ value: c2d.toString(), symbol: c2dSymbol })
+      priceChecks.push({ value: c2dPrice.toString(), symbol: c2dSymbol })
     }
 
     let sufficient = true
@@ -789,7 +606,7 @@ export default function Review({
     providerFeesSymbol,
     totalPrices,
     allResourceValues,
-    selectedEnvId
+    values.computeEnv
   ])
 
   const PurchaseButton = () => {

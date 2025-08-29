@@ -270,9 +270,6 @@ export default function ComputeWizard({
     datasetServices?: { asset: AssetExtended; service: Service }[]
   ) {
     try {
-      console.log('Init price 1')
-      console.log('selectedComputeEnv ', selectedComputeEnv)
-
       if (!selectedComputeEnv || !selectedComputeEnv.id || !selectedResources)
         throw new Error(`Error getting compute environment!`)
 
@@ -281,7 +278,6 @@ export default function ComputeWizard({
         : [asset]
 
       const actualAlgorithmAsset = selectedAlgorithmAsset || asset
-      console.log('actualAlgorithmAsset ', actualAlgorithmAsset)
       let actualAlgoService = service
       let actualSvcIndex = svcIndex
       let actualAlgoAccessDetails = accessDetails
@@ -531,19 +527,13 @@ export default function ComputeWizard({
       setIsOrdered(false)
       setError(undefined)
 
-      const initResult = await initPriceAndFees(datasetServices)
-      if (!initResult) {
-        throw new Error(
-          'Initialize compute failed. Check credentials and selections and try again.'
-        )
-      }
       const {
         datasetResponses,
         actualAlgorithmAsset,
         actualAlgoService,
         actualAlgoAccessDetails,
         initializedProvider
-      } = initResult
+      } = await initPriceAndFees(datasetServices)
 
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
@@ -553,7 +543,7 @@ export default function ComputeWizard({
       }
 
       // Check isOrderable for all datasets
-      for (const ds of datasetResponses || []) {
+      for (const ds of datasetResponses) {
         const allowed = await isOrderable(
           ds.actualDatasetAsset,
           ds.actualDatasetService.id,
@@ -591,7 +581,10 @@ export default function ComputeWizard({
         initializedProvider?.algorithm ||
           initializedProviderResponse?.algorithm,
         hasAlgoAssetDatatoken,
-        lookupVerifierSessionId(actualAlgorithmAsset.id, actualAlgoService.id),
+        lookupVerifierSessionId(
+          datasetResponses[0].actualDatasetAsset.id,
+          datasetResponses[0].actualDatasetService.id
+        ),
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
@@ -599,11 +592,6 @@ export default function ComputeWizard({
       const datasetInputs = []
       const policyDatasets: PolicyServerInitiateComputeActionData[] = []
 
-      if (!datasetResponses || datasetResponses.length === 0) {
-        throw new Error(
-          'No dataset responses returned from initialize. Select at least one dataset and verify credentials.'
-        )
-      }
       for (const ds of datasetResponses) {
         const datasetOrderTx = await handleComputeOrder(
           signer,
@@ -743,20 +731,6 @@ export default function ComputeWizard({
   }
 
   const onSubmit = async (values: FormComputeData) => {
-    console.log(
-      '🔍 AlgorithmComputeWizard onSubmit called with values:',
-      values
-    )
-    console.log('🔍 Asset type:', asset.credentialSubject.metadata.type)
-    console.log('🔍 Values algorithm:', values.algorithm)
-    console.log('🔍 Values dataset:', values.dataset)
-    console.log('🔍 Values computeEnv:', values.computeEnv)
-    console.log('🔍 Values termsAndConditions:', values.termsAndConditions)
-    console.log(
-      '🔍 Values acceptPublishingLicense:',
-      values.acceptPublishingLicense
-    )
-
     try {
       const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
 
@@ -776,14 +750,11 @@ export default function ComputeWizard({
       }
 
       if (
+        !(values.algorithm || values.dataset) ||
         !values.computeEnv ||
         !values.termsAndConditions ||
         !values.acceptPublishingLicense
       ) {
-        console.log('🔍 Form validation failed:')
-        console.log('🔍 - ComputeEnv check:', !values.computeEnv)
-        console.log('🔍 - Terms check:', !values.termsAndConditions)
-        console.log('🔍 - License check:', !values.acceptPublishingLicense)
         toast.error('Please complete all required fields.')
         return
       }
@@ -814,22 +785,17 @@ export default function ComputeWizard({
       console.log('🔍 Form validation passed, proceeding with compute job...')
 
       let actualSelectedDataset: AssetExtended[] = []
-      let actualSelectedAlgorithm: AssetExtended
+      let actualSelectedAlgorithm: AssetExtended = selectedAlgorithmAsset
 
-      // Case: algorithm wizard (main asset is algorithm)
+      // Case: dataset selected, algorithm undefined (algo is main asset)
       if (asset.credentialSubject.metadata.type === 'algorithm') {
-        actualSelectedAlgorithm = asset // Main asset is the algorithm
+        actualSelectedAlgorithm = asset
         if (selectedDatasetAsset && Array.isArray(selectedDatasetAsset)) {
           actualSelectedDataset = selectedDatasetAsset
         }
       } else {
-        // Case: dataset wizard (main asset is dataset, algorithm is selected)
-        actualSelectedAlgorithm = selectedAlgorithmAsset
         actualSelectedDataset = [asset]
       }
-
-      console.log('🔍 Actual selected algorithm:', actualSelectedAlgorithm)
-      console.log('🔍 Actual selected datasets:', actualSelectedDataset)
 
       const userCustomParameters = {
         dataServiceParams: parseConsumerParameterValues(
@@ -849,138 +815,23 @@ export default function ComputeWizard({
         )
       }
 
-      let datasetServices: { asset: AssetExtended; service: Service }[] = []
-
-      const datasetPairs = (values.dataset || []) as string[]
-      const selectedDatasetsObjects = Array.isArray(values.datasets)
-        ? (values.datasets as Array<{
-            id: string
-            services?: Array<{ id: string; checked?: boolean }>
-          }>)
-        : []
-
-      if (
-        (!actualSelectedDataset || actualSelectedDataset.length === 0) &&
-        datasetPairs.length > 0
-      ) {
-        // Legacy fallback: values.dataset contains ["did|serviceId"] pairs
-        const built = await Promise.all(
-          datasetPairs.map(async (pair) => {
-            const [did, serviceId] = pair.split('|')
-            const dsAsset = (await getAsset(
-              did,
-              newCancelToken()
-            )) as AssetExtended
-            if (!dsAsset || !dsAsset.credentialSubject?.services?.length) {
-              throw new Error(`Dataset ${did} not found or has no services`)
-            }
-
-            const accessDetailsList = await Promise.all(
-              dsAsset.credentialSubject.services.map((svc) =>
-                getAccessDetails(
-                  dsAsset.credentialSubject.chainId,
-                  svc,
-                  accountId || ZERO_ADDRESS,
-                  newCancelToken()
-                )
-              )
-            )
-
-            const serviceIndex = dsAsset.credentialSubject.services.findIndex(
-              (s: any) => s.id === serviceId
-            )
-
-            const extended: AssetExtended = {
-              ...(dsAsset as any),
-              accessDetails: accessDetailsList,
-              serviceIndex: serviceIndex !== -1 ? serviceIndex : 0
-            }
-
-            const selectedService =
-              dsAsset.credentialSubject.services[
-                serviceIndex !== -1 ? serviceIndex : 0
-              ]
-
-            return { asset: extended, service: selectedService as Service }
-          })
-        )
-        datasetServices = built
-      } else if (
-        (!actualSelectedDataset || actualSelectedDataset.length === 0) &&
-        selectedDatasetsObjects.length > 0
-      ) {
-        // New flow: values.datasets contains objects with services[] including checked flags
-        type SelectedDataset = {
-          id: string
-          services?: Array<{ id: string; checked?: boolean }>
-        }
-        const uniqueByDid = new Map<string, SelectedDataset>()
-        ;(selectedDatasetsObjects as SelectedDataset[]).forEach((d) => {
-          if (!uniqueByDid.has(d.id)) uniqueByDid.set(d.id, d)
-        })
-
-        const assetsByDid = new Map<string, AssetExtended>()
-        for (const [did] of uniqueByDid.entries()) {
-          const dsAsset = (await getAsset(
-            did,
-            newCancelToken()
-          )) as AssetExtended
-          if (!dsAsset || !dsAsset.credentialSubject?.services?.length) {
-            throw new Error(`Dataset ${did} not found or has no services`)
-          }
-          const accessDetailsList = await Promise.all(
-            dsAsset.credentialSubject.services.map((svc) =>
-              getAccessDetails(
-                dsAsset.credentialSubject.chainId,
-                svc,
-                accountId || ZERO_ADDRESS,
-                newCancelToken()
-              )
-            )
-          )
-          assetsByDid.set(did, {
-            ...(dsAsset as any),
-            accessDetails: accessDetailsList
-          } as AssetExtended)
-        }
-
-        const built: { asset: AssetExtended; service: Service }[] = []
-        for (const d of selectedDatasetsObjects as SelectedDataset[]) {
-          const assetExt = assetsByDid.get(d.id)
-          const checkedServices = (d.services ?? []).filter((s) => s.checked)
-          for (const svc of checkedServices as Array<{ id: string }>) {
-            const svcObj = assetExt?.credentialSubject?.services?.find(
-              (s) => s.id === svc.id
-            )
-            if (assetExt && svcObj)
-              built.push({ asset: assetExt, service: svcObj })
-          }
-        }
-        datasetServices = built
-      } else {
-        // Fallback: use selected assets already resolved in state
-        datasetServices = actualSelectedDataset.map((ds, i) => {
+      const datasetServices: { asset: AssetExtended; service: Service }[] =
+        actualSelectedDataset.map((ds, i) => {
           const datasetEntry = values.dataset?.[i]
           const selectedServiceId = datasetEntry?.includes('|')
             ? datasetEntry.split('|')[1]
             : ds.credentialSubject.services?.[0]?.id
+
           const selectedService =
             ds.credentialSubject.services.find(
               (s) => s.id === selectedServiceId
             ) || ds.credentialSubject.services?.[0]
-          return { asset: ds, service: selectedService }
+
+          return {
+            asset: ds,
+            service: selectedService
+          }
         })
-      }
-
-      if (!datasetServices || datasetServices.length === 0) {
-        toast.error('Please select at least one dataset service to run.')
-        return
-      }
-
-      console.log('🔍 About to call startJob with:', {
-        userCustomParameters,
-        datasetServices
-      })
 
       await startJob(userCustomParameters, datasetServices)
     } catch (error) {
