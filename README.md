@@ -1,6 +1,20 @@
-[![banner](https://raw.githubusercontent.com/oceanprotocol/art/master/github/repo-banner%402x.png)](https://oceanprotocol.com)
+<h1 align="center">Pontus-X Marketplace</h1>
 
-<h1 align="center">Ocean Marketplace</h1>
+# Patch Notes: August 29, 2025
+
+This update includes a significant change to our auto-wallet feature and a key bug fix to improve user interface reliability.
+
+## ✨ Key Changes
+
+- **MetaMask Dependency Removed for Auto-Wallet**:  
+  The auto-wallet feature has been re-engineered to operate without requiring MetaMask installation. This change allows for faster onboarding using an encrypted json wallet. This function will only be available on test networks.
+
+## 🛠️ Fixes
+
+- **Labels for `select` Input for Consumer Parameters**:  
+  Fixed an issue where option labels in a consumer parameters "select" dropdown were not displaying correctly. Users will now see the proper text for each option. Thanks @rogargon, for providing the fix!
+
+---
 
 [![Build Status](https://github.com/oceanprotocol/market/workflows/CI/badge.svg)](https://github.com/oceanprotocol/market/actions)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/c85f4d8b-95e1-4010-95a4-2bacd8b90981/deploy-status)](https://app.netlify.com/sites/market-oceanprotocol/deploys)
@@ -10,30 +24,33 @@
 
 **Table of Contents**
 
-- [🏄 Get Started](#-get-started)
-  - [Local components with Barge](#local-components-with-barge)
-- [🦑 Environment variables](#-environment-variables)
-- [🦀 Data Sources](#-data-sources)
-  - [Aquarius](#aquarius)
-  - [Ocean Protocol Subgraph](#ocean-protocol-subgraph)
-  - [ENS](#ens)
-  - [Purgatory](#purgatory)
-  - [Network Metadata](#network-metadata)
-- [👩‍🎤 Storybook](#-storybook)
-- [🤖 Testing](#-testing)
-- [✨ Code Style](#-code-style)
-- [🛳 Production](#-production)
-- [⬆️ Deployment](#️-deployment)
-- [💖 Contributing](#-contributing)
-- [🍴 Forking](#-forking)
-- [💰 Pricing Options](#-pricing-options)
-  - [Fixed Pricing](#fixed-pricing)
-  - [Free Pricing](#free-pricing)
-- [✅ GDPR Compliance](#-gdpr-compliance)
-  - [Multi-Language Privacy Policies](#multi-language-privacy-policies)
-  - [Privacy Preference Center](#privacy-preference-center)
-    - [Privacy Preference Center Styling](#privacy-preference-center-styling)
-- [🏛 License](#-license)
+- [Patch Notes: August 29, 2025](#patch-notes-august-29-2025)
+  - [✨ Key Changes](#-key-changes)
+  - [🛠️ Fixes](#️-fixes)
+  - [🏄 Get Started](#-get-started)
+    - [Local components with Barge](#local-components-with-barge)
+  - [🦑 Environment variables](#-environment-variables)
+  - [🦀 Data Sources](#-data-sources)
+    - [Aquarius](#aquarius)
+    - [Ocean Protocol Subgraph](#ocean-protocol-subgraph)
+    - [ENS](#ens)
+    - [Purgatory](#purgatory)
+    - [Network Metadata](#network-metadata)
+  - [👩‍🎤 Storybook](#-storybook)
+  - [🤖 Testing](#-testing)
+  - [✨ Code Style](#-code-style)
+  - [🛳 Production](#-production)
+  - [⬆️ Deployment](#️-deployment)
+  - [💖 Contributing](#-contributing)
+  - [🍴 Forking](#-forking)
+  - [💰 Pricing Options](#-pricing-options)
+    - [Fixed Pricing](#fixed-pricing)
+    - [Free Pricing](#free-pricing)
+  - [✅ GDPR Compliance](#-gdpr-compliance)
+    - [Multi-Language Privacy Policies](#multi-language-privacy-policies)
+    - [Privacy Preference Center](#privacy-preference-center)
+      - [Privacy Preference Center Styling](#privacy-preference-center-styling)
+  - [🏛 License](#-license)
 
 ## 🏄 Get Started
 
