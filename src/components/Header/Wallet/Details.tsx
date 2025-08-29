@@ -5,7 +5,7 @@ import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
 import Button from '@components/@shared/atoms/Button'
-import { JSON_WALLET_CONNECTOR_ID } from '@context/Automation/AutomationProvider'
+import { JSON_WALLET_CONNECTOR_ID } from '@utils/wallet/EthersWalletConnector'
 
 export default function Details(): ReactElement {
   const { address: accountId, connector: activeConnector } = useAccount()

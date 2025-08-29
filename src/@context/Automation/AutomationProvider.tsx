@@ -19,13 +19,15 @@ import { toast } from 'react-toastify'
 import { useMarketMetadata } from '../MarketMetadata'
 import DeleteAutomationModal from './DeleteAutomationModal'
 import useBalance from '../../@hooks/useBalance'
-import { EthersWalletConnector } from '@utils/wallet/EthersWalletConnector'
+import {
+  EthersWalletConnector,
+  JSON_WALLET_CONNECTOR_ID
+} from '@utils/wallet/EthersWalletConnector'
 
 export enum AUTOMATION_MODES {
   SIMPLE = 'simple',
   ADVANCED = 'advanced'
 }
-export const JSON_WALLET_CONNECTOR_ID = 'jsonWallet'
 
 export interface AutomationProviderValue {
   autoWallet: Wallet

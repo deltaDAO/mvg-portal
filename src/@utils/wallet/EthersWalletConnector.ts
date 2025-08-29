@@ -1,7 +1,8 @@
 import { Connector, Chain, UserRejectedRequestError } from 'wagmi'
 import { ethers, Wallet } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
-import { JSON_WALLET_CONNECTOR_ID } from '@context/Automation/AutomationProvider'
+
+export const JSON_WALLET_CONNECTOR_ID = 'jsonWallet'
 
 export class EthersWalletConnector extends Connector {
   readonly id = JSON_WALLET_CONNECTOR_ID
@@ -26,7 +27,7 @@ export class EthersWalletConnector extends Connector {
     }
 
     // Use the first chain's RPC URL to create the provider for the wallet
-    const chainId = this.chains[0].id
+    const chainId = this.chains[0].id // TODO add option to configure default chain / check for last chain connected
     const config = getOceanConfig(chainId)
     this.#provider = new ethers.providers.JsonRpcProvider(config.nodeUri)
 
