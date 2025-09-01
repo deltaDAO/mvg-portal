@@ -33,6 +33,7 @@ import type { Dataset } from '../SelectServices'
 import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
+import Loader from '@components/@shared/atoms/Loader'
 interface ReviewProps {
   totalPrices?: { value: string; symbol: string }[]
   datasetOrderPrice?: string
@@ -180,15 +181,17 @@ export default function Review({
     if (s) parts.push(`${s}s`)
     return parts.join(' ') || '0s'
   }
-  const computeItems = [
+  const algoItems = [
     {
       name: 'ALGORITHM',
-      value: algoOrderPrice,
+      value: algoOrderPrice || '0',
       duration: '1 day'
-    },
+    }
+  ]
+  const computeItems = [
     {
       name: 'C2D RESOURCES',
-      value: c2dPrice,
+      value: c2dPrice || '0',
       duration: formatDuration(values.jobDuration)
     }
   ]
@@ -564,11 +567,16 @@ export default function Review({
           {service && (
             <PricingRow
               key={`DATASET-${service.id}`}
+              label={'DATASET'}
               itemName={service.name}
-              value={datasetOrderPrice || accessDetails?.price || '0'}
+              value={
+                asset.accessDetails?.[0].validOrderTx
+                  ? '0'
+                  : asset.accessDetails?.[0].price
+              }
               duration={formatDuration(service.timeout || 0)}
               isService
-              actionLabel="Check credentials"
+              actionLabel="Check Dataset Credentials"
               onAction={() => setShowDatasetCredentialsCheck(true)}
               actionDisabled={Boolean(
                 lookupVerifierSessionId?.(asset?.id, service.id)
@@ -577,34 +585,55 @@ export default function Review({
           )}
 
           {/* Compute Items */}
+          {!selectedAlgorithmAsset ? (
+            <div className={styles.loaderWrap}>
+              <Loader
+                message="Loading Selected Algorithms..."
+                noMargin={true}
+              />
+            </div>
+          ) : (
+            algoItems.map((item) => (
+              <PricingRow
+                key={item.name}
+                label={'ALGORITHM'}
+                itemName={
+                  selectedAlgorithmAsset?.credentialSubject?.services[0]?.name
+                }
+                value={item.value}
+                duration={item.duration}
+                actionLabel={
+                  item.name === 'ALGORITHM'
+                    ? 'Check Algorithm Credentials'
+                    : undefined
+                }
+                onAction={
+                  item.name === 'ALGORITHM'
+                    ? () => setShowCredentialsCheck(true)
+                    : undefined
+                }
+                actionDisabled={
+                  item.name === 'ALGORITHM' && selectedAlgorithmAsset?.id
+                    ? Boolean(
+                        lookupVerifierSessionId?.(
+                          selectedAlgorithmAsset.id,
+                          selectedAlgorithmAsset?.credentialSubject?.services?.[
+                            serviceIndex
+                          ]?.id
+                        )
+                      )
+                    : false
+                }
+              />
+            ))
+          )}
+
           {computeItems.map((item) => (
             <PricingRow
               key={item.name}
               itemName={item.name}
               value={item.value}
               duration={item.duration}
-              actionLabel={
-                item.name === 'ALGORITHM'
-                  ? 'Check algorithm credentials'
-                  : undefined
-              }
-              onAction={
-                item.name === 'ALGORITHM'
-                  ? () => setShowCredentialsCheck(true)
-                  : undefined
-              }
-              actionDisabled={
-                item.name === 'ALGORITHM' && selectedAlgorithmAsset?.id
-                  ? Boolean(
-                      lookupVerifierSessionId?.(
-                        selectedAlgorithmAsset.id,
-                        selectedAlgorithmAsset?.credentialSubject?.services?.[
-                          serviceIndex
-                        ]?.id
-                      )
-                    )
-                  : false
-              }
             />
           ))}
 

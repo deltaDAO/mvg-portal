@@ -5,6 +5,7 @@ import styles from './index.module.css'
 
 interface PricingRowProps {
   itemName: string
+  label?: string
   value: string | number
   duration?: string
   className?: string
@@ -16,6 +17,7 @@ interface PricingRowProps {
 
 export default function PricingRow({
   itemName,
+  label,
   value,
   duration,
   className,
@@ -27,6 +29,7 @@ export default function PricingRow({
   return (
     <div className={`${styles.pricingRow} ${className || ''}`}>
       <div className={styles.itemInfo}>
+        {label && <span className={styles.datasetLabel}>{label}</span>}
         <span className={isService ? styles.serviceName : styles.itemName}>
           {itemName}
         </span>

@@ -299,17 +299,19 @@ export default function Review({
   }
 
   // Data arrays for mapping - now using real pricing data
-  const computeItems = [
+  const datasetItems = [
     {
       name: 'DATASET',
       value: datasetOrderPrice,
       duration: '1 day'
     }
-    // {
-    //   name: 'C2D RESOURCES',
-    //   value: c2dPrice,
-    //   duration: formatDuration(values.jobDuration)
-    // }
+  ]
+  const computeItems = [
+    {
+      name: 'C2D RESOURCES',
+      value: c2dPrice || '0',
+      duration: formatDuration(values.jobDuration)
+    }
   ]
 
   const marketFees = [
@@ -725,7 +727,7 @@ export default function Review({
                 ? '0'
                 : details?.price || '0'
 
-              return computeItems.map((item) => (
+              return datasetItems.map((item) => (
                 <PricingRow
                   key={`${asset.indexedMetadata.stats[0].name}-${asset.id}-${i}-${item.name}`}
                   label={
@@ -775,7 +777,14 @@ export default function Review({
               )}
             />
           )}
-
+          {computeItems.map((item) => (
+            <PricingRow
+              key={item.name}
+              itemName={item.name}
+              value={item.value}
+              duration={item.duration}
+            />
+          ))}
           {/* Market Order Fees */}
           {marketFees.map((fee) => (
             <PricingRow key={fee.name} itemName={fee.name} value={fee.value} />
