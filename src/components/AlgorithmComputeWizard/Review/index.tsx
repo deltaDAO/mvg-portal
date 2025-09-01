@@ -33,6 +33,7 @@ import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
+import Loader from '@components/@shared/atoms/Loader'
 type CredentialTarget = { did: string; serviceId?: string } | null
 interface ReviewProps {
   totalPrices?: { value: string; symbol: string }[]
@@ -300,15 +301,15 @@ export default function Review({
   // Data arrays for mapping - now using real pricing data
   const computeItems = [
     {
-      name: 'ALGORITHM',
-      value: algoOrderPrice,
+      name: 'DATASET',
+      value: datasetOrderPrice,
       duration: '1 day'
-    },
-    {
-      name: 'C2D RESOURCES',
-      value: c2dPrice,
-      duration: formatDuration(values.jobDuration)
     }
+    // {
+    //   name: 'C2D RESOURCES',
+    //   value: c2dPrice,
+    //   duration: formatDuration(values.jobDuration)
+    // }
   ]
 
   const marketFees = [
@@ -705,55 +706,75 @@ export default function Review({
               />
             ))
           )} */}
+          {/* Datasets list */}
+          {!selectedDatasetAsset || selectedDatasetAsset.length === 0 ? (
+            <div className={styles.loaderWrap}>
+              <Loader message="Loading datasets..." noMargin={true} />
+            </div>
+          ) : (
+            selectedDatasetAsset.map((asset, i) => {
+              const service =
+                asset.credentialSubject?.services?.[asset.serviceIndex || 0]
 
-          {/* Dataset service (per-service) */}
+              const isVerified = lookupVerifierSessionId?.(
+                asset.id,
+                service?.id
+              )
+              const details = asset.accessDetails?.[i]
+              const rawPrice = details?.validOrderTx
+                ? '0'
+                : details?.price || '0'
+
+              return computeItems.map((item) => (
+                <PricingRow
+                  key={`${asset.indexedMetadata.stats[0].name}-${asset.id}-${i}-${item.name}`}
+                  label={
+                    item.name === 'DATASET' ? `Dataset ${i + 1}` : undefined
+                  }
+                  itemName={asset.credentialSubject.services[0].name}
+                  value={rawPrice}
+                  duration={item.duration}
+                  actionLabel={
+                    item.name === 'DATASET'
+                      ? 'Check Dataset credentials'
+                      : undefined
+                  }
+                  onAction={
+                    item.name === 'DATASET'
+                      ? () => {
+                          setActiveCredentialAsset(asset)
+                          setShowCredentialsCheck(true)
+                        }
+                      : undefined
+                  }
+                  actionDisabled={
+                    item.name === 'DATASET' ? Boolean(isVerified) : false
+                  }
+                />
+              ))
+            })
+          )}
+
+          {/* Algorithm service (per-service) */}
           {service && (
             <PricingRow
               key={`DATASET-${service.id}`}
+              label={'ALGORITHM'}
               itemName={service.name}
-              value={datasetOrderPrice || accessDetails?.price || '0'}
+              value={
+                asset.accessDetails?.[0].validOrderTx
+                  ? '0'
+                  : asset.accessDetails?.[0].price
+              }
               duration={formatDuration(service.timeout || 0)}
               isService
-              actionLabel="Check credentials"
+              actionLabel="Check Algorithm Credentials"
               onAction={() => setShowDatasetCredentialsCheck(true)}
               actionDisabled={Boolean(
                 lookupVerifierSessionId?.(asset?.id, service.id)
               )}
             />
           )}
-
-          {/* Compute Items */}
-          {selectedDatasetAsset.map((asset, i) => {
-            const service =
-              asset.credentialSubject?.services?.[asset.serviceIndex || 0]
-
-            const isVerified = lookupVerifierSessionId?.(asset.id, service?.id)
-
-            return computeItems.map((item) => (
-              <PricingRow
-                key={`${item.name}-${asset.id}-${i}`}
-                itemName={item.name}
-                value={item.value}
-                duration={item.duration}
-                actionLabel={
-                  item.name === 'ALGORITHM'
-                    ? 'Check algorithm credentials'
-                    : undefined
-                }
-                onAction={
-                  item.name === 'ALGORITHM'
-                    ? () => {
-                        setActiveCredentialAsset(asset)
-                        setShowCredentialsCheck(true)
-                      }
-                    : undefined
-                }
-                actionDisabled={
-                  item.name === 'ALGORITHM' ? Boolean(isVerified) : false
-                }
-              />
-            ))
-          })}
 
           {/* Market Order Fees */}
           {marketFees.map((fee) => (
@@ -821,7 +842,7 @@ export default function Review({
         <div className={styles.credentialsOverlay}>
           <div className={styles.credentialsContainer}>
             <div className={styles.credentialsHeader}>
-              <h3>Verify Algorithm Credentials</h3>
+              <h3>Verify Dataset Credentials</h3>
               <button
                 className={styles.closeButton}
                 onClick={() => setShowCredentialsCheck(false)}
@@ -850,7 +871,7 @@ export default function Review({
         <div className={styles.credentialsOverlay}>
           <div className={styles.credentialsContainer}>
             <div className={styles.credentialsHeader}>
-              <h3>Verify Dataset Credentials</h3>
+              <h3>Verify Algorithm Credentials</h3>
               <button
                 className={styles.closeButton}
                 onClick={() => setShowDatasetCredentialsCheck(false)}

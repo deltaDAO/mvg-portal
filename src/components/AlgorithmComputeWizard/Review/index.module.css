@@ -216,3 +216,13 @@
   border-radius: 8px;
   margin-bottom: 2rem;
 }
+
+.datasetLabel {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  text-transform: uppercase;
+  color: #303031;
+  display: block;
+  margin-bottom: 2px;
+}
