@@ -147,7 +147,7 @@
     "url": "https://github.com/OceanProtocolEnterprise/market"
   },
   "engines": {
-    "node": "18"
+    "node": "22"
   },
   "browser": {
     "fs": false,
