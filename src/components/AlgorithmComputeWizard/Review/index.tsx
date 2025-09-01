@@ -166,6 +166,7 @@ export default function Review({
   const c2dPrice = selectedResources?.price
   const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
   const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
+  const [activeCredentialAsset, setActiveCredentialAsset] = useState<any>(null)
   const verifiedCount = selectedDatasetAsset?.filter((asset) => {
     const svc = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
     return lookupVerifierSessionId?.(asset.id, svc?.id)
@@ -741,7 +742,10 @@ export default function Review({
                 }
                 onAction={
                   item.name === 'ALGORITHM'
-                    ? () => setShowCredentialsCheck(true)
+                    ? () => {
+                        setActiveCredentialAsset(asset)
+                        setShowCredentialsCheck(true)
+                      }
                     : undefined
                 }
                 actionDisabled={
@@ -826,15 +830,17 @@ export default function Review({
               </button>
             </div>
             <CredentialDialogProvider>
-              <AssetActionCheckCredentialsAlgo
-                asset={selectedDatasetAsset[0]}
-                service={
-                  selectedDatasetAsset[0]?.credentialSubject?.services?.[
-                    selectedDatasetAsset[0].serviceIndex || 0
-                  ]
-                }
-                onVerified={() => setShowCredentialsCheck(false)}
-              />
+              {activeCredentialAsset && (
+                <AssetActionCheckCredentialsAlgo
+                  asset={activeCredentialAsset}
+                  service={
+                    activeCredentialAsset?.credentialSubject?.services?.[
+                      activeCredentialAsset.serviceIndex || 0
+                    ]
+                  }
+                  onVerified={() => setShowCredentialsCheck(false)}
+                />
+              )}
             </CredentialDialogProvider>
           </div>
         </div>
