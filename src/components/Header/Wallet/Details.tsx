@@ -5,6 +5,7 @@ import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
 import { MenuLink } from '../Menu'
 import Button from '@components/@shared/atoms/Button'
+import { JSON_WALLET_CONNECTOR_ID } from '@utils/wallet/EthersWalletConnector'
 
 export default function Details(): ReactElement {
   const { address: accountId, connector: activeConnector } = useAccount()
@@ -38,15 +39,18 @@ export default function Details(): ReactElement {
             </span>
           </div>
           <div className={styles.actions}>
-            <Button
-              style="text"
-              size="small"
-              onClick={async () => {
-                connect()
-              }}
-            >
-              Switch Wallet
-            </Button>
+            {/* Switch Wallet disabled for json wallet */}
+            {activeConnector?.id !== JSON_WALLET_CONNECTOR_ID && (
+              <Button
+                style="text"
+                size="small"
+                onClick={async () => {
+                  connect()
+                }}
+              >
+                Switch Wallet
+              </Button>
+            )}
             <Button
               style="text"
               size="small"
