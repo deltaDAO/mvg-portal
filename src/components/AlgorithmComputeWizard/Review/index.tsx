@@ -176,6 +176,7 @@ export default function Review({
     computeEnv: values?.computeEnv?.id,
     datasetsCount: Array.isArray(values?.datasets) ? values.datasets.length : 0
   })
+  console.log('Selected Dataset Asset! ', selectedDatasetAsset)
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
     accessDetails.price
@@ -679,16 +680,19 @@ export default function Review({
 
       <div className={styles.contentContainer}>
         <div className={styles.pricingBreakdown}>
-          {/* Datasets (title only, no price) */}
-          {selectedDatasets?.map((dataset) => (
+          {/* Datasets */}
+          {/* {selectedDatasets?.map((dataset) => (
             <div key={dataset.id} className={styles.pricingRow}>
               <div className={styles.itemInfo}>
-                <DatasetItem dataset={dataset} />
+                <DatasetItem
+                  dataset={dataset}
+                  onCheckCredentials={handleCheckCredentials}
+                />
               </div>
+              <PriceDisplay value="1" />
             </div>
           ))}
 
-          {/* Dataset Services */}
           {selectedDatasets?.map((dataset) =>
             dataset.services.map((service) => (
               <PricingRow
@@ -697,46 +701,55 @@ export default function Review({
                 value={service.price}
                 duration={service.duration}
                 isService={true}
-                actionLabel="Check credentials"
-                onAction={() => handleCheckCredentials(dataset.id, service.id)}
-                actionDisabled={Boolean(
-                  lookupVerifierSessionId?.(dataset.id, service.id)
-                )}
               />
             ))
+          )} */}
+
+          {/* Dataset service (per-service) */}
+          {service && (
+            <PricingRow
+              key={`DATASET-${service.id}`}
+              itemName={service.name}
+              value={datasetOrderPrice || accessDetails?.price || '0'}
+              duration={formatDuration(service.timeout || 0)}
+              isService
+              actionLabel="Check credentials"
+              onAction={() => setShowDatasetCredentialsCheck(true)}
+              actionDisabled={Boolean(
+                lookupVerifierSessionId?.(asset?.id, service.id)
+              )}
+            />
           )}
 
           {/* Compute Items */}
-          {computeItems.map((item) => (
-            <PricingRow
-              key={item.name}
-              itemName={item.name}
-              value={item.value}
-              duration={item.duration}
-              actionLabel={
-                item.name === 'ALGORITHM'
-                  ? 'Check algorithm credentials'
-                  : undefined
-              }
-              onAction={
-                item.name === 'ALGORITHM'
-                  ? () => setShowCredentialsCheck(true)
-                  : undefined
-              }
-              actionDisabled={
-                item.name === 'ALGORITHM' && selectedAlgorithmAsset?.id
-                  ? Boolean(
-                      lookupVerifierSessionId?.(
-                        selectedAlgorithmAsset.id,
-                        selectedAlgorithmAsset?.credentialSubject?.services?.[
-                          serviceIndex
-                        ]?.id
-                      )
-                    )
-                  : false
-              }
-            />
-          ))}
+          {selectedDatasetAsset.map((asset, i) => {
+            const service =
+              asset.credentialSubject?.services?.[asset.serviceIndex || 0]
+
+            const isVerified = lookupVerifierSessionId?.(asset.id, service?.id)
+
+            return computeItems.map((item) => (
+              <PricingRow
+                key={`${item.name}-${asset.id}-${i}`}
+                itemName={item.name}
+                value={item.value}
+                duration={item.duration}
+                actionLabel={
+                  item.name === 'ALGORITHM'
+                    ? 'Check algorithm credentials'
+                    : undefined
+                }
+                onAction={
+                  item.name === 'ALGORITHM'
+                    ? () => setShowCredentialsCheck(true)
+                    : undefined
+                }
+                actionDisabled={
+                  item.name === 'ALGORITHM' ? Boolean(isVerified) : false
+                }
+              />
+            ))
+          })}
 
           {/* Market Order Fees */}
           {marketFees.map((fee) => (
@@ -799,40 +812,53 @@ export default function Review({
         <PurchaseButton />
       </div>
 
-      {showCredentialsCheck && (
+      {/* for dataset credentials  */}
+      {showCredentialsCheck && selectedDatasetAsset?.length > 0 && (
         <div className={styles.credentialsOverlay}>
           <div className={styles.credentialsContainer}>
             <div className={styles.credentialsHeader}>
-              <h3>Verify Credentials</h3>
+              <h3>Verify Algorithm Credentials</h3>
               <button
                 className={styles.closeButton}
-                onClick={() => {
-                  console.log('[Review] Credentials overlay closed')
-                  setShowCredentialsCheck(false)
-                  setCredentialCheckTarget(null)
-                }}
+                onClick={() => setShowCredentialsCheck(false)}
               >
                 ✕ Close
               </button>
             </div>
-            {credentialCheckTarget ? (
-              <DatasetCredentialsOverlay
-                did={credentialCheckTarget.did}
-                serviceId={credentialCheckTarget.serviceId}
-              />
-            ) : isAlgorithm ? (
+            <CredentialDialogProvider>
               <AssetActionCheckCredentialsAlgo
-                asset={asset}
-                service={service}
+                asset={selectedDatasetAsset[0]}
+                service={
+                  selectedDatasetAsset[0]?.credentialSubject?.services?.[
+                    selectedDatasetAsset[0].serviceIndex || 0
+                  ]
+                }
                 onVerified={() => setShowCredentialsCheck(false)}
               />
-            ) : (
+            </CredentialDialogProvider>
+          </div>
+        </div>
+      )}
+
+      {showDatasetCredentialsCheck && asset && service && (
+        <div className={styles.credentialsOverlay}>
+          <div className={styles.credentialsContainer}>
+            <div className={styles.credentialsHeader}>
+              <h3>Verify Dataset Credentials</h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowDatasetCredentialsCheck(false)}
+              >
+                ✕ Close
+              </button>
+            </div>
+            <CredentialDialogProvider>
               <AssetActionCheckCredentials
-                asset={asset}
-                service={service}
-                onVerified={() => setShowCredentialsCheck(false)}
+                asset={asset as any}
+                service={service as any}
+                onVerified={() => setShowDatasetCredentialsCheck(false)}
               />
-            )}
+            </CredentialDialogProvider>
           </div>
         </div>
       )}
