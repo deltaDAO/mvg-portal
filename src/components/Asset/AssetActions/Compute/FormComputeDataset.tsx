@@ -46,8 +46,6 @@ export default function FormStartCompute({
   selectedComputeAssetTimeout,
   computeEnvs,
   setSelectedComputeEnv,
-  setAssetTermsAndConditions,
-  setPortalTermsAndConditions,
   stepText,
   isConsumable,
   consumableFeedback,
@@ -83,8 +81,6 @@ export default function FormStartCompute({
   setSelectedComputeEnv: React.Dispatch<
     React.SetStateAction<ComputeEnvironment>
   >
-  setAssetTermsAndConditions: React.Dispatch<React.SetStateAction<boolean>>
-  setPortalTermsAndConditions: React.Dispatch<React.SetStateAction<boolean>>
   stepText: string
   isConsumable: boolean
   consumableFeedback: string
@@ -401,21 +397,11 @@ export default function FormStartCompute({
         {...content.form.portalTermsAndConditions}
         licenses={[appConfig.defaultTermsAndConditionsUrl]}
         disabled={isLoading}
-        onChange={() =>
-          setPortalTermsAndConditions(
-            (portalTermsAndConditions) => !portalTermsAndConditions
-          )
-        }
       />
       <TermsAndConditionsCheckbox
         {...content.form.assetTermsAndConditions}
         licenses={[license]}
         disabled={isLoading}
-        onChange={() =>
-          setAssetTermsAndConditions(
-            (assetTermsAndConditions) => !assetTermsAndConditions
-          )
-        }
       />
     </Form>
   )

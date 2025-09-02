@@ -131,7 +131,7 @@
     "url": "https://github.com/deltaDAO/mvg-portal"
   },
   "engines": {
-    "node": "18"
+    "node": "22"
   },
   "browserslist": [
     ">0.2%",

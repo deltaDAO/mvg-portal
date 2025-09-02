@@ -7,14 +7,22 @@ import {
   useEffect,
   useState
 } from 'react'
-import { useProvider, useBalance as useWagmiBalance } from 'wagmi'
-import { accountTruncate } from '../../@utils/wallet'
+import {
+  useConnect,
+  useNetwork,
+  useProvider,
+  useBalance as useWagmiBalance
+} from 'wagmi'
 import { useUserPreferences } from '../UserPreferences'
 import { toast } from 'react-toastify'
 
 import { useMarketMetadata } from '../MarketMetadata'
 import DeleteAutomationModal from './DeleteAutomationModal'
 import useBalance from '../../@hooks/useBalance'
+import {
+  EthersWalletConnector,
+  JSON_WALLET_CONNECTOR_ID
+} from '@utils/wallet/EthersWalletConnector'
 
 export enum AUTOMATION_MODES {
   SIMPLE = 'simple',
@@ -45,6 +53,9 @@ const AutomationContext = createContext({} as AutomationProviderValue)
 // Provider
 function AutomationProvider({ children }) {
   const { getApprovedTokenBalances } = useBalance()
+  const { connect, connectors } = useConnect()
+  const { chain } = useNetwork()
+  const wagmiProvider = useProvider()
   const { approvedBaseTokens, appConfig } = useMarketMetadata()
   const { automationWalletJSON, setAutomationWalletJSON } = useUserPreferences()
 
@@ -69,7 +80,22 @@ function AutomationProvider({ children }) {
 
   const [hasDeleteRequest, setHasDeleteRequest] = useState(false)
 
-  const wagmiProvider = useProvider()
+  const jsonWalletConnector = connectors.find(
+    (connector) => connector.id === JSON_WALLET_CONNECTOR_ID
+  ) as EthersWalletConnector
+
+  if (!jsonWalletConnector) {
+    throw new Error('[AutomationProvider] Custom wallet connector not found.')
+  }
+
+  useEffect(() => {
+    if (isAutomationEnabled && chain?.id) {
+      LoggerInstance.log(
+        `[AutomationProvider] ✅ Network changed to: ${chain.name} (ID: ${chain.id})`
+      )
+      setAutoWallet(jsonWalletConnector.getWallet())
+    }
+  }, [chain])
 
   useEffect(() => {
     if (!automationWalletJSON) setAutoWalletAddress(undefined)
@@ -78,20 +104,6 @@ function AutomationProvider({ children }) {
         ethers.utils.getJsonWalletAddress(automationWalletJSON)
       )
   }, [automationWalletJSON])
-
-  useEffect(() => {
-    if (autoWallet && !isAutomationEnabled) {
-      toast.info(`Automation disabled`)
-      return
-    }
-
-    if (autoWallet?.address)
-      toast.success(
-        `Successfully enabled automation wallet with address ${accountTruncate(
-          autoWallet?.address
-        )}`
-      )
-  }, [isAutomationEnabled, autoWallet])
 
   const updateBalance = useCallback(async () => {
     if (!autoWallet) return
@@ -145,6 +157,7 @@ function AutomationProvider({ children }) {
     setAutoWalletAddress(undefined)
     setAutomationWalletJSON(undefined)
     setBalance(undefined)
+    jsonWalletConnector.disconnect()
     toast.info('The automation wallet was removed from your machine.')
     setHasDeleteRequest(false)
     setIsLoading(false)
@@ -184,10 +197,13 @@ function AutomationProvider({ children }) {
           password,
           (percent) => setDecryptPercentage(percent)
         )
-        const connectedWallet = wallet.connect(wagmiProvider)
-        LoggerInstance.log('[AutomationProvider] Finished decrypting:', {
-          connectedWallet
-        })
+
+        await jsonWalletConnector.loadWallet(wallet.privateKey)
+        connect({ connector: jsonWalletConnector })
+        const connectedWallet = jsonWalletConnector.getWallet()
+        LoggerInstance.log(
+          '[AutomationProvider] Finished decrypting json wallet.'
+        )
         setAutoWallet(connectedWallet)
         toast.success(
           `Successfully imported wallet ${connectedWallet.address} for automation.`
