@@ -70,10 +70,10 @@
           "isLive": true
         },
         {
-          "name": "Airbus",
-          "link": "https://airbus.pontus-x.eu/",
-          "description": "For those who make this world a safer place. We pioneer defense and space for their mission success.",
-          "image": "airbus-logo.webp",
+          "name": "CIRP",
+          "link": "https://cirp-cooperative-work.pontus-x.eu",
+          "description": "The CIRP dataspace supports an integrated research environment designed to facilitate coordinated experimental activities within the CIRP STC-C community.",
+          "image": "cirp.webp",
           "category": "manufacturing",
           "isLive": true
         },
@@ -94,19 +94,27 @@
           "isLive": true
         },
         {
-          "name": "beebucket",
-          "link": "https://daseen.pontus-x.eu/",
-          "description": "The beebucket portal features access to the Extended Dataset Profile Service (EDPS) and Dataset Search Engine (daseen).",
-          "image": "beebucket.webp",
-          "category": "AI",
-          "isLive": true
-        },
-        {
           "name": "Clio-X",
           "link": "https://www.cliox.org/",
           "description": "ClioX is a new kind of privacy-first platform—built by and for researchers, archivists, and cultural institutions.",
           "image": "cliox.webp",
           "category": "Research",
+          "isLive": true
+        },
+        {
+          "name": "Open Dataspace Lab",
+          "link": "https://www.opendataspacelab.eu/",
+          "description": "Open Dataspace Lab connects supply and demand for all types of data and AI algorithms.",
+          "image": "odl-logo.webp",
+          "category": "general",
+          "isLive": true
+        },
+        {
+          "name": "beebucket",
+          "link": "https://daseen.pontus-x.eu/",
+          "description": "The beebucket portal features access to the Extended Dataset Profile Service (EDPS) and Dataset Search Engine (daseen).",
+          "image": "beebucket.webp",
+          "category": "AI",
           "isLive": true
         },
         {
@@ -139,14 +147,6 @@
           "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
           "image": "PSNC.webp",
           "category": "agriculture",
-          "isLive": true
-        },
-        {
-          "name": "Open Dataspace Lab",
-          "link": "https://www.opendataspacelab.eu/",
-          "description": "Open Dataspace Lab connects supply and demand for all types of data and AI algorithms.",
-          "image": "odl-logo.webp",
-          "category": "general",
           "isLive": true
         },
         {
