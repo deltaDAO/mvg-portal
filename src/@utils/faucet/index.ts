@@ -29,23 +29,16 @@ export async function getMessage(address: string): Promise<string> {
   }
 }
 
-export async function getChainId(): Promise<number> {
-  const network = await new ethers.providers.Web3Provider(
-    window?.ethereum
-  ).getNetwork()
-  return network.chainId
-}
-
 export async function requestTokens(
   address: string,
-  signature: string
+  signature: string,
+  chainId: number
 ): Promise<string[]> {
   try {
     const availableNetworks = {
       32456: 'devnet',
       32457: 'testnet'
     }
-    const chainId = await getChainId()
     const network = availableNetworks[chainId]
 
     const response = await axios.post<{
