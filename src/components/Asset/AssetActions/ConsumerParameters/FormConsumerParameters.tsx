@@ -1,4 +1,4 @@
-import { ChangeEvent, ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import Input from '@shared/FormInput'
 import Label from '@shared/FormInput/Label'
 import { Field, useField } from 'formik'
@@ -58,14 +58,6 @@ export default function FormConsumerParameters({
     return updatedOptions
   }
 
-  const [memorizedParameters, setMemorizedParameters] =
-    useState<UserCustomParameters>()
-
-  useEffect(() => {
-    const defaults = getDefaultValues(parameters)
-    setMemorizedParameters(defaults)
-  }, [])
-
   return (
     <div className={styles.container}>
       <Label htmlFor="Input the consumer parameters">
@@ -91,14 +83,7 @@ export default function FormConsumerParameters({
                 options={getParameterOptions(param)}
                 size="small"
                 type={param.type === 'boolean' ? 'select' : param.type}
-                onChange={(event: ChangeEvent<HTMLInputElement>) => {
-                  const { value } = event.target
-                  setMemorizedParameters((prev) => ({
-                    ...prev,
-                    [param.name]: value
-                  }))
-                }}
-                value={memorizedParameters?.[param.name]}
+                value={field.value[param.name]}
               />
             </div>
           )

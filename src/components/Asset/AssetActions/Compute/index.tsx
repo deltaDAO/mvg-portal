@@ -113,10 +113,6 @@ export default function Compute({
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
   const [selectedComputeEnv, setSelectedComputeEnv] =
     useState<ComputeEnvironment>()
-  const [assetTermsAndConditions, setAssetTermsAndConditions] =
-    useState<boolean>(false)
-  const [portalTermsAndConditions, setPortalTermsAndConditions] =
-    useState<boolean>(false)
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
   const [providerFeeAmount, setProviderFeeAmount] = useState<string>('0')
@@ -573,8 +569,8 @@ export default function Compute({
             asset,
             selectedAlgorithmAsset,
             selectedComputeEnv,
-            assetTermsAndConditions,
-            portalTermsAndConditions
+            false, // intial assetTermsAndConditions checkbox always false
+            false // intial portalTermsAndConditions checkbox always false
           )}
           validateOnMount
           validationSchema={getComputeValidationSchema(
@@ -616,8 +612,6 @@ export default function Compute({
             )}
             computeEnvs={computeEnvs}
             setSelectedComputeEnv={setSelectedComputeEnv}
-            setAssetTermsAndConditions={setAssetTermsAndConditions}
-            setPortalTermsAndConditions={setPortalTermsAndConditions}
             // lazy comment when removing pricingStepText
             stepText={computeStatusText}
             isConsumable={isConsumablePrice}
