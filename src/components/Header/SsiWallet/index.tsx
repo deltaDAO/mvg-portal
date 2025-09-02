@@ -277,7 +277,7 @@ export function SsiWallet(): ReactElement {
             </div>
           </dialog>
 
-          {sessionToken ? (
+          {sessionToken && isConnected && signer ? (
             <div
               className={`${styles.ssiPanel} ${styles.connected}`}
               onClick={handleOpenDialog}
@@ -293,10 +293,7 @@ export function SsiWallet(): ReactElement {
               className={`${styles.ssiPanel} ${styles.disconnected}`}
               onClick={handleReconnection}
             >
-              {' '}
-              <span className={styles.text}>
-                {isConnected && signer ? 'SSI' : 'SSI'}
-              </span>
+              <span className={styles.text}>SSI</span>
               <span className={styles.iconWrapper}>
                 <DisconnectedIcon className={styles.icon} />
               </span>
