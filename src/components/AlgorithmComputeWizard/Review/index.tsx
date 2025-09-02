@@ -722,10 +722,14 @@ export default function Review({
                 asset.id,
                 service?.id
               )
-              const details = asset.accessDetails?.[i]
-              const rawPrice = details?.validOrderTx
-                ? '0'
-                : details?.price || '0'
+
+              // Use serviceIndex or default to 0, not i
+              const details = asset.accessDetails?.[asset.serviceIndex || 0]
+
+              const rawPrice =
+                details?.validOrderTx && details.validOrderTx !== ''
+                  ? '0'
+                  : details?.price || '0'
 
               return datasetItems.map((item) => (
                 <PricingRow
@@ -733,7 +737,7 @@ export default function Review({
                   label={
                     item.name === 'DATASET' ? `Dataset ${i + 1}` : undefined
                   }
-                  itemName={asset.credentialSubject.services[0].name}
+                  itemName={asset.credentialSubject?.services?.[0]?.name}
                   value={rawPrice}
                   duration={item.duration}
                   actionLabel={
