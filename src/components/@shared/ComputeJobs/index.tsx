@@ -10,7 +10,13 @@ import InProgress from '@images/InProgress.svg'
 import { useProfile } from '@context/Profile/index'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
-const ComputeJobs = ({ asset }: { asset?: AssetExtended }) => {
+const ComputeJobs = ({
+  asset,
+  refetchTrigger
+}: {
+  asset?: AssetExtended
+  refetchTrigger?: number
+}) => {
   const [showDetails, setShowDetails] = useState<string | null>(null)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -34,6 +40,7 @@ const ComputeJobs = ({ asset }: { asset?: AssetExtended }) => {
 
         if (response?.computeJobs) {
           const allJobs = response.computeJobs
+
           const matchingJobs = Object.entries(allJobs)
             .filter(([jobId, job]: any) => {
               if (!job.assets || !Array.isArray(job.assets)) {
@@ -45,7 +52,11 @@ const ComputeJobs = ({ asset }: { asset?: AssetExtended }) => {
                 return assetObj.documentId === asset?.id
               })
 
-              return hasMatch
+              // Also check algorithm if it exists
+              const hasAlgorithmMatch =
+                job.algorithm && job.algorithm.documentId === asset?.id
+
+              return hasMatch || hasAlgorithmMatch
             })
             .map(([_, job]) => job)
 
@@ -64,7 +75,7 @@ const ComputeJobs = ({ asset }: { asset?: AssetExtended }) => {
     }
 
     fetchComputeJobs()
-  }, [accountId, newCancelToken])
+  }, [accountId, newCancelToken, refetchTrigger])
 
   if (isLoading) {
     return (

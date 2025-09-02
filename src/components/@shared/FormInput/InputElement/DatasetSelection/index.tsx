@@ -115,7 +115,11 @@ export default function DatasetSelection({
                     </p>
 
                     <div className={styles.cardActions}>
-                      <Button style="slim">
+                      <Button
+                        type="button"
+                        style="slim"
+                        onClick={() => onChange?.(dataset.did)}
+                      >
                         {isSelected ? 'Selected' : 'Select'}
                       </Button>
                     </div>

@@ -51,6 +51,7 @@ export default function AssetContent({
   const [fileMetadata, setFileMetadata] = useState<any>(null)
   const [isAccountIdWhitelisted, setIsAccountIdWhitelisted] =
     useState<boolean>(false)
+  const [computeJobsRefetchTrigger, setComputeJobsRefetchTrigger] = useState(0)
   const router = useRouter()
 
   const availableServices =
@@ -193,7 +194,10 @@ export default function AssetContent({
             <MetaFull ddo={asset} />
             {debug === true && <DebugOutput title="DDO" output={asset} />}
           </div>
-          <ComputeJobs asset={asset} />
+          <ComputeJobs
+            asset={asset}
+            refetchTrigger={computeJobsRefetchTrigger}
+          />
         </div>
 
         <div className={styles.actions}>
@@ -239,6 +243,9 @@ export default function AssetContent({
                     accessDetails={asset.accessDetails[selectedService]}
                     serviceIndex={selectedService}
                     handleBack={() => setSelectedService(undefined)}
+                    onComputeJobCreated={() =>
+                      setComputeJobsRefetchTrigger((prev) => prev + 1)
+                    }
                   />
                 )
               ) : (

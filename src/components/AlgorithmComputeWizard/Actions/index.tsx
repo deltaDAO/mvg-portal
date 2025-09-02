@@ -37,7 +37,12 @@ export default function Actions(): ReactElement {
   return (
     <footer className={styles.actions}>
       {values.user.stepCurrent > 1 && (
-        <Button style="text" onClick={handleBack} disabled={isSubmitting}>
+        <Button
+          type="button"
+          style="text"
+          onClick={handleBack}
+          disabled={isSubmitting}
+        >
           Back
         </Button>
       )}
@@ -47,6 +52,7 @@ export default function Actions(): ReactElement {
         </Button>
       ) : (
         <Button
+          type="button"
           style="publish"
           onClick={handleContinue}
           disabled={isSubmitting}

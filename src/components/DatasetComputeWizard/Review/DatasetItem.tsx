@@ -33,7 +33,12 @@ export default function DatasetItem({
             </span>
           </div>
         ) : (
-          <Button size="small" style="slim" onClick={handleCredentialCheck}>
+          <Button
+            type="button"
+            size="small"
+            style="slim"
+            onClick={handleCredentialCheck}
+          >
             {getCredentialButtonText()}
           </Button>
         )}

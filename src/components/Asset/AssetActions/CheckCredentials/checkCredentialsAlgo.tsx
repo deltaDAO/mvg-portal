@@ -311,32 +311,36 @@ export function AssetActionCheckCredentialsAlgo({
           dids={exchangeStateData.dids}
         />
       )}
-      <div className={styles.buttonWrapperAlgo}>
-        <Button
-          type="button"
-          style="publish"
-          onClick={() =>
-            setCheckCredentialState(
-              CheckCredentialState.StartCredentialExchange
-            )
-          }
-          disabled={!selectedWallet?.id}
+      {!showVpDialog && !showDidDialog && (
+        <div className={styles.buttonWrapperAlgo}>
+          <Button
+            type="button"
+            style="publish"
+            onClick={() =>
+              setCheckCredentialState(
+                CheckCredentialState.StartCredentialExchange
+              )
+            }
+            disabled={!selectedWallet?.id}
+          >
+            {type === 'dataset'
+              ? `Check Dataset Credentials for ${service.name}`
+              : 'Check Algorithm Credentials'}
+          </Button>
+        </div>
+      )}
+      {requiredCredentials && requiredCredentials.length > 0 && (
+        <div
+          className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
         >
-          {type === 'dataset'
-            ? `Check Dataset Credentials for ${service.name}`
-            : 'Check Algorithm Credentials'}
-        </Button>
-      </div>
-      <div
-        className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
-      >
-        {requiredCredentials?.map((cred) => (
-          <React.Fragment key={cred}>
-            <div className={`${styles.marginTop6px} ${styles.fillGreen}`} />
-            {cred}
-          </React.Fragment>
-        ))}
-      </div>
+          {requiredCredentials.map((cred) => (
+            <React.Fragment key={cred}>
+              <div className={`${styles.marginTop6px} ${styles.fillGreen}`} />
+              {cred}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -376,24 +376,26 @@ export function AssetActionCheckCredentials({
         }
         dids={exchangeStateData.dids}
       />
-      <div className={styles.buttonWrapper}>
-        <Button
-          type="button"
-          onClick={() => {
-            console.log('Check Credentials button clicked')
-            console.log('selectedWallet:', selectedWallet)
-            console.log('selectedWallet?.id:', selectedWallet?.id)
-            console.log('checkCredentialState:', checkCredentialState)
-            setCheckCredentialState(
-              CheckCredentialState.StartCredentialExchange
-            )
-          }}
-          disabled={!selectedWallet?.id}
-          style="publish"
-        >
-          Check Credentials
-        </Button>
-      </div>
+      {!showVpDialog && !showDidDialog && (
+        <div className={styles.buttonWrapper}>
+          <Button
+            type="button"
+            onClick={() => {
+              console.log('Check Credentials button clicked')
+              console.log('selectedWallet:', selectedWallet)
+              console.log('selectedWallet?.id:', selectedWallet?.id)
+              console.log('checkCredentialState:', checkCredentialState)
+              setCheckCredentialState(
+                CheckCredentialState.StartCredentialExchange
+              )
+            }}
+            disabled={!selectedWallet?.id}
+            style="publish"
+          >
+            Check Credentials
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

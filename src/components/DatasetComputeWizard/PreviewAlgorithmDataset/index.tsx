@@ -175,17 +175,6 @@ const PreviewAlgorithmDataset = ({
             ))}
           </div>
         </div>
-
-        {/* Dataset Section */}
-        <div className={styles.datasetContainer}>
-          <div className={styles.datasetHeader}>
-            <h2 className={styles.datasetName}>Selected Dataset</h2>
-            <p className={styles.datasetAddress}>Current dataset asset</p>
-            <p className={styles.datasetDescription}>
-              This is the dataset you are running the algorithm against
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   )

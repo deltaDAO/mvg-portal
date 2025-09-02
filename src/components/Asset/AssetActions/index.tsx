@@ -33,7 +33,8 @@ export default function AssetActions({
   accessDetails,
   serviceIndex,
   handleBack,
-  consumableFeedback
+  consumableFeedback,
+  onComputeJobCreated
 }: {
   asset: AssetExtended
   service: Service
@@ -41,6 +42,7 @@ export default function AssetActions({
   serviceIndex: number
   handleBack: () => void
   consumableFeedback?: string
+  onComputeJobCreated?: () => void
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { data: signer } = useSigner()
@@ -341,6 +343,8 @@ export default function AssetActions({
                 file={fileMetadata}
                 fileIsLoading={fileIsLoading}
                 consumableFeedback={consumableFeedback}
+                onClose={closeComputePopup}
+                onComputeJobCreated={onComputeJobCreated}
               />
             ) : (
               <ComputeWizard
@@ -354,6 +358,8 @@ export default function AssetActions({
                 file={fileMetadata}
                 fileIsLoading={fileIsLoading}
                 consumableFeedback={consumableFeedback}
+                onClose={closeComputePopup}
+                onComputeJobCreated={onComputeJobCreated}
               />
             )}
           </div>

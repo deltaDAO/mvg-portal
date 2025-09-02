@@ -11,7 +11,6 @@
 .panelColumn {
   display: flex;
   flex-direction: column;
-  gap: calc(var(--spacer) / 2);
 }
 
 .credentialsTitle {
@@ -162,13 +161,9 @@
 }
 
 .buttonWrapperAlgo {
-  position: relative;
-  top: -10px;
-  right: 50px;
-  width: 100%;
-  height: 10px;
   display: flex;
-  justify-content: left;
-  align-items: first baseline;
+  justify-content: center;
+  align-items: center;
+  margin-top: calc(var(--spacer) / 2);
   margin-bottom: 20px;
 }

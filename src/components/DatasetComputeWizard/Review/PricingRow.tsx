@@ -39,6 +39,7 @@ export default function PricingRow({
         {actionLabel && onAction && (
           <div style={{ marginTop: '4px' }}>
             <Button
+              type="button"
               size="small"
               style="slim"
               onClick={onAction}
