@@ -34,6 +34,19 @@ import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 import Loader from '@components/@shared/atoms/Loader'
+
+interface VerificationItem {
+  id: string
+  type: 'dataset' | 'algorithm'
+  asset: AssetExtended
+  service: Service
+  isVerified: boolean
+  index: number
+  price: string
+  duration: string
+  name: string
+}
+
 interface ReviewProps {
   totalPrices?: { value: string; symbol: string }[]
   datasetOrderPrice?: string
@@ -46,9 +59,6 @@ interface ReviewProps {
 }
 
 export default function Review({
-  // totalPrices = [],
-  // algoOrderPrice = '0',
-  // c2dPrice = '0',
   isRequestingPrice = false,
   asset,
   service,
@@ -148,19 +158,23 @@ export default function Review({
   const { isValid, setFieldValue, values }: FormikContextType<FormComputeData> =
     useFormikContext()
   console.log('Field values ', values)
-  const { isAssetNetwork } = useAsset() // TODO - is this needed?
+  const { isAssetNetwork } = useAsset()
 
+  // State for verification flow
+  const [verificationQueue, setVerificationQueue] = useState<
+    VerificationItem[]
+  >([])
+  const [currentVerificationIndex, setCurrentVerificationIndex] =
+    useState<number>(-1)
+  const [showCredentialsCheck, setShowCredentialsCheck] =
+    useState<boolean>(false)
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
     accessDetails.price
   )
-
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
   )
   const [serviceIndex, setServiceIndex] = useState(0)
-  const [showDatasetCredentialsCheck, setShowDatasetCredentialsCheck] =
-    useState(false)
-  const [showCredentialsCheck, setShowCredentialsCheck] = useState(false)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const envKey =
@@ -181,13 +195,96 @@ export default function Review({
     if (s) parts.push(`${s}s`)
     return parts.join(' ') || '0s'
   }
-  const algoItems = [
-    {
-      name: 'ALGORITHM',
-      value: algoOrderPrice || '0',
-      duration: '1 day'
+  // Build verification queue from dataset and algorithm
+  useEffect(() => {
+    const queue: VerificationItem[] = []
+
+    // Add dataset to queue if exists
+    if (asset && service) {
+      const isVerified = lookupVerifierSessionId?.(asset.id, service.id)
+
+      queue.push({
+        id: asset.id,
+        type: 'dataset',
+        asset,
+        service,
+        isVerified: Boolean(isVerified),
+        index: 0,
+        price: asset.accessDetails?.[0].validOrderTx
+          ? '0'
+          : asset.accessDetails?.[0].price,
+        duration: formatDuration(service.timeout || 0),
+        name: service.name
+      })
     }
-  ]
+
+    // Add algorithm to queue if exists
+    if (selectedAlgorithmAsset) {
+      const algoService =
+        selectedAlgorithmAsset.credentialSubject?.services?.[serviceIndex]
+      const isVerified = lookupVerifierSessionId?.(
+        selectedAlgorithmAsset.id,
+        algoService?.id
+      )
+
+      const details = selectedAlgorithmAsset.accessDetails?.[serviceIndex]
+      const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
+
+      queue.push({
+        id: selectedAlgorithmAsset.id,
+        type: 'algorithm',
+        asset: selectedAlgorithmAsset,
+        service: algoService,
+        isVerified: Boolean(isVerified),
+        index: queue.length,
+        price: rawPrice,
+        duration: '1 day',
+        name:
+          selectedAlgorithmAsset.credentialSubject?.services?.[0]?.name ||
+          'Algorithm'
+      })
+    }
+
+    setVerificationQueue(queue)
+  }, [
+    asset,
+    service,
+    selectedAlgorithmAsset,
+    serviceIndex,
+    lookupVerifierSessionId
+  ])
+
+  // Start verification for a specific item
+  const startVerification = (index: number) => {
+    setCurrentVerificationIndex(index)
+    setShowCredentialsCheck(true)
+  }
+
+  // Handle verification completion
+  const handleVerificationComplete = () => {
+    // Update verification status
+    setVerificationQueue((prev) =>
+      prev.map((item, i) =>
+        i === currentVerificationIndex ? { ...item, isVerified: true } : item
+      )
+    )
+
+    setShowCredentialsCheck(false)
+
+    // Find next unverified item
+    const nextIndex = verificationQueue.findIndex(
+      (item, index) => index > currentVerificationIndex && !item.isVerified
+    )
+
+    if (nextIndex !== -1) {
+      // Auto-initiate next verification after a short delay
+      setTimeout(() => startVerification(nextIndex), 300)
+    }
+  }
+
+  // Get current item being verified
+  const currentVerificationItem = verificationQueue[currentVerificationIndex]
+
   const computeItems = [
     {
       name: 'C2D RESOURCES',
@@ -201,6 +298,7 @@ export default function Review({
     { name: 'CONSUME MARKET ORDER FEE ALGORITHM (0%)', value: '0' },
     { name: 'CONSUME MARKET ORDER FEE C2C (0%)', value: '0' }
   ]
+
   function getAlgorithmAsset(algo: string): {
     algorithmAsset: AssetExtended | null
     serviceIndexAlgo: number | null
@@ -259,7 +357,6 @@ export default function Review({
     if (!values.algorithm || !isConsumable) return
 
     async function fetchAlgorithmAssetExtended() {
-      // TODO test this type override
       const { algorithmAsset, serviceIndexAlgo } = getAlgorithmAsset(
         values.algorithm
       )
@@ -318,7 +415,7 @@ export default function Review({
         disk,
         jobDuration,
         price: 0,
-        mode: 'free' // need to make it dynamic
+        mode: 'paid' // need to make it dynamic
       }
 
       setAllResourceValues((prev) => ({
@@ -537,97 +634,54 @@ export default function Review({
       </div>
 
       <div className={styles.contentContainer}>
-        <div className={styles.pricingBreakdown}>
-          {/* Datasets */}
-          {/* {selectedDatasets?.map((dataset) => (
-            <div key={dataset.id} className={styles.pricingRow}>
-              <div className={styles.itemInfo}>
-                <DatasetItem
-                  dataset={dataset}
-                  onCheckCredentials={handleCheckCredentials}
-                />
-              </div>
-              <PriceDisplay value="1" />
+        {/* Verification Progress Indicator */}
+        {verificationQueue.length > 0 && (
+          <div className={styles.progressContainer}>
+            <div className={styles.progressLabel}>Verification Progress:</div>
+            <div className={styles.progressSteps}>
+              {verificationQueue.map((item, index) => (
+                <div
+                  key={item.id}
+                  className={`${styles.progressStep} ${
+                    item.isVerified
+                      ? styles.completed
+                      : index === currentVerificationIndex
+                      ? styles.active
+                      : styles.pending
+                  }`}
+                >
+                  {item.type === 'dataset' ? 'Dataset' : 'Algorithm'}
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+        )}
 
-          {selectedDatasets?.map((dataset) =>
-            dataset.services.map((service) => (
+        <div className={styles.pricingBreakdown}>
+          {/* Render all items from verification queue */}
+          {verificationQueue.length === 0 ? (
+            <div className={styles.loaderWrap}>
+              <Loader message="Loading assets..." noMargin={true} />
+            </div>
+          ) : (
+            verificationQueue.map((item, i) => (
               <PricingRow
-                key={`${dataset.id}-${service.id}`}
-                itemName={service.name}
-                value={service.price}
-                duration={service.duration}
+                key={`${item.type}-${item.id}-${i}`}
+                label={item.type === 'dataset' ? 'DATASET' : 'ALGORITHM'}
+                itemName={item.name}
+                value={item.price}
+                duration={item.duration}
+                actionLabel={`Check ${
+                  item.type === 'dataset' ? 'Dataset' : 'Algorithm'
+                } Credentials`}
+                onAction={() => startVerification(i)}
+                actionDisabled={item.isVerified}
                 isService={true}
               />
             ))
-          )} */}
-
-          {/* Dataset service (per-service) */}
-          {service && (
-            <PricingRow
-              key={`DATASET-${service.id}`}
-              label={'DATASET'}
-              itemName={service.name}
-              value={
-                asset.accessDetails?.[0].validOrderTx
-                  ? '0'
-                  : asset.accessDetails?.[0].price
-              }
-              duration={formatDuration(service.timeout || 0)}
-              isService
-              actionLabel="Check Dataset Credentials"
-              onAction={() => setShowDatasetCredentialsCheck(true)}
-              actionDisabled={Boolean(
-                lookupVerifierSessionId?.(asset?.id, service.id)
-              )}
-            />
           )}
 
-          {/* Compute Items */}
-          {!selectedAlgorithmAsset ? (
-            <div className={styles.loaderWrap}>
-              <Loader
-                message="Loading Selected Algorithms..."
-                noMargin={true}
-              />
-            </div>
-          ) : (
-            algoItems.map((item) => (
-              <PricingRow
-                key={item.name}
-                label={'ALGORITHM'}
-                itemName={
-                  selectedAlgorithmAsset?.credentialSubject?.services[0]?.name
-                }
-                value={item.value}
-                duration={item.duration}
-                actionLabel={
-                  item.name === 'ALGORITHM'
-                    ? 'Check Algorithm Credentials'
-                    : undefined
-                }
-                onAction={
-                  item.name === 'ALGORITHM'
-                    ? () => setShowCredentialsCheck(true)
-                    : undefined
-                }
-                actionDisabled={
-                  item.name === 'ALGORITHM' && selectedAlgorithmAsset?.id
-                    ? Boolean(
-                        lookupVerifierSessionId?.(
-                          selectedAlgorithmAsset.id,
-                          selectedAlgorithmAsset?.credentialSubject?.services?.[
-                            serviceIndex
-                          ]?.id
-                        )
-                      )
-                    : false
-                }
-              />
-            ))
-          )}
-
+          {/* Compute items and market fees */}
           {computeItems.map((item) => (
             <PricingRow
               key={item.name}
@@ -637,7 +691,6 @@ export default function Review({
             />
           ))}
 
-          {/* Market Order Fees */}
           {marketFees.map((fee) => (
             <PricingRow key={fee.name} itemName={fee.name} value={fee.value} />
           ))}
@@ -697,11 +750,19 @@ export default function Review({
         </div>
         <PurchaseButton />
       </div>
-      {showCredentialsCheck && selectedAlgorithmAsset && (
+
+      {/* Unified credentials modal */}
+      {showCredentialsCheck && currentVerificationItem && (
         <div className={styles.credentialsOverlay}>
           <div className={styles.credentialsContainer}>
             <div className={styles.credentialsHeader}>
-              <h3>Verify Algorithm Credentials</h3>
+              <h3>
+                Verify{' '}
+                {currentVerificationItem.type === 'dataset'
+                  ? 'Dataset'
+                  : 'Algorithm'}{' '}
+                Credentials
+              </h3>
               <button
                 className={styles.closeButton}
                 onClick={() => setShowCredentialsCheck(false)}
@@ -710,37 +771,19 @@ export default function Review({
               </button>
             </div>
             <CredentialDialogProvider>
-              <AssetActionCheckCredentialsAlgo
-                asset={selectedAlgorithmAsset as any}
-                service={
-                  (selectedAlgorithmAsset as any)?.credentialSubject
-                    ?.services?.[serviceIndex]
-                }
-                onVerified={() => setShowCredentialsCheck(false)}
-              />
-            </CredentialDialogProvider>
-          </div>
-        </div>
-      )}
-
-      {showDatasetCredentialsCheck && asset && service && (
-        <div className={styles.credentialsOverlay}>
-          <div className={styles.credentialsContainer}>
-            <div className={styles.credentialsHeader}>
-              <h3>Verify Dataset Credentials</h3>
-              <button
-                className={styles.closeButton}
-                onClick={() => setShowDatasetCredentialsCheck(false)}
-              >
-                ✕ Close
-              </button>
-            </div>
-            <CredentialDialogProvider>
-              <AssetActionCheckCredentials
-                asset={asset as any}
-                service={service as any}
-                onVerified={() => setShowDatasetCredentialsCheck(false)}
-              />
+              {currentVerificationItem.type === 'dataset' ? (
+                <AssetActionCheckCredentials
+                  asset={currentVerificationItem.asset as any}
+                  service={currentVerificationItem.service as any}
+                  onVerified={handleVerificationComplete}
+                />
+              ) : (
+                <AssetActionCheckCredentialsAlgo
+                  asset={currentVerificationItem.asset as any}
+                  service={currentVerificationItem.service as any}
+                  onVerified={handleVerificationComplete}
+                />
+              )}
             </CredentialDialogProvider>
           </div>
         </div>
