@@ -7,11 +7,14 @@ import AvailableNetworks from '@components/Publish/AvailableNetworks'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAccount } from 'wagmi'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from 'src/@types/ddo/Service'
 
 export default function Title({
-  asset
+  asset,
+  service
 }: {
   asset: AssetExtended
+  service: Service
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
@@ -19,7 +22,10 @@ export default function Title({
 
   return (
     <div className={styles.titleContainer}>
-      <span className={styles.titleText}>Buy Dataset</span>
+      <span className={styles.titleText}>Buy Compute Job</span>
+      <span className={`${styles.assetInfo} ${styles.right}`}>
+        {asset.credentialSubject.metadata.name} - {service.name}
+      </span>
     </div>
   )
 }
