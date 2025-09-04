@@ -27,7 +27,6 @@ export default function Navigation({
   })
 
   const handleStepClick = (stepNumber: number) => {
-    console.log('Navigation - step clicked:', stepNumber)
     setFieldValue('user.stepCurrent', stepNumber)
   }
 

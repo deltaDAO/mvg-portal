@@ -3,8 +3,6 @@ import { useFormikContext, Field, FormikContextType } from 'formik'
 import Input from '@shared/FormInput'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
-import DatasetItem from './DatasetItem'
-import PriceDisplay from './PriceDisplay'
 import PricingRow from './PricingRow'
 import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -15,8 +13,6 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
-import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
-import { ComputeDatasetForm } from '../_constants'
 import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
@@ -26,13 +22,13 @@ import { getAsset } from '@utils/aquarius'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
-import appConfig, { consumeMarketOrderFee } from 'app.config.cjs'
+import { consumeMarketOrderFee } from 'app.config.cjs'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
-import type { Dataset } from '../SelectServices'
 import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
+import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 
 interface VerificationItem {
@@ -41,21 +37,11 @@ interface VerificationItem {
   asset: AssetExtended
   service: Service
   isVerified: boolean
+  hasError: boolean
   index: number
   price: string
   duration: string
   name: string
-}
-
-interface ReviewProps {
-  totalPrices?: { value: string; symbol: string }[]
-  datasetOrderPrice?: string
-  algoOrderPrice?: string
-  c2dPrice?: string
-  isRequestingPrice?: boolean
-  asset?: AssetExtended
-  service?: Service
-  isAlgorithm?: boolean
 }
 
 export default function Review({
@@ -149,15 +135,13 @@ export default function Review({
   refetchJobs?: () => void
   isRequestingPrice?: boolean
 }): ReactElement {
-  console.log('Compute envs in Review ', computeEnvs)
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
-  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
+  const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isValid, setFieldValue, values }: FormikContextType<FormComputeData> =
     useFormikContext()
-  console.log('Field values ', values)
   const { isAssetNetwork } = useAsset()
 
   // State for verification flow
@@ -177,12 +161,15 @@ export default function Review({
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
-  const envKey =
-    typeof values.computeEnv === 'string'
-      ? (values.computeEnv as unknown as string)
-      : values.computeEnv?.id
-  const selectedResources = envKey ? allResourceValues?.[envKey] : undefined
-  const c2dPrice = selectedResources?.price
+  const selectedEnvId = values?.computeEnv?.id
+  const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
+  const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
+  const c2dPrice =
+    values?.mode === 'paid' ? paidResources?.price : freeResources?.price
+  const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
+  const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
+  const [activeCredentialAsset, setActiveCredentialAsset] =
+    useState<AssetExtended | null>(null)
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)
     const h = Math.floor((seconds % 86400) / 3600)
@@ -202,17 +189,41 @@ export default function Review({
     // Add dataset to queue if exists
     if (asset && service) {
       const isVerified = lookupVerifierSessionId?.(asset.id, service.id)
+      const rawPrice = asset.accessDetails?.[0].validOrderTx
+        ? '0'
+        : asset.accessDetails?.[0].price
+
+      const existingItem = verificationQueue.find(
+        (item) => item.id === asset.id && item.type === 'dataset'
+      )
+
+      let preservedIsVerified = Boolean(isVerified)
+      let preservedHasError = false
+
+      if (existingItem) {
+        const currentSessionValid = Boolean(isVerified)
+
+        if (existingItem.isVerified && !currentSessionValid) {
+          preservedIsVerified = false
+          preservedHasError = false
+        } else if (currentSessionValid) {
+          preservedIsVerified = existingItem.isVerified
+          preservedHasError = existingItem.hasError
+        } else {
+          preservedIsVerified = false
+          preservedHasError = existingItem.hasError
+        }
+      }
 
       queue.push({
         id: asset.id,
         type: 'dataset',
         asset,
         service,
-        isVerified: Boolean(isVerified),
+        isVerified: preservedIsVerified,
+        hasError: preservedHasError,
         index: 0,
-        price: asset.accessDetails?.[0].validOrderTx
-          ? '0'
-          : asset.accessDetails?.[0].price,
+        price: rawPrice,
         duration: formatDuration(service.timeout || 0),
         name: service.name
       })
@@ -230,12 +241,35 @@ export default function Review({
       const details = selectedAlgorithmAsset.accessDetails?.[serviceIndex]
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
 
+      const existingItem = verificationQueue.find(
+        (item) =>
+          item.id === selectedAlgorithmAsset.id && item.type === 'algorithm'
+      )
+
+      let preservedIsVerified = Boolean(isVerified)
+      let preservedHasError = false
+
+      if (existingItem) {
+        const currentSessionValid = Boolean(isVerified)
+        if (existingItem.isVerified && !currentSessionValid) {
+          preservedIsVerified = false
+          preservedHasError = false
+        } else if (currentSessionValid) {
+          preservedIsVerified = existingItem.isVerified
+          preservedHasError = existingItem.hasError
+        } else {
+          preservedIsVerified = false
+          preservedHasError = existingItem.hasError
+        }
+      }
+
       queue.push({
         id: selectedAlgorithmAsset.id,
         type: 'algorithm',
         asset: selectedAlgorithmAsset,
         service: algoService,
-        isVerified: Boolean(isVerified),
+        isVerified: preservedIsVerified,
+        hasError: preservedHasError,
         index: queue.length,
         price: rawPrice,
         duration: '1 day',
@@ -265,7 +299,9 @@ export default function Review({
     // Update verification status
     setVerificationQueue((prev) =>
       prev.map((item, i) =>
-        i === currentVerificationIndex ? { ...item, isVerified: true } : item
+        i === currentVerificationIndex
+          ? { ...item, isVerified: true, hasError: false }
+          : item
       )
     )
 
@@ -273,11 +309,31 @@ export default function Review({
 
     // Find next unverified item
     const nextIndex = verificationQueue.findIndex(
-      (item, index) => index > currentVerificationIndex && !item.isVerified
+      (item, index) =>
+        index > currentVerificationIndex && !item.isVerified && !item.hasError
     )
 
     if (nextIndex !== -1) {
-      // Auto-initiate next verification after a short delay
+      setTimeout(() => startVerification(nextIndex), 300)
+    }
+  }
+
+  const handleVerificationError = () => {
+    setVerificationQueue((prev) => {
+      const updated = prev.map((item, i) =>
+        i === currentVerificationIndex ? { ...item, hasError: true } : item
+      )
+      return updated
+    })
+
+    setShowCredentialsCheck(false)
+
+    const nextIndex = verificationQueue.findIndex(
+      (item, index) =>
+        index > currentVerificationIndex && !item.isVerified && !item.hasError
+    )
+
+    if (nextIndex !== -1) {
       setTimeout(() => startVerification(nextIndex), 300)
     }
   }
@@ -321,7 +377,7 @@ export default function Review({
         assetDdo = ddo
         if (serviceId && ddo.credentialSubject?.services) {
           const index = ddo.credentialSubject.services.findIndex(
-            (svc: any) => svc.id === serviceId
+            (svc: Service) => svc.id === serviceId
           )
           serviceIndexAlgo = index !== -1 ? index : null
         }
@@ -334,8 +390,7 @@ export default function Review({
   // Pre-select computeEnv and/or algo if there is only one available option
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
-      const { id } = computeEnvs[0]
-      setFieldValue('computeEnv', id, true)
+      setFieldValue('computeEnv', computeEnvs[0], true)
     }
     if (
       algorithms?.length === 1 &&
@@ -386,7 +441,6 @@ export default function Review({
   }, [values.algorithm, accountId, isConsumable, setSelectedAlgorithmAsset])
 
   useEffect(() => {
-    console.log('I am in select Env!!!! ')
     if (!values.computeEnv || !computeEnvs) return
 
     const currentEnvId =
@@ -395,9 +449,8 @@ export default function Review({
         : values.computeEnv?.id
 
     const selectedEnv = computeEnvs.find((env) => env.id === currentEnvId)
-    console.log('Selected env get ', selectedEnv)
     if (!selectedEnv) return
-    console.log('I am in select Env passed!!!! ')
+
     // if not already initialized, set default resource values
     if (!allResourceValues[selectedEnv.id]) {
       const cpu = selectedEnv.resources.find((r) => r.id === 'cpu')?.min || 1
@@ -415,14 +468,13 @@ export default function Review({
         disk,
         jobDuration,
         price: 0,
-        mode: 'paid' // need to make it dynamic
+        mode: 'paid'
       }
 
       setAllResourceValues((prev) => ({
         ...prev,
         [selectedEnv.id]: newRes
       }))
-      console.log('env value has been set')
     }
   }, [values.computeEnv, computeEnvs])
 
@@ -677,6 +729,17 @@ export default function Review({
                 onAction={() => startVerification(i)}
                 actionDisabled={item.isVerified}
                 isService={true}
+                credentialStatus={(() => {
+                  const status = item.isVerified
+                    ? 'verified'
+                    : item.hasError
+                    ? 'error'
+                    : currentVerificationIndex === i
+                    ? 'checking'
+                    : 'pending'
+
+                  return status
+                })()}
               />
             ))
           )}
@@ -773,15 +836,17 @@ export default function Review({
             <CredentialDialogProvider>
               {currentVerificationItem.type === 'dataset' ? (
                 <AssetActionCheckCredentials
-                  asset={currentVerificationItem.asset as any}
-                  service={currentVerificationItem.service as any}
+                  asset={currentVerificationItem.asset}
+                  service={currentVerificationItem.service}
                   onVerified={handleVerificationComplete}
+                  onError={handleVerificationError}
                 />
               ) : (
                 <AssetActionCheckCredentialsAlgo
-                  asset={currentVerificationItem.asset as any}
-                  service={currentVerificationItem.service as any}
+                  asset={currentVerificationItem.asset}
+                  service={currentVerificationItem.service}
                   onVerified={handleVerificationComplete}
+                  onError={handleVerificationError}
                 />
               )}
             </CredentialDialogProvider>

@@ -313,20 +313,10 @@ export default function Review({
   }
 
   const handleVerificationError = () => {
-    console.log(
-      '❌ [Review] handleVerificationError called for index:',
-      currentVerificationIndex
-    )
-    console.log(
-      '❌ [Review] Current verification item:',
-      verificationQueue[currentVerificationIndex]
-    )
-
     setVerificationQueue((prev) => {
       const updated = prev.map((item, i) =>
         i === currentVerificationIndex ? { ...item, hasError: true } : item
       )
-      console.log('❌ [Review] Updated verificationQueue with error:', updated)
       return updated
     })
 
@@ -355,15 +345,6 @@ export default function Review({
 
   // const [credentialCheckTarget, setCredentialCheckTarget] =
   //   useState<CredentialTarget>(null)
-
-  // const handleCheckCredentials = (datasetId: string, serviceId?: string) => {
-  //   console.log('[Review] handleCheckCredentials called', {
-  //     datasetId,
-  //     serviceId
-  //   })
-  //   setCredentialCheckTarget({ did: datasetId, serviceId })
-  //   setShowCredentialsCheck(true)
-  // }
 
   function DatasetCredentialsOverlay({
     did,
@@ -844,20 +825,6 @@ export default function Review({
                     : currentVerificationIndex === i
                     ? 'checking'
                     : 'pending'
-
-                  if (i === 0) {
-                    // Debug for first item
-                    console.log(
-                      `🎯 [Review] Item ${i} (${item.type}) credential status calculation:`,
-                      {
-                        isVerified: item.isVerified,
-                        hasError: item.hasError,
-                        currentVerificationIndex,
-                        i,
-                        status
-                      }
-                    )
-                  }
 
                   return status
                 })()}
