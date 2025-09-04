@@ -1,8 +1,7 @@
 .root {
   padding: 0;
   min-height: 200px;
-  max-height: 600px;
-
+  max-height: 530px;
   display: flex;
   flex-direction: column;
   gap: var(--sp-6);

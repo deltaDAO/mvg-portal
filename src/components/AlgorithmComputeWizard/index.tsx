@@ -1041,14 +1041,14 @@ export default function ComputeWizard({
                   </div>
                 ) : (
                   <>
-                    {service.type === 'compute' && (
+                    {/* {service.type === 'compute' && (
                       <Alert
                         text={
                           "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
                         }
                         state="info"
                       />
-                    )}
+                    )} */}
                     <CredentialDialogProvider>
                       <Steps
                         asset={asset}

@@ -20,6 +20,26 @@
   max-width: 1080px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;
+  max-height: 510px;
+  overflow-y: auto;
+}
+/* Custom scrollbar */
+.boxModel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.boxModel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 20px;
+}
+
+.boxModel::-webkit-scrollbar-thumb {
+  background: #fdd655;
+  border-radius: 20px;
+}
+
+.boxModel::-webkit-scrollbar-thumb:hover {
+  background: #fbcb05;
 }
 
 .header {

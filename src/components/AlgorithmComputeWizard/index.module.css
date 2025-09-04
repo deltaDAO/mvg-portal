@@ -1,9 +1,9 @@
 .containerOuter {
-  padding: 60px;
+  padding: 40px;
 }
 
 .container {
-  padding: var(--sp-10);
+  padding: 20px;
 }
 
 .form {
