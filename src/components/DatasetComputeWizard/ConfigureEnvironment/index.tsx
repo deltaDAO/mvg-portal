@@ -1,6 +1,7 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { Datatoken } from '@oceanprotocol/lib'
+import { ResourceType } from 'src/@types/ResourceType'
 import { useNetwork, useSigner } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
@@ -14,7 +15,13 @@ interface ResourceValues {
   mode?: string
 }
 
-export default function ConfigureEnvironment(): ReactElement {
+export default function ConfigureEnvironment({
+  allResourceValues
+}: {
+  allResourceValues?: {
+    [envId: string]: ResourceType
+  }
+}): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const { chain } = useNetwork()
   const { data: signer } = useSigner()
@@ -22,22 +29,65 @@ export default function ConfigureEnvironment(): ReactElement {
   const [mode, setMode] = useState<'free' | 'paid'>('free')
   const [symbolMap, setSymbolMap] = useState<{ [address: string]: string }>({})
 
-  // Separate state for free and paid values
-  const [freeValues, setFreeValues] = useState<ResourceValues>({
-    cpu: values.cpu || 1,
-    ram: values.ram || 8,
-    disk: values.disk || 100,
-    jobDuration: values.jobDuration || 3600,
-    mode: 'free'
-  })
+  // Get environment resource values
+  const getEnvResourceValues = (isFree: boolean = true) => {
+    const env = values.computeEnv
+    if (!env) return { cpu: 1, ram: 8, disk: 100, jobDuration: 3600 }
 
-  const [paidValues, setPaidValues] = useState<ResourceValues>({
-    cpu: values.cpu || 1,
-    ram: values.ram || 8,
-    disk: values.disk || 100,
-    jobDuration: values.jobDuration || 3600,
+    const envId = typeof env === 'string' ? env : env.id
+    const modeKey = isFree ? 'free' : 'paid'
+    const envResourceValues = allResourceValues?.[`${envId}_${modeKey}`]
+
+    // Get resource limits for the appropriate mode
+    const resourceLimits = isFree ? env.free?.resources : env.resources
+
+    // Convert bytes to MB for RAM and DISK
+    const convertToMB = (value: number) => {
+      return Math.floor(value / 1_000_000) // Convert bytes to MB
+    }
+
+    return {
+      cpu: isFree
+        ? envResourceValues?.cpu || 0
+        : envResourceValues?.cpu && envResourceValues.cpu > 0
+        ? envResourceValues.cpu
+        : resourceLimits?.find((r) => r.id === 'cpu')?.min || 1,
+      ram: isFree
+        ? envResourceValues?.ram || 0
+        : envResourceValues?.ram && envResourceValues.ram > 0
+        ? envResourceValues.ram
+        : convertToMB(resourceLimits?.find((r) => r.id === 'ram')?.min || 0),
+      disk: isFree
+        ? envResourceValues?.disk || 0
+        : envResourceValues?.disk && envResourceValues.disk > 0
+        ? envResourceValues.disk
+        : convertToMB(resourceLimits?.find((r) => r.id === 'disk')?.min || 0),
+      jobDuration: isFree
+        ? envResourceValues?.jobDuration || 0
+        : envResourceValues?.jobDuration && envResourceValues.jobDuration > 0
+        ? envResourceValues.jobDuration
+        : resourceLimits?.find((r) => r.id === 'jobDuration')?.min || 60
+    }
+  }
+
+  // Separate state for free and paid values
+  const [freeValues, setFreeValues] = useState<ResourceValues>(() => ({
+    ...getEnvResourceValues(true),
+    mode: 'free'
+  }))
+
+  const [paidValues, setPaidValues] = useState<ResourceValues>(() => ({
+    ...getEnvResourceValues(false),
     mode: 'paid'
-  })
+  }))
+
+  // Update values when environment changes
+  useEffect(() => {
+    const freeEnvValues = getEnvResourceValues(true)
+    const paidEnvValues = getEnvResourceValues(false)
+    setFreeValues((prev) => ({ ...prev, ...freeEnvValues }))
+    setPaidValues((prev) => ({ ...prev, ...paidEnvValues }))
+  }, [values.computeEnv, allResourceValues])
 
   const formatMB = (bytes: number) => Math.floor(bytes / 1_000_000)
   const formatMinutes = (seconds: number) => Math.floor(seconds / 60)
@@ -80,7 +130,11 @@ export default function ConfigureEnvironment(): ReactElement {
 
   const getLimits = (id: string, isFree: boolean) => {
     const resourceLimits = isFree ? env.free?.resources : env.resources
-    return resourceLimits?.find((r) => r.id === id) ?? { max: 0, min: 0 }
+    const resource = resourceLimits?.find((r) => r.id === id)
+    return {
+      minValue: resource?.min ?? 0,
+      maxValue: resource?.max ?? 0
+    }
   }
 
   const updateResource = (

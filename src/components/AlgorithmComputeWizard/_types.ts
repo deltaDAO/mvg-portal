@@ -11,6 +11,7 @@ export interface FormComputeData {
   algorithm: any
   dataset?: any // Added for algorithm flow - array of dataset IDs
   computeEnv?: any
+  mode?: 'free' | 'paid'
   cpu: number
   gpu: number
   ram: number

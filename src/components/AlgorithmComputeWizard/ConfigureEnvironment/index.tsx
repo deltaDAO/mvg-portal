@@ -1,6 +1,7 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect, useCallback } from 'react'
 import { useFormikContext } from 'formik'
 import { Datatoken } from '@oceanprotocol/lib'
+import { ResourceType } from 'src/@types/ResourceType'
 import { useNetwork, useSigner } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
@@ -13,31 +14,150 @@ interface ResourceValues {
   jobDuration: number
 }
 
-export default function ConfigureEnvironment(): ReactElement {
+export default function ConfigureEnvironment({
+  allResourceValues,
+  setAllResourceValues
+}: {
+  allResourceValues?: {
+    [envId: string]: ResourceType
+  }
+  setAllResourceValues?: (values: Record<string, any>) => void
+}): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const { chain } = useNetwork()
   const { data: signer } = useSigner()
 
   const [mode, setMode] = useState<'free' | 'paid'>('free')
+
+  useEffect(() => {
+    setFieldValue('mode', mode)
+  }, [mode, setFieldValue])
   const [symbolMap, setSymbolMap] = useState<{ [address: string]: string }>({})
 
-  // Separate state for free and paid values
-  const [freeValues, setFreeValues] = useState<ResourceValues>({
-    cpu: values.cpu || 1,
-    ram: values.ram || 8,
-    disk: values.disk || 100,
-    jobDuration: values.jobDuration || 3600
-  })
+  // Get environment resource values
+  const getEnvResourceValues = useCallback(
+    (isFree: boolean = true) => {
+      const env = values.computeEnv
+      if (!env) return { cpu: 0, ram: 0, disk: 0, jobDuration: 0 }
 
-  const [paidValues, setPaidValues] = useState<ResourceValues>({
-    cpu: values.cpu || 1,
-    ram: values.ram || 8,
-    disk: values.disk || 100,
-    jobDuration: values.jobDuration || 3600
-  })
+      const envId = typeof env === 'string' ? env : env.id
+      const modeKey = isFree ? 'free' : 'paid'
+      const envResourceValues = allResourceValues?.[`${envId}_${modeKey}`]
 
-  const formatMB = (bytes: number) => Math.floor(bytes / 1_000_000)
-  const formatMinutes = (seconds: number) => Math.floor(seconds / 60)
+      const convertToMB = (value: number) => {
+        return Math.floor(value / 1_000_000) // Convert bytes to MB
+      }
+
+      const resourceLimits = isFree ? env.free?.resources : env.resources
+
+      return {
+        cpu: isFree
+          ? envResourceValues?.cpu || 0
+          : envResourceValues?.cpu && envResourceValues.cpu > 0
+          ? envResourceValues.cpu
+          : resourceLimits?.find((r) => r.id === 'cpu')?.min || 1,
+        ram: isFree
+          ? envResourceValues?.ram || 0
+          : envResourceValues?.ram && envResourceValues.ram > 0
+          ? envResourceValues.ram
+          : convertToMB(resourceLimits?.find((r) => r.id === 'ram')?.min || 0),
+        disk: isFree
+          ? envResourceValues?.disk || 0
+          : envResourceValues?.disk && envResourceValues.disk > 0
+          ? envResourceValues.disk
+          : convertToMB(resourceLimits?.find((r) => r.id === 'disk')?.min || 0),
+        jobDuration: isFree
+          ? envResourceValues?.jobDuration || 0
+          : envResourceValues?.jobDuration && envResourceValues.jobDuration > 0
+          ? envResourceValues.jobDuration
+          : resourceLimits?.find((r) => r.id === 'jobDuration')?.min || 60
+      }
+    },
+    [values.computeEnv, allResourceValues]
+  )
+
+  const [freeValues, setFreeValues] = useState<ResourceValues>(() =>
+    getEnvResourceValues(true)
+  )
+  const [paidValues, setPaidValues] = useState<ResourceValues>(() =>
+    getEnvResourceValues(false)
+  )
+
+  const calculatePrice = useCallback(() => {
+    if (mode === 'free') return 0
+    if (!values.computeEnv) return 0
+
+    const env = values.computeEnv
+    const chainId = chain?.id?.toString() || '11155111'
+    const fee = env.fees?.[chainId]?.[0]
+
+    if (!fee?.prices) return 0
+
+    let totalPrice = 0
+    for (const p of fee.prices) {
+      const units =
+        p.id === 'cpu'
+          ? paidValues.cpu
+          : p.id === 'ram'
+          ? paidValues.ram
+          : p.id === 'disk'
+          ? paidValues.disk
+          : 0
+      totalPrice += units * p.price
+    }
+    // Price is per time unit (per minute), so multiply by job duration
+    return totalPrice * paidValues.jobDuration
+  }, [mode, values.computeEnv, chain?.id, paidValues])
+
+  // Update values when environment changes
+  useEffect(() => {
+    const env = values.computeEnv
+    if (!env) return
+
+    const envId = typeof env === 'string' ? env : env.id
+    const freeExistingValues = allResourceValues?.[`${envId}_free`]
+    const paidExistingValues = allResourceValues?.[`${envId}_paid`]
+
+    const freeEnvValues = getEnvResourceValues(true)
+    const paidEnvValues = getEnvResourceValues(false)
+
+    setFreeValues({
+      cpu:
+        freeExistingValues?.cpu && freeExistingValues.cpu > 0
+          ? freeExistingValues.cpu
+          : freeEnvValues.cpu,
+      ram:
+        freeExistingValues?.ram && freeExistingValues.ram > 0
+          ? freeExistingValues.ram
+          : freeEnvValues.ram,
+      disk:
+        freeExistingValues?.disk && freeExistingValues.disk > 0
+          ? freeExistingValues.disk
+          : freeEnvValues.disk,
+      jobDuration:
+        freeExistingValues?.jobDuration && freeExistingValues.jobDuration > 0
+          ? freeExistingValues.jobDuration
+          : freeEnvValues.jobDuration
+    })
+    setPaidValues({
+      cpu:
+        paidExistingValues?.cpu && paidExistingValues.cpu > 0
+          ? paidExistingValues.cpu
+          : paidEnvValues.cpu,
+      ram:
+        paidExistingValues?.ram && paidExistingValues.ram > 0
+          ? paidExistingValues.ram
+          : paidEnvValues.ram,
+      disk:
+        paidExistingValues?.disk && paidExistingValues.disk > 0
+          ? paidExistingValues.disk
+          : paidEnvValues.disk,
+      jobDuration:
+        paidExistingValues?.jobDuration && paidExistingValues.jobDuration > 0
+          ? paidExistingValues.jobDuration
+          : paidEnvValues.jobDuration
+    })
+  }, [values.computeEnv, allResourceValues, getEnvResourceValues])
 
   const fetchSymbol = async (address: string) => {
     if (symbolMap[address]) return symbolMap[address]
@@ -56,6 +176,62 @@ export default function ConfigureEnvironment(): ReactElement {
     setFieldValue('disk', currentValues.disk)
     setFieldValue('jobDuration', currentValues.jobDuration)
   }, [mode, freeValues, paidValues, setFieldValue])
+
+  useEffect(() => {
+    if (!setAllResourceValues || !values.computeEnv) return
+
+    const env = values.computeEnv
+    const envId = typeof env === 'string' ? env : env.id
+    const modeKey = mode === 'free' ? 'free' : 'paid'
+    const currentValues = mode === 'free' ? freeValues : paidValues
+
+    let currentPrice = 0
+    if (mode === 'paid') {
+      const chainId = chain?.id?.toString() || '11155111'
+      const fee = env.fees?.[chainId]?.[0]
+
+      if (fee?.prices) {
+        let totalPrice = 0
+        for (const p of fee.prices) {
+          const units =
+            p.id === 'cpu'
+              ? currentValues.cpu
+              : p.id === 'ram'
+              ? currentValues.ram
+              : p.id === 'disk'
+              ? currentValues.disk
+              : 0
+          totalPrice += units * p.price
+        }
+        currentPrice = totalPrice * currentValues.jobDuration
+      }
+    }
+
+    setAllResourceValues((prev) => ({
+      ...prev,
+      [`${envId}_${modeKey}`]: {
+        ...prev[`${envId}_${modeKey}`],
+        cpu: currentValues.cpu,
+        ram: currentValues.ram,
+        disk: currentValues.disk,
+        jobDuration: currentValues.jobDuration,
+        mode,
+        price: currentPrice.toString()
+      }
+    }))
+  }, [
+    freeValues.cpu,
+    freeValues.ram,
+    freeValues.disk,
+    freeValues.jobDuration,
+    paidValues.cpu,
+    paidValues.ram,
+    paidValues.disk,
+    paidValues.jobDuration,
+    mode,
+    values.computeEnv,
+    chain?.id
+  ])
 
   if (!values.computeEnv) {
     return (
@@ -76,8 +252,28 @@ export default function ConfigureEnvironment(): ReactElement {
   if (tokenAddress) fetchSymbol(tokenAddress)
 
   const getLimits = (id: string, isFree: boolean) => {
+    if (id === 'jobDuration') {
+      const maxDuration = isFree ? env.free?.maxJobDuration : env.maxJobDuration
+      return {
+        minValue: 1,
+        maxValue: Math.floor((maxDuration || 3600) / 60)
+      }
+    }
+
     const resourceLimits = isFree ? env.free?.resources : env.resources
-    return resourceLimits?.find((r) => r.id === id) ?? { max: 0, min: 0 }
+    const resource = resourceLimits?.find((r) => r.id === id)
+
+    const convertToMB = (value: number) => {
+      if (id === 'ram' || id === 'disk') {
+        return Math.floor(value / 1_000_000)
+      }
+      return value
+    }
+
+    return {
+      minValue: convertToMB(resource?.min ?? 0),
+      maxValue: convertToMB(resource?.max ?? 0)
+    }
   }
 
   const updateResource = (
@@ -90,25 +286,6 @@ export default function ConfigureEnvironment(): ReactElement {
     } else {
       setPaidValues((prev) => ({ ...prev, [type]: value }))
     }
-  }
-
-  const calculatePrice = () => {
-    if (mode === 'free') return 0
-    if (!fee?.prices) return 0
-
-    let totalPrice = 0
-    for (const p of fee.prices) {
-      const units =
-        p.id === 'cpu'
-          ? paidValues.cpu
-          : p.id === 'ram'
-          ? paidValues.ram
-          : p.id === 'disk'
-          ? paidValues.disk
-          : 0
-      totalPrice += units * p.price
-    }
-    return totalPrice * formatMinutes(paidValues.jobDuration)
   }
 
   const renderResourceRow = (
@@ -223,7 +400,7 @@ export default function ConfigureEnvironment(): ReactElement {
           {renderResourceRow('cpu', 'CPU', '', false)}
           {renderResourceRow('ram', 'RAM', '', false)}
           {renderResourceRow('disk', 'DISK', '', false)}
-          {renderResourceRow('jobDuration', 'JOB DURATION', '', true)}
+          {renderResourceRow('jobDuration', 'JOB DURATION', '', false)}
         </div>
       </div>
 

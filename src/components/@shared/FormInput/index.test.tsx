@@ -57,6 +57,8 @@ describe('@shared/FormInput', () => {
     const assets: AssetSelectionAsset[] = [
       {
         did: 'did:ope:xxx',
+        serviceId: 'service-1',
+        serviceName: 'Service 1',
         name: 'Asset',
         price: 10,
         tokenSymbol: 'OCEAN',
@@ -66,6 +68,8 @@ describe('@shared/FormInput', () => {
       },
       {
         did: 'did:ope:yyy',
+        serviceId: 'service-2',
+        serviceName: 'Service 2',
         name: 'Asset',
         price: 10,
         tokenSymbol: 'OCEAN',

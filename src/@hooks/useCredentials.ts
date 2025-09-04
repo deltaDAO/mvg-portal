@@ -41,6 +41,9 @@ export function useCredentialDialogState() {
   )
   const [showVpDialog, setShowVpDialog] = useState<boolean>(false)
   const [showDidDialog, setShowDidDialog] = useState<boolean>(false)
+  const [credentialError, setCredentialError] = useState<string | null>(null)
+  const [isCheckingCredentials, setIsCheckingCredentials] =
+    useState<boolean>(false)
 
   return {
     checkCredentialState,
@@ -52,6 +55,10 @@ export function useCredentialDialogState() {
     showVpDialog,
     setShowVpDialog,
     showDidDialog,
-    setShowDidDialog
+    setShowDidDialog,
+    credentialError,
+    setCredentialError,
+    isCheckingCredentials,
+    setIsCheckingCredentials
   }
 }

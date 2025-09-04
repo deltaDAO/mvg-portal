@@ -6,14 +6,6 @@ const CredentialDialogContext = createContext(null)
 
 export function CredentialDialogProvider({ children }) {
   const dialogState = useCredentialDialogState()
-  try {
-    // Debug provider lifecycle
-    console.log('[CredentialDialogProvider] mount', {
-      state: dialogState.checkCredentialState,
-      showVpDialog: dialogState.showVpDialog,
-      showDidDialog: dialogState.showDidDialog
-    })
-  } catch {}
   return (
     <CredentialDialogContext.Provider value={dialogState}>
       {children}

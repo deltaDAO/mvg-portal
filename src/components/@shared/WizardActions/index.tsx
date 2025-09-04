@@ -87,8 +87,6 @@ export default function WizardActions({
       wizardComplete,
       nextButtonDisabled: isContinueDisabled
     }
-
-    console.log('Wizard state', state)
   }, [values, errors, isContinueDisabled, totalSteps])
 
   function handleAction(action: string) {

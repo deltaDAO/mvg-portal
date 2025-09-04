@@ -58,11 +58,13 @@ function newExchangeStateData(): ExchangeStateData {
 export function AssetActionCheckCredentials({
   asset,
   service,
-  onVerified
+  onVerified,
+  onError
 }: {
   asset: Asset
   service: Service
   onVerified?: () => void
+  onError?: () => void
 }) {
   console.log('AssetActionCheckCredentials component rendered')
   const { address: accountId } = useAccount()
@@ -77,6 +79,9 @@ export function AssetActionCheckCredentials({
 
   const [showVpDialog, setShowVpDialog] = useState<boolean>(false)
   const [showDidDialog, setShowDidDialog] = useState<boolean>(false)
+  const [credentialError, setCredentialError] = useState<string | null>(null)
+  const [isCheckingCredentials, setIsCheckingCredentials] =
+    useState<boolean>(false)
 
   const {
     cacheVerifierSessionId,
@@ -91,6 +96,7 @@ export function AssetActionCheckCredentials({
   function handleResetWalletCache() {
     clearVerifierSessionCache()
     setCachedCredentials([])
+    setIsCheckingCredentials(false)
   }
 
   // Debug logging for SSI wallet state
@@ -112,31 +118,63 @@ export function AssetActionCheckCredentials({
 
   useEffect(() => {
     console.log(
-      'useEffect triggered with checkCredentialState:',
+      '🔄 [CredentialCheck] useEffect triggered with checkCredentialState:',
       checkCredentialState
     )
+    console.log(
+      '🔄 [CredentialCheck] Asset:',
+      asset?.id,
+      'Service:',
+      service?.id
+    )
+
     async function handleCredentialExchange() {
       try {
+        console.log('🚀 [CredentialCheck] handleCredentialExchange started')
+
+        // Clear any previous errors when starting new credential check
+        if (
+          checkCredentialState === CheckCredentialState.StartCredentialExchange
+        ) {
+          console.log(
+            '🚀 [CredentialCheck] Starting new credential exchange, clearing previous errors'
+          )
+          setCredentialError(null)
+          setIsCheckingCredentials(true)
+        }
+
         console.log(
-          'handleCredentialExchange called with state:',
+          '🔄 [CredentialCheck] Processing state:',
           checkCredentialState
         )
         switch (checkCredentialState) {
           case CheckCredentialState.StartCredentialExchange: {
-            console.log('Starting credential presentation request...')
-            console.log('Asset:', asset)
-            console.log('AccountId:', accountId)
-            console.log('Service ID:', service.id)
+            console.log(
+              '📋 [CredentialCheck] StartCredentialExchange case - requesting presentation'
+            )
+            console.log('📋 [CredentialCheck] Asset:', asset?.id)
+            console.log('📋 [CredentialCheck] AccountId:', accountId)
+            console.log('📋 [CredentialCheck] Service ID:', service.id)
+
             let presentationResult
             try {
+              console.log(
+                '🌐 [CredentialCheck] Requesting credential presentation...'
+              )
               presentationResult = await requestCredentialPresentation(
                 asset,
                 accountId,
                 service.id
               )
-              console.log('Presentation result:', presentationResult)
+              console.log(
+                '🌐 [CredentialCheck] Presentation result received:',
+                presentationResult
+              )
             } catch (error) {
-              console.error('Error in requestCredentialPresentation:', error)
+              console.error(
+                '❌ [CredentialCheck] Error in requestCredentialPresentation:',
+                error
+              )
               throw error
             }
             if (
@@ -147,10 +185,15 @@ export function AssetActionCheckCredentials({
                 'success'
               )
             ) {
+              console.log(
+                '✅ [CredentialCheck] Success redirect detected, extracting session ID'
+              )
               const { id } = extractURLSearchParams(
                 (presentationResult.openid4vc as any).redirectUri
               )
+              console.log('✅ [CredentialCheck] Session ID extracted:', id)
               cacheVerifierSessionId(asset.id, service.id, id, true)
+              console.log('✅ [CredentialCheck] Calling onVerified callback')
               onVerified?.()
               break
             }
@@ -309,22 +352,52 @@ export function AssetActionCheckCredentials({
           }
         }
       } catch (error) {
-        if (error.message) {
-          toast.error(
-            `SSI credential validation was not succesful: ${error.message}`
-          )
-        } else {
-          toast.error(
-            'An error occurred during SSI credential validation. Please check the console'
-          )
-        }
+        console.error(
+          '❌ [CredentialCheck] Error in handleCredentialExchange:',
+          error
+        )
+        console.error('❌ [CredentialCheck] Error details:', {
+          message: error?.message,
+          stack: error?.stack,
+          name: error?.name
+        })
+
+        const errorMessage = error.message
+          ? `SSI credential validation was not successful: ${error.message}`
+          : 'An error occurred during SSI credential validation. Please check the console'
+
+        console.log(
+          '❌ [CredentialCheck] Setting error state and calling onError'
+        )
+        setCredentialError(errorMessage)
+        setIsCheckingCredentials(false)
+        toast.error(errorMessage)
         handleResetWalletCache()
+
+        console.log('❌ [CredentialCheck] Calling onError callback:', !!onError)
+        onError?.()
       }
     }
 
     handleCredentialExchange().catch((error) => {
+      console.error(
+        '❌ [CredentialCheck] Unhandled error in handleCredentialExchange:',
+        error
+      )
+      console.error('❌ [CredentialCheck] Unhandled error details:', {
+        message: error?.message,
+        data: error?.data,
+        stack: error?.stack,
+        name: error?.name
+      })
+
       setExchangeStateData(newExchangeStateData())
       setCheckCredentialState(CheckCredentialState.Stop)
+      setIsCheckingCredentials(false)
+
+      const errorMessage =
+        error?.data?.message || error?.message || 'An error occurred'
+      setCredentialError(errorMessage)
 
       if (error?.data?.message) {
         LoggerInstance.error(error?.data?.message)
@@ -332,7 +405,12 @@ export function AssetActionCheckCredentials({
         LoggerInstance.error(error?.message)
       }
 
-      toast.error('An error occurred')
+      console.log(
+        '❌ [CredentialCheck] Calling onError for unhandled error:',
+        !!onError
+      )
+      toast.error(errorMessage)
+      onError?.()
     })
   }, [
     checkCredentialState,
@@ -381,10 +459,20 @@ export function AssetActionCheckCredentials({
           <Button
             type="button"
             onClick={() => {
-              console.log('Check Credentials button clicked')
-              console.log('selectedWallet:', selectedWallet)
-              console.log('selectedWallet?.id:', selectedWallet?.id)
-              console.log('checkCredentialState:', checkCredentialState)
+              console.log(
+                '🖱️ [CredentialCheck] Check credentials button clicked'
+              )
+              console.log(
+                '🖱️ [CredentialCheck] Selected wallet:',
+                selectedWallet?.id
+              )
+              console.log(
+                '🖱️ [CredentialCheck] Current state:',
+                checkCredentialState
+              )
+              console.log(
+                '🖱️ [CredentialCheck] Setting state to StartCredentialExchange'
+              )
               setCheckCredentialState(
                 CheckCredentialState.StartCredentialExchange
               )

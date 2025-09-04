@@ -40,12 +40,14 @@ export function AssetActionCheckCredentialsAlgo({
   asset,
   service,
   type,
-  onVerified
+  onVerified,
+  onError
 }: {
   asset: Asset
   service: Service
   type?: string
   onVerified?: () => void
+  onError?: () => void
 }) {
   const { address: accountId } = useAccount()
   const {
@@ -58,7 +60,11 @@ export function AssetActionCheckCredentialsAlgo({
     showVpDialog,
     setShowVpDialog,
     showDidDialog,
-    setShowDidDialog
+    setShowDidDialog,
+    credentialError,
+    setCredentialError,
+    isCheckingCredentials,
+    setIsCheckingCredentials
   } = useCredentialDialog()
 
   const {
@@ -72,23 +78,68 @@ export function AssetActionCheckCredentialsAlgo({
 
   function handleResetWalletCache() {
     setCheckCredentialState(CheckCredentialState.Stop)
+    setIsCheckingCredentials(false)
   }
 
   useEffect(() => {
+    console.log(
+      '🔄 [CredentialAlgo] useEffect triggered with checkCredentialState:',
+      checkCredentialState
+    )
+    console.log(
+      '🔄 [CredentialAlgo] Asset:',
+      asset?.id,
+      'Service:',
+      service?.id
+    )
+
     async function handleCredentialExchange() {
       try {
+        console.log('🚀 [CredentialAlgo] handleCredentialExchange started')
+
+        // Clear any previous errors when starting new credential check
+        if (
+          checkCredentialState === CheckCredentialState.StartCredentialExchange
+        ) {
+          console.log(
+            '🚀 [CredentialAlgo] Starting new credential exchange, clearing previous errors'
+          )
+          setCredentialError(null)
+          setIsCheckingCredentials(true)
+        }
+
+        console.log(
+          '🔄 [CredentialAlgo] Processing state:',
+          checkCredentialState
+        )
         switch (checkCredentialState) {
           case CheckCredentialState.StartCredentialExchange: {
+            console.log(
+              '📋 [CredentialAlgo] StartCredentialExchange case - parsing credential policies'
+            )
             parseCredentialPolicies(asset.credentialSubject?.credentials)
             asset?.credentialSubject?.services?.forEach((service) => {
               parseCredentialPolicies(service.credentials)
             })
+
+            console.log(
+              '🌐 [CredentialAlgo] Requesting credential presentation...'
+            )
+            console.log('🌐 [CredentialAlgo] Asset ID:', asset.id)
+            console.log('🌐 [CredentialAlgo] Account ID:', accountId)
+            console.log('🌐 [CredentialAlgo] Service ID:', service.id)
 
             const presentationResult = await requestCredentialPresentation(
               asset,
               accountId,
               service.id
             )
+
+            console.log(
+              '🌐 [CredentialAlgo] Presentation result received:',
+              presentationResult
+            )
+
             if (
               presentationResult.openid4vc &&
               typeof presentationResult.openid4vc === 'object' &&
@@ -97,14 +148,22 @@ export function AssetActionCheckCredentialsAlgo({
                 'success'
               )
             ) {
+              console.log(
+                '✅ [CredentialAlgo] Success redirect detected, extracting session ID'
+              )
               const { id } = extractURLSearchParams(
                 (presentationResult.openid4vc as any).redirectUri
               )
+              console.log('✅ [CredentialAlgo] Session ID extracted:', id)
               cacheVerifierSessionId(asset.id, service.id, id, true)
+              console.log('✅ [CredentialAlgo] Calling onVerified callback')
               onVerified?.()
               break
             }
 
+            console.log(
+              '🔄 [CredentialAlgo] Setting up credential exchange state'
+            )
             exchangeStateData.openid4vp = presentationResult.openid4vc
             exchangeStateData.poliyServerData =
               presentationResult.policyServerData
@@ -114,7 +173,11 @@ export function AssetActionCheckCredentialsAlgo({
             )
             const { state } = searchParams
             exchangeStateData.sessionId = state
+            console.log('🔄 [CredentialAlgo] Session state extracted:', state)
 
+            console.log(
+              '🔄 [CredentialAlgo] Getting presentation definition...'
+            )
             const presentationDefinition = await getPd(state)
             const resultRequiredCredentials =
               presentationDefinition.input_descriptors.map(
@@ -251,23 +314,42 @@ export function AssetActionCheckCredentialsAlgo({
               ...newExchangeStateData()
             })
             setCheckCredentialState(CheckCredentialState.Stop)
+            setIsCheckingCredentials(false)
             break
           }
 
           case CheckCredentialState.AbortSelection: {
             setExchangeStateData(newExchangeStateData())
             setCheckCredentialState(CheckCredentialState.Stop)
+            setIsCheckingCredentials(false)
             break
           }
         }
       } catch (error: any) {
-        console.log(error)
-        toast.error(
-          error?.message
-            ? `SSI credential validation was not successful: ${error.message}`
-            : 'An error occurred during SSI credential validation. Please check the console'
+        console.error(
+          '❌ [CredentialAlgo] Error in handleCredentialExchange:',
+          error
         )
+        console.error('❌ [CredentialAlgo] Error details:', {
+          message: error?.message,
+          stack: error?.stack,
+          name: error?.name
+        })
+
+        const errorMessage = error?.message
+          ? `SSI credential validation was not successful: ${error.message}`
+          : 'An error occurred during SSI credential validation. Please check the console'
+
+        console.log(
+          '❌ [CredentialAlgo] Setting error state and calling onError'
+        )
+        setCredentialError(errorMessage)
+        setIsCheckingCredentials(false)
+        toast.error(errorMessage)
         handleResetWalletCache()
+
+        console.log('❌ [CredentialAlgo] Calling onError callback:', !!onError)
+        onError?.()
       }
     }
 
@@ -316,11 +398,25 @@ export function AssetActionCheckCredentialsAlgo({
           <Button
             type="button"
             style="publish"
-            onClick={() =>
+            onClick={() => {
+              console.log(
+                '🖱️ [CredentialAlgo] Check credentials button clicked'
+              )
+              console.log(
+                '🖱️ [CredentialAlgo] Selected wallet:',
+                selectedWallet?.id
+              )
+              console.log(
+                '🖱️ [CredentialAlgo] Current state:',
+                checkCredentialState
+              )
+              console.log(
+                '🖱️ [CredentialAlgo] Setting state to StartCredentialExchange'
+              )
               setCheckCredentialState(
                 CheckCredentialState.StartCredentialExchange
               )
-            }
+            }}
             disabled={!selectedWallet?.id}
           >
             {type === 'dataset'

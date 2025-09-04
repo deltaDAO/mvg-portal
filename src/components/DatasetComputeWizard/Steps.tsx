@@ -180,7 +180,7 @@ export default function Steps({
     case 4:
       return <SelectEnvironment computeEnvs={computeEnvs} />
     case 5:
-      return <ConfigureEnvironment />
+      return <ConfigureEnvironment allResourceValues={allResourceValues} />
     case 6:
       return (
         <CredentialDialogProvider>

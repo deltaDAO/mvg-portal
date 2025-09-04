@@ -134,15 +134,6 @@ export default function Steps({
 
   const currentStep = values?.user?.stepCurrent ?? 1
 
-  console.log(
-    'Steps component - currentStep:',
-    currentStep,
-    'values.user:',
-    values.user,
-    'step type:',
-    typeof currentStep
-  )
-
   switch (currentStep) {
     case 1:
       return (
@@ -159,7 +150,12 @@ export default function Steps({
     case 4:
       return <SelectEnvironment computeEnvs={computeEnvs} />
     case 5:
-      return <ConfigureEnvironment />
+      return (
+        <ConfigureEnvironment
+          allResourceValues={allResourceValues}
+          setAllResourceValues={setAllResourceValues}
+        />
+      )
     case 6:
       return (
         <CredentialDialogProvider>
@@ -170,7 +166,6 @@ export default function Steps({
             totalPrices={[]}
             datasetOrderPrice="0"
             algoOrderPrice="0"
-            c2dPrice="0"
             isRequestingPrice={false}
             accessDetails={accessDetails}
             datasets={datasets}

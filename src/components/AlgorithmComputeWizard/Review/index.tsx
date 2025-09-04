@@ -3,8 +3,6 @@ import { useFormikContext, Field, FormikContextType } from 'formik'
 import Input from '@shared/FormInput'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
-import DatasetItem from './DatasetItem'
-import PriceDisplay from './PriceDisplay'
 import PricingRow from './PricingRow'
 import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -15,7 +13,6 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
-import { ComputeDatasetForm } from '../_constants'
 import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
@@ -25,10 +22,9 @@ import { getAsset } from '@utils/aquarius'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
-import appConfig, { consumeMarketOrderFee } from 'app.config.cjs'
+import { consumeMarketOrderFee } from 'app.config.cjs'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
-import type { Dataset } from '../SelectServices'
 import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
@@ -41,21 +37,11 @@ interface VerificationItem {
   asset: AssetExtended
   service: Service
   isVerified: boolean
+  hasError: boolean
   index: number
   price: string
   duration: string
   name: string
-}
-
-interface ReviewProps {
-  totalPrices?: { value: string; symbol: string }[]
-  datasetOrderPrice?: string
-  algoOrderPrice?: string
-  c2dPrice?: string
-  isRequestingPrice?: boolean
-  asset?: AssetExtended
-  service?: Service
-  isAlgorithm?: boolean
 }
 
 export default function Review({
@@ -178,7 +164,13 @@ export default function Review({
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const selectedEnvId = values?.computeEnv?.id
   const selectedResources = allResourceValues?.[selectedEnvId as any]
-  const c2dPrice = selectedResources?.price
+
+  const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
+  const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
+  const c2dPrice =
+    selectedResources?.mode === 'paid'
+      ? paidResources?.price
+      : freeResources?.price
   const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
   const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
   const [activeCredentialAsset, setActiveCredentialAsset] = useState<any>(null)
@@ -209,12 +201,35 @@ export default function Review({
           ? '0'
           : details?.price || '0'
 
+      const existingItem = verificationQueue.find(
+        (item) => item.id === asset.id && item.type === 'dataset'
+      )
+
+      let preservedIsVerified = Boolean(isVerified)
+      let preservedHasError = false
+
+      if (existingItem) {
+        const currentSessionValid = Boolean(isVerified)
+
+        if (existingItem.isVerified && !currentSessionValid) {
+          preservedIsVerified = false
+          preservedHasError = false
+        } else if (currentSessionValid) {
+          preservedIsVerified = existingItem.isVerified
+          preservedHasError = existingItem.hasError
+        } else {
+          preservedIsVerified = false
+          preservedHasError = existingItem.hasError
+        }
+      }
+
       queue.push({
         id: asset.id,
         type: 'dataset',
         asset,
         service,
-        isVerified: Boolean(isVerified),
+        isVerified: preservedIsVerified,
+        hasError: preservedHasError,
         index,
         price: rawPrice,
         duration: '1 day', // Default duration for datasets
@@ -223,19 +238,40 @@ export default function Review({
       })
     })
 
-    // Add algorithm to queue if exists
     if (service && asset) {
       const isVerified = lookupVerifierSessionId?.(asset?.id, service.id)
       const rawPrice = asset.accessDetails?.[0].validOrderTx
         ? '0'
         : asset.accessDetails?.[0].price
 
+      const existingItem = verificationQueue.find(
+        (item) => item.id === asset.id && item.type === 'algorithm'
+      )
+
+      let preservedIsVerified = Boolean(isVerified)
+      let preservedHasError = false
+
+      if (existingItem) {
+        const currentSessionValid = Boolean(isVerified)
+        if (existingItem.isVerified && !currentSessionValid) {
+          preservedIsVerified = false
+          preservedHasError = false
+        } else if (currentSessionValid) {
+          preservedIsVerified = existingItem.isVerified
+          preservedHasError = existingItem.hasError
+        } else {
+          preservedIsVerified = false
+          preservedHasError = existingItem.hasError
+        }
+      }
+
       queue.push({
         id: asset.id,
         type: 'algorithm',
         asset,
         service,
-        isVerified: Boolean(isVerified),
+        isVerified: preservedIsVerified,
+        hasError: preservedHasError,
         index: queue.length,
         price: rawPrice,
         duration: formatDuration(service.timeout || 0),
@@ -257,7 +293,9 @@ export default function Review({
     // Update verification status
     setVerificationQueue((prev) =>
       prev.map((item, i) =>
-        i === currentVerificationIndex ? { ...item, isVerified: true } : item
+        i === currentVerificationIndex
+          ? { ...item, isVerified: true, hasError: false }
+          : item
       )
     )
 
@@ -265,25 +303,47 @@ export default function Review({
 
     // Find next unverified item
     const nextIndex = verificationQueue.findIndex(
-      (item, index) => index > currentVerificationIndex && !item.isVerified
+      (item, index) =>
+        index > currentVerificationIndex && !item.isVerified && !item.hasError
     )
 
     if (nextIndex !== -1) {
-      // Auto-initiate next verification after a short delay
+      setTimeout(() => startVerification(nextIndex), 300)
+    }
+  }
+
+  const handleVerificationError = () => {
+    console.log(
+      '❌ [Review] handleVerificationError called for index:',
+      currentVerificationIndex
+    )
+    console.log(
+      '❌ [Review] Current verification item:',
+      verificationQueue[currentVerificationIndex]
+    )
+
+    setVerificationQueue((prev) => {
+      const updated = prev.map((item, i) =>
+        i === currentVerificationIndex ? { ...item, hasError: true } : item
+      )
+      console.log('❌ [Review] Updated verificationQueue with error:', updated)
+      return updated
+    })
+
+    setShowCredentialsCheck(false)
+
+    const nextIndex = verificationQueue.findIndex(
+      (item, index) =>
+        index > currentVerificationIndex && !item.isVerified && !item.hasError
+    )
+
+    if (nextIndex !== -1) {
       setTimeout(() => startVerification(nextIndex), 300)
     }
   }
 
   // Get current item being verified
   const currentVerificationItem = verificationQueue[currentVerificationIndex]
-
-  // Debug: current form state minimal
-  console.log('[Review] form init', {
-    step: values?.user?.stepCurrent,
-    computeEnv: values?.computeEnv?.id,
-    datasetsCount: Array.isArray(values?.datasets) ? values.datasets.length : 0
-  })
-  console.log('Selected Dataset Asset! ', selectedDatasetAsset)
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
     accessDetails.price
@@ -319,7 +379,6 @@ export default function Review({
       let cancelled = false
       async function load() {
         try {
-          console.log('[Review] Overlay load start', { did, serviceId })
           const assetObj = await getAsset(did, newCancelToken())
           if (!assetObj) return
 
@@ -337,11 +396,6 @@ export default function Review({
             serviceId ||
             selectedSvcIdFromPairs ||
             ds?.services?.find((s: any) => s.checked)?.id
-          console.log('[Review] Overlay service resolution', {
-            datasetPair,
-            selectedSvcIdFromPairs,
-            selectedSvcId
-          })
           const svc =
             assetObj?.credentialSubject?.services?.find(
               (s: any) => s.id === selectedSvcId
@@ -350,9 +404,6 @@ export default function Review({
           if (!cancelled) {
             setTargetAsset(assetObj as any)
             setTargetService(svc as any)
-            console.log('[Review] Overlay target ready', {
-              targetServiceId: (svc as any)?.id
-            })
           }
         } catch (e) {
           // ignore
@@ -374,10 +425,6 @@ export default function Review({
           service={targetService}
           type="dataset"
           onVerified={() => {
-            console.log('[Review] Credentials verified', {
-              did,
-              serviceId: targetService?.id
-            })
             setShowCredentialsCheck(false)
             // setCredentialCheckTarget(null)
           }}
@@ -484,8 +531,8 @@ export default function Review({
     datasets,
     computeEnvs,
     setFieldValue,
-    values.algorithm,
-    values.computeEnv
+    values.algorithm
+    // Removed values.computeEnv from dependencies to prevent infinite loop
   ])
   useEffect(() => {
     if (!values.dataset || !isConsumable) return
@@ -690,8 +737,6 @@ export default function Review({
   ])
 
   const PurchaseButton = () => {
-    console.log('purchase is called! ')
-
     const isDisabled =
       isComputeButtonDisabled ||
       !isValid ||
@@ -701,18 +746,6 @@ export default function Review({
         (asset) => asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
       ) ||
       !isAccountIdWhitelisted
-
-    console.log('🔍 PurchaseButton disabled state:', {
-      isDisabled,
-      isComputeButtonDisabled,
-      isValid,
-      isBalanceSufficient,
-      isAssetNetwork,
-      selectedDatasetAssetPurchasable: selectedDatasetAsset?.every(
-        (asset) => asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
-      ),
-      isAccountIdWhitelisted
-    })
 
     return (
       <ButtonBuy
@@ -803,6 +836,31 @@ export default function Review({
                 onAction={() => startVerification(i)}
                 actionDisabled={item.isVerified}
                 isService={item.type === 'algorithm'}
+                credentialStatus={(() => {
+                  const status = item.isVerified
+                    ? 'verified'
+                    : item.hasError
+                    ? 'error'
+                    : currentVerificationIndex === i
+                    ? 'checking'
+                    : 'pending'
+
+                  if (i === 0) {
+                    // Debug for first item
+                    console.log(
+                      `🎯 [Review] Item ${i} (${item.type}) credential status calculation:`,
+                      {
+                        isVerified: item.isVerified,
+                        hasError: item.hasError,
+                        currentVerificationIndex,
+                        i,
+                        status
+                      }
+                    )
+                  }
+
+                  return status
+                })()}
               />
             ))
           )}
@@ -902,12 +960,14 @@ export default function Review({
                   asset={currentVerificationItem.asset}
                   service={currentVerificationItem.service}
                   onVerified={handleVerificationComplete}
+                  onError={handleVerificationError}
                 />
               ) : (
                 <AssetActionCheckCredentials
                   asset={currentVerificationItem.asset as any}
                   service={currentVerificationItem.service as any}
                   onVerified={handleVerificationComplete}
+                  onError={handleVerificationError}
                 />
               )}
             </CredentialDialogProvider>

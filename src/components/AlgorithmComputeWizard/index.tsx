@@ -191,13 +191,42 @@ export default function ComputeWizard({
     [envId: string]: ResourceType
   }>({})
 
-  const selectedEnvId = Object.keys(allResourceValues)[0]
-  const selectedComputeEnv = computeEnvs?.find(
-    (env) => env.id === selectedEnvId
-  )
-  const selectedResources = selectedEnvId
-    ? allResourceValues[selectedEnvId]
-    : undefined
+  const getSelectedComputeEnvAndResources = (
+    formikValues: FormComputeData | Record<string, never>
+  ) => {
+    const selectedEnvId = (formikValues as FormComputeData)?.computeEnv?.id
+    const selectedComputeEnv = computeEnvs?.find(
+      (env) => env.id === selectedEnvId
+    )
+    const selectedResources = selectedEnvId
+      ? (() => {
+          const freeResources = allResourceValues[`${selectedEnvId}_free`]
+          const paidResources = allResourceValues[`${selectedEnvId}_paid`]
+
+          const mode = (formikValues as FormComputeData)?.mode || 'free'
+
+          if (mode === 'paid' && paidResources) {
+            return paidResources
+          } else if (mode === 'free' && freeResources) {
+            return freeResources
+          }
+
+          if (
+            paidResources &&
+            (paidResources.cpu > 0 ||
+              paidResources.ram > 0 ||
+              paidResources.disk > 0)
+          ) {
+            return paidResources
+          } else if (freeResources) {
+            return freeResources
+          }
+          return undefined
+        })()
+      : undefined
+
+    return { selectedComputeEnv, selectedResources }
+  }
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
 
@@ -274,9 +303,13 @@ export default function ComputeWizard({
   }
 
   async function initPriceAndFees(
-    datasetServices?: { asset: AssetExtended; service: Service }[]
+    datasetServices?: { asset: AssetExtended; service: Service }[],
+    formikValues?: FormComputeData
   ) {
     try {
+      const { selectedComputeEnv, selectedResources } =
+        getSelectedComputeEnvAndResources(formikValues || {})
+
       if (!selectedComputeEnv || !selectedComputeEnv.id || !selectedResources)
         throw new Error(`Error getting compute environment!`)
 
@@ -527,12 +560,16 @@ export default function ComputeWizard({
       algoServiceParams?: UserCustomParameters
       algoParams?: UserCustomParameters
     },
-    datasetServices?: { asset: AssetExtended; service: Service }[]
+    datasetServices?: { asset: AssetExtended; service: Service }[],
+    formikValues?: FormComputeData
   ): Promise<void> {
     try {
       setIsOrdering(true)
       setIsOrdered(false)
       setError(undefined)
+
+      const { selectedComputeEnv, selectedResources } =
+        getSelectedComputeEnvAndResources(formikValues || {})
 
       const {
         datasetResponses,
@@ -540,7 +577,7 @@ export default function ComputeWizard({
         actualAlgoService,
         actualAlgoAccessDetails,
         initializedProvider
-      } = await initPriceAndFees(datasetServices)
+      } = await initPriceAndFees(datasetServices, formikValues)
 
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
@@ -771,6 +808,8 @@ export default function ComputeWizard({
       }
 
       // Check if compute environment is properly configured with resources
+      const { selectedComputeEnv, selectedResources } =
+        getSelectedComputeEnvAndResources(values)
       if (!selectedComputeEnv || !selectedResources) {
         console.log('🔍 Compute environment validation failed:')
         console.log('🔍 - selectedComputeEnv:', selectedComputeEnv)
@@ -844,7 +883,7 @@ export default function ComputeWizard({
           }
         })
 
-      await startJob(userCustomParameters, datasetServices)
+      await startJob(userCustomParameters, datasetServices, values)
     } catch (error) {
       if (
         error?.message?.includes('user rejected transaction') ||
@@ -956,137 +995,144 @@ export default function ComputeWizard({
         await onSubmit(values)
       }}
     >
-      {(formikContext) => (
-        <div className={styles.containerOuter}>
-          <PageHeader title={<Title asset={asset} />} />
-          <Form className={styles.form}>
-            <Navigation steps={steps} />
-            <SectionContainer classNames={styles.container}>
-              {showSuccess ? (
-                <div className={styles.successContent}>
-                  <SuccessConfetti success="Job Started Successfully!" />
-                  <div className={styles.successDetails}>
-                    <h3>Compute Job Started!</h3>
-                    <p>
-                      Your compute job is now running and processing your data.
-                    </p>
-                    {successJobId && successJobId !== 'N/A' && (
-                      <div className={styles.jobIdContainer}>
-                        <p>
-                          <strong>Job ID:</strong> {successJobId}
-                        </p>
-                      </div>
-                    )}
-                    <p>
-                      You can monitor the progress in your profile or on the
-                      asset page.
-                    </p>
-                    <p>Please close this wizard to continue.</p>
-                    <Button
-                      style="gradient"
-                      onClick={() => {
-                        setShowSuccess(false)
-                        // Close the modal
-                        onClose?.()
-                      }}
-                    >
-                      Continue
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {service.type === 'compute' && (
-                    <Alert
-                      text={
-                        "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
-                      }
-                      state="info"
-                    />
-                  )}
-                  <CredentialDialogProvider>
-                    <Steps
-                      asset={asset}
-                      service={service}
-                      accessDetails={accessDetails}
-                      datasets={datasetList}
-                      algorithms={algorithmList}
-                      selectedDatasetAsset={selectedDatasetAsset}
-                      setSelectedDatasetAsset={setSelectedDatasetAsset}
-                      isLoading={isOrdering || isRequestingAlgoOrderPrice}
-                      isComputeButtonDisabled={isComputeButtonDisabled}
-                      hasPreviousOrder={!!validOrderTx}
-                      hasDatatoken={hasDatatoken}
-                      dtBalance={dtBalance}
-                      assetTimeout={secondsToString(service.timeout)}
-                      hasPreviousOrderSelectedComputeAsset={
-                        !!validAlgorithmOrderTx
-                      }
-                      hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
-                      isAccountIdWhitelisted={isAccountIdWhitelisted}
-                      datasetSymbol={
-                        accessDetails.baseToken?.symbol ||
-                        (asset.credentialSubject?.chainId === 137
-                          ? 'mOCEAN'
-                          : 'OCEAN')
-                      }
-                      algorithmSymbol={
-                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
-                          ?.baseToken?.symbol ||
-                        (selectedAlgorithmAsset?.credentialSubject?.chainId ===
-                        137
-                          ? 'mOCEAN'
-                          : 'OCEAN')
-                      }
-                      providerFeesSymbol={providerFeesSymbol}
-                      dtSymbolSelectedComputeAsset={
-                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
-                          ?.datatoken.symbol
-                      }
-                      dtBalanceSelectedComputeAsset={algorithmDTBalance}
-                      selectedComputeAssetType="algorithm"
-                      selectedComputeAssetTimeout={secondsToString(
-                        selectedAlgorithmAsset?.credentialSubject?.services[
-                          svcIndex
-                        ]?.timeout
+      {(formikContext) => {
+        // Get selectedEnvId from form values
+        const { selectedComputeEnv, selectedResources } =
+          getSelectedComputeEnvAndResources(formikContext.values)
+
+        return (
+          <div className={styles.containerOuter}>
+            <PageHeader title={<Title asset={asset} />} />
+            <Form className={styles.form}>
+              <Navigation steps={steps} />
+              <SectionContainer classNames={styles.container}>
+                {showSuccess ? (
+                  <div className={styles.successContent}>
+                    <SuccessConfetti success="Job Started Successfully!" />
+                    <div className={styles.successDetails}>
+                      <h3>Compute Job Started!</h3>
+                      <p>
+                        Your compute job is now running and processing your
+                        data.
+                      </p>
+                      {successJobId && successJobId !== 'N/A' && (
+                        <div className={styles.jobIdContainer}>
+                          <p>
+                            <strong>Job ID:</strong> {successJobId}
+                          </p>
+                        </div>
                       )}
-                      allResourceValues={allResourceValues}
-                      setAllResourceValues={setAllResourceValues}
-                      stepText={computeStatusText}
-                      isConsumable={isConsumablePrice}
-                      consumableFeedback={consumableFeedback}
-                      datasetOrderPriceAndFees={datasetOrderPriceAndFees}
-                      algoOrderPriceAndFees={algoOrderPriceAndFees}
-                      retry={retry}
-                      computeEnvs={computeEnvs}
-                      isAlgorithm={isAlgorithm}
-                      formikValues={formikContext.values}
-                      setFieldValue={formikContext.setFieldValue}
-                    />
-                  </CredentialDialogProvider>
-                  {/* <AlgorithmDatasetsListForCompute
+                      <p>
+                        You can monitor the progress in your profile or on the
+                        asset page.
+                      </p>
+                      <p>Please close this wizard to continue.</p>
+                      <Button
+                        style="gradient"
+                        onClick={() => {
+                          setShowSuccess(false)
+                          // Close the modal
+                          onClose?.()
+                        }}
+                      >
+                        Continue
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {service.type === 'compute' && (
+                      <Alert
+                        text={
+                          "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
+                        }
+                        state="info"
+                      />
+                    )}
+                    <CredentialDialogProvider>
+                      <Steps
+                        asset={asset}
+                        service={service}
+                        accessDetails={accessDetails}
+                        datasets={datasetList}
+                        algorithms={algorithmList}
+                        selectedDatasetAsset={selectedDatasetAsset}
+                        setSelectedDatasetAsset={setSelectedDatasetAsset}
+                        isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                        isComputeButtonDisabled={isComputeButtonDisabled}
+                        hasPreviousOrder={!!validOrderTx}
+                        hasDatatoken={hasDatatoken}
+                        dtBalance={dtBalance}
+                        assetTimeout={secondsToString(service.timeout)}
+                        hasPreviousOrderSelectedComputeAsset={
+                          !!validAlgorithmOrderTx
+                        }
+                        hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+                        isAccountIdWhitelisted={isAccountIdWhitelisted}
+                        datasetSymbol={
+                          accessDetails.baseToken?.symbol ||
+                          (asset.credentialSubject?.chainId === 137
+                            ? 'mOCEAN'
+                            : 'OCEAN')
+                        }
+                        algorithmSymbol={
+                          selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                            ?.baseToken?.symbol ||
+                          (selectedAlgorithmAsset?.credentialSubject
+                            ?.chainId === 137
+                            ? 'mOCEAN'
+                            : 'OCEAN')
+                        }
+                        providerFeesSymbol={providerFeesSymbol}
+                        dtSymbolSelectedComputeAsset={
+                          selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                            ?.datatoken.symbol
+                        }
+                        dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                        selectedComputeAssetType="algorithm"
+                        selectedComputeAssetTimeout={secondsToString(
+                          selectedAlgorithmAsset?.credentialSubject?.services[
+                            svcIndex
+                          ]?.timeout
+                        )}
+                        allResourceValues={allResourceValues}
+                        setAllResourceValues={setAllResourceValues}
+                        stepText={computeStatusText}
+                        isConsumable={isConsumablePrice}
+                        consumableFeedback={consumableFeedback}
+                        datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                        algoOrderPriceAndFees={algoOrderPriceAndFees}
+                        retry={retry}
+                        computeEnvs={computeEnvs}
+                        isAlgorithm={isAlgorithm}
+                        formikValues={formikContext.values}
+                        setFieldValue={formikContext.setFieldValue}
+                      />
+                    </CredentialDialogProvider>
+                    {/* <AlgorithmDatasetsListForCompute
                                               asset={asset}
                                               service={service}
                                               accessDetails={accessDetails}
                                             /> */}
-                </>
-              )}
+                  </>
+                )}
 
-              {!showSuccess && (
-                <WizardActions
-                  totalSteps={totalSteps}
-                  submitButtonText="Buy Dataset"
-                  showSuccessConfetti={false}
-                  rightAlignFirstStep={false}
-                />
-              )}
-            </SectionContainer>
-          </Form>
-          {debug && (
-            <div>Debug: {JSON.stringify(formikContext.values, null, 2)}</div>
-          )}
-        </div>
-      )}
+                {!showSuccess && (
+                  <WizardActions
+                    totalSteps={totalSteps}
+                    submitButtonText="Buy Dataset"
+                    showSuccessConfetti={false}
+                    rightAlignFirstStep={false}
+                  />
+                )}
+              </SectionContainer>
+            </Form>
+            {debug && (
+              <div>Debug: {JSON.stringify(formikContext.values, null, 2)}</div>
+            )}
+          </div>
+        )
+      }}
     </Formik>
   )
 }
