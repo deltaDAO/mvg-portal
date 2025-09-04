@@ -1002,7 +1002,7 @@ export default function ComputeWizard({
 
         return (
           <div className={styles.containerOuter}>
-            <PageHeader title={<Title asset={asset} />} />
+            <Title asset={asset} service={service} />
             <Form className={styles.form}>
               <Navigation steps={steps} />
               <SectionContainer classNames={styles.container}>
