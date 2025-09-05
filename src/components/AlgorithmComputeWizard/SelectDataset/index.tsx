@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect, useMemo } from 'react'
 import { useFormikContext } from 'formik'
 import { useAccount } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
@@ -13,6 +13,7 @@ import styles from './index.module.css'
 
 type FormValues = {
   dataset: string[]
+  datasets: any[]
 }
 
 export interface DatasetSelectionDataset extends AssetSelectionAsset {
@@ -30,9 +31,14 @@ export default function SelectDataset({
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const [selectedDatasetIds, setSelectedDatasetIds] = useState<string[]>([])
   const newCancelToken = useCancelToken()
   const [datasetsForCompute, setDatasetsForCompute] = useState<any[]>()
+
+  const selectedDatasetIds = useMemo(() => {
+    return (
+      values.datasets?.map((dataset: any) => dataset.did || dataset.id) || []
+    )
+  }, [values.datasets])
 
   function transformDatasets(
     datasets: AssetSelectionAsset[],
@@ -95,27 +101,29 @@ export default function SelectDataset({
     }
   }, [accessDetails, accountId, asset, newCancelToken, service])
 
-  // useEffect(() => {
-  //   // Initialize from form values if needed
-  //   if (Array.isArray(values.dataset)) {
-  //     const existingIds = values.dataset.map((env) => env.)
-  //     setSelectedDatasetIds(existingIds)
-  //   }
-  // }, [values.dataset])
+  useEffect(() => {
+    if (datasetsForCompute && selectedDatasetIds.length >= 0) {
+      const updatedDatasets = datasetsForCompute.map((ds) => ({
+        ...ds,
+        checked: selectedDatasetIds.includes(ds.did),
+        expanded: selectedDatasetIds.includes(ds.did)
+      }))
+      setDatasetsForCompute(updatedDatasets)
+    }
+  }, [selectedDatasetIds, datasetsForCompute])
 
   const handleDatasetSelect = (did: string) => {
-    const updatedDatasetIds = selectedDatasetIds.includes(did)
+    const isCurrentlySelected = selectedDatasetIds.includes(did)
+    const updatedDatasetIds = isCurrentlySelected
       ? selectedDatasetIds.filter((id) => id !== did)
       : [...selectedDatasetIds, did]
 
-    setSelectedDatasetIds(updatedDatasetIds)
-
+    // Update form state directly - this will trigger the useMemo above
     const updatedDatasets = datasetsForCompute?.map((ds) => ({
       ...ds,
       checked: updatedDatasetIds.includes(ds.did),
       expanded: updatedDatasetIds.includes(ds.did)
     }))
-    setDatasetsForCompute(updatedDatasets)
 
     const selectedDatasets = updatedDatasets?.filter((ds) =>
       updatedDatasetIds.includes(ds.did)

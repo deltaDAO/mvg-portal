@@ -69,6 +69,7 @@ export const initialValues: FormComputeData = {
   algorithm: null,
   dataset: [], // Added for algorithm flow
   computeEnv: null,
+  mode: 'free',
   cpu: 0,
   gpu: 0,
   ram: 0,

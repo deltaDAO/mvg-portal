@@ -27,7 +27,18 @@ export default function ConfigureEnvironment({
   const { chain } = useNetwork()
   const { data: signer } = useSigner()
 
-  const [mode, setMode] = useState<'free' | 'paid'>('free')
+  const [mode, setMode] = useState<'free' | 'paid'>(() => {
+    if (values.computeEnv && allResourceValues) {
+      const env = values.computeEnv
+      const envId = typeof env === 'string' ? env : env.id
+      const paidValues = allResourceValues[`${envId}_paid`]
+      const freeValues = allResourceValues[`${envId}_free`]
+
+      if (paidValues?.mode === 'paid') return 'paid'
+      if (freeValues?.mode === 'free') return 'free'
+    }
+    return values.mode || 'free'
+  })
 
   useEffect(() => {
     setFieldValue('mode', mode)
@@ -171,6 +182,8 @@ export default function ConfigureEnvironment({
   // Update form values when mode changes
   useEffect(() => {
     const currentValues = mode === 'free' ? freeValues : paidValues
+    if (!currentValues) return
+
     setFieldValue('cpu', currentValues.cpu)
     setFieldValue('ram', currentValues.ram)
     setFieldValue('disk', currentValues.disk)
@@ -220,6 +233,9 @@ export default function ConfigureEnvironment({
       }
     }))
   }, [
+    mode,
+    values.computeEnv,
+    chain?.id,
     freeValues.cpu,
     freeValues.ram,
     freeValues.disk,
@@ -228,9 +244,7 @@ export default function ConfigureEnvironment({
     paidValues.ram,
     paidValues.disk,
     paidValues.jobDuration,
-    mode,
-    values.computeEnv,
-    chain?.id
+    setAllResourceValues
   ])
 
   if (!values.computeEnv) {
@@ -252,6 +266,9 @@ export default function ConfigureEnvironment({
   if (tokenAddress) fetchSymbol(tokenAddress)
 
   const getLimits = (id: string, isFree: boolean) => {
+    const env = values.computeEnv
+    if (!env) return { minValue: 0, maxValue: 0 }
+
     if (id === 'jobDuration') {
       const maxDuration = isFree ? env.free?.maxJobDuration : env.maxJobDuration
       return {

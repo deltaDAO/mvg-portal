@@ -419,7 +419,9 @@ export default function Compute({
       }
 
       try {
-        type === 'init' && setIsLoadingJobs(true)
+        if (type === 'init') {
+          setIsLoadingJobs(true)
+        }
         const computeJobs = await getComputeJobs(
           asset.credentialSubject?.chainId !== undefined
             ? [asset.credentialSubject.chainId]
@@ -433,7 +435,9 @@ export default function Compute({
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
         LoggerInstance.error(error.message)
-        setIsLoadingJobs(false)
+        if (type === 'init') {
+          setIsLoadingJobs(false)
+        }
       }
     },
     [address, accountId, asset, service, chainIds, newCancelToken]
@@ -441,6 +445,15 @@ export default function Compute({
 
   useEffect(() => {
     fetchJobs('init')
+
+    const refreshInterval = 10000
+    const interval = setInterval(() => {
+      fetchJobs('poll')
+    }, refreshInterval)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [refetchJobs])
 
   // Output errors in toast UI

@@ -36,7 +36,11 @@ export default function Results({
     async function getAssetMetadata() {
       if (job.assets) {
         const ddo = await getAsset(job.assets[0].documentId, newCancelToken())
-        setDatasetProvider(ddo.credentialSubject.services[0].serviceEndpoint)
+        if (ddo?.credentialSubject?.services?.[0]?.serviceEndpoint) {
+          setDatasetProvider(ddo.credentialSubject.services[0].serviceEndpoint)
+        } else {
+          setDatasetProvider(customProviderUrl)
+        }
       } else {
         setDatasetProvider(customProviderUrl)
       }
