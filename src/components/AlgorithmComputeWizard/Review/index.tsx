@@ -162,14 +162,13 @@ export default function Review({
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const selectedEnvId = values?.computeEnv?.id
-  const selectedResources = allResourceValues?.[selectedEnvId as any]
-
   const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
   const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
+
+  // Determine current mode from the resource values
+  const currentMode = paidResources?.mode === 'paid' ? 'paid' : 'free'
   const c2dPrice =
-    selectedResources?.mode === 'paid'
-      ? paidResources?.price
-      : freeResources?.price
+    currentMode === 'paid' ? paidResources?.price : freeResources?.price
   const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
   const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
   const [activeCredentialAsset, setActiveCredentialAsset] = useState<any>(null)
@@ -365,7 +364,11 @@ export default function Review({
     {
       name: 'C2D RESOURCES',
       value: c2dPrice || '0',
-      duration: formatDuration(values.jobDuration)
+      duration: formatDuration(
+        currentMode === 'paid'
+          ? (paidResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+          : (freeResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+      )
     }
   ]
 
@@ -481,8 +484,11 @@ export default function Review({
     const selectedEnv = values.computeEnv
     if (!selectedEnv?.id) return
 
-    // if not already initialized, set default resource values
-    if (!allResourceValues[selectedEnv.id]) {
+    // if not already initialized, set default resource values for both free and paid modes
+    if (
+      !allResourceValues[`${selectedEnv.id}_free`] &&
+      !allResourceValues[`${selectedEnv.id}_paid`]
+    ) {
       const cpu = selectedEnv.resources.find((r) => r.id === 'cpu')?.min || 1
       const ram =
         selectedEnv.resources.find((r) => r.id === ('ram' as any))?.min ||
@@ -492,7 +498,16 @@ export default function Review({
         1_000_000_000
       const jobDuration = selectedEnv.maxJobDuration || 3600
 
-      const newRes = {
+      const freeRes = {
+        cpu: 0,
+        ram: 0,
+        disk: 0,
+        jobDuration: 0,
+        price: 0,
+        mode: 'free'
+      }
+
+      const paidRes = {
         cpu,
         ram,
         disk,
@@ -503,7 +518,8 @@ export default function Review({
 
       setAllResourceValues((prev) => ({
         ...prev,
-        [selectedEnv.id]: newRes
+        [`${selectedEnv.id}_free`]: freeRes,
+        [`${selectedEnv.id}_paid`]: paidRes
       }))
     }
   }, [values.computeEnv])
@@ -623,14 +639,31 @@ export default function Review({
     }
 
     setTotalPrices(totalPrices)
-  }, [serviceIndex, selectedDatasetAsset])
+  }, [
+    serviceIndex,
+    selectedDatasetAsset,
+    accessDetails.price,
+    algoOrderPrice,
+    algoOrderPriceAndFees?.price,
+    algorithmSymbol,
+    asset?.accessDetails,
+    c2dPrice,
+    datasetSymbol,
+    hasDatatoken,
+    hasPreviousOrder,
+    providerFeesSymbol
+  ])
 
   useEffect(() => {
     // Copy totalPrices so you don't mutate the original array
     const priceChecks = [...totalPrices]
 
     // Add C2D price if not already included in totalPrices
-    const c2dPrice = allResourceValues?.[values.computeEnv]?.price
+    const selectedEnvId = values?.computeEnv?.id
+    const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
+    const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
+    const c2dPrice =
+      values?.mode === 'paid' ? paidResources?.price : freeResources?.price
     const c2dSymbol = providerFeesSymbol
     // Only add if price > 0 and not present in totalPrices already (optional check)
     if (
@@ -662,7 +695,8 @@ export default function Review({
     providerFeesSymbol,
     totalPrices,
     allResourceValues,
-    values.computeEnv
+    values.computeEnv,
+    values?.mode
   ])
 
   const PurchaseButton = () => {

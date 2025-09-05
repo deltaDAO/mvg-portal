@@ -55,7 +55,6 @@ import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
 // import FormStartComputeAlgo from './FormComputeAlgorithm'
 import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
 
-import PageHeader from '@shared/Page/PageHeader'
 import Title from './Title'
 import WizardActions from '@shared/WizardActions'
 import Navigation from './Navigation'
@@ -448,7 +447,10 @@ export default function ComputeWizard({
       }
 
       try {
-        type === 'init' && setIsLoadingJobs(true)
+        // Only show loading on initial load, not during polling
+        if (type === 'init') {
+          setIsLoadingJobs(true)
+        }
         const computeJobs = await getComputeJobs(
           asset.credentialSubject?.chainId !== undefined
             ? [asset.credentialSubject.chainId]
@@ -462,7 +464,10 @@ export default function ComputeWizard({
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
         LoggerInstance.error(error.message)
-        setIsLoadingJobs(false)
+
+        if (type === 'init') {
+          setIsLoadingJobs(false)
+        }
       }
     },
     [address, accountId, asset, service, chainIds, newCancelToken]
@@ -470,6 +475,15 @@ export default function ComputeWizard({
 
   useEffect(() => {
     fetchJobs('init')
+
+    const refreshInterval = 10000
+    const interval = setInterval(() => {
+      fetchJobs('poll')
+    }, refreshInterval)
+
+    return () => {
+      clearInterval(interval)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetchJobs])
 

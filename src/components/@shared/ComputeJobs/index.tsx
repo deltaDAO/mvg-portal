@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import styles from './index.module.css'
 import { getAllComputeJobs } from '@utils/compute'
 import { useAccount } from 'wagmi'
@@ -7,7 +7,6 @@ import Time from '@shared/atoms/Time'
 import Details from '@components/Profile/History/ComputeJobs/Details'
 import FinishedIcon from '@images/finished.svg'
 import InProgress from '@images/InProgress.svg'
-import { useProfile } from '@context/Profile/index'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
 const ComputeJobs = ({
@@ -23,10 +22,9 @@ const ComputeJobs = ({
   const [error, setError] = useState<string | null>(null)
   const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
-  const { sales } = useProfile()
 
   useEffect(() => {
-    const fetchComputeJobs = async () => {
+    const fetchComputeJobs = async (type: string = 'init') => {
       if (!accountId) {
         console.log('No account ID available')
         setIsLoading(false)
@@ -34,7 +32,9 @@ const ComputeJobs = ({
       }
 
       try {
-        setIsLoading(true)
+        if (type === 'init') {
+          setIsLoading(true)
+        }
         setError(null)
         const response = await getAllComputeJobs(accountId, newCancelToken())
 
@@ -42,23 +42,24 @@ const ComputeJobs = ({
           const allJobs = response.computeJobs
 
           const matchingJobs = Object.entries(allJobs)
-            .filter(([jobId, job]: any) => {
+            .filter(([jobId, job]: [string, ComputeJobMetaData]) => {
               if (!job.assets || !Array.isArray(job.assets)) {
                 console.warn(`Job ${jobId} has no assets array.`)
                 return false
               }
 
-              const hasMatch = job.assets.some((assetObj: any) => {
-                return assetObj.documentId === asset?.id
-              })
+              const hasMatch = job.assets.some(
+                (assetObj: { documentId: string }) => {
+                  return assetObj.documentId === asset?.id
+                }
+              )
 
-              // Also check algorithm if it exists
               const hasAlgorithmMatch =
                 job.algorithm && job.algorithm.documentId === asset?.id
 
               return hasMatch || hasAlgorithmMatch
             })
-            .map(([_, job]) => job)
+            .map(([, job]) => job)
 
           setJobs(matchingJobs)
         } else {
@@ -70,12 +71,23 @@ const ComputeJobs = ({
         setError('Failed to load compute jobs. Please try again.')
         setJobs([])
       } finally {
-        setIsLoading(false)
+        if (type === 'init') {
+          setIsLoading(false)
+        }
       }
     }
 
-    fetchComputeJobs()
-  }, [accountId, newCancelToken, refetchTrigger])
+    fetchComputeJobs('init')
+
+    const refreshInterval = 10000
+    const interval = setInterval(() => {
+      fetchComputeJobs('poll')
+    }, refreshInterval)
+
+    return () => {
+      clearInterval(interval)
+    }
+  }, [accountId, newCancelToken, refetchTrigger, asset?.id])
 
   if (isLoading) {
     return (

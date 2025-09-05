@@ -262,7 +262,7 @@ export default function FormStartComputeAlgo({
         disk,
         jobDuration,
         price: 0,
-        mode: allResourceValues[selectedEnv.id]?.mode
+        mode: values.mode
       }
 
       setAllResourceValues((prev) => ({
