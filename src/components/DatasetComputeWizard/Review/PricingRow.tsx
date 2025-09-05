@@ -16,7 +16,7 @@ interface PricingRowProps {
   actionLabel?: string
   onAction?: () => void
   actionDisabled?: boolean
-  credentialStatus?: 'pending' | 'verified' | 'error' | 'checking'
+  credentialStatus?: 'verified' | 'checking' | 'failed'
 }
 
 export default function PricingRow({
@@ -46,9 +46,13 @@ export default function PricingRow({
             </span>
           </div>
         )
-      case 'error':
-        return <CircleX className={styles.credentialIcon} />
-      case 'pending':
+      case 'failed':
+        return (
+          <div className={styles.credentialStatusContainer}>
+            <CircleX className={styles.credentialIcon} />
+            <span className={styles.verifiedText}>Check credentials again</span>
+          </div>
+        )
       default:
         return null
     }

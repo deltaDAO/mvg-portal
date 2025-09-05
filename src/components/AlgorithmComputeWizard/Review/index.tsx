@@ -36,8 +36,7 @@ interface VerificationItem {
   type: 'dataset' | 'algorithm'
   asset: AssetExtended
   service: Service
-  isVerified: boolean
-  hasError: boolean
+  status: 'verified' | 'checking' | 'failed'
   index: number
   price: string
   duration: string
@@ -201,35 +200,12 @@ export default function Review({
           ? '0'
           : details?.price || '0'
 
-      const existingItem = verificationQueue.find(
-        (item) => item.id === asset.id && item.type === 'dataset'
-      )
-
-      let preservedIsVerified = Boolean(isVerified)
-      let preservedHasError = false
-
-      if (existingItem) {
-        const currentSessionValid = Boolean(isVerified)
-
-        if (existingItem.isVerified && !currentSessionValid) {
-          preservedIsVerified = false
-          preservedHasError = false
-        } else if (currentSessionValid) {
-          preservedIsVerified = existingItem.isVerified
-          preservedHasError = existingItem.hasError
-        } else {
-          preservedIsVerified = false
-          preservedHasError = existingItem.hasError
-        }
-      }
-
       queue.push({
         id: asset.id,
         type: 'dataset',
         asset,
         service,
-        isVerified: preservedIsVerified,
-        hasError: preservedHasError,
+        status: isVerified ? 'verified' : 'failed',
         index,
         price: rawPrice,
         duration: '1 day', // Default duration for datasets
@@ -244,34 +220,12 @@ export default function Review({
         ? '0'
         : asset.accessDetails?.[0].price
 
-      const existingItem = verificationQueue.find(
-        (item) => item.id === asset.id && item.type === 'algorithm'
-      )
-
-      let preservedIsVerified = Boolean(isVerified)
-      let preservedHasError = false
-
-      if (existingItem) {
-        const currentSessionValid = Boolean(isVerified)
-        if (existingItem.isVerified && !currentSessionValid) {
-          preservedIsVerified = false
-          preservedHasError = false
-        } else if (currentSessionValid) {
-          preservedIsVerified = existingItem.isVerified
-          preservedHasError = existingItem.hasError
-        } else {
-          preservedIsVerified = false
-          preservedHasError = existingItem.hasError
-        }
-      }
-
       queue.push({
         id: asset.id,
         type: 'algorithm',
         asset,
         service,
-        isVerified: preservedIsVerified,
-        hasError: preservedHasError,
+        status: isVerified ? 'verified' : 'failed',
         index: queue.length,
         price: rawPrice,
         duration: formatDuration(service.timeout || 0),
@@ -284,52 +238,45 @@ export default function Review({
 
   // Start verification for a specific item
   const startVerification = (index: number) => {
+    setVerificationQueue((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, status: 'checking' } : item
+      )
+    )
     setCurrentVerificationIndex(index)
     setShowCredentialsCheck(true)
   }
 
   // Handle verification completion
   const handleVerificationComplete = () => {
-    // Update verification status
     setVerificationQueue((prev) =>
       prev.map((item, i) =>
-        i === currentVerificationIndex
-          ? { ...item, isVerified: true, hasError: false }
-          : item
+        i === currentVerificationIndex ? { ...item, status: 'verified' } : item
       )
     )
-
     setShowCredentialsCheck(false)
+    setCurrentVerificationIndex(-1)
 
-    // Find next unverified item
+    // Proceed to next unverified item
     const nextIndex = verificationQueue.findIndex(
       (item, index) =>
-        index > currentVerificationIndex && !item.isVerified && !item.hasError
+        index > currentVerificationIndex && item.status === 'failed'
     )
-
     if (nextIndex !== -1) {
       setTimeout(() => startVerification(nextIndex), 300)
     }
   }
 
+  // Handle verification error
   const handleVerificationError = () => {
-    setVerificationQueue((prev) => {
-      const updated = prev.map((item, i) =>
-        i === currentVerificationIndex ? { ...item, hasError: true } : item
+    setVerificationQueue((prev) =>
+      prev.map((item, i) =>
+        i === currentVerificationIndex ? { ...item, status: 'failed' } : item
       )
-      return updated
-    })
-
-    setShowCredentialsCheck(false)
-
-    const nextIndex = verificationQueue.findIndex(
-      (item, index) =>
-        index > currentVerificationIndex && !item.isVerified && !item.hasError
     )
-
-    if (nextIndex !== -1) {
-      setTimeout(() => startVerification(nextIndex), 300)
-    }
+    setShowCredentialsCheck(false)
+    setCurrentVerificationIndex(-1)
+    // Stop verification on error
   }
 
   // Get current item being verified
@@ -515,6 +462,7 @@ export default function Review({
     values.algorithm
     // Removed values.computeEnv from dependencies to prevent infinite loop
   ])
+
   useEffect(() => {
     if (!values.dataset || !isConsumable) return
 
@@ -770,34 +718,9 @@ export default function Review({
       </div>
 
       <div className={styles.contentContainer}>
-        {/* Verification Progress Indicator */}
-        {verificationQueue.length > 0 && (
-          <div className={styles.progressContainer}>
-            <div className={styles.progressLabel}>Verification Progress:</div>
-            <div className={styles.progressSteps}>
-              {verificationQueue.map((item, index) => (
-                <div
-                  key={item.id}
-                  className={`${styles.progressStep} ${
-                    item.isVerified
-                      ? styles.completed
-                      : index === currentVerificationIndex
-                      ? styles.active
-                      : styles.pending
-                  }`}
-                >
-                  {item.type === 'dataset'
-                    ? `Dataset ${index + 1}`
-                    : 'Algorithm'}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className={styles.pricingBreakdown}>
           {/* Render all items from verification queue */}
-          {verificationQueue.length === 0 ? (
+          {selectedDatasetAsset.length === 0 ? (
             <div className={styles.loaderWrap}>
               <Loader message="Loading assets..." noMargin={true} />
             </div>
@@ -815,19 +738,9 @@ export default function Review({
                   item.type === 'dataset' ? 'Dataset' : 'Algorithm'
                 } credentials`}
                 onAction={() => startVerification(i)}
-                actionDisabled={item.isVerified}
+                actionDisabled={item.status === 'verified'}
                 isService={item.type === 'algorithm'}
-                credentialStatus={(() => {
-                  const status = item.isVerified
-                    ? 'verified'
-                    : item.hasError
-                    ? 'error'
-                    : currentVerificationIndex === i
-                    ? 'checking'
-                    : 'pending'
-
-                  return status
-                })()}
+                credentialStatus={item.status}
               />
             ))
           )}
@@ -916,7 +829,17 @@ export default function Review({
               </h3>
               <button
                 className={styles.closeButton}
-                onClick={() => setShowCredentialsCheck(false)}
+                onClick={() => {
+                  setShowCredentialsCheck(false)
+                  setVerificationQueue((prev) =>
+                    prev.map((item, i) =>
+                      i === currentVerificationIndex
+                        ? { ...item, status: 'failed' }
+                        : item
+                    )
+                  )
+                  setCurrentVerificationIndex(-1)
+                }}
               >
                 ✕ Close
               </button>
