@@ -6,7 +6,7 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import Time from '@shared/atoms/Time'
 import Details from '@components/Profile/History/ComputeJobs/Details'
 import FinishedIcon from '@images/finished.svg'
-import InProgress from '@images/InProgress.svg'
+import InProgress from '@images/inProgress.svg'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
 const ComputeJobs = ({
