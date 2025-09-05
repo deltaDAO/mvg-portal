@@ -14,19 +14,10 @@ import {
   EscrowContract
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
-import Price from '@shared/Price'
-import FileIcon from '@shared/FileIcon'
 import Alert from '@shared/atoms/Alert'
-import { Formik, Form, useFormikContext } from 'formik'
+import { Formik, Form } from 'formik'
 import Button from '@shared/atoms/Button'
-import {
-  ComputeDatasetForm,
-  getComputeValidationSchema,
-  getInitialValues,
-  initialValues,
-  algorithmSteps,
-  datasetSteps
-} from './_constants'
+import { initialValues, algorithmSteps, datasetSteps } from './_constants'
 // import FormStartComputeDataset from './FormComputeDataset'
 import styles from './index.module.css'
 import SuccessConfetti from '@shared/SuccessConfetti'
@@ -42,10 +33,7 @@ import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelecti
 // import AlgorithmDatasetsListForCompute from './AlgorithmDatasetsListForCompute'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { Decimal } from 'decimal.js'
-import {
-  getAvailablePrice,
-  getOrderPriceAndFees
-} from '@utils/accessDetailsAndPricing'
+import { getOrderPriceAndFees } from '@utils/accessDetailsAndPricing'
 import { getComputeFeedback } from '@utils/feedback'
 import {
   initializeProviderForComputeMulti,
@@ -53,11 +41,10 @@ import {
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
 import { getDummySigner } from '@utils/wallet'
-import WhitelistIndicator from '../Asset/AssetActions/Compute/WhitelistIndicator'
 import { parseConsumerParameterValues } from '../Asset/AssetActions/ConsumerParameters'
 import { BigNumber, ethers, Signer } from 'ethers'
 import { useAccount } from 'wagmi'
-import { Asset, AssetPrice } from 'src/@types/Asset'
+import { Asset } from 'src/@types/Asset'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
 import appConfig, { oceanTokenAddress } from 'app.config.cjs'
@@ -70,12 +57,10 @@ import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
 
 import PageHeader from '@shared/Page/PageHeader'
 import Title from './Title'
-import Actions from './Actions'
 import WizardActions from '@shared/WizardActions'
 import Navigation from './Navigation'
 import Steps from './Steps'
 import { validationSchema } from './_validation'
-import ContainerForm from '../@shared/atoms/ContainerForm'
 import SectionContainer from '../@shared/SectionContainer/SectionContainer'
 import { AssetExtended } from 'src/@types/AssetExtended'
 // import { AssetExtended } from '../../../../@types/AssetExtended'
@@ -93,7 +78,6 @@ export default function ComputeWizard({
   dtBalance,
   file,
   isAccountIdWhitelisted,
-  fileIsLoading,
   consumableFeedback,
   onClose,
   onComputeJobCreated
@@ -106,25 +90,15 @@ export default function ComputeWizard({
   dtBalance: string
   file: FileInfo
   isAccountIdWhitelisted: boolean
-  fileIsLoading?: boolean
   consumableFeedback?: string
   onClick?: () => void
   onClose?: () => void
   onComputeJobCreated?: () => void
 }): ReactElement {
   const { debug } = useUserPreferences()
-  console.log('accountId  ', accountId)
-  console.log('signer  ', signer)
-  console.log('asset  ', asset)
-  console.log('accessDetails  ', accessDetails)
-  console.log('file  ', file)
-  console.log('dtBalance  ', dtBalance)
-  console.log('service  ', service)
   // const { asset } = useAsset()
   // const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
-  const [algorithms, setAlgorithms] = useState<AssetSelectionAsset[]>([])
-  const [datasets, setDatasets] = useState<AssetSelectionAsset[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const isAlgorithm = asset?.credentialSubject.metadata.type === 'algorithm'
   const steps = isAlgorithm ? algorithmSteps : datasetSteps
@@ -135,7 +109,6 @@ export default function ComputeWizard({
   const { chainIds } = useUserPreferences()
 
   const [isOrdering, setIsOrdering] = useState(false)
-  const [isOrdered, setIsOrdered] = useState(false)
   const [error, setError] = useState<string>()
   const [showSuccess, setShowSuccess] = useState(false)
   const [successJobId, setSuccessJobId] = useState<string>()
@@ -146,38 +119,25 @@ export default function ComputeWizard({
   const [ddoAlgorithmList, setDdoAlgorithmList] = useState<Asset[]>()
   const [selectedAlgorithmAsset, setSelectedAlgorithmAsset] =
     useState<AssetExtended>()
-  const [selectedDatasetAsset, setSelectedDatasetAsset] = useState<
-    AssetExtended[]
-  >([])
   const [hasAlgoAssetDatatoken, setHasAlgoAssetDatatoken] = useState<boolean>()
   const [algorithmDTBalance, setAlgorithmDTBalance] = useState<string>()
 
   const [validOrderTx, setValidOrderTx] = useState('')
-  const [validAlgorithmOrderTx, setValidAlgorithmOrderTx] = useState('')
 
   const [isConsumablePrice, setIsConsumablePrice] = useState(true)
-  const [isConsumableaAlgorithmPrice, setIsConsumableAlgorithmPrice] =
-    useState(true)
   const [computeStatusText, setComputeStatusText] = useState('')
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
-  const [termsAndConditions, setTermsAndConditions] = useState<boolean>(false)
-  const [acceptPublishingLicense, setAcceptPublishingLicense] =
-    useState<boolean>(false)
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
-  const [providerFeesSymbol, setProviderFeesSymbol] = useState<string>('OCEAN')
   const [datasetOrderPriceAndFees, setDatasetOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
   const [algoOrderPriceAndFees, setAlgoOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
-  const [isRequestingAlgoOrderPrice, setIsRequestingAlgoOrderPrice] =
-    useState(false)
   const [refetchJobs, setRefetchJobs] = useState(false)
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [retry, setRetry] = useState<boolean>(false)
   const {
-    verifierSessionCache,
     lookupVerifierSessionId,
     lookupVerifierSessionIdSkip,
     ssiWalletCache,
@@ -190,24 +150,48 @@ export default function ComputeWizard({
     [envId: string]: ResourceType
   }>({})
 
-  const selectedEnvId = Object.keys(allResourceValues)[0]
-  const selectedComputeEnv = computeEnvs?.find(
-    (env) => env.id === selectedEnvId
-  )
-  const selectedResources = selectedEnvId
-    ? allResourceValues[selectedEnvId]
-    : undefined
+  const getSelectedComputeEnvAndResources = (
+    formikValues: FormComputeData | Record<string, never>
+  ) => {
+    const selectedEnvId = (formikValues as FormComputeData)?.computeEnv?.id
+    const selectedComputeEnv = computeEnvs?.find(
+      (env) => env.id === selectedEnvId
+    )
+    const selectedResources = selectedEnvId
+      ? (() => {
+          const freeResources = allResourceValues[`${selectedEnvId}_free`]
+          const paidResources = allResourceValues[`${selectedEnvId}_paid`]
 
-  const price: AssetPrice = getAvailablePrice(accessDetails)
+          const mode = (formikValues as FormComputeData)?.mode || 'free'
+
+          if (mode === 'paid' && paidResources) {
+            return paidResources
+          } else if (mode === 'free' && freeResources) {
+            return freeResources
+          }
+
+          if (
+            paidResources &&
+            (paidResources.cpu > 0 ||
+              paidResources.ram > 0 ||
+              paidResources.disk > 0)
+          ) {
+            return paidResources
+          } else if (freeResources) {
+            return freeResources
+          }
+          return undefined
+        })()
+      : undefined
+
+    return { selectedComputeEnv, selectedResources }
+  }
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
     isOrdering === true ||
     file === null ||
-    (!validOrderTx && !hasDatatoken && !isConsumablePrice) ||
-    (!validAlgorithmOrderTx &&
-      !hasAlgoAssetDatatoken &&
-      !isConsumableaAlgorithmPrice)
+    (!validOrderTx && !hasDatatoken && !isConsumablePrice)
 
   const isUnsupportedPricing = accessDetails?.type === 'NOT_SUPPORTED'
 
@@ -273,15 +257,15 @@ export default function ComputeWizard({
   }
 
   async function initPriceAndFees(
-    datasetServices?: { asset: AssetExtended; service: Service }[]
+    datasetServices?: { asset: AssetExtended; service: Service }[],
+    formikValues?: FormComputeData
   ) {
     try {
+      const { selectedComputeEnv, selectedResources } =
+        getSelectedComputeEnvAndResources(formikValues || {})
+
       if (!selectedComputeEnv || !selectedComputeEnv.id || !selectedResources)
         throw new Error(`Error getting compute environment!`)
-
-      const actualDatasetAssets: AssetExtended[] = selectedDatasetAsset.length
-        ? selectedDatasetAsset
-        : [asset]
 
       const actualAlgorithmAsset = selectedAlgorithmAsset || asset
       let actualAlgoService = service
@@ -301,20 +285,22 @@ export default function ComputeWizard({
       actualSvcIndex = algoIndex
       actualAlgoAccessDetails = actualAlgorithmAsset.accessDetails[algoIndex]
 
-      const datasetsForProvider = datasetServices.map(({ asset, service }) => {
-        const datasetIndex = asset.credentialSubject.services.findIndex(
-          (s) => s.id === service.id
-        )
-        if (datasetIndex === -1)
-          throw new Error(`ServiceId ${service.id} not found in ${asset.id}`)
+      const datasetsForProvider = (datasetServices || []).map(
+        ({ asset, service }) => {
+          const datasetIndex = asset.credentialSubject.services.findIndex(
+            (s) => s.id === service.id
+          )
+          if (datasetIndex === -1)
+            throw new Error(`ServiceId ${service.id} not found in ${asset.id}`)
 
-        return {
-          asset,
-          service,
-          accessDetails: asset.accessDetails[datasetIndex],
-          sessionId: lookupVerifierSessionId(asset.id, service.id)
+          return {
+            asset,
+            service,
+            accessDetails: asset.accessDetails[datasetIndex],
+            sessionId: lookupVerifierSessionId(asset.id, service.id)
+          }
         }
-      })
+      )
 
       const algoSessionId = lookupVerifierSessionId(
         actualAlgorithmAsset.id,
@@ -400,6 +386,7 @@ export default function ComputeWizard({
     } catch (error) {
       setError(error.message)
       LoggerInstance.error(`[compute] ${error.message} `)
+      throw error
     }
   }
 
@@ -483,6 +470,7 @@ export default function ComputeWizard({
 
   useEffect(() => {
     fetchJobs('init')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetchJobs])
 
   // Output errors in toast UI
@@ -526,12 +514,15 @@ export default function ComputeWizard({
       algoServiceParams?: UserCustomParameters
       algoParams?: UserCustomParameters
     },
-    datasetServices?: { asset: AssetExtended; service: Service }[]
+    datasetServices?: { asset: AssetExtended; service: Service }[],
+    formikValues?: FormComputeData
   ): Promise<void> {
     try {
       setIsOrdering(true)
-      setIsOrdered(false)
       setError(undefined)
+
+      const { selectedComputeEnv, selectedResources } =
+        getSelectedComputeEnvAndResources(formikValues || {})
 
       const {
         datasetResponses,
@@ -539,7 +530,7 @@ export default function ComputeWizard({
         actualAlgoService,
         actualAlgoAccessDetails,
         initializedProvider
-      } = await initPriceAndFees(datasetServices)
+      } = await initPriceAndFees(datasetServices, formikValues)
 
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
@@ -707,7 +698,6 @@ export default function ComputeWizard({
           'Failed to start compute job, check console for more details.'
         )
 
-      setIsOrdered(true)
       setRefetchJobs(!refetchJobs)
       setSuccessJobId(response?.jobId || response?.id || 'N/A')
       setShowSuccess(true)
@@ -775,9 +765,7 @@ export default function ComputeWizard({
       // Case: dataset selected, algorithm undefined (algo is main asset)
       if (asset.credentialSubject.metadata.type === 'algorithm') {
         actualSelectedAlgorithm = asset
-        if (selectedDatasetAsset && Array.isArray(selectedDatasetAsset)) {
-          actualSelectedDataset = selectedDatasetAsset
-        }
+        // No selectedDatasetAsset for dataset flow
       } else {
         actualSelectedDataset = [asset]
       }
@@ -818,7 +806,7 @@ export default function ComputeWizard({
           }
         })
 
-      await startJob(userCustomParameters, datasetServices)
+      await startJob(userCustomParameters, datasetServices, values)
     } catch (error) {
       if (
         error?.message?.includes('user rejected transaction') ||
@@ -846,8 +834,7 @@ export default function ComputeWizard({
 
         const computeService = asset.credentialSubject?.services?.find(
           (service) => service.type === 'compute'
-        ) as any
-        console.log('services for compute. ', computeService)
+        )
 
         if (!computeService) {
           setError('No compute service found for this asset')
@@ -861,12 +848,11 @@ export default function ComputeWizard({
           newCancelToken()
         )
 
-        const algorithmSelectionList =
-          await getAlgorithmAssetSelectionListForComputeWizard(
-            computeService,
-            algorithmsAssets,
-            accountId
-          )
+        await getAlgorithmAssetSelectionListForComputeWizard(
+          computeService,
+          algorithmsAssets,
+          accountId
+        )
 
         const environments = await getComputeEnvironments(
           computeService.serviceEndpoint,
@@ -886,8 +872,7 @@ export default function ComputeWizard({
         // )
 
         // setDatasets(datasets)
-        setAlgorithms(algorithmSelectionList)
-        setComputeEnvs(environments)
+        setComputeEnvs(environments || [])
       } catch (err) {
         console.error('Error fetching data:', err)
         setError('Failed to load compute data')
@@ -926,7 +911,6 @@ export default function ComputeWizard({
       validationSchema={validationSchema}
       enableReinitialize={true}
       onSubmit={async (values) => {
-        console.log('Form submitted:', values)
         await onSubmit(values)
       }}
     >
@@ -988,15 +972,13 @@ export default function ComputeWizard({
                       ddoListAlgorithms={ddoAlgorithmList}
                       selectedAlgorithmAsset={selectedAlgorithmAsset}
                       setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
-                      isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                      isLoading={isOrdering}
                       isComputeButtonDisabled={isComputeButtonDisabled}
                       hasPreviousOrder={!!validOrderTx}
                       hasDatatoken={hasDatatoken}
                       dtBalance={dtBalance}
                       assetTimeout={secondsToString(service.timeout)}
-                      hasPreviousOrderSelectedComputeAsset={
-                        !!validAlgorithmOrderTx
-                      }
+                      hasPreviousOrderSelectedComputeAsset={false}
                       hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
                       isAccountIdWhitelisted={isAccountIdWhitelisted}
                       datasetSymbol={
@@ -1013,7 +995,7 @@ export default function ComputeWizard({
                           ? 'mOCEAN'
                           : 'OCEAN')
                       }
-                      providerFeesSymbol={providerFeesSymbol}
+                      providerFeesSymbol="OCEAN"
                       dtSymbolSelectedComputeAsset={
                         selectedAlgorithmAsset?.accessDetails?.[svcIndex]
                           ?.datatoken.symbol
@@ -1034,7 +1016,7 @@ export default function ComputeWizard({
                       algoOrderPriceAndFees={algoOrderPriceAndFees}
                       retry={retry}
                       onRunInitPriceAndFees={async () => {
-                        await initPriceAndFees()
+                        await initPriceAndFees(undefined, formikContext.values)
                       }}
                       onCheckAlgoDTBalance={() =>
                         checkAssetDTBalance(selectedAlgorithmAsset)

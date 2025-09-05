@@ -248,7 +248,6 @@ export default function Steps({
         </CredentialDialogProvider>
       )
     default:
-      console.log('Algorithm flow - no matching case for step:', currentStep)
       return <div>Invalid step: {currentStep}</div>
   }
 }
