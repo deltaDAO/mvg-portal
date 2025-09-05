@@ -341,7 +341,7 @@ export default function AssetActions({
                 dtBalance={dtBalance}
                 isAccountIdWhitelisted={isAccountIdWhitelisted}
                 file={fileMetadata}
-                fileIsLoading={fileIsLoading}
+                // fileIsLoading={fileIsLoading}
                 consumableFeedback={consumableFeedback}
                 onClose={closeComputePopup}
                 onComputeJobCreated={onComputeJobCreated}
@@ -356,7 +356,7 @@ export default function AssetActions({
                 dtBalance={dtBalance}
                 isAccountIdWhitelisted={isAccountIdWhitelisted}
                 file={fileMetadata}
-                fileIsLoading={fileIsLoading}
+                // fileIsLoading={fileIsLoading}
                 consumableFeedback={consumableFeedback}
                 onClose={closeComputePopup}
                 onComputeJobCreated={onComputeJobCreated}
