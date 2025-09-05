@@ -50,10 +50,21 @@ export default function ConsumerParameters({
 
   const updateTabs = useCallback(() => {
     const tabs: TabsItem[] = []
-
+    function hasValidParams(params: any[]): boolean {
+      return params.some(
+        (p) =>
+          (p.default && p.default.trim() !== '') ||
+          (p.name && p.name.trim() !== '') ||
+          (p.description && p.description.trim() !== '') ||
+          (p.label && p.label.trim() !== '')
+      )
+    }
     // Dataset Services Tabs
     services?.forEach((service, index) => {
-      if (service.consumerParameters?.length > 0) {
+      if (
+        service.consumerParameters?.length > 0 &&
+        hasValidParams(service.consumerParameters)
+      ) {
         tabs.push({
           title: `Dataset ${index + 1} Params`,
           content: (
