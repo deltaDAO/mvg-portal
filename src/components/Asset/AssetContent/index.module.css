@@ -244,6 +244,12 @@
 .serviceDisplay {
   margin-top: 3rem;
 }
+.descriptionWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-direction: row;
+}
 
 .description {
   font-family: var(--font-family);
@@ -251,11 +257,36 @@
   font-size: 14px;
   line-height: 129%;
   color: var(--publish-text-secondary);
+  word-break: break-word;
+}
+
+.description.collapsed {
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 1; /* 1 line only */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.description.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.toggle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #00adb2;
+  cursor: pointer;
+  border: 1px solid #00adb2;
+  border-radius: 10px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.toggle:hover {
+  background: rgba(0, 150, 136, 0.1);
 }
 
 .description p {

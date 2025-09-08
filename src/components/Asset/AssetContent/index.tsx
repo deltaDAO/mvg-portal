@@ -41,6 +41,7 @@ export default function AssetContent({
   const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
   const [jsonInvoice, setJsonInvoice] = useState(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [expanded, setExpanded] = useState(false)
 
   const availableServices =
     asset.credentialSubject?.services?.filter(
@@ -143,27 +144,65 @@ export default function AssetContent({
               />
             ) : isDescriptionIsString ? (
               <>
-                <Markdown
-                  className={styles.description}
-                  text={
-                    asset.credentialSubject?.metadata?.description['@value']
-                  }
-                  blockImages={!allowExternalContent}
-                />
+                <div className={styles.descriptionWrapper}>
+                  <div
+                    className={`${styles.description} ${
+                      expanded ? styles.expanded : styles.collapsed
+                    }`}
+                  >
+                    <Markdown
+                      text={
+                        asset.credentialSubject?.metadata?.description[
+                          '@value'
+                        ] || ''
+                      }
+                      blockImages={!allowExternalContent}
+                    />
+                  </div>
+
+                  {asset.credentialSubject?.metadata?.description['@value']
+                    ?.length > 80 && (
+                    <span
+                      className={styles.toggle}
+                      onClick={() => setExpanded(!expanded)}
+                    >
+                      {expanded ? 'Show less' : 'Show more'}
+                    </span>
+                  )}
+                </div>
                 <MetaSecondary ddo={asset} />
               </>
             ) : (
               <>
-                <Markdown
-                  className={styles.description}
-                  text={
-                    (
-                      asset.credentialSubject?.metadata
-                        ?.description as LanguageValueObject
-                    )['@value'] || ''
-                  }
-                  blockImages={!allowExternalContent}
-                />
+                <div className={styles.descriptionWrapper}>
+                  <div
+                    className={`${styles.description} ${
+                      expanded ? styles.expanded : styles.collapsed
+                    }`}
+                  >
+                    <Markdown
+                      text={
+                        (
+                          asset.credentialSubject?.metadata
+                            ?.description as LanguageValueObject
+                        )['@value'] || ''
+                      }
+                      blockImages={!allowExternalContent}
+                    />
+                  </div>
+
+                  {(
+                    asset.credentialSubject?.metadata
+                      ?.description as LanguageValueObject
+                  )['@value']?.length > 80 && (
+                    <span
+                      className={styles.toggle}
+                      onClick={() => setExpanded(!expanded)}
+                    >
+                      {expanded ? 'Show less' : 'Show more'}
+                    </span>
+                  )}
+                </div>
                 <MetaSecondary ddo={asset} />
               </>
             )}
