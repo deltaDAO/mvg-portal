@@ -62,24 +62,24 @@ function generateCredentials(
             requestCredentials.push(newRequestCredential)
           })
 
-          const newVpPolicies: VpPolicyType[] = value.vp_policies.map(
-            (policy) => {
-              if (isVpValue(policy)) {
-                const result: ArgumentVpPolicy = {
-                  type: 'argumentVpPolicy',
-                  policy: policy.policy,
-                  args: policy.args.toString()
+          const newVpPolicies: VpPolicyType[] = Array.isArray(value.vp_policies)
+            ? value.vp_policies.map((policy) => {
+                if (isVpValue(policy)) {
+                  const result: ArgumentVpPolicy = {
+                    type: 'argumentVpPolicy',
+                    policy: policy.policy,
+                    args: policy.args.toString()
+                  }
+                  return result
+                } else {
+                  const result: StaticVpPolicy = {
+                    type: 'staticVpPolicy',
+                    name: policy
+                  }
+                  return result
                 }
-                return result
-              } else {
-                const result: StaticVpPolicy = {
-                  type: 'staticVpPolicy',
-                  name: policy
-                }
-                return result
-              }
-            }
-          )
+              })
+            : []
 
           vcPolicies = [
             ...vcPolicies,

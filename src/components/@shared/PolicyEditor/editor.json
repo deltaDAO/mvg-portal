@@ -33,7 +33,7 @@
   },
   {
     "name": "name",
-    "label": "Custom Policy Name",
+    "label": "Parameter Name",
     "type": "text",
     "required": true
   },

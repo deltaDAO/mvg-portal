@@ -56,7 +56,7 @@
 .select {
   composes: input;
   height: 43px;
-  padding: 15px 48px 15px 25px;
+  padding: 8px 48px 8px 25px;
   font-weight: var(--font-weight-bold);
 
   background-image: linear-gradient(
