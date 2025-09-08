@@ -11,8 +11,7 @@ import {
   ProviderFees,
   ProviderInstance,
   ProviderInitialize,
-  getErrorMessage,
-  ZERO_ADDRESS
+  getErrorMessage
 } from '@oceanprotocol/lib'
 import { Signer, ethers } from 'ethers'
 import { getOceanConfig } from './ocean'
@@ -26,7 +25,7 @@ import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
-async function initializeProvider(
+export async function initializeProvider(
   asset: AssetExtended,
   service: Service,
   accountId: string,

@@ -25,6 +25,7 @@ import VerifiedPatch from '@images/patch_check.svg'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { useAccount } from 'wagmi'
+import { initializeProvider } from '@utils/order'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -139,7 +140,12 @@ export function AssetActionCheckCredentials({
 
             const { state } = searchParams
             exchangeStateData.sessionId = state
-
+            const initializeData = await initializeProvider(
+              asset,
+              service,
+              accountId
+            )
+            console.log('Initialize data', initializeData)
             const presentationDefinition = await getPd(state)
             const resultRequiredCredentials =
               presentationDefinition.input_descriptors.map(
