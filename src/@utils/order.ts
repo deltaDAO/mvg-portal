@@ -49,6 +49,7 @@ export async function initializeProvider(
       customProviderUrl || service.serviceEndpoint,
       command
     )
+    console.log('Initialize PS response', initializePs)
     if (initializePs?.success) {
       const provider = await ProviderInstance.initialize(
         asset.id,
@@ -64,6 +65,7 @@ export async function initializeProvider(
     const message = getErrorMessage(error.message)
     LoggerInstance.log('[Initialize Provider] Error:', message)
     toast.error(message)
+    throw new Error(message)
   }
 }
 
