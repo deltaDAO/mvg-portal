@@ -14,7 +14,7 @@ import {
   usePresentationRequest,
   getSsiVerifiableCredentialType
 } from '@utils/wallet/ssiWallet'
-import React, { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { SsiVerifiableCredential, SsiWalletDid } from 'src/@types/SsiWallet'
 import { VpSelector } from '../VpSelector'
 import { DidSelector } from '../DidSelector'
@@ -140,12 +140,14 @@ export function AssetActionCheckCredentials({
 
             const { state } = searchParams
             exchangeStateData.sessionId = state
-            const initializeData = await initializeProvider(
-              asset,
-              service,
-              accountId
-            )
-            console.log('Initialize data', initializeData)
+            if (service?.type === 'access' && accountId) {
+              const initializeData = await initializeProvider(
+                asset,
+                service,
+                accountId
+              )
+              console.log('Initialize data', initializeData)
+            }
             const presentationDefinition = await getPd(state)
             const resultRequiredCredentials =
               presentationDefinition.input_descriptors.map(
@@ -362,7 +364,7 @@ export function AssetActionCheckCredentials({
           )
           .map((credential) => {
             return (
-              <React.Fragment key={credential}>
+              <Fragment key={credential}>
                 {isCredentialCached(cachedCredentials, credential) ? (
                   <VerifiedPatch
                     key={credential}
@@ -376,7 +378,7 @@ export function AssetActionCheckCredentials({
                 )}
 
                 {credential}
-              </React.Fragment>
+              </Fragment>
             )
           })}
       </div>
