@@ -12,7 +12,7 @@ import {
   resolvePresentationRequest,
   usePresentationRequest
 } from '@utils/wallet/ssiWallet'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import { SsiVerifiableCredential, SsiWalletDid } from 'src/@types/SsiWallet'
 import { VpSelector } from '../VpSelector'
 import { DidSelector } from '../DidSelector'
@@ -23,7 +23,8 @@ import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { useAccount } from 'wagmi'
 import Button from '@shared/atoms/Button'
-import appConfig from 'app.config.cjs'
+import { initializeProvider } from '@utils/order'
+import VerifiedPatch from '@images/circle_check.svg'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -53,6 +54,15 @@ function newExchangeStateData(): ExchangeStateData {
     selectedDid: '',
     poliyServerData: undefined
   }
+}
+
+function isCredentialCached(
+  cachedCredentials: SsiVerifiableCredential[],
+  credentialType: string
+): boolean {
+  return cachedCredentials.some((credential) =>
+    credential.parsedDocument.type.includes(credentialType)
+  )
 }
 
 export function AssetActionCheckCredentials({
@@ -144,7 +154,14 @@ export function AssetActionCheckCredentials({
 
             const { state } = searchParams
             exchangeStateData.sessionId = state
-
+            if (service?.type === 'access' && accountId) {
+              const initializeData = await initializeProvider(
+                asset,
+                service,
+                accountId
+              )
+              console.log('Initialize data', initializeData)
+            }
             const presentationDefinition = await getPd(state)
             const resultRequiredCredentials =
               presentationDefinition.input_descriptors.map(
@@ -363,6 +380,34 @@ export function AssetActionCheckCredentials({
           </Button>
         </div>
       )}
+
+      <div
+        className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
+      >
+        {requiredCredentials
+          ?.sort((credential1, credential2) =>
+            credential1.localeCompare(credential2)
+          )
+          .map((credential) => {
+            return (
+              <Fragment key={credential}>
+                {isCredentialCached(cachedCredentials, credential) ? (
+                  <VerifiedPatch
+                    key={credential}
+                    className={`${styles.marginTop6px} ${styles.fillGreen}`}
+                  />
+                ) : (
+                  <div
+                    key={credential}
+                    className={`${styles.marginTop6px} ${styles.fillRed}`}
+                  ></div>
+                )}
+
+                {credential}
+              </Fragment>
+            )
+          })}
+      </div>
     </div>
   )
 }
