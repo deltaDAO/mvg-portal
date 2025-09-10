@@ -14,6 +14,7 @@ interface WizardActionsProps {
   formikContext?: FormikContextType<any>
   isContinueDisabled?: boolean
   rightAlignFirstStep?: boolean
+  isSubmitDisabled?: boolean
 }
 
 export default function WizardActions({
@@ -24,7 +25,8 @@ export default function WizardActions({
   scrollToRef,
   formikContext,
   isContinueDisabled = false,
-  rightAlignFirstStep = true
+  rightAlignFirstStep = true,
+  isSubmitDisabled = false
 }: WizardActionsProps): ReactElement {
   const {
     values,
@@ -159,7 +161,7 @@ export default function WizardActions({
           {continueButtonText}
         </Button>
       ) : (
-        <Button type="submit" style="publish" disabled={false}>
+        <Button type="submit" style="publish" disabled={isSubmitDisabled}>
           {isSubmitting ? <Loader variant="primary" /> : submitButtonText}
         </Button>
       )}

@@ -699,52 +699,6 @@ export default function Review({
     values?.mode
   ])
 
-  const PurchaseButton = () => {
-    const isDisabled =
-      isComputeButtonDisabled ||
-      !isValid ||
-      !isBalanceSufficient ||
-      !isAssetNetwork ||
-      !selectedDatasetAsset?.every(
-        (asset) => asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
-      ) ||
-      !isAccountIdWhitelisted
-
-    return (
-      <ButtonBuy
-        action="compute"
-        disabled={isDisabled}
-        hasPreviousOrder={hasPreviousOrder}
-        hasDatatoken={hasDatatoken}
-        btSymbol={accessDetails.baseToken?.symbol}
-        dtSymbol={accessDetails.datatoken?.symbol}
-        dtBalance={dtBalance}
-        assetTimeout={assetTimeout}
-        assetType={asset.credentialSubject?.metadata.type}
-        hasPreviousOrderSelectedComputeAsset={
-          hasPreviousOrderSelectedComputeAsset
-        }
-        hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-        dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
-        dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
-        selectedComputeAssetType={selectedComputeAssetType}
-        stepText={stepText}
-        isLoading={isLoading}
-        type="submit"
-        priceType={accessDetails.type}
-        algorithmPriceType={asset?.accessDetails?.[0]?.type}
-        isBalanceSufficient={isBalanceSufficient}
-        isConsumable={isConsumable}
-        consumableFeedback={consumableFeedback}
-        isAlgorithmConsumable={asset?.accessDetails?.[0]?.isPurchasable}
-        isSupportedOceanNetwork={isSupportedOceanNetwork}
-        hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
-        retry={retry}
-        isAccountConnected={isConnected}
-      />
-    )
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.titleContainer}>
@@ -846,7 +800,6 @@ export default function Review({
             />
           </FormErrorGroup>
         </div>
-        <PurchaseButton />
       </div>
 
       {/* Unified credentials modal */}

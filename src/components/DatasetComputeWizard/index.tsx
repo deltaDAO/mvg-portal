@@ -1054,13 +1054,14 @@ export default function ComputeWizard({
               {!showSuccess && (
                 <WizardActions
                   totalSteps={totalSteps}
-                  submitButtonText="Buy Dataset"
+                  submitButtonText="Buy Compute Job"
                   showSuccessConfetti={false}
                   rightAlignFirstStep={false}
                   isContinueDisabled={
                     formikContext.values.user.stepCurrent === 1 &&
                     !formikContext.values.algorithm
                   }
+                  isSubmitDisabled={isComputeButtonDisabled}
                 />
               )}
             </SectionContainer>

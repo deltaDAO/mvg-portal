@@ -46,11 +46,7 @@ export default function Actions(): ReactElement {
           Back
         </Button>
       )}
-      {isLastStep ? (
-        <Button type="submit" style="publish" disabled={isSubmitting}>
-          {isSubmitting ? 'Processing...' : 'Buy Dataset'}
-        </Button>
-      ) : (
+      {!isLastStep && (
         <Button
           type="button"
           style="publish"
