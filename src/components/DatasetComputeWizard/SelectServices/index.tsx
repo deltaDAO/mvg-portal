@@ -145,8 +145,11 @@ const ServiceSelector = () => {
         </div>
 
         {/* Datasets and services */}
-        {datasets.map((dataset) => (
-          <div key={dataset.id} className={styles.dataset}>
+        {datasets.map((dataset, index) => (
+          <div
+            key={dataset.id || `dataset-${index}`}
+            className={styles.dataset}
+          >
             <div className={styles.datasetRow}>
               <div className={styles.checkboxColumn}>
                 <input
@@ -183,8 +186,11 @@ const ServiceSelector = () => {
 
             {dataset.expanded && (
               <div className={styles.servicesContainer}>
-                {dataset.services.map((service) => (
-                  <div key={service.id} className={styles.service}>
+                {dataset.services.map((service, index) => (
+                  <div
+                    key={service.id || `${dataset.id}-service-${index}`}
+                    className={styles.service}
+                  >
                     <div className={styles.checkboxColumn}>
                       <input
                         type="checkbox"

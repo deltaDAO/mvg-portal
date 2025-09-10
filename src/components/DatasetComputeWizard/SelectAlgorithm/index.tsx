@@ -29,7 +29,7 @@ export default function SelectAlgorithm({
           type="assetSelection"
           options={algorithms}
           accountId={accountId}
-          selected={values.algorithm}
+          selected={values.algorithm || []}
           disabled={false}
           priceOnRight={true}
           variant="compute"

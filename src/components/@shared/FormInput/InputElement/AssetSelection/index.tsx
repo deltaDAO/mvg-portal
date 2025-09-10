@@ -133,7 +133,6 @@ export default function AssetSelection({
                   className={styleClassesInput}
                   {...props}
                   checked={selected && selected.includes(asset.serviceId)}
-                  defaultChecked={asset.checked}
                   disabled={disabled || !asset.isAccountIdWhitelisted}
                   type={multiple ? 'checkbox' : 'radio'}
                   value={JSON.stringify({

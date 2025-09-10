@@ -6,9 +6,9 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import DatasetSelection from '@shared/FormInput/InputElement/DatasetSelection'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { getAlgorithmDatasetsForComputeSelection } from '@utils/aquarius'
-import { FormComputeData } from '../_types'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import Loader from '@shared/atoms/Loader'
 import styles from './index.module.css'
 
 type FormValues = {
@@ -33,6 +33,7 @@ export default function SelectDataset({
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const newCancelToken = useCancelToken()
   const [datasetsForCompute, setDatasetsForCompute] = useState<any[]>()
+  const [isLoadingDatasets, setIsLoadingDatasets] = useState(false)
 
   const selectedDatasetIds = useMemo(() => {
     return (
@@ -83,17 +84,25 @@ export default function SelectDataset({
     if (!accessDetails.type) return
 
     async function getDatasetsAllowedForCompute() {
-      const datasets = await getAlgorithmDatasetsForComputeSelection(
-        asset.id,
-        service.id,
-        service.serviceEndpoint,
-        accountId,
-        asset.credentialSubject?.chainId,
-        newCancelToken()
-      )
+      setIsLoadingDatasets(true)
+      try {
+        const datasets = await getAlgorithmDatasetsForComputeSelection(
+          asset.id,
+          service.id,
+          service.serviceEndpoint,
+          accountId,
+          asset.credentialSubject?.chainId,
+          newCancelToken()
+        )
 
-      const groupedDatasets = transformDatasets(datasets)
-      setDatasetsForCompute(groupedDatasets)
+        const groupedDatasets = transformDatasets(datasets)
+        setDatasetsForCompute(groupedDatasets)
+      } catch (error) {
+        console.error('Error fetching datasets:', error)
+        setDatasetsForCompute([])
+      } finally {
+        setIsLoadingDatasets(false)
+      }
     }
 
     if (asset.credentialSubject?.metadata.type === 'algorithm') {
@@ -101,30 +110,22 @@ export default function SelectDataset({
     }
   }, [accessDetails, accountId, asset, newCancelToken, service])
 
-  useEffect(() => {
-    if (datasetsForCompute && selectedDatasetIds.length >= 0) {
-      const updatedDatasets = datasetsForCompute.map((ds) => ({
-        ...ds,
-        checked: selectedDatasetIds.includes(ds.did),
-        expanded: selectedDatasetIds.includes(ds.did)
-      }))
-      setDatasetsForCompute(updatedDatasets)
-    }
-  }, [selectedDatasetIds, datasetsForCompute])
-
   const handleDatasetSelect = (did: string) => {
     const isCurrentlySelected = selectedDatasetIds.includes(did)
     const updatedDatasetIds = isCurrentlySelected
       ? selectedDatasetIds.filter((id) => id !== did)
       : [...selectedDatasetIds, did]
 
-    // Update form state directly - this will trigger the useMemo above
+    // Update datasets state with new checked/expanded values
     const updatedDatasets = datasetsForCompute?.map((ds) => ({
       ...ds,
       checked: updatedDatasetIds.includes(ds.did),
       expanded: updatedDatasetIds.includes(ds.did)
     }))
 
+    setDatasetsForCompute(updatedDatasets)
+
+    // Update form state
     const selectedDatasets = updatedDatasets?.filter((ds) =>
       updatedDatasetIds.includes(ds.did)
     )
@@ -136,12 +137,16 @@ export default function SelectDataset({
     <>
       <StepTitle title="Select Datasets" />
       <div className={styles.environmentSelection}>
-        <DatasetSelection
-          asset={asset}
-          datasets={datasetsForCompute}
-          selected={selectedDatasetIds}
-          onChange={handleDatasetSelect}
-        />
+        {isLoadingDatasets ? (
+          <Loader message="Loading datasets..." />
+        ) : (
+          <DatasetSelection
+            asset={asset}
+            datasets={datasetsForCompute}
+            selected={selectedDatasetIds}
+            onChange={handleDatasetSelect}
+          />
+        )}
       </div>
     </>
   )

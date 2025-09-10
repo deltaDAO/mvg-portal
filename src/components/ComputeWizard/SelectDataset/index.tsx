@@ -6,9 +6,9 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import DatasetSelection from '@shared/FormInput/InputElement/DatasetSelection'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { getAlgorithmDatasetsForComputeSelection } from '@utils/aquarius'
-import { FormComputeData } from '../_types'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import Loader from '@shared/atoms/Loader'
 import styles from './index.module.css'
 
 type FormValues = {
@@ -33,6 +33,7 @@ export default function SelectDataset({
   const [selectedDatasetIds, setSelectedDatasetIds] = useState<string[]>([])
   const newCancelToken = useCancelToken()
   const [datasetsForCompute, setDatasetsForCompute] = useState<any[]>()
+  const [isLoadingDatasets, setIsLoadingDatasets] = useState(false)
 
   function transformDatasets(
     datasets: AssetSelectionAsset[],
@@ -77,17 +78,25 @@ export default function SelectDataset({
     if (!accessDetails.type) return
 
     async function getDatasetsAllowedForCompute() {
-      const datasets = await getAlgorithmDatasetsForComputeSelection(
-        asset.id,
-        service.id,
-        service.serviceEndpoint,
-        accountId,
-        asset.credentialSubject?.chainId,
-        newCancelToken()
-      )
+      setIsLoadingDatasets(true)
+      try {
+        const datasets = await getAlgorithmDatasetsForComputeSelection(
+          asset.id,
+          service.id,
+          service.serviceEndpoint,
+          accountId,
+          asset.credentialSubject?.chainId,
+          newCancelToken()
+        )
 
-      const groupedDatasets = transformDatasets(datasets)
-      setDatasetsForCompute(groupedDatasets)
+        const groupedDatasets = transformDatasets(datasets)
+        setDatasetsForCompute(groupedDatasets)
+      } catch (error) {
+        console.error('Error fetching datasets:', error)
+        setDatasetsForCompute([])
+      } finally {
+        setIsLoadingDatasets(false)
+      }
     }
 
     if (asset.credentialSubject?.metadata.type === 'algorithm') {
@@ -128,12 +137,16 @@ export default function SelectDataset({
     <>
       <StepTitle title="Select Datasets" />
       <div className={styles.environmentSelection}>
-        <DatasetSelection
-          asset={asset}
-          datasets={datasetsForCompute}
-          selected={selectedDatasetIds}
-          onChange={handleDatasetSelect}
-        />
+        {isLoadingDatasets ? (
+          <Loader message="Loading datasets..." />
+        ) : (
+          <DatasetSelection
+            asset={asset}
+            datasets={datasetsForCompute}
+            selected={selectedDatasetIds}
+            onChange={handleDatasetSelect}
+          />
+        )}
       </div>
     </>
   )

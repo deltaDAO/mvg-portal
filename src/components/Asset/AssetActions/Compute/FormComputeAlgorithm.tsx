@@ -678,7 +678,7 @@ export default function FormStartComputeAlgo({
             disabled={isLoading || isComputeButtonDisabled}
             options={computeEnvs}
             accountId={accountId}
-            selected={values.computeEnv}
+            selected={values.computeEnv || []}
             setAllResourceValues={setAllResourceValues}
           />
         ) : null
