@@ -303,31 +303,32 @@ export default function Compute({
               accessDetails,
               initializedProvider.datasets?.[i]?.providerFee
             )
+            if (selectedResources.mode === 'paid') {
+              const escrow = new EscrowContract(
+                ethers.utils.getAddress(
+                  initializedProvider.payment.escrowAddress
+                ),
+                signer,
+                asset.credentialSubject.chainId
+              )
 
-            const escrow = new EscrowContract(
-              ethers.utils.getAddress(
-                initializedProvider.payment.escrowAddress
-              ),
-              signer,
-              asset.credentialSubject.chainId
-            )
+              const price = BigNumber.from(selectedResources.price)
+              const payment = BigNumber.from(initializedProvider.payment.amount)
 
-            const price = BigNumber.from(selectedResources.price)
-            const payment = BigNumber.from(initializedProvider.payment.amount)
+              const amountToDeposit = price
+                .mul(BigNumber.from(10).pow(18))
+                .add(payment)
+                .toString()
 
-            const amountToDeposit = price
-              .mul(BigNumber.from(10).pow(18))
-              .add(payment)
-              .toString()
-
-            await escrow.verifyFundsForEscrowPayment(
-              oceanTokenAddress,
-              selectedComputeEnv.consumerAddress,
-              await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
-              initializedProvider.payment.amount.toString(),
-              initializedProvider.payment.minLockSeconds.toString(),
-              '10'
-            )
+              await escrow.verifyFundsForEscrowPayment(
+                oceanTokenAddress,
+                selectedComputeEnv.consumerAddress,
+                await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
+                initializedProvider.payment.amount.toString(),
+                initializedProvider.payment.minLockSeconds.toString(),
+                '10'
+              )
+            }
 
             return {
               actualDatasetAsset: asset,
