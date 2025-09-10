@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import Head from 'next/head'
 
-import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { DatasetSchema } from './DatasetSchema'
 
@@ -19,6 +18,15 @@ export default function Seo({
   // Remove trailing slash from all URLs
   const canonical = `${siteContent?.siteUrl}${uri}`.replace(/\/$/, '')
 
+  // Avoid client/server divergence by not depending on window during render
+  let isProdHostname = false
+  try {
+    const host = new URL(siteContent?.siteUrl || '').hostname
+    isProdHostname = host === 'portal.pontus-x.eu'
+  } catch {
+    isProdHostname = false
+  }
+
   const pageTitle =
     uri === '/'
       ? siteContent?.siteTitle
@@ -30,13 +38,9 @@ export default function Seo({
 
   return (
     <Head>
-      <html lang="en" />
-
       <title>{pageTitle}</title>
 
-      {isBrowser && window?.location?.hostname !== 'portal.pontus-x.eu' && (
-        <meta name="robots" content="noindex,nofollow" />
-      )}
+      {!isProdHostname && <meta name="robots" content="noindex,nofollow" />}
 
       <link rel="canonical" href={canonical} />
       <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -64,9 +68,7 @@ export default function Seo({
       />
 
       <meta property="og:site_name" content={siteContent?.siteTitle} />
-      {isBrowser && window?.location?.hostname === 'portal.pontus-x.eu' && (
-        <meta name="twitter:creator" content="@deltaDAO" />
-      )}
+      {isProdHostname && <meta name="twitter:creator" content="@deltaDAO" />}
       <meta name="twitter:card" content="summary_large_image" />
 
       {datasetSchema && (

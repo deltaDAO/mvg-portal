@@ -56,9 +56,10 @@ function UserPreferencesProvider({
   const [debug, setDebug] = useState<boolean>(
     getCookieValue('debug') === 'true'
   )
-  const [currency, setCurrency] = useState<string>(
-    localStorage?.currency || 'EUR'
-  )
+  const [currency, setCurrency] = useState<string>(() => {
+    if (typeof window === 'undefined') return 'EUR'
+    return localStorage?.currency || 'EUR'
+  })
   const [locale, setLocale] = useState<string>()
   const [bookmarks, setBookmarks] = useState(
     getCookieValue('bookmarks')?.split(',') || []
