@@ -93,19 +93,19 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
             type="button"
             style="primary"
             size="small"
-            className={`${styles.acceptButton}`}
-            onClick={handleAcceptSelection}
+            className={`${styles.abortButton}`}
+            onClick={handleAbortSelection}
           >
-            Confirm
+            Cancel
           </Button>
           <Button
             type="button"
             style="primary"
             size="small"
-            className={`${styles.abortButton}`}
-            onClick={handleAbortSelection}
+            className={`${styles.acceptButton}`}
+            onClick={handleAcceptSelection}
           >
-            Cancel
+            Confirm
           </Button>
         </div>
       </div>

@@ -232,7 +232,7 @@
 }
 
 .panelRow:last-child {
-  justify-content: end;
+  justify-content: center;
   gap: var(--sp-4);
   margin-top: var(--publish-spacing-lg);
 }

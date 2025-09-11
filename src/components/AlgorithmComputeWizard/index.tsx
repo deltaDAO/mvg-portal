@@ -7,13 +7,11 @@ import {
   LoggerInstance,
   ComputeAlgorithm,
   ProviderComputeInitializeResults,
-  unitsToAmount,
   ProviderFees,
   UserCustomParameters,
   EscrowContract
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
-import Alert from '@shared/atoms/Alert'
 import { Formik, Form } from 'formik'
 import Button from '@shared/atoms/Button'
 import { initialValues, algorithmSteps, datasetSteps } from './_constants'
@@ -41,6 +39,7 @@ import { BigNumber, ethers, Signer } from 'ethers'
 import { useAccount } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
+import { useCredentialValidation } from '@hooks/useCredentialValidation'
 import appConfig, { oceanTokenAddress } from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
@@ -139,6 +138,8 @@ export default function ComputeWizard({
     setCachedCredentials,
     clearVerifierSessionCache
   } = useSsiWallet()
+
+  const { validateCredentials, refreshCredentials } = useCredentialValidation()
   const [svcIndex, setSvcIndex] = useState(0)
 
   const [allResourceValues, setAllResourceValues] = useState<{
@@ -750,17 +751,11 @@ export default function ComputeWizard({
       const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
 
       if (appConfig.ssiEnabled && !skip) {
-        try {
-          const result = await checkVerifierSessionId(
-            lookupVerifierSessionId(asset.id, service.id)
-          )
-          if (!result.success) {
-            toast.error('Invalid session')
-            return
-          }
-        } catch (error) {
-          resetCacheWallet()
-          throw error
+        const isValid = await validateCredentials(asset.id, service.id)
+        if (!isValid) {
+          await refreshCredentials(asset.id, service.id)
+          toast.error('Credentials expired. Please re-verify your credentials.')
+          return
         }
       }
 

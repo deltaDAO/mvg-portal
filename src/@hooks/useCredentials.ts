@@ -32,7 +32,7 @@ export function newExchangeStateData(): ExchangeStateData {
   }
 }
 
-export function useCredentialDialogState() {
+export function useCredentialDialogState(autoStart = false) {
   const [checkCredentialState, setCheckCredentialState] =
     useState<CheckCredentialState>(CheckCredentialState.Stop)
   const [requiredCredentials, setRequiredCredentials] = useState<string[]>([])
@@ -59,6 +59,7 @@ export function useCredentialDialogState() {
     credentialError,
     setCredentialError,
     isCheckingCredentials,
-    setIsCheckingCredentials
+    setIsCheckingCredentials,
+    autoStart
   }
 }

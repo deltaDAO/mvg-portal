@@ -16,7 +16,6 @@ import styles from './index.module.css'
 import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
-import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { getAsset } from '@utils/aquarius'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
@@ -25,9 +24,6 @@ import { MAX_DECIMALS } from '@utils/constants'
 import { consumeMarketOrderFee } from 'app.config.cjs'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
-import { Asset } from 'src/@types/Asset'
-import { useAsset } from '@context/Asset'
-import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 
@@ -36,7 +32,7 @@ interface VerificationItem {
   type: 'dataset' | 'algorithm'
   asset: AssetExtended
   service: Service
-  status: 'verified' | 'checking' | 'failed'
+  status: 'verified' | 'checking' | 'failed' | 'unverified'
   index: number
   price: string
   duration: string
@@ -47,40 +43,21 @@ export default function Review({
   isRequestingPrice = false,
   asset,
   service,
-  isAlgorithm = false,
   accessDetails,
   datasets,
   selectedDatasetAsset,
   setSelectedDatasetAsset,
   selectedAlgorithmAsset,
-  setSelectedAlgorithmAsset,
-  isLoading,
-  isComputeButtonDisabled,
   hasPreviousOrder,
   hasDatatoken,
   dtBalance,
-  assetTimeout,
-  hasPreviousOrderSelectedComputeAsset,
-  hasDatatokenSelectedComputeAsset,
-  isAccountIdWhitelisted,
   datasetSymbol,
   algorithmSymbol,
   providerFeesSymbol,
-  dtSymbolSelectedComputeAsset,
-  dtBalanceSelectedComputeAsset,
-  selectedComputeAssetType,
-  selectedComputeAssetTimeout,
   computeEnvs,
-  stepText,
   isConsumable,
-  consumableFeedback,
-  datasetOrderPriceAndFees,
   algoOrderPriceAndFees,
-  providerFeeAmount,
-  validUntil,
-  retry,
   allResourceValues,
-  ddoListAlgorithms,
   setAllResourceValues
 }: {
   asset: AssetExtended
@@ -88,39 +65,19 @@ export default function Review({
   accessDetails: AccessDetails
   datasets: AssetSelectionAsset[]
   selectedDatasetAsset?: AssetExtended[]
-  ddoListAlgorithms?: Asset[]
   setSelectedDatasetAsset?: React.Dispatch<
     React.SetStateAction<AssetExtended[]>
   >
   selectedAlgorithmAsset?: AssetExtended
-  setSelectedAlgorithmAsset?: React.Dispatch<
-    React.SetStateAction<AssetExtended>
-  >
-  isLoading: boolean
-  isComputeButtonDisabled: boolean
   hasPreviousOrder: boolean
   hasDatatoken: boolean
   dtBalance: string
-  assetTimeout: string
-  hasPreviousOrderSelectedComputeAsset?: boolean
-  hasDatatokenSelectedComputeAsset?: boolean
-  isAccountIdWhitelisted?: boolean
   datasetSymbol?: string
   algorithmSymbol?: string
   providerFeesSymbol?: string
-  dtSymbolSelectedComputeAsset?: string
-  dtBalanceSelectedComputeAsset?: string
-  selectedComputeAssetType?: string
-  selectedComputeAssetTimeout?: string
   computeEnvs: ComputeEnvironment[]
-  stepText: string
   isConsumable: boolean
-  consumableFeedback: string
-  datasetOrderPriceAndFees?: OrderPriceAndFees
   algoOrderPriceAndFees?: OrderPriceAndFees
-  providerFeeAmount?: string
-  validUntil?: string
-  retry: boolean
   allResourceValues?: {
     [envId: string]: ResourceType
   }
@@ -134,18 +91,14 @@ export default function Review({
   algoOrderPrice?: string
   c2dPrice?: string
   isRequestingPrice?: boolean
-  isAlgorithm?: boolean
 }): ReactElement {
-  const { address: accountId, isConnected } = useAccount()
+  const { address: accountId } = useAccount()
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
-  const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { isValid, setFieldValue, values }: FormikContextType<FormComputeData> =
+  const { setFieldValue, values }: FormikContextType<FormComputeData> =
     useFormikContext()
-  const { isAssetNetwork } = useAsset()
 
-  // State for verification flow
   const [verificationQueue, setVerificationQueue] = useState<
     VerificationItem[]
   >([])
@@ -160,18 +113,13 @@ export default function Review({
   )
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
-  const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const selectedEnvId = values?.computeEnv?.id
   const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
   const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
 
-  // Determine current mode from the resource values
   const currentMode = paidResources?.mode === 'paid' ? 'paid' : 'free'
   const c2dPrice =
     currentMode === 'paid' ? paidResources?.price : freeResources?.price
-  const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
-  const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
-  const [activeCredentialAsset, setActiveCredentialAsset] = useState<any>(null)
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)
     const h = Math.floor((seconds % 86400) / 3600)
@@ -184,11 +132,10 @@ export default function Review({
     if (s) parts.push(`${s}s`)
     return parts.join(' ') || '0s'
   }
-  // Build verification queue from datasets and algorithm
+
   useEffect(() => {
     const queue: VerificationItem[] = []
 
-    // Add datasets to queue
     selectedDatasetAsset?.forEach((asset, index) => {
       const service =
         asset.credentialSubject?.services?.[asset.serviceIndex || 0]
@@ -204,7 +151,7 @@ export default function Review({
         type: 'dataset',
         asset,
         service,
-        status: isVerified ? 'verified' : 'failed',
+        status: isVerified ? ('verified' as const) : ('unverified' as const),
         index,
         price: rawPrice,
         duration: '1 day', // Default duration for datasets
@@ -224,7 +171,7 @@ export default function Review({
         type: 'algorithm',
         asset,
         service,
-        status: isVerified ? 'verified' : 'failed',
+        status: isVerified ? ('verified' as const) : ('unverified' as const),
         index: queue.length,
         price: rawPrice,
         duration: formatDuration(service.timeout || 0),
@@ -235,130 +182,157 @@ export default function Review({
     setVerificationQueue(queue)
   }, [selectedDatasetAsset, asset, service, lookupVerifierSessionId])
 
-  // Start verification for a specific item
+  useEffect(() => {
+    const checkExpiration = () => {
+      setVerificationQueue((prev) =>
+        prev.map((item) => {
+          if (
+            item.status === 'verified' &&
+            item.asset?.id &&
+            item.service?.id
+          ) {
+            const credentialKey = `credential_${item.asset.id}_${item.service.id}`
+            const storedTimestamp =
+              typeof window !== 'undefined' && window.localStorage
+                ? window.localStorage.getItem(credentialKey)
+                : null
+
+            if (storedTimestamp) {
+              const timestamp = parseInt(storedTimestamp, 10)
+              const now = Date.now()
+              const isExpired = now - timestamp > 5 * 60 * 1000 // 5 minutes
+
+              if (isExpired) {
+                return { ...item, status: 'failed' as const }
+              }
+            } else {
+              return { ...item, status: 'failed' as const }
+            }
+          }
+          return item
+        })
+      )
+    }
+
+    checkExpiration()
+    const interval = setInterval(checkExpiration, 10000)
+
+    return () => clearInterval(interval)
+  }, [])
+
   const startVerification = (index: number) => {
-    setVerificationQueue((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, status: 'checking' } : item
-      )
+    const hasExpiredCredentials = verificationQueue.some(
+      (item) => item.status === 'failed'
     )
-    setCurrentVerificationIndex(index)
-    setShowCredentialsCheck(true)
-  }
 
-  // Handle verification completion
-  const handleVerificationComplete = () => {
-    setVerificationQueue((prev) =>
-      prev.map((item, i) =>
-        i === currentVerificationIndex ? { ...item, status: 'verified' } : item
-      )
-    )
-    setShowCredentialsCheck(false)
-    setCurrentVerificationIndex(-1)
+    if (hasExpiredCredentials) {
+      const expiredIndices = verificationQueue
+        .map((item, i) => ({ item, index: i }))
+        .filter(({ item }) => item.status === 'failed')
+        .map(({ index }) => index)
 
-    // Proceed to next unverified item
-    const nextIndex = verificationQueue.findIndex(
-      (item, index) =>
-        index > currentVerificationIndex && item.status === 'failed'
-    )
-    if (nextIndex !== -1) {
-      setTimeout(() => startVerification(nextIndex), 300)
+      const firstExpiredIndex = expiredIndices[0]
+      if (firstExpiredIndex !== undefined) {
+        setVerificationQueue((prev) =>
+          prev.map((item, i) =>
+            i === firstExpiredIndex
+              ? { ...item, status: 'checking' as const }
+              : item
+          )
+        )
+        setCurrentVerificationIndex(firstExpiredIndex)
+        setShowCredentialsCheck(true)
+      }
+    } else {
+      setVerificationQueue((prev) =>
+        prev.map((item, i) =>
+          i === index ? { ...item, status: 'checking' as const } : item
+        )
+      )
+      setCurrentVerificationIndex(index)
+      setShowCredentialsCheck(true)
     }
   }
 
-  // Handle verification error
+  const handleVerificationComplete = () => {
+    const currentItem = verificationQueue[currentVerificationIndex]
+    if (currentItem) {
+      const credentialKey = `credential_${currentItem.asset.id}_${currentItem.service.id}`
+      const timestamp = Date.now().toString()
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(credentialKey, timestamp)
+        window.dispatchEvent(
+          new CustomEvent('credentialUpdated', {
+            detail: { credentialKey }
+          })
+        )
+      }
+    }
+
+    setVerificationQueue((prev) => {
+      const updatedQueue = prev.map((item, i) =>
+        i === currentVerificationIndex
+          ? { ...item, status: 'verified' as const }
+          : item
+      )
+
+      const hasExpiredCredentials = updatedQueue.some(
+        (item) =>
+          item.status === 'failed' &&
+          item.asset?.id &&
+          item.service?.id &&
+          typeof window !== 'undefined' &&
+          window.localStorage &&
+          window.localStorage.getItem(
+            `credential_${item.asset.id}_${item.service.id}`
+          ) !== null
+      )
+
+      let nextIndex = -1
+
+      if (hasExpiredCredentials) {
+        nextIndex = updatedQueue.findIndex(
+          (item, index) =>
+            index > currentVerificationIndex &&
+            item.status === 'failed' &&
+            item.asset?.id &&
+            item.service?.id &&
+            typeof window !== 'undefined' &&
+            window.localStorage &&
+            window.localStorage.getItem(
+              `credential_${item.asset.id}_${item.service.id}`
+            ) !== null
+        )
+      } else {
+        nextIndex = updatedQueue.findIndex(
+          (item, index) =>
+            index > currentVerificationIndex && item.status !== 'verified'
+        )
+      }
+
+      if (nextIndex !== -1) {
+        setTimeout(() => startVerification(nextIndex), 300)
+      }
+
+      return updatedQueue
+    })
+    setShowCredentialsCheck(false)
+    setCurrentVerificationIndex(-1)
+  }
+
   const handleVerificationError = () => {
     setVerificationQueue((prev) =>
       prev.map((item, i) =>
-        i === currentVerificationIndex ? { ...item, status: 'failed' } : item
+        i === currentVerificationIndex
+          ? { ...item, status: 'failed' as const }
+          : item
       )
     )
     setShowCredentialsCheck(false)
     setCurrentVerificationIndex(-1)
-    // Stop verification on error
   }
 
-  // Get current item being verified
   const currentVerificationItem = verificationQueue[currentVerificationIndex]
-
-  const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
-    accessDetails.price
-  )
-
-  const selectedDatasets = Array.isArray(values?.datasets)
-    ? values.datasets
-    : []
-
-  // const [credentialCheckTarget, setCredentialCheckTarget] =
-  //   useState<CredentialTarget>(null)
-
-  function DatasetCredentialsOverlay({
-    did,
-    serviceId
-  }: {
-    did: string
-    serviceId?: string
-  }) {
-    const [targetAsset, setTargetAsset] = useState<AssetExtended | null>(null)
-    const [targetService, setTargetService] = useState<Service | null>(null)
-
-    useEffect(() => {
-      let cancelled = false
-      async function load() {
-        try {
-          const assetObj = await getAsset(did, newCancelToken())
-          if (!assetObj) return
-
-          // Resolve selected serviceId from form values.dataset first (authoritative)
-          const datasetPair = (values?.dataset || []).find(
-            (pair: string) =>
-              typeof pair === 'string' && pair.startsWith(`${did}|`)
-          )
-          const selectedSvcIdFromPairs = datasetPair
-            ? datasetPair.split('|')[1]
-            : undefined
-          // Fallback to any checked service in values.datasets
-          const ds = (selectedDatasets || []).find((d: any) => d.id === did)
-          const selectedSvcId =
-            serviceId ||
-            selectedSvcIdFromPairs ||
-            ds?.services?.find((s: any) => s.checked)?.id
-          const svc =
-            assetObj?.credentialSubject?.services?.find(
-              (s: any) => s.id === selectedSvcId
-            ) || assetObj?.credentialSubject?.services?.[0]
-
-          if (!cancelled) {
-            setTargetAsset(assetObj as any)
-            setTargetService(svc as any)
-          }
-        } catch (e) {
-          // ignore
-        }
-      }
-      load()
-      return () => {
-        cancelled = true
-      }
-    }, [did, serviceId])
-
-    if (!targetAsset || !targetService) {
-      return <div>Loading...</div>
-    }
-    return (
-      <CredentialDialogProvider>
-        <AssetActionCheckCredentialsAlgo
-          asset={targetAsset}
-          service={targetService}
-          type="dataset"
-          onVerified={() => {
-            setShowCredentialsCheck(false)
-            // setCredentialCheckTarget(null)
-          }}
-        />
-      </CredentialDialogProvider>
-    )
-  }
 
   const computeItems = [
     {
@@ -458,13 +432,7 @@ export default function Review({
       const { did } = datasets[0]
       setFieldValue('dataset', did, true)
     }
-  }, [
-    datasets,
-    computeEnvs,
-    setFieldValue,
-    values.algorithm
-    // Removed values.computeEnv from dependencies to prevent infinite loop
-  ])
+  }, [datasets, computeEnvs, setFieldValue, values.algorithm])
 
   useEffect(() => {
     if (!values.dataset || !isConsumable) return
@@ -472,7 +440,6 @@ export default function Review({
     async function fetchDatasetAssetsExtended() {
       const { assets, services } = await getDatasetAssets(values.dataset)
       setSelectedDatasetAsset(assets)
-      setAllDatasetServices(services)
     }
 
     fetchDatasetAssetsExtended()
@@ -551,10 +518,6 @@ export default function Review({
 
       datasetOrderPriceSum = datasetOrderPriceSum.add(price)
     })
-
-    setDatasetOrderPrice(
-      datasetOrderPriceSum.toDecimalPlaces(MAX_DECIMALS).toString()
-    )
 
     const priceDataset = datasetPrice
     const feeDataset = datasetFee
@@ -686,7 +649,6 @@ export default function Review({
         break
       }
     }
-    setIsBalanceSufficient(sufficient)
   }, [
     balance,
     dtBalance,
@@ -726,9 +688,12 @@ export default function Review({
                   item.type === 'dataset' ? 'Dataset' : 'Algorithm'
                 } credentials`}
                 onAction={() => startVerification(i)}
-                actionDisabled={item.status === 'verified'}
+                actionDisabled={false}
                 isService={item.type === 'algorithm'}
                 credentialStatus={item.status}
+                assetId={item.asset?.id}
+                serviceId={item.service?.id}
+                onCredentialRefresh={() => startVerification(i)}
               />
             ))
           )}
@@ -821,7 +786,7 @@ export default function Review({
                   setVerificationQueue((prev) =>
                     prev.map((item, i) =>
                       i === currentVerificationIndex
-                        ? { ...item, status: 'failed' }
+                        ? { ...item, status: 'failed' as const }
                         : item
                     )
                   )
@@ -831,7 +796,7 @@ export default function Review({
                 ✕ Close
               </button>
             </div>
-            <CredentialDialogProvider>
+            <CredentialDialogProvider autoStart={true}>
               {currentVerificationItem.type === 'dataset' ? (
                 <AssetActionCheckCredentialsAlgo
                   asset={currentVerificationItem.asset}

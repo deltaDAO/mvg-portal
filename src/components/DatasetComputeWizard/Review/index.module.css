@@ -282,6 +282,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
 .verifiedText {
@@ -289,4 +290,15 @@
   font-size: 12px;
   line-height: 14px;
   color: var(--loader-message-color);
+}
+
+.warningText {
+  color: #f59e0b !important;
+}
+
+.refreshButton {
+  margin-left: 0.5rem;
+  font-size: 12px;
+  padding: 2px 8px;
+  height: 24px;
 }

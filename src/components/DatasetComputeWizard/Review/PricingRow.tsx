@@ -4,6 +4,7 @@ import PriceDisplay from './PriceDisplay'
 import Loader from '@shared/atoms/Loader'
 import CircleCheck from '@images/circle_check.svg'
 import CircleX from '@images/circle_x.svg'
+import { useCredentialExpiration } from '@hooks/useCredentialExpiration'
 import styles from './index.module.css'
 
 interface PricingRowProps {
@@ -16,7 +17,10 @@ interface PricingRowProps {
   actionLabel?: string
   onAction?: () => void
   actionDisabled?: boolean
-  credentialStatus?: 'verified' | 'checking' | 'failed'
+  credentialStatus?: 'verified' | 'checking' | 'failed' | 'unverified'
+  assetId?: string
+  serviceId?: string
+  onCredentialRefresh?: () => void
 }
 
 export default function PricingRow({
@@ -29,8 +33,21 @@ export default function PricingRow({
   actionLabel,
   onAction,
   actionDisabled,
-  credentialStatus
+  credentialStatus,
+  assetId,
+  serviceId,
+  onCredentialRefresh
 }: PricingRowProps): ReactElement {
+  const {
+    credentialStatus: expirationStatus,
+    timeRemainingText,
+    showExpirationWarning
+  } = useCredentialExpiration(
+    assetId || '',
+    serviceId || '',
+    onCredentialRefresh,
+    credentialStatus === 'verified'
+  )
   const renderCredentialStatus = () => {
     if (!credentialStatus) return null
 
@@ -41,16 +58,25 @@ export default function PricingRow({
         return (
           <div className={styles.credentialStatusContainer}>
             <CircleCheck className={styles.credentialIcon} />
-            <span className={styles.verifiedText}>
-              Credentials valid for 5 minutes
+            <span
+              className={`${styles.verifiedText} ${
+                showExpirationWarning ? styles.warningText : ''
+              }`}
+            >
+              {timeRemainingText}
             </span>
+            {expirationStatus.needsRefresh && (
+              <Loader message="Checking..." noMargin={true} />
+            )}
           </div>
         )
+      case 'unverified':
+        return null
       case 'failed':
         return (
           <div className={styles.credentialStatusContainer}>
             <CircleX className={styles.credentialIcon} />
-            <span className={styles.verifiedText}>Check credentials again</span>
+            <span className={styles.verifiedText}>Credentials expired</span>
           </div>
         )
       default:
@@ -80,7 +106,10 @@ export default function PricingRow({
               size="small"
               style="slim"
               onClick={onAction}
-              disabled={actionDisabled}
+              disabled={
+                actionDisabled ||
+                (credentialStatus === 'verified' && expirationStatus.isValid)
+              }
             >
               {actionLabel}
             </Button>

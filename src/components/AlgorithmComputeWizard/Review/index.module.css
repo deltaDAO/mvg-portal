@@ -309,4 +309,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.warningText {
+  color: #f59e0b !important;
+}
+
+.refreshButton {
+  margin-left: 0.5rem;
+  font-size: 12px;
+  padding: 2px 8px;
+  height: 24px;
 }

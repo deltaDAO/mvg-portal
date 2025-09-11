@@ -23,8 +23,10 @@ import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { useAccount } from 'wagmi'
 import Button from '@shared/atoms/Button'
+import Loader from '@shared/atoms/Loader'
 import { initializeProvider } from '@utils/order'
 import VerifiedPatch from '@images/circle_check.svg'
+import { useCredentialDialog } from '../Compute/CredentialDialogProvider'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -77,9 +79,11 @@ export function AssetActionCheckCredentials({
   onError?: () => void
 }) {
   const { address: accountId } = useAccount()
+  const { autoStart } = useCredentialDialog()
 
   const [checkCredentialState, setCheckCredentialState] =
     useState<CheckCredentialState>(CheckCredentialState.Stop)
+
   const [requiredCredentials, setRequiredCredentials] = useState<string[]>([])
   const [exchangeStateData, setExchangeStateData] = useState<ExchangeStateData>(
     newExchangeStateData()
@@ -87,6 +91,8 @@ export function AssetActionCheckCredentials({
 
   const [showVpDialog, setShowVpDialog] = useState<boolean>(false)
   const [showDidDialog, setShowDidDialog] = useState<boolean>(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isRetrying, setIsRetrying] = useState<boolean>(false)
 
   const {
     cacheVerifierSessionId,
@@ -97,6 +103,12 @@ export function AssetActionCheckCredentials({
     sessionToken,
     clearVerifierSessionCache
   } = useSsiWallet()
+
+  useEffect(() => {
+    if (autoStart && selectedWallet?.id) {
+      setCheckCredentialState(CheckCredentialState.StartCredentialExchange)
+    }
+  }, [autoStart, selectedWallet?.id])
 
   function handleResetWalletCache() {
     clearVerifierSessionCache()
@@ -131,6 +143,16 @@ export function AssetActionCheckCredentials({
                 (presentationResult.openid4vc as any).redirectUri
               )
               cacheVerifierSessionId(asset.id, service.id, id, true)
+              if (typeof window !== 'undefined' && window.localStorage) {
+                const credentialKey = `credential_${asset.id}_${service.id}`
+                const timestamp = Date.now().toString()
+                window.localStorage.setItem(credentialKey, timestamp)
+                window.dispatchEvent(
+                  new CustomEvent('credentialUpdated', {
+                    detail: { credentialKey }
+                  })
+                )
+              }
               onVerified?.()
               break
             }
@@ -138,7 +160,6 @@ export function AssetActionCheckCredentials({
             // Check if we have a valid presentation result
             if (!presentationResult || !presentationResult.openid4vc) {
               console.error('No presentation result or openid4vc URL received')
-              console.log('Full presentation result:', presentationResult)
               toast.error('No credential requirements found for this asset')
               setCheckCredentialState(CheckCredentialState.Stop)
               break
@@ -160,7 +181,6 @@ export function AssetActionCheckCredentials({
                 service,
                 accountId
               )
-              console.log('Initialize data', initializeData)
             }
             const presentationDefinition = await getPd(state)
             const resultRequiredCredentials =
@@ -300,7 +320,8 @@ export function AssetActionCheckCredentials({
           ? `SSI credential validation was not successful: ${error.message}`
           : 'An error occurred during SSI credential validation. Please check the console'
 
-        toast.error(errorMessage)
+        setError(errorMessage)
+        setCheckCredentialState(CheckCredentialState.Stop)
         handleResetWalletCache()
         onError?.()
       }
@@ -313,13 +334,14 @@ export function AssetActionCheckCredentials({
       const errorMessage =
         error?.data?.message || error?.message || 'An error occurred'
 
+      setError(errorMessage)
+
       if (error?.data?.message) {
         LoggerInstance.error(error?.data?.message)
       } else if (error?.message) {
         LoggerInstance.error(error?.message)
       }
 
-      toast.error(errorMessage)
       onError?.()
     })
   }, [
@@ -341,6 +363,37 @@ export function AssetActionCheckCredentials({
     exchangeStateData.selectedDid = selectedDid.did
     setExchangeStateData(exchangeStateData)
     setCheckCredentialState(CheckCredentialState.ResolveCredentials)
+  }
+
+  function getLoaderMessage() {
+    const assetName = asset.credentialSubject?.metadata?.name || 'asset'
+    const serviceName = service.name || 'service'
+
+    if (error) {
+      return error
+    }
+
+    if (isRetrying) {
+      return `Retrying credential check for ${assetName}...`
+    }
+
+    switch (checkCredentialState) {
+      case CheckCredentialState.StartCredentialExchange:
+        return `Connecting to policy server for ${assetName}...`
+      case CheckCredentialState.ReadDids:
+        return `Selecting credentials for ${serviceName}...`
+      case CheckCredentialState.ResolveCredentials:
+        return `Verifying access to ${assetName}...`
+      default:
+        return `Checking credentials for ${assetName}...`
+    }
+  }
+
+  function handleRetry() {
+    setError(null)
+    setIsRetrying(true)
+    setCheckCredentialState(CheckCredentialState.StartCredentialExchange)
+    setTimeout(() => setIsRetrying(false), 1000)
   }
 
   return (
@@ -366,18 +419,34 @@ export function AssetActionCheckCredentials({
       />
       {!showVpDialog && !showDidDialog && (
         <div className={styles.buttonWrapper}>
-          <Button
-            type="button"
-            onClick={() => {
-              setCheckCredentialState(
-                CheckCredentialState.StartCredentialExchange
-              )
-            }}
-            disabled={!selectedWallet?.id}
-            style="publish"
-          >
-            Check Credentials
-          </Button>
+          {autoStart ? (
+            <div className={styles.loaderContainer}>
+              <Loader message={getLoaderMessage()} variant="primary" />
+              {error && (
+                <Button
+                  type="button"
+                  onClick={handleRetry}
+                  style="publish"
+                  className={styles.retryButton}
+                >
+                  Retry
+                </Button>
+              )}
+            </div>
+          ) : (
+            <Button
+              type="button"
+              onClick={() => {
+                setCheckCredentialState(
+                  CheckCredentialState.StartCredentialExchange
+                )
+              }}
+              disabled={!selectedWallet?.id}
+              style="publish"
+            >
+              Check Credentials
+            </Button>
+          )}
         </div>
       )}
 
