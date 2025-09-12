@@ -162,7 +162,6 @@ export default function Steps({
           <Review
             asset={asset}
             service={service}
-            isAlgorithm={isAlgorithm}
             totalPrices={[]}
             datasetOrderPrice="0"
             algoOrderPrice="0"
@@ -171,36 +170,19 @@ export default function Steps({
             datasets={datasets}
             selectedDatasetAsset={selectedDatasetAsset}
             setSelectedDatasetAsset={setSelectedDatasetAsset}
-            isLoading={isLoading}
-            isComputeButtonDisabled={isComputeButtonDisabled}
             hasPreviousOrder={hasPreviousOrder}
             hasDatatoken={hasDatatoken}
             dtBalance={dtBalance}
-            assetTimeout={assetTimeout}
-            hasPreviousOrderSelectedComputeAsset={
-              hasPreviousOrderSelectedComputeAsset
-            }
-            hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-            isAccountIdWhitelisted={isAccountIdWhitelisted}
             datasetSymbol={
               accessDetails.baseToken?.symbol ||
               (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
             }
             algorithmSymbol={algorithmSymbol}
             providerFeesSymbol={providerFeesSymbol}
-            dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
-            dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
-            selectedComputeAssetType="algorithm"
-            selectedComputeAssetTimeout={selectedComputeAssetTimeout}
             allResourceValues={allResourceValues}
             setAllResourceValues={setAllResourceValues}
-            // lazy comment when removing pricingStepText
-            stepText={stepText}
             isConsumable={isConsumable}
-            consumableFeedback={consumableFeedback}
-            datasetOrderPriceAndFees={datasetOrderPriceAndFees}
             algoOrderPriceAndFees={algoOrderPriceAndFees}
-            retry={retry}
             computeEnvs={computeEnvs}
           />
           {/* <ButtonBuy
