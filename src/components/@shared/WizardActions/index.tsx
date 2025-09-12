@@ -4,10 +4,13 @@ import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
 import Loader from '@shared/atoms/Loader'
 import { FormComputeData } from '@components/ComputeWizard/_types'
+import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 
 interface WizardActionsProps {
-  totalSteps: number
-  submitButtonText: string
+  totalSteps?: number
+  disabled?: boolean
+  action?: 'compute'
+  submitButtonText?: string
   continueButtonText?: string
   showSuccessConfetti?: boolean
   scrollToRef?: RefObject<any>
@@ -15,6 +18,33 @@ interface WizardActionsProps {
   isContinueDisabled?: boolean
   rightAlignFirstStep?: boolean
   isSubmitDisabled?: boolean
+  hasPreviousOrder?: boolean
+  hasDatatoken?: boolean
+  btSymbol?: string
+  dtSymbol?: string
+  dtBalance?: string
+  assetType?: string
+  assetTimeout?: string
+  isConsumable?: boolean
+  consumableFeedback?: string
+  hasPreviousOrderSelectedComputeAsset?: boolean
+  hasDatatokenSelectedComputeAsset?: boolean
+  dtSymbolSelectedComputeAsset?: string
+  dtBalanceSelectedComputeAsset?: string
+  selectedComputeAssetType?: string
+  isBalanceSufficient?: boolean
+  isLoading?: boolean
+  onClick?: (e: FormEvent<HTMLButtonElement>) => void
+  stepText?: string
+  type?: 'submit' | 'button'
+  priceType?: string
+  algorithmPriceType?: string
+  isAlgorithmConsumable?: boolean
+  isSupportedOceanNetwork?: boolean
+  isAccountConnected?: boolean
+  hasProviderFee?: boolean
+  retry?: boolean
+  computeWizard?: boolean
 }
 
 export default function WizardActions({
@@ -26,9 +56,39 @@ export default function WizardActions({
   formikContext,
   isContinueDisabled = false,
   rightAlignFirstStep = true,
-  isSubmitDisabled = false
+  isSubmitDisabled = false,
+  action,
+  disabled,
+  hasPreviousOrder,
+  hasDatatoken,
+  btSymbol,
+  dtSymbol,
+  dtBalance,
+  assetType,
+  assetTimeout,
+  isConsumable,
+  consumableFeedback,
+  isBalanceSufficient,
+  hasPreviousOrderSelectedComputeAsset,
+  hasDatatokenSelectedComputeAsset,
+  dtSymbolSelectedComputeAsset,
+  dtBalanceSelectedComputeAsset,
+  selectedComputeAssetType,
+  onClick,
+  stepText,
+  isLoading,
+  type,
+  priceType,
+  algorithmPriceType,
+  isAlgorithmConsumable,
+  hasProviderFee,
+  retry,
+  isSupportedOceanNetwork,
+  isAccountConnected,
+  computeWizard
 }: WizardActionsProps): ReactElement {
   const {
+    isValid,
     values,
     errors,
     isSubmitting,
@@ -145,6 +205,41 @@ export default function WizardActions({
   const actionsClassName =
     isFirstStep && rightAlignFirstStep ? styles.actionsRight : styles.actions
 
+  const PurchaseButton = () => (
+    <ButtonBuy
+      action={action}
+      disabled={disabled || !isValid}
+      hasPreviousOrder={hasPreviousOrder}
+      hasDatatoken={hasDatatoken}
+      btSymbol={btSymbol}
+      dtSymbol={dtSymbol}
+      dtBalance={dtBalance}
+      assetTimeout={assetTimeout}
+      assetType={assetType}
+      hasPreviousOrderSelectedComputeAsset={
+        hasPreviousOrderSelectedComputeAsset
+      }
+      hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
+      dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+      dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+      selectedComputeAssetType={selectedComputeAssetType}
+      stepText={stepText}
+      isLoading={isLoading}
+      type="submit"
+      priceType={priceType}
+      algorithmPriceType={algorithmPriceType}
+      isBalanceSufficient={isBalanceSufficient}
+      isConsumable={isConsumable}
+      consumableFeedback={consumableFeedback}
+      isAlgorithmConsumable={isAlgorithmConsumable}
+      isSupportedOceanNetwork={isSupportedOceanNetwork}
+      hasProviderFee={hasProviderFee}
+      retry={retry}
+      isAccountConnected={isAccountConnected}
+      computeWizard={computeWizard}
+    />
+  )
+
   return (
     <footer className={actionsClassName}>
       {currentStep > 1 && (
@@ -152,19 +247,23 @@ export default function WizardActions({
           Back
         </Button>
       )}
-      {!isLastStep ? (
-        <Button
-          style="publish"
-          onClick={handleNext}
-          disabled={isContinueDisabled}
-        >
-          {continueButtonText}
-        </Button>
-      ) : (
-        <Button type="submit" style="publish" disabled={isSubmitDisabled}>
-          {isSubmitting ? <Loader variant="primary" /> : submitButtonText}
-        </Button>
-      )}
+      {
+        !isLastStep ? (
+          <Button
+            style="publish"
+            onClick={handleNext}
+            disabled={isContinueDisabled}
+          >
+            {continueButtonText}
+          </Button>
+        ) : (
+          // <Button type="submit" style="publish" disabled={isSubmitDisabled}>
+          //   {isSubmitting ? <Loader variant="primary" /> : 'find'}
+          // </Button>
+          <PurchaseButton />
+        )
+        // null
+      }
     </footer>
   )
 }

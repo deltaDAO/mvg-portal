@@ -173,6 +173,7 @@ export default function Steps({
             hasPreviousOrder={hasPreviousOrder}
             hasDatatoken={hasDatatoken}
             dtBalance={dtBalance}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
             datasetSymbol={
               accessDetails.baseToken?.symbol ||
               (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')

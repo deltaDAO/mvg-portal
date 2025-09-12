@@ -167,6 +167,40 @@ export default function Review({
   const c2dPrice =
     currentMode === 'paid' ? paidResources?.price : freeResources?.price
 
+  // error message
+  const errorMessages: string[] = []
+
+  // if (!isBalanceSufficient) {
+  //   errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
+  // }
+  // if (!isValid) {
+  //   errorMessages.push('Form is not complete!')
+  // }
+  if (!isAssetNetwork) {
+    errorMessages.push('This asset is not available on the selected network.')
+  }
+  if (
+    selectedAlgorithmAsset?.accessDetails &&
+    selectedAlgorithmAsset.accessDetails[0] &&
+    !selectedAlgorithmAsset.accessDetails[0].isPurchasable
+  ) {
+    errorMessages.push('The selected algorithm asset is not purchasable.')
+  }
+  if (!isAccountIdWhitelisted) {
+    errorMessages.push(
+      'Your account is not whitelisted to purchase this asset.'
+    )
+  }
+
+  // Debug: Check what's actually in allResourceValues
+  console.log('Review Debug:', {
+    selectedEnvId,
+    allResourceValues,
+    freeResources,
+    paidResources,
+    currentMode,
+    c2dPrice
+  })
   const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
   const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
   const [activeCredentialAsset, setActiveCredentialAsset] =
@@ -728,6 +762,50 @@ export default function Review({
     c2dPrice
   ])
 
+  const PurchaseButton = () => (
+    <ButtonBuy
+      action="compute"
+      disabled={
+        isComputeButtonDisabled ||
+        !isValid ||
+        !isBalanceSufficient ||
+        !isAssetNetwork ||
+        !selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable ||
+        !isAccountIdWhitelisted
+      }
+      hasPreviousOrder={hasPreviousOrder}
+      hasDatatoken={hasDatatoken}
+      btSymbol={accessDetails.baseToken?.symbol}
+      dtSymbol={accessDetails.datatoken?.symbol}
+      dtBalance={dtBalance}
+      assetTimeout={assetTimeout}
+      assetType={asset.credentialSubject?.metadata.type}
+      hasPreviousOrderSelectedComputeAsset={
+        hasPreviousOrderSelectedComputeAsset
+      }
+      hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
+      dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+      dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+      selectedComputeAssetType={selectedComputeAssetType}
+      stepText={stepText}
+      isLoading={isLoading}
+      type="submit"
+      priceType={accessDetails.type}
+      algorithmPriceType={selectedAlgorithmAsset?.accessDetails?.[0]?.type}
+      isBalanceSufficient={isBalanceSufficient}
+      isConsumable={isConsumable}
+      consumableFeedback={consumableFeedback}
+      isAlgorithmConsumable={
+        selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable
+      }
+      isSupportedOceanNetwork={isSupportedOceanNetwork}
+      hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
+      retry={retry}
+      isAccountConnected={isConnected}
+      computeWizard={true}
+    />
+  )
+
   return (
     <div className={styles.container}>
       <div className={styles.titleContainer}>
@@ -803,7 +881,15 @@ export default function Review({
             )}
           </span>
         </div>
-
+        {errorMessages.length > 0 && (
+          <div className={styles.errorMessage}>
+            <ul>
+              {errorMessages.map((msg, idx) => (
+                <li key={idx}>{msg}</li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className={styles.termsSection}>
           <FormErrorGroup
             errorFields={['termsAndConditions', 'acceptPublishingLicense']}
@@ -832,6 +918,8 @@ export default function Review({
           </FormErrorGroup>
         </div>
       </div>
+      {/* <PurchaseButton /> */}
+
       {/* Unified credentials modal */}
       {showCredentialsCheck && currentVerificationItem && (
         <div className={styles.credentialsOverlay}>

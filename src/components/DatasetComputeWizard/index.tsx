@@ -68,6 +68,8 @@ import { Service } from 'src/@types/ddo/Service'
 import Loader from '@shared/atoms/Loader'
 import { FormComputeData } from './_types'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
+import useNetworkMetadata from '@hooks/useNetworkMetadata'
+import { useAsset } from '@context/Asset'
 
 export default function ComputeWizard({
   accountId,
@@ -96,9 +98,11 @@ export default function ComputeWizard({
   onComputeJobCreated?: () => void
 }): ReactElement {
   const { debug } = useUserPreferences()
-  // const { asset } = useAsset()
-  // const { address: accountId } = useAccount()
+  const { isAssetNetwork } = useAsset()
+  const { isConnected } = useAccount()
   const newCancelToken = useCancelToken()
+  const { isSupportedOceanNetwork } = useNetworkMetadata()
+
   const [isLoading, setIsLoading] = useState(true)
   const isAlgorithm = asset?.credentialSubject.metadata.type === 'algorithm'
   const steps = isAlgorithm ? algorithmSteps : datasetSteps
@@ -121,6 +125,7 @@ export default function ComputeWizard({
     useState<AssetExtended>()
   const [hasAlgoAssetDatatoken, setHasAlgoAssetDatatoken] = useState<boolean>()
   const [algorithmDTBalance, setAlgorithmDTBalance] = useState<string>()
+  const [validAlgorithmOrderTx, setValidAlgorithmOrderTx] = useState('')
 
   const [validOrderTx, setValidOrderTx] = useState('')
 
@@ -1098,6 +1103,42 @@ export default function ComputeWizard({
                     !formikContext.values.algorithm
                   }
                   isSubmitDisabled={isComputeButtonDisabled}
+                  action="compute"
+                  disabled={
+                    isComputeButtonDisabled ||
+                    !isAssetNetwork ||
+                    !isAccountIdWhitelisted
+                  }
+                  hasPreviousOrder={!!validOrderTx}
+                  hasDatatoken={hasDatatoken}
+                  btSymbol={accessDetails.baseToken?.symbol}
+                  dtSymbol={accessDetails.datatoken?.symbol}
+                  dtBalance={dtBalance}
+                  assetTimeout={secondsToString(service.timeout)}
+                  assetType={asset.credentialSubject?.metadata.type}
+                  hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
+                  hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+                  dtSymbolSelectedComputeAsset={
+                    selectedAlgorithmAsset?.accessDetails?.[svcIndex]?.datatoken
+                      .symbol
+                  }
+                  dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                  selectedComputeAssetType="algorithm"
+                  stepText={computeStatusText}
+                  isLoading={isOrdering}
+                  type="submit"
+                  priceType={accessDetails.type}
+                  algorithmPriceType={asset?.accessDetails?.[0]?.type}
+                  // isBalanceSufficient={isBalanceSufficient}
+                  isConsumable={isConsumablePrice}
+                  consumableFeedback={consumableFeedback}
+                  isAlgorithmConsumable={
+                    asset?.accessDetails?.[0]?.isPurchasable
+                  }
+                  isSupportedOceanNetwork={isSupportedOceanNetwork}
+                  retry={retry}
+                  isAccountConnected={isConnected}
+                  computeWizard={true}
                 />
               )}
             </SectionContainer>

@@ -26,6 +26,8 @@ import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
+import useNetworkMetadata from '@hooks/useNetworkMetadata'
+import { useAsset } from '@context/Asset'
 
 interface VerificationItem {
   id: string
@@ -52,6 +54,7 @@ export default function Review({
   hasDatatoken,
   dtBalance,
   datasetSymbol,
+  isAccountIdWhitelisted,
   algorithmSymbol,
   providerFeesSymbol,
   computeEnvs,
@@ -77,6 +80,7 @@ export default function Review({
   providerFeesSymbol?: string
   computeEnvs: ComputeEnvironment[]
   isConsumable: boolean
+  isAccountIdWhitelisted: boolean
   algoOrderPriceAndFees?: OrderPriceAndFees
   allResourceValues?: {
     [envId: string]: ResourceType
@@ -92,10 +96,12 @@ export default function Review({
   c2dPrice?: string
   isRequestingPrice?: boolean
 }): ReactElement {
-  const { address: accountId } = useAccount()
+  const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
+  const { isAssetNetwork } = useAsset()
+  const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { setFieldValue, values }: FormikContextType<FormComputeData> =
     useFormikContext()
 
@@ -132,7 +138,30 @@ export default function Review({
     if (s) parts.push(`${s}s`)
     return parts.join(' ') || '0s'
   }
+  // error message
+  const errorMessages: string[] = []
 
+  // if (!isBalanceSufficient) {
+  //   errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
+  // }
+  // if (!isValid) {
+  //   errorMessages.push('Form is not complete!')
+  // }
+  if (!isAssetNetwork) {
+    errorMessages.push('This asset is not available on the selected network.')
+  }
+  if (
+    selectedAlgorithmAsset?.accessDetails &&
+    selectedAlgorithmAsset.accessDetails[0] &&
+    !selectedAlgorithmAsset.accessDetails[0].isPurchasable
+  ) {
+    errorMessages.push('The selected algorithm asset is not purchasable.')
+  }
+  if (!isAccountIdWhitelisted) {
+    errorMessages.push(
+      'Your account is not whitelisted to purchase this asset.'
+    )
+  }
   useEffect(() => {
     const queue: VerificationItem[] = []
 
@@ -737,6 +766,15 @@ export default function Review({
             )}
           </span>
         </div>
+        {errorMessages.length > 0 && (
+          <div className={styles.errorMessage}>
+            <ul>
+              {errorMessages.map((msg, idx) => (
+                <li key={idx}>{msg}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className={styles.termsSection}>
           <FormErrorGroup

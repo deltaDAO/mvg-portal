@@ -302,3 +302,17 @@
   padding: 2px 8px;
   height: 24px;
 }
+.errorMessage {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #e74c3c;
+  background: #fdecea;
+  color: #c0392b;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.errorMessage ul {
+  margin: 0;
+  padding-left: 1.2rem;
+}
