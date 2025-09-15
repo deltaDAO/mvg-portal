@@ -20,7 +20,10 @@ export default function ComputeEnvSelection({
   selected?: string
   disabled?: boolean
 }): JSX.Element {
-  const { approvedBaseTokens } = useMarketMetadata()
+  const {
+    approvedBaseTokens,
+    appConfig: { defaultTokenSymbol }
+  } = useMarketMetadata()
   const styleClassesWrapper = `${styles.selection} ${
     disabled ? assetSelectionStyles.disabled : ''
   }`
@@ -74,7 +77,7 @@ export default function ComputeEnvSelection({
                       (token) =>
                         token.address.toLowerCase() ===
                         env.feeToken.toLowerCase()
-                    )?.symbol || 'EUROe'
+                    )?.symbol || defaultTokenSymbol
                   } / minute`}
                 />
               </label>

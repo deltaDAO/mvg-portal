@@ -64,6 +64,7 @@ import { parseConsumerParameterValues } from '../ConsumerParameters'
 import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
 import { Signer } from 'ethers'
 import { useAccount } from 'wagmi'
+import { useMarketMetadata } from '@context/MarketMetadata'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -88,6 +89,10 @@ export default function Compute({
 }): ReactElement {
   const { address } = useAccount()
   const { chainIds } = useUserPreferences()
+
+  const {
+    appConfig: { defaultTokenSymbol }
+  } = useMarketMetadata()
 
   const newAbortController = useAbortController()
   const newCancelToken = useCancelToken()
@@ -116,7 +121,8 @@ export default function Compute({
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
   const [providerFeeAmount, setProviderFeeAmount] = useState<string>('0')
-  const [providerFeesSymbol, setProviderFeesSymbol] = useState<string>('EUROe')
+  const [providerFeesSymbol, setProviderFeesSymbol] =
+    useState<string>(defaultTokenSymbol)
   const [computeValidUntil, setComputeValidUntil] = useState<string>('0')
   const [datasetOrderPriceAndFees, setDatasetOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
@@ -596,10 +602,12 @@ export default function Compute({
             hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
             hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
             isAccountIdWhitelisted={isAccountIdWhitelisted}
-            datasetSymbol={asset?.accessDetails?.baseToken?.symbol || 'EUROe'}
+            datasetSymbol={
+              asset?.accessDetails?.baseToken?.symbol || defaultTokenSymbol
+            }
             algorithmSymbol={
               selectedAlgorithmAsset?.accessDetails?.baseToken?.symbol ||
-              'EUROe'
+              defaultTokenSymbol
             }
             providerFeesSymbol={providerFeesSymbol}
             dtSymbolSelectedComputeAsset={
