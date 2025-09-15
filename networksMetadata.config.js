@@ -10,8 +10,8 @@ const networksMetadata = [
     rpc: ['https://rpc.dev.pontus-x.eu'],
     faucets: [],
     nativeCurrency: {
-      name: 'EUROe',
-      symbol: 'EUROe',
+      name: 'EURAU',
+      symbol: 'EURAU',
       decimals: 18
     },
     infoURL: 'https://docs.pontus-x.eu',
@@ -32,8 +32,8 @@ const networksMetadata = [
     rpc: ['https://rpc.test.pontus-x.eu'],
     faucets: [],
     nativeCurrency: {
-      name: 'EUROe',
-      symbol: 'EUROe',
+      name: 'EURAU',
+      symbol: 'EURAU',
       decimals: 18
     },
     infoURL: 'https://docs.pontus-x.eu',

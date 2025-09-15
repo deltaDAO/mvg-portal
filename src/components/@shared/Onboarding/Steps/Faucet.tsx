@@ -92,7 +92,7 @@ export default function Faucet(): ReactElement {
 
   const actions = [
     {
-      buttonLabel: `Request Test EUROe Tokens`,
+      buttonLabel: `Request Test EURAU Tokens`,
       buttonAction: async () => {
         await prepareMessage()
       },

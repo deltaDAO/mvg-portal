@@ -27,21 +27,6 @@ export function Steps({
     setFieldValue('user.accountId', accountId)
   }, [chain?.id, accountId, setFieldValue])
 
-  useEffect(() => {
-    if (!approvedBaseTokens?.length) return
-
-    const defaultBaseToken =
-      approvedBaseTokens?.find((token) =>
-        token.name.toLowerCase().includes('euro')
-      ) || approvedBaseTokens?.[0]
-    const isBaseTokenSet = !!approvedBaseTokens?.find(
-      (token) => token?.address === values?.pricing?.baseToken?.address
-    )
-    if (isBaseTokenSet) return
-
-    setFieldValue('pricing.baseToken', defaultBaseToken)
-  }, [approvedBaseTokens, values?.pricing?.baseToken?.address])
-
   // auto-sync publish feedback into form data values
   useEffect(() => {
     setFieldValue('feedback', feedback)
