@@ -74,7 +74,7 @@ export default function ComputeEnvSelection({
                       (token) =>
                         token.address.toLowerCase() ===
                         env.feeToken.toLowerCase()
-                    )?.symbol || 'EUROe'
+                    )?.symbol || 'EURAU'
                   } / minute`}
                 />
               </label>

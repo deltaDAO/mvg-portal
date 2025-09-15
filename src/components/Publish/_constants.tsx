@@ -114,7 +114,7 @@ export const initialValues: FormPublishData = {
     deny: []
   },
   pricing: {
-    baseToken: { address: '', name: '', symbol: 'EUROe', decimals: 6 },
+    baseToken: { address: '', name: '', symbol: 'EURAU', decimals: 6 },
     price: 0,
     type: allowFixedPricing === 'true' ? 'fixed' : 'free',
     freeAgreement: false

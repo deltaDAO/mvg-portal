@@ -1,6 +1,7 @@
 import { ReactElement } from 'react'
 import AddToken from '@components/@shared/AddToken'
 import EUROeLogo from '@images/EUROe_Symbol_Black.svg'
+import EURAULogo from '@images/EURAU_Symbol_Black.svg'
 import OceanLogo from '@images/logo.svg'
 import { useMarketMetadata } from '@context/MarketMetadata'
 
@@ -8,6 +9,10 @@ export const tokenLogos = {
   EUROe: {
     image: <EUROeLogo />,
     url: 'https://dev.euroe.com/img/EUROe_Symbol_Black.svg'
+  },
+  EURAU: {
+    image: <EURAULogo />,
+    url: 'https://allunity.com/wp-content/uploads/2025/07/EURAU-Floating-Coin-Revised.png'
   },
   OCEAN: {
     image: <OceanLogo />,
