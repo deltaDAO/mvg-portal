@@ -11,6 +11,7 @@ import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
+import { isAddress } from 'ethers/lib/utils.js'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
@@ -81,12 +82,43 @@ export default function EditService({
   // edit 1 service
   async function handleSubmit(values: ServiceEditForm, resetForm: () => void) {
     try {
-      // update fixed price if changed
+      const processAddress = (
+        inputValue: string,
+        fieldName: 'allow' | 'deny'
+      ) => {
+        const trimmedValue = inputValue?.trim()
+        if (
+          !trimmedValue ||
+          trimmedValue.length < 40 ||
+          !trimmedValue.startsWith('0x')
+        ) {
+          return
+        }
+
+        try {
+          if (isAddress(trimmedValue)) {
+            const lowerCaseAddress = trimmedValue.toLowerCase()
+            const currentList = values.credentials[fieldName] || []
+
+            if (!currentList.includes(lowerCaseAddress)) {
+              const newList = [...currentList, lowerCaseAddress]
+              values.credentials[fieldName] = newList
+            }
+          }
+        } catch (error) {}
+      }
+
+      if (values.credentials.allowInputValue) {
+        processAddress(values.credentials.allowInputValue, 'allow')
+      }
+      if (values.credentials.denyInputValue) {
+        processAddress(values.credentials.denyInputValue, 'deny')
+      }
+
       accessDetails.type === 'fixed' &&
         values.price !== parseFloat(accessDetails.price) &&
         (await updateFixedPrice(values.price))
 
-      // update payment collector if changed
       if (values.paymentCollector !== accessDetails.paymentCollector) {
         const datatoken = new Datatoken(signer)
         await datatoken.setPaymentCollector(
@@ -128,7 +160,7 @@ export default function EditService({
           values.state === undefined
             ? State.Active
             : assetStateToNumber(values.state),
-        files: updatedFiles, // TODO: check if this works,
+        files: updatedFiles,
         credentials: updatedCredentials,
         ...(values.access === 'compute' &&
           asset.credentialSubject?.metadata?.type === 'dataset' && {
@@ -146,7 +178,6 @@ export default function EditService({
         )
       }
 
-      // update asset with new service
       const serviceIndex = asset.credentialSubject?.services.findIndex(
         (s) => s.id === service.id
       )

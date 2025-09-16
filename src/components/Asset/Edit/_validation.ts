@@ -112,7 +112,8 @@ const validationCredentials = {
   vcPolicies: Yup.array().of(Yup.string().required('Required')),
   vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
-  deny: Yup.array().of(Yup.string()).nullable()
+  deny: Yup.array().of(Yup.string()).nullable(),
+  allowInputValue: Yup.string().nullable()
 }
 
 export const metadataValidationSchema = Yup.object().shape({
@@ -124,9 +125,8 @@ export const metadataValidationSchema = Yup.object().shape({
     Yup.object().shape({
       url: testLinks(true),
       valid: Yup.boolean().test((value, context) => {
-        // allow user to submit if the value is null
         const { valid, url } = context.parent
-        // allow user to continue if the url is empty
+
         if (!url) return true
         return valid
       })
@@ -143,6 +143,7 @@ export const metadataValidationSchema = Yup.object().shape({
       .nullable()
       .transform((value) => value || null)
   }),
+  credentials: Yup.object().shape(validationCredentials),
   allow: Yup.array().of(Yup.string()).nullable(),
   deny: Yup.array().of(Yup.string()).nullable(),
   retireAsset: Yup.string(),
@@ -184,8 +185,7 @@ export const metadataValidationSchema = Yup.object().shape({
         type: Yup.string().required('Required')
       })
     )
-    .nullable(),
-  credentials: Yup.object().shape(validationCredentials)
+    .nullable()
 })
 
 export const serviceValidationSchema = Yup.object().shape({
@@ -193,7 +193,9 @@ export const serviceValidationSchema = Yup.object().shape({
     .min(4, (param) => `Name must be at least ${param.min} characters`)
     .required('Required'),
   description: Yup.string().required('Required').min(10),
-  price: Yup.number().required('Required'),
+  price: Yup.number()
+    .required('Required')
+    .min(0.000001, 'Price must be greater than 0 for paid services'),
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({
@@ -225,10 +227,8 @@ export const serviceValidationSchema = Yup.object().shape({
       return isAddress(value)
     }
   ),
-  allowAllPublishedAlgorithms: Yup.boolean().nullable(),
+  allowAllPublishedAlgorithms: Yup.string().nullable(),
   publisherTrustedAlgorithms: Yup.array().nullable(),
   publisherTrustedAlgorithmPublishers: Yup.array().nullable(),
-  allow: Yup.array().of(Yup.string()).nullable(),
-  deny: Yup.array().of(Yup.string()).nullable(),
   credentials: Yup.object().shape(validationCredentials)
 })

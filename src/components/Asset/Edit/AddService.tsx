@@ -16,6 +16,7 @@ import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
+import { isAddress } from 'ethers/lib/utils.js'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import { getEncryptedFiles } from '@utils/provider'
@@ -70,6 +71,39 @@ export default function AddService({
   // add new service
   async function handleSubmit(values: ServiceEditForm, resetForm: () => void) {
     try {
+      const processAddress = (
+        inputValue: string,
+        fieldName: 'allow' | 'deny'
+      ) => {
+        const trimmedValue = inputValue?.trim()
+        if (
+          !trimmedValue ||
+          trimmedValue.length < 40 ||
+          !trimmedValue.startsWith('0x')
+        ) {
+          return
+        }
+
+        try {
+          if (isAddress(trimmedValue)) {
+            const lowerCaseAddress = trimmedValue.toLowerCase()
+            const currentList = values.credentials[fieldName] || []
+
+            if (!currentList.includes(lowerCaseAddress)) {
+              const newList = [...currentList, lowerCaseAddress]
+              values.credentials[fieldName] = newList
+            }
+          }
+        } catch (error) {}
+      }
+
+      if (values.credentials.allowInputValue) {
+        processAddress(values.credentials.allowInputValue, 'allow')
+      }
+      if (values.credentials.denyInputValue) {
+        processAddress(values.credentials.denyInputValue, 'deny')
+      }
+
       if (!isAssetNetwork) {
         setError('Please switch to the correct network.')
         return

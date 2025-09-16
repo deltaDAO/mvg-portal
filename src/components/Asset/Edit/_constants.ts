@@ -32,7 +32,11 @@ function generateCredentials(
   credentials: Credential,
   type?: string
 ): CredentialForm {
-  const credentialForm: CredentialForm = {}
+  const credentialForm: CredentialForm = {
+    vpPolicies: [],
+    allowInputValue: '',
+    denyInputValue: ''
+  }
   if (appConfig.ssiEnabled) {
     const requestCredentials: RequestCredentialForm[] = []
     let vcPolicies: string[] = []
@@ -225,6 +229,8 @@ export const getNewServiceInitialValues = (
     credentials: {
       allow: [],
       deny: [],
+      allowInputValue: '',
+      denyInputValue: '',
       requestCredentials: [],
       vcPolicies: [],
       vpPolicies: []
@@ -247,7 +253,9 @@ export const getServiceInitialValues = (
     direction: service.description?.['@direction'],
     language: service.description?.['@language'],
     access: service.type as 'access' | 'compute',
-    price: parseFloat(accessDetails.price),
+    price: isNaN(parseFloat(accessDetails.price))
+      ? 0.000001
+      : parseFloat(accessDetails.price),
     paymentCollector: accessDetails.paymentCollector,
     providerUrl: {
       url: service.serviceEndpoint,
