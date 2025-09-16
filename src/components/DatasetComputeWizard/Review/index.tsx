@@ -139,8 +139,12 @@ export default function Review({
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { isValid, setFieldValue, values }: FormikContextType<FormComputeData> =
-    useFormikContext()
+  const {
+    isValid,
+    setFieldValue,
+    values,
+    validateForm
+  }: FormikContextType<FormComputeData> = useFormikContext()
   const { isAssetNetwork } = useAsset()
 
   const [verificationQueue, setVerificationQueue] = useState<
@@ -193,14 +197,14 @@ export default function Review({
   }
 
   // Debug: Check what's actually in allResourceValues
-  console.log('Review Debug:', {
-    selectedEnvId,
-    allResourceValues,
-    freeResources,
-    paidResources,
-    currentMode,
-    c2dPrice
-  })
+  // console.log('Review Debug:', {
+  //   selectedEnvId,
+  //   allResourceValues,
+  //   freeResources,
+  //   paidResources,
+  //   currentMode,
+  //   c2dPrice
+  // })
   const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
   const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
   const [activeCredentialAsset, setActiveCredentialAsset] =
@@ -761,6 +765,14 @@ export default function Review({
     values.computeEnv,
     c2dPrice
   ])
+  useEffect(() => {
+    const allVerified =
+      verificationQueue.length > 0 &&
+      verificationQueue.every((item) => item.status === 'verified')
+
+    setFieldValue('credentialsVerified', allVerified, false)
+    validateForm()
+  }, [verificationQueue, setFieldValue, validateForm])
 
   const PurchaseButton = () => (
     <ButtonBuy

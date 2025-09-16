@@ -22,6 +22,7 @@ export interface FormComputeData {
   description: string
   termsAndConditions: boolean
   acceptPublishingLicense: boolean
+  credentialsVerified: boolean
   step1Completed: boolean
   step2Completed: boolean
   step3Completed: boolean

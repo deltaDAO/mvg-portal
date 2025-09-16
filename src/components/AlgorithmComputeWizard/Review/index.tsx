@@ -102,8 +102,11 @@ export default function Review({
   const newCancelToken = useCancelToken()
   const { isAssetNetwork } = useAsset()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { setFieldValue, values }: FormikContextType<FormComputeData> =
-    useFormikContext()
+  const {
+    setFieldValue,
+    values,
+    validateForm
+  }: FormikContextType<FormComputeData> = useFormikContext()
 
   const [verificationQueue, setVerificationQueue] = useState<
     VerificationItem[]
@@ -689,6 +692,14 @@ export default function Review({
     values.computeEnv,
     values?.mode
   ])
+  useEffect(() => {
+    const allVerified =
+      verificationQueue.length > 0 &&
+      verificationQueue.every((item) => item.status === 'verified')
+
+    setFieldValue('credentialsVerified', allVerified, false)
+    validateForm()
+  }, [verificationQueue, setFieldValue, validateForm])
 
   return (
     <div className={styles.container}>

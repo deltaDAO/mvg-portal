@@ -26,6 +26,10 @@ export const validationSchema: Yup.SchemaOf<FormComputeData> = Yup.object()
       [true],
       'Publishing license must be accepted'
     ),
+    credentialsVerified: Yup.boolean().oneOf(
+      [true],
+      'Dataset & Algorithm credentials must be verified'
+    ),
     step1Completed: Yup.boolean(),
     step2Completed: Yup.boolean(),
     step3Completed: Yup.boolean(),

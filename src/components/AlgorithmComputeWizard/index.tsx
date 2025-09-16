@@ -1117,9 +1117,9 @@ export default function ComputeWizard({
                 )}
               </SectionContainer>
             </Form>
-            {debug && (
+            {/* {debug && (
               <div>Debug: {JSON.stringify(formikContext.values, null, 2)}</div>
-            )}
+            )} */}
           </div>
         )
       }}

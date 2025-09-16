@@ -489,9 +489,11 @@ export async function getAlgorithmDatasetsForComputeSelection(
     ...(res2?.results || []),
     ...(res3?.results || [])
   ]
-
+  const datasetsOnly = combined.filter(
+    (asset) => asset?.credentialSubject?.metadata?.type === 'dataset'
+  )
   const uniqueAssetsMap = new Map<string, any>()
-  combined.forEach((asset) => {
+  datasetsOnly.forEach((asset) => {
     if (!uniqueAssetsMap.has(asset.id)) {
       uniqueAssetsMap.set(asset.id, asset)
     }
