@@ -1,7 +1,7 @@
-import { useField } from 'formik'
+import { useField, useFormikContext } from 'formik'
 import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
-import Button from '../../../atoms/Button'
 import PublishButton from '../../../PublishButton'
+import DeleteButton from '../../../DeleteButton/DeleteButton'
 import styles from './index.module.css'
 import { isAddress } from 'ethers/lib/utils.js'
 import { toast } from 'react-toastify'
@@ -14,10 +14,10 @@ interface CredentialProps extends InputProps {
 }
 
 export default function Credentials(props: CredentialProps) {
-  const [field, meta, helpers] = useField(props.name)
+  const [field] = useField(props.name)
+  const { setFieldValue } = useFormikContext()
   const [addressList, setAddressList] = useState<string[]>(field.value || [])
   const [value, setValue] = useState('')
-  const { buttonStyle = 'ocean' } = props
 
   const hasWildcard = addressList.includes('*')
 
@@ -28,16 +28,16 @@ export default function Credentials(props: CredentialProps) {
     if (isExternalUpdate) {
       setAddressList(field.value || [])
     }
-  }, [field.value])
+  }, [field.value, addressList])
 
   useEffect(() => {
-    helpers.setValue(addressList)
-  }, [addressList])
+    setFieldValue(props.name, addressList)
+  }, [addressList, setFieldValue, props.name])
 
   function handleDeleteAddress(value: string) {
     const newInput = addressList.filter((input) => input !== value)
     setAddressList(newInput)
-    helpers.setValue(newInput)
+    setFieldValue(props.name, newInput)
   }
 
   function handleAddValue(e: FormEvent<HTMLButtonElement>) {
@@ -104,16 +104,7 @@ export default function Credentials(props: CredentialProps) {
                   value={value === '*' ? 'All Wallets (*)' : value}
                   disabled
                 />
-                <Button
-                  style={buttonStyle}
-                  size="small"
-                  onClick={(e: React.SyntheticEvent) => {
-                    e.preventDefault()
-                    handleDeleteAddress(value)
-                  }}
-                >
-                  Remove
-                </Button>
+                <DeleteButton onClick={() => handleDeleteAddress(value)} />
               </InputGroup>
             </div>
           ))}

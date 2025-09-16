@@ -105,6 +105,13 @@ export default function AssetSelection({
     setCurrentPage(1)
   }
 
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+  }
+
   return (
     <div className={styleClassesWrapper}>
       <div className={styles.searchContainer}>
@@ -114,6 +121,7 @@ export default function AssetSelection({
           placeholder="Search by title, datatoken, or DID..."
           value={searchValue}
           onChange={handleSearchInput}
+          onKeyDown={handleKeyDown}
           className={styles.search}
           disabled={disabled}
         />
