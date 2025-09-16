@@ -1,38 +1,30 @@
 import { useFormikContext } from 'formik'
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import { FormPublishData } from '../_types'
-import appConfig from 'app.config.cjs'
-import { getDefaultPolicies } from '../_utils'
-import { LoggerInstance } from '@oceanprotocol/lib'
 import AccessRulesSection from './AccessRulesSection'
 import SSIPoliciesSection from './SSIPoliciesSection'
 
 export function AccessPolicies(): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
-  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
-  useEffect(() => {
-    if (appConfig.ssiEnabled) {
-      getDefaultPolicies()
-        .then((policies) => {
-          setDefaultPolicies(policies)
-        })
-        .catch((error) => {
-          LoggerInstance.error(error)
-          setDefaultPolicies([])
-        })
-    }
+  // Removed default policy loading - users must manually select policies
 
-    if (values.accessPolicyPageVisited) {
-      return
-    }
+  if (!values.accessPolicyPageVisited) {
     setFieldValue('accessPolicyPageVisited', true)
-  }, [])
+  }
 
   return (
     <>
       <AccessRulesSection />
-      <SSIPoliciesSection defaultPolicies={defaultPolicies} />
+      <SSIPoliciesSection
+        defaultPolicies={[
+          'signature',
+          'not-before',
+          'revoked-status-list',
+          'expired',
+          'signature_sd-jwt-vc'
+        ]}
+      />
     </>
   )
 }

@@ -83,6 +83,7 @@ export default function SSIPoliciesSection({
             isAsset={true}
             buttonStyle="ocean"
             enabledView={true}
+            hideDefaultPolicies={false}
           />
         </SectionContainer>
       )}

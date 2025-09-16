@@ -240,19 +240,16 @@ export function PolicyEditor(props): ReactElement {
     const currentVcPolicies = credentials.vcPolicies || []
     const hasExistingPolicies = currentVcPolicies.length > 0
 
-    return {
-      'not-before':
-        currentVcPolicies.includes('not-before') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
+    // Initialize all policies as unchecked
+    const initialState = {
+      'not-before': currentVcPolicies.includes('not-before'),
       expired: currentVcPolicies.includes('expired'),
-      'revoked-status-list':
-        currentVcPolicies.includes('revoked-status-list') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
-      signature:
-        currentVcPolicies.includes('signature') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
+      'revoked-status-list': currentVcPolicies.includes('revoked-status-list'),
+      signature: currentVcPolicies.includes('signature'),
       'signature_sd-jwt-vc': currentVcPolicies.includes('signature_sd-jwt-vc')
     }
+
+    return initialState
   })
 
   // Update checkbox states when credentials change (e.g., when navigating between steps)
@@ -322,13 +319,7 @@ export function PolicyEditor(props): ReactElement {
     }
   }, [credentials, hasUserSetEnabled, editAdvancedFeatures])
 
-  const allPolicies = [
-    'signature',
-    'not-before',
-    'revoked-status-list',
-    'expired',
-    'signature_sd-jwt-vc'
-  ]
+  const allPolicies = hideDefaultPolicies ? [] : defaultPolicies
 
   function getPolicyDescription(policy: string): string {
     const descriptions = {
