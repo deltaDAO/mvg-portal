@@ -12,7 +12,7 @@ const networksMetadata = [
     nativeCurrency: {
       name: 'EURAU',
       symbol: 'EURAU',
-      decimals: 18
+      decimals: 6
     },
     infoURL: 'https://docs.pontus-x.eu',
     shortName: 'Pontus-X',
@@ -34,7 +34,7 @@ const networksMetadata = [
     nativeCurrency: {
       name: 'EURAU',
       symbol: 'EURAU',
-      decimals: 18
+      decimals: 6
     },
     infoURL: 'https://docs.pontus-x.eu',
     shortName: 'Pontus-X',
