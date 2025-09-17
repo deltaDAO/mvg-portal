@@ -60,6 +60,17 @@ export interface FormComputeData {
     c2d: string
   }
   totalPrice?: string
+  algorithmServices?: Array<{
+    id?: string
+    name?: string
+    title?: string
+    serviceDescription?: string
+    type?: string
+    duration?: string | number
+    price?: string
+    symbol?: string
+    checked?: boolean
+  }>
 }
 
 export interface StepContent {

@@ -3,7 +3,7 @@ import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
 import Loader from '@shared/atoms/Loader'
-import { FormComputeData } from '@components/ComputeWizard/_types'
+import { FormComputeData } from '@components/DatasetComputeWizard/_types'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 
 interface WizardActionsProps {
@@ -155,18 +155,8 @@ export default function WizardActions({
     const currentStep: number = values.user.stepCurrent
     const newStep = action === 'next' ? currentStep + 1 : currentStep - 1
 
-    console.log(
-      'WizardActions - currentStep:',
-      currentStep,
-      'newStep:',
-      newStep,
-      'action:',
-      action
-    )
-
     if (newStep >= 1 && newStep <= totalSteps) {
       setFieldValue('user.stepCurrent', newStep)
-      console.log('WizardActions - setFieldValue called with:', newStep)
     }
 
     if (scrollToRef?.current) {

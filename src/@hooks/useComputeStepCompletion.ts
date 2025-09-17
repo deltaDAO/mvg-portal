@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { FormComputeData } from '../components/ComputeWizard/_types'
+import { FormComputeData } from '../components/DatasetComputeWizard/_types'
 
 export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
   const { values, errors } = useFormikContext<FormComputeData>()
