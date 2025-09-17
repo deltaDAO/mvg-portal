@@ -313,24 +313,13 @@ export default function AssetActions({
       {isCompute && isComputePopupOpen && (
         <div className={styles.computePopup}>
           <div className={styles.computePopupContent}>
-            <Button
-              // style="icon"
+            <button
               className={styles.closeButton}
               onClick={closeComputePopup}
+              aria-label="Close wizard"
             >
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path
-                  d="M18 6L6 18M6 6l12 12"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                />
-              </svg>
-            </Button>
+              &times;
+            </button>
             {asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
               <AlgorithmComputeWizard
                 accountId={accountId}

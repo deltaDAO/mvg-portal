@@ -45,7 +45,20 @@
 .primary:hover,
 .primary:focus,
 .primary:active {
-  background: var(--button-primary-background);
+  background: var(--publish-primary-gradient);
+  color: #ffffff;
+  border-radius: 20px;
+  box-shadow: 1px 2px 8px var(--box-shadow-color);
+  font-family: 'Helvetica';
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: none;
+  min-width: unset;
+}
+
+.primary:hover,
+.primary:focus {
+  opacity: 0.9;
 }
 
 .ghost,

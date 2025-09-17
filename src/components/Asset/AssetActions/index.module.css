@@ -134,10 +134,19 @@ body .backButton {
 
 .closeButton {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  background: none;
-  border: none;
   cursor: pointer;
-  padding: 8px;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  outline: 0;
+  top: calc(var(--spacer) / 4);
+  right: calc(var(--spacer) / 2);
+  font-size: var(--font-size-h2);
+  color: var(--font-color-text);
+  z-index: 10;
+}
+
+.closeButton:hover,
+.closeButton:focus {
+  opacity: 0.7;
 }
