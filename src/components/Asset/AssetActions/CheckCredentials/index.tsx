@@ -79,8 +79,8 @@ export function AssetActionCheckCredentials({
   onError?: () => void
 }) {
   const { address: accountId } = useAccount()
-  const { autoStart } = useCredentialDialog()
-
+  const credentialDialog = useCredentialDialog()
+  const autoStart = credentialDialog?.autoStart ?? false
   const [checkCredentialState, setCheckCredentialState] =
     useState<CheckCredentialState>(CheckCredentialState.Stop)
 
