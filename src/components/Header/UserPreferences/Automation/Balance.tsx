@@ -10,7 +10,7 @@ export default function Balance(): ReactElement {
       <div className={styles.wrapper}>
         <div className={styles.balance}>
           <ul>
-            {balance.native && (
+            {balance?.native && (
               <li key={`automation-balance-${balance.native.symbol}`}>
                 <span>{balance.native.symbol}</span>:{' '}
                 {Number(balance.native.balance).toFixed(4)}
@@ -20,7 +20,7 @@ export default function Balance(): ReactElement {
         </div>
         <div className={styles.balance}>
           <ul>
-            {balance.approved &&
+            {balance?.approved &&
               Object.keys(balance.approved).map((currency) => (
                 <li key={`automation-balance-${currency}`}>
                   <span>{currency}</span>:{' '}
