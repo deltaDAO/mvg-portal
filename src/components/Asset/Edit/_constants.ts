@@ -32,7 +32,11 @@ function generateCredentials(
   credentials: Credential,
   type?: string
 ): CredentialForm {
-  const credentialForm: CredentialForm = {}
+  const credentialForm: CredentialForm = {
+    vpPolicies: [],
+    allowInputValue: '',
+    denyInputValue: ''
+  }
   if (appConfig.ssiEnabled) {
     const requestCredentials: RequestCredentialForm[] = []
     let vcPolicies: string[] = []
@@ -62,24 +66,24 @@ function generateCredentials(
             requestCredentials.push(newRequestCredential)
           })
 
-          const newVpPolicies: VpPolicyType[] = value.vp_policies.map(
-            (policy) => {
-              if (isVpValue(policy)) {
-                const result: ArgumentVpPolicy = {
-                  type: 'argumentVpPolicy',
-                  policy: policy.policy,
-                  args: policy.args.toString()
+          const newVpPolicies: VpPolicyType[] = Array.isArray(value.vp_policies)
+            ? value.vp_policies.map((policy) => {
+                if (isVpValue(policy)) {
+                  const result: ArgumentVpPolicy = {
+                    type: 'argumentVpPolicy',
+                    policy: policy.policy,
+                    args: policy.args.toString()
+                  }
+                  return result
+                } else {
+                  const result: StaticVpPolicy = {
+                    type: 'staticVpPolicy',
+                    name: policy
+                  }
+                  return result
                 }
-                return result
-              } else {
-                const result: StaticVpPolicy = {
-                  type: 'staticVpPolicy',
-                  name: policy
-                }
-                return result
-              }
-            }
-          )
+              })
+            : []
 
           vcPolicies = [
             ...vcPolicies,
@@ -225,6 +229,8 @@ export const getNewServiceInitialValues = (
     credentials: {
       allow: [],
       deny: [],
+      allowInputValue: '',
+      denyInputValue: '',
       requestCredentials: [],
       vcPolicies: [],
       vpPolicies: []
@@ -247,7 +253,9 @@ export const getServiceInitialValues = (
     direction: service.description?.['@direction'],
     language: service.description?.['@language'],
     access: service.type as 'access' | 'compute',
-    price: parseFloat(accessDetails.price),
+    price: isNaN(parseFloat(accessDetails.price))
+      ? 0.000001
+      : parseFloat(accessDetails.price),
     paymentCollector: accessDetails.paymentCollector,
     providerUrl: {
       url: service.serviceEndpoint,

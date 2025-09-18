@@ -1,18 +1,18 @@
 .input {
-  font-size: var(--font-size-base);
+  font-size: var(--publish-font-size);
   font-family: var(--publish-font-family);
   font-weight: var(--publish-font-weight-normal);
-  color: var(--input-font-color);
+  color: var(--publish-text-secondary);
   border: var(--publish-input-border-size) solid
     var(--publish-input-border-color);
-  box-shadow: none;
+  box-shadow: var(--publish-shadow);
   width: 100%;
-  background: var(--background-content);
+  background: var(--publish-white);
   padding: var(--publish-input-padding);
   margin: 0;
   border-radius: var(--publish-input-border-radius);
   transition: 0.2s ease-out;
-  height: auto;
+  height: var(--publish-input-height);
   min-width: 0;
   appearance: none;
   display: block;
@@ -26,8 +26,8 @@
 
 .input::placeholder {
   font-family: var(--publish-font-family);
-  font-size: var(--font-size-base);
-  color: var(--input-placeholder-font-color);
+  font-size: var(--publish-font-size);
+  color: var(--publish-text-secondary);
   font-weight: var(--publish-font-weight-normal);
   transition: 0.2s ease-out;
   opacity: 0.7;
@@ -57,7 +57,7 @@
 .select {
   composes: input;
   height: 43px;
-  padding: 15px 48px 15px 25px;
+  padding: 8px 48px 8px 25px;
   font-weight: var(--font-weight-bold);
 
   background-image: linear-gradient(

@@ -1,8 +1,13 @@
 .service {
-  border-radius: var(--box-template-border-radius);
-  border: var(--box-template-border-size) solid var(--box-template-border-color);
   cursor: pointer;
   padding: calc(var(--spacer) * 0.5) var(--spacer);
+  border: 1px solid rgba(48, 48, 49, 0.1);
+  border-radius: 20px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: #fff;
+  position: relative;
+  min-height: 145px;
+  min-width: 250px;
   display: flex;
   justify-content: center;
   align-items: center;

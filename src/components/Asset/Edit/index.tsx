@@ -49,12 +49,15 @@ export default function Edit({ uri }: { uri: string }): ReactElement {
           state="error"
         />
       ) : (
-        <Container className={styles.container}>
+        <Container className={`${styles.container} ${styles.containerPublish}`}>
           <Tabs
             items={tabs}
             selectedIndex={tabIndex}
             onIndexSelected={setTabIndex}
             className={styles.edit}
+            variant="publish"
+            showRadio
+            isEditPage
           />
         </Container>
       )}

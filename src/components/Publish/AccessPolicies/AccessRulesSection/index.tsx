@@ -9,19 +9,21 @@ import { FormPublishData } from '../../_types'
 import { isAddress } from 'ethers/lib/utils.js'
 import { toast } from 'react-toastify'
 import styles from './index.module.css'
-import DeleteIcon from '@images/delete.svg'
+import DeleteButton from '@components/@shared/DeleteButton/DeleteButton'
 import AddIcon from '@images/add_param.svg'
 import Label from '../../../@shared/FormInput/Label'
 import ContainerForm from '../../../@shared/atoms/ContainerForm'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 
+interface AccessRulesSectionProps {
+  fieldPrefix?: string
+}
+
 export default function AccessRulesSection({
   fieldPrefix = 'credentials'
-}: {
-  fieldPrefix?: string
-} = {}): ReactElement {
-  const { values, setFieldValue } = useFormikContext<FormPublishData>()
+}: AccessRulesSectionProps = {}): ReactElement {
+  const { values, setFieldValue } = useFormikContext<any>()
   const [allowInputValue, setAllowInputValue] = useState(
     values.credentials?.allowInputValue || ''
   )
@@ -271,13 +273,9 @@ export default function AccessRulesSection({
                   value={address === '*' ? 'All Wallets (*)' : address}
                   disabled
                 />
-                <Button
-                  type="button"
+                <DeleteButton
                   onClick={() => handleDeleteAllowAddress(address)}
-                  style="outlined"
-                >
-                  <DeleteIcon /> Delete
-                </Button>
+                />
               </InputGroup>
             ))}
           </div>
@@ -360,13 +358,9 @@ export default function AccessRulesSection({
                   value={address === '*' ? 'All Wallets (*)' : address}
                   disabled
                 />
-                <Button
-                  type="button"
+                <DeleteButton
                   onClick={() => handleDeleteDenyAddress(address)}
-                  style="outlined"
-                >
-                  <DeleteIcon /> Delete
-                </Button>
+                />
               </InputGroup>
             ))}
           </div>

@@ -17,6 +17,22 @@
   margin-bottom: calc(var(--spacer) * 0.75);
 }
 
+.inputRow button {
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.addressList .inputGroup {
+  display: flex;
+  gap: calc(var(--spacer) * 0.5);
+  align-items: center;
+}
+
+.addressList .inputGroup input {
+  flex: 1;
+  min-width: 0;
+}
+
 .addressInput {
   flex: 1;
   padding: calc(var(--spacer) * 0.75);

@@ -240,19 +240,16 @@ export function PolicyEditor(props): ReactElement {
     const currentVcPolicies = credentials.vcPolicies || []
     const hasExistingPolicies = currentVcPolicies.length > 0
 
-    return {
-      'not-before':
-        currentVcPolicies.includes('not-before') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
+    // Initialize all policies as unchecked
+    const initialState = {
+      'not-before': currentVcPolicies.includes('not-before'),
       expired: currentVcPolicies.includes('expired'),
-      'revoked-status-list':
-        currentVcPolicies.includes('revoked-status-list') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
-      signature:
-        currentVcPolicies.includes('signature') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
+      'revoked-status-list': currentVcPolicies.includes('revoked-status-list'),
+      signature: currentVcPolicies.includes('signature'),
       'signature_sd-jwt-vc': currentVcPolicies.includes('signature_sd-jwt-vc')
     }
+
+    return initialState
   })
 
   // Update checkbox states when credentials change (e.g., when navigating between steps)
@@ -322,13 +319,7 @@ export function PolicyEditor(props): ReactElement {
     }
   }, [credentials, hasUserSetEnabled, editAdvancedFeatures])
 
-  const allPolicies = [
-    'signature',
-    'not-before',
-    'revoked-status-list',
-    'expired',
-    'signature_sd-jwt-vc'
-  ]
+  const allPolicies = hideDefaultPolicies ? [] : defaultPolicies
 
   function getPolicyDescription(policy: string): string {
     const descriptions = {
@@ -404,8 +395,7 @@ export function PolicyEditor(props): ReactElement {
     } else {
       const updatedCredentials = {
         ...credentials,
-        enabled: true,
-        vcPolicies: defaultPolicies || []
+        enabled: true
       }
       if (credentials.vpPolicies?.length) {
         updatedCredentials.vpPolicies = credentials.vpPolicies
@@ -422,6 +412,7 @@ export function PolicyEditor(props): ReactElement {
       policies: [],
       newPolicyType: 'staticPolicy'
     }
+
     credentials?.requestCredentials?.push(newRequestCredential)
     setCredentials(credentials)
   }
@@ -737,11 +728,22 @@ export function PolicyEditor(props): ReactElement {
   useEffect(() => {
     if (!enabled) return
 
+    const hasCompletedCredentials = credentials.requestCredentials?.some(
+      (cred) => cred.type?.trim() && cred.format?.trim()
+    )
+
     const selectedPolicies = Object.entries(defaultPolicyStates)
       .filter(([_, isSelected]) => isSelected)
       .map(([policyName, _]) => policyName)
 
     const currentVcPolicies = credentials.vcPolicies || []
+
+    if (!hasCompletedCredentials) {
+      if (currentVcPolicies.length > 0) {
+        setCredentials({ ...credentials, vcPolicies: [] })
+      }
+      return
+    }
 
     if (
       JSON.stringify(selectedPolicies.sort()) !==
@@ -749,7 +751,13 @@ export function PolicyEditor(props): ReactElement {
     ) {
       setCredentials({ ...credentials, vcPolicies: selectedPolicies })
     }
-  }, [defaultPolicyStates, enabled])
+  }, [
+    defaultPolicyStates,
+    enabled,
+    credentials.requestCredentials,
+    credentials.vcPolicies,
+    setCredentials
+  ])
 
   const ssiContent = enabled && (
     <>

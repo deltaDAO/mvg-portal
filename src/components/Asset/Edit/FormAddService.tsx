@@ -15,6 +15,8 @@ import appConfig from 'app.config.cjs'
 import { PolicyEditor } from '@components/@shared/PolicyEditor'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { supportedLanguages } from '../languageType'
+import ContainerForm from '@shared/atoms/ContainerForm'
+import AccessRulesSection from '@components/Publish/AccessPolicies/AccessRulesSection'
 
 export default function FormAddService({
   data,
@@ -98,120 +100,117 @@ export default function FormAddService({
   }, [])
 
   return (
-    <Form className={styles.form}>
-      <Field {...getFieldContent('name', data)} component={Input} name="name" />
-
-      <Field
-        {...getFieldContent('description', data)}
-        component={Input}
-        name="description"
-      />
-
-      <Field
-        {...getFieldContent('language', data)}
-        component={Input}
-        name="language"
-        type="select"
-        options={languageOptions}
-        value={getCurrentLanguageName()}
-        onChange={(e) => handleLanguageChange(e.target.value)}
-      />
-      <Field
-        {...getFieldContent('direction', data)}
-        component={Input}
-        name="direction"
-        readOnly
-      />
-
-      <Field
-        {...getFieldContent('access', data)}
-        component={Input}
-        name="access"
-        options={accessTypeOptions}
-      />
-
-      {values.access === 'compute' && assetType === 'dataset' && (
-        <FormEditComputeService
-          chainId={chainId}
-          serviceEndpoint={values.providerUrl.url}
-          serviceCompute={defaultServiceComputeOptions}
-        />
-      )}
-
-      <Field
-        {...getFieldContent('price', data)}
-        component={Input}
-        name="price"
-        min={0} // override the value from edit form
-      />
-
-      <Field
-        {...getFieldContent('paymentCollector', data)}
-        component={Input}
-        name="paymentCollector"
-      />
-
-      <Field
-        {...getFieldContent('providerUrl', data)}
-        component={Input}
-        name="providerUrl"
-        disabled={true} // TODO tied with files and compute - not editable now
-      />
-
-      <Field
-        {...getFieldContent('files', data)}
-        component={Input}
-        name="files"
-      />
-
-      <Field
-        {...getFieldContent('timeout', data)}
-        component={Input}
-        name="timeout"
-      />
-
-      <Field
-        {...getFieldContent('allow', data)}
-        component={Input}
-        name="credentials.allow"
-      />
-      <Field
-        {...getFieldContent('deny', data)}
-        component={Input}
-        name="credentials.deny"
-      />
-
-      {appConfig.ssiEnabled ? (
-        <PolicyEditor
-          label="SSI Policies"
-          credentials={values.credentials}
-          setCredentials={(newCredentials) =>
-            setFieldValue('credentials', newCredentials)
-          }
-          name="credentials"
-          defaultPolicies={defaultPolicies}
-          help="Self-sovereign identity (SSI) is used to verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
-        />
-      ) : (
-        <></>
-      )}
-
-      <Field
-        {...getFieldContent('usesConsumerParameters', data)}
-        component={Input}
-        name="usesConsumerParameters"
-      />
-      {values.usesConsumerParameters && (
+    <Form>
+      <ContainerForm style="publish">
         <Field
-          {...getFieldContent(
-            'consumerParameters',
-            consumerParametersContent.consumerParameters.fields
-          )}
+          {...getFieldContent('name', data)}
           component={Input}
-          name="consumerParameters"
+          name="name"
         />
-      )}
-      <FormActions />
+
+        <Field
+          {...getFieldContent('description', data)}
+          component={Input}
+          name="description"
+        />
+
+        <Field
+          {...getFieldContent('language', data)}
+          component={Input}
+          name="language"
+          type="select"
+          options={languageOptions}
+          value={getCurrentLanguageName()}
+          onChange={(e) => handleLanguageChange(e.target.value)}
+        />
+        <Field
+          {...getFieldContent('direction', data)}
+          component={Input}
+          name="direction"
+          readOnly
+        />
+
+        <Field
+          {...getFieldContent('access', data)}
+          component={Input}
+          name="access"
+          options={accessTypeOptions}
+        />
+
+        {values.access === 'compute' && assetType === 'dataset' && (
+          <FormEditComputeService
+            chainId={chainId}
+            serviceEndpoint={values.providerUrl.url}
+            serviceCompute={defaultServiceComputeOptions}
+          />
+        )}
+
+        <Field
+          {...getFieldContent('price', data)}
+          component={Input}
+          name="price"
+          min={0} // override the value from edit form
+        />
+
+        <Field
+          {...getFieldContent('paymentCollector', data)}
+          component={Input}
+          name="paymentCollector"
+        />
+
+        <Field
+          {...getFieldContent('providerUrl', data)}
+          component={Input}
+          name="providerUrl"
+          disabled={true} // TODO tied with files and compute - not editable now
+        />
+
+        <Field
+          {...getFieldContent('files', data)}
+          component={Input}
+          name="files"
+        />
+
+        <Field
+          {...getFieldContent('timeout', data)}
+          component={Input}
+          name="timeout"
+        />
+
+        <AccessRulesSection fieldPrefix="credentials" />
+
+        {appConfig.ssiEnabled ? (
+          <PolicyEditor
+            label="SSI Policies"
+            credentials={values.credentials}
+            setCredentials={(newCredentials) =>
+              setFieldValue('credentials', newCredentials)
+            }
+            name="credentials"
+            defaultPolicies={defaultPolicies}
+            help="Self-sovereign identity (SSI) is used to verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
+          />
+        ) : (
+          <></>
+        )}
+
+        <Field
+          {...getFieldContent('usesConsumerParameters', data)}
+          component={Input}
+          name="usesConsumerParameters"
+        />
+        {values.usesConsumerParameters && (
+          <Field
+            {...getFieldContent(
+              'consumerParameters',
+              consumerParametersContent.consumerParameters.fields
+            )}
+            component={Input}
+            name="consumerParameters"
+          />
+        )}
+        <FormActions />
+      </ContainerForm>
     </Form>
   )
 }
