@@ -264,7 +264,7 @@ export default function FormEditComputeService({
 
       <SectionContainer
         border
-        classNames={styles.publisherTrustedAlgorithmPublishersContainer}
+        className={styles.publisherTrustedAlgorithmPublishersContainer}
       >
         <Field
           {...getFieldContent(

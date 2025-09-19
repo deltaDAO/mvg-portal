@@ -5,7 +5,8 @@ export interface CredentialStatus {
   needsRefresh: boolean
 }
 
-const CREDENTIAL_VALIDITY_DURATION = 5 * 60 * 1000
+const CREDENTIAL_VALIDITY_DURATION =
+  Number(process.env.NEXT_PUBLIC_CREDENTIAL_VALIDITY_DURATION) || 5 * 60 * 1000
 
 export function createCredentialStatus(
   isValid: boolean,

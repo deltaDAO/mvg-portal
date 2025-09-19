@@ -956,7 +956,7 @@ export default function ComputeWizard({
             <Title asset={asset} service={service} />
             <Form className={styles.form}>
               <Navigation steps={steps} />
-              <SectionContainer classNames={styles.container}>
+              <SectionContainer className={styles.container}>
                 {showSuccess ? (
                   <div className={styles.successContent}>
                     <SuccessConfetti success="Job Started Successfully!" />
