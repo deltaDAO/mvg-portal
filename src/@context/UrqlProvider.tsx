@@ -6,21 +6,42 @@ import {
   fetchExchange
 } from 'urql'
 import { refocusExchange } from '@urql/exchange-refocus'
-import { useState, useEffect, ReactNode, ReactElement } from 'react'
+import { ReactNode, ReactElement } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 
-let urqlClient: Client
+let urqlClient: Client | undefined
 
 function createUrqlClient(subgraphUri: string) {
-  const client = createClient({
+  return createClient({
     url: `${subgraphUri}/subgraphs/name/oceanprotocol/ocean-subgraph`,
     exchanges: [dedupExchange, refocusExchange(), fetchExchange]
   })
-  return client
 }
 
+// Initialize synchronously for SSR so markup is consistent across server/client
+;(() => {
+  try {
+    const oceanConfig = getOceanConfig(1)
+    if (!oceanConfig?.subgraphUri) {
+      LoggerInstance.error(
+        'No subgraphUri defined, preventing UrqlProvider initialization.'
+      )
+      return
+    }
+    urqlClient = createUrqlClient(oceanConfig.subgraphUri)
+    LoggerInstance.log(`[URQL] Client connected to ${oceanConfig.subgraphUri}`)
+  } catch (e) {
+    LoggerInstance.error('Failed to initialize URQL client', e?.message || e)
+  }
+})()
+
 export function getUrqlClientInstance(): Client {
+  // Consumers expect a client; if not initialized, throw to surface misconfig
+  if (!urqlClient)
+    throw new Error(
+      'URQL client not initialized. Check subgraph configuration.'
+    )
   return urqlClient
 }
 
@@ -29,31 +50,9 @@ export default function UrqlClientProvider({
 }: {
   children: ReactNode
 }): ReactElement {
-  //
-  // Set a default client here based on ETH Mainnet, as that's required for
-  // urql to work.
-  // Throughout code base this client is then used and altered by passing
-  // a new queryContext holding different subgraph URLs.
-  //
-  const [client, setClient] = useState<Client>()
+  if (!urqlClient) return <>{children}</> // Render children to avoid SSR blank output
 
-  useEffect(() => {
-    const oceanConfig = getOceanConfig(1)
-
-    if (!oceanConfig?.subgraphUri) {
-      LoggerInstance.error(
-        'No subgraphUri defined, preventing UrqlProvider from initialization.'
-      )
-      return
-    }
-
-    const newClient = createUrqlClient(oceanConfig.subgraphUri)
-    urqlClient = newClient
-    setClient(newClient)
-    LoggerInstance.log(`[URQL] Client connected to ${oceanConfig.subgraphUri}`)
-  }, [])
-
-  return client ? <Provider value={client}>{children}</Provider> : <></>
+  return <Provider value={urqlClient}>{children}</Provider>
 }
 
 export { UrqlClientProvider }
