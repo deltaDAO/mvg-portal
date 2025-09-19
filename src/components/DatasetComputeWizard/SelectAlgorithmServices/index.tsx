@@ -21,7 +21,6 @@ interface AlgorithmService {
   checked?: boolean
 }
 
-// Helper function to extract string from LanguageValueObject
 const extractString = (
   value: string | { '@value': string } | undefined
 ): string => {
@@ -60,7 +59,6 @@ const SelectAlgorithmServices = ({
   )
   const [isLoading, setIsLoading] = useState(false)
 
-  // Function to get algorithm asset from ddoListAlgorithms
   const getAlgorithmAsset = useCallback(
     (
       algo: string
@@ -98,20 +96,13 @@ const SelectAlgorithmServices = ({
     [ddoListAlgorithms]
   )
 
-  // Initialize from selectedAlgorithmAsset prop or fetch from form values
   useEffect(() => {
-    // reduced verbose logging
-
     if (selectedAlgorithm) return
 
-    // If we have selectedAlgorithmAsset, use it directly
     if (selectedAlgorithmAsset) {
-      // initialize from provided asset
-
-      // Transform real algorithm asset to our component format
       const algorithmServices: AlgorithmService[] =
         selectedAlgorithmAsset.credentialSubject?.services?.map(
-          (service: Service) => ({
+          (service: Service, i: number) => ({
             id: service.id,
             name: extractString(service.name) || service.type,
             title: extractString(service.name) || service.type,
@@ -120,9 +111,9 @@ const SelectAlgorithmServices = ({
               `Service for ${service.type}`,
             type: service.type,
             duration: service.timeout || 0,
-            price: '0', // Price will be determined during compute
+            price: '0',
             symbol: 'OCEAN',
-            checked: true // Default to checked
+            checked: i === 0 // Only first service is checked by default
           })
         ) || []
 
@@ -143,10 +134,7 @@ const SelectAlgorithmServices = ({
       return
     }
 
-    // If no selectedAlgorithmAsset but we have algorithm in form values, fetch it
     if (values.algorithm && ddoListAlgorithms && ddoListAlgorithms.length > 0) {
-      // initialize from form values
-
       setIsLoading(true)
       const fetchAlgorithmAssetExtended = async () => {
         try {
@@ -173,10 +161,9 @@ const SelectAlgorithmServices = ({
             serviceIndex: serviceIndexAlgo
           }
 
-          // Transform algorithm asset to our component format
           const algorithmServices: AlgorithmService[] =
             extendedAlgoAsset.credentialSubject?.services?.map(
-              (service: Service) => ({
+              (service: Service, i: number) => ({
                 id: service.id,
                 name: extractString(service.name) || service.type,
                 title: extractString(service.name) || service.type,
@@ -185,9 +172,9 @@ const SelectAlgorithmServices = ({
                   `Service for ${service.type}`,
                 type: service.type,
                 duration: service.timeout || 0,
-                price: '0', // Price will be determined during compute
+                price: '0',
                 symbol: 'OCEAN',
-                checked: true // Default to checked
+                checked: i === 0 // Only first service is checked by default
               })
             ) || []
 
@@ -213,12 +200,6 @@ const SelectAlgorithmServices = ({
       }
 
       fetchAlgorithmAssetExtended()
-    } else {
-      console.log('🔍 Cannot fetch algorithm because:', {
-        hasValuesAlgorithm: !!values.algorithm,
-        hasDdoListAlgorithms: !!ddoListAlgorithms,
-        ddoListAlgorithmsLength: ddoListAlgorithms?.length || 0
-      })
     }
   }, [
     selectedAlgorithmAsset,
@@ -228,7 +209,6 @@ const SelectAlgorithmServices = ({
     getAlgorithmAsset
   ])
 
-  // keep selection local; do not write to form until used elsewhere
   const syncWithFormik = (_updated: Algorithm) => {}
 
   const toggleAlgorithm = () => {
@@ -246,9 +226,9 @@ const SelectAlgorithmServices = ({
       const updatedAlgorithm = {
         ...selectedAlgorithm,
         checked: newCheckedState,
-        services: selectedAlgorithm.services.map((service) => ({
+        services: selectedAlgorithm.services.map((service, i) => ({
           ...service,
-          checked: newCheckedState
+          checked: newCheckedState && i === 0 // Only first service checked if algorithm is checked
         }))
       }
       setSelectedAlgorithm(updatedAlgorithm)
@@ -258,24 +238,17 @@ const SelectAlgorithmServices = ({
 
   const toggleService = (serviceId: string) => {
     if (selectedAlgorithm) {
-      const updatedServices = selectedAlgorithm.services.map((service) =>
-        service.id === serviceId
-          ? { ...service, checked: !service.checked }
-          : service
-      )
-
-      const allServicesChecked = updatedServices.every((s) => s.checked)
-      const someServicesChecked = updatedServices.some((s) => s.checked)
+      const updatedServices = selectedAlgorithm.services.map((service) => ({
+        ...service,
+        checked: service.id === serviceId // Only the clicked service is checked
+      }))
 
       const updatedAlgorithm = {
         ...selectedAlgorithm,
         services: updatedServices,
-        checked: allServicesChecked
-          ? true
-          : someServicesChecked
-          ? undefined
-          : false
+        checked: true
       }
+
       setSelectedAlgorithm(updatedAlgorithm)
       syncWithFormik(updatedAlgorithm)
     }
@@ -299,7 +272,6 @@ const SelectAlgorithmServices = ({
     )
   }
 
-  // Only show services if there are actual services from the algorithm
   if (!selectedAlgorithm.services || selectedAlgorithm.services.length === 0) {
     return (
       <div className={styles.container}>
@@ -348,7 +320,6 @@ const SelectAlgorithmServices = ({
             <div className={styles.algorithmName} onClick={toggleAlgorithm}>
               {selectedAlgorithm.name}
             </div>
-            {/* Empty cells to align with header */}
             <div className={styles.titleColumn}></div>
             <div className={styles.descriptionColumn}></div>
             <div className={styles.typeColumn}></div>
