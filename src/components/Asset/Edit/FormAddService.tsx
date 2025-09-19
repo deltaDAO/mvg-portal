@@ -12,11 +12,11 @@ import { defaultServiceComputeOptions } from './_constants'
 import styles from './index.module.css'
 import { getDefaultPolicies } from '@components/Publish/_utils'
 import appConfig from 'app.config.cjs'
-import { PolicyEditor } from '@components/@shared/PolicyEditor'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { supportedLanguages } from '../languageType'
 import ContainerForm from '@shared/atoms/ContainerForm'
 import AccessRulesSection from '@components/Publish/AccessPolicies/AccessRulesSection'
+import SSIPoliciesSection from './SSIPoliciesSection'
 
 export default function FormAddService({
   data,
@@ -179,20 +179,11 @@ export default function FormAddService({
 
         <AccessRulesSection fieldPrefix="credentials" />
 
-        {appConfig.ssiEnabled ? (
-          <PolicyEditor
-            label="SSI Policies"
-            credentials={values.credentials}
-            setCredentials={(newCredentials) =>
-              setFieldValue('credentials', newCredentials)
-            }
-            name="credentials"
-            defaultPolicies={defaultPolicies}
-            help="Self-sovereign identity (SSI) is used to verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
-          />
-        ) : (
-          <></>
-        )}
+        <SSIPoliciesSection
+          defaultPolicies={defaultPolicies}
+          isAsset={false}
+          hideDefaultPolicies={true}
+        />
 
         <Field
           {...getFieldContent('usesConsumerParameters', data)}

@@ -99,6 +99,7 @@ export interface InputProps {
     }>
   >
   priceOnRight?: boolean
+  computeHelp?: string
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {

@@ -102,35 +102,33 @@ export default function TabsFile({
       <div className={styles.tabContent}>
         {items.map((item, index) => {
           return (
-            <>
-              <TabPanel
-                key={`tabpanel_${items[tabIndex].props.name}_${index}`}
-                className={styles.tabPanel}
-              >
-                {!isHidden && (
-                  <label className={styles.tabLabel}>
-                    {item.field.label}
-                    {item.field.required && (
-                      <span title="Required" className={styles.required}>
-                        *
-                      </span>
-                    )}
-                    {item.field.help && item.field.prominentHelp && (
-                      <Tooltip
-                        content={
-                          <Markdown
-                            text={`${item.field.help} ${
-                              textToolTip ? item.field.computeHelp : ''
-                            }`}
-                          />
-                        }
-                      />
-                    )}
-                  </label>
-                )}
-                {item.content}
-              </TabPanel>
-            </>
+            <TabPanel
+              key={`tabpanel_${items[tabIndex].props.name}_${index}`}
+              className={styles.tabPanel}
+            >
+              {!isHidden && (
+                <label className={styles.tabLabel}>
+                  {item.field.label}
+                  {item.field.required && (
+                    <span title="Required" className={styles.required}>
+                      *
+                    </span>
+                  )}
+                  {item.field.help && item.field.prominentHelp && (
+                    <Tooltip
+                      content={
+                        <Markdown
+                          text={`${item.field.help} ${
+                            textToolTip ? item.field.computeHelp : ''
+                          }`}
+                        />
+                      }
+                    />
+                  )}
+                </label>
+              )}
+              {item.content}
+            </TabPanel>
           )
         })}
       </div>
