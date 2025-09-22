@@ -188,7 +188,8 @@ export default function Review({
         price: rawPrice,
         duration: '1 day', // Default duration for datasets
         name:
-          asset.credentialSubject?.services?.[0]?.name || `Dataset ${index + 1}`
+          asset.credentialSubject?.services?.[asset.serviceIndex || 0]?.name ||
+          `Dataset ${queue.length + 1}`
       })
     })
 
