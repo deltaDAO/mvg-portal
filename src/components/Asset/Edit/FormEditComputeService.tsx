@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useState, useRef } from 'react'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
 import { Field, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -23,15 +23,11 @@ import styles from './index.module.css'
 
 const ALLOW_ANY_PUBLISHED_ALGORITHMS = 'Allow any published algorithms'
 const ALLOW_SELECTED_ALGORITHMS = 'Allow selected algorithms'
-const ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS =
-  'Allow all trusted algorithm publishers'
 const ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS =
   'Allow specific trusted algorithm publishers'
 
 const isAllowAnyPublishedAlgorithms = (value: string) =>
   value === ALLOW_ANY_PUBLISHED_ALGORITHMS
-const isAllowAllTrustedAlgorithmPublishers = (value: string) =>
-  value === ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS
 
 export default function FormEditComputeService({
   chainId,
@@ -49,7 +45,6 @@ export default function FormEditComputeService({
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
   const [addressInputValue, setAddressInputValue] = useState('')
   const [addressList, setAddressList] = useState<string[]>([])
-  const isUpdatingRef = useRef(false)
 
   const isPublishFormContext = values.services && Array.isArray(values.services)
 
@@ -73,7 +68,11 @@ export default function FormEditComputeService({
         ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
       )
     }
-  }, [allowAllPublishedAlgorithms, setFieldValue])
+  }, [
+    allowAllPublishedAlgorithms,
+    setFieldValue,
+    publisherTrustedAlgorithmPublishers
+  ])
 
   useEffect(() => {
     const currentAddresses = publisherTrustedAlgorithmPublishersAddresses || ''

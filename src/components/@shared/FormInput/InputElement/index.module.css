@@ -52,6 +52,7 @@
 .textarea {
   composes: input;
   height: auto;
+  min-height: 80px;
 }
 
 .select {

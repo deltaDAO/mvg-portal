@@ -97,7 +97,7 @@ export default function FormAddService({
           setDefaultPolicies([])
         })
     }
-  }, [])
+  }, [setFieldValue])
 
   return (
     <Form>
