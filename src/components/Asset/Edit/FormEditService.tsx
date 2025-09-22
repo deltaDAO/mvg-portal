@@ -4,6 +4,7 @@ import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
+import content from '../../../../content/publish/form.json'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
@@ -64,6 +65,21 @@ export default function FormEditService({
       setFieldValue('direction', 'ltr')
     }
   }, [setFieldValue, values.language])
+
+  // Initialize files field to show encrypted file exists
+  useEffect(() => {
+    if (service.files && service.files.length > 0) {
+      // Service files are encrypted, show placeholder
+      setFieldValue('files', [
+        {
+          url: '[Encrypted file - URL not available for editing]',
+          type: 'url',
+          valid: true,
+          isEncrypted: true
+        }
+      ])
+    }
+  }, [service.files, setFieldValue])
 
   const handleLanguageChange = (languageName: string) => {
     const selectedLanguage = supportedLanguages.find(
@@ -151,7 +167,7 @@ export default function FormEditService({
         />
 
         <Field
-          {...getFieldContent('files', data)}
+          {...getFieldContent('files', content.services.fields)}
           component={Input}
           name="files"
         />

@@ -162,9 +162,13 @@ export default function FilesInput(props: InputProps): ReactElement {
             />
           )}
 
-          {(isValidated || field?.value?.[0]?.type === 'hidden') && (
-            <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
-          )}
+          {(isValidated || field?.value?.[0]?.type === 'hidden') &&
+            field?.value?.[0] && (
+              <FileInfoDetails
+                file={field.value[0]}
+                handleClose={handleClose}
+              />
+            )}
 
           {props.innerFields && (
             <>

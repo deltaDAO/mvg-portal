@@ -44,7 +44,8 @@ export default function FormEditComputeService({
 }): ReactElement {
   const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
-  const { values, setFieldValue } = useFormikContext<Record<string, any>>()
+  const { values, setFieldValue, setFieldTouched } =
+    useFormikContext<Record<string, any>>()
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
   const [addressInputValue, setAddressInputValue] = useState('')
   const [addressList, setAddressList] = useState<string[]>([])
@@ -72,11 +73,7 @@ export default function FormEditComputeService({
         ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
       )
     }
-  }, [
-    allowAllPublishedAlgorithms,
-    publisherTrustedAlgorithmPublishers,
-    setFieldValue
-  ])
+  }, [allowAllPublishedAlgorithms, setFieldValue])
 
   useEffect(() => {
     const currentAddresses = publisherTrustedAlgorithmPublishersAddresses || ''
@@ -111,76 +108,13 @@ export default function FormEditComputeService({
       (address) => address !== addressToDelete
     )
     setAddressList(updatedAddresses)
+
     setFieldValue(
       'publisherTrustedAlgorithmPublishersAddresses',
       updatedAddresses.join(',')
     )
+    setFieldTouched('publisherTrustedAlgorithmPublishersAddresses', true)
   }
-
-  useEffect(() => {
-    if (isUpdatingRef.current) return
-
-    if (isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)) {
-      if (
-        !isAllowAllTrustedAlgorithmPublishers(
-          publisherTrustedAlgorithmPublishers
-        )
-      ) {
-        isUpdatingRef.current = true
-        setFieldValue(
-          'publisherTrustedAlgorithmPublishers',
-          ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS
-        )
-        setTimeout(() => {
-          isUpdatingRef.current = false
-        }, 0)
-      }
-    } else if (allowAllPublishedAlgorithms === ALLOW_SELECTED_ALGORITHMS) {
-      if (
-        publisherTrustedAlgorithmPublishers !==
-        ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
-      ) {
-        isUpdatingRef.current = true
-        setFieldValue(
-          'publisherTrustedAlgorithmPublishers',
-          ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
-        )
-        setTimeout(() => {
-          isUpdatingRef.current = false
-        }, 0)
-      }
-    }
-  }, [allowAllPublishedAlgorithms, setFieldValue])
-
-  useEffect(() => {
-    if (isUpdatingRef.current) return
-
-    if (
-      isAllowAllTrustedAlgorithmPublishers(publisherTrustedAlgorithmPublishers)
-    ) {
-      if (!isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)) {
-        isUpdatingRef.current = true
-        setFieldValue(
-          'allowAllPublishedAlgorithms',
-          ALLOW_ANY_PUBLISHED_ALGORITHMS
-        )
-        setTimeout(() => {
-          isUpdatingRef.current = false
-        }, 0)
-      }
-    } else if (
-      publisherTrustedAlgorithmPublishers ===
-      ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
-    ) {
-      if (allowAllPublishedAlgorithms !== ALLOW_SELECTED_ALGORITHMS) {
-        isUpdatingRef.current = true
-        setFieldValue('allowAllPublishedAlgorithms', ALLOW_SELECTED_ALGORITHMS)
-        setTimeout(() => {
-          isUpdatingRef.current = false
-        }, 0)
-      }
-    }
-  }, [publisherTrustedAlgorithmPublishers, setFieldValue])
 
   const getAlgorithmList = useCallback(
     async (

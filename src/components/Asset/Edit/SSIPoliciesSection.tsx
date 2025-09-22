@@ -22,6 +22,15 @@ export default function SSIPoliciesSection({
   }>()
 
   const [enabled, setEnabled] = useState(false)
+  const [originalCredentials, setOriginalCredentials] =
+    useState<CredentialForm | null>(null)
+
+  // Store original credentials when component mounts
+  useEffect(() => {
+    if (values.credentials && !originalCredentials) {
+      setOriginalCredentials({ ...values.credentials })
+    }
+  }, [values.credentials, originalCredentials])
 
   useEffect(() => {
     const hasCurrentPolicies =
@@ -55,6 +64,20 @@ export default function SSIPoliciesSection({
       setFieldValue('credentials.requestCredentials', [])
       setFieldValue('credentials.vcPolicies', [])
       setFieldValue('credentials.vpPolicies', [])
+    } else if (originalCredentials) {
+      // Restore original credentials when re-enabling
+      setFieldValue(
+        'credentials.requestCredentials',
+        originalCredentials.requestCredentials || []
+      )
+      setFieldValue(
+        'credentials.vcPolicies',
+        originalCredentials.vcPolicies || []
+      )
+      setFieldValue(
+        'credentials.vpPolicies',
+        originalCredentials.vpPolicies || []
+      )
     }
   }
 

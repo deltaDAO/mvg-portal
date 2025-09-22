@@ -18,13 +18,33 @@ export default function FileInfo({
 
   const hideUrl = file.type === 'hidden' || false
 
+  // Show file information if there's a valid file (even if encrypted)
+  const hasValidFile = file.valid === true
+  const isEncrypted =
+    (file as any).isEncrypted || file.url?.includes('[Encrypted file')
+  const shouldShowConfirmed = hasValidFile && !isEncrypted
+
+  // Don't render anything if there's no valid file
+  if (!hasValidFile) {
+    return null
+  }
+
   return (
     <>
       <div className={styles.fileDetails}>
-        <div className={styles.defaultContainer}>
-          <CircleCheckIcon />
-          <div className={styles.confirmed}>File confirmed</div>
-        </div>
+        {shouldShowConfirmed && (
+          <div className={styles.defaultContainer}>
+            <CircleCheckIcon />
+            <div className={styles.confirmed}>File confirmed</div>
+          </div>
+        )}
+        {isEncrypted && (
+          <div className={styles.defaultContainer}>
+            <div className={styles.confirmed}>
+              Encrypted file (URL not editable)
+            </div>
+          </div>
+        )}
         {file.contentLength && <span>{prettySize(+file.contentLength)}</span>}
         {file.contentLength && contentTypeCleaned && <span> • </span>}
         {contentTypeCleaned && <span>{contentTypeCleaned}</span>}

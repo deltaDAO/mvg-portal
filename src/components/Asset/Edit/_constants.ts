@@ -185,11 +185,11 @@ function getComputeSettingsInitialValues({
           })
         )
 
-  const publisherTrustedAlgorithmPublishersValue =
-    publisherTrustedAlgorithmPublishers &&
-    publisherTrustedAlgorithmPublishers.length > 0
-      ? 'Allow specific trusted algorithm publishers'
-      : 'Allow all trusted algorithm publishers'
+  const publisherTrustedAlgorithmPublishersValue = Array.isArray(
+    publisherTrustedAlgorithmPublishers
+  )
+    ? 'Allow specific trusted algorithm publishers'
+    : 'Allow all trusted algorithm publishers'
 
   return {
     allowAllPublishedAlgorithms,

@@ -199,13 +199,8 @@ export const serviceValidationSchema = Yup.object().shape({
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({
-        url: testLinks(true),
-        valid: Yup.boolean().test((value, context) => {
-          const { type } = context.parent
-          // allow user to submit if the value type is hidden
-          if (type === 'hidden') return true
-          return value || false
-        })
+        url: Yup.string().nullable(),
+        valid: Yup.boolean().nullable()
       })
     )
     .nullable(),
@@ -229,6 +224,6 @@ export const serviceValidationSchema = Yup.object().shape({
   ),
   allowAllPublishedAlgorithms: Yup.string().nullable(),
   publisherTrustedAlgorithms: Yup.array().nullable(),
-  publisherTrustedAlgorithmPublishers: Yup.array().nullable(),
+  publisherTrustedAlgorithmPublishers: Yup.string().nullable(),
   credentials: Yup.object().shape(validationCredentials)
 })

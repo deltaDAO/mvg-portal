@@ -12,8 +12,10 @@ export default function FormActions({
   handleClick?: () => void
 }): ReactElement {
   const { isAssetNetwork, asset } = useAsset()
-  const { isValid }: FormikContextType<MetadataEditForm | ServiceEditForm> =
-    useFormikContext()
+  const {
+    isValid,
+    errors
+  }: FormikContextType<MetadataEditForm | ServiceEditForm> = useFormikContext()
 
   const isSubmitDisabled = !isValid || !isAssetNetwork
 

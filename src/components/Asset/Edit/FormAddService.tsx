@@ -4,12 +4,12 @@ import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
+import content from '../../../../content/publish/form.json'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import FormEditComputeService from './FormEditComputeService'
 import { defaultServiceComputeOptions } from './_constants'
-import styles from './index.module.css'
 import { getDefaultPolicies } from '@components/Publish/_utils'
 import appConfig from 'app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
@@ -162,11 +162,11 @@ export default function FormAddService({
           {...getFieldContent('providerUrl', data)}
           component={Input}
           name="providerUrl"
-          disabled={true} // TODO tied with files and compute - not editable now
+          disabled={true}
         />
 
         <Field
-          {...getFieldContent('files', data)}
+          {...getFieldContent('files', content.services.fields)}
           component={Input}
           name="files"
         />

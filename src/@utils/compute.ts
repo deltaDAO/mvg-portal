@@ -458,6 +458,13 @@ export async function transformComputeFormToServiceComputeOptions(
           .split(',')
           .map((addr) => addr.trim())
           .filter((addr) => addr.length > 0)
+      : values.publisherTrustedAlgorithmPublishers ===
+          'Allow specific trusted algorithm publishers' &&
+        !values.publisherTrustedAlgorithmPublishersAddresses
+      ? []
+      : values.publisherTrustedAlgorithmPublishers ===
+        'Allow all trusted algorithm publishers'
+      ? []
       : ['*']
 
   const privacy: Compute = {
