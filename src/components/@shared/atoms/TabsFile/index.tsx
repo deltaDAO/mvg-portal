@@ -6,6 +6,11 @@ import { FormPublishData } from 'src/components/Publish/_types'
 import Tooltip from '../Tooltip'
 import styles from './index.module.css'
 
+import IconUrl from '@images/url.svg'
+import IconIpfs from '@images/ipfs.svg'
+import IconArweave from '@images/arweave.svg'
+import IconGraphql from '@images/graphql.svg'
+
 export interface TabsItem {
   field: any
   title: string
@@ -19,6 +24,13 @@ export interface TabsProps {
   className?: string
 }
 
+const iconMap = {
+  URL: IconUrl,
+  IPFS: IconIpfs,
+  ARWEAVE: IconArweave,
+  GRAPHQL: IconGraphql
+}
+
 export default function TabsFile({
   items,
   className
@@ -28,7 +40,6 @@ export default function TabsFile({
     const index = items.findIndex((tab: any) => {
       // fallback for edit mode (starts at index 0 with hidden element)
       if (!values?.services) return 0
-
       return tab.field.value === values.services[0].files[0].type
     })
 
@@ -65,6 +76,7 @@ export default function TabsFile({
       <div className={styles.tabListContainer}>
         <TabList className={styles.tabList}>
           {items.map((item, index) => {
+            const IconComponent = iconMap[item.title.toUpperCase()]
             return (
               <Tab
                 className={`${styles.tab} ${
@@ -76,7 +88,12 @@ export default function TabsFile({
                 }
                 disabled={item.disabled}
               >
-                {item.title}
+                <div className={styles.tabInner}>
+                  {IconComponent && (
+                    <IconComponent className={styles.tabIcon} />
+                  )}
+                  <span>{item.title}</span>
+                </div>
               </Tab>
             )
           })}

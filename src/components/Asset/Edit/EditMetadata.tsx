@@ -1,6 +1,6 @@
 import { ReactElement, useState } from 'react'
 import { Formik } from 'formik'
-import { LoggerInstance, Asset, Nft, Metadata } from '@oceanprotocol/lib'
+import { LoggerInstance, Nft } from '@oceanprotocol/lib'
 import { metadataValidationSchema } from './_validation'
 import { getInitialValues } from './_constants'
 import { MetadataEditForm } from './_types'
@@ -9,18 +9,28 @@ import Web3Feedback from '@shared/Web3Feedback'
 import FormEditMetadata from './FormEditMetadata'
 import styles from './index.module.css'
 import content from '../../../../content/pages/editMetadata.json'
-import { useAbortController } from '@hooks/useAbortController'
 import DebugEditMetadata from './DebugEditMetadata'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
-import { setNftMetadata } from '@utils/nft'
 import { sanitizeUrl } from '@utils/url'
-import { assetStateToNumber } from '@utils/assetState'
 import { useAccount, useSigner } from 'wagmi'
 import {
   transformConsumerParameters,
-  generateCredentials
+  generateCredentials,
+  signAssetAndUploadToIpfs,
+  IpfsUpload,
+  stringifyCredentialPolicies
 } from '@components/Publish/_utils'
+import { Metadata } from 'src/@types/ddo/Metadata'
+import { Asset, AssetNft } from 'src/@types/Asset'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
+import { ethers } from 'ethers'
+import { convertLinks } from '@utils/links'
+import { License } from 'src/@types/ddo/License'
+import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
+import { useSsiWallet } from '@context/SsiWallet'
+import { State } from 'src/@types/ddo/State'
 
 export default function Edit({
   asset
@@ -31,7 +41,7 @@ export default function Edit({
   const { fetchAsset, isAssetNetwork, assetState } = useAsset()
   const { address: accountId } = useAccount()
   const { data: signer } = useSigner()
-  const newAbortController = useAbortController()
+  const ssiWalletContext = useSsiWallet()
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -41,69 +51,109 @@ export default function Edit({
     try {
       const linksTransformed = values.links?.length &&
         values.links[0].valid && [sanitizeUrl(values.links[0].url)]
-      const updatedMetadata: Metadata = {
-        ...asset.metadata,
-        name: values.name,
-        description: values.description,
-        links: linksTransformed,
-        author: values.author,
-        tags: values.tags,
-        license: values.license,
-        additionalInformation: {
-          ...asset.metadata?.additionalInformation
+
+      let license: License
+      if (!values.useRemoteLicense && values.licenseUrl[0]) {
+        license = {
+          name: values.licenseUrl[0].url,
+          licenseDocuments: [
+            {
+              name: values.licenseUrl[0].url,
+              fileType: values.licenseUrl[0].contentType,
+              sha256: values.licenseUrl[0].checksum,
+              mirrors: [
+                {
+                  type: values.licenseUrl[0].type,
+                  method: values.licenseUrl[0].method,
+                  url: values.licenseUrl[0].url
+                }
+              ]
+            }
+          ]
         }
       }
 
-      if (asset.metadata.type === 'algorithm') {
+      const updatedMetadata: Metadata = {
+        ...asset.credentialSubject?.metadata,
+        name: values.name,
+        description: {
+          '@value': values.description,
+          '@direction': '',
+          '@language': ''
+        },
+        links: convertLinks(linksTransformed),
+        author: values.author,
+        tags: values.tags,
+        license: values.useRemoteLicense ? values.uploadedLicense : license,
+        additionalInformation: {
+          ...asset.credentialSubject?.metadata?.additionalInformation
+        }
+      }
+
+      if (asset.credentialSubject?.metadata.type === 'algorithm') {
         updatedMetadata.algorithm.consumerParameters =
           !values.usesConsumerParameters
             ? undefined
             : transformConsumerParameters(values.consumerParameters)
       }
 
-      const updatedCredentials = generateCredentials(
-        asset?.credentials,
-        values?.allow,
-        values?.deny
-      )
+      const updatedCredentials = generateCredentials(values?.credentials)
+      const updatedNft: AssetNft = {
+        ...asset.indexedMetadata.nft,
+        state: State[values.assetState as unknown as keyof typeof State]
+      }
 
-      // TODO: remove version update at a later time
       const updatedAsset: Asset = {
         ...(asset as Asset),
-        version: '4.1.0',
-        metadata: updatedMetadata,
-        credentials: updatedCredentials
+        credentialSubject: {
+          ...(asset as Asset).credentialSubject,
+          metadata: updatedMetadata,
+          credentials: updatedCredentials
+        },
+        indexedMetadata: {
+          ...asset?.indexedMetadata,
+          nft: updatedNft
+        },
+        additionalDdos:
+          (values?.additionalDdos as AdditionalVerifiableCredentials[]) || []
       }
+
+      stringifyCredentialPolicies(updatedAsset.credentialSubject.credentials)
+      updatedAsset.credentialSubject.services.forEach((service) => {
+        stringifyCredentialPolicies(service.credentials)
+      })
 
       // delete custom helper properties injected in the market so we don't write them on chain
       delete (updatedAsset as AssetExtended).accessDetails
-      delete (updatedAsset as AssetExtended).datatokens
-      delete (updatedAsset as AssetExtended).stats
+      delete (updatedAsset as AssetExtended).views
       delete (updatedAsset as AssetExtended).offchain
+      delete (updatedAsset as any).credentialSubject.stats
 
-      const setMetadataTx = await setNftMetadata(
+      const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,
-        accountId,
         signer,
-        newAbortController()
+        encryptAsset,
+        customProviderUrl ||
+          updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
+        ssiWalletContext
       )
 
-      if (values.assetState !== assetState) {
-        const nft = new Nft(signer)
+      if (ipfsUpload /* && values.assetState !== assetState */) {
+        const nft = new Nft(signer, updatedAsset.credentialSubject.chainId)
 
-        await nft.setMetadataState(
-          asset?.nftAddress,
-          accountId,
-          assetStateToNumber(values.assetState)
+        await nft.setMetadata(
+          updatedAsset.credentialSubject.nftAddress,
+          await signer.getAddress(),
+          updatedNft.state,
+          customProviderUrl ||
+            updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
+          '',
+          ethers.utils.hexlify(ipfsUpload.flags),
+          ipfsUpload.metadataIPFS,
+          ipfsUpload.metadataIPFSHash
         )
-      }
 
-      LoggerInstance.log('[edit] setMetadata result', setMetadataTx)
-
-      if (!setMetadataTx) {
-        setError(content.form.error)
-        LoggerInstance.error(content.form.error)
-        return
+        LoggerInstance.log('Version 5.0.0 Asset updated. ID:', updatedAsset.id)
       }
 
       // Edit succeeded
@@ -119,8 +169,9 @@ export default function Edit({
     <Formik
       enableReinitialize
       initialValues={getInitialValues(
-        asset?.metadata,
-        asset?.credentials,
+        asset?.credentialSubject?.metadata,
+        asset?.credentialSubject?.credentials,
+        asset?.additionalDdos,
         assetState
       )}
       validationSchema={metadataValidationSchema}
@@ -151,7 +202,7 @@ export default function Edit({
             <FormEditMetadata />
 
             <Web3Feedback
-              networkId={asset?.chainId}
+              networkId={asset?.credentialSubject?.chainId}
               accountId={accountId}
               isAssetNetwork={isAssetNetwork}
             />

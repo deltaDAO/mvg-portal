@@ -34,6 +34,7 @@ export interface TableOceanProps<T> extends TableProps<T> {
   revenue: number
   sales: number
   items: number
+  allResults?: any[]
 }
 
 export default function HistoryTable({
@@ -54,24 +55,29 @@ export default function HistoryTable({
   revenue,
   sales,
   items,
+  allResults,
   ...props
 }: TableOceanProps<any>): ReactElement {
   const { networksList } = useNetworkMetadata()
 
   const handleExport = () => {
-    const exportData = data.map((asset) => {
+    const exportData = allResults.map((asset) => {
       const exportedAsset = {}
       columns.forEach((col) => {
         const value = col.selector(asset)
 
         if (col.name === 'Dataset') {
-          exportedAsset[col.name as string] = asset.metadata?.name
+          exportedAsset[col.name as string] =
+            asset.credentialSubject?.metadata?.name
         } else if (col.name === 'Network') {
-          const networkData = getNetworkDataById(networksList, asset.chainId)
+          const networkData = getNetworkDataById(
+            networksList,
+            asset.credentialSubject.chainId
+          )
           exportedAsset[col.name as string] = getNetworkDisplayName(networkData)
         } else if (col.name === 'Time') {
           exportedAsset[col.name as string] = new Date(
-            asset.event.datetime
+            asset.indexedMetadata?.event?.datetime
           ).toLocaleString()
         } else {
           exportedAsset[col.name as string] = value

@@ -1,8 +1,8 @@
 .network {
-  border: var(--menu-border-size) solid var(--menu-border-color);
+  /* border: var(--menu-border-size) solid var(--menu-border-color); */
   border-right: none;
-  border-top-left-radius: var(--menu-border-radius);
-  border-bottom-left-radius: var(--menu-border-radius);
+  /* border-top-left-radius: var(--menu-border-radius); */
+  /* border-bottom-left-radius: var(--menu-border-radius); */
   padding: calc(var(--spacer) / 6) calc(var(--spacer) / 3);
   white-space: nowrap;
   margin-right: -3px;
@@ -12,7 +12,7 @@
 
 .name {
   font-size: var(--font-size-small);
-  color: var(--menu-font-color);
+  color: #fff;
 }
 
 .badge {

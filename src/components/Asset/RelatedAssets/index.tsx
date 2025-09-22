@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { Asset, LoggerInstance } from '@oceanprotocol/lib'
+import { LoggerInstance } from '@oceanprotocol/lib'
 import { generateBaseQuery, queryMetadata } from '@utils/aquarius'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useAsset } from '@context/Asset'
@@ -7,6 +7,7 @@ import styles from './index.module.css'
 import { useCancelToken } from '@hooks/useCancelToken'
 import AssetList from '@shared/AssetList'
 import { generateQuery } from './_utils'
+import { Asset } from 'src/@types/Asset'
 
 export default function RelatedAssets(): ReactElement {
   const { asset } = useAsset()
@@ -19,9 +20,9 @@ export default function RelatedAssets(): ReactElement {
   useEffect(() => {
     if (
       !chainIds?.length ||
-      !asset?.nftAddress ||
-      !asset?.nft ||
-      !asset?.metadata
+      !asset?.credentialSubject?.nftAddress ||
+      !asset?.indexedMetadata.nft ||
+      !asset?.credentialSubject?.metadata
     ) {
       return
     }
@@ -33,25 +34,44 @@ export default function RelatedAssets(): ReactElement {
         let tagResults: Asset[] = []
 
         // safeguard against faults in the metadata
-        if (asset.metadata.tags instanceof Array) {
-          const tagQuery = generateBaseQuery(
-            generateQuery(chainIds, asset.nftAddress, 4, asset.metadata.tags)
-          )
-
-          tagResults = (await queryMetadata(tagQuery, newCancelToken()))
-            ?.results
+        if (asset.credentialSubject?.metadata.tags instanceof Array) {
+          const tagQuery = {
+            ...generateBaseQuery({
+              chainIds,
+              esPaginationOptions: { from: 0, size: 4 }
+            }),
+            query: {
+              bool: {
+                must: [
+                  {
+                    terms: {
+                      'credentialSubject.metadata.tags.keyword':
+                        asset.credentialSubject.metadata.tags
+                    }
+                  }
+                ],
+                must_not: [
+                  {
+                    term: {
+                      id: asset.id
+                    }
+                  }
+                ]
+              }
+            }
+          }
+          tagResults = (await queryMetadata(tagQuery, newCancelToken())).results
         }
-
-        if (tagResults.length === 4) {
+        if (tagResults?.length === 4) {
           setRelatedAssets(tagResults)
         } else {
           const ownerQuery = generateBaseQuery(
             generateQuery(
               chainIds,
-              asset.nftAddress,
-              4 - tagResults.length,
+              asset.credentialSubject.nftAddress,
+              4 - tagResults?.length,
               null,
-              asset.nft.owner
+              asset.indexedMetadata.nft.owner
             )
           )
 
@@ -61,12 +81,12 @@ export default function RelatedAssets(): ReactElement {
 
           // combine both results, and filter out duplicates
           // stolen from: https://stackoverflow.com/a/70326769/733677
-          const bothResults = tagResults.concat(
+          const bothResults = tagResults?.concat(
             ownerResults?.filter(
-              (asset2) => !tagResults.find((asset1) => asset1.id === asset2.id)
+              (asset2) => !tagResults?.find((asset1) => asset1.id === asset2.id)
             )
           )
-          setRelatedAssets(bothResults)
+          setRelatedAssets(bothResults?.filter((a) => a.id !== asset.id))
         }
       } catch (error) {
         LoggerInstance.error(error.message)

@@ -9,12 +9,11 @@ import {
 import queryString from 'query-string'
 import { CancelToken } from 'axios'
 import {
-  FilterByAccessOptions,
-  FilterByTypeOptions,
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
 import { filterSets, getInitialFilters } from './Filter'
+import { State } from 'src/@types/ddo/State'
 
 export function updateQueryStringParameter(
   uri: string,
@@ -42,11 +41,44 @@ export function getSearchQuery(
   sortDirection?: string,
   serviceType?: string | string[],
   accessType?: string | string[],
-  filterSet?: string | string[]
+  filterSet?: string | string[],
+  assetState?: string | string[]
 ): SearchQuery {
   text = escapeEsReservedCharacters(text)
   const emptySearchTerm = text === undefined || text === ''
   const filters: FilterTerm[] = []
+  if (assetState) {
+    const normalizeState = (s: string): number => Number(s)
+
+    if (Array.isArray(assetState)) {
+      const stateNumbers = assetState
+        .map(normalizeState)
+        .filter((v) => !isNaN(v))
+      if (stateNumbers.length > 0) {
+        filters.push({
+          terms: {
+            'indexedMetadata.nft.state': stateNumbers
+          }
+        })
+      }
+    } else {
+      const stateNumber = normalizeState(assetState)
+      if (!isNaN(stateNumber)) {
+        filters.push({
+          term: {
+            'indexedMetadata.nft.state': stateNumber
+          }
+        })
+      }
+    }
+  } else {
+    filters.push({
+      term: {
+        'indexedMetadata.nft.state': State.Active
+      }
+    })
+  }
+
   let searchTerm = text || ''
   let nestedQuery
   if (tags) {
@@ -64,14 +96,14 @@ export function getSearchQuery(
         : '**'
     const searchFields = [
       'id',
-      'nft.owner',
-      'datatokens.address',
-      'datatokens.name',
-      'datatokens.symbol',
-      'metadata.name^10',
-      'metadata.author',
-      'metadata.description',
-      'metadata.tags'
+      'indexedMetadata.nft.owner',
+      'indexedMetadata.stats.datatokenAddress',
+      'indexedMetadata.stats.name',
+      'indexedMetadata.stats.symbol',
+      'credentialSubject.metadata.name^10',
+      'credentialSubject.metadata.author',
+      'credentialSubject.metadata.description',
+      'credentialSubject.metadata.tags'
     ]
 
     nestedQuery = {
@@ -128,7 +160,7 @@ export function getSearchQuery(
     chainIds,
     nestedQuery,
     esPaginationOptions: {
-      from: (Number(page) - 1 || 0) * (Number(offset) || 21),
+      from: page || 0,
       size: Number(offset) || 21
     },
     sortOptions: { sortBy: sort, sortDirection },
@@ -152,6 +184,7 @@ export async function getResults(
     serviceType?: string | string[]
     accessType?: string | string[]
     filterSet?: string[]
+    assetState?: string | string[]
   },
   chainIds: number[],
   cancelToken?: CancelToken
@@ -166,7 +199,8 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    filterSet
+    filterSet,
+    assetState
   } = params
 
   const searchQuery = getSearchQuery(
@@ -180,11 +214,10 @@ export async function getResults(
     sortOrder,
     serviceType,
     accessType,
-    filterSet
+    filterSet,
+    assetState
   )
   const queryResult = await queryMetadata(searchQuery, cancelToken)
-
-  // update queryResult to workaround the wrong return datatype of totalPages and totalResults
   return queryResult?.results?.length === 0
     ? {
         ...queryResult,

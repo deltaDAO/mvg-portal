@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { useField, useFormikContext } from 'formik'
 import UrlInput from '../URLInput'
 import { InputProps } from '@shared/FormInput'
@@ -15,7 +15,9 @@ import { getOceanConfig } from '@utils/ocean'
 import axios from 'axios'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { useNetwork } from 'wagmi'
-import { toast } from 'react-toastify'
+import { customProviderUrl } from 'app.config.cjs'
+import CircleErrorIcon from '@images/circle_error.svg'
+import CircleCheckIcon from '@images/circle_check.svg'
 
 export default function CustomProvider(props: InputProps): ReactElement {
   const { chain } = useNetwork()
@@ -23,6 +25,10 @@ export default function CustomProvider(props: InputProps): ReactElement {
   const { initialValues, setFieldError } = useFormikContext<FormPublishData>()
   const [field, meta, helpers] = useField(props.name)
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    helpers.setValue({ url: customProviderUrl, valid: true, custom: true })
+  }, [])
 
   async function handleValidation(e: React.SyntheticEvent) {
     e.preventDefault()
@@ -54,10 +60,12 @@ export default function CustomProvider(props: InputProps): ReactElement {
       })
       const userChainId = chain?.id || 100
       const providerChain =
-        providerResponse?.data?.chainId || providerResponse?.data?.chainIds
+        (providerResponse?.data?.chainId as number) ||
+        providerResponse?.data?.chainIds
 
       const isCompatible =
-        providerChain === userChainId
+        // eslint-disable-next-line eqeqeq
+        providerChain == userChainId
           ? true
           : !!(
               providerChain.length > 0 &&
@@ -94,17 +102,20 @@ export default function CustomProvider(props: InputProps): ReactElement {
 
   function handleDefault(e: React.SyntheticEvent) {
     e.preventDefault()
-
     const oceanConfig = getOceanConfig(chain?.id || 100)
     const providerUrl =
-      oceanConfig?.providerUri || initialValues.services[0].providerUrl.url
-
-    helpers.setValue({ url: providerUrl, valid: true, custom: false })
+      customProviderUrl ||
+      oceanConfig?.nodeUri ||
+      initialValues.services[0].providerUrl.url
+    helpers.setValue({ url: providerUrl, valid: true, custom: true })
   }
 
-  return field?.value?.valid === true ? (
-    <FileInfo file={field.value} handleClose={handleFileInfoClose} />
-  ) : (
+  function handleClear() {
+    helpers.setValue({ url: '', valid: false, custom: true })
+    helpers.setTouched(false)
+  }
+
+  return (
     <>
       <UrlInput
         submitText="Validate"
@@ -112,15 +123,28 @@ export default function CustomProvider(props: InputProps): ReactElement {
         name={`${field.name}.url`}
         isLoading={isLoading}
         handleButtonClick={handleValidation}
+        isValidated={field?.value?.valid === true}
+        onReset={handleClear}
       />
-      <Button
-        style="text"
-        size="small"
-        onClick={handleDefault}
-        className={styles.default}
-      >
-        Use Default Provider
-      </Button>
+
+      {field?.value?.valid === true ? (
+        <div className={styles.defaultContainer}>
+          <CircleCheckIcon />
+          <div className={styles.confirmed}>File confirmed</div>
+        </div>
+      ) : (
+        <Button
+          style="text"
+          size="small"
+          onClick={handleDefault}
+          className={styles.default}
+        >
+          <div className={styles.defaultContainer}>
+            <CircleErrorIcon />
+            Use Default Provider
+          </div>
+        </Button>
+      )}
     </>
   )
 }

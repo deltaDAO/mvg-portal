@@ -1,0 +1,193 @@
+.menu {
+  width: 1160px;
+  height: 70px;
+  padding: calc(var(--spacer) / 2);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  background: transparent;
+  margin-bottom: 2rem;
+}
+
+.logo {
+  white-space: nowrap;
+  display: flex;
+}
+
+.logo {
+  order: 0;
+  align-items: center;
+}
+
+.navigation {
+  order: 3;
+  margin-top: calc(var(--spacer) / 2);
+  text-align: center;
+  border-top: var(--menu-mobile-navigation-border-size) solid
+    var(--menu-mobile-navigation-border-color);
+  border-bottom: var(--menu-mobile-navigation-border-size) solid
+    var(--menu-mobile-navigation-border-color);
+  margin-left: -1rem;
+  margin-right: -1rem;
+  width: calc(100% + 2rem);
+}
+
+.actions {
+  order: 2;
+  display: flex;
+  gap: calc(var(--spacer) / 3);
+  margin-left: auto;
+  align-items: center;
+  font-size: 22px;
+}
+
+.navigation {
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: none;
+}
+
+.navigation::-webkit-scrollbar,
+.navigation::-moz-scrollbar {
+  display: none;
+}
+
+.navigation li {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: calc(var(--spacer) / 3);
+  margin-left: calc(var(--spacer) / 3);
+}
+
+.link {
+  composes: text from '../../@shared/atoms/Button/index.module.css';
+
+  color: white;
+  font-weight: var(--menu-link-font-weight);
+  font-size: var(--menu-link-font-size);
+}
+
+.link,
+.link:hover,
+.link:focus,
+.link:active,
+.active {
+  display: block;
+  padding: calc(var(--spacer) / 8) 0;
+  text-transform: uppercase;
+  transform: none;
+  position: relative;
+  z-index: 1;
+}
+
+.link:after {
+  content: '';
+  position: absolute;
+  background-color: var(--menu-font-color-hover);
+  height: 2px;
+  left: 1px;
+  right: 1px;
+  bottom: 0;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  transition: transform 0.2s;
+}
+
+.link:hover:after,
+.active:after {
+  transform: scaleX(1);
+}
+
+.link:hover {
+  color: var(--menu-font-color-hover);
+}
+
+.link:active,
+.link:focus,
+.active,
+.active:hover {
+  color: var(--menu-font-color-active);
+}
+
+.active:after {
+  background-color: var(--menu-font-color-active);
+}
+
+.link[aria-disabled] {
+  pointer-events: none;
+}
+
+.logo svg {
+  margin-right: calc(var(--spacer) / 3);
+  width: 11rem;
+}
+
+.actions button {
+  text-transform: none;
+}
+
+.caret,
+svg.caret {
+  display: none;
+  width: var(--menu-caret-size);
+  height: var(--menu-caret-size);
+  fill: var(--menu-caret-fill-color);
+  transition: transform 0.2s ease-out;
+  vertical-align: middle;
+  margin-left: calc(var(--spacer) / 4);
+}
+
+[aria-expanded='true'] .caret {
+  transform: rotate(180deg);
+}
+
+@media screen and (min-width: 75rem) {
+  .caret,
+  svg.caret {
+    display: inline-block;
+  }
+
+  .navigation {
+    margin-left: calc(var(--spacer) / 2);
+  }
+}
+
+@media screen and (min-width: 256px) and (max-width: 786px) {
+  .menu {
+    width: 100%;
+  }
+  .actions {
+    font-size: 18px;
+    margin-top: 1rem;
+  }
+}
+@media screen and (min-width: 786px) and (max-width: 1025px) {
+  .menu {
+    margin-top: 1rem;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1026px) and (max-width: 1250px) {
+  .menu {
+    margin-top: 1rem;
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 1550px) and (max-width: 2550px) {
+  .menu {
+    margin-top: 1rem;
+    width: 1500px;
+    /* height: 140px; */
+  }
+}
+
+@media screen and (min-width: 2550px) {
+  .menu {
+    width: 1900px;
+    /* height: 140px; */
+  }
+}

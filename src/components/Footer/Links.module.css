@@ -1,20 +1,21 @@
 .container {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: calc(var(--spacer) * 2);
   width: 100%;
 }
 
 .section {
-  text-align: left;
+  text-align: center;
 }
 
 .title {
   margin-bottom: calc(var(--spacer) / 2);
   text-transform: uppercase;
-  font-weight: var(--font-weight-bold);
-  color: var(--footer-link-category-font-color);
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
 }
 
 .links {
@@ -26,25 +27,32 @@
 }
 
 .link {
-  composes: text from '../@shared/atoms/Button/index.module.css';
-}
-
-.link,
-.link:focus,
-.link:active {
-  text-transform: none;
-  color: var(--footer-font-color);
-  font-weight: var(--font-weight-normal);
-  transform: none;
+  font-weight: 400;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  position: relative;
+  padding-right: 20px;
 }
 
 .link:hover {
-  color: var(--footer-font-color-highlight);
-  transform: none;
+  color: #fdd655;
+  text-decoration: underline;
+}
+
+.arrow {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: var(--font-size-small);
 }
 
 @media screen and (min-width: 55rem) {
   .container {
+    justify-content: flex-start;
     width: auto;
+  }
+  .section {
+    text-align: left;
   }
 }

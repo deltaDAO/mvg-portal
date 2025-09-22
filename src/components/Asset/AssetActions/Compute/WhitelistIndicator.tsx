@@ -24,7 +24,9 @@ export default function WhitelistIndicator({
       <Badge
         isValid={isAccountIdWhitelisted}
         verifiedService={
-          isAccountIdWhitelisted ? 'Access allowed' : 'Access denied'
+          isAccountIdWhitelisted
+            ? 'Web3 address verification passed'
+            : 'Access denied for web3 address'
         }
         className={styles.whitelistBadge}
       />

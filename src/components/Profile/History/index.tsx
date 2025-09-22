@@ -4,12 +4,13 @@ import PublishedList from './PublishedList'
 import Downloads from './Downloads'
 import ComputeJobs from './ComputeJobs'
 import styles from './index.module.css'
-import { getComputeJobs } from '@utils/compute'
+import { getAllComputeJobs, getComputeJobs } from '@utils/compute'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useAccount } from 'wagmi'
 import HistoryData from './HistoryData'
+import { getUserOrders } from '@utils/aquarius'
 
 interface HistoryTab {
   title: string
@@ -89,14 +90,27 @@ export default function HistoryPage({
 
       try {
         type === 'init' && setIsLoadingJobs(true)
-        const computeJobs = await getComputeJobs(
-          chainIds,
-          accountId,
-          null,
-          null, // TODO whitch service?
-          newCancelToken()
-        )
-        setJobs(computeJobs.computeJobs)
+        let currentPage = 1
+        let totalPages = 1
+
+        const dtList: string[] = []
+
+        // Fetch all pages of user orders
+        while (currentPage <= totalPages) {
+          const orders = await getUserOrders(
+            accountId,
+            newCancelToken(),
+            currentPage
+          )
+          orders?.results?.forEach((order) => {
+            if (order.datatokenAddress) dtList.push(order.datatokenAddress)
+          })
+          // eslint-disable-next-line prefer-destructuring
+          totalPages = orders?.totalPages || 0
+          currentPage++
+        }
+        const computeJobs = await getAllComputeJobs(accountId, newCancelToken())
+        setJobs(computeJobs?.computeJobs)
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
         LoggerInstance.error(error.message)

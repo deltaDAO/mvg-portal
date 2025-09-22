@@ -5,6 +5,7 @@ import AddService from './AddService'
 import ServiceCard from '../AssetContent/ServiceCard'
 import AddServiceCard from './AddServiceCard'
 import styles from './index.module.css'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 export default function EditServices({
   asset
@@ -16,7 +17,7 @@ export default function EditServices({
   return (
     <div>
       <div className={styles.servicesGrid}>
-        {asset.services.map((service, index) => (
+        {asset.credentialSubject?.services.map((service, index) => (
           <ServiceCard
             key={service.id}
             service={service}
@@ -35,7 +36,7 @@ export default function EditServices({
             <h3>
               {selectedService === -1
                 ? 'Add a new service'
-                : `Edit service ${asset.services[selectedService].name}`}
+                : `Edit service ${asset.credentialSubject?.services[selectedService].name}`}
             </h3>
             <Button
               size="small"
@@ -51,7 +52,7 @@ export default function EditServices({
           ) : (
             <EditService
               asset={asset}
-              service={asset.services[selectedService]}
+              service={asset.credentialSubject?.services[selectedService]}
               accessDetails={asset.accessDetails[selectedService]}
             />
           )}

@@ -1,4 +1,4 @@
-import { allowFixedPricing, defaultAccessTerms } from '../../../app.config'
+import { allowFixedPricing } from '../../../app.config.cjs'
 import {
   FormPublishData,
   MetadataAlgorithmContainer,
@@ -11,8 +11,10 @@ import MetadataFields from './Metadata'
 import ServicesFields from './Services'
 import Preview from './Preview'
 import Submission from './Submission'
-import { ServiceComputeOptions } from '@oceanprotocol/lib'
 import contentFeedback from '../../../content/publish/feedback.json'
+import { Compute } from 'src/@types/ddo/Service'
+import { AdditionalCredentials } from './AdditionalCredentials'
+import { AccessPolicies } from './AccessPolicies'
 
 export const wizardSteps: StepContent[] = [
   {
@@ -22,27 +24,37 @@ export const wizardSteps: StepContent[] = [
   },
   {
     step: 2,
+    title: content.policies.title,
+    component: <AccessPolicies />
+  },
+  {
+    step: 3,
     title: content.services.title,
     component: <ServicesFields />
   },
   {
-    step: 3,
+    step: 4,
     title: content.pricing.title,
     component: <PricingFields />
   },
   {
-    step: 4,
+    step: 5,
+    title: content.additionalDdos.title,
+    component: <AdditionalCredentials />
+  },
+  {
+    step: 6,
     title: content.preview.title,
     component: <Preview />
   },
   {
-    step: 5,
+    step: 7,
     title: content.submission.title,
     component: <Submission />
   }
 ]
 
-const computeOptions: ServiceComputeOptions = {
+const computeOptions: Compute = {
   allowRawAlgorithm: false,
   allowNetworkAccess: true,
   publisherTrustedAlgorithmPublishers: [],
@@ -56,20 +68,31 @@ export const initialValues: FormPublishData = {
     accountId: ''
   },
   metadata: {
-    nft: { name: '', symbol: '', description: '', image_data: '' },
+    nft: {
+      name: '',
+      symbol: '',
+      description: '',
+      image_data: '',
+      external_url: ''
+    },
     transferable: true,
-    type: 'dataset',
+    type: 'dataset' as 'dataset' | 'algorithm',
     name: '',
-    author: '',
     description: '',
-    tags: [],
+    author: '',
     termsAndConditions: false,
     dockerImage: '',
     dockerImageCustom: '',
     dockerImageCustomTag: '',
     dockerImageCustomEntrypoint: '',
+    dockerImageCustomChecksum: '',
+    tags: [],
     usesConsumerParameters: false,
-    consumerParameters: []
+    consumerParameters: [],
+    dataSubjectConsent: false,
+    licenseTypeSelection: '',
+    licenseUrl: [{ url: '', type: 'url' }],
+    uploadedLicense: undefined
   },
   services: [
     {
@@ -86,8 +109,13 @@ export const initialValues: FormPublishData = {
       computeOptions,
       usesConsumerParameters: false,
       consumerParameters: [],
-      allow: [],
-      deny: []
+      credentials: {
+        allow: [],
+        deny: [],
+        requestCredentials: [],
+        vcPolicies: [],
+        enabled: false
+      }
     }
   ],
   pricing: {
@@ -95,7 +123,27 @@ export const initialValues: FormPublishData = {
     price: 0,
     type: allowFixedPricing === 'true' ? 'fixed' : 'free',
     freeAgreement: false
-  }
+  },
+  additionalDdos: [],
+  additionalDdosPageVisited: false,
+  credentials: {
+    allow: [],
+    deny: [],
+    allowInputValue: '',
+    denyInputValue: '',
+    requestCredentials: [],
+    vcPolicies: [],
+    enabled: false
+  },
+  accessPolicyPageVisited: false,
+  step1Completed: false,
+  step2Completed: false,
+  step3Completed: false,
+  step4Completed: false,
+  step5Completed: false,
+  step6Completed: false,
+  submissionPageVisited: false,
+  previewPageVisited: false
 }
 
 export const algorithmContainerPresets: MetadataAlgorithmContainer[] = [

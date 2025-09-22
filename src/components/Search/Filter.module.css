@@ -26,6 +26,10 @@
 
 .filterTypeLabel {
   margin: calc(var(--spacer) / 4) 0;
+  font-weight: 700;
+  /* font-size: 14px; */
+  line-height: 171%;
+  color: var(--publish-text-secondary);
 }
 
 .filterType > div:not(:last-child) {

@@ -8,11 +8,22 @@
   border-bottom: none;
 }
 
+/* Your custom input styling */
 .input {
   composes: checkbox from '@shared/FormInput/InputElement/Radio/index.module.css';
   vertical-align: baseline;
   margin-right: calc(var(--spacer) / 3);
   margin-top: 0;
+}
+
+/* Override the checked state */
+.input:checked {
+  /* background-color: yellow !important; */
+  /* You might also need to override other properties */
+  border-color: rgb(13, 75, 120) !important;
+  border-radius: 2px;
+  background: rgb(13, 75, 120) !important;
+  box-shadow: 0 0 0 1px rgb(13, 75, 120) !important;
 }
 
 .radioLabel {

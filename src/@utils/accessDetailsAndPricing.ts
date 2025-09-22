@@ -1,12 +1,11 @@
 import {
-  AssetPrice,
+  ComputeAsset,
   Datatoken,
   FixedRateExchange,
   getErrorMessage,
   LoggerInstance,
   ProviderFees,
   ProviderInstance,
-  Service,
   ZERO_ADDRESS
 } from '@oceanprotocol/lib'
 import { getFixedBuyPrice } from './ocean/fixedRateExchange'
@@ -15,10 +14,15 @@ import {
   consumeMarketOrderFee,
   publisherMarketOrderFee,
   customProviderUrl
-} from '../../app.config'
+} from '../../app.config.cjs'
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
 import { getDummySigner } from './wallet'
+import { Service } from '../@types/ddo/Service'
+import { AssetExtended } from '../@types/AssetExtended'
+import { CancelToken } from 'axios'
+import { getUserOrders } from './aquarius'
+import { AssetPrice } from '../@types/AssetPrice'
 
 /**
  * This will be used to get price including fees before ordering
@@ -47,16 +51,26 @@ export async function getOrderPriceAndFees(
   // fetch provider fee
   let initializeData
   try {
-    initializeData =
-      !providerFees &&
-      (await ProviderInstance.initialize(
+    let initialize = null
+    if (service.type === 'compute') {
+      console.log('service type is compute')
+    } else {
+      initialize = await ProviderInstance.initialize(
         asset.id,
         service.id,
         0,
         accountId,
         customProviderUrl || service.serviceEndpoint
-      ))
+      )
+    }
+    initializeData = !providerFees && initialize
   } catch (error) {
+    if (error.message.includes('Unexpected token')) {
+      // toast.error(
+      //   `Use the initializeCompute endpoint to initialize compute jobs`
+      // )
+      return
+    }
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Initialize Provider] Error:', message)
 
@@ -88,17 +102,19 @@ export async function getOrderPriceAndFees(
     }
     toast.error(message)
   }
-  orderPriceAndFee.providerFee = providerFees || initializeData.providerFee
-
+  orderPriceAndFee.providerFee = providerFees || initializeData?.providerFee
   // fetch price and swap fees
   if (accessDetails.type === 'fixed') {
-    const fixed = await getFixedBuyPrice(accessDetails, asset.chainId, signer)
+    const fixed = await getFixedBuyPrice(
+      accessDetails,
+      asset.credentialSubject.chainId,
+      signer
+    )
     orderPriceAndFee.price = accessDetails.price
     orderPriceAndFee.opcFee = fixed.oceanFeeAmount
     orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount
     orderPriceAndFee.consumeMarketFixedSwapFee = fixed.consumeMarketFeeAmount
   }
-
   const price = new Decimal(+accessDetails.price || 0)
   const consumeMarketFeePercentage =
     +orderPriceAndFee?.consumeMarketOrderFee || 0
@@ -122,7 +138,9 @@ export async function getOrderPriceAndFees(
  */
 export async function getAccessDetails(
   chainId: number,
-  service: Service
+  service: Service,
+  accountId: string,
+  cancelToken: CancelToken
 ): Promise<AccessDetails> {
   const signer = await getDummySigner(chainId)
   const datatoken = new Datatoken(signer, chainId)
@@ -152,6 +170,47 @@ export async function getAccessDetails(
     isPurchasable: true,
     publisherMarketOrderFee: '0'
   }
+  try {
+    // Check for past orders
+    let allOrders: any[] = []
+    let page = 1
+    let totalPages = 1
+
+    // Fetch all orders across all pages
+    while (page <= totalPages) {
+      const filter =
+        service.type === 'compute' ? 'payer.keyword' : 'consumer.keyword'
+      const res = await getUserOrders(accountId, cancelToken, page, filter)
+      allOrders = allOrders.concat(res?.results || [])
+      const orderTotal = res?.totalPages || 0
+      totalPages = orderTotal
+      page++
+    }
+    const matchingOrders = allOrders.filter(
+      (order) =>
+        order.datatokenAddress.toLowerCase() ===
+          datatokenAddress.toLowerCase() ||
+        order.payer.toLowerCase() === datatokenAddress.toLowerCase()
+    )
+
+    const order = matchingOrders.reduce((prev, curr) => {
+      return curr.timestamp > prev.timestamp ? curr : prev
+    }, matchingOrders[0])
+
+    if (order) {
+      const orderTimestamp = order.timestamp
+      const timeout = Number(service.timeout)
+      const now = Date.now()
+
+      const isValid =
+        timeout === 0 ||
+        (orderTimestamp && orderTimestamp * 1000 + timeout * 1000 > now)
+      accessDetails.isOwned = isValid
+      accessDetails.validOrderTx = isValid ? order.orderId : ''
+    }
+  } catch (err) {
+    LoggerInstance.error('[getAccessDetails] Failed to fetch user orders', err)
+  }
 
   // if there is at least 1 dispenser => service is free and use first dispenser
   const dispensers = await datatoken.getDispensers(datatokenAddress)
@@ -169,7 +228,7 @@ export async function getAccessDetails(
   if (fixedRates.length > 0) {
     const freAddress = fixedRates[0].contractAddress
     const exchangeId = fixedRates[0].id
-    const fre = new FixedRateExchange(freAddress, signer)
+    const fre = new FixedRateExchange(freAddress, signer, chainId)
     const exchange = await fre.getExchange(exchangeId)
 
     return {

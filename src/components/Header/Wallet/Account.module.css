@@ -1,22 +1,17 @@
+/* Updated to remove all boxes while keeping functionality */
 .button {
   font-family: var(--font-family-base);
-  font-size: var(--font-size-small);
+  font-size: 20px;
   text-transform: uppercase;
-  border: var(--menu-border-size) solid var(--menu-border-color);
-  border-radius: var(--menu-border-radius);
-  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 3);
+  padding: 0;
   white-space: nowrap;
-  background: var(--background-content);
   margin: 0;
-  transition: border 0.2s ease-out;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  height: 100%;
+  height: auto;
   display: flex;
   align-items: center;
-}
-
-.button,
-.address {
   color: var(--menu-font-color);
 }
 
@@ -24,10 +19,20 @@
 .button:focus {
   transform: none;
   outline: 0;
+  /* text-decoration: underline; */
 }
 
 .button.initial {
-  color: var(--menu-font-color);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 137%;
+  text-align: center;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .button.initial span {
@@ -35,16 +40,17 @@
 }
 
 .address {
+  font-family: var(--font-family);
   display: none;
   text-transform: none;
-  border-right: var(--menu-border-size) solid var(--menu-border-color);
   padding-right: calc(var(--spacer) / 3);
   padding-left: calc(var(--spacer) / 8);
+  color: #fff;
 }
 
 .button svg {
-  width: 1em;
-  height: 1em;
+  width: var(--menu-caret-size);
+  height: var(--menu-caret-size);
   fill: var(--menu-icon-color-fill);
   display: inline-block;
   vertical-align: middle;
@@ -64,10 +70,10 @@
 
 .caret,
 svg.caret {
-  display: none;
+  display: inline;
 }
 
-@media screen and (min-width: 25rem) {
+@media screen and (min-width: 15rem) and (max-width: 47rem) {
   .button.initial span {
     display: inline;
   }
@@ -75,6 +81,38 @@ svg.caret {
   svg.caret {
     display: inline-block;
     fill: var(--menu-icon-fill-color);
+  }
+}
+@media screen and (min-width: 47rem) {
+  .button.initial span {
+    display: inline;
+  }
+  /* ... */
+}
+
+@media screen and (min-width: 481px) and (max-width: 1150px) {
+  .button {
+    font-size: 16px;
+  }
+  .button.initial {
+    font-size: 16px;
+  }
+}
+
+@media screen and (min-width: 150px) and (max-width: 480px) {
+  .button.initial {
+    font-size: 14px;
+    /* max-width: 50%; */
+  }
+  .button {
+    font-size: 14px;
+  }
+  .button.initial::after {
+    content: 'Connect...';
+  }
+
+  .button.initial span {
+    display: none;
   }
 }
 
@@ -85,4 +123,42 @@ svg.caret {
   .blockies {
     margin-right: calc(var(--spacer) / 6);
   }
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.inputWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: white;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  z-index: 9999;
+  position: relative;
+  max-width: 400px;
+  width: max-content;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.inputWrapper label {
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.inputWrapper input {
+  width: 100%;
+  min-width: 200px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
 }

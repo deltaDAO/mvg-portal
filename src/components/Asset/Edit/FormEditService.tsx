@@ -1,30 +1,38 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState, useMemo } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
-import { Service } from '@oceanprotocol/lib'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import FormEditComputeService from './FormEditComputeService'
 import { defaultServiceComputeOptions } from './_constants'
 import styles from './index.module.css'
+import { Service } from 'src/@types/ddo/Service'
+import { getDefaultPolicies } from '@components/Publish/_utils'
+import appConfig from 'app.config.cjs'
+import { PolicyEditor } from '@components/@shared/PolicyEditor'
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { supportedLanguages } from '../languageType'
 
 export default function FormEditService({
   data,
   chainId,
   service,
-  accessDetails
+  accessDetails,
+  assetType
 }: {
   data: FormFieldContent[]
   chainId: number
   service: Service
   accessDetails: AccessDetails
+  assetType: string
 }): ReactElement {
   const formUniqueId = service.id // because BoxSelection component is not a Formik component
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
+  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
   const accessTypeOptionsTitles = getFieldContent('access', data).options
 
@@ -47,14 +55,79 @@ export default function FormEditService({
     }
   ]
 
+  const languageOptions = useMemo(() => {
+    return supportedLanguages
+      .map((lang) => lang.name)
+      .sort((a, b) => a.localeCompare(b))
+  }, [])
+
+  useEffect(() => {
+    if (!values.language || values.language === '') {
+      setFieldValue('language', 'en')
+      setFieldValue('direction', 'ltr')
+    }
+  }, [setFieldValue, values.language])
+
+  const handleLanguageChange = (languageName: string) => {
+    const selectedLanguage = supportedLanguages.find(
+      (lang) => lang.name === languageName
+    )
+
+    if (selectedLanguage) {
+      setFieldValue('language', selectedLanguage.code)
+      setFieldValue('direction', selectedLanguage.direction)
+    }
+  }
+
+  const getCurrentLanguageName = () => {
+    if (!values.language) return ''
+
+    const language = supportedLanguages.find(
+      (lang) => lang.code === values.language
+    )
+    return language?.name || ''
+  }
+
+  useEffect(() => {
+    if (appConfig.ssiEnabled) {
+      getDefaultPolicies()
+        .then((policies) => {
+          const newVcPolicies = [
+            ...new Set(policies.concat(values.credentials.vcPolicies))
+          ]
+          setFieldValue('credentials.vcPolicies', newVcPolicies)
+          setDefaultPolicies(policies)
+        })
+        .catch((error) => {
+          LoggerInstance.error(error)
+          setFieldValue('credentials.vcPolicies', [])
+          setDefaultPolicies([])
+        })
+    }
+  }, [])
+
   return (
     <Form className={styles.form}>
       <Field {...getFieldContent('name', data)} component={Input} name="name" />
-
       <Field
         {...getFieldContent('description', data)}
         component={Input}
         name="description"
+      />
+      <Field
+        {...getFieldContent('language', data)}
+        component={Input}
+        name="language"
+        type="select"
+        options={languageOptions}
+        value={getCurrentLanguageName()}
+        onChange={(e) => handleLanguageChange(e.target.value)}
+      />
+      <Field
+        {...getFieldContent('direction', data)}
+        component={Input}
+        name="direction"
+        readOnly
       />
 
       <Field
@@ -65,7 +138,7 @@ export default function FormEditService({
         disabled={true}
       />
 
-      {values.access === 'compute' && (
+      {values.access === 'compute' && assetType === 'dataset' && (
         <FormEditComputeService
           chainId={chainId}
           serviceEndpoint={service.serviceEndpoint} // if we allow editing serviceEndpoint, we need to update it here
@@ -106,11 +179,37 @@ export default function FormEditService({
       />
 
       <Field
+        {...getFieldContent('state', data)}
+        component={Input}
+        name="state"
+      />
+
+      <Field
         {...getFieldContent('allow', data)}
         component={Input}
-        name="allow"
+        name="credentials.allow"
       />
-      <Field {...getFieldContent('deny', data)} component={Input} name="deny" />
+      <Field
+        {...getFieldContent('deny', data)}
+        component={Input}
+        name="credentials.deny"
+      />
+
+      {appConfig.ssiEnabled ? (
+        <PolicyEditor
+          label="SSI Policies"
+          credentials={values.credentials}
+          setCredentials={(newCredentials) =>
+            setFieldValue('credentials', newCredentials)
+          }
+          defaultPolicies={defaultPolicies}
+          name="credentials"
+          help="Self-sovereign identity (SSI) is used to verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
+          enabledView={values.credentials.requestCredentials?.length > 0}
+        />
+      ) : (
+        <></>
+      )}
 
       <Field
         {...getFieldContent('usesConsumerParameters', data)}

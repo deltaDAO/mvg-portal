@@ -10,6 +10,8 @@ import { getServiceByName } from '@utils/ddo'
 import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
 import Time from '../atoms/Time'
 import Loader from '../atoms/Loader'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import Alert from '../atoms/Alert'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
@@ -45,21 +47,36 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Price',
     selector: (row) => {
-      return <Price price={row.stats.price} size="small" />
+      return (
+        <Price
+          price={{
+            value: Number(row.indexedMetadata.stats[0].prices[0].price),
+            tokenSymbol: row.indexedMetadata.stats[0].symbol,
+            tokenAddress: row.indexedMetadata.stats[0].datatokenAddress
+          }}
+          size="small"
+        />
+      )
     },
     maxWidth: '7rem'
   },
   {
     name: 'Sales',
     selector: (row) => {
-      return <strong>{row.stats.orders < 0 ? 'N/A' : row.stats.orders}</strong>
+      return (
+        <strong>
+          {row.indexedMetadata.stats[0].orders < 0
+            ? 'N/A'
+            : row.indexedMetadata.stats[0].orders}
+        </strong>
+      )
     },
     maxWidth: '7rem'
   },
   {
     name: 'Published',
     selector: (row) => {
-      return <Time date={row.nft.created} />
+      return <Time date={row.indexedMetadata.nft.created} />
     },
     maxWidth: '7rem'
   }
@@ -109,12 +126,12 @@ export default function AssetList({
     <Loader />
   ) : (
     <>
-      {showAssetViewSelector && (
+      {/* {showAssetViewSelector && (
         <AssetViewSelector
           activeAssetView={activeAssetView}
           setActiveAssetView={setActiveAssetView}
         />
-      )}
+      )} */}
       <div className={styleClasses}>
         {assets?.length > 0 && assets[0] !== undefined ? (
           <>
@@ -129,18 +146,23 @@ export default function AssetList({
             )}
 
             {activeAssetView === AssetViewOptions.Grid &&
-              assets?.map((asset) => (
-                <AssetTeaser
-                  asset={asset}
-                  key={asset.id}
-                  noPublisher={noPublisher}
-                  noDescription={noDescription}
-                  noPrice={noPrice}
-                />
-              ))}
+              assets?.map((asset) => {
+                if (asset?.indexedMetadata && asset?.credentialSubject) {
+                  return (
+                    <AssetTeaser
+                      asset={asset}
+                      key={asset.id}
+                      noPublisher={noPublisher}
+                      noDescription={noDescription}
+                      noPrice={noPrice}
+                    />
+                  )
+                }
+                return null
+              })}
           </>
         ) : (
-          <div className={styles.empty}>No results found</div>
+          <Alert warning>No results found</Alert>
         )}
       </div>
       {showPagination && (

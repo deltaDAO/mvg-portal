@@ -33,3 +33,27 @@
   font-size: var(--font-size-base);
   font-family: var(--font-family-heading);
 }
+
+.datasetsContainer {
+  margin-bottom: 1rem;
+}
+
+.radioList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.radioItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.radioItem input[type='radio'] {
+  margin-top: 4px;
+}

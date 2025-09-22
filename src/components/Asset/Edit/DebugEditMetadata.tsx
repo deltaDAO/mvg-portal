@@ -1,4 +1,3 @@
-import { Asset, Credentials, Metadata } from '@oceanprotocol/lib'
 import { ReactElement, useEffect, useState } from 'react'
 import DebugOutput from '@shared/DebugOutput'
 import { MetadataEditForm } from './_types'
@@ -8,6 +7,12 @@ import {
   generateCredentials,
   transformConsumerParameters
 } from '@components/Publish/_utils'
+import { Asset, AssetNft } from 'src/@types/Asset'
+import { Metadata } from 'src/@types/ddo/Metadata'
+import { Credential } from 'src/@types/ddo/Credentials'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { convertLinks } from '@utils/links'
+import { State } from 'src/@types/ddo/State'
 
 export default function DebugEditMetadata({
   values,
@@ -25,41 +30,57 @@ export default function DebugEditMetadata({
         values.links[0].valid && [sanitizeUrl(values.links[0].url)]
 
       const newMetadata: Metadata = {
-        ...asset?.metadata,
+        ...asset?.credentialSubject?.metadata,
         name: values.name,
-        description: values.description,
-        links: linksTransformed,
+        description: {
+          '@value': values.description,
+          '@direction': '',
+          '@language': ''
+        },
+        links: convertLinks(linksTransformed),
         author: values.author,
         tags: values.tags,
         license: values.license,
         additionalInformation: {
-          ...asset?.metadata?.additionalInformation
+          ...asset?.credentialSubject?.metadata?.additionalInformation
         }
       }
-      if (asset.metadata.type === 'algorithm') {
+
+      if (asset.credentialSubject?.metadata.type === 'algorithm') {
         newMetadata.algorithm.consumerParameters =
           !values.usesConsumerParameters
             ? undefined
             : transformConsumerParameters(values.consumerParameters)
       }
 
-      const updatedCredentials: Credentials = generateCredentials(
-        asset?.credentials,
-        values?.allow,
-        values?.deny
+      const updatedCredentials: Credential = generateCredentials(
+        values.credentials
       )
-
+      const updatedNft: AssetNft = {
+        ...asset.indexedMetadata.nft,
+        state:
+          values.assetState !== undefined
+            ? State[values.assetState as unknown as keyof typeof State]
+            : asset.indexedMetadata.nft.state
+      }
       const tmpAsset: Asset = {
         ...asset,
-        metadata: newMetadata,
-        credentials: updatedCredentials
+        credentialSubject: {
+          ...asset.credentialSubject,
+          metadata: newMetadata,
+          credentials: updatedCredentials
+        },
+        indexedMetadata: {
+          ...asset?.indexedMetadata,
+          nft: updatedNft
+        }
       }
 
       // delete custom helper properties injected in the market that will not be written on chain
       delete (tmpAsset as AssetExtended).accessDetails
-      delete (tmpAsset as AssetExtended).datatokens
-      delete (tmpAsset as AssetExtended).stats
+      delete (tmpAsset as AssetExtended).views
       delete (tmpAsset as AssetExtended).offchain
+      delete (tmpAsset as any).credentialSubject.stats
 
       setUpdatedAsset(tmpAsset)
     }
@@ -70,8 +91,12 @@ export default function DebugEditMetadata({
 
   return (
     <>
-      <DebugOutput title="Collected Form Values" output={valuePreview} />
-      <DebugOutput title="Transformed Asset Values" output={updatedAsset} />
+      <DebugOutput title="Collected Form Values" output={valuePreview} large />
+      <DebugOutput
+        title="Transformed Asset Values"
+        output={updatedAsset}
+        large
+      />
     </>
   )
 }

@@ -1,9 +1,9 @@
 .preferences {
   padding: calc(var(--spacer) / 4) calc(var(--spacer) / 3);
   cursor: pointer;
-  border: var(--menu-border-size) solid var(--menu-border-color);
-  border-radius: var(--menu-border-radius);
-  background-color: var(--background-content);
+  /* border: var(--menu-border-size) solid var(--menu-border-color); */
+  /* border-radius: var(--menu-border-radius); */
+  /* background-color: var(--background-content); */
   white-space: nowrap;
 }
 
@@ -53,4 +53,8 @@
 .preferencesDetails li:last-child p {
   border-bottom: none;
   margin-bottom: 0;
+}
+
+.preferencesDetails input[type='checkbox'] + label {
+  font-weight: 700;
 }

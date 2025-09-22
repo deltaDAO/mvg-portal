@@ -93,7 +93,7 @@ export default function PublishedList({
           assets={queryResult?.results}
           isLoading={isLoading}
           showPagination
-          page={queryResult?.page}
+          page={queryResult?.page > 1 ? queryResult?.page - 1 : 1}
           totalPages={queryResult?.totalPages}
           onPageChange={(newPage) => {
             setPage(newPage)

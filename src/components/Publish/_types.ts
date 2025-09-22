@@ -1,6 +1,10 @@
-import { FileInfo, ServiceComputeOptions } from '@oceanprotocol/lib'
+import { CredentialForm } from '@components/@shared/PolicyEditor/types'
+import { FileInfo } from '@oceanprotocol/lib'
 import { NftMetadata } from '@utils/nft'
 import { ReactElement } from 'react'
+import { License } from 'src/@types/ddo/License'
+import { Option } from 'src/@types/ddo/Option'
+import { Compute } from 'src/@types/ddo/Service'
 
 export interface FormPublishService {
   files: FileInfo[]
@@ -10,11 +14,24 @@ export interface FormPublishService {
   access: 'Download' | 'Compute' | string
   providerUrl: { url: string; valid: boolean; custom: boolean }
   algorithmPrivacy?: boolean
-  computeOptions?: ServiceComputeOptions
+  computeOptions?: Compute
   usesConsumerParameters?: boolean
   consumerParameters?: FormConsumerParameter[]
-  allow?: string[]
-  deny?: string[]
+  credentials: CredentialForm
+  name?: string
+  description?: DescriptionForm
+}
+
+export interface DescriptionForm {
+  value: string
+  language: string
+  direction: string
+}
+
+export interface FormAdditionalDdo {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any
+  type: string
 }
 
 export interface FormPublishData {
@@ -31,7 +48,7 @@ export interface FormPublishData {
     description: string
     author: string
     termsAndConditions: boolean
-    license?: string
+    license?: License
     tags?: string[]
     dockerImage?: string
     dockerImageCustom?: string
@@ -40,14 +57,34 @@ export interface FormPublishData {
     dockerImageCustomChecksum?: string
     usesConsumerParameters?: boolean
     consumerParameters?: FormConsumerParameter[]
+    dataSubjectConsent?: boolean
     service?: {
       usesConsumerParameters?: boolean
       consumerParameters?: FormConsumerParameter[]
     }
+    licenseTypeSelection?: string
+    licenseUrl: FileInfo[]
+    uploadedLicense: License
   }
   services: FormPublishService[]
   pricing: PricePublishOptions
   feedback?: PublishFeedback
+  additionalDdos: FormAdditionalDdo[]
+  additionalDdosPageVisited: boolean
+  previewPageVisited: boolean
+  credentials: CredentialForm
+  accessPolicyPageVisited: boolean
+  step1Completed: boolean
+  step2Completed: boolean
+  step3Completed: boolean
+  step4Completed: boolean
+  step5Completed: boolean
+  step6Completed: boolean
+  submissionPageVisited: boolean
+  allowAllPublishedAlgorithms?: string
+  publisherTrustedAlgorithms?: string[]
+  publisherTrustedAlgorithmPublishers?: string[]
+  publisherTrustedAlgorithmPublishersAddresses?: string
 }
 
 export interface StepContent {
@@ -80,7 +117,7 @@ export interface FormConsumerParameter {
   label: string
   required: string
   description: string
-  default: string | boolean | number
+  default: string | boolean | number | Option[]
   options?: { key: string; value: string }[]
   value?: string | boolean | number
 }

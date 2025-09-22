@@ -2,6 +2,7 @@ import { ReactElement } from 'react'
 import Alert from '@shared/atoms/Alert'
 import Footer from '../Footer/Footer'
 import Header from '../Header'
+import { useRouter } from 'next/router'
 import { useAccountPurgatory } from '@hooks/useAccountPurgatory'
 import AnnouncementBanner from '@shared/AnnouncementBanner'
 import PrivacyPreferenceCenter from '../Privacy/PrivacyPreferenceCenter'
@@ -19,6 +20,8 @@ export default function App({
   const { siteContent, appConfig } = useMarketMetadata()
   const { address } = useAccount()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(address)
+  const router = useRouter()
+  const isRoot = router.pathname === '/'
 
   const devPreviewAnnouncementText =
     siteContent?.devPreviewAnnouncement
@@ -34,7 +37,7 @@ export default function App({
         devPreviewAnnouncementText !== '' && (
           <AnnouncementBanner text={devPreviewAnnouncementText} />
         )}
-      <Header />
+      {!isRoot && <Header />}
 
       {isInPurgatory && (
         <Alert

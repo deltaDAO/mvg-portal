@@ -12,7 +12,7 @@ export default function Nft({
   isBlockscoutExplorer: boolean
 }) {
   const { asset } = useAsset()
-  const nftMetadata = decodeTokenURI(asset?.nft?.tokenURI)
+  const nftMetadata = decodeTokenURI(asset?.indexedMetadata.nft?.tokenURI)
 
   // TODO: using this for the publish preview works fine, but produces a console warning
   // on asset details page as there is no formik context there:
@@ -35,20 +35,20 @@ export default function Nft({
   return (
     <div className={styles.nftImage}>
       {nftImage ? (
-        <img src={nftImage} alt={asset?.nft?.name} />
+        <img src={nftImage} alt={asset?.indexedMetadata.nft?.name} />
       ) : (
         <div className={styles.placeholder} />
       )}
 
-      {(nftMetadata || asset?.nftAddress) && (
+      {(nftMetadata || asset?.credentialSubject?.nftAddress) && (
         <Tooltip
           className={styles.tooltip}
           content={
             <NftTooltip
               nft={nftMetadata}
               nftImage={nftImage}
-              address={asset?.nftAddress}
-              chainId={asset?.chainId}
+              address={asset?.credentialSubject?.nftAddress}
+              chainId={asset?.credentialSubject?.chainId}
               isBlockscoutExplorer={isBlockscoutExplorer}
             />
           }

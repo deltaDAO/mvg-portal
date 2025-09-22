@@ -13,7 +13,8 @@ import styles from './Filter.module.css'
 import { useFilter, Filters } from '@context/Filter'
 import Input from '@components/@shared/FormInput'
 import Accordion from '@components/@shared/Accordion'
-import customFilters from '../../../filters.config'
+import customFilters from '../../../filters.config.cjs'
+import { State } from 'src/@types/ddo/State'
 
 const cx = classNames.bind(styles)
 
@@ -23,7 +24,7 @@ interface FilterStructure {
   type: string
   options: {
     label: string
-    value: string
+    value: any
   }[]
 }
 
@@ -82,7 +83,6 @@ export default function Filter({
       const parsedFilter = filter.join(',')
       urlLocation = `${urlLocation}&${filterId}=${parsedFilter}`
     }
-
     router.push(urlLocation)
   }
 
@@ -140,6 +140,22 @@ export default function Filter({
       options: [
         { label: 'download', value: FilterByAccessOptions.Download },
         { label: 'compute', value: FilterByAccessOptions.Compute }
+      ]
+    },
+    {
+      id: 'assetState',
+      label: 'Asset State',
+      type: 'filterList',
+      options: [
+        { label: 'Active', value: State.Active },
+        { label: 'EndOfLife', value: State.EndOfLife },
+        { label: 'Deprecated', value: State.Deprecated },
+        { label: 'RevokedByPublisher', value: State.RevokedByPublisher },
+        {
+          label: 'TemporaryDisabled',
+          value: State.OrderingIsTemporaryDisabled
+        },
+        { label: 'Unlisted', value: State.Unlisted }
       ]
     },
     ...(showTime

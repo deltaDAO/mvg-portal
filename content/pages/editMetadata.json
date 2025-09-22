@@ -54,6 +54,12 @@
         "required": false
       },
       {
+        "name": "author",
+        "label": "New Author",
+        "type": "author",
+        "placeholder": "e.g. John SRL"
+      },
+      {
         "name": "usesConsumerParameters",
         "label": "Algorithm custom parameters",
         "help": "Algorithm custom parameters are used to define required consumer input before running the algorithm in a Compute-to-Data environment.",
@@ -65,15 +71,27 @@
         "name": "allow",
         "label": "Allow ETH Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Enter an ETH address and click the ADD button to append to the list. Only ETH addresses in the allow list can consume this asset. If the list is empty anyone can download or compute this asset.",
+        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to allow access to the asset, or allow access to all wallets by clicking “add all”.",
         "type": "credentials"
       },
       {
         "name": "deny",
         "label": "Deny ETH Address",
         "placeholder": "e.g. 0xe328aB96B7CbB55A6E1c1054678137bA09780acA",
-        "help": "Enter an ETH address and click the ADD button to append to the list. If an ETH address is in the deny list, download or compute of this asset will be denied for that ETH address.",
+        "help": "Web3 wallet addresses are used to control access to registered assets. Indicate specific wallet addresses to deny access to the asset, or deny access to all wallets by clicking “add all”.",
         "type": "credentials"
+      },
+      {
+        "name": "requestPolicies",
+        "label": "Request Policies",
+        "type": "policyList",
+        "placeholder": "e.g. PassPort"
+      },
+      {
+        "name": "customPolicies",
+        "label": "Custom Policies",
+        "type": "textarea",
+        "placeholder": "Example:\n\npackage access\n\ndefault allow=false\n\nallow {\n\tinput.credentials.password.placeOfBirth=\"Paris\"\n}"
       },
       {
         "name": "assetState",
@@ -82,9 +100,11 @@
         "type": "select",
         "options": [
           "Active",
-          "Revoked by publisher",
-          "Ordering is temporary disabled",
-          "Asset unlisted"
+          "EndOfLife",
+          "Deprecated",
+          "RevokedByPublisher",
+          "OrderingIsTemporaryDisabled",
+          "Unlisted"
         ],
         "sortOptions": false,
         "required": false
@@ -92,8 +112,27 @@
       {
         "name": "license",
         "label": "License",
-        "placeholder": "e.g. MIT",
-        "help": "A SPDX identifier of the license applicable to this service."
+        "prominentHelp": false,
+        "type": "tabs",
+        "fields": [
+          {
+            "value": "url",
+            "title": "URL",
+            "label": "URL",
+            "placeholder": "e.g. https://file.com/license.json",
+            "help": "A SPDX identifier of the license applicable to this service.",
+            "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
+            "prominentHelp": true,
+            "type": "files",
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "licenseTypeSelection",
+        "label": "Use Remote License",
+        "type": "checkbox",
+        "options": ["Select if you want to upload a license file"]
       },
       {
         "name": "accessTermsAndConditions",

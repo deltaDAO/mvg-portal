@@ -8,38 +8,46 @@ import {
 } from '@components/Publish/_types'
 import {
   Arweave,
-  Asset,
-  ConsumerParameter,
-  DDO,
   FileInfo,
-  GraphqlQuery,
   Ipfs,
-  Service,
-  Smartcontract,
+  LoggerInstance,
   UrlFile
 } from '@oceanprotocol/lib'
 import { checkJson } from './codemirror'
+import { Asset } from 'src/@types/Asset'
+import { Service } from 'src/@types/ddo/Service'
+import { Option } from 'src/@types/ddo/Option'
+import { isCredentialAddressBased } from './credentials'
+import {
+  CredentialAddressBased,
+  Credential,
+  CredentialPolicyBased
+} from 'src/@types/ddo/Credentials'
 
 export function isValidDid(did: string): boolean {
-  const regex = /^did:op:[A-Za-z0-9]{64}$/
+  const regex = /^did:ope:[A-Za-z0-9]{64}$/
   return regex.test(did)
 }
 
 // TODO: this function doesn't make sense, since market is now supporting multiple services. We should remove it after checking all the flows where it's being used.
 export function getServiceByName(
-  ddo: Asset | DDO,
+  ddo: Asset,
   name: 'access' | 'compute'
 ): Service {
   if (!ddo) return
 
-  const service = ddo.services.filter((service) => service.type === name)[0]
+  const service = ddo.credentialSubject?.services.filter(
+    (service) => service.type === name
+  )[0]
   return service
 }
 
-export function getServiceById(ddo: Asset | DDO, serviceId: string): Service {
+export function getServiceById(ddo: Asset, serviceId: string): Service {
   if (!ddo) return
 
-  const service = ddo.services.find((s) => s.id === serviceId)
+  const service = ddo.credentialSubject?.services.find(
+    (s) => s.id === serviceId
+  )
   return service
 }
 
@@ -136,27 +144,6 @@ export function normalizeFile(
       } as Arweave
       break
     }
-    case 'graphql': {
-      fileObj = {
-        type: storageType,
-        url: file[0]?.url || file?.url,
-        query: file[0]?.query || file?.query,
-        headers: headersProvider
-      } as GraphqlQuery
-      break
-    }
-    case 'smartcontract': {
-      // clean obj
-      fileObj = {
-        chainId,
-        type: storageType,
-        address: file[0]?.address || file?.address || file[0]?.url || file?.url,
-        abi: checkJson(file[0]?.abi || file?.abi)
-          ? JSON.parse(file[0]?.abi || file?.abi)
-          : file[0]?.abi || file?.abi
-      } as Smartcontract
-      break
-    }
     default: {
       fileObj = {
         type: 'url',
@@ -182,67 +169,127 @@ export function previewDebugPatch(
 }
 
 export function parseConsumerParameters(
-  consumerParameters: ConsumerParameter[]
+  consumerParameters: Record<string, string | number | boolean | Option[]>[]
 ): FormConsumerParameter[] {
-  if (!consumerParameters?.length) return []
+  if (!consumerParameters) {
+    return []
+  }
+  return consumerParameters.map<FormConsumerParameter>((param) => {
+    let transformedOptions
+    if (Array.isArray(param.options)) {
+      transformedOptions = param.options.map((option) => {
+        const key = Object.keys(option)[0]
+        return {
+          key,
+          value: option[key]
+        }
+      })
+    }
 
-  return consumerParameters.map((param) => ({
-    ...param,
-    required: param.required ? 'required' : 'optional',
-    options:
-      param.type === 'select'
-        ? JSON.parse(param.options)?.map((option) => {
-            const key = Object.keys(option)[0]
-            return {
-              key,
-              value: option[key]
-            }
-          })
-        : [],
-    default:
-      param.type === 'boolean'
-        ? param.default === 'true'
-        : param.type === 'number'
-        ? Number(param.default)
-        : param.default
-  }))
+    return {
+      ...param,
+      required: param.required ? 'required' : 'optional',
+      options: param.type === 'select' ? transformedOptions : [],
+      default:
+        param.type === 'boolean'
+          ? param.default === 'true'
+          : param.type === 'number'
+          ? Number(param.default)
+          : param.default
+    } as FormConsumerParameter
+  })
+}
+
+export function findCredential(
+  credentials: (CredentialAddressBased | CredentialPolicyBased)[],
+  consumerCredentials: CredentialAddressBased,
+  type?: string
+) {
+  const hasAddressType = credentials.some((credential) => {
+    const type = String(credential.type ?? '').toLowerCase()
+    return type === 'address'
+  })
+  if (type === 'service' && !hasAddressType) return true
+  return credentials.find((credential) => {
+    if (!isCredentialAddressBased(credential)) {
+      return false
+    }
+    if (Array.isArray(credential?.values)) {
+      if (credential.values.length > 0) {
+        const credentialType = String(credential?.type)?.toLowerCase()
+        const credentialValues = credential.values.map((v) => v.address)
+        const result =
+          credentialType === consumerCredentials.type &&
+          (credentialValues.includes('*') ||
+            credentialValues.includes(consumerCredentials.values[0].address))
+        return result
+      }
+    }
+    if (type === 'service') return true
+    return false
+  })
+}
+
+/**
+ * This method checks credentials
+ * @param credentials credentials
+ * @param consumerAddress consumer address
+ */
+export function checkCredentials(
+  credentials: Credential,
+  consumerAddress: string,
+  type?: string
+) {
+  const consumerCredentials: CredentialAddressBased = {
+    type: 'address',
+    values: [{ address: String(consumerAddress)?.toLowerCase() }]
+  }
+  // check deny access
+  if (Array.isArray(credentials?.deny) && credentials.deny.length > 0) {
+    const accessDeny = findCredential(credentials.deny, consumerCredentials)
+    if (accessDeny) {
+      return false
+    }
+  }
+  // check allow access
+  if (Array.isArray(credentials?.allow) && credentials.allow.length > 0) {
+    const accessAllow = findCredential(
+      credentials.allow,
+      consumerCredentials,
+      type
+    )
+    if (!accessAllow) {
+      return false
+    }
+  }
+  return true
 }
 
 export function isAddressWhitelisted(
-  ddo: AssetExtended,
-  accountId: string
+  ddo: Asset,
+  accountId: string,
+  service?: Service
 ): boolean {
   if (!ddo || !accountId) return false
 
-  // All addresses can access
-  if (!ddo.credentials) return true
+  if (!ddo.credentialSubject.credentials) {
+    LoggerInstance.error('The asset has no credentials property')
+    return false
+  }
 
-  const { credentials } = ddo
+  if (!service || (service && !service.credentials)) {
+    LoggerInstance.error('The selected service has no credentials property')
+    return false
+  }
 
-  const isAddressWhitelisted =
-    !credentials.allow ||
-    credentials.allow?.length === 0 ||
-    credentials.allow?.some((credential) => {
-      if (credential.type === 'address') {
-        return credential.values.some(
-          (address) => address.toLowerCase() === accountId.toLowerCase()
-        )
-      }
-
-      return true
-    })
-
-  const isAddressBlacklisted =
-    credentials.deny?.length > 0 &&
-    credentials.deny?.some((credential) => {
-      if (credential.type === 'address') {
-        return credential.values.some(
-          (address) => address.toLowerCase() === accountId.toLowerCase()
-        )
-      }
-
-      return false
-    })
-
-  return isAddressWhitelisted && !isAddressBlacklisted
+  const assetAccessGranted = checkCredentials(
+    ddo.credentialSubject.credentials,
+    accountId
+  )
+  const serviceAccessGranted = checkCredentials(
+    service.credentials,
+    accountId,
+    'service'
+  )
+  return assetAccessGranted && serviceAccessGranted
 }

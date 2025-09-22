@@ -75,7 +75,7 @@ cd barge
 ./start_ocean.sh --with-thegraph
 ```
 
-Barge will deploy contracts to the local Ganache node which will take some time. At the end the compiled artifacts need to imported over to this project as environment variables. The `set-barge-env` script will do that for you and set the env variables to use this local connection in `.env` in the app. You also need to append the `chainIdsSupported` array with the barge's ganache chainId (`8996`) in the `app.config.js` file.
+Barge will deploy contracts to the local Ganache node which will take some time. At the end the compiled artifacts need to imported over to this project as environment variables. The `set-barge-env` script will do that for you and set the env variables to use this local connection in `.env` in the app. You also need to append the `chainIdsSupported` array with the barge's ganache chainId (`8996`) in the `app.config.cjs` file.
 
 If you are using `macOS` operating system you should also make same changes to the provider url since the default barge ip can not be accessed due to some network constraints on `macOs`. So we should be using the `127.0.0.1:8030` (if you have changed the provider port please use that here as well) for each direct call from the market to provider, but we should keep the internal barge url `http://172.15.0.4:8030/` (this is the default ip:port for provider in barge, if changed please use the according url). So on inside `src/@utils/provider.ts` if on `macOS` you can hardcode this env variable `NEXT_PUBLIC_PROVIDER_URL` or set
 `127.0.0.1:8030` as `providerUrl` on all the methods that call `ProviderInstance` methods. (eg: `getEncryptedFiles`, `getFileDidInfo`, `downloadFile` etc). You should use the same provider url for `src/@utils/nft.ts` inside `setNFTMetadataAndTokenURI` and `setNftMetadata` and `src/components/Publish/index.tsx` inisde `encrypt` method (if you set the env variable there's no need to do this). You also need to use local ip's for the subgraph (`127.0.0.1` instead of `172.15.0.15`) and the metadatacache (`127.0.0.1` instead of `172.15.0.5`).
@@ -94,7 +94,7 @@ To use the app together with MetaMask, importing one of the accounts auto-genera
 
 ## 🦑 Environment variables
 
-The `app.config.js` file is setup to prioritize environment variables for setting each Ocean component endpoint. By setting environment variables, you can easily switch between Ocean networks the app connects to, without directly modifying `app.config.js`.
+The `app.config.cjs` file is setup to prioritize environment variables for setting each Ocean component endpoint. By setting environment variables, you can easily switch between Ocean networks the app connects to, without directly modifying `app.config.cjs`.
 
 For local development, you can use a `.env` file:
 
@@ -119,7 +119,7 @@ All this data then comes from multiple sources:
 
 ### Aquarius
 
-All initial assets and their metadata (DDO) is retrieved client-side on run-time from the [Aquarius](https://github.com/oceanprotocol/aquarius) instance, defined in `app.config.js`. All app calls to Aquarius are done with 2 internal methods which mimic the same methods in ocean.js, but allow us:
+All initial assets and their metadata (DDO) is retrieved client-side on run-time from the [Aquarius](https://github.com/oceanprotocol/aquarius) instance, defined in `app.config.cjs`. All app calls to Aquarius are done with 2 internal methods which mimic the same methods in ocean.js, but allow us:
 
 - to cancel requests when components get unmounted in combination with [axios](https://github.com/axios/axios)
 - hit Aquarius as early as possible without relying on any ocean.js initialization

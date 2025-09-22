@@ -4,22 +4,23 @@ import {
   LoggerInstance,
   FixedRateExchange,
   Datatoken,
-  Service
+  Nft
 } from '@oceanprotocol/lib'
 import { getServiceInitialValues } from './_constants'
 import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
-import { useAbortController } from '@hooks/useAbortController'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
-import { setNftMetadata } from '@utils/nft'
 import { getEncryptedFiles } from '@utils/provider'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
 import {
   generateCredentials,
+  IpfsUpload,
+  signAssetAndUploadToIpfs,
+  stringifyCredentialPolicies,
   transformConsumerParameters
 } from '@components/Publish/_utils'
 import FormEditService from './FormEditService'
@@ -29,6 +30,13 @@ import { serviceValidationSchema } from './_validation'
 import { useUserPreferences } from '@context/UserPreferences'
 import DebugEditService from './DebugEditService'
 import styles from './index.module.css'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { customProviderUrl, encryptAsset } from 'app.config.cjs'
+import { ethers } from 'ethers'
+import { useSsiWallet } from '@context/SsiWallet'
+import { State } from 'src/@types/ddo/State'
+import { assetStateToNumber } from '@utils/assetState'
 
 export default function EditService({
   asset,
@@ -44,15 +52,15 @@ export default function EditService({
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
   const { data: signer } = useSigner()
-  const newAbortController = useAbortController()
   const newCancelToken = useCancelToken()
+  const ssiWalletContext = useSsiWallet()
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
   const hasFeedback = error || success
 
   async function updateFixedPrice(newPrice: number) {
-    const config = getOceanConfig(asset.chainId)
+    const config = getOceanConfig(asset.credentialSubject?.chainId)
 
     const fixedRateInstance = new FixedRateExchange(
       config.fixedRateExchangeAddress,
@@ -91,7 +99,7 @@ export default function EditService({
       let updatedFiles = service.files
       if (values.files[0]?.url) {
         const file = {
-          nftAddress: asset.nftAddress,
+          nftAddress: asset.credentialSubject.nftAddress,
           datatokenAddress: service.datatokenAddress,
           files: [
             normalizeFile(values.files[0].type, values.files[0], chain?.id)
@@ -100,33 +108,37 @@ export default function EditService({
 
         const filesEncrypted = await getEncryptedFiles(
           file,
-          asset.chainId,
+          asset.credentialSubject?.chainId,
           service.serviceEndpoint
         )
         updatedFiles = filesEncrypted
       }
 
-      const updatedCredentials = generateCredentials(
-        service.credentials,
-        values.allow,
-        values.deny
-      )
-
+      const updatedCredentials = generateCredentials(values.credentials)
       const updatedService: Service = {
         ...service,
         name: values.name,
-        description: values.description,
+        description: {
+          '@value': values.description,
+          '@language': values.language,
+          '@direction': values.direction
+        },
         timeout: mapTimeoutStringToSeconds(values.timeout),
+        state:
+          values.state === undefined
+            ? State.Active
+            : assetStateToNumber(values.state),
         files: updatedFiles, // TODO: check if this works,
         credentials: updatedCredentials,
-        ...(values.access === 'compute' && {
-          compute: await transformComputeFormToServiceComputeOptions(
-            values,
-            service.compute,
-            asset.chainId,
-            newCancelToken()
-          )
-        })
+        ...(values.access === 'compute' &&
+          asset.credentialSubject?.metadata?.type === 'dataset' && {
+            compute: await transformComputeFormToServiceComputeOptions(
+              values,
+              service.compute,
+              asset.credentialSubject?.chainId,
+              newCancelToken()
+            )
+          })
       }
       if (values.consumerParameters) {
         updatedService.consumerParameters = transformConsumerParameters(
@@ -135,28 +147,52 @@ export default function EditService({
       }
 
       // update asset with new service
-      const serviceIndex = asset.services.findIndex((s) => s.id === service.id)
+      const serviceIndex = asset.credentialSubject?.services.findIndex(
+        (s) => s.id === service.id
+      )
       const updatedAsset = { ...asset }
-      updatedAsset.services[serviceIndex] = updatedService
+      if (updatedAsset.credentialSubject) {
+        updatedAsset.credentialSubject.services[serviceIndex] = updatedService
+      }
+
+      stringifyCredentialPolicies(updatedAsset.credentialSubject.credentials)
+      updatedAsset.credentialSubject.services.forEach((service) => {
+        stringifyCredentialPolicies(service.credentials)
+      })
 
       // delete custom helper properties injected in the market so we don't write them on chain
       delete (updatedAsset as AssetExtended).accessDetails
-      delete (updatedAsset as AssetExtended).datatokens
-      delete (updatedAsset as AssetExtended).stats
+      delete (updatedAsset as AssetExtended).views
       delete (updatedAsset as AssetExtended).offchain
+      delete (updatedAsset as any).credentialSubject.stats
 
-      const setMetadataTx = await setNftMetadata(
+      const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,
-        accountId,
         signer,
-        newAbortController()
+        encryptAsset,
+        customProviderUrl ||
+          updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
+        ssiWalletContext
       )
 
-      if (!setMetadataTx) {
-        setError(content.form.error)
-        LoggerInstance.error(content.form.error)
-        return
+      if (ipfsUpload /* && values.assetState !== assetState */) {
+        const nft = new Nft(signer, updatedAsset.credentialSubject.chainId)
+
+        await nft.setMetadata(
+          updatedAsset.credentialSubject.nftAddress,
+          await signer.getAddress(),
+          0,
+          customProviderUrl ||
+            updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
+          '',
+          ethers.utils.hexlify(ipfsUpload.flags),
+          ipfsUpload.metadataIPFS,
+          ipfsUpload.metadataIPFSHash
+        )
+
+        LoggerInstance.log('Version 5.0.0 Asset updated. ID:', updatedAsset.id)
       }
+
       // Edit succeeded
       setSuccess(content.form.success)
       resetForm()
@@ -199,13 +235,14 @@ export default function EditService({
           <>
             <FormEditService
               data={content.form.data}
-              chainId={asset.chainId}
+              chainId={asset.credentialSubject?.chainId}
               service={service}
               accessDetails={accessDetails}
+              assetType={asset.credentialSubject?.metadata?.type}
             />
 
             <Web3Feedback
-              networkId={asset?.chainId}
+              networkId={asset?.credentialSubject?.chainId}
               accountId={accountId}
               isAssetNetwork={isAssetNetwork}
             />

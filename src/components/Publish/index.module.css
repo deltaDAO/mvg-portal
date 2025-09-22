@@ -1,23 +1,183 @@
+/* Main Publish Container */
+.publish {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-4xl);
+  max-width: var(--publish-container-width);
+  margin: 0 auto;
+  font-family: var(--publish-font-family);
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-lg);
+  width: 100%;
+  align-self: stretch;
+}
+
+/* Title Row */
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: var(--publish-spacing-sm);
+}
+
+/* Main Title */
+.mainTitle {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size-xl);
+  line-height: var(--publish-line-height-3xl);
+  color: var(--publish-text);
+  margin: 0;
+}
+
+/* Network Info Container */
+.networkInfo {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: var(--publish-spacing-xs);
+}
+
+/* Network Details */
+.networkDetails {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  padding: 0;
+  gap: 3px;
+}
+
+/* Network Icon */
+.networkIcon {
+  width: var(--publish-line-height-3xl);
+  height: var(--publish-line-height-3xl);
+}
+
+/* Network Name */
+.networkName {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size-xl);
+  line-height: var(--publish-line-height-3xl);
+  color: var(--publish-text);
+  margin: 0;
+}
+
+/* Info Icon */
+.infoIcon {
+  width: 22px;
+  height: 22px;
+  color: var(--publish-neutral);
+}
+
+/* Description */
+.description {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size-lg);
+  line-height: var(--publish-line-height-2xl);
+  color: var(--publish-text-secondary);
+  margin: 0;
+  align-self: stretch;
+}
+
+/* Main Content */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-2xl);
+  width: 100%;
+  align-self: stretch;
+}
+
+/* Form Section */
 .form {
-  composes: box from '@shared/atoms/Box.module.css';
-  margin-bottom: var(--spacer);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-2xl);
+  width: 100%;
 }
 
-@media (min-width: 40rem) {
-  .form {
-    padding-left: calc(var(--spacer) * 2);
-    padding-right: calc(var(--spacer) * 2);
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-md);
+  width: 100%;
+}
+
+/* Section Title */
+.sectionTitle {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size-base);
+  line-height: var(--publish-line-height-lg);
+  color: var(--publish-text);
+  margin: 0;
+}
+
+/* Section Content */
+.sectionContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-md);
+  width: 100%;
+  align-self: stretch;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .publish {
+    width: 100%;
+    padding: 0 var(--publish-spacing-lg);
   }
 }
 
-@media (min-width: 60rem) {
-  .form {
-    padding-left: calc(var(--spacer) * 4);
-    padding-right: calc(var(--spacer) * 4);
+@media (max-width: 768px) {
+  .publish {
+    gap: var(--publish-spacing-2xl);
   }
-}
 
-.fieldWarning {
-  margin-top: -2rem;
-  margin-bottom: var(--spacer);
+  .header {
+    gap: var(--publish-spacing-md);
+  }
+
+  .titleRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--publish-spacing-md);
+  }
+
+  .mainTitle,
+  .networkName {
+    font-size: var(--publish-font-size-lg);
+    line-height: var(--publish-line-height-2xl);
+  }
+
+  .description {
+    font-size: var(--publish-font-size-base);
+    line-height: var(--publish-line-height-xl);
+  }
 }

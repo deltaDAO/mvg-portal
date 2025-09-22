@@ -4,17 +4,24 @@ import { FormPublishData } from '../_types'
 import { useFormikContext } from 'formik'
 import { transformPublishFormToDdo } from '../_utils'
 import styles from './index.module.css'
-import { DDO } from '@oceanprotocol/lib'
 import { previewDebugPatch } from '@utils/ddo'
+import { Asset } from 'src/@types/Asset'
+import { useCancelToken } from '@hooks/useCancelToken'
 
 export default function Debug(): ReactElement {
   const { values } = useFormikContext<FormPublishData>()
   const [valuePreview, setValuePreview] = useState({})
-  const [ddo, setDdo] = useState<DDO>()
+  const [ddo, setDdo] = useState<Asset>()
+  const newCancelToken = useCancelToken()
 
   useEffect(() => {
     async function makeDdo() {
-      const ddo = await transformPublishFormToDdo(values)
+      const ddo = await transformPublishFormToDdo(
+        values,
+        null,
+        null,
+        newCancelToken()
+      )
       setValuePreview(previewDebugPatch(values))
       setDdo(ddo)
     }
@@ -23,8 +30,8 @@ export default function Debug(): ReactElement {
 
   return (
     <div className={styles.debug}>
-      <DebugOutput title="Collected Form Values" output={valuePreview} />
-      <DebugOutput title="Transformed DDO Values" output={ddo} />
+      <DebugOutput title="Collected Form Values" output={valuePreview} large />
+      <DebugOutput title="Transformed DDO Values" output={ddo} large />
     </div>
   )
 }

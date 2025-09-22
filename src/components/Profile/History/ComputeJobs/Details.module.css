@@ -1,86 +1,58 @@
-.main {
+.assetListBox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacer);
   margin-bottom: var(--spacer);
 }
 
-.main > div:first-child {
-  margin-bottom: calc(var(--spacer) / 2);
-}
-
-.asset {
+.assetBox {
   composes: box from '@shared/atoms/Box.module.css';
-  box-shadow: none;
-  padding: calc(var(--spacer) / 2);
-  margin-bottom: calc(var(--spacer) / 2);
+  padding: var(--spacer);
+  background: var(--background-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
-.asset + .asset {
-  margin-left: var(--spacer);
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  position: relative;
-  overflow: visible;
-}
-
-.asset + .asset:before {
-  content: '';
-  display: block;
-  position: absolute;
-  left: -1px;
-  top: -1.15rem;
-  bottom: 3px;
-  width: 1px;
-  background-color: var(--border-color);
-}
-
-.asset p {
-  margin: 0;
-}
-
-.asset code {
-  padding: 0;
+.assetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .assetTitle {
-  margin-bottom: 0;
   font-size: var(--font-size-base);
+  font-weight: bold;
+  margin: 0;
   color: var(--font-color-text);
 }
 
-.assetLink {
-  display: inline-block;
-  margin-left: calc(var(--spacer) / 8);
-}
-
 .assetLink svg {
-  margin: 0;
+  margin-left: 0.25rem;
   fill: var(--color-highlight);
-  width: 0.6em;
-  height: 0.6em;
+  width: 0.75em;
+  height: 0.75em;
 }
 
-.assetMeta,
-.assetMeta code {
-  color: var(--color-secondary);
-  font-size: var(--font-size-small);
-  overflow: hidden;
-  width: 100%;
-  flex: 6;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.assetMeta span {
-  flex: 1;
-}
-
-.assetMeta {
+.assetMetaBlock {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: var(--font-size-small);
+  color: var(--color-secondary);
+  word-break: break-all;
 }
 
-.meta {
-  display: grid;
-  gap: var(--spacer);
-  grid-template-columns: 1fr 1fr;
-  margin-top: calc(var(--spacer) * 1.5);
+.assetLabel {
+  font-weight: 600;
+  color: var(--font-color-text);
+  min-width: 6rem;
+}
+
+.assetCode {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: var(--color-secondary);
 }

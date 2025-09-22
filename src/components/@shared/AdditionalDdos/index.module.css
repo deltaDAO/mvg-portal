@@ -1,0 +1,29 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+
+.assetCard {
+  width: 100%;
+}
+
+.deleteButtonContainer {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: var(--sp-2);
+}
+
+.createButtonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--sp-2);
+}
+
+.title {
+  font-size: var(--publish-font-size-lg);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+  font-weight: 700;
+  margin: 0;
+}

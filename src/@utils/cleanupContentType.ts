@@ -1,4 +1,5 @@
 export default function cleanupContentType(contentType: string): string {
+  if (!contentType) return
   // strip away the `charset=utf-8`
   const contentSplit = contentType.split(';')[0]
   // strip away the 'application/' part

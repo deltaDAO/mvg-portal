@@ -1,0 +1,86 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.cardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardContainer,
+.image {
+  width: 100%;
+}
+
+.image {
+  object-fit: contain;
+  max-height: 25rem;
+}
+
+.card {
+  composes: box from '../atoms/Box.module.css';
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 20rem;
+  min-height: 20rem;
+  height: 100%;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
+  width: 100%;
+}
+
+.refresh button,
+.refresh button:hover,
+.refresh button:focus {
+  display: flex;
+  gap: 1rem;
+}
+.tokenList {
+  border: 0;
+  cursor: pointer;
+  outline: 0;
+  margin: 0;
+  display: inline-block;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  min-width: 7rem;
+  padding: calc(var(--spacer) / 3) var(--spacer);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  border-radius: var(--button-border-radius);
+  transition: 0.2s ease-out;
+  color: var(--button-font-color);
+  background: #fdd655;
+  box-shadow: 0 9px 18px 0 rgba(0, 0, 0, 0.1);
+  -webkit-user-select: none;
+  user-select: none;
+  text-align: center;
+}
+
+.refresh svg {
+  fill: var(--button-text-font-color);
+}
+
+@media screen and (min-width: 60rem) {
+  .content {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .cardContainer,
+  .image {
+    width: 50%;
+  }
+}

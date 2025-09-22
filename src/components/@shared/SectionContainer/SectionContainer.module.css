@@ -1,0 +1,65 @@
+.container {
+  position: relative;
+  border: 1px solid var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--publish-spacing-md);
+}
+
+.large {
+  gap: var(--publish-spacing-xl);
+}
+
+.publish {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-form-container-padding-top-extended);
+  gap: var(--publish-spacing-xl);
+}
+
+.border {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+}
+
+.label {
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--background-content);
+  padding: 0 8px;
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+}
+
+.required {
+  color: var(--input-error-text-color);
+  margin-left: 2px;
+}
+
+.content {
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.content > div {
+  margin-bottom: 0 !important;
+}
+
+.default {
+  padding: 0;
+}
+
+.borderNavy {
+  border: 1px solid var(--clr-navy);
+}

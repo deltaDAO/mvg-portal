@@ -1,5 +1,6 @@
 .form {
   position: relative;
+  width: 100%;
 }
 
 .form *,
@@ -7,17 +8,10 @@
   margin-bottom: 0;
 }
 
-.price {
-  background: var(--background-highlight);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-}
-
 .grid {
   display: grid;
   gap: calc(var(--spacer) / 2);
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  padding: calc(var(--spacer) / 2);
+  grid-template-columns: minmax(12rem, 70%) 1fr;
   max-width: 30rem;
   margin-left: auto;
   margin-right: auto;
@@ -29,6 +23,11 @@
 }
 
 .datatoken {
+  height: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
   color: var(--color-secondary);
   font-size: var(--font-size-small);
   font-weight: var(--font-weight-bold);
@@ -50,7 +49,6 @@
 
 .free {
   text-align: left;
-  margin: calc(var(--spacer) / 2);
   font-size: var(--font-size-base);
 }
 

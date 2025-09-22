@@ -19,6 +19,10 @@
 
 .sortList div h5 {
   margin: calc(var(--spacer) / 4) 0;
+  font-weight: 700;
+  /* font-size: 14px; */
+  line-height: 171%;
+  color: var(--publish-text-secondary);
 }
 
 .sortList > div > div:not(:last-child) {

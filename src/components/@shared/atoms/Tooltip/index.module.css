@@ -7,6 +7,8 @@
   padding: calc(var(--spacer) / 4);
   max-width: 25rem;
   font-size: var(--font-size-small);
+  border: 0.5px solid rgba(48, 48, 49, 0.3);
+  border-radius: 10px;
 }
 
 .content p {

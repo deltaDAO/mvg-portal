@@ -4,6 +4,7 @@ import Publisher from '@shared/Publisher'
 import { getServiceByName } from '@utils/ddo'
 import { ReactElement } from 'react'
 import styles from './MetaInfo.module.css'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 export default function MetaInfo({
   asset,
@@ -16,18 +17,19 @@ export default function MetaInfo({
 }): ReactElement {
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
-  const nftOwner = asset?.nft?.owner
+  const nftOwner = asset?.indexedMetadata?.nft?.owner
 
   return (
     <div className={styles.wrapper}>
       <AssetType
-        type={asset?.metadata.type}
+        type={asset?.credentialSubject?.metadata.type}
         accessType={accessType}
         className={styles.assetType}
       />
       <div className={styles.byline}>
         <div>
-          Published <Time date={asset?.metadata.created} relative />
+          Published{' '}
+          <Time date={asset?.credentialSubject?.metadata.created} relative />
           {(verifiedServiceProviderName ||
             (nftPublisher && nftPublisher !== nftOwner)) && (
             <span>
@@ -38,11 +40,16 @@ export default function MetaInfo({
               />
             </span>
           )}
-          {asset?.metadata.created !== asset?.metadata.updated && (
+          {asset?.credentialSubject?.metadata.created !==
+            asset?.credentialSubject?.metadata.updated && (
             <>
               {' — '}
               <span className={styles.updated}>
-                updated <Time date={asset?.metadata.updated} relative />
+                updated{' '}
+                <Time
+                  date={asset?.credentialSubject?.metadata.updated}
+                  relative
+                />
               </span>
             </>
           )}

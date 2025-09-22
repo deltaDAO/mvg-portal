@@ -3,12 +3,15 @@
   display: inline-flex;
   align-items: center;
   cursor: default;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--publish-text-secondary);
 }
 
 .icon {
   display: inline-block;
-  width: 1.2em;
-  height: 1.2em;
+  width: 1.5em;
+  height: 1.5em;
   fill: currentColor;
   margin-right: calc(var(--spacer) / 8);
 }
@@ -28,6 +31,13 @@
 }
 
 @media screen and (min-width: 47rem) {
+  .minimal .name,
+  .minimal:hover .name {
+    width: auto;
+    opacity: 1;
+  }
+}
+@media screen and (min-width: 1500px) {
   .minimal .name,
   .minimal:hover .name {
     width: auto;

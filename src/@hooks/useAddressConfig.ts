@@ -1,4 +1,5 @@
-import addressConfig from '../../address.config'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import addressConfig from '../../address.config.cjs'
 const {
   whitelists,
   featured,
@@ -11,8 +12,8 @@ const {
 
 export interface UseAddressConfig {
   whitelists: {
-    'nft.owner': string[]
-    'datatokens.address': string[]
+    'indexedMetadata.nft.owner': string[]
+    'indexedMetadata.stats.datatokenAddress': string[]
   }
   featured: { assets: string[]; title: string }[]
   verifiedWallets: {
@@ -58,10 +59,16 @@ export function useAddressConfig(): UseAddressConfig {
     if (!isWhitelistEnabled()) return true
     return (
       ddo &&
-      (isAddressWhitelisted(ddo.nft.owner, 'nft.owner') ||
-        ddo.datatokens
-          .map((datatoken) => {
-            return isAddressWhitelisted(datatoken.address, 'datatokens.address')
+      (isAddressWhitelisted(
+        ddo.indexedMetadata.nft.owner,
+        'indexedMetadata.nft.owner'
+      ) ||
+        ddo.indexedMetadata.stats
+          .map((stat) => {
+            return isAddressWhitelisted(
+              stat.datatokenAddress,
+              'indexedMetadata.stats.datatokenAddress'
+            )
           })
           .some((isWhitelisted) => isWhitelisted === true))
     )

@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
@@ -10,17 +10,58 @@ import IconCompute from '@images/compute.svg'
 import FormEditComputeService from './FormEditComputeService'
 import { defaultServiceComputeOptions } from './_constants'
 import styles from './index.module.css'
+import { getDefaultPolicies } from '@components/Publish/_utils'
+import appConfig from 'app.config.cjs'
+import { PolicyEditor } from '@components/@shared/PolicyEditor'
+import { LoggerInstance } from '@oceanprotocol/lib'
+import { supportedLanguages } from '../languageType'
 
 export default function FormAddService({
   data,
-  chainId
+  chainId,
+  assetType
 }: {
   data: FormFieldContent[]
   chainId: number
+  assetType: string
 }): ReactElement {
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
+  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
   const accessTypeOptionsTitles = getFieldContent('access', data).options
+
+  useEffect(() => {
+    if (!values.language || values.language === '') {
+      setFieldValue('language', 'en')
+      setFieldValue('direction', 'ltr')
+    }
+  }, [setFieldValue, values.language])
+
+  const languageOptions = useMemo(() => {
+    return supportedLanguages
+      .map((lang) => lang.name)
+      .sort((a, b) => a.localeCompare(b))
+  }, [])
+
+  const handleLanguageChange = (languageName: string) => {
+    const selectedLanguage = supportedLanguages.find(
+      (lang) => lang.name === languageName
+    )
+
+    if (selectedLanguage) {
+      setFieldValue('language', selectedLanguage.code)
+      setFieldValue('direction', selectedLanguage.direction)
+    }
+  }
+
+  const getCurrentLanguageName = () => {
+    if (!values.language) return ''
+
+    const language = supportedLanguages.find(
+      (lang) => lang.code === values.language
+    )
+    return language?.name || ''
+  }
 
   const accessTypeOptions = [
     {
@@ -41,6 +82,21 @@ export default function FormAddService({
     }
   ]
 
+  useEffect(() => {
+    if (appConfig.ssiEnabled) {
+      getDefaultPolicies()
+        .then((policies) => {
+          setFieldValue('credentials.vcPolicies', policies)
+          setDefaultPolicies(policies)
+        })
+        .catch((error) => {
+          LoggerInstance.error(error)
+          setFieldValue('credentials.vcPolicies', [])
+          setDefaultPolicies([])
+        })
+    }
+  }, [])
+
   return (
     <Form className={styles.form}>
       <Field {...getFieldContent('name', data)} component={Input} name="name" />
@@ -52,13 +108,29 @@ export default function FormAddService({
       />
 
       <Field
+        {...getFieldContent('language', data)}
+        component={Input}
+        name="language"
+        type="select"
+        options={languageOptions}
+        value={getCurrentLanguageName()}
+        onChange={(e) => handleLanguageChange(e.target.value)}
+      />
+      <Field
+        {...getFieldContent('direction', data)}
+        component={Input}
+        name="direction"
+        readOnly
+      />
+
+      <Field
         {...getFieldContent('access', data)}
         component={Input}
         name="access"
         options={accessTypeOptions}
       />
 
-      {values.access === 'compute' && (
+      {values.access === 'compute' && assetType === 'dataset' && (
         <FormEditComputeService
           chainId={chainId}
           serviceEndpoint={values.providerUrl.url}
@@ -90,7 +162,6 @@ export default function FormAddService({
         {...getFieldContent('files', data)}
         component={Input}
         name="files"
-        disabled={true} // TODO tied with providerUrl - not editable now
       />
 
       <Field
@@ -102,9 +173,28 @@ export default function FormAddService({
       <Field
         {...getFieldContent('allow', data)}
         component={Input}
-        name="allow"
+        name="credentials.allow"
       />
-      <Field {...getFieldContent('deny', data)} component={Input} name="deny" />
+      <Field
+        {...getFieldContent('deny', data)}
+        component={Input}
+        name="credentials.deny"
+      />
+
+      {appConfig.ssiEnabled ? (
+        <PolicyEditor
+          label="SSI Policies"
+          credentials={values.credentials}
+          setCredentials={(newCredentials) =>
+            setFieldValue('credentials', newCredentials)
+          }
+          name="credentials"
+          defaultPolicies={defaultPolicies}
+          help="Self-sovereign identity (SSI) is used to verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
+        />
+      ) : (
+        <></>
+      )}
 
       <Field
         {...getFieldContent('usesConsumerParameters', data)}

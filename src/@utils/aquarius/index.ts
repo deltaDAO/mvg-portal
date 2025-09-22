@@ -1,16 +1,21 @@
-import { Asset, LoggerInstance } from '@oceanprotocol/lib'
+import { LoggerInstance } from '@oceanprotocol/lib'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import axios, { CancelToken, AxiosResponse } from 'axios'
-import { metadataCacheUri, allowDynamicPricing } from '../../../app.config'
+import {
+  metadataCacheUri,
+  allowDynamicPricing,
+  nodeUriIndex
+} from '../../../app.config.cjs'
 import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
-import { transformAssetToAssetSelection } from '../assetConvertor'
-import addressConfig from '../../../address.config'
+import { transformAssetToAssetSelection } from '../assetConverter'
+import addressConfig from '../../../address.config.cjs'
 import { isValidDid } from '@utils/ddo'
 import { Filters } from '@context/Filter'
 import { filterSets } from '@components/Search/Filter'
+import { Asset } from 'src/@types/Asset'
 
 export interface UserSales {
   id: string
@@ -32,7 +37,6 @@ export function escapeEsReservedCharacters(value: string): string {
  */
 type TFilterValue = string | number | boolean | number[] | string[]
 type TFilterKey = 'terms' | 'term' | 'match' | 'match_phrase'
-
 export function getFilterTerm(
   filterField: string,
   value: TFilterValue,
@@ -65,10 +69,11 @@ export function parseFilters(
   filterSets: { [key: string]: string[] }
 ): FilterTerm[] {
   const filterQueryPath = {
-    accessType: 'services.type',
-    serviceType: 'metadata.type',
-    filterSet: 'metadata.tags.keyword',
-    filterTime: 'metadata.created'
+    accessType: 'credentialSubject.services.type',
+    serviceType: 'credentialSubject.metadata.type',
+    filterSet: 'credentialSubject.metadata.tags.keyword',
+    filterTime: 'credentialSubject.metadata.created',
+    assetState: 'indexedMetadata.nft.state'
   }
   if (filtersList) {
     const filterTerms = Object.keys(filtersList)?.map((key) => {
@@ -82,13 +87,13 @@ export function parseFilters(
           ? getFilterTerm(filterQueryPath[key], uniqueTags)
           : undefined
       }
-      if (key === 'filterTime' && filtersList[key].length > 0) {
+      if (key === 'filterTime' && filtersList[key]?.length > 0) {
         const now = new Date()
         const targetDate = new Date(now.getTime() - Number(filtersList[key][0]))
         const targetDateISOString = targetDate.toISOString()
         return getRangeFilterTerm(filterQueryPath[key], targetDateISOString)
       }
-      if (filtersList[key].length > 0) {
+      if (filtersList[key]?.length > 0) {
         return getFilterTerm(filterQueryPath[key], filtersList[key])
       }
       return undefined
@@ -103,28 +108,29 @@ export function getWhitelistShould(): FilterTerm[] {
   const { whitelists } = addressConfig
 
   const whitelistFilterTerms = Object.entries(whitelists)
-    .filter(([field, whitelist]) => whitelist.length > 0)
+    .filter(([field, whitelist]) => whitelist?.length > 0)
     .map(([field, whitelist]) =>
       whitelist.map((address) => getFilterTerm(field, address, 'match'))
     )
     .reduce((prev, cur) => prev.concat(cur), [])
 
-  return whitelistFilterTerms.length > 0 ? whitelistFilterTerms : []
+  return whitelistFilterTerms?.length > 0 ? whitelistFilterTerms : []
 }
 
 export function getDynamicPricingMustNot(): // eslint-disable-next-line camelcase
 FilterTerm | undefined {
   return allowDynamicPricing === 'true'
     ? undefined
-    : getFilterTerm('price.type', 'pool')
+    : getFilterTerm('indexedMetadata.stats.prices.type', 'pool')
 }
 
 export function generateBaseQuery(
   baseQueryParams: BaseQueryParams,
-  index?: string
+  index?: string,
+  allNode?: boolean
 ): SearchQuery {
   const generatedQuery = {
-    index: index ?? 'op_ddo_v4.1.0',
+    index: index ?? 'op_ddo_v5.0.0',
     from: baseQueryParams.esPaginationOptions?.from || 0,
     size:
       baseQueryParams.esPaginationOptions?.size >= 0
@@ -136,19 +142,35 @@ export function generateBaseQuery(
         filter: [
           ...(baseQueryParams.filters || []),
           ...(baseQueryParams.chainIds
-            ? [getFilterTerm('chainId', baseQueryParams.chainIds)]
+            ? [
+                getFilterTerm(
+                  'credentialSubject.chainId',
+                  baseQueryParams.chainIds
+                )
+              ]
             : []),
           ...(baseQueryParams.ignorePurgatory
             ? []
-            : [getFilterTerm('purgatory.state', false)]),
+            : [getFilterTerm('indexedMetadata.purgatory.state', false)]),
           {
             bool: {
               must_not: [
-                !baseQueryParams.ignoreState && getFilterTerm('nft.state', 5),
+                !baseQueryParams.ignoreState &&
+                  getFilterTerm('indexedMetadata.nft.state', 5),
                 getDynamicPricingMustNot()
               ]
             }
-          }
+          },
+          ...(!allNode
+            ? [
+                {
+                  terms: {
+                    'credentialSubject.services.serviceEndpoint.keyword':
+                      nodeUriIndex
+                  }
+                }
+              ]
+            : [])
         ]
       }
     }
@@ -158,12 +180,13 @@ export function generateBaseQuery(
     generatedQuery.aggs = baseQueryParams.aggs
   }
 
-  if (baseQueryParams.sortOptions !== undefined)
+  if (baseQueryParams.sortOptions !== undefined) {
     generatedQuery.sort = {
-      [baseQueryParams.sortOptions.sortBy]:
+      [`${baseQueryParams.sortOptions.sortBy}`]:
         baseQueryParams.sortOptions.sortDirection ||
         SortDirectionOptions.Descending
     }
+  }
 
   // add whitelist filtering
   if (getWhitelistShould()?.length > 0) {
@@ -193,12 +216,10 @@ export function transformQueryResult(
     totalResults: 0,
     aggregations: {}
   }
-  result.results =
-    queryResult.hits?.hits.map((hit: Asset) => (hit as any)._source) ||
-    queryResult
+  result.results = queryResult.results
 
   result.totalResults =
-    queryResult.hits?.total?.value || queryResult.length || 0
+    queryResult.totalResults || queryResult.results?.length || 0
 
   result.totalPages = Math.ceil(result.totalResults / size)
   result.page = from ? from + 1 : 1
@@ -231,11 +252,10 @@ export async function queryMetadata(
 export async function getAsset(
   did: string,
   cancelToken: CancelToken
-): Promise<Asset> {
+): Promise<any> {
   try {
     if (!isValidDid(did)) return
-
-    const response: AxiosResponse<Asset> = await axios.get(
+    const response: AxiosResponse<any> = await axios.get(
       `${metadataCacheUri}/api/aquarius/assets/ddo/${did}`,
       { cancelToken }
     )
@@ -243,27 +263,6 @@ export async function getAsset(
 
     const data = { ...response.data }
     return data
-  } catch (error) {
-    if (axios.isCancel(error)) {
-      LoggerInstance.log(error.message)
-    } else {
-      LoggerInstance.error(error.message)
-    }
-  }
-}
-
-export async function getAssetsNames(
-  didList: string[],
-  cancelToken: CancelToken
-): Promise<Record<string, string>> {
-  try {
-    const response: AxiosResponse<Record<string, string>> = await axios.post(
-      `${metadataCacheUri}/api/aquarius/assets/names`,
-      { didList },
-      { cancelToken }
-    )
-    if (!response || response.status !== 200 || !response.data) return
-    return response.data
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)
@@ -302,6 +301,7 @@ export async function getAssetsFromDids(
 
 export async function getAlgorithmDatasetsForCompute(
   algorithmId: string,
+  serviceId: string,
   datasetProviderUri: string,
   accountId: string,
   datasetChainId?: number,
@@ -309,15 +309,58 @@ export async function getAlgorithmDatasetsForCompute(
 ): Promise<AssetSelectionAsset[]> {
   const baseQueryParams = {
     chainIds: [datasetChainId],
-    nestedQuery: {
-      must: {
-        match_phrase: {
-          'services.compute.publisherTrustedAlgorithms.did': {
-            query: algorithmId
-          }
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            algorithmId
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            serviceId
         }
       }
-    },
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const baseQueryParams2 = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            '*'
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            '*'
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const baseQueryParams3 = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithmPublishers.keyword':
+            '*'
+        }
+      }
+    ],
     sortOptions: {
       sortBy: SortTermOptions.Created,
       sortDirection: SortDirectionOptions.Descending
@@ -325,12 +368,35 @@ export async function getAlgorithmDatasetsForCompute(
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
-  const computeDatasets = await queryMetadata(query, cancelToken)
-  if (computeDatasets?.results?.length === 0) return []
+  const query2 = generateBaseQuery(baseQueryParams2)
+  const query3 = generateBaseQuery(baseQueryParams3)
+  const [res1, res2, res3] = await Promise.all([
+    queryMetadata(query, cancelToken),
+    queryMetadata(query2, cancelToken),
+    queryMetadata(query3, cancelToken)
+  ])
 
+  // Combine results and deduplicate by ID
+  const combined = [
+    ...(res1?.results || []),
+    ...(res2?.results || []),
+    ...(res3?.results || [])
+  ]
+
+  const datasetsOnly = combined.filter(
+    (asset) => asset?.credentialSubject?.metadata?.type === 'dataset'
+  )
+
+  const uniqueAssetsMap = new Map<string, any>()
+  datasetsOnly.forEach((asset) => {
+    if (!uniqueAssetsMap.has(asset.id)) {
+      uniqueAssetsMap.set(asset.id, asset)
+    }
+  })
+  const uniqueAssets = Array.from(uniqueAssetsMap.values())
   const datasets = await transformAssetToAssetSelection(
     datasetProviderUri,
-    computeDatasets.results,
+    uniqueAssets,
     accountId,
     []
   )
@@ -348,8 +414,9 @@ export async function getPublishedAssets(
 ): Promise<PagedAssets> {
   if (!accountId) return
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('nft.state', [0, 4, 5]))
-  filters.push(getFilterTerm('nft.owner', accountId.toLowerCase()))
+  filters.push(
+    getFilterTerm('indexedMetadata.nft.owner', accountId.toLowerCase())
+  )
   if (filtersList) {
     parseFilters(filtersList, filterSets).forEach((term) => filters.push(term))
   }
@@ -365,38 +432,17 @@ export async function getPublishedAssets(
         sum: {
           field: SortTermOptions.Orders
         }
-      },
-      totalRevenue: {
-        terms: {
-          field: SortTermOptions.TokenSymbol
-        },
-        aggs: {
-          totalValue: {
-            sum: {
-              script: {
-                source:
-                  "doc['" +
-                  SortTermOptions.Price +
-                  "'].value * doc['" +
-                  SortTermOptions.Orders +
-                  "'].value",
-                lang: 'painless'
-              }
-            }
-          }
-        }
       }
     },
     ignorePurgatory,
     ignoreState,
     esPaginationOptions: {
-      from: Number(page) - 1 || 0,
+      from: page || 0,
       size: 9
     }
   } as BaseQueryParams
 
   const query = generateBaseQuery(baseQueryParams)
-
   try {
     const result = await queryMetadata(query, cancelToken)
     return result
@@ -419,8 +465,9 @@ async function getTopPublishers(
   const filters: FilterTerm[] = []
 
   accesType !== undefined &&
-    filters.push(getFilterTerm('services.type', accesType))
-  type !== undefined && filters.push(getFilterTerm('metadata.type', type))
+    filters.push(getFilterTerm('credentialSubject.services.type', accesType))
+  type !== undefined &&
+    filters.push(getFilterTerm('credentialSubject.metadata.type', type))
 
   const baseQueryParams = {
     chainIds,
@@ -432,7 +479,7 @@ async function getTopPublishers(
     aggs: {
       topPublishers: {
         terms: {
-          field: 'nft.owner.keyword',
+          field: 'indexedMetadata.nft.owner.keyword',
           order: { totalSales: 'desc' }
         },
         aggs: {
@@ -445,7 +492,7 @@ async function getTopPublishers(
       }
     },
     esPaginationOptions: {
-      from: (Number(page) - 1 || 0) * 9,
+      from: page || 0,
       size: 9
     }
   } as BaseQueryParams
@@ -473,7 +520,11 @@ export async function getTopAssetsPublishers(
   const result = await getTopPublishers(chainIds, null)
   const { topPublishers } = result.aggregations
 
-  for (let i = 0; i < topPublishers.buckets.length; i++) {
+  if (!topPublishers?.buckets) {
+    return []
+  }
+
+  for (let i = 0; i < topPublishers.buckets?.length; i++) {
     publishers.push({
       id: topPublishers.buckets[i].key,
       totalSales: parseInt(topPublishers.buckets[i].totalSales.value)
@@ -487,13 +538,15 @@ export async function getTopAssetsPublishers(
 
 export async function getUserSalesAndRevenue(
   accountId: string,
-  chainIds: number[]
-): Promise<{ totalOrders: number; totalRevenue: number }> {
+  chainIds: number[],
+  filter?: Filters
+): Promise<{ totalOrders: number; totalRevenue: number; results: Asset[] }> {
   try {
     let page = 1
     let totalOrders = 0
     let totalRevenue = 0
     let assets: PagedAssets
+    const allResults: Asset[] = []
 
     do {
       assets = await getPublishedAssets(
@@ -502,53 +555,53 @@ export async function getUserSalesAndRevenue(
         null,
         false,
         false,
-        undefined,
+        filter,
         page
       )
+      // TODO stats is not in ddo
       if (assets && assets.results) {
         assets.results.forEach((asset) => {
-          const orders = asset?.stats?.orders || 0
-          const price = asset?.stats?.price?.value || 0
+          const orders = asset?.indexedMetadata?.stats[0]?.orders || 0
+          const price =
+            Number(asset?.indexedMetadata?.stats?.[0]?.prices?.[0]?.price) || 0
           totalOrders += orders
           totalRevenue += orders * price
         })
+        allResults.push(...assets.results)
       }
       page++
     } while (
       assets &&
       assets.results &&
-      assets.results.length > 0 &&
-      page < assets.totalPages
+      assets.results?.length > 0 &&
+      page <= assets.totalPages
     )
 
-    return { totalOrders, totalRevenue }
+    return { totalOrders, totalRevenue, results: allResults }
   } catch (error) {
     LoggerInstance.error('Error in getUserSales', error.message)
-    return { totalOrders: 0, totalRevenue: 0 }
+    return { totalOrders: 0, totalRevenue: 0, results: [] }
   }
 }
 
 export async function getUserOrders(
   accountId: string,
   cancelToken: CancelToken,
-  page?: number
+  page?: number,
+  filterTerm?: string
 ): Promise<PagedAssets> {
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('consumer.keyword', accountId))
-  filters.push({
-    exists: {
-      field: 'datatokenAddress'
-    }
-  })
+  const filterTermKeyword = filterTerm || 'consumer.keyword'
+  filters.push(getFilterTerm(filterTermKeyword, accountId))
   const baseQueryparams = {
     filters,
     ignorePurgatory: true,
     esPaginationOptions: {
-      from: Number(page) - 1 || 0,
-      size: 9
+      from: page || 0,
+      size: 1000
     }
   } as BaseQueryParams
-  const query = generateBaseQuery(baseQueryparams, 'order')
+  const query = generateBaseQuery(baseQueryparams, 'order', true)
   try {
     return queryMetadata(query, cancelToken)
   } catch (error) {
@@ -568,33 +621,50 @@ export async function getDownloadAssets(
   page?: number
 ): Promise<{ downloadedAssets: DownloadedAsset[]; totalResults: number }> {
   const filters: FilterTerm[] = []
-  filters.push(getFilterTerm('services.datatokenAddress.keyword', dtList))
-  filters.push(getFilterTerm('services.type', 'access'))
+  filters.push(
+    getFilterTerm('credentialSubject.services.datatokenAddress.keyword', dtList)
+  )
+  filters.push({
+    exists: {
+      field: 'indexedMetadata'
+    }
+  })
+  filters.push(getFilterTerm('credentialSubject.services.type', 'access'))
   const baseQueryparams = {
     chainIds,
     filters,
     ignorePurgatory: true,
     ignoreState,
     esPaginationOptions: {
-      from: Number(page) - 1 || 0,
+      from: page || 0,
       size: 9
     }
   } as BaseQueryParams
   const query = generateBaseQuery(baseQueryparams)
   try {
     const result = await queryMetadata(query, cancelToken)
-    const downloadedAssets: DownloadedAsset[] = result.results
-      .map((asset) => {
-        const timestamp = new Date(asset.event.datetime).getTime()
-        return {
-          asset,
-          networkId: asset.chainId,
-          dtSymbol: asset?.datatokens[0]?.symbol,
-          timestamp
-        }
-      })
-      .sort((a, b) => b.timestamp - a.timestamp)
-    return { downloadedAssets, totalResults: result.totalResults }
+    let downloadedAssets: DownloadedAsset[] = []
+    if (result) {
+      downloadedAssets = result?.results
+        ?.map((asset) => {
+          const timestampStr =
+            asset?.indexedMetadata?.event?.datetime ??
+            asset?.indexedMetadata?.nft?.created
+
+          const timestamp = timestampStr
+            ? new Date(timestampStr).getTime()
+            : Date.now()
+
+          return {
+            asset,
+            networkId: asset?.credentialSubject?.chainId,
+            dtSymbol: asset?.indexedMetadata?.stats[0]?.symbol,
+            timestamp
+          }
+        })
+        .sort((a, b) => b.timestamp - a.timestamp)
+    }
+    return { downloadedAssets, totalResults: result?.totalResults || 0 }
   } catch (error) {
     if (axios.isCancel(error)) {
       LoggerInstance.log(error.message)
@@ -617,7 +687,7 @@ export async function getTagsList(
     aggs: {
       tags: {
         terms: {
-          field: 'metadata.tags.keyword',
+          field: 'credentialSubject.metadata.tags.keyword',
           size: 1000
         }
       }
@@ -635,21 +705,11 @@ export async function getTagsList(
     }
     const tagsSet: Set<string> = new Set()
     response.data.forEach((items) => {
-      if (items.hits) {
-        items.hits?.hits.forEach((item) => {
-          if (item._source?.metadata?.tags) {
-            item._source.metadata.tags
-              .filter((tag: string) => tag !== '')
-              .forEach((tag: string) => tagsSet.add(tag))
-          }
-        })
-      } else {
-        items.forEach((item) => {
-          item.metadata.tags
-            .filter((tag: string) => tag !== '')
-            .forEach((tag: string) => tagsSet.add(tag))
-        })
-      }
+      items.results?.forEach((item) => {
+        item.credentialSubject.metadata.tags
+          .filter((tag: string) => tag !== '')
+          .forEach((tag: string) => tagsSet.add(tag))
+      })
     })
     const uniqueTagsList = Array.from(tagsSet).sort()
     return uniqueTagsList

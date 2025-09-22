@@ -2,7 +2,12 @@ import { ReactElement, useState, useRef } from 'react'
 import { Form, Formik } from 'formik'
 import { initialPublishFeedback, initialValues } from './_constants'
 import { useAccountPurgatory } from '@hooks/useAccountPurgatory'
-import { createTokensAndPricing, transformPublishFormToDdo } from './_utils'
+import {
+  createTokensAndPricing,
+  signAssetAndUploadToIpfs,
+  IpfsUpload,
+  transformPublishFormToDdo
+} from './_utils'
 import PageHeader from '@shared/Page/PageHeader'
 import Title from './Title'
 import styles from './index.module.css'
@@ -13,18 +18,15 @@ import { Steps } from './Steps'
 import { FormPublishData } from './_types'
 import { useUserPreferences } from '@context/UserPreferences'
 import useNftFactory from '@hooks/useNftFactory'
-import {
-  ProviderInstance,
-  LoggerInstance,
-  DDO,
-  getErrorMessage
-} from '@oceanprotocol/lib'
+import { LoggerInstance, Nft } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 import { validationSchema } from './_validation'
-import { useAbortController } from '@hooks/useAbortController'
-import { setNFTMetadataAndTokenURI } from '@utils/nft'
-import { customProviderUrl } from '../../../app.config'
+import appConfig, { customProviderUrl } from '../../../app.config.cjs'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { Asset } from 'src/@types/Asset'
+import { ethers } from 'ethers'
+import { useSsiWallet } from '@context/SsiWallet'
+import ContainerForm from '../@shared/atoms/ContainerForm'
 
 export default function PublishPage({
   content
@@ -38,7 +40,6 @@ export default function PublishPage({
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
   const scrollToRef = useRef()
   const nftFactory = useNftFactory()
-  const newAbortController = useAbortController()
 
   // This `feedback` state is auto-synced into Formik context under `values.feedback`
   // for use in other components. Syncing defined in ./Steps.tsx child component.
@@ -47,9 +48,10 @@ export default function PublishPage({
   // Collecting output of each publish step, enabling retry of failed steps
   const [erc721Address, setErc721Address] = useState<string>()
   const [datatokenAddress, setDatatokenAddress] = useState<string>()
-  const [ddo, setDdo] = useState<DDO>()
-  const [ddoEncrypted, setDdoEncrypted] = useState<string>()
+  const [ddo, setDdo] = useState<Asset>()
+  const [ipfsUpload, setIpdsUpload] = useState<IpfsUpload>()
   const [did, setDid] = useState<string>()
+  const ssiWalletContext = useSsiWallet()
 
   // --------------------------------------------------
   // 1. Create NFT & datatokens & create pricing schema
@@ -115,7 +117,7 @@ export default function PublishPage({
     values: FormPublishData,
     erc721Address: string,
     datatokenAddress: string
-  ): Promise<{ ddo: DDO; ddoEncrypted: string }> {
+  ): Promise<{ ddo: Asset; ipfsUpload: IpfsUpload }> {
     setFeedback((prevState) => ({
       ...prevState,
       '2': {
@@ -129,7 +131,7 @@ export default function PublishPage({
       if (!datatokenAddress || !erc721Address)
         throw new Error('No NFT or Datatoken received. Please try again.')
 
-      const ddo = await transformPublishFormToDdo(
+      const ddo: Asset = await transformPublishFormToDdo(
         values,
         datatokenAddress,
         erc721Address
@@ -140,24 +142,19 @@ export default function PublishPage({
       setDdo(ddo)
       LoggerInstance.log('[publish] Got new DDO', ddo)
 
-      let ddoEncrypted: string
-      try {
-        ddoEncrypted = await ProviderInstance.encrypt(
-          ddo,
-          ddo.chainId,
-          customProviderUrl || values.services[0].providerUrl.url,
-          newAbortController()
-        )
-      } catch (error) {
-        const message = getErrorMessage(error.message)
-        LoggerInstance.error('[Provider Encrypt] Error:', message)
-      }
+      const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
+        ddo,
+        signer,
+        appConfig.encryptAsset,
+        customProviderUrl || values.services[0].providerUrl.url,
+        ssiWalletContext
+      )
 
-      if (!ddoEncrypted)
+      if (!ipfsUpload)
         throw new Error('No encrypted DDO received. Please try again.')
 
-      setDdoEncrypted(ddoEncrypted)
-      LoggerInstance.log('[publish] Got encrypted DDO', ddoEncrypted)
+      setIpdsUpload(ipfsUpload)
+      LoggerInstance.log('[publish] Got encrypted DDO', ipfsUpload.metadataIPFS)
 
       setFeedback((prevState) => ({
         ...prevState,
@@ -166,7 +163,8 @@ export default function PublishPage({
           status: 'success'
         }
       }))
-      return { ddo, ddoEncrypted }
+
+      return { ddo, ipfsUpload }
     } catch (error) {
       LoggerInstance.error('[publish] error', error.message)
       setFeedback((prevState) => ({
@@ -185,8 +183,9 @@ export default function PublishPage({
   // --------------------------------------------------
   async function publish(
     values: FormPublishData,
-    ddo: DDO,
-    ddoEncrypted: string
+    ddo: Asset,
+    ipfsUpload: IpfsUpload,
+    erc721Address: string
   ): Promise<{ did: string }> {
     setFeedback((prevState) => ({
       ...prevState,
@@ -198,30 +197,29 @@ export default function PublishPage({
     }))
 
     try {
-      if (!ddo || !ddoEncrypted)
+      if (!ddo || !ipfsUpload)
         throw new Error('No DDO received. Please try again.')
 
-      const res = await setNFTMetadataAndTokenURI(
-        ddo,
-        accountId,
-        signer,
-        values.metadata.nft,
-        newAbortController()
+      // Set metadata for the NFT
+      const nft = new Nft(signer, ddo.credentialSubject.chainId)
+      await nft.setMetadata(
+        erc721Address,
+        await signer.getAddress(),
+        0,
+        customProviderUrl || values.services[0].providerUrl.url,
+        '',
+        ethers.utils.hexlify(ipfsUpload.flags),
+        ipfsUpload.metadataIPFS,
+        ipfsUpload.metadataIPFSHash
       )
-      const tx = await res.wait()
-      if (!tx?.transactionHash)
-        throw new Error(
-          'Metadata could not be written into the NFT. Please try again.'
-        )
 
-      LoggerInstance.log('[publish] setMetadata result', tx)
+      LoggerInstance.log('Version 5.0.0 Asset published. ID:', ddo.id)
 
       setFeedback((prevState) => ({
         ...prevState,
         '3': {
           ...prevState['3'],
-          status: tx ? 'success' : 'error',
-          txHash: tx?.transactionHash
+          status: 'success'
         }
       }))
 
@@ -247,31 +245,32 @@ export default function PublishPage({
     let _erc721Address = erc721Address
     let _datatokenAddress = datatokenAddress
     let _ddo = ddo
-    let _ddoEncrypted = ddoEncrypted
+    let _ipfsUpload = ipfsUpload
     let _did = did
 
     if (!_erc721Address || !_datatokenAddress) {
       const { erc721Address, datatokenAddress } = await create(values)
+
       _erc721Address = erc721Address
       _datatokenAddress = datatokenAddress
       setErc721Address(erc721Address)
       setDatatokenAddress(datatokenAddress)
     }
 
-    if (!_ddo || !_ddoEncrypted) {
-      const { ddo, ddoEncrypted } = await encrypt(
+    if (!_ddo || !_ipfsUpload) {
+      const { ddo, ipfsUpload } = await encrypt(
         values,
         _erc721Address,
         _datatokenAddress
       )
       _ddo = ddo
-      _ddoEncrypted = ddoEncrypted
+      _ipfsUpload = ipfsUpload
       setDdo(ddo)
-      setDdoEncrypted(ddoEncrypted)
+      setIpdsUpload(ipfsUpload)
     }
 
     if (!_did) {
-      const { did } = await publish(values, _ddo, _ddoEncrypted)
+      const { did } = await publish(values, _ddo, _ipfsUpload, _erc721Address)
       _did = did
       setDid(did)
     }
@@ -281,6 +280,7 @@ export default function PublishPage({
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
+      enableReinitialize={true}
       onSubmit={async (values) => {
         // kick off publishing
         await handleSubmit(values)
@@ -291,11 +291,14 @@ export default function PublishPage({
           <PageHeader
             title={<Title networkId={values.user.chainId} />}
             description={content.description}
+            isExtended
           />
           <Form className={styles.form} ref={scrollToRef}>
             <Navigation />
-            <Steps feedback={feedback} />
-            <Actions scrollToRef={scrollToRef} did={did} />
+            <ContainerForm style="publish">
+              <Steps feedback={feedback} />
+              <Actions scrollToRef={scrollToRef} did={did} />
+            </ContainerForm>
           </Form>
           {debug && <Debug />}
         </>

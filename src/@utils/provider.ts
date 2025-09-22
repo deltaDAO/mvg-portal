@@ -1,7 +1,5 @@
 import {
   Arweave,
-  GraphqlQuery,
-  Smartcontract,
   ComputeAlgorithm,
   ComputeAsset,
   ComputeEnvironment,
@@ -12,51 +10,161 @@ import {
   ProviderComputeInitializeResults,
   ProviderInstance,
   UrlFile,
-  AbiItem,
   UserCustomParameters,
-  getErrorMessage,
-  Service
+  getErrorMessage
 } from '@oceanprotocol/lib'
 // if customProviderUrl is set, we need to call provider using this custom endpoint
-import { customProviderUrl } from '../../app.config'
+import { customProviderUrl, oceanTokenAddress } from '../../app.config.cjs'
 import { KeyValuePair } from '@shared/FormInput/InputElement/KeyValueInput'
 import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
 import { toast } from 'react-toastify'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { ResourceType } from 'src/@types/ResourceType'
+import {
+  PolicyServerInitiateActionData,
+  PolicyServerInitiateComputeActionData
+} from 'src/@types/PolicyServer'
+
+export async function initializeProviderForComputeMulti(
+  datasets: {
+    asset: AssetExtended
+    service: Service
+    accessDetails: AccessDetails
+    sessionId: string
+  }[],
+  algorithm: AssetExtended,
+  algoSessionId: string,
+  accountId: Signer,
+  computeEnv: ComputeEnvironment,
+  selectedResources: ResourceType,
+  svcIndexAlgo: number
+) {
+  const computeAssets = datasets.map(({ asset, service, accessDetails }) => ({
+    documentId: asset.id,
+    serviceId: service.id,
+    transferTxId: accessDetails.validOrderTx
+  }))
+
+  const computeAlgo: ComputeAlgorithm = {
+    documentId: algorithm.id,
+    serviceId: algorithm.credentialSubject.services[svcIndexAlgo].id,
+    transferTxId: algorithm.accessDetails[svcIndexAlgo].validOrderTx
+  }
+
+  const policiesServer: PolicyServerInitiateComputeActionData[] = [
+    ...datasets.map(({ asset, service, sessionId }) => ({
+      documentId: asset.id,
+      serviceId: service.id,
+      sessionId,
+      successRedirectUri: '',
+      errorRedirectUri: '',
+      responseRedirectUri: '',
+      presentationDefinitionUri: ''
+    })),
+    {
+      documentId: algorithm.id,
+      serviceId: algorithm.credentialSubject.services[svcIndexAlgo].id,
+      sessionId: algoSessionId,
+      successRedirectUri: '',
+      errorRedirectUri: '',
+      responseRedirectUri: '',
+      presentationDefinitionUri: ''
+    }
+  ]
+
+  const validUntil = getValidUntilTime(
+    selectedResources.jobDuration,
+    datasets[0].service.timeout,
+    algorithm.credentialSubject.services[svcIndexAlgo].timeout
+  )
+
+  return await ProviderInstance.initializeCompute(
+    computeAssets,
+    computeAlgo,
+    computeEnv.id,
+    oceanTokenAddress,
+    validUntil,
+    customProviderUrl || datasets[0].service.serviceEndpoint,
+    accountId,
+    computeEnv.resources.map((res) => ({
+      id: res.id,
+      amount: selectedResources?.[res.id] || res.min
+    })),
+    datasets[0].asset.credentialSubject.chainId,
+    policiesServer
+  )
+}
 
 export async function initializeProviderForCompute(
   dataset: AssetExtended,
   datasetService: Service,
   datasetAccessDetails: AccessDetails,
   algorithm: AssetExtended,
-  accountId: string,
-  computeEnv: ComputeEnvironment = null
+  accountId: Signer,
+  computeEnv: ComputeEnvironment = null,
+  selectedResources: ResourceType,
+  svcIndexAlgo: number,
+  datasetSessionId: string,
+  algoSessionId: string
 ): Promise<ProviderComputeInitializeResults> {
   const computeAsset: ComputeAsset = {
     documentId: dataset.id,
     serviceId: datasetService.id,
     transferTxId: datasetAccessDetails.validOrderTx
   }
+
   const computeAlgo: ComputeAlgorithm = {
     documentId: algorithm.id,
-    serviceId: algorithm.services[0].id,
-    transferTxId: algorithm.accessDetails?.[0]?.validOrderTx
+    serviceId: algorithm.credentialSubject?.services[svcIndexAlgo].id,
+    transferTxId: algorithm.accessDetails?.[svcIndexAlgo]?.validOrderTx
   }
 
   const validUntil = getValidUntilTime(
-    computeEnv?.maxJobDuration,
+    selectedResources?.jobDuration,
     datasetService.timeout,
-    algorithm.services[0].timeout
+    algorithm.credentialSubject.services[svcIndexAlgo].timeout
   )
 
+  const policiesServer: PolicyServerInitiateComputeActionData[] = [
+    {
+      sessionId: algoSessionId,
+      serviceId: algorithm.credentialSubject.services[svcIndexAlgo].id,
+      documentId: algorithm.id,
+      successRedirectUri: ``,
+      errorRedirectUri: ``,
+      responseRedirectUri: ``,
+      presentationDefinitionUri: ``
+    },
+    {
+      sessionId: datasetSessionId,
+      serviceId: datasetService.id,
+      documentId: dataset.id,
+      successRedirectUri: ``,
+      errorRedirectUri: ``,
+      responseRedirectUri: ``,
+      presentationDefinitionUri: ``
+    }
+  ]
+
   try {
+    const resourceRequests = computeEnv.resources.map((res) => ({
+      id: res.id,
+      amount: selectedResources?.[res.id] || res.min
+    }))
     return await ProviderInstance.initializeCompute(
       [computeAsset],
       computeAlgo,
       computeEnv?.id,
+      oceanTokenAddress,
       validUntil,
       customProviderUrl || datasetService.serviceEndpoint,
-      accountId
+      accountId,
+      resourceRequests,
+      dataset.credentialSubject?.chainId ||
+        algorithm.credentialSubject?.chainId,
+      policiesServer
     )
   } catch (error) {
     const message = getErrorMessage(error.message)
@@ -166,45 +274,6 @@ export async function getFileInfo(
       }
       break
     }
-    case 'graphql': {
-      const fileGraphql: GraphqlQuery = {
-        type: storageType,
-        url: file,
-        headers: headersProvider,
-        query
-      }
-      try {
-        response = await ProviderInstance.getFileInfo(
-          fileGraphql,
-          customProviderUrl || providerUrl
-        )
-      } catch (error) {
-        const message = getErrorMessage(error.message)
-        LoggerInstance.error('[Provider Get File info] Error:', message)
-        toast.error(message)
-      }
-      break
-    }
-    case 'smartcontract': {
-      // clean obj
-      const fileSmartContract: Smartcontract = {
-        chainId,
-        type: storageType,
-        address: file,
-        abi: JSON.parse(abi) as AbiItem
-      }
-      try {
-        response = await ProviderInstance.getFileInfo(
-          fileSmartContract,
-          customProviderUrl || providerUrl
-        )
-      } catch (error) {
-        const message = getErrorMessage(error.message)
-        LoggerInstance.error('[Provider Get File info] Error:', message)
-        toast.error(message)
-      }
-      break
-    }
     default: {
       const fileUrl: UrlFile = {
         type: 'url',
@@ -236,10 +305,18 @@ export async function downloadFile(
   service: Service,
   accessDetails: AccessDetails,
   accountId: string,
+  verifierSessionId: string,
   validOrderTx?: string,
   userCustomParameters?: UserCustomParameters
 ) {
   let downloadUrl
+  const policyServer: PolicyServerInitiateActionData = {
+    sessionId: verifierSessionId,
+    successRedirectUri: ``,
+    errorRedirectUri: ``,
+    responseRedirectUri: ``,
+    presentationDefinitionUri: ``
+  }
   try {
     downloadUrl = await ProviderInstance.getDownloadUrl(
       asset.id,
@@ -248,6 +325,7 @@ export async function downloadFile(
       validOrderTx || accessDetails.validOrderTx,
       customProviderUrl || service.serviceEndpoint,
       signer,
+      policyServer,
       userCustomParameters
     )
   } catch (error) {
@@ -281,6 +359,6 @@ export async function getComputeEnvironments(
 
     return computeEnvs
   } catch (error) {
-    LoggerInstance.error(error.message)
+    LoggerInstance.error(`[getComputeEnvironments] ${error.message}`)
   }
 }

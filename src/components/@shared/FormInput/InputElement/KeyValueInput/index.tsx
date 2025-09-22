@@ -11,6 +11,7 @@ import styles from './index.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 import Button from '@shared/atoms/Button'
+import PublishButton from '@shared/PublishButton'
 import { InputProps } from '@shared/FormInput'
 import classNames from 'classnames/bind'
 
@@ -33,6 +34,7 @@ export default function InputKeyValue({
   value,
   keyPlaceholder = 'key',
   valuePlaceholder = 'value',
+  disabled = false,
   ...props
 }: KeyValueInputProps): ReactElement {
   const { label, help, prominentHelp, form, field } = props
@@ -117,6 +119,7 @@ export default function InputKeyValue({
           placeholder={keyPlaceholder}
           value={`${currentKey}`}
           onChange={handleChange}
+          disabled={disabled}
         />
 
         <InputElement
@@ -125,19 +128,19 @@ export default function InputKeyValue({
           placeholder={valuePlaceholder}
           value={`${currentValue}`}
           onChange={handleChange}
+          disabled={disabled}
         />
 
-        <Button
-          style="primary"
-          size="small"
+        <PublishButton
+          icon="add"
+          text="Add"
+          buttonStyle="primary"
           onClick={(e: React.SyntheticEvent) => {
             e.preventDefault()
             addPair()
           }}
-          disabled={disabledButton}
-        >
-          add
-        </Button>
+          disabled={disabledButton || disabled}
+        />
 
         {uniqueKeys && !hasOnlyUniqueKeys && (
           <p
@@ -163,13 +166,13 @@ export default function InputKeyValue({
               />
 
               <Button
-                style="primary"
+                style="outlined"
                 size="small"
                 onClick={(e: React.SyntheticEvent) => {
                   e.preventDefault()
                   removePair(i)
                 }}
-                disabled={false}
+                disabled={disabled}
               >
                 remove
               </Button>

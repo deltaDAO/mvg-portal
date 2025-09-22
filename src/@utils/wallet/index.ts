@@ -7,7 +7,7 @@ import { getDefaultClient } from 'connectkit'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
-import { chainIdsSupported } from '../../../app.config'
+import { chainIdsSupported } from '../../../app.config.cjs'
 
 export async function getDummySigner(chainId: number): Promise<Signer> {
   if (typeof chainId !== 'number') {
@@ -48,11 +48,13 @@ export const connectKitTheme = {
   '--ck-overlay-background': 'var(--background-body-transparent)',
   '--ck-modal-box-shadow': '0 0 20px 20px var(--box-shadow-color)',
   '--ck-body-background': 'var(--background-body)',
-  '--ck-body-color': 'var(--font-color-text)',
+  '--ck-body-color': '#000000',
   '--ck-primary-button-border-radius': 'var(--border-radius)',
   '--ck-primary-button-color': 'var(--font-color-heading)',
   '--ck-primary-button-background': 'var(--background-content)',
-  '--ck-secondary-button-border-radius': 'var(--border-radius)'
+  '--ck-secondary-button-border-radius': 'var(--border-radius)',
+  '--ck-body-color-muted': '#333333',
+  '--ck-body-color-danger': '#ff3333'
 }
 
 export function accountTruncate(account: string): string {
@@ -178,6 +180,9 @@ export function getTokenBalanceFromSymbol(
 ): string {
   if (!symbol) return
 
-  const baseTokenBalance = balance?.[symbol.toLocaleLowerCase()]
-  return baseTokenBalance || '0'
+  return (
+    balance?.[symbol.toLocaleLowerCase()] ||
+    balance?.approved?.[symbol.toLocaleLowerCase()] ||
+    '0'
+  )
 }

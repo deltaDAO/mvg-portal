@@ -9,33 +9,48 @@ import styles from './Details.module.css'
 import { useCancelToken } from '@hooks/useCancelToken'
 import MetaItem from '../../../Asset/AssetContent/MetaItem'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import { Asset as AssetType } from 'src/@types/Asset'
 
 function Asset({
   title,
   symbol,
-  did
+  did,
+  serviceId
 }: {
   title: string
   symbol: string
   did: string
+  serviceId?: string
 }) {
   return (
-    <div className={styles.asset}>
-      <h3 className={styles.assetTitle}>
-        {title}{' '}
-        <a
-          className={styles.assetLink}
-          href={`/asset/${did}`}
-          target="_blank"
-          rel="noreferrer"
-        >
-          <External />
-        </a>
-      </h3>
-      <p className={styles.assetMeta}>
-        <span className={styles.assetMeta}> {`${symbol} | `}</span>
-        <code className={styles.assetMeta}>{did}</code>
-      </p>
+    <div className={styles.assetBox}>
+      <div className={styles.assetHeader}>
+        <h3 className={styles.assetTitle}>
+          {title}{' '}
+          <a
+            className={styles.assetLink}
+            href={`/asset/${did}`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <External />
+          </a>
+        </h3>
+      </div>
+      <div className={styles.assetMetaBlock}>
+        <span className={styles.assetLabel}>Symbol:</span>
+        <code className={styles.assetCode}>{symbol}</code>
+      </div>
+      <div className={styles.assetMetaBlock}>
+        <span className={styles.assetLabel}>DID:</span>
+        <code className={styles.assetCode}>{did}</code>
+      </div>
+      {serviceId && (
+        <div className={styles.assetMetaBlock}>
+          <span className={styles.assetLabel}>Service ID:</span>
+          <code className={styles.assetCode}>{serviceId}</code>
+        </div>
+      )}
     </div>
   )
 }
@@ -46,24 +61,63 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
 
   const [algoName, setAlgoName] = useState<string>()
   const [algoDtSymbol, setAlgoDtSymbol] = useState<string>()
+  const [datasetAssets, setDatasetAssets] = useState<
+    { ddo: AssetType; serviceId?: string }[]
+  >([])
 
   useEffect(() => {
     async function getAlgoMetadata() {
-      const ddo = await getAsset(job.algoDID, newCancelToken())
-      setAlgoDtSymbol(ddo.datatokens[0].symbol)
-      setAlgoName(ddo?.metadata.name)
+      if (job.algorithm) {
+        const ddo = (await getAsset(
+          job.algorithm.documentId,
+          newCancelToken()
+        )) as AssetType
+        setAlgoDtSymbol(ddo.indexedMetadata.stats[0].symbol)
+        setAlgoName(ddo?.credentialSubject.metadata.name)
+      }
     }
+
+    async function getAssetsMetadata() {
+      if (job.assets && job.assets.length > 0) {
+        const allAssets = await Promise.all(
+          job.assets.map(async (asset) => {
+            const ddo = (await getAsset(
+              asset.documentId,
+              newCancelToken()
+            )) as AssetType
+            return { ddo, serviceId: asset.serviceId }
+          })
+        )
+        setDatasetAssets(allAssets)
+      }
+    }
+
     getAlgoMetadata()
-  }, [appConfig.metadataCacheUri, job.algoDID, newCancelToken])
+    getAssetsMetadata()
+  }, [appConfig.metadataCacheUri, job.algorithm, job.assets, newCancelToken])
 
   return (
     <>
-      <Asset
-        title={job.assetName}
-        symbol={job.assetDtSymbol}
-        did={job.inputDID[0]}
-      />
-      <Asset title={algoName} symbol={algoDtSymbol} did={job.algoDID} />
+      <h3 className={styles.sectionLabel}>Input Datasets</h3>
+      <div className={styles.assetListBox}>
+        {datasetAssets.map(({ ddo, serviceId }) => (
+          <Asset
+            key={ddo.id}
+            title={ddo.credentialSubject.metadata.name}
+            symbol={ddo.indexedMetadata.stats[0].symbol}
+            did={ddo.id}
+            serviceId={serviceId}
+          />
+        ))}
+      </div>
+      <h3 className={styles.sectionLabel}>Algorithm</h3>
+      <div className={styles.assetListBox}>
+        <Asset
+          title={algoName}
+          symbol={algoDtSymbol}
+          did={job.algorithm.documentId}
+        />
+      </div>
     </>
   )
 }
@@ -74,7 +128,6 @@ export default function Details({
   job: ComputeJobMetaData
 }): ReactElement {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
   return (
     <>
       <Button style="text" size="small" onClick={() => setIsDialogOpen(true)}>
@@ -91,12 +144,30 @@ export default function Details({
         <div className={styles.meta}>
           <MetaItem
             title="Created"
-            content={<Time date={job.dateCreated} isUnix relative />}
+            content={
+              <Time
+                date={
+                  Number((job as any).algoStartTimestamp) > 0
+                    ? (
+                        Number((job as any).algoStartTimestamp) * 1000
+                      ).toString()
+                    : (Number(job.dateCreated) * 1000).toString()
+                }
+                isUnix
+                relative
+              />
+            }
           />
           {job.dateFinished && (
             <MetaItem
               title="Finished"
-              content={<Time date={job.dateFinished} isUnix relative />}
+              content={
+                <Time
+                  date={((job as any).algoStopTimestamp * 1000).toString()}
+                  isUnix
+                  relative
+                />
+              }
             />
           )}
           <MetaItem title="Job ID" content={<code>{job.jobId}</code>} />

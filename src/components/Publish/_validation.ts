@@ -63,10 +63,162 @@ const validationMetadata = {
         .nullable()
         .transform((value) => value || null)
     })
+  }),
+  useRemoteLicense: Yup.boolean(),
+  licenseUrl: Yup.array().when('useRemoteLicense', {
+    is: false,
+    then: Yup.array().test('urlTest', (array, context) => {
+      if (!array || !array[0]) {
+        return context.createError({ message: `Need a valid url` })
+      }
+      const { url, valid } = array[0] as {
+        url: string
+        type: 'url'
+        valid: boolean
+      }
+      if (!url || url.length === 0) {
+        return context.createError({ message: `Need a valid url` })
+      }
+      // Only check valid flag if validation has been attempted (valid is not undefined)
+      if (valid !== undefined && !valid) {
+        return context.createError({ message: `Need a valid url` })
+      }
+      return true
+    })
+  }),
+  uploadedLicense: Yup.object().when('useRemoteLicense', {
+    is: true,
+    then: Yup.object().test('remoteTest', (license, context) => {
+      if (!license) {
+        return context.createError({ message: `Need a license file` })
+      }
+      return true
+    })
   })
 }
 
+const validationRequestCredentials = {
+  format: Yup.string().required('Required'),
+  type: Yup.string().required('Required'),
+  policies: Yup.array().of(
+    Yup.object().shape({
+      type: Yup.string(),
+      name: Yup.string()
+        .when('type', {
+          is: 'staticPolicy',
+          then: (shema) => shema.required('Required')
+        })
+        .when('type', {
+          is: 'customUrlPolicy',
+          then: (shema) => shema.required('Required')
+        })
+        .when('type', {
+          is: 'customPolicy',
+          then: (shema) => shema.required('Required')
+        }),
+      args: Yup.array().when('type', {
+        is: 'parameterizedPolicy',
+        then: (shema) => shema.of(Yup.string().required('Required'))
+      }),
+      policy: Yup.string().when('type', {
+        is: 'parameterizedPolicy',
+        then: (shema) => shema.required('Required')
+      }),
+      policyUrl: Yup.string().when('type', {
+        is: 'customUrlPolicy',
+        then: (shema) =>
+          shema
+            .required('Required')
+            .test('isValidUrl', 'Invalid URL format', (value) => {
+              if (!value) return false
+              const trimmedValue = value.trim()
+              if (
+                !trimmedValue.startsWith('http://') &&
+                !trimmedValue.startsWith('https://')
+              ) {
+                return false
+              }
+              try {
+                const url = new URL(trimmedValue)
+                return url.protocol === 'http:' || url.protocol === 'https:'
+              } catch {
+                return false
+              }
+            })
+      }),
+      arguments: Yup.array()
+        .when('type', {
+          is: 'customUrlPolicy',
+          then: (shema) =>
+            shema.of(
+              Yup.object().shape({
+                name: Yup.string().required('Required'),
+                value: Yup.string().required('Required')
+              })
+            )
+        })
+        .when('type', {
+          is: 'customPolicy',
+          then: (shema) =>
+            shema.of(
+              Yup.object().shape({
+                name: Yup.string().required('Required'),
+                value: Yup.string().required('Required')
+              })
+            )
+        }),
+      rules: Yup.array().when('type', {
+        is: 'customPolicy',
+        then: (shema) =>
+          shema.of(
+            Yup.object().shape({
+              leftValue: Yup.string().required('Required'),
+              operator: Yup.string().required('Required'),
+              rightValue: Yup.string().required('Required')
+            })
+          )
+      })
+    })
+  )
+}
+
+const validationVpPolicy = {
+  type: Yup.string().required('Required'),
+  name: Yup.string().when('type', {
+    is: 'staticVpPolicy',
+    then: (shema) => shema.required('Required')
+  }),
+  policy: Yup.string().when('type', {
+    is: 'argumentVpPolicy',
+    then: (shema) => shema.required('Required')
+  }),
+  args: Yup.number().when('type', {
+    is: 'argumentVpPolicy',
+    then: (shema) => shema.required('Required')
+  })
+}
+
+const validationCredentials = {
+  requestCredentials: Yup.array().of(
+    Yup.object().shape(validationRequestCredentials)
+  ),
+  vcPolicies: Yup.array().of(Yup.string().required('Required')),
+  vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
+  allow: Yup.array().of(Yup.string()).nullable(),
+  deny: Yup.array().of(Yup.string()).nullable()
+}
+
 const validationService = {
+  name: Yup.string().required('Required'),
+  description: Yup.object().shape({
+    value: Yup.string()
+      .min(
+        10,
+        (param) =>
+          `Service description must be at least ${param.min} characters`
+      )
+      .required('Required')
+  }),
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({
@@ -94,7 +246,7 @@ const validationService = {
     .matches(/compute|access/g)
     .required('Required'),
   providerUrl: Yup.object().shape({
-    url: Yup.string().url('Must be a valid URL.').required('Required'),
+    //    url: Yup.string().url('Must be a valid URL.').required('Required'),
     valid: Yup.boolean().isTrue().required('Valid Provider is required.'),
     custom: Yup.boolean()
   }),
@@ -108,8 +260,7 @@ const validationService = {
       .nullable()
       .transform((value) => value || null)
   }),
-  allow: Yup.array().of(Yup.string()).nullable(),
-  deny: Yup.array().of(Yup.string()).nullable()
+  credentials: Yup.object().shape(validationCredentials)
 }
 
 const validationPricing = {
@@ -143,5 +294,14 @@ export const validationSchema: Yup.SchemaOf<any> = Yup.object().shape({
   }),
   metadata: Yup.object().shape(validationMetadata),
   services: Yup.array().of(Yup.object().shape(validationService)),
-  pricing: Yup.object().shape(validationPricing)
+  pricing: Yup.object().shape(validationPricing),
+  additionalDdos: Yup.array()
+    .of(
+      Yup.object().shape({
+        data: Yup.string().required('Required'),
+        type: Yup.string().required('Required')
+      })
+    )
+    .nullable(),
+  credentials: Yup.object().shape(validationCredentials)
 })

@@ -8,7 +8,7 @@ import ButtonBuy from '../ButtonBuy'
 import PriceOutput from './PriceOutput'
 import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
-import { Asset, ComputeEnvironment, Service } from '@oceanprotocol/lib'
+import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
@@ -18,9 +18,15 @@ import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
 import { ComputeDatasetForm } from './_constants'
-import CalculateButtonBuy from '../CalculateButtonBuy'
-import { consumeMarketOrderFee } from 'app.config'
+import appConfig, { consumeMarketOrderFee } from 'app.config.cjs'
 import { Row } from '../Row'
+import { Service } from 'src/@types/ddo/Service'
+import { Asset } from 'src/@types/Asset'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { useCancelToken } from '@hooks/useCancelToken'
+import { ResourceType } from 'src/@types/ResourceType'
+import { useSsiWallet } from '@context/SsiWallet'
+import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
 
 export default function FormStartCompute({
   asset,
@@ -47,8 +53,6 @@ export default function FormStartCompute({
   selectedComputeAssetType,
   selectedComputeAssetTimeout,
   computeEnvs,
-  setSelectedComputeEnv,
-  setTermsAndConditions,
   stepText,
   isConsumable,
   consumableFeedback,
@@ -56,7 +60,11 @@ export default function FormStartCompute({
   algoOrderPriceAndFees,
   providerFeeAmount,
   validUntil,
-  retry
+  retry,
+  onRunInitPriceAndFees,
+  onCheckAlgoDTBalance,
+  allResourceValues,
+  setAllResourceValues
 }: {
   asset: AssetExtended
   service: Service
@@ -82,10 +90,6 @@ export default function FormStartCompute({
   selectedComputeAssetType?: string
   selectedComputeAssetTimeout?: string
   computeEnvs: ComputeEnvironment[]
-  setSelectedComputeEnv: React.Dispatch<
-    React.SetStateAction<ComputeEnvironment>
-  >
-  setTermsAndConditions: React.Dispatch<React.SetStateAction<boolean>>
   stepText: string
   isConsumable: boolean
   consumableFeedback: string
@@ -94,9 +98,21 @@ export default function FormStartCompute({
   providerFeeAmount?: string
   validUntil?: string
   retry: boolean
+  onRunInitPriceAndFees: () => Promise<void>
+  onCheckAlgoDTBalance: () => Promise<void>
+  allResourceValues?: {
+    [envId: string]: ResourceType
+  }
+  setAllResourceValues?: React.Dispatch<
+    React.SetStateAction<{
+      [envId: string]: ResourceType
+    }>
+  >
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
+  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
+  const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const {
     isValid,
@@ -112,18 +128,41 @@ export default function FormStartCompute({
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
   )
+  const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
-  const [isFullPriceLoading, setIsFullPriceLoading] = useState(
-    accessDetails.type !== 'free'
-  )
+  const selectedResources = allResourceValues?.[values.computeEnv]
+  const c2dPrice = selectedResources?.price
+  function getAlgorithmAsset(algo: string): {
+    algorithmAsset: AssetExtended | null
+    serviceIndexAlgo: number | null
+  } {
+    let algorithmId: string
+    let serviceId: string = ''
+    try {
+      const parsed = JSON.parse(algo)
+      algorithmId = parsed?.algoDid || algo
+      serviceId = parsed?.serviceId || ''
+    } catch (e) {
+      algorithmId = algo
+    }
 
-  function getAlgorithmAsset(algorithmId: string): Asset {
-    let assetDdo = null
+    let assetDdo: AssetExtended | null = null
+    let serviceIndexAlgo: number | null = null
+
     ddoListAlgorithms.forEach((ddo: Asset) => {
-      if (ddo.id === algorithmId) assetDdo = ddo
+      if (ddo.id === algorithmId) {
+        assetDdo = ddo
+        if (serviceId && ddo.credentialSubject?.services) {
+          const index = ddo.credentialSubject.services.findIndex(
+            (svc: any) => svc.id === serviceId
+          )
+          serviceIndexAlgo = index !== -1 ? index : null
+        }
+      }
     })
-    return assetDdo
+
+    return { algorithmAsset: assetDdo, serviceIndexAlgo }
   }
 
   // Pre-select computeEnv and/or algo if there is only one available option
@@ -144,7 +183,6 @@ export default function FormStartCompute({
     algorithms,
     computeEnvs,
     setFieldValue,
-    setSelectedComputeEnv,
     values.algorithm,
     values.computeEnv
   ])
@@ -154,28 +192,66 @@ export default function FormStartCompute({
 
     async function fetchAlgorithmAssetExtended() {
       // TODO test this type override
-      const algorithmAsset: AssetExtended = getAlgorithmAsset(values.algorithm)
+      const { algorithmAsset, serviceIndexAlgo } = getAlgorithmAsset(
+        values.algorithm
+      )
+      if (serviceIndexAlgo) {
+        setServiceIndex(serviceIndexAlgo)
+      }
       const algoAccessDetails = await Promise.all(
-        algorithmAsset.services.map((service) =>
-          getAccessDetails(algorithmAsset.chainId, service)
+        algorithmAsset.credentialSubject?.services.map((service) =>
+          getAccessDetails(
+            algorithmAsset.credentialSubject?.chainId,
+            service,
+            accountId,
+            newCancelToken()
+          )
         )
       )
 
       const extendedAlgoAsset: AssetExtended = {
         ...algorithmAsset,
-        accessDetails: algoAccessDetails
+        accessDetails: algoAccessDetails,
+        serviceIndex: serviceIndexAlgo
       }
       setSelectedAlgorithmAsset(extendedAlgoAsset)
     }
     fetchAlgorithmAssetExtended()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.algorithm, accountId, isConsumable, setSelectedAlgorithmAsset])
 
   useEffect(() => {
-    if (!values.computeEnv) return
-    setSelectedComputeEnv(
-      computeEnvs.find((env) => env.id === values.computeEnv)
-    )
-  }, [computeEnvs, setSelectedComputeEnv, values.computeEnv])
+    if (!values.computeEnv || !computeEnvs) return
+
+    const selectedEnv = computeEnvs.find((env) => env.id === values.computeEnv)
+    if (!selectedEnv) return
+
+    // if not already initialized, set default resource values
+    if (!allResourceValues[selectedEnv.id]) {
+      const cpu = selectedEnv.resources.find((r) => r.id === 'cpu')?.min || 1
+      const ram =
+        selectedEnv.resources.find((r) => r.id === ('ram' as any))?.min ||
+        1_000_000_000
+      const disk =
+        selectedEnv.resources.find((r) => r.id === ('disk' as any))?.min ||
+        1_000_000_000
+      const jobDuration = selectedEnv.maxJobDuration || 3600
+
+      const newRes = {
+        cpu,
+        ram,
+        disk,
+        jobDuration,
+        price: 0,
+        mode: allResourceValues[selectedEnv.id].mode
+      }
+
+      setAllResourceValues((prev) => ({
+        ...prev,
+        [selectedEnv.id]: newRes
+      }))
+    }
+  }, [values.computeEnv, computeEnvs])
 
   //
   // Set price for calculation output
@@ -183,32 +259,42 @@ export default function FormStartCompute({
   useEffect(() => {
     if (!asset?.accessDetails || !selectedAlgorithmAsset?.accessDetails?.length)
       return
+
     setDatasetOrderPrice(datasetOrderPriceAndFees?.price || accessDetails.price)
-    setAlgoOrderPrice(algoOrderPriceAndFees?.price)
+    const details = selectedAlgorithmAsset.accessDetails[serviceIndex]
+    if (details?.validOrderTx) {
+      setAlgoOrderPrice('0')
+    } else {
+      setAlgoOrderPrice(algoOrderPriceAndFees?.price)
+    }
+
     const totalPrices: totalPriceMap[] = []
+
+    // Always use resources price for C2D (provider) part
     const priceDataset =
       !datasetOrderPrice || hasPreviousOrder || hasDatatoken
         ? new Decimal(0)
         : new Decimal(datasetOrderPrice).toDecimalPlaces(MAX_DECIMALS)
-    const priceAlgo =
-      !algoOrderPrice ||
-      hasPreviousOrderSelectedComputeAsset ||
-      hasDatatokenSelectedComputeAsset
-        ? new Decimal(0)
-        : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
-    const providerFees = providerFeeAmount
-      ? new Decimal(providerFeeAmount).toDecimalPlaces(MAX_DECIMALS)
-      : new Decimal(0)
+    const rawPrice = details?.validOrderTx ? 0 : details?.price
 
+    // wrap in Decimal and round to your MAX_DECIMALS
+    const priceAlgo = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
+
+    const priceC2D =
+      c2dPrice !== undefined
+        ? new Decimal(c2dPrice).toDecimalPlaces(MAX_DECIMALS)
+        : new Decimal(0)
+
+    // Now use priceC2D everywhere you'd use providerFees
     const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
-    const feeProvider = new Decimal(consumeMarketOrderFee)
-      .mul(providerFees)
-      .div(100)
+    const feeC2D = new Decimal(consumeMarketOrderFee).mul(priceC2D).div(100)
     const feeDataset = new Decimal(consumeMarketOrderFee)
       .mul(priceDataset)
       .div(100)
+
+    // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = providerFees.add(priceAlgo).add(feeProvider).add(feeAlgo)
+      let sum = priceC2D.add(priceAlgo).add(feeC2D).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
@@ -227,10 +313,7 @@ export default function FormStartCompute({
       }
     } else {
       if (datasetSymbol === providerFeesSymbol) {
-        const sum = providerFees
-          .add(priceDataset)
-          .add(feeProvider)
-          .add(feeDataset)
+        const sum = priceC2D.add(priceDataset).add(feeC2D).add(feeDataset)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: datasetSymbol
@@ -249,10 +332,7 @@ export default function FormStartCompute({
           symbol: algorithmSymbol
         })
         totalPrices.push({
-          value: providerFees
-            .add(feeProvider)
-            .toDecimalPlaces(MAX_DECIMALS)
-            .toString(),
+          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
       } else {
@@ -264,10 +344,7 @@ export default function FormStartCompute({
           symbol: datasetSymbol
         })
         totalPrices.push({
-          value: providerFees
-            .add(feeProvider)
-            .toDecimalPlaces(MAX_DECIMALS)
-            .toString(),
+          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
         totalPrices.push({
@@ -281,6 +358,7 @@ export default function FormStartCompute({
     }
 
     setTotalPrices(totalPrices)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     asset,
     hasPreviousOrder,
@@ -289,30 +367,56 @@ export default function FormStartCompute({
     hasDatatokenSelectedComputeAsset,
     datasetOrderPriceAndFees,
     algoOrderPriceAndFees,
-    providerFeeAmount,
     isAssetNetwork,
     selectedAlgorithmAsset,
     datasetOrderPrice,
     algoOrderPrice,
     algorithmSymbol,
     datasetSymbol,
-    providerFeesSymbol
+    providerFeesSymbol,
+    values.computeEnv, // Add this!
+    allResourceValues // Add this!
   ])
 
   useEffect(() => {
-    totalPrices.forEach((price) => {
-      const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
-      if (!baseTokenBalance) {
-        setIsBalanceSufficient(false)
-        return
-      }
+    // Copy totalPrices so you don't mutate the original array
+    const priceChecks = [...totalPrices]
 
-      // if one comparison of baseTokenBalance and token price comparison is false then the state will be false
-      setIsBalanceSufficient(
-        baseTokenBalance && compareAsBN(baseTokenBalance, `${price.value}`)
+    // Add C2D price if not already included in totalPrices
+    const c2dPrice = allResourceValues?.[values.computeEnv]?.price
+    const c2dSymbol = providerFeesSymbol
+    // Only add if price > 0 and not present in totalPrices already (optional check)
+    if (
+      c2dPrice &&
+      !totalPrices.some(
+        (p) => p.symbol === c2dSymbol && p.value === c2dPrice.toString()
       )
-    })
-  }, [balance, dtBalance, datasetSymbol, algorithmSymbol, totalPrices])
+    ) {
+      priceChecks.push({ value: c2dPrice.toString(), symbol: c2dSymbol })
+    }
+
+    let sufficient = true
+    for (const price of priceChecks) {
+      const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
+      if (
+        !baseTokenBalance ||
+        !compareAsBN(baseTokenBalance, `${price.value}`)
+      ) {
+        sufficient = false
+        break
+      }
+    }
+    setIsBalanceSufficient(sufficient)
+  }, [
+    balance,
+    dtBalance,
+    datasetSymbol,
+    algorithmSymbol,
+    providerFeesSymbol,
+    totalPrices,
+    allResourceValues,
+    values.computeEnv
+  ])
 
   const PurchaseButton = () => (
     <ButtonBuy
@@ -331,7 +435,7 @@ export default function FormStartCompute({
       dtSymbol={accessDetails.datatoken?.symbol}
       dtBalance={dtBalance}
       assetTimeout={assetTimeout}
-      assetType={asset.metadata.type}
+      assetType={asset.credentialSubject?.metadata.type}
       hasPreviousOrderSelectedComputeAsset={
         hasPreviousOrderSelectedComputeAsset
       }
@@ -357,21 +461,22 @@ export default function FormStartCompute({
     />
   )
 
-  const handleFullPrice = () => {
-    setIsFullPriceLoading(false)
-  }
-
-  const CalculateButton = () => (
-    <div style={{ textAlign: 'center' }}>
-      <CalculateButtonBuy
-        type="submit"
-        onClick={handleFullPrice}
-        isLoading={isLoading}
-      />
-    </div>
-  )
-
   const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
+    function formatDuration(seconds: number): string {
+      const d = Math.floor(seconds / 86400)
+      const h = Math.floor((seconds % 86400) / 3600)
+      const m = Math.floor((seconds % 3600) / 60)
+      const s = seconds % 60
+      const parts: string[] = []
+      if (d) parts.push(`${d}d`)
+      if (h) parts.push(`${h}h`)
+      if (m) parts.push(`${m}m`)
+      if (s) parts.push(`${s}s`)
+
+      const result = parts.join(' ') || '0s'
+      return result
+    }
+
     return (
       <div style={{ textAlign: 'left' }}>
         <>
@@ -388,7 +493,7 @@ export default function FormStartCompute({
                 hasDatatokenSelectedComputeAsset
               }
               algorithmConsumeDetails={
-                selectedAlgorithmAsset?.accessDetails?.[0]
+                selectedAlgorithmAsset?.accessDetails[serviceIndex]
               }
               symbol={datasetSymbol}
               algorithmSymbol={algorithmSymbol}
@@ -423,7 +528,8 @@ export default function FormStartCompute({
                 hasDatatoken={hasDatatokenSelectedComputeAsset}
                 price={new Decimal(
                   algoOrderPrice ||
-                    selectedAlgorithmAsset?.accessDetails?.[0]?.price ||
+                    selectedAlgorithmAsset?.accessDetails[serviceIndex]
+                      ?.price ||
                     0
                 )
                   .toDecimalPlaces(MAX_DECIMALS)
@@ -435,8 +541,8 @@ export default function FormStartCompute({
 
               {computeEnvs?.length > 0 && (
                 <Row
-                  price={providerFeeAmount} // initializeCompute.provider fee amount
-                  timeout={`${validUntil} seconds`} // valid until value
+                  price={selectedResources?.price?.toString() || '0'}
+                  timeout={formatDuration(selectedResources?.jobDuration || 0)}
                   symbol={providerFeesSymbol}
                   type="C2D RESOURCES"
                 />
@@ -459,7 +565,8 @@ export default function FormStartCompute({
                   .mul(
                     new Decimal(
                       algoOrderPrice ||
-                        selectedAlgorithmAsset?.accessDetails?.[0]?.price ||
+                        selectedAlgorithmAsset?.accessDetails[serviceIndex]
+                          ?.price ||
                         0
                     )
                   )
@@ -473,12 +580,12 @@ export default function FormStartCompute({
               {computeEnvs?.length > 0 && (
                 <Row
                   price={new Decimal(consumeMarketOrderFee)
-                    .mul(new Decimal(providerFeeAmount))
+                    .mul(new Decimal(selectedResources?.price || 0))
                     .toDecimalPlaces(MAX_DECIMALS)
                     .div(100)
-                    .toString()} // consume market order fee fee amount
+                    .toString()}
                   symbol={providerFeesSymbol}
-                  type={`CONSUME MARKET ORDER FEE CDD (${consumeMarketOrderFee}%}`}
+                  type={`CONSUME MARKET ORDER FEE C2D (${consumeMarketOrderFee}%)`}
                 />
               )}
               {totalPrices.map((item) =>
@@ -493,7 +600,30 @@ export default function FormStartCompute({
             </div>
           )}
           <div style={{ textAlign: 'center' }}>
-            <PurchaseButton />
+            {appConfig.ssiEnabled && selectedAlgorithmAsset ? (
+              verifierSessionCache &&
+              lookupVerifierSessionId(
+                `${selectedAlgorithmAsset?.id}`,
+                selectedAlgorithmAsset?.credentialSubject?.services?.[
+                  serviceIndex
+                ]?.id
+              ) ? (
+                <PurchaseButton />
+              ) : (
+                <div style={{ marginTop: '60px', marginLeft: '10px' }}>
+                  <AssetActionCheckCredentialsAlgo
+                    asset={selectedAlgorithmAsset}
+                    service={
+                      selectedAlgorithmAsset?.credentialSubject?.services?.[
+                        serviceIndex
+                      ]
+                    }
+                  />
+                </div>
+              )
+            ) : (
+              <PurchaseButton />
+            )}
           </div>
         </>
       </div>
@@ -523,32 +653,43 @@ export default function FormStartCompute({
               ? values.computeEnv
               : undefined
           }
+          setAllResourceValues={
+            field.name === 'computeEnv' ? setAllResourceValues : undefined
+          }
         />
       ))}
       {asset && selectedAlgorithmAsset && (
         <ConsumerParameters
-          service={service}
+          services={[service]}
           selectedAlgorithmAsset={selectedAlgorithmAsset}
           isLoading={isLoading}
+          svcIndex={serviceIndex}
         />
       )}
 
-      {isFullPriceLoading ? (
+      {/* {isFullPriceLoading ? (
         <CalculateButton />
-      ) : (
-        <>
-          <AssetActionBuy asset={asset} />
-          <Field
-            component={Input}
-            name="termsAndConditions"
-            type="checkbox"
-            options={['Terms and Conditions']}
-            prefixes={['I agree to the']}
-            actions={['/terms']}
-            disabled={isLoading}
-          />
-        </>
-      )}
+      ) : ( */}
+      <>
+        <AssetActionBuy asset={asset} />
+        <Field
+          component={Input}
+          name="termsAndConditions"
+          type="checkbox"
+          options={['Terms and Conditions']}
+          prefixes={['I agree to the']}
+          actions={['/terms']}
+          disabled={isLoading}
+        />
+        <Field
+          component={Input}
+          name="acceptPublishingLicense"
+          type="checkbox"
+          options={['Publishing License']}
+          prefixes={['I agree the']}
+          disabled={isLoading}
+        />
+      </>
     </Form>
   )
 }

@@ -1,0 +1,78 @@
+.panelColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.marginTop1 {
+  margin-top: 1em;
+}
+
+.marginTop2p {
+  margin-top: -45px;
+}
+
+.marginTop6px {
+  margin-top: 6px;
+}
+
+.textAlignCenter {
+  text-align: left;
+}
+
+.alignItemsCenter {
+  margin-left: 18%;
+  margin-top: -10%;
+}
+
+.errorMessage {
+  font-size: 1.3em;
+  color: red;
+}
+
+.list {
+  margin: 1em 0em 0em 2em;
+}
+
+.listItem {
+  display: list-item;
+}
+
+.panelGrid {
+  display: grid;
+}
+
+.panelTemplateData {
+  grid-template-columns: minmax(max-content, 10%) auto;
+  gap: 0.3em;
+}
+
+.fillRed {
+  fill: red;
+}
+
+.fillGreen {
+  fill: var(--color-primary);
+}
+
+.buttonWrapper {
+  position: relative;
+  top: -10px;
+  width: 100%;
+  height: 10px;
+  display: flex;
+  justify-content: left;
+  align-items: first baseline;
+  margin-bottom: 20px;
+}
+
+.buttonWrapperAlgo {
+  position: relative;
+  top: -10px;
+  right: 50px;
+  width: 100%;
+  height: 10px;
+  display: flex;
+  justify-content: left;
+  align-items: first baseline;
+  margin-bottom: 20px;
+}

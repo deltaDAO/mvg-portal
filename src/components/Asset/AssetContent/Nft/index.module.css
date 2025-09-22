@@ -2,8 +2,8 @@
   position: relative;
   margin: 0;
   border-right: 1px solid var(--border-color);
-  width: calc(var(--spacer) * 2);
-  height: calc(var(--spacer) * 2);
+  width: calc(var(--spacer) * 1.335);
+  height: calc(var(--spacer) * 1.335);
   display: flex;
   align-items: center;
 }
@@ -32,8 +32,22 @@
   fill: var(--nft-refresh-icon-fill);
 }
 
+.nftImage .tooltip > svg > path {
+  fill: var(--nft-refresh-icon-fill);
+}
 .placeholder {
-  width: 100%;
+  border-radius: 10px 0 0 10px;
+  padding: 6px 25px;
+  margin-left: 0px;
+  width: 61px;
   height: 100%;
-  background: var(--nft-placeholder-background);
+  box-shadow: -2px 0 8px 0 rgba(0, 0, 0, 0.15);
+  background: linear-gradient(
+    135deg,
+    #1f2c50 0%,
+    rgba(10, 75, 112, 0.8) 27.47%,
+    rgba(10, 75, 112, 0.7) 43.49%,
+    rgba(10, 75, 112, 0.8) 55.43%,
+    #1e2e52 100%
+  );
 }

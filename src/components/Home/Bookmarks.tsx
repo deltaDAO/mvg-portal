@@ -9,12 +9,13 @@ import { getAssetsFromDids } from '@utils/aquarius'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { useAccount } from 'wagmi'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Dataset',
     selector: (row) => {
-      const { metadata } = row
+      const { metadata } = row.credentialSubject
       return <AssetTitle title={metadata.name} asset={row} />
     },
     maxWidth: '45rem',
@@ -23,15 +24,24 @@ const columns: TableOceanColumn<AssetExtended>[] = [
   {
     name: 'Datatoken Symbol',
     selector: (row) => (
-      <Tooltip content={row.datatokens[0].name}>
-        <>{row.datatokens[0].symbol}</>
+      <Tooltip content={row.indexedMetadata.stats[0].name}>
+        <>{row.indexedMetadata.stats[0].symbol}</>
       </Tooltip>
     ),
     maxWidth: '10rem'
   },
   {
     name: 'Price',
-    selector: (row) => <Price price={row.stats.price} size="small" />,
+    selector: (row) => (
+      <Price
+        price={{
+          value: Number(row.indexedMetadata.stats[0].prices[0].price),
+          tokenSymbol: row.indexedMetadata.stats[0].symbol,
+          tokenAddress: row.indexedMetadata.stats[0].datatokenAddress
+        }}
+        size="small"
+      />
+    ),
     right: true
   }
 ]

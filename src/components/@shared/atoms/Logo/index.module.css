@@ -2,17 +2,31 @@
   width: var(--menu-logo-size-width-sm);
   height: var(--menu-logo-size-height-sm);
   margin: 0;
+  transition: width 0.3s ease, height 0.3s ease;
 }
 
 .logo path {
-  fill: var(--menu-logo-color);
+  fill: white;
 }
 
 a > .logo:hover path {
-  fill: var(--menu-logo-color-hover);
+  /* fill: var(--menu-logo-color-hover); */
 }
 
 @media screen and (min-width: 55rem) {
+  .logo {
+    width: var(--menu-logo-size-width-lg);
+    height: var(--menu-logo-size-height-lg);
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .logo {
+    width: 150px;
+    height: 50px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
   .logo {
     width: var(--menu-logo-size-width-lg);
     height: var(--menu-logo-size-height-lg);

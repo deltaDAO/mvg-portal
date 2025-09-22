@@ -32,22 +32,25 @@ export default function Page({
   return (
     <>
       <Seo title={title} description={description} uri={uri} />
-      <Container>
-        <SearchBar
-          placeholder="Search for service offerings"
-          isSearchPage={isSearchPage}
-        />
-        {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
-        {title && !noPageHeader && (
-          <PageHeader
-            title={isHome ? title : <>{title.slice(0, 400)}</>}
-            center={headerCenter}
-            description={description}
-            isHome={isHome}
-          />
-        )}
-        {children}
-      </Container>
+
+      {/* Header section - always wrapped in Container except for home page */}
+      {!isHome && (
+        <Container>
+          {/* <SearchBar
+            placeholder="Search for service offerings"
+            isSearchPage={isSearchPage}
+          /> */}
+          {isAssetPage && !allowExternalContent && <ExternalContentWarning />}
+          {title && !noPageHeader && (
+            <PageHeader center={headerCenter} isHome={isHome} />
+          )}
+        </Container>
+      )}
+
+      {/* Main content - full width for home, contained for others */}
+      <main className={isHome ? 'full-width' : ''}>
+        {isHome ? children : <Container>{children}</Container>}
+      </main>
     </>
   )
 }

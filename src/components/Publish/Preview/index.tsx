@@ -6,12 +6,13 @@ import AssetContent from '@components/Asset/AssetContent'
 import { transformPublishFormToDdo } from '../_utils'
 import { ZERO_ADDRESS } from '@oceanprotocol/lib'
 import { useAccount } from 'wagmi'
-import { defaultDatatokenTemplateIndex } from 'app.config'
+import { defaultDatatokenTemplateIndex } from 'app.config.cjs'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 export default function Preview(): ReactElement {
   const [asset, setAsset] = useState<AssetExtended>()
   const { address: accountId } = useAccount()
-  const { values } = useFormikContext<FormPublishData>()
+  const { values, setFieldValue } = useFormikContext<FormPublishData>()
 
   useEffect(() => {
     async function makeDdo() {
@@ -40,18 +41,17 @@ export default function Preview(): ReactElement {
           paymentCollector: accountId
         }
       ]
-      asset.stats = {
-        orders: null,
-        price: {
-          value: values.pricing.type === 'free' ? 0 : values.pricing.price,
-          tokenSymbol: values.pricing?.baseToken?.symbol || 'OCEAN',
-          tokenAddress: ZERO_ADDRESS
-        }
-      }
       setAsset(asset)
     }
     makeDdo()
   }, [accountId, values])
+
+  useEffect(() => {
+    if (values.previewPageVisited) {
+      return
+    }
+    setFieldValue('previewPageVisited', true)
+  })
 
   return (
     <div className={styles.preview}>

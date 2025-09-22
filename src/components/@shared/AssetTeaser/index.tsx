@@ -1,19 +1,13 @@
-import { ReactElement, useEffect, useState } from 'react'
+import { ReactElement } from 'react'
 import Link from 'next/link'
 import Dotdotdot from 'react-dotdotdot'
-import Price from '@shared/Price'
 import removeMarkdown from 'remove-markdown'
 import Publisher from '@shared/Publisher'
 import AssetType from '@shared/AssetType'
 import NetworkName from '@shared/NetworkName'
 import styles from './index.module.css'
 import { getServiceByName } from '@utils/ddo'
-import { useUserPreferences } from '@context/UserPreferences'
-import { formatNumber } from '@utils/numbers'
-import {
-  getAccessDetails,
-  getOrderPriceAndFees
-} from '@utils/accessDetailsAndPricing'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 export declare type AssetTeaserProps = {
   asset: AssetExtended
@@ -27,50 +21,11 @@ export default function AssetTeaser({
   noPublisher,
   noDescription
 }: AssetTeaserProps): ReactElement {
-  const { name, type, description } = asset.metadata
-  const { datatokens } = asset
+  const { name, type, description } = asset.credentialSubject.metadata
   const isCompute = Boolean(getServiceByName(asset, 'compute'))
   const accessType = isCompute ? 'compute' : 'access'
-  const owner = asset.nft?.owner
-  const { orders, allocated, price } = asset.stats || {}
-  const [accessDetails, setAccessDetails] = useState(null)
-  const [orderPriceAndFees, setOrderPriceAndFees] = useState(null)
-  const [isUnsupportedPricing, setIsUnsupportedPricing] = useState(false)
-
-  const { locale } = useUserPreferences()
-
-  useEffect(() => {
-    async function fetchAccessDetails() {
-      if (asset.services?.length > 0) {
-        const details = await getAccessDetails(asset.chainId, asset.services[0])
-        setAccessDetails(details)
-      }
-    }
-
-    fetchAccessDetails()
-  }, [asset.chainId, asset.services])
-
-  useEffect(() => {
-    async function fetchOrderPriceAndFees() {
-      if (asset.services?.length > 0) {
-        const orderPrice = await getOrderPriceAndFees(
-          asset,
-          asset.services[0],
-          accessDetails,
-          owner
-        )
-        setOrderPriceAndFees(orderPrice)
-      }
-    }
-    if (accessDetails) fetchOrderPriceAndFees()
-  }, [asset.chainId, asset.services, accessDetails])
-
-  useEffect(() => {
-    const unsupported =
-      !asset.services.length ||
-      (accessDetails && accessDetails.type === 'NOT_SUPPORTED')
-    setIsUnsupportedPricing(unsupported)
-  }, [asset.services, price?.value, accessDetails])
+  const owner = asset.indexedMetadata.nft?.owner
+  const { orders } = asset.indexedMetadata.stats[0] || {}
 
   return (
     <article className={`${styles.teaser} ${styles[type]}`}>
@@ -81,49 +36,27 @@ export default function AssetTeaser({
             type={type}
             accessType={accessType}
           />
-          <span className={styles.typeLabel}>
-            {datatokens[0]?.symbol.substring(0, 9)}
-          </span>
         </aside>
         <header className={styles.header}>
           <Dotdotdot tagName="h1" clamp={3} className={styles.title}>
             {name.slice(0, 200)}
           </Dotdotdot>
-          {!noPublisher && <Publisher account={owner} minimal />}
+
+          {!noPublisher && (
+            <span className={styles.owner}>
+              <Publisher account={owner} minimal />
+            </span>
+          )}
         </header>
         {!noDescription && (
           <div className={styles.content}>
             <Dotdotdot tagName="p" clamp={3}>
-              {removeMarkdown(description?.substring(0, 300) || '')}
+              {removeMarkdown(description?.['@value']?.substring(0, 300) || '')}
             </Dotdotdot>
           </div>
         )}
-        <div className={styles.price}>
-          {accessDetails &&
-            (isUnsupportedPricing ? (
-              <strong>No pricing schema available</strong>
-            ) : (
-              <Price
-                price={price || { value: parseFloat(accessDetails.price) }}
-                orderPriceAndFees={orderPriceAndFees}
-                size="small"
-              />
-            ))}
-        </div>
         <footer className={styles.footer}>
           <div className={styles.stats}>
-            {allocated && allocated > 0 ? (
-              <span className={styles.typeLabel}>
-                {allocated < 0 ? (
-                  ''
-                ) : (
-                  <>
-                    <strong>{formatNumber(allocated, locale, '0')}</strong>{' '}
-                    veOCEAN
-                  </>
-                )}
-              </span>
-            ) : null}
             {orders && orders > 0 ? (
               <span className={styles.typeLabel}>
                 {orders < 0 ? (
@@ -149,7 +82,7 @@ export default function AssetTeaser({
             ) : null}
           </div>
           <NetworkName
-            networkId={asset.chainId}
+            networkId={asset.credentialSubject?.chainId}
             className={styles.networkName}
           />
         </footer>

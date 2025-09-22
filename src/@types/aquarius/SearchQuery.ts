@@ -4,12 +4,11 @@ export enum SortDirectionOptions {
 }
 
 export enum SortTermOptions {
-  Created = 'nft.created',
+  Created = 'indexedMetadata.event.block',
   Relevance = '_score',
-  Orders = 'stats.orders',
-  Allocated = 'stats.allocated',
-  Price = 'stats.price.value',
-  TokenSymbol = 'stats.price.tokenSymbol.keyword'
+  Orders = 'indexedMetadata.stats.orders',
+  Price = 'indexedMetadata.stats.prices.price.keyword',
+  TokenSymbol = 'indexedMetadata.stats.symbol.keyword'
 }
 
 // Note: could not figure out how to get `enum` to be ambiant

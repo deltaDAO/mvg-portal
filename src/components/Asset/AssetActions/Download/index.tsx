@@ -7,10 +7,8 @@ import { secondsToString } from '@utils/ddo'
 import styles from './index.module.css'
 import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import {
-  AssetPrice,
   FileInfo,
   LoggerInstance,
-  Service,
   UserCustomParameters,
   ZERO_ADDRESS
 } from '@oceanprotocol/lib'
@@ -40,8 +38,14 @@ import Input from '@components/@shared/FormInput'
 import CalculateButtonBuy from '../CalculateButtonBuy'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
-import { consumeMarketFixedSwapFee } from 'app.config'
+import appConfig, { consumeMarketFixedSwapFee } from 'app.config.cjs'
 import { Row } from '../Row'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { AssetPrice } from 'src/@types/Asset'
+import { useSsiWallet } from '@context/SsiWallet'
+import { checkVerifierSessionId } from '@utils/wallet/policyServer'
+import { AssetActionCheckCredentials } from '../CheckCredentials'
 
 export default function Download({
   accountId,
@@ -84,11 +88,18 @@ export default function Download({
     accessDetails.type !== 'free'
   )
   const [isOwned, setIsOwned] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
   const [validOrderTx, setValidOrderTx] = useState('')
   const [isOrderDisabled, setIsOrderDisabled] = useState(false)
   const [orderPriceAndFees, setOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
   const [retry, setRetry] = useState<boolean>(false)
+
+  const {
+    verifierSessionCache,
+    lookupVerifierSessionId,
+    lookupVerifierSessionIdSkip
+  } = useSsiWallet()
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
@@ -96,12 +107,17 @@ export default function Download({
     (accessDetails.type === 'fixed' && !accessDetails.baseToken?.symbol)
 
   useEffect(() => {
-    Number(asset.nft.state) === 4 && setIsOrderDisabled(true)
-  }, [asset.nft.state])
+    Number(asset.indexedMetadata.nft.state) === 4 && setIsOrderDisabled(true)
+  }, [asset.indexedMetadata.nft.state])
+
+  useEffect(() => {
+    if (asset?.indexedMetadata?.event?.from === accountId) {
+      setIsOwner(true)
+    }
+  }, [asset, accountId])
 
   useEffect(() => {
     if (isUnsupportedPricing) return
-
     setIsOwned(accessDetails.isOwned || false)
     setValidOrderTx(accessDetails.validOrderTx || '')
 
@@ -115,7 +131,6 @@ export default function Download({
 
       try {
         !orderPriceAndFees && setIsPriceLoading(true)
-
         const _orderPriceAndFees = await getOrderPriceAndFees(
           asset,
           service,
@@ -145,6 +160,12 @@ export default function Download({
     orderPriceAndFees,
     service
   ])
+
+  useEffect(() => {
+    if (isOwned) {
+      setIsFullPriceLoading(false)
+    }
+  }, [isOwned])
 
   useEffect(() => {
     setHasDatatoken(Number(dtBalance) >= 1)
@@ -206,6 +227,7 @@ export default function Download({
           service,
           accessDetails,
           accountId,
+          lookupVerifierSessionId(asset.id, service.id),
           validOrderTx,
           dataParams
         )
@@ -243,6 +265,31 @@ export default function Download({
     setIsLoading(false)
   }
 
+  async function handleFormSubmit(values: any) {
+    try {
+      const skip = lookupVerifierSessionIdSkip(asset.id, service.id)
+      if (appConfig.ssiEnabled && !skip) {
+        const result = await checkVerifierSessionId(
+          lookupVerifierSessionId(asset.id, service.id)
+        )
+        if (!result.success) {
+          toast.error('Invalid session')
+          return
+        }
+      }
+
+      const dataServiceParams = parseConsumerParameterValues(
+        values?.dataServiceParams,
+        service.consumerParameters
+      )
+
+      await handleOrderOrDownload(dataServiceParams)
+    } catch (error) {
+      toast.error(error.message)
+      LoggerInstance.error(error)
+    }
+  }
+
   const handleFullPrice = () => {
     setIsFullPriceLoading(false)
   }
@@ -256,121 +303,137 @@ export default function Download({
     />
   )
 
-  const PurchaseButton = ({ isValid }: { isValid?: boolean }) => (
-    <ButtonBuy
-      action="download"
-      disabled={isDisabled || !isValid}
-      hasPreviousOrder={isOwned}
-      hasDatatoken={hasDatatoken}
-      btSymbol={accessDetails.baseToken?.symbol}
-      dtSymbol={asset.datatokens[serviceIndex]?.symbol} // TODO - check datatokens
-      dtBalance={dtBalance}
-      type="submit"
-      assetTimeout={secondsToString(service.timeout)}
-      assetType={asset.metadata?.type}
-      stepText={statusText}
-      isLoading={isLoading}
-      priceType={accessDetails.type}
-      isConsumable={accessDetails.isPurchasable}
-      isBalanceSufficient={isBalanceSufficient}
-      consumableFeedback={consumableFeedback}
-      retry={retry}
-      isSupportedOceanNetwork={isSupportedOceanNetwork}
-      isAccountConnected={isConnected}
-    />
-  )
+  const PurchaseButton = ({ isValid }: { isValid?: boolean }) => {
+    return (
+      <ButtonBuy
+        action="download"
+        disabled={isDisabled || !isValid}
+        hasPreviousOrder={isOwned}
+        hasDatatoken={hasDatatoken}
+        btSymbol={accessDetails.baseToken?.symbol}
+        dtSymbol={asset.indexedMetadata?.stats[serviceIndex]?.symbol} // TODO - check datatokens
+        dtBalance={dtBalance}
+        type="submit"
+        assetTimeout={secondsToString(service.timeout)}
+        assetType={asset.credentialSubject?.metadata?.type}
+        stepText={statusText}
+        isLoading={isLoading}
+        priceType={accessDetails.type}
+        isConsumable={accessDetails.isPurchasable}
+        isBalanceSufficient={isBalanceSufficient}
+        consumableFeedback={consumableFeedback}
+        retry={retry}
+        isSupportedOceanNetwork={isSupportedOceanNetwork}
+        isAccountConnected={isConnected}
+      />
+    )
+  }
 
   const AssetAction = ({ asset }: { asset: AssetExtended }) => {
     const { isValid } = useFormikContext()
-
-    return (
-      <div>
-        {isOrderDisabled ? (
-          <Alert
-            className={styles.fieldWarning}
-            state="info"
-            text={`The publisher temporarily disabled ordering for this asset`}
-          />
-        ) : (
-          <>
-            {isUnsupportedPricing ? (
-              <Alert
-                className={styles.fieldWarning}
-                state="info"
-                text={`No pricing schema available for this asset.`}
-              />
-            ) : (
-              <div className={styles.priceWrapper}>
-                {isPriceLoading ? (
-                  <Loader message="Calculating asset price" />
-                ) : (
-                  <Price
-                    price={price}
-                    orderPriceAndFees={orderPriceAndFees}
-                    size="large"
-                  />
-                )}
-                {!isInPurgatory && isFullPriceLoading && (
-                  <CalculateButton isValid={isValid} />
-                )}
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    )
+    if (isOwner) {
+      return <div> You are the publisher</div>
+    } else
+      return (
+        <div>
+          {isOrderDisabled ? (
+            <Alert
+              className={styles.fieldWarning}
+              state="info"
+              text={`The publisher temporarily disabled ordering for this asset`}
+            />
+          ) : (
+            <>
+              {isUnsupportedPricing ? (
+                <Alert
+                  className={styles.fieldWarning}
+                  state="info"
+                  text={`No pricing schema available for this asset.`}
+                />
+              ) : (
+                <div className={styles.priceWrapper}>
+                  {isPriceLoading ? (
+                    <Loader message="Calculating asset price" />
+                  ) : (
+                    <Price
+                      price={price}
+                      orderPriceAndFees={orderPriceAndFees}
+                      size="large"
+                    />
+                  )}
+                  {!isInPurgatory && isFullPriceLoading && !isOwner && (
+                    <CalculateButton isValid={isValid} />
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )
   }
 
   const AssetActionBuy = ({ asset }: { asset: AssetExtended }) => {
     const { isValid } = useFormikContext()
-
     return (
       <div style={{ textAlign: 'left', marginTop: '2%' }}>
-        {!isPriceLoading && new Decimal(price.value || 0).greaterThan(0) && (
-          <div className={styles.calculation}>
-            <Row
-              hasDatatoken={hasDatatoken}
-              price={new Decimal(
-                Number(orderPriceAndFees?.price) || price.value || 0
-              )
-                .toDecimalPlaces(MAX_DECIMALS)
-                .toString()}
-              symbol={price.tokenSymbol}
-              type="DATASET"
-            />
-            <Row
-              price={new Decimal(consumeMarketFixedSwapFee)
-                .mul(
-                  new Decimal(
-                    Number(orderPriceAndFees?.price) || price.value || 0
-                  )
-                    .toDecimalPlaces(MAX_DECIMALS)
-                    .div(100)
-                )
-                .toString()} // consume market fixed swap fee amount
-              symbol={price.tokenSymbol}
-              type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
-            />
-            <Row
-              price={new Decimal(
-                new Decimal(
+        {!isPriceLoading &&
+          !isOwned &&
+          new Decimal(price.value || 0).greaterThan(0) && (
+            <div className={styles.calculation}>
+              <Row
+                hasDatatoken={hasDatatoken}
+                price={new Decimal(
                   Number(orderPriceAndFees?.price) || price.value || 0
-                ).toDecimalPlaces(MAX_DECIMALS)
-              )
-                .add(
-                  new Decimal(consumeMarketFixedSwapFee).mul(
+                )
+                  .toDecimalPlaces(MAX_DECIMALS)
+                  .toString()}
+                symbol={price.tokenSymbol}
+                type="DATASET"
+              />
+              <Row
+                price={new Decimal(consumeMarketFixedSwapFee)
+                  .mul(
                     new Decimal(
                       Number(orderPriceAndFees?.price) || price.value || 0
                     )
                       .toDecimalPlaces(MAX_DECIMALS)
                       .div(100)
                   )
+                  .toString()} // consume market fixed swap fee amount
+                symbol={price.tokenSymbol}
+                type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
+              />
+              <Row
+                price={orderPriceAndFees?.opcFee || '0'}
+                symbol={price.tokenSymbol}
+                type={`OPC FEE (${(
+                  (parseFloat(orderPriceAndFees.opcFee) /
+                    parseFloat(orderPriceAndFees.price)) *
+                  100
+                ).toFixed(1)}%)`}
+              />
+              <Row
+                price={new Decimal(
+                  new Decimal(
+                    Number(orderPriceAndFees?.price) || price.value || 0
+                  ).toDecimalPlaces(MAX_DECIMALS)
                 )
-                .toString()}
-              symbol={price.tokenSymbol}
-            />
-          </div>
-        )}
+                  .add(
+                    new Decimal(consumeMarketFixedSwapFee).mul(
+                      new Decimal(
+                        Number(orderPriceAndFees?.price) || price.value || 0
+                      )
+                        .toDecimalPlaces(MAX_DECIMALS)
+                        .div(100)
+                    )
+                  )
+                  .add(new Decimal(orderPriceAndFees?.opcFee || 0))
+                  .toString()}
+                symbol={price.tokenSymbol}
+              />
+            </div>
+          )}
+
         <div style={{ textAlign: 'center' }}>
           {!isInPurgatory && <PurchaseButton isValid={isValid} />}
         </div>
@@ -381,18 +444,18 @@ export default function Download({
   return (
     <Formik
       initialValues={{
-        dataServiceParams: getDefaultValues(service.consumerParameters),
-        termsAndConditions: false
+        dataServiceParams: getDefaultValues(service.consumerParameters)
       }}
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
-      onSubmit={async (values) => {
-        const dataServiceParams = parseConsumerParameterValues(
-          values?.dataServiceParams,
-          service.consumerParameters
-        )
-
-        await handleOrderOrDownload(dataServiceParams)
+      onSubmit={(values) => {
+        if (
+          !lookupVerifierSessionId(asset.id, service.id) &&
+          appConfig.ssiEnabled
+        ) {
+          return
+        }
+        handleFormSubmit(values)
       }}
     >
       <Form>
@@ -408,39 +471,80 @@ export default function Download({
             </div>
             <AssetAction asset={asset} />
           </div>
-          {!isFullPriceLoading && (
-            <>
-              <AssetActionBuy asset={asset} />
-              <Field
-                component={Input}
-                name="termsAndConditions"
-                type="checkbox"
-                options={['Terms and Conditions']}
-                prefixes={['I agree to the']}
-                actions={['/terms']}
-                disabled={isLoading}
-              />
-            </>
-          )}
+          {!isFullPriceLoading &&
+            !isOwner &&
+            (appConfig.ssiEnabled ? (
+              <>
+                {verifierSessionCache &&
+                lookupVerifierSessionId(asset.id, service.id) ? (
+                  <>
+                    <AssetActionBuy asset={asset} />
+                    <Field
+                      component={Input}
+                      name="termsAndConditions"
+                      type="checkbox"
+                      options={['Terms and Conditions']}
+                      prefixes={['I agree to the']}
+                      actions={['/terms']}
+                      disabled={isLoading}
+                    />
+                    <Field
+                      component={Input}
+                      name="acceptPublishingLicense"
+                      type="checkbox"
+                      options={['Publishing License']}
+                      prefixes={['I agree the']}
+                      disabled={isLoading}
+                    />
+                  </>
+                ) : (
+                  <AssetActionCheckCredentials
+                    asset={asset}
+                    service={service}
+                  />
+                )}
+              </>
+            ) : (
+              <>
+                <AssetActionBuy asset={asset} />
+                <Field
+                  component={Input}
+                  name="termsAndConditions"
+                  type="checkbox"
+                  options={['Terms and Conditions']}
+                  prefixes={['I agree to the']}
+                  actions={['/terms']}
+                  disabled={isLoading}
+                />
+                <Field
+                  component={Input}
+                  name="acceptPublishingLicense"
+                  type="checkbox"
+                  options={['Publishing License']}
+                  prefixes={['I agree the']}
+                  disabled={isLoading}
+                />
+              </>
+            ))}
           <div className={styles.consumerParameters}>
             {/* TODO - */}
-            <ConsumerParameters service={service} isLoading={isLoading} />
+            <ConsumerParameters services={[service]} isLoading={isLoading} />
           </div>
           {isOwned && (
             <div className={styles.confettiContainer}>
               <SuccessConfetti
-                success={`You successfully bought this ${asset.metadata.type} and are now able to download it.`}
+                success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
               />
             </div>
           )}
-          {asset.metadata?.type === 'algorithm' && (
+          {asset.credentialSubject?.metadata?.type === 'algorithm' && (
             <AlgorithmDatasetsListForCompute
               asset={asset}
               service={service}
               accessDetails={accessDetails}
             />
           )}
-          {accountId && (
+          {accountId && !isOwner && (
             <WhitelistIndicator
               accountId={accountId}
               isAccountIdWhitelisted={isAccountIdWhitelisted}

@@ -1,0 +1,171 @@
+[
+  {
+    "name": "issuerDid",
+    "label": "Issuer DID",
+    "type": "text"
+  },
+  {
+    "name": "policyUrl",
+    "label": "Policy URL",
+    "type": "text",
+    "placeholder": "https://files.com/policy.json",
+    "required": true
+  },
+  {
+    "name": "leftValue",
+    "label": "Credential field",
+    "type": "dynamic-select",
+    "required": true
+  },
+  {
+    "name": "operator",
+    "label": "Operator",
+    "type": "select",
+    "options": ["==", "!=", ">=", "<=", ">", "<"],
+    "default": "==",
+    "required": true
+  },
+  {
+    "name": "rightValue",
+    "label": "Value",
+    "type": "text",
+    "required": true
+  },
+  {
+    "name": "name",
+    "label": "Custom Policy Name",
+    "type": "text",
+    "required": true
+  },
+  {
+    "name": "rule",
+    "label": "Rule",
+    "type": "text",
+    "required": true
+  },
+  {
+    "name": "value",
+    "label": "Value",
+    "type": "text",
+    "required": true
+  },
+  {
+    "name": "requestCredential",
+    "label": "Credential Request",
+    "type": "textarea",
+    "placeholder": "Example:\n{\n\t\"type\": \"OpenBadgeCredential\",\n\t\"format\": \"jwt_vc_json\"\n\t\"policies\": [\"signature\"]\n}"
+  },
+  {
+    "name": "argument",
+    "label": "Argument",
+    "type": "text"
+  },
+  {
+    "name": "args",
+    "label": "Args",
+    "type": "text",
+    "required": true
+  },
+  {
+    "name": "policy",
+    "label": "Policy",
+    "type": "text",
+    "required": true
+  },
+  {
+    "name": "newPolicy",
+    "label": "New Policy",
+    "type": "text"
+  },
+  {
+    "name": "static",
+    "label": "Static",
+    "type": "text"
+  },
+  {
+    "name": "parameterized",
+    "label": "Parameterized",
+    "type": "text"
+  },
+  {
+    "name": "custom",
+    "label": "Custom",
+    "type": "text"
+  },
+  {
+    "name": "customUrl",
+    "label": "Custom Url",
+    "type": "text",
+    "required": true
+  },
+  {
+    "name": "custom",
+    "label": "Custom",
+    "type": "text",
+    "placeholder": "Example: input.credentials.password.placeOfBirth=\"Paris\""
+  },
+  {
+    "name": "staticPolicy",
+    "label": "Static Policy",
+    "type": "select",
+    "options": [
+      "signature",
+      "not-before",
+      "revoked-status-list",
+      "expired",
+      "signature_sd-jwt-vc"
+    ],
+    "required": true
+  },
+  {
+    "name": "parameterizedPolicy",
+    "label": "Parameterized Policy",
+    "type": "tags"
+  },
+  {
+    "name": "customUrlPolicy",
+    "label": "Custom URL Policy",
+    "type": "text"
+  },
+  {
+    "name": "customPolicy",
+    "label": "Custom Policy",
+    "type": "text"
+  },
+  {
+    "name": "argumentVpPolicy",
+    "label": "Argument VP Policy",
+    "type": "text"
+  },
+  {
+    "name": "staticVpPolicy",
+    "label": "Static VP Policy",
+    "type": "text"
+  },
+  {
+    "name": "defaultStaticPolicy",
+    "label": "Default Static Policy",
+    "type": "text"
+  },
+  {
+    "name": "format",
+    "label": "Format",
+    "type": "select",
+    "options": ["jwt_vc_json", "vc+sd-jwt", "mso_mdoc"],
+    "required": true
+  },
+  {
+    "name": "type",
+    "label": "Type",
+    "type": "select",
+    "options": [
+      "VerifiableId",
+      "UniversityDegree",
+      "LegalPerson",
+      "LegalRegistrationNumber",
+      "GaiaXTermsAndConditions",
+      "DataspaceParticipantCredential"
+    ],
+    "required": true
+  }
+]

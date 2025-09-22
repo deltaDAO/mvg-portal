@@ -6,10 +6,27 @@
   font-family: var(--font-family-base);
   text-transform: none;
   font-weight: var(--font-weight-base);
+  margin-top: 8px;
 
   /* take it out of layout so error messages 
   are not pushed down */
-  position: absolute;
+  /* position: absolute;
   left: 0;
-  bottom: -30%;
+  bottom: -30%; */
+}
+
+.defaultContainer {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1_5);
+}
+
+.defaultContainer svg {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+}
+.confirmed {
+  font-weight: var(--font-weight-base);
+  color: var(--color-success, #5fb359);
 }

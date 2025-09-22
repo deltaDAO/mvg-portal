@@ -2,24 +2,22 @@ import { ReactElement, useCallback, useEffect, useState } from 'react'
 import FormConsumerParameters from './FormConsumerParameters'
 import styles from './index.module.css'
 import Tabs, { TabsItem } from '@shared/atoms/Tabs'
-import {
-  ConsumerParameter,
-  Service,
-  UserCustomParameters
-} from '@oceanprotocol/lib'
+import { UserCustomParameters } from '@oceanprotocol/lib'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Option } from 'src/@types/ddo/Option'
 
 export function parseConsumerParameterValues(
   formValues?: UserCustomParameters,
-  parameters?: ConsumerParameter[]
+  consumerParameters?: Record<string, string | number | boolean | Option[]>[]
 ): UserCustomParameters {
-  if (!formValues) return
+  if (!formValues || !consumerParameters) return
 
   const parsedValues = {}
   Object.entries(formValues)?.forEach((userCustomParameter) => {
     const [userCustomParameterKey, userCustomParameterValue] =
       userCustomParameter
-
-    const { type } = parameters.find(
+    const { type } = consumerParameters.find(
       (param) => param.name === userCustomParameterKey
     )
 
@@ -37,55 +35,78 @@ export function parseConsumerParameterValues(
 }
 
 export default function ConsumerParameters({
-  service,
+  services,
   selectedAlgorithmAsset,
-  isLoading
+  isLoading,
+  svcIndex
 }: {
-  service: Service
+  services: Service[]
   selectedAlgorithmAsset?: AssetExtended
   isLoading?: boolean
+  svcIndex?: number
 }): ReactElement {
   const [tabs, setTabs] = useState<TabsItem[]>([])
   const [tabIndex, setTabIndex] = useState(0)
 
   const updateTabs = useCallback(() => {
-    const tabs = []
-    if (service.consumerParameters?.length > 0) {
-      tabs.push({
-        title: 'Data Service',
-        content: (
-          <FormConsumerParameters
-            name="dataServiceParams"
-            parameters={service.consumerParameters}
-            disabled={isLoading}
-          />
-        )
-      })
+    const tabs: TabsItem[] = []
+    function hasValidParams(params: any[]): boolean {
+      return params.some(
+        (p) =>
+          (p.default && p.default.trim() !== '') ||
+          (p.name && p.name.trim() !== '') ||
+          (p.description && p.description.trim() !== '') ||
+          (p.label && p.label.trim() !== '')
+      )
     }
-    // TODO -
-    if (selectedAlgorithmAsset?.services[0]?.consumerParameters?.length > 0) {
+    // Dataset Services Tabs
+    services?.forEach((service, index) => {
+      if (
+        service.consumerParameters?.length > 0 &&
+        hasValidParams(service.consumerParameters)
+      ) {
+        tabs.push({
+          title: `Dataset ${index + 1} Params`,
+          content: (
+            <FormConsumerParameters
+              name={`datasetParams_${index}`}
+              parameters={service.consumerParameters}
+              disabled={isLoading}
+            />
+          )
+        })
+      }
+    })
+
+    // Algo Service Tab
+    const algoSvc =
+      selectedAlgorithmAsset?.credentialSubject?.services?.[svcIndex || 0]
+
+    if (algoSvc?.consumerParameters?.length > 0) {
       tabs.push({
         title: 'Algo Service',
         content: (
           <FormConsumerParameters
             name="algoServiceParams"
-            parameters={selectedAlgorithmAsset.services[0].consumerParameters}
+            parameters={algoSvc.consumerParameters}
             disabled={isLoading}
           />
         )
       })
     }
-    if (
-      selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters?.length
-    ) {
+
+    // Algo Params Tab (from metadata.algorithm.consumerParameters)
+    const algoParams =
+      selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+        ?.consumerParameters
+
+    if (algoParams?.length > 0) {
       tabs.push({
         title: 'Algo Params',
         content: (
           <FormConsumerParameters
             name="algoParams"
-            parameters={
-              selectedAlgorithmAsset.metadata?.algorithm.consumerParameters
-            }
+            parameters={algoParams}
             disabled={isLoading}
           />
         )
@@ -93,7 +114,7 @@ export default function ConsumerParameters({
     }
 
     return tabs
-  }, [selectedAlgorithmAsset, service, isLoading])
+  }, [services, selectedAlgorithmAsset, svcIndex, isLoading])
 
   useEffect(() => {
     setTabs(updateTabs())

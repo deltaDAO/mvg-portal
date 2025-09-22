@@ -1,4 +1,4 @@
-import { Asset } from '@oceanprotocol/lib'
+import { Asset } from 'src/@types/Asset'
 
 // Boolean value that will be true if we are inside a browser, false otherwise
 export const isBrowser = typeof window !== 'undefined'

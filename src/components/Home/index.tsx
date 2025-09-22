@@ -1,100 +1,196 @@
-import { ReactElement, useEffect, useState } from 'react'
-import Button from '@shared/atoms/Button'
-import { generateBaseQuery, getFilterTerm } from '@utils/aquarius'
-import { useUserPreferences } from '@context/UserPreferences'
-import { SortTermOptions } from '../../@types/aquarius/SearchQuery'
-import SectionQueryResult from './SectionQueryResult'
+import {
+  useState,
+  useEffect,
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent,
+  ReactElement,
+  useRef
+} from 'react'
+import type { MouseEvent } from 'react'
 import styles from './index.module.css'
-import { useAddressConfig } from '@hooks/useAddressConfig'
-import TopSales from './TopSales'
-import HomeContent from './Content'
-import Ecosystem from './Ecosystem'
+import InputElement from '@shared/FormInput/InputElement'
 
-interface FeaturedSection {
-  title: string
-  query: SearchQuery
+import Features from './Features/Features'
+import Upload from '@images/publish.svg'
+import SearchLogo from '@images/search.svg'
+import Menu from './Menu/Menu'
+import { addExistingParamsToUrl } from '../Search/utils'
+import { useRouter } from 'next/router'
+import { useSearchBarStatus } from '@context/SearchBarStatus'
+import { useUserPreferences } from '@context/UserPreferences'
+import Container from '@components/@shared/atoms/Container'
+import OnboardingSection from '@components/@shared/Onboarding'
+
+async function emptySearch() {
+  const searchParams = new URLSearchParams(window?.location.href)
+  const text = searchParams.get('text')
+
+  if (text !== '' && text !== undefined && text !== null) {
+    await addExistingParamsToUrl(location, ['text', 'owner', 'tags'])
+  }
 }
 
-function AllAssetsButton(): ReactElement {
+function HeroSection({
+  placeholder,
+  initialValue,
+  isSearchPage
+}: {
+  placeholder?: string
+  initialValue?: string
+  isSearchPage?: boolean
+}): ReactElement {
+  const router = useRouter()
+  const [value, setValue] = useState(initialValue || '')
+  const parsed = router.query
+  const searchBarRef = useRef<HTMLInputElement>(null)
+  const {
+    isSearchBarVisible,
+    setSearchBarVisible,
+    homeSearchBarFocus,
+    setHomeSearchBarFocus
+  } = useSearchBarStatus()
+
+  useEffect(() => {
+    if (parsed?.text || parsed?.owner)
+      setValue((parsed?.text || parsed?.owner) as string)
+  }, [parsed?.text, parsed?.owner])
+
+  useEffect(() => {
+    setSearchBarVisible(false)
+    setHomeSearchBarFocus(false)
+  }, [setSearchBarVisible, setHomeSearchBarFocus])
+
+  useEffect(() => {
+    if (!isSearchBarVisible && !homeSearchBarFocus) return
+    if (searchBarRef?.current) {
+      searchBarRef.current.focus()
+    }
+  }, [isSearchBarVisible, homeSearchBarFocus])
+
+  async function startSearch() {
+    if (value === '') setValue(' ')
+
+    const urlEncodedValue = encodeURIComponent(value)
+    const url = await addExistingParamsToUrl(location, [
+      'text',
+      'owner',
+      'tags'
+    ])
+    router.push(`${url}&text=${urlEncodedValue}`)
+  }
+
+  function handleChange(e: ChangeEvent<HTMLInputElement>) {
+    setValue(e.target.value)
+    e.target.value === '' && emptySearch()
+  }
+
+  async function handleKeyPress(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      await startSearch()
+    }
+  }
+
+  async function handleButtonClick(e: FormEvent<HTMLButtonElement>) {
+    e.preventDefault()
+    await startSearch()
+  }
+  const handlePublishClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    router.push('/publish/1')
+  }
+  const handleCatalogClick = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    router.push('/search?sort=indexedMetadata.event.block&sortOrder=desc')
+  }
+
   return (
-    <Button
-      className={styles.allAssetsButton}
-      style="text"
-      to="/search?sort=nft.created&sortOrder=desc"
-      arrow
-    >
-      All datasets and algorithms
-    </Button>
+    <section className={styles.hero}>
+      <div className={styles.contentContainer}>
+        <header>
+          <Menu />
+        </header>
+        <div className={styles.textContent}>
+          <h1 className={styles.title}>
+            Ocean Enterprise Demonstration Marketplace
+          </h1>
+          <div className={styles.subtitle}>
+            <p>
+              Publish, find, compare, manage and monetize proprietary data & AI
+              products in a secure, trusted and compliant environment
+            </p>
+          </div>
+          <div className={styles.ctaContainer}>
+            <div className={styles.ctaBlock}>
+              <h3 className={styles.ctaTitle}>Publish an asset</h3>
+              <button className={styles.ctaButton} onClick={handlePublishClick}>
+                <div className={styles.buttonContent}>
+                  <Upload className={styles.uploadIcon} />
+                  <span className={styles.buttonText}>Publish</span>
+                </div>
+              </button>
+            </div>
+
+            <div className={styles.divider}></div>
+
+            <form
+              className={styles.searchBlock}
+              autoComplete={!value ? 'off' : 'on'}
+            >
+              <h3 className={styles.ctaTitle}>Search for data</h3>
+              <div className={styles.searchContainer}>
+                <InputElement
+                  ref={searchBarRef}
+                  type="search"
+                  name="search"
+                  placeholder={placeholder || 'Search'}
+                  value={value}
+                  onChange={handleChange}
+                  required
+                  size="large"
+                  className={styles.searchInput}
+                  onKeyPress={handleKeyPress}
+                />
+                <button
+                  onClick={handleButtonClick}
+                  className={styles.searchButton}
+                >
+                  <SearchLogo className={styles.searchIcon} />
+                </button>
+              </div>
+            </form>
+            <div className={styles.divider}></div>
+
+            <div className={styles.ctaBlock}>
+              <h3 className={styles.ctaTitle}>Go to Catalogue</h3>
+              <button className={styles.ctaButton} onClick={handleCatalogClick}>
+                <div className={styles.buttonContent}>
+                  <span className={styles.buttonText}>Catalogue</span>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
 export default function HomePage(): ReactElement {
-  const { chainIds } = useUserPreferences()
-  const { featured, hasFeaturedAssets } = useAddressConfig()
-
-  const [queryFeatured, setQueryFeatured] = useState<FeaturedSection[]>([])
-  const [queryRecent, setQueryRecent] = useState<SearchQuery>()
-  const [queryMostSales, setQueryMostSales] = useState<SearchQuery>()
-
-  useEffect(() => {
-    const baseParams = {
-      chainIds,
-      esPaginationOptions: {
-        size: 4
-      },
-      sortOptions: {
-        sortBy: SortTermOptions.Created
-      } as SortOptions
-    } as BaseQueryParams
-
-    const baseParamsSales = {
-      chainIds,
-      esPaginationOptions: {
-        size: 4
-      },
-      sortOptions: {
-        sortBy: SortTermOptions.Orders
-      } as SortOptions
-    } as BaseQueryParams
-
-    setQueryRecent(generateBaseQuery(baseParams))
-    setQueryMostSales(generateBaseQuery(baseParamsSales))
-
-    if (hasFeaturedAssets()) {
-      const featuredSections = featured.map((section) => ({
-        title: section.title,
-        query: generateBaseQuery({
-          ...baseParams,
-          esPaginationOptions: {
-            size: section.assets.length
-          },
-          filters: [getFilterTerm('_id', section.assets)]
-        })
-      }))
-
-      setQueryFeatured(featuredSections)
-    }
-  }, [chainIds, featured, hasFeaturedAssets])
+  const { showOnboardingModule } = useUserPreferences()
 
   return (
     <>
-      <Ecosystem />
-      <TopSales title="Publishers With Most Sales" />
-      <HomeContent />
-      {hasFeaturedAssets() && (
+      <HeroSection />
+      {showOnboardingModule && (
         <>
-          {queryFeatured.map((section, i) => (
-            <SectionQueryResult
-              key={`${section.title}-${i}`}
-              title={section.title}
-              query={section.query}
-            />
-          ))}
+          <div className={styles.divider}></div>
+          <Container>
+            <OnboardingSection />
+          </Container>
         </>
       )}
-      <SectionQueryResult title="Recently Published" query={queryRecent} />
-      <SectionQueryResult title="Most Sales" query={queryMostSales} />
-      <AllAssetsButton />
+      <Features />
     </>
   )
 }

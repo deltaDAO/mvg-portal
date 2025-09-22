@@ -1,59 +1,199 @@
-import {
-  Credentials,
-  Metadata,
-  Service,
-  ServiceComputeOptions
-} from '@oceanprotocol/lib'
+import { assetStateToString } from '@utils/assetState'
+import { FileInfo, LoggerInstance } from '@oceanprotocol/lib'
 import { parseConsumerParameters, secondsToString } from '@utils/ddo'
 import { ComputeEditForm, MetadataEditForm, ServiceEditForm } from './_types'
+import { Metadata } from 'src/@types/ddo/Metadata'
+import { Credential, isVpValue } from 'src/@types/ddo/Credentials'
+import { Compute, Service } from 'src/@types/ddo/Service'
+import {
+  isCredentialAddressBased,
+  isCredentialPolicyBased
+} from '@utils/credentials'
+import appConfig from 'app.config.cjs'
+import {
+  ArgumentVpPolicy,
+  CredentialForm,
+  RequestCredentialForm,
+  StaticVpPolicy,
+  VpPolicyType
+} from '@components/@shared/PolicyEditor/types'
+import { convertToPolicyType } from '@components/@shared/PolicyEditor/utils'
+import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
+import { State } from 'src/@types/ddo/State'
 
-export const defaultServiceComputeOptions: ServiceComputeOptions = {
+export const defaultServiceComputeOptions: Compute = {
   allowRawAlgorithm: false,
   allowNetworkAccess: true,
   publisherTrustedAlgorithmPublishers: [],
   publisherTrustedAlgorithms: []
 }
 
+function generateCredentials(
+  credentials: Credential,
+  type?: string
+): CredentialForm {
+  const credentialForm: CredentialForm = {}
+  if (appConfig.ssiEnabled) {
+    const requestCredentials: RequestCredentialForm[] = []
+    let vcPolicies: string[] = []
+    let vpPolicies: VpPolicyType[] = []
+    credentials.allow?.forEach((policyCredential) => {
+      if (isCredentialPolicyBased(policyCredential)) {
+        policyCredential.values.forEach((value) => {
+          value.request_credentials.forEach((requestCredential) => {
+            let policyTypes = (requestCredential?.policies ?? []).map(
+              (policy) => {
+                try {
+                  const newPolicy = convertToPolicyType(policy, type)
+                  return newPolicy
+                } catch (error) {
+                  LoggerInstance.error(error)
+                  return undefined
+                }
+              }
+            )
+            policyTypes = policyTypes.filter((item) => !!item)
+
+            const newRequestCredential: RequestCredentialForm = {
+              format: requestCredential.format,
+              type: requestCredential.type,
+              policies: policyTypes
+            }
+            requestCredentials.push(newRequestCredential)
+          })
+
+          const newVpPolicies: VpPolicyType[] = value.vp_policies.map(
+            (policy) => {
+              if (isVpValue(policy)) {
+                const result: ArgumentVpPolicy = {
+                  type: 'argumentVpPolicy',
+                  policy: policy.policy,
+                  args: policy.args.toString()
+                }
+                return result
+              } else {
+                const result: StaticVpPolicy = {
+                  type: 'staticVpPolicy',
+                  name: policy
+                }
+                return result
+              }
+            }
+          )
+
+          vcPolicies = [
+            ...vcPolicies,
+            ...(Array.isArray(value.vc_policies) ? value.vc_policies : [])
+          ]
+          vpPolicies = [...vpPolicies, ...newVpPolicies]
+        })
+      }
+    })
+    credentialForm.requestCredentials = requestCredentials
+    credentialForm.vcPolicies = vcPolicies
+    credentialForm.vpPolicies = vpPolicies
+  }
+
+  let allowAddresses = []
+  credentials.allow?.forEach((allowCredential) => {
+    if (isCredentialAddressBased(allowCredential)) {
+      const addresses = allowCredential.values.map((item) => item.address)
+      allowAddresses = [...allowAddresses, ...addresses]
+    }
+  })
+  allowAddresses = Array.from(new Set(allowAddresses))
+  credentialForm.allow = allowAddresses
+
+  let denyAddresses = []
+  credentials.deny?.forEach((denyCredential) => {
+    if (isCredentialAddressBased(denyCredential)) {
+      const addresses = denyCredential.values.map((item) => item.address)
+      denyAddresses = [...denyAddresses, ...addresses]
+    }
+  })
+  denyAddresses = Array.from(new Set(denyAddresses))
+  credentialForm.deny = denyAddresses
+  return credentialForm
+}
+
 export function getInitialValues(
   metadata: Metadata,
-  credentials: Credentials,
+  credentials: Credential,
+  additionalDdos: AdditionalVerifiableCredentials[],
   assetState: string
 ): MetadataEditForm {
+  const useRemoteLicense =
+    metadata.license?.licenseDocuments?.[0]?.mirrors?.[0]?.type !== 'url'
+
+  let fileInfo: FileInfo
+  if (
+    !useRemoteLicense &&
+    metadata.license?.licenseDocuments?.[0].mirrors?.[0]
+  ) {
+    const licenseItem = metadata.license?.licenseDocuments?.[0]
+    fileInfo = {
+      type: licenseItem.mirrors[0].type,
+      checksum: licenseItem.sha256,
+      contentLength: '',
+      contentType: licenseItem.fileType,
+      index: 0,
+      method: licenseItem.mirrors[0].method,
+      url: licenseItem.mirrors[0].url,
+      valid: true
+    }
+  }
+
+  const credentialForm = generateCredentials(credentials, 'edit')
   return {
     name: metadata?.name,
-    description: metadata?.description,
+    description: metadata?.description?.['@value'],
     type: metadata?.type,
     links: [{ url: '', type: 'url' }],
     author: metadata?.author,
     tags: metadata?.tags,
-    usesConsumerParameters: metadata?.algorithm?.consumerParameters?.length > 0,
+    usesConsumerParameters: metadata?.algorithm?.consumerParameters
+      ? Object.values(metadata?.algorithm?.consumerParameters).length > 0
+      : false,
     consumerParameters: parseConsumerParameters(
       metadata?.algorithm?.consumerParameters
     ),
-    allow:
-      credentials?.allow?.find((credential) => credential.type === 'address')
-        ?.values || [],
-    deny:
-      credentials?.deny?.find((credential) => credential.type === 'address')
-        ?.values || [],
+    credentials: credentialForm,
     assetState,
-    license: metadata?.license
+    licenseUrl: !useRemoteLicense ? [fileInfo] : [{ url: '', type: 'url' }],
+    uploadedLicense: useRemoteLicense ? metadata.license : undefined,
+    useRemoteLicense,
+    additionalDdos
   }
 }
 
 function getComputeSettingsInitialValues({
   publisherTrustedAlgorithms,
   publisherTrustedAlgorithmPublishers
-}: ServiceComputeOptions): ComputeEditForm {
+}: Compute): ComputeEditForm {
   const allowAllPublishedAlgorithms = publisherTrustedAlgorithms === null
-  const publisherTrustedAlgorithmsForForm = allowAllPublishedAlgorithms
-    ? null
-    : publisherTrustedAlgorithms.map((algo) => algo.did)
+  const publisherTrustedAlgorithmsForForm =
+    allowAllPublishedAlgorithms === true
+      ? null
+      : publisherTrustedAlgorithms.map((algo) =>
+          JSON.stringify({
+            algoDid: algo.did,
+            serviceId: algo.serviceId
+          })
+        )
+
+  const publisherTrustedAlgorithmPublishersValue =
+    publisherTrustedAlgorithmPublishers &&
+    publisherTrustedAlgorithmPublishers.length > 0
+      ? 'Allow specific trusted algorithm publishers'
+      : 'Allow all trusted algorithm publishers'
 
   return {
     allowAllPublishedAlgorithms,
-    publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm,
-    publisherTrustedAlgorithmPublishers
+    publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm || [],
+    publisherTrustedAlgorithmPublishers:
+      publisherTrustedAlgorithmPublishersValue,
+    publisherTrustedAlgorithmPublishersAddresses:
+      publisherTrustedAlgorithmPublishers?.join(',') || ''
   }
 }
 
@@ -66,7 +206,9 @@ export const getNewServiceInitialValues = (
   )
   return {
     name: 'New Service',
-    description: '',
+    description: 'New description',
+    language: '',
+    direction: '',
     access: 'access',
     price: 1,
     paymentCollector: accountId,
@@ -75,12 +217,18 @@ export const getNewServiceInitialValues = (
       valid: false,
       custom: false
     },
-    files: [{ url: '', type: 'hidden' }],
+    files: [{ url: '', type: 'url' }],
+    state: assetStateToString(State.Active),
     timeout: '1 day',
     usesConsumerParameters: false,
     consumerParameters: [],
-    allow: [],
-    deny: [],
+    credentials: {
+      allow: [],
+      deny: [],
+      requestCredentials: [],
+      vcPolicies: [],
+      vpPolicies: []
+    },
     ...computeSettings
   }
 }
@@ -92,9 +240,12 @@ export const getServiceInitialValues = (
   const computeSettings = getComputeSettingsInitialValues(
     service.compute || defaultServiceComputeOptions
   )
+  const credentialForm = generateCredentials(service.credentials, 'edit')
   return {
     name: service.name,
-    description: service.description,
+    description: service.description?.['@value'],
+    direction: service.description?.['@direction'],
+    language: service.description?.['@language'],
     access: service.type as 'access' | 'compute',
     price: parseFloat(accessDetails.price),
     paymentCollector: accessDetails.paymentCollector,
@@ -104,17 +255,13 @@ export const getServiceInitialValues = (
       custom: false
     },
     files: [{ url: '', type: 'hidden' }],
+    state: assetStateToString(service.state),
     timeout: secondsToString(service.timeout),
-    usesConsumerParameters: service.consumerParameters?.length > 0,
+    usesConsumerParameters: service.consumerParameters
+      ? Object.assign(service.consumerParameters).length > 0
+      : undefined,
     consumerParameters: parseConsumerParameters(service.consumerParameters),
-    allow:
-      service.credentials?.allow?.find(
-        (credential) => credential.type === 'address'
-      )?.values || [],
-    deny:
-      service.credentials?.deny?.find(
-        (credential) => credential.type === 'address'
-      )?.values || [],
+    credentials: credentialForm,
     ...computeSettings
   }
 }

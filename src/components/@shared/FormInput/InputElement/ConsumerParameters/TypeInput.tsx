@@ -24,11 +24,12 @@ export default function TypeInput({
     index: number
   ) => {
     if (parameterName !== 'type') return
-    if (field.value[index].type === parameterType) return
+    if (!field.value?.[index] || field.value[index].type === parameterType)
+      return
 
     setFieldTouched(`${field.name}[${index}].default`, false)
     helpers.setValue(
-      field.value.map((currentParam, i) => {
+      (field.value || []).map((currentParam, i) => {
         if (i !== index) return currentParam
 
         return {

@@ -1,5 +1,5 @@
 .field {
-  margin-bottom: calc(var(--spacer) * var(--line-height));
+  margin-bottom: calc(var(--spacer) * var(--line-height) + 20px);
   position: relative;
 }
 
@@ -14,34 +14,67 @@
 
 .required {
   font-size: var(--font-size-base);
-  color: var(--color-secondary);
+  color: var(--input-error-text-color);
   display: inline-block;
   margin-left: 0.1rem;
 }
 
 .error {
-  display: inline-block;
-  font-size: var(--font-size-mini);
-  line-height: 1.2;
+  display: block;
+  font-family: var(--font-family-base);
   font-weight: var(--font-weight-bold);
-  color: var(--brand-white);
-  background: var(--brand-alert-red);
-  border-radius: var(--border-radius);
-  padding: 0.2rem 0.4rem;
+  font-size: 10px;
+  color: var(--input-error-text-color);
+  line-height: 1.2;
   position: absolute;
-  right: 0;
+  top: 105%;
+  left: 0;
+  right: auto;
   z-index: 1;
 }
 
-.hasError label {
-  color: var(--brand-alert-red);
+.error.centerError {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--sp-1_5);
+  position: absolute;
+  bottom: -30px;
+  left: 40px;
+  right: auto;
 }
 
-.hasError input,
-.hasError input:focus,
-.hasError select,
-.hasError textarea,
-.hasError [class*='prefix'],
-.hasError [class*='postfix'] {
-  border-color: var(--brand-alert-red);
+.hasError label {
+  color: var(--input-error-text-color);
+}
+
+body .hasError input,
+body .hasError input:focus,
+body .hasError select,
+body .hasError textarea,
+body .hasError [class*='prefix'],
+body .hasError [class*='postfix'] {
+  border-color: var(--input-error-border-color) !important;
+  box-shadow: none !important;
+}
+
+.errorIcon {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+/* Row-level error spacing - apply to row containers when any field has errors */
+.rowWithErrors {
+  margin-bottom: calc(var(--spacer) * var(--line-height) + 20px) !important;
+}
+
+/* Automatic detection: if a flex row contains any field with errors, add spacing 
+   Note: :has() is supported in modern browsers (Chrome 105+, Firefox 103+, Safari 15.4+) */
+:global(.formRow):has(.hasError),
+:global(.pairsContainer):has(.hasError),
+:global(.inputRow):has(.hasError),
+:global(.argumentRow):has(.hasError),
+:global(.ruleRow):has(.hasError) {
+  margin-bottom: calc(var(--spacer) * var(--line-height) + 20px) !important;
 }

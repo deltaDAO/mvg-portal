@@ -1,23 +1,17 @@
-// TODO - selectedAlgorithmAsset works now only with first service
 import { useState, ReactElement, useEffect, useCallback } from 'react'
 import {
-  Asset,
   FileInfo,
   Datatoken,
   ProviderInstance,
-  ComputeAsset,
   ZERO_ADDRESS,
   ComputeEnvironment,
   LoggerInstance,
   ComputeAlgorithm,
-  ComputeOutput,
   ProviderComputeInitializeResults,
   unitsToAmount,
   ProviderFees,
-  AssetPrice,
   UserCustomParameters,
-  getErrorMessage,
-  Service
+  EscrowContract
 } from '@oceanprotocol/lib'
 import { toast } from 'react-toastify'
 import Price from '@shared/Price'
@@ -45,27 +39,34 @@ import ComputeHistory from './History'
 import ComputeJobs from '../../../Profile/History/ComputeJobs'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { Decimal } from 'decimal.js'
-import { useAbortController } from '@hooks/useAbortController'
 import {
   getAvailablePrice,
   getOrderPriceAndFees
 } from '@utils/accessDetailsAndPricing'
-import { handleComputeOrder } from '@utils/order'
 import { getComputeFeedback } from '@utils/feedback'
 import {
   getComputeEnvironments,
-  initializeProviderForCompute
+  initializeProviderForComputeMulti
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
 import { getDummySigner } from '@utils/wallet'
-import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import { useAsset } from '@context/Asset'
 import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
-import { Signer } from 'ethers'
+import { BigNumber, ethers, Signer } from 'ethers'
 import { useAccount } from 'wagmi'
-
-const refreshInterval = 10000 // 10 sec.
+import { Service } from '../../../../@types/ddo/Service'
+import { Asset, AssetPrice } from '../../../../@types/Asset'
+import { AssetExtended } from '../../../../@types/AssetExtended'
+import { AssetActionCheckCredentials } from '../CheckCredentials'
+import { useSsiWallet } from '@context/SsiWallet'
+import { checkVerifierSessionId } from '@utils/wallet/policyServer'
+import appConfig, { oceanTokenAddress } from 'app.config.cjs'
+import { ResourceType } from 'src/@types/ResourceType'
+import { handleComputeOrder } from '@utils/order'
+import { CredentialDialogProvider } from './CredentialDialogProvider'
+import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
+import FormStartComputeAlgo from './FormComputeAlgorithm'
+import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
 
 export default function Compute({
   accountId,
@@ -93,7 +94,6 @@ export default function Compute({
   const { address } = useAccount()
   const { chainIds } = useUserPreferences()
 
-  const newAbortController = useAbortController()
   const newCancelToken = useCancelToken()
 
   const [isOrdering, setIsOrdering] = useState(false)
@@ -101,9 +101,14 @@ export default function Compute({
   const [error, setError] = useState<string>()
 
   const [algorithmList, setAlgorithmList] = useState<AssetSelectionAsset[]>()
+  const [datasetList, setDatasetList] = useState<AssetSelectionAsset[]>()
+
   const [ddoAlgorithmList, setDdoAlgorithmList] = useState<Asset[]>()
   const [selectedAlgorithmAsset, setSelectedAlgorithmAsset] =
     useState<AssetExtended>()
+  const [selectedDatasetAsset, setSelectedDatasetAsset] = useState<
+    AssetExtended[]
+  >([])
   const [hasAlgoAssetDatatoken, setHasAlgoAssetDatatoken] = useState<boolean>()
   const [algorithmDTBalance, setAlgorithmDTBalance] = useState<string>()
 
@@ -115,14 +120,12 @@ export default function Compute({
     useState(true)
   const [computeStatusText, setComputeStatusText] = useState('')
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
-  const [selectedComputeEnv, setSelectedComputeEnv] =
-    useState<ComputeEnvironment>()
   const [termsAndConditions, setTermsAndConditions] = useState<boolean>(false)
+  const [acceptPublishingLicense, setAcceptPublishingLicense] =
+    useState<boolean>(false)
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
-  const [providerFeeAmount, setProviderFeeAmount] = useState<string>('0')
   const [providerFeesSymbol, setProviderFeesSymbol] = useState<string>('OCEAN')
-  const [computeValidUntil, setComputeValidUntil] = useState<string>('0')
   const [datasetOrderPriceAndFees, setDatasetOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
   const [algoOrderPriceAndFees, setAlgoOrderPriceAndFees] =
@@ -133,8 +136,27 @@ export default function Compute({
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [retry, setRetry] = useState<boolean>(false)
-  const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const { isAssetNetwork } = useAsset()
+  const {
+    verifierSessionCache,
+    lookupVerifierSessionId,
+    lookupVerifierSessionIdSkip,
+    ssiWalletCache,
+    setCachedCredentials,
+    clearVerifierSessionCache
+  } = useSsiWallet()
+  const [svcIndex, setSvcIndex] = useState(0)
+
+  const [allResourceValues, setAllResourceValues] = useState<{
+    [envId: string]: ResourceType
+  }>({})
+
+  const selectedEnvId = Object.keys(allResourceValues)[0]
+  const selectedComputeEnv = computeEnvs?.find(
+    (env) => env.id === selectedEnvId
+  )
+  const selectedResources = selectedEnvId
+    ? allResourceValues[selectedEnvId]
+    : undefined
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
 
@@ -149,89 +171,55 @@ export default function Compute({
 
   const isUnsupportedPricing = accessDetails.type === 'NOT_SUPPORTED'
 
+  function resetCacheWallet() {
+    ssiWalletCache.clearCredentials()
+    setCachedCredentials(undefined)
+    clearVerifierSessionCache()
+  }
+
+  useEffect(() => {
+    if (selectedAlgorithmAsset) {
+      setSvcIndex(selectedAlgorithmAsset?.serviceIndex)
+    }
+  }, [selectedAlgorithmAsset])
+
   async function checkAssetDTBalance(algoAsset: AssetExtended | undefined) {
     try {
-      if (!algoAsset?.services[0].datatokenAddress) return
-      const dummySigner = await getDummySigner(algoAsset?.chainId)
-      const datatokenInstance = new Datatoken(dummySigner)
+      if (!algoAsset?.credentialSubject?.services[svcIndex].datatokenAddress)
+        return
+      const dummySigner = await getDummySigner(
+        algoAsset?.credentialSubject?.chainId
+      )
+      const datatokenInstance = new Datatoken(
+        dummySigner,
+        algoAsset.credentialSubject.chainId
+      )
       const dtBalance = await datatokenInstance.balance(
-        algoAsset?.services[0].datatokenAddress,
+        algoAsset?.credentialSubject?.services[svcIndex].datatokenAddress,
         accountId || ZERO_ADDRESS // if the user is not connected, we use ZERO_ADDRESS as accountId
       )
       setAlgorithmDTBalance(new Decimal(dtBalance).toString())
       const hasAlgoDt = Number(dtBalance) >= 1
       setHasAlgoAssetDatatoken(hasAlgoDt)
     } catch (error) {
-      console.log(error)
+      LoggerInstance.error(error)
     }
   }
-
-  async function setComputeFees(
-    providerData: ProviderComputeInitializeResults
-  ): Promise<ProviderComputeInitializeResults> {
-    if (accessDetails.validProviderFees) {
-      providerData.datasets[0].providerFee.providerFeeAmount = '0'
-    }
-
-    const providerFeeToken =
-      providerData?.datasets?.[0]?.providerFee?.providerFeeToken
-    const providerFeeAmount = accessDetails.validProviderFees
-      ? '0'
-      : providerData?.datasets?.[0]?.providerFee?.providerFeeAmount
-    const feeValidity = providerData?.datasets?.[0]?.providerFee?.validUntil
-
-    const feeAmount = await unitsToAmount(
-      !isSupportedOceanNetwork || !isAssetNetwork
-        ? await getDummySigner(asset.chainId)
-        : signer,
-      providerFeeToken,
-      providerFeeAmount
-    )
-    setProviderFeeAmount(feeAmount)
-
-    const datatoken = new Datatoken(await getDummySigner(asset?.chainId))
-    setProviderFeesSymbol(await datatoken.getSymbol(providerFeeToken))
-
-    const computeDuration = accessDetails.validProviderFees
-      ? accessDetails.validProviderFees.validUntil
-      : (parseInt(feeValidity) - Math.floor(Date.now() / 1000)).toString()
-    setComputeValidUntil(computeDuration)
-
-    return providerData
-  }
-
-  async function setAlgoPrice(algoProviderFees: ProviderFees) {
+  async function setDatasetPrice(
+    actualAsset: AssetExtended,
+    actualService: Service,
+    actualAccessDetails: AccessDetails,
+    datasetProviderFees: ProviderFees
+  ) {
     if (
-      selectedAlgorithmAsset?.accessDetails?.[0]?.addressOrId !==
-        ZERO_ADDRESS &&
-      selectedAlgorithmAsset?.accessDetails?.[0]?.type !== 'free' &&
-      algoProviderFees
-    ) {
-      const algorithmOrderPriceAndFees = await getOrderPriceAndFees(
-        selectedAlgorithmAsset,
-        selectedAlgorithmAsset.services?.[0],
-        selectedAlgorithmAsset.accessDetails?.[0],
-        accountId || ZERO_ADDRESS,
-        signer,
-        algoProviderFees
-      )
-      if (!algorithmOrderPriceAndFees)
-        throw new Error('Error setting algorithm price and fees!')
-
-      setAlgoOrderPriceAndFees(algorithmOrderPriceAndFees)
-    }
-  }
-
-  async function setDatasetPrice(datasetProviderFees: ProviderFees) {
-    if (
-      accessDetails.addressOrId !== ZERO_ADDRESS &&
-      accessDetails.type !== 'free' &&
+      actualAccessDetails.addressOrId !== ZERO_ADDRESS &&
+      actualAccessDetails.type !== 'free' &&
       datasetProviderFees
     ) {
       const datasetPriceAndFees = await getOrderPriceAndFees(
-        asset,
-        service,
-        accessDetails,
+        actualAsset,
+        actualService,
+        actualAccessDetails,
         accountId || ZERO_ADDRESS,
         signer,
         datasetProviderFees
@@ -240,45 +228,175 @@ export default function Compute({
         throw new Error('Error setting dataset price and fees!')
 
       setDatasetOrderPriceAndFees(datasetPriceAndFees)
+      return datasetPriceAndFees
     }
   }
 
-  async function initPriceAndFees() {
+  async function initPriceAndFees(
+    datasetServices?: { asset: AssetExtended; service: Service }[]
+  ) {
     try {
-      if (!selectedComputeEnv || !selectedComputeEnv.id)
+      if (!selectedComputeEnv || !selectedComputeEnv.id || !selectedResources)
         throw new Error(`Error getting compute environment!`)
-      const initializedProvider = await initializeProviderForCompute(
-        asset,
-        service,
-        accessDetails,
-        selectedAlgorithmAsset,
-        accountId || ZERO_ADDRESS, // if the user is not connected, we use ZERO_ADDRESS as accountId
-        selectedComputeEnv
+
+      const actualDatasetAssets: AssetExtended[] = selectedDatasetAsset.length
+        ? selectedDatasetAsset
+        : [asset]
+
+      const actualAlgorithmAsset = selectedAlgorithmAsset || asset
+      let actualAlgoService = service
+      let actualSvcIndex = svcIndex
+      let actualAlgoAccessDetails = accessDetails
+
+      const algoServiceId =
+        selectedAlgorithmAsset?.id?.split('|')[1] ||
+        selectedAlgorithmAsset?.credentialSubject?.services?.[svcIndex]?.id ||
+        service.id
+
+      const algoServices = actualAlgorithmAsset.credentialSubject.services || []
+      const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
+      if (algoIndex === -1) throw new Error('Algorithm serviceId not found.')
+
+      actualAlgoService = algoServices[algoIndex]
+      actualSvcIndex = algoIndex
+      actualAlgoAccessDetails = actualAlgorithmAsset.accessDetails[algoIndex]
+
+      const datasetsForProvider = datasetServices.map(({ asset, service }) => {
+        const datasetIndex = asset.credentialSubject.services.findIndex(
+          (s) => s.id === service.id
+        )
+        if (datasetIndex === -1)
+          throw new Error(`ServiceId ${service.id} not found in ${asset.id}`)
+
+        return {
+          asset,
+          service,
+          accessDetails: asset.accessDetails[datasetIndex],
+          sessionId: lookupVerifierSessionId(asset.id, service.id)
+        }
+      })
+
+      const algoSessionId = lookupVerifierSessionId(
+        actualAlgorithmAsset.id,
+        actualAlgoService.id
       )
-      if (
-        !initializedProvider ||
-        !initializedProvider?.datasets ||
-        !initializedProvider?.algorithm
+
+      const initializedProvider = await initializeProviderForComputeMulti(
+        datasetsForProvider,
+        actualAlgorithmAsset,
+        algoSessionId,
+        signer,
+        selectedComputeEnv,
+        selectedResources,
+        actualSvcIndex
       )
-        throw new Error(`Error initializing provider for the compute job!`)
+
+      if (!initializedProvider)
+        throw new Error('Error initializing provider for compute job')
+
+      const datasetResponses = await Promise.all(
+        datasetsForProvider.map(
+          async ({ asset, service, accessDetails }, i) => {
+            const datasetOrderPriceResponse = await setDatasetPrice(
+              asset,
+              service,
+              accessDetails,
+              initializedProvider.datasets?.[i]?.providerFee
+            )
+            if (selectedResources.mode === 'paid') {
+              const escrow = new EscrowContract(
+                ethers.utils.getAddress(
+                  initializedProvider.payment.escrowAddress
+                ),
+                signer,
+                asset.credentialSubject.chainId
+              )
+
+              const amountHuman = String(selectedResources.price) // ex. "4"
+              const amountWei = ethers.utils.parseUnits(amountHuman, 18)
+
+              const erc20 = new ethers.Contract(
+                oceanTokenAddress,
+                [
+                  'function approve(address spender, uint256 amount) returns (bool)',
+                  'function allowance(address owner, address spender) view returns (uint256)'
+                ],
+                signer
+              )
+
+              const owner = await signer.getAddress()
+              const escrowAddress = (
+                escrow.contract.target ?? escrow.contract.address
+              ).toString()
+
+              const currentAllowanceWei = await erc20.allowance(
+                owner,
+                escrowAddress
+              )
+              if (currentAllowanceWei.lt(amountWei)) {
+                console.log(`Approving ${amountHuman} OCEAN to escrow...`)
+                const approveTx = await erc20.approve(escrowAddress, amountWei)
+                await approveTx.wait()
+                console.log(`Approved ${amountHuman} OCEAN`)
+              } else {
+                console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
+              }
+
+              const funds = await escrow.getUserFunds(owner, oceanTokenAddress)
+              const depositedWei = ethers.BigNumber.from(funds[0] ?? '0')
+
+              if (depositedWei.lt(amountWei)) {
+                console.log(`Depositing ${amountHuman} OCEAN to escrow...`)
+                const depositTx = await escrow.deposit(
+                  oceanTokenAddress,
+                  amountHuman
+                )
+                await depositTx.wait()
+                console.log(`Deposited ${amountHuman} OCEAN`)
+              } else {
+                console.log(
+                  `Skip deposit: escrow funds >= ${amountHuman} OCEAN`
+                )
+              }
+
+              // await escrow.verifyFundsForEscrowPayment(
+              //   oceanTokenAddress,
+              //   selectedComputeEnv.consumerAddress,
+              //   await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
+              //   initializedProvider.payment.amount.toString(),
+              //   initializedProvider.payment.minLockSeconds.toString(),
+              //   '10'
+              // )
+            }
+
+            return {
+              actualDatasetAsset: asset,
+              actualDatasetService: service,
+              actualDatasetAccessDetails: accessDetails,
+              datasetOrderPriceResponse,
+              initializedProvider
+            }
+          }
+        )
+      )
+
       setComputeStatusText(
         getComputeFeedback(
-          accessDetails.baseToken?.symbol,
-          accessDetails.datatoken?.symbol,
-          asset.metadata.type
+          actualAlgoAccessDetails?.baseToken?.symbol,
+          actualAlgoAccessDetails?.datatoken?.symbol,
+          actualAlgorithmAsset?.credentialSubject?.metadata?.type
         )[0]
       )
-      await setDatasetPrice(initializedProvider?.datasets?.[0]?.providerFee)
-      setComputeStatusText(
-        getComputeFeedback(
-          selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken?.symbol,
-          selectedAlgorithmAsset?.accessDetails?.[0]?.datatoken?.symbol,
-          selectedAlgorithmAsset?.metadata?.type
-        )[0]
-      )
-      await setAlgoPrice(initializedProvider?.algorithm?.providerFee)
-      const sanitizedResponse = await setComputeFees(initializedProvider)
-      setInitializedProviderResponse(sanitizedResponse)
+
+      setInitializedProviderResponse(initializedProvider)
+
+      return {
+        datasetResponses,
+        actualAlgorithmAsset,
+        actualAlgoService,
+        actualAlgoAccessDetails,
+        initializedProvider
+      }
     } catch (error) {
       setError(error.message)
       LoggerInstance.error(`[compute] ${error.message} `)
@@ -293,46 +411,41 @@ export default function Compute({
   }, [accessDetails, accountId, isUnsupportedPricing])
 
   useEffect(() => {
-    if (!selectedAlgorithmAsset?.accessDetails?.length || !selectedComputeEnv)
-      return
-
-    setIsRequestingAlgoOrderPrice(true)
-    setIsConsumableAlgorithmPrice(
-      selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable
-    )
-    setValidAlgorithmOrderTx(
-      selectedAlgorithmAsset?.accessDetails?.[0]?.validOrderTx
-    )
-    setAlgoOrderPriceAndFees(null)
-    async function initSelectedAlgo() {
-      await checkAssetDTBalance(selectedAlgorithmAsset)
-      await initPriceAndFees()
-      setIsRequestingAlgoOrderPrice(false)
-    }
-    initSelectedAlgo()
-  }, [selectedAlgorithmAsset, accountId, selectedComputeEnv])
-
-  useEffect(() => {
     if (isUnsupportedPricing) return
-
-    getAlgorithmsForAsset(asset, service, newCancelToken()).then(
-      (algorithmsAssets) => {
-        setDdoAlgorithmList(algorithmsAssets)
-        getAlgorithmAssetSelectionList(
-          service,
-          algorithmsAssets,
-          accountId
-        ).then((algorithmSelectionList) => {
-          setAlgorithmList(algorithmSelectionList)
-        })
-      }
-    )
+    if (asset.credentialSubject?.metadata.type === 'algorithm') {
+      getAlgorithmDatasetsForCompute(
+        asset.id,
+        service.id,
+        service.serviceEndpoint,
+        accountId,
+        asset.credentialSubject?.chainId,
+        newCancelToken()
+      ).then((datasetLists) => {
+        setDatasetList(datasetLists)
+        if (datasetLists && datasetLists.length > 0) {
+          setDatasetList(datasetLists)
+        }
+      })
+    } else {
+      getAlgorithmsForAsset(asset, service, newCancelToken()).then(
+        (algorithmsAssets) => {
+          setDdoAlgorithmList(algorithmsAssets)
+          getAlgorithmAssetSelectionList(
+            service,
+            algorithmsAssets,
+            accountId
+          ).then((algorithmSelectionList) => {
+            setAlgorithmList(algorithmSelectionList)
+          })
+        }
+      )
+    }
   }, [accountId, asset, service, isUnsupportedPricing, newCancelToken])
 
   const initializeComputeEnvironment = useCallback(async () => {
     const computeEnvs = await getComputeEnvironments(
       service.serviceEndpoint,
-      asset.chainId
+      asset.credentialSubject?.chainId
     )
     setComputeEnvs(computeEnvs || [])
   }, [asset, service])
@@ -350,7 +463,9 @@ export default function Compute({
       try {
         type === 'init' && setIsLoadingJobs(true)
         const computeJobs = await getComputeJobs(
-          [asset?.chainId] || chainIds,
+          asset.credentialSubject?.chainId !== undefined
+            ? [asset.credentialSubject.chainId]
+            : chainIds,
           address,
           asset,
           service,
@@ -368,16 +483,6 @@ export default function Compute({
 
   useEffect(() => {
     fetchJobs('init')
-
-    // init periodic refresh for jobs
-    const balanceInterval = setInterval(
-      () => fetchJobs('repeat'),
-      refreshInterval
-    )
-
-    return () => {
-      clearInterval(balanceInterval)
-    }
   }, [refetchJobs])
 
   // Output errors in toast UI
@@ -388,110 +493,232 @@ export default function Compute({
     toast.error(errorMsg)
   }, [error])
 
-  async function startJob(userCustomParameters: {
-    dataServiceParams?: UserCustomParameters
-    algoServiceParams?: UserCustomParameters
-    algoParams?: UserCustomParameters
-  }): Promise<void> {
+  async function setAlgoPrice(
+    algo: AssetExtended,
+    algoService: Service,
+    algoAccessDetails,
+    algoProviderFees: ProviderFees
+  ) {
+    if (
+      algoAccessDetails.addressOrId !== ZERO_ADDRESS &&
+      algoAccessDetails?.type !== 'free' &&
+      algoProviderFees
+    ) {
+      const algorithmOrderPriceAndFees = await getOrderPriceAndFees(
+        algo,
+        algoService,
+        algoAccessDetails,
+        accountId || ZERO_ADDRESS,
+        signer,
+        algoProviderFees
+      )
+      if (!algorithmOrderPriceAndFees)
+        throw new Error('Error setting algorithm price and fees!')
+
+      setAlgoOrderPriceAndFees(algorithmOrderPriceAndFees)
+      return algorithmOrderPriceAndFees
+    }
+  }
+
+  async function startJob(
+    userCustomParameters: {
+      dataServiceParams?: UserCustomParameters
+      algoServiceParams?: UserCustomParameters
+      algoParams?: UserCustomParameters
+    },
+    datasetServices?: { asset: AssetExtended; service: Service }[]
+  ): Promise<void> {
     try {
       setIsOrdering(true)
       setIsOrdered(false)
       setError(undefined)
+
+      const {
+        datasetResponses,
+        actualAlgorithmAsset,
+        actualAlgoService,
+        actualAlgoAccessDetails,
+        initializedProvider
+      } = await initPriceAndFees(datasetServices)
+
       const computeAlgorithm: ComputeAlgorithm = {
-        documentId: selectedAlgorithmAsset?.id,
-        serviceId: selectedAlgorithmAsset?.services[0].id,
+        documentId: actualAlgorithmAsset?.id,
+        serviceId: actualAlgoService.id,
         algocustomdata: userCustomParameters?.algoParams,
         userdata: userCustomParameters?.algoServiceParams
       }
 
-      const allowed = await isOrderable(
-        asset,
-        service.id,
-        computeAlgorithm,
-        selectedAlgorithmAsset
-      )
-      LoggerInstance.log('[compute] Is dataset orderable?', allowed)
-      if (!allowed)
-        throw new Error(
-          'Dataset is not orderable in combination with selected algorithm.'
+      // Check isOrderable for all datasets
+      for (const ds of datasetResponses) {
+        const allowed = await isOrderable(
+          ds.actualDatasetAsset,
+          ds.actualDatasetService.id,
+          computeAlgorithm,
+          actualAlgorithmAsset
         )
-
-      await initPriceAndFees()
+        if (!allowed)
+          throw new Error(
+            `Dataset ${ds.actualDatasetAsset.id} is not orderable.`
+          )
+      }
 
       setComputeStatusText(
         getComputeFeedback(
-          selectedAlgorithmAsset.accessDetails?.[0]?.baseToken?.symbol,
-          selectedAlgorithmAsset.accessDetails?.[0]?.datatoken?.symbol,
-          selectedAlgorithmAsset.metadata.type
-        )[selectedAlgorithmAsset.accessDetails?.[0]?.type === 'fixed' ? 2 : 3]
+          actualAlgoAccessDetails?.baseToken?.symbol,
+          actualAlgoAccessDetails?.datatoken?.symbol,
+          actualAlgorithmAsset.credentialSubject?.metadata.type
+        )[actualAlgoAccessDetails?.type === 'fixed' ? 2 : 3]
       )
 
+      const algoOrderPriceAndFeesResponse = await setAlgoPrice(
+        actualAlgorithmAsset,
+        actualAlgoService,
+        actualAlgoAccessDetails,
+        initializedProvider?.algorithm?.providerFee ||
+          initializedProviderResponse?.algorithm?.providerFee
+      )
       const algorithmOrderTx = await handleComputeOrder(
         signer,
-        selectedAlgorithmAsset,
-        selectedAlgorithmAsset?.services[0],
-        selectedAlgorithmAsset?.accessDetails?.[0],
-        algoOrderPriceAndFees,
+        actualAlgorithmAsset,
+        actualAlgoService,
+        actualAlgoAccessDetails,
+        algoOrderPriceAndFees || algoOrderPriceAndFeesResponse,
         accountId,
-        initializedProviderResponse.algorithm,
+        initializedProvider?.algorithm ||
+          initializedProviderResponse?.algorithm,
         hasAlgoAssetDatatoken,
+        lookupVerifierSessionId(
+          datasetResponses[0].actualDatasetAsset.id,
+          datasetResponses[0].actualDatasetService.id
+        ),
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
 
-      setComputeStatusText(
-        getComputeFeedback(
-          accessDetails.baseToken?.symbol,
-          accessDetails.datatoken?.symbol,
-          asset.metadata.type
-        )[accessDetails.type === 'fixed' ? 2 : 3]
-      )
+      const datasetInputs = []
+      const policyDatasets: PolicyServerInitiateComputeActionData[] = []
 
-      const datasetOrderTx = await handleComputeOrder(
-        signer,
-        asset,
-        service,
-        accessDetails,
-        datasetOrderPriceAndFees,
-        accountId,
-        initializedProviderResponse.datasets[0],
-        hasDatatoken,
-        selectedComputeEnv.consumerAddress
-      )
-      if (!datasetOrderTx) throw new Error('Failed to order dataset.')
+      for (const ds of datasetResponses) {
+        const datasetOrderTx = await handleComputeOrder(
+          signer,
+          ds.actualDatasetAsset,
+          ds.actualDatasetService,
+          ds.actualDatasetAccessDetails,
+          datasetOrderPriceAndFees || ds.datasetOrderPriceResponse,
+          accountId,
+          ds.initializedProvider.datasets[0],
+          hasDatatoken,
+          lookupVerifierSessionId(
+            ds.actualDatasetAsset.id,
+            ds.actualDatasetService.id
+          ),
+          selectedComputeEnv.consumerAddress
+        )
+        if (!datasetOrderTx)
+          throw new Error(
+            `Failed to order dataset ${ds.actualDatasetAsset.id}.`
+          )
 
-      LoggerInstance.log('[compute] Starting compute job.')
-      const computeAsset: ComputeAsset = {
-        documentId: asset.id,
-        serviceId: service.id,
-        transferTxId: datasetOrderTx,
-        userdata: userCustomParameters?.dataServiceParams
+        datasetInputs.push({
+          documentId: ds.actualDatasetAsset.id,
+          serviceId: ds.actualDatasetService.id,
+          transferTxId: datasetOrderTx,
+          userdata: userCustomParameters?.dataServiceParams
+        })
+
+        policyDatasets.push({
+          sessionId: lookupVerifierSessionId(
+            ds.actualDatasetAsset.id,
+            ds.actualDatasetService.id
+          ),
+          serviceId: ds.actualDatasetService.id,
+          documentId: ds.actualDatasetAsset.id,
+          successRedirectUri: '',
+          errorRedirectUri: '',
+          responseRedirectUri: '',
+          presentationDefinitionUri: ''
+        })
       }
-      computeAlgorithm.transferTxId = algorithmOrderTx
-      const output: ComputeOutput = {
-        publishAlgorithmLog: true,
-        publishOutput: true
-      }
+
       setComputeStatusText(getComputeFeedback()[4])
-      const response = await ProviderInstance.computeStart(
-        service.serviceEndpoint,
-        signer,
-        selectedComputeEnv?.id,
-        computeAsset,
-        computeAlgorithm,
-        newAbortController(),
-        null,
-        output
-      )
-      if (!response) throw new Error('Error starting compute job.')
 
-      LoggerInstance.log('[compute] Starting compute job response: ', response)
+      const resourceRequests = selectedComputeEnv.resources.map((res) => ({
+        id: res.id,
+        amount: selectedResources[res.id] || res.min
+      }))
+
+      const policyServerAlgo: PolicyServerInitiateComputeActionData = {
+        sessionId: lookupVerifierSessionId(
+          actualAlgorithmAsset.id,
+          actualAlgoService.id
+        ),
+        serviceId: actualAlgoService.id,
+        documentId: actualAlgorithmAsset.id,
+        successRedirectUri: '',
+        errorRedirectUri: '',
+        responseRedirectUri: '',
+        presentationDefinitionUri: ''
+      }
+
+      const policiesServer = [policyServerAlgo, ...policyDatasets]
+
+      let response
+      if (selectedResources.mode === 'paid') {
+        response = await ProviderInstance.computeStart(
+          service.serviceEndpoint,
+          signer,
+          selectedComputeEnv.id,
+          datasetInputs,
+          { ...computeAlgorithm, transferTxId: algorithmOrderTx },
+          selectedResources.jobDuration,
+          oceanTokenAddress,
+          resourceRequests,
+          datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
+          null,
+          null,
+          policiesServer
+        )
+      } else {
+        const algorithm: ComputeAlgorithm = {
+          documentId: actualAlgorithmAsset.id,
+          serviceId: actualAlgoService.id,
+          meta: actualAlgorithmAsset.credentialSubject?.metadata
+            ?.algorithm as any
+        }
+
+        response = await ProviderInstance.freeComputeStart(
+          service.serviceEndpoint,
+          signer,
+          selectedComputeEnv.id,
+          datasetInputs.map(({ documentId, serviceId }) => ({
+            documentId,
+            serviceId
+          })),
+          algorithm,
+          resourceRequests,
+          null,
+          null,
+          policiesServer
+        )
+      }
+
+      if (!response)
+        throw new Error(
+          'Failed to start compute job, check console for more details.'
+        )
+
       setIsOrdered(true)
       setRefetchJobs(!refetchJobs)
-      initPriceAndFees()
     } catch (error) {
-      const message = getErrorMessage(error.message)
-      LoggerInstance.error('[Compute] Error:', message)
+      let message: string
+      try {
+        message =
+          error.message && typeof error.message === 'string'
+            ? JSON.parse(error.message)
+            : error.message || String(error)
+      } catch {
+        message = error.message || String(error)
+      }
       setError(message)
       setRetry(true)
     } finally {
@@ -500,25 +727,88 @@ export default function Compute({
   }
 
   const onSubmit = async (values: ComputeDatasetForm) => {
-    if (!values.algorithm || !values.computeEnv || !values.termsAndConditions)
-      return
+    try {
+      const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
 
-    const userCustomParameters = {
-      dataServiceParams: parseConsumerParameterValues(
-        values?.dataServiceParams,
-        service.consumerParameters
-      ),
-      algoServiceParams: parseConsumerParameterValues(
-        values?.algoServiceParams,
-        selectedAlgorithmAsset?.services[0].consumerParameters
-      ),
-      algoParams: parseConsumerParameterValues(
-        values?.algoParams,
-        selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters
-      )
+      if (appConfig.ssiEnabled && !skip) {
+        try {
+          const result = await checkVerifierSessionId(
+            lookupVerifierSessionId(asset.id, service.id)
+          )
+          if (!result.success) {
+            toast.error('Invalid session')
+            return
+          }
+        } catch (error) {
+          resetCacheWallet()
+          throw error
+        }
+      }
+
+      if (
+        !(values.algorithm || values.dataset) ||
+        !values.computeEnv ||
+        !values.termsAndConditions ||
+        !values.acceptPublishingLicense
+      ) {
+        toast.error('Please complete all required fields.')
+        return
+      }
+
+      let actualSelectedDataset: AssetExtended[] = []
+      let actualSelectedAlgorithm: AssetExtended = selectedAlgorithmAsset
+
+      // Case: dataset selected, algorithm undefined (algo is main asset)
+      if (asset.credentialSubject.metadata.type === 'algorithm') {
+        actualSelectedAlgorithm = asset
+        if (selectedDatasetAsset && Array.isArray(selectedDatasetAsset)) {
+          actualSelectedDataset = selectedDatasetAsset
+        }
+      } else {
+        actualSelectedDataset = [asset]
+      }
+
+      const userCustomParameters = {
+        dataServiceParams: parseConsumerParameterValues(
+          values?.dataServiceParams,
+          actualSelectedDataset[0]?.credentialSubject?.services?.[0]
+            ?.consumerParameters
+        ),
+        algoServiceParams: parseConsumerParameterValues(
+          values?.algoServiceParams,
+          actualSelectedAlgorithm?.credentialSubject?.services[svcIndex]
+            ?.consumerParameters
+        ),
+        algoParams: parseConsumerParameterValues(
+          values?.algoParams,
+          actualSelectedAlgorithm?.credentialSubject?.metadata?.algorithm
+            ?.consumerParameters
+        )
+      }
+
+      const datasetServices: { asset: AssetExtended; service: Service }[] =
+        actualSelectedDataset.map((ds, i) => {
+          const datasetEntry = values.dataset?.[i]
+          const selectedServiceId = datasetEntry?.includes('|')
+            ? datasetEntry.split('|')[1]
+            : ds.credentialSubject.services?.[0]?.id
+
+          const selectedService =
+            ds.credentialSubject.services.find(
+              (s) => s.id === selectedServiceId
+            ) || ds.credentialSubject.services?.[0]
+
+          return {
+            asset: ds,
+            service: selectedService
+          }
+        })
+
+      await startJob(userCustomParameters, datasetServices)
+    } catch (error) {
+      toast.error(error.message)
+      LoggerInstance.error(error)
     }
-
-    await startJob(userCustomParameters)
   }
 
   return (
@@ -540,94 +830,309 @@ export default function Compute({
             state="info"
           />
         ) : (
-          <Price
-            price={price}
-            orderPriceAndFees={datasetOrderPriceAndFees}
-            size="large"
-          />
+          <div className={styles.priceClass}>
+            <Price
+              price={price}
+              orderPriceAndFees={datasetOrderPriceAndFees}
+              size="large"
+            />
+          </div>
         )}
       </div>
 
-      {isUnsupportedPricing ? null : asset.metadata.type === 'algorithm' ? (
-        <>
-          {service.type === 'compute' && (
-            <Alert
-              text={
-                "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
-              }
-              state="info"
-            />
+      {isUnsupportedPricing ? null : asset.credentialSubject?.metadata.type ===
+        'algorithm' ? (
+        <Formik
+          initialValues={getInitialValues(
+            service,
+            selectedAlgorithmAsset,
+            selectedComputeEnv,
+            termsAndConditions,
+            acceptPublishingLicense
           )}
-          <AlgorithmDatasetsListForCompute
-            asset={asset}
-            service={service}
-            accessDetails={accessDetails}
-          />
-        </>
+          validateOnMount
+          validationSchema={getComputeValidationSchema(
+            service.consumerParameters,
+            selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
+              ?.consumerParameters,
+            selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+              ?.consumerParameters
+          )}
+          onSubmit={(values) => {
+            if (
+              !lookupVerifierSessionId(asset.id, service.id) &&
+              appConfig.ssiEnabled
+            ) {
+              return
+            }
+            onSubmit(values)
+          }}
+        >
+          {appConfig.ssiEnabled ? (
+            <>
+              {verifierSessionCache &&
+              lookupVerifierSessionId(asset.id, service.id) ? (
+                <>
+                  {service.type === 'compute' && (
+                    <Alert
+                      text={
+                        "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
+                      }
+                      state="info"
+                    />
+                  )}
+                  <CredentialDialogProvider>
+                    <FormStartComputeAlgo
+                      asset={asset}
+                      service={service}
+                      accessDetails={accessDetails}
+                      datasets={datasetList}
+                      selectedDatasetAsset={selectedDatasetAsset}
+                      setSelectedDatasetAsset={setSelectedDatasetAsset}
+                      isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                      isComputeButtonDisabled={isComputeButtonDisabled}
+                      hasPreviousOrder={!!validOrderTx}
+                      hasDatatoken={hasDatatoken}
+                      dtBalance={dtBalance}
+                      assetTimeout={secondsToString(service.timeout)}
+                      hasPreviousOrderSelectedComputeAsset={
+                        !!validAlgorithmOrderTx
+                      }
+                      hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+                      isAccountIdWhitelisted={isAccountIdWhitelisted}
+                      datasetSymbol={
+                        accessDetails.baseToken?.symbol ||
+                        (asset.credentialSubject?.chainId === 137
+                          ? 'mOCEAN'
+                          : 'OCEAN')
+                      }
+                      algorithmSymbol={
+                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                          ?.baseToken?.symbol ||
+                        (selectedAlgorithmAsset?.credentialSubject?.chainId ===
+                        137
+                          ? 'mOCEAN'
+                          : 'OCEAN')
+                      }
+                      providerFeesSymbol={providerFeesSymbol}
+                      dtSymbolSelectedComputeAsset={
+                        selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                          ?.datatoken.symbol
+                      }
+                      dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                      selectedComputeAssetType="algorithm"
+                      selectedComputeAssetTimeout={secondsToString(
+                        selectedAlgorithmAsset?.credentialSubject?.services[
+                          svcIndex
+                        ]?.timeout
+                      )}
+                      allResourceValues={allResourceValues}
+                      setAllResourceValues={setAllResourceValues}
+                      // lazy comment when removing pricingStepText
+                      stepText={computeStatusText}
+                      isConsumable={isConsumablePrice}
+                      consumableFeedback={consumableFeedback}
+                      datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                      algoOrderPriceAndFees={algoOrderPriceAndFees}
+                      retry={retry}
+                      computeEnvs={computeEnvs}
+                    />
+                  </CredentialDialogProvider>
+                  {/* <AlgorithmDatasetsListForCompute
+                    asset={asset}
+                    service={service}
+                    accessDetails={accessDetails}
+                  /> */}
+                </>
+              ) : (
+                <AssetActionCheckCredentials asset={asset} service={service} />
+              )}
+            </>
+          ) : (
+            <>
+              {service.type === 'compute' && (
+                <Alert
+                  text={
+                    "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
+                  }
+                  state="info"
+                />
+              )}
+              <AlgorithmDatasetsListForCompute
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+              />
+            </>
+          )}
+        </Formik>
       ) : (
         <Formik
           initialValues={getInitialValues(
             service,
             selectedAlgorithmAsset,
             selectedComputeEnv,
-            termsAndConditions
+            termsAndConditions,
+            acceptPublishingLicense
           )}
           validateOnMount
           validationSchema={getComputeValidationSchema(
             service.consumerParameters,
-            selectedAlgorithmAsset?.services[0].consumerParameters,
-            selectedAlgorithmAsset?.metadata?.algorithm?.consumerParameters
+            selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
+              ?.consumerParameters,
+            selectedAlgorithmAsset?.credentialSubject?.metadata?.algorithm
+              ?.consumerParameters
           )}
-          enableReinitialize
-          onSubmit={onSubmit}
+          onSubmit={(values) => {
+            if (
+              !lookupVerifierSessionId(asset.id, service.id) &&
+              appConfig.ssiEnabled
+            ) {
+              return
+            }
+            onSubmit(values)
+          }}
         >
-          <FormStartComputeDataset
-            asset={asset}
-            service={service}
-            accessDetails={accessDetails}
-            algorithms={algorithmList}
-            ddoListAlgorithms={ddoAlgorithmList}
-            selectedAlgorithmAsset={selectedAlgorithmAsset}
-            setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
-            isLoading={isOrdering || isRequestingAlgoOrderPrice}
-            isComputeButtonDisabled={isComputeButtonDisabled}
-            hasPreviousOrder={!!validOrderTx}
-            hasDatatoken={hasDatatoken}
-            dtBalance={dtBalance}
-            assetTimeout={secondsToString(service.timeout)}
-            hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
-            hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
-            isAccountIdWhitelisted={isAccountIdWhitelisted}
-            datasetSymbol={
-              accessDetails.baseToken?.symbol ||
-              (asset.chainId === 137 ? 'mOCEAN' : 'OCEAN')
-            }
-            algorithmSymbol={
-              selectedAlgorithmAsset?.accessDetails?.[0]?.baseToken?.symbol ||
-              (selectedAlgorithmAsset?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
-            }
-            providerFeesSymbol={providerFeesSymbol}
-            dtSymbolSelectedComputeAsset={
-              selectedAlgorithmAsset?.accessDetails?.[0]?.datatoken.symbol
-            }
-            dtBalanceSelectedComputeAsset={algorithmDTBalance}
-            selectedComputeAssetType="algorithm"
-            selectedComputeAssetTimeout={secondsToString(
-              selectedAlgorithmAsset?.services[0]?.timeout
-            )}
-            computeEnvs={computeEnvs}
-            setSelectedComputeEnv={setSelectedComputeEnv}
-            setTermsAndConditions={setTermsAndConditions}
-            // lazy comment when removing pricingStepText
-            stepText={computeStatusText}
-            isConsumable={isConsumablePrice}
-            consumableFeedback={consumableFeedback}
-            datasetOrderPriceAndFees={datasetOrderPriceAndFees}
-            algoOrderPriceAndFees={algoOrderPriceAndFees}
-            providerFeeAmount={providerFeeAmount}
-            validUntil={computeValidUntil}
-            retry={retry}
-          />
+          {appConfig.ssiEnabled ? (
+            <>
+              {verifierSessionCache &&
+              lookupVerifierSessionId(asset.id, service.id) ? (
+                <CredentialDialogProvider>
+                  <FormStartComputeDataset
+                    asset={asset}
+                    service={service}
+                    accessDetails={accessDetails}
+                    algorithms={algorithmList}
+                    ddoListAlgorithms={ddoAlgorithmList}
+                    selectedAlgorithmAsset={selectedAlgorithmAsset}
+                    setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+                    isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                    isComputeButtonDisabled={isComputeButtonDisabled}
+                    hasPreviousOrder={!!validOrderTx}
+                    hasDatatoken={hasDatatoken}
+                    dtBalance={dtBalance}
+                    assetTimeout={secondsToString(service.timeout)}
+                    hasPreviousOrderSelectedComputeAsset={
+                      !!validAlgorithmOrderTx
+                    }
+                    hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+                    isAccountIdWhitelisted={isAccountIdWhitelisted}
+                    datasetSymbol={
+                      accessDetails.baseToken?.symbol ||
+                      (asset.credentialSubject?.chainId === 137
+                        ? 'mOCEAN'
+                        : 'OCEAN')
+                    }
+                    algorithmSymbol={
+                      selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                        ?.baseToken?.symbol ||
+                      (selectedAlgorithmAsset?.credentialSubject?.chainId ===
+                      137
+                        ? 'mOCEAN'
+                        : 'OCEAN')
+                    }
+                    providerFeesSymbol={providerFeesSymbol}
+                    dtSymbolSelectedComputeAsset={
+                      selectedAlgorithmAsset?.accessDetails?.[svcIndex]
+                        ?.datatoken.symbol
+                    }
+                    dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                    selectedComputeAssetType="algorithm"
+                    selectedComputeAssetTimeout={secondsToString(
+                      selectedAlgorithmAsset?.credentialSubject?.services[
+                        svcIndex
+                      ]?.timeout
+                    )}
+                    allResourceValues={allResourceValues}
+                    setAllResourceValues={setAllResourceValues}
+                    // lazy comment when removing pricingStepText
+                    stepText={computeStatusText}
+                    isConsumable={isConsumablePrice}
+                    consumableFeedback={consumableFeedback}
+                    datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                    algoOrderPriceAndFees={algoOrderPriceAndFees}
+                    retry={retry}
+                    onRunInitPriceAndFees={async () => {
+                      await initPriceAndFees()
+                    }}
+                    onCheckAlgoDTBalance={() =>
+                      checkAssetDTBalance(selectedAlgorithmAsset)
+                    }
+                    computeEnvs={computeEnvs}
+                  />
+                </CredentialDialogProvider>
+              ) : (
+                <div className={styles.actionButton}>
+                  {' '}
+                  <AssetActionCheckCredentials
+                    asset={asset}
+                    service={service}
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <CredentialDialogProvider>
+              <FormStartComputeDataset
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                algorithms={algorithmList}
+                ddoListAlgorithms={ddoAlgorithmList}
+                selectedAlgorithmAsset={selectedAlgorithmAsset}
+                setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+                isLoading={isOrdering || isRequestingAlgoOrderPrice}
+                isComputeButtonDisabled={isComputeButtonDisabled}
+                hasPreviousOrder={!!validOrderTx}
+                hasDatatoken={hasDatatoken}
+                dtBalance={dtBalance}
+                assetTimeout={secondsToString(service.timeout)}
+                hasPreviousOrderSelectedComputeAsset={!!validAlgorithmOrderTx}
+                hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                datasetSymbol={
+                  accessDetails.baseToken?.symbol ||
+                  (asset.credentialSubject?.chainId === 137
+                    ? 'mOCEAN'
+                    : 'OCEAN')
+                }
+                algorithmSymbol={
+                  selectedAlgorithmAsset?.accessDetails?.[svcIndex]?.baseToken
+                    ?.symbol ||
+                  (selectedAlgorithmAsset?.credentialSubject?.chainId === 137
+                    ? 'mOCEAN'
+                    : 'OCEAN')
+                }
+                providerFeesSymbol={providerFeesSymbol}
+                dtSymbolSelectedComputeAsset={
+                  selectedAlgorithmAsset?.accessDetails?.[svcIndex]?.datatoken
+                    .symbol
+                }
+                dtBalanceSelectedComputeAsset={algorithmDTBalance}
+                selectedComputeAssetType="algorithm"
+                selectedComputeAssetTimeout={secondsToString(
+                  selectedAlgorithmAsset?.credentialSubject?.services[svcIndex]
+                    ?.timeout
+                )}
+                allResourceValues={allResourceValues}
+                setAllResourceValues={setAllResourceValues}
+                // lazy comment when removing pricingStepText
+                stepText={computeStatusText}
+                isConsumable={isConsumablePrice}
+                consumableFeedback={consumableFeedback}
+                datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+                algoOrderPriceAndFees={algoOrderPriceAndFees}
+                retry={retry}
+                onRunInitPriceAndFees={async () => {
+                  await initPriceAndFees()
+                }}
+                onCheckAlgoDTBalance={() =>
+                  checkAssetDTBalance(selectedAlgorithmAsset)
+                }
+                computeEnvs={computeEnvs}
+              />
+            </CredentialDialogProvider>
+          )}
         </Formik>
       )}
 
@@ -642,19 +1147,21 @@ export default function Compute({
           isAccountIdWhitelisted={isAccountIdWhitelisted}
         />
       )}
-      {accountId && accessDetails.datatoken && (
-        <ComputeHistory
-          title="Your Compute Jobs"
-          refetchJobs={() => setRefetchJobs(!refetchJobs)}
-        >
-          <ComputeJobs
-            minimal
-            jobs={jobs}
-            isLoading={isLoadingJobs}
+      {accountId &&
+        accessDetails.datatoken &&
+        asset.credentialSubject.metadata.type !== 'algorithm' && (
+          <ComputeHistory
+            title="Your Compute Jobs"
             refetchJobs={() => setRefetchJobs(!refetchJobs)}
-          />
-        </ComputeHistory>
-      )}
+          >
+            <ComputeJobs
+              minimal
+              jobs={jobs}
+              isLoading={isLoadingJobs}
+              refetchJobs={() => setRefetchJobs(!refetchJobs)}
+            />
+          </ComputeHistory>
+        )}
     </>
   )
 }

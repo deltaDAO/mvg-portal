@@ -1,5 +1,5 @@
 import { fetchData } from './fetch'
-import { purgatoryUrl } from '../../app.config'
+import { purgatoryUrl } from '../../app.config.cjs'
 
 export interface PurgatoryDataAccount {
   address: string

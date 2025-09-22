@@ -11,10 +11,15 @@ import { useNetwork, useSwitchNetwork } from 'wagmi'
 export default function WalletNetworkSwitcher(): ReactElement {
   const { chain } = useNetwork()
   const { asset } = useAsset()
-  const { switchNetwork } = useSwitchNetwork({ chainId: asset?.chainId })
+  const { switchNetwork } = useSwitchNetwork({
+    chainId: asset?.credentialSubject?.chainId
+  })
   const { networksList } = useNetworkMetadata()
 
-  const ddoNetworkData = getNetworkDataById(networksList, asset.chainId)
+  const ddoNetworkData = getNetworkDataById(
+    networksList,
+    asset.credentialSubject?.chainId
+  )
   const walletNetworkData = getNetworkDataById(networksList, chain?.id)
 
   const ddoNetworkName = (

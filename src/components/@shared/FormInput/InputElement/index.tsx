@@ -18,6 +18,7 @@ import { ConsumerParameters } from './ConsumerParameters'
 import ComputeEnvSelection from './ComputeEnvSelection'
 import Credentials from './Credential'
 import Option from './Radio/Option'
+import { PublishConsumerParameters } from './ConsumerParameters/PublishConsumerParameters'
 
 const cx = classNames.bind(styles)
 
@@ -76,12 +77,22 @@ const InputElement = forwardRef(
       prefixes,
       postfixes,
       actions,
+      variant = 'default',
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
     ref: RefObject<HTMLInputElement>
   ): ReactElement => {
-    const styleClasses = cx({ select: true, [size]: size })
+    const styleClasses = cx({
+      select:
+        props.selectStyle !== 'publish' &&
+        props.selectStyle !== 'custom' &&
+        props.selectStyle !== 'serviceLanguage',
+      publishSelect: props.selectStyle === 'publish',
+      customSelect: props.selectStyle === 'custom',
+      serviceLanguageSelect: props.selectStyle === 'serviceLanguage',
+      [size]: size
+    })
 
     switch (props.type) {
       case 'select': {
@@ -98,7 +109,11 @@ const InputElement = forwardRef(
             {...props}
             multiple={multiple}
           >
-            {field !== undefined && field.value === '' && <option value="" />}
+            {field !== undefined && field.value === '' && (
+              <option value="" disabled hidden>
+                {props.placeholder}
+              </option>
+            )}
             {sortedOptions &&
               (sortedOptions as string[]).map(
                 (option: string, index: number) => (
@@ -159,6 +174,8 @@ const InputElement = forwardRef(
 
       case 'consumerParameters':
         return <ConsumerParameters {...field} form={form} {...props} />
+      case 'publishConsumerParameters':
+        return <PublishConsumerParameters {...field} form={form} {...props} />
 
       case 'textarea':
         return (
@@ -192,6 +209,7 @@ const InputElement = forwardRef(
         return (
           <ComputeEnvSelection
             computeEnvs={options as ComputeEnvironmentExtended[]}
+            setAllResourceValues={props.setAllResourceValues}
             {...field}
             {...props}
           />
@@ -201,6 +219,7 @@ const InputElement = forwardRef(
         return (
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
+            accountId={accountId}
             multiple
             {...field}
             {...props}
@@ -220,6 +239,7 @@ const InputElement = forwardRef(
         return (
           <BoxSelection
             options={options as BoxSelectionOption[]}
+            size={size}
             {...field}
             {...props}
           />
@@ -231,10 +251,20 @@ const InputElement = forwardRef(
       default:
         return prefix || postfix ? (
           <div
-            className={`${prefix ? styles.prefixGroup : styles.postfixGroup}`}
+            className={`${prefix ? styles.prefixGroup : styles.postfixGroup} ${
+              variant === 'publish' ? styles.publishPrefixGroup : ''
+            }`}
           >
             {prefix && (
-              <div className={cx({ prefix: true, [size]: size })}>{prefix}</div>
+              <div
+                className={cx({
+                  prefix: true,
+                  [size]: size,
+                  publishPrefix: variant === 'publish'
+                })}
+              >
+                {prefix}
+              </div>
             )}
             <DefaultInput
               ref={ref}
@@ -244,7 +274,13 @@ const InputElement = forwardRef(
               {...props}
             />
             {postfix && (
-              <div className={cx({ postfix: true, [size]: size })}>
+              <div
+                className={cx({
+                  postfix: true,
+                  [size]: size,
+                  publishPostfix: variant === 'publish'
+                })}
+              >
                 {postfix}
               </div>
             )}

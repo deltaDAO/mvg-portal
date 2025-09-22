@@ -8,7 +8,7 @@ import {
   ReactNode
 } from 'react'
 import { useUserPreferences } from '../UserPreferences'
-import { Asset, LoggerInstance } from '@oceanprotocol/lib'
+import { LoggerInstance } from '@oceanprotocol/lib'
 import {
   getDownloadAssets,
   getPublishedAssets,
@@ -18,6 +18,7 @@ import {
 import axios, { CancelToken } from 'axios'
 import { useMarketMetadata } from '../MarketMetadata'
 import { isAddress } from 'ethers/lib/utils'
+import { Asset } from 'src/@types/Asset'
 
 interface ProfileProviderValue {
   assets: Asset[]
@@ -121,23 +122,39 @@ function ProfileProvider({
   const fetchDownloads = useCallback(
     async (cancelToken: CancelToken, page = 1) => {
       if (!accountId || !chainIds) return
+
       const dtList: string[] = []
-      const orders = await getUserOrders(accountId, cancelToken)
-      for (let i = 0; i < orders?.results?.length; i++) {
-        dtList.push(orders.results[i].datatokenAddress)
+      let currentPage = 1
+      let totalPages = 1
+
+      // Fetch all pages of user orders
+      while (currentPage <= totalPages) {
+        const orders = await getUserOrders(accountId, cancelToken, currentPage)
+        orders?.results?.forEach((order) => {
+          if (order.datatokenAddress) dtList.push(order.datatokenAddress)
+        })
+        // eslint-disable-next-line prefer-destructuring
+        totalPages = orders?.totalPages || 0
+        currentPage++
       }
-      const { downloadedAssets, totalResults } = await getDownloadAssets(
+
+      const result = await getDownloadAssets(
         dtList,
         chainIds,
         cancelToken,
         ownAccount,
-        page
+        page // Only paginate here
       )
+      // Paginate only the download assets
+      const downloadedAssets = result?.downloadedAssets || []
+      const totalResults = result?.totalResults || 0
+
       setDownloads(downloadedAssets)
       setDownloadsTotal(totalResults)
+
       LoggerInstance.log(
         `[profile] Fetched ${downloadedAssets.length} download orders.`,
-        downloads
+        downloadedAssets
       )
     },
     [accountId, chainIds, ownAccount]

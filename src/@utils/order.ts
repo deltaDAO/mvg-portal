@@ -1,5 +1,4 @@
 import {
-  amountToUnits,
   approve,
   approveWei,
   Datatoken,
@@ -12,8 +11,7 @@ import {
   ProviderFees,
   ProviderInstance,
   ProviderInitialize,
-  getErrorMessage,
-  Service
+  getErrorMessage
 } from '@oceanprotocol/lib'
 import { Signer, ethers } from 'ethers'
 import { getOceanConfig } from './ocean'
@@ -22,10 +20,12 @@ import {
   consumeMarketOrderFee,
   consumeMarketFixedSwapFee,
   customProviderUrl
-} from '../../app.config'
+} from '../../app.config.cjs'
 import { toast } from 'react-toastify'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
-async function initializeProvider(
+export async function initializeProvider(
   asset: AssetExtended,
   service: Service,
   accountId: string,
@@ -33,18 +33,39 @@ async function initializeProvider(
 ): Promise<ProviderInitialize> {
   if (providerFees) return
   try {
-    const provider = await ProviderInstance.initialize(
-      asset.id,
-      service.id,
-      0,
-      accountId,
-      customProviderUrl || service.serviceEndpoint
+    const command = {
+      documentId: asset.id,
+      serviceId: service.id,
+      consumerAddress: accountId,
+      policyServer: {
+        sessionId: '',
+        successRedirectUri: '',
+        errorRedirectUri: '',
+        responseRedirectUri: '',
+        presentationDefinitionUri: ''
+      }
+    }
+    const initializePs = await ProviderInstance.initializePSVerification(
+      customProviderUrl || service.serviceEndpoint,
+      command
     )
-    return provider
+    console.log('Initialize PS response', initializePs)
+    if (initializePs?.success) {
+      const provider = await ProviderInstance.initialize(
+        asset.id,
+        service.id,
+        0,
+        accountId,
+        customProviderUrl || service.serviceEndpoint
+      )
+      return provider
+    }
+    throw new Error(`Provider initialization failed: ${initializePs.error}`)
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.log('[Initialize Provider] Error:', message)
     toast.error(message)
+    throw new Error(message)
   }
 }
 
@@ -68,19 +89,23 @@ export async function order(
   providerFees?: ProviderFees,
   computeConsumerAddress?: string
 ): Promise<ethers.providers.TransactionResponse> {
-  const datatoken = new Datatoken(signer)
-  const config = getOceanConfig(asset.chainId)
-
+  const datatoken = new Datatoken(signer, asset.credentialSubject?.chainId)
+  const config = getOceanConfig(asset.credentialSubject?.chainId)
   const initializeData = await initializeProvider(
     asset,
     service,
     accountId,
     providerFees
   )
-
+  const serviceIndex = asset.credentialSubject?.services.findIndex(
+    (s: Service) => s.id === service.id
+  )
+  if (serviceIndex === -1) {
+    throw new Error(`Service with id ${service.id} not found in the DDO.`)
+  }
   const orderParams = {
     consumer: computeConsumerAddress || accountId,
-    serviceIndex: 0,
+    serviceIndex,
     _providerFee: providerFees || initializeData.providerFee,
     _consumeMarketFee: {
       consumeMarketFeeAddress: marketFeeAddress,
@@ -90,21 +115,18 @@ export async function order(
         '0x0000000000000000000000000000000000000000'
     }
   } as OrderParams
-
   switch (accessDetails.type) {
     case 'fixed': {
       // this assumes all fees are in ocean
-
       const freParams = {
         exchangeContract: config.fixedRateExchangeAddress,
         exchangeId: accessDetails.addressOrId,
-        maxBaseTokenAmount: orderPriceAndFees.price,
+        maxBaseTokenAmount: orderPriceAndFees?.price,
         baseTokenAddress: accessDetails.baseToken?.address,
         baseTokenDecimals: accessDetails.baseToken?.decimals || 18,
         swapMarketFee: consumeMarketFixedSwapFee,
         marketFeeAddress
       } as FreOrderParams
-
       if (accessDetails.templateId === 1) {
         if (!hasDatatoken) {
           // buy datatoken
@@ -114,7 +136,7 @@ export async function order(
             await signer.getAddress(),
             accessDetails.baseToken.address,
             config.fixedRateExchangeAddress,
-            orderPriceAndFees.price,
+            orderPriceAndFees?.price,
             false
           )
           const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
@@ -126,7 +148,7 @@ export async function order(
             signer
           )
           const consumeMarketFee = (
-            (parseFloat(orderPriceAndFees.price) *
+            (parseFloat(orderPriceAndFees?.price) *
               parseFloat(consumeMarketFixedSwapFee)) /
             100
           ).toFixed(2)
@@ -134,7 +156,7 @@ export async function order(
           const freTx = await fre.buyDatatokens(
             accessDetails.addressOrId,
             '1',
-            orderPriceAndFees.price,
+            orderPriceAndFees?.price,
             marketFeeAddress,
             '0'
           )
@@ -149,25 +171,32 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
+        freParams.maxBaseTokenAmount = (
+          Number(freParams.maxBaseTokenAmount) +
+          (Number(freParams.maxBaseTokenAmount) +
+            Number(orderPriceAndFees?.opcFee))
+        ).toString()
         const tx: any = await approve(
           signer,
           config,
           accountId,
           accessDetails.baseToken.address,
           accessDetails.datatoken.address,
-          orderPriceAndFees.price,
+          (
+            Number(orderPriceAndFees?.price) + Number(orderPriceAndFees?.opcFee)
+          ).toString(),
           false
         )
-
         const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
         if (!txApprove) {
           return
         }
-        return await datatoken.buyFromFreAndOrder(
+        const buyTx = await datatoken.buyFromFreAndOrder(
           accessDetails.datatoken.address,
           orderParams,
           freParams
         )
+        return buyTx
       }
       break
     }
@@ -240,10 +269,10 @@ async function approveProviderFee(
   signer: Signer,
   providerFeeAmount: string
 ): Promise<ethers.providers.TransactionResponse> {
-  const config = getOceanConfig(asset.chainId)
+  const config = getOceanConfig(asset.credentialSubject?.chainId)
   const baseToken =
     accessDetails.type === 'free'
-      ? getOceanConfig(asset.chainId).oceanTokenAddress
+      ? getOceanConfig(asset.credentialSubject?.chainId).oceanTokenAddress
       : accessDetails.baseToken?.address
   const txApproveWei = await approveWei(
     signer,
@@ -279,17 +308,26 @@ export async function handleComputeOrder(
   accountId: string,
   initializeData: ProviderComputeInitialize,
   hasDatatoken,
+  verifierSessionId: string,
   computeConsumerAddress?: string
 ): Promise<string> {
   LoggerInstance.log(
     '[compute] Handle compute order for asset type: ',
-    asset.metadata.type
+    asset.credentialSubject?.metadata?.type
   )
   LoggerInstance.log('[compute] Using initializeData: ', initializeData)
-
   try {
     // Return early when valid order is found, and no provider fees
     // are to be paid
+    if (accessDetails.validOrderTx) {
+      return accessDetails.validOrderTx
+    }
+    if (!initializeData) {
+      LoggerInstance.log(
+        '[compute] No initializeData found, returning valid order tx'
+      )
+      throw new Error('No initializeData found, please try again.')
+    }
     if (initializeData?.validOrder && !initializeData.providerFee) {
       LoggerInstance.log(
         '[compute] Has valid order: ',
@@ -331,8 +369,13 @@ export async function handleComputeOrder(
       return tx?.transactionHash
     }
 
-    LoggerInstance.log('[compute] Calling order ...', initializeData)
-
+    LoggerInstance.log(
+      '[compute] Calling order ...',
+      initializeData,
+      orderPriceAndFees,
+      asset,
+      service
+    )
     const txStartOrder = await order(
       signer,
       asset,

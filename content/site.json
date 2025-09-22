@@ -1,36 +1,22 @@
 {
   "siteTitle": "Ocean Protocol Enterprise",
-  "siteTagline": "The enterprise data ecosystem",
+  "siteTagline": "Publish, find, compare, manage and monetize proprietary data & AI products in a secure,",
+  "taglineContinuation": "Continuted",
   "siteUrl": "https://enterprise.oceanprotocol.com",
   "siteImage": "/share.png",
   "copyright": "All Rights Reserved. Powered by [Ocean Protocol](https://oceanprotocol.com).",
   "menu": [
     {
       "name": "Catalogue",
-      "link": "/search?sort=nft.created&sortOrder=desc"
+      "link": "/search?sort=indexedMetadata.event.block&sortOrder=desc"
     },
     {
       "name": "Publish",
       "link": "/publish/1"
     },
     {
-      "name": "Ecosystem",
-      "subItems": [
-        {
-          "name": "Example",
-          "link": "https://marketplace.example.com/",
-          "description": "An enterprise marketplace built with Ocean Protocol Enterprise",
-          "image": "example_logo.png",
-          "category": "manufacturing"
-        },
-        {
-          "name": "Another Example",
-          "link": "https://marketplace.example.com/",
-          "description": "An enterprise marketplace built with Ocean Protocol Enterprise",
-          "image": "example_logo.png",
-          "category": "mobility"
-        }
-      ]
+      "name": "Profile",
+      "link": "/profile"
     }
   ],
   "announcement": "",
@@ -38,21 +24,39 @@
   "warning": {
     "ctd": "Please note that Compute-to-Data is still in beta phase."
   },
+  "siteDescription": "A decentralized data marketplace powered by Ocean Protocol.",
   "footer": {
     "subtitle": "The enterprise data market",
-    "copyright": "Built by [Ocean Protocol Enterprise](https://github.com/OceanProtocolEnterprise)",
+    "copyright": "© Ocean Enterprise 2025",
     "privacyTitle": "Privacy",
     "content": [
+      {
+        "title": "Resources",
+        "links": [
+          {
+            "name": "Log",
+            "link": "https://sepolia.etherscan.io/"
+          },
+          {
+            "name": "GitHub",
+            "link": "https://github.com/OceanProtocolEnterprise"
+          },
+          {
+            "name": "Docs",
+            "link": "https://github.com/OceanProtocolEnterprise/docs"
+          },
+          {
+            "name": "Medium",
+            "link": "https://medium.com/ocean-enterprise-collective"
+          }
+        ]
+      },
       {
         "title": "Navigation",
         "links": [
           {
-            "name": "Bookmarks",
-            "link": "/bookmarks"
-          },
-          {
             "name": "Catalogue",
-            "link": "/search?sort=nft.created&sortOrder=desc"
+            "link": "/search?sort=indexedMetadata.event.block&sortOrder=desc"
           },
           {
             "name": "Profile",
@@ -61,6 +65,23 @@
           {
             "name": "Publish",
             "link": "/publish/1"
+          }
+        ]
+      },
+      {
+        "title": "Privacy",
+        "links": [
+          {
+            "name": "Terms and Conditions",
+            "link": "/imprint"
+          },
+          {
+            "name": "Privacy",
+            "link": "/privacy/en#6-cookies-and-web-storage"
+          },
+          {
+            "name": "Cookie Settings",
+            "link": "/cookie-settings"
           }
         ]
       }

@@ -1,4 +1,8 @@
 .wallet {
   display: flex;
   align-self: stretch;
+  align-items: center;
+  margin-right: 1rem;
+  margin-left: 1rem;
+  gap: 1rem;
 }

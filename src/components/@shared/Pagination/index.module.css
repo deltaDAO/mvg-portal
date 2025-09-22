@@ -2,8 +2,6 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: var(--spacer);
-  margin-bottom: var(--spacer);
   padding-left: 0;
   font-size: var(--font-size-small);
 }

@@ -7,7 +7,11 @@ module.exports = {
   // return appConfig.metadataCacheUri
   metadataCacheUri:
     process.env.NEXT_PUBLIC_METADATACACHE_URI ||
-    'https://v4.aquarius.oceanprotocol.com',
+    'https://ocean-node-vm3.oceanenterprise.io',
+
+  nodeUri:
+    process.env.NEXT_PUBLIC_NODE_URI ||
+    'https://eth-sepolia.blastapi.io/a91cc615-dbae-493b-b011-5796477a64de',
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
@@ -82,5 +86,37 @@ module.exports = {
 
   // Display alert banner for the developer preview deployment
   showPreviewAlert: process.env.NEXT_PUBLIC_SHOW_PREVIEW_ALERT || 'false',
-  oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
+
+  encryptAsset: process.env.NEXT_PUBLIC_ENCRYPT_ASSET
+    ? process.env.NEXT_PUBLIC_ENCRYPT_ASSET === 'true'
+    : false,
+
+  // This enables / disables the ssi support
+  ssiEnabled: process.env.NEXT_PUBLIC_SSI_ENABLED
+    ? process.env.NEXT_PUBLIC_SSI_ENABLED === 'true'
+    : false,
+  ssiWalletApi:
+    process.env.NEXT_PUBLIC_SSI_WALLET_API || 'https://wallet.demo.walt.id',
+  ssiDefaultPolicyUrl:
+    process.env.NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL ||
+    'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
+
+  ipfsApiKey: process.env.NEXT_PUBLIC_IPFS_API_KEY,
+  ipfsSecretApiKey: process.env.NEXT_PUBLIC_IPFS_SECRET_API_KEY,
+  ipfsGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY,
+  ipfsUnpinFiles: process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES
+    ? process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES === 'true'
+    : false,
+
+  oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
+
+  opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL,
+  showOnboardingModuleByDefault:
+    process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT === 'false',
+  nodeUriIndex: process.env.NEXT_PUBLIC_NODE_URI_INDEXED
+    ? JSON.parse(process.env.NEXT_PUBLIC_NODE_URI_INDEXED)
+    : [
+        process.env.NEXT_PUBLIC_PROVIDER_URL ||
+          'https://ocean-node-vm3.oceanenterprise.io'
+      ]
 }

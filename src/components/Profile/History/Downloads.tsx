@@ -9,6 +9,7 @@ import Button from '@components/@shared/atoms/Button'
 import { getPdf } from '@utils/invoice/createInvoice'
 import { decodeBuyDataSet } from '../../../@types/invoice/buyInvoice'
 import { getOceanConfig } from '@utils/ocean'
+import { InvoiceData } from 'src/@types/invoice/InvoiceData'
 
 export default function ComputeDownloads({
   accountId
@@ -30,17 +31,34 @@ export default function ComputeDownloads({
       setLoadingInvoice(row.asset.id)
       let pdfUrlsResponse: Blob[]
       if (!jsonInvoices[row.asset.id]) {
-        const config = getOceanConfig(row.asset?.chainId)
-        const response = await decodeBuyDataSet(
-          row.asset.id,
-          row.asset.datatokens[0].address,
-          row.asset.chainId,
-          row.asset.stats.price.tokenSymbol || 'OCEAN',
-          row.asset.stats.price.tokenAddress || config.oceanTokenAddress,
-          row.asset.stats.price.value,
-          accountId
-        )
-        pdfUrlsResponse = await getPdf(response)
+        const config = getOceanConfig(row.asset?.credentialSubject?.chainId)
+        const invoiceData: InvoiceData[] = []
+
+        for (const dt of row.asset.indexedMetadata.stats) {
+          try {
+            const result = await decodeBuyDataSet(
+              row.asset.id,
+              dt.datatokenAddress,
+              row.asset.credentialSubject.chainId,
+              row.asset.indexedMetadata.stats.symbol || 'OCEAN',
+              dt.prices[0].token || config.oceanTokenAddress,
+              Number(dt.prices[0].price),
+              accountId
+            )
+            invoiceData.push(...result)
+          } catch (err) {
+            console.warn(
+              `No matching OrderStarted event for datatoken ${dt.address}`
+            )
+          }
+        }
+
+        if (invoiceData.length === 0) {
+          throw new Error(
+            'No matching OrderStarted events found for any datatoken.'
+          )
+        }
+        pdfUrlsResponse = await getPdf(invoiceData)
       } else {
         pdfUrlsResponse = await getPdf(jsonInvoices[row.asset.id])
       }
@@ -56,21 +74,39 @@ export default function ComputeDownloads({
   async function handleGenerateJson(row: DownloadedAsset) {
     try {
       setLoadingInvoiceJson(row.asset.id)
+
       if (!jsonInvoices[row.asset.id]) {
-        const config = getOceanConfig(row.asset?.chainId)
-        const response = await decodeBuyDataSet(
-          row.asset.id,
-          row.asset.datatokens[0].address,
-          row.asset.chainId,
-          row.asset.stats.price.tokenSymbol || 'OCEAN',
-          row.asset.stats.price.tokenAddress || config.oceanTokenAddress,
-          row.asset.stats.price.value,
-          accountId
-        )
-        setJsonInvoices({ ...jsonInvoices, [row.asset.id]: response })
+        const config = getOceanConfig(row.asset?.credentialSubject?.chainId)
+        const invoiceData: InvoiceData[] = []
+
+        for (const dt of row.asset.indexedMetadata.stats) {
+          try {
+            const result = await decodeBuyDataSet(
+              row.asset.id,
+              dt.datatokenAddress,
+              row.asset.credentialSubject.chainId,
+              dt.symbol || 'OCEAN',
+              dt.prices[0].token || config.oceanTokenAddress,
+              Number(dt.prices[0].price),
+              accountId
+            )
+            invoiceData.push(...result)
+          } catch (err) {
+            console.warn(
+              `No matching OrderStarted event for datatoken ${dt.address}`
+            )
+          }
+        }
+
+        if (invoiceData.length === 0) {
+          throw new Error(
+            'No matching OrderStarted events found for any datatoken.'
+          )
+        }
+
+        setJsonInvoices({ ...jsonInvoices, [row.asset.id]: invoiceData })
       }
     } catch (error) {
-      // Handle error
       console.error('Error:', error)
     } finally {
       setLoadingInvoiceJson(null)

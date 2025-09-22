@@ -1,12 +1,7 @@
 import { ReactElement, useState, useEffect } from 'react'
 import Compute from './Compute'
 import Download from './Download'
-import {
-  FileInfo,
-  LoggerInstance,
-  Datatoken,
-  Service
-} from '@oceanprotocol/lib'
+import { FileInfo, LoggerInstance, Datatoken } from '@oceanprotocol/lib'
 import { compareAsBN } from '@utils/numbers'
 import { useAsset } from '@context/Asset'
 import { getFileDidInfo, getFileInfo } from '@utils/provider'
@@ -22,6 +17,8 @@ import { isAddressWhitelisted } from '@utils/ddo'
 import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import Button from '@components/@shared/atoms/Button'
+import { Service } from 'src/@types/ddo/Service'
+import { AssetExtended } from 'src/@types/AssetExtended'
 
 export default function AssetActions({
   asset,
@@ -62,7 +59,7 @@ export default function AssetActions({
 
   // Get and set file info
   useEffect(() => {
-    const oceanConfig = getOceanConfig(asset.chainId)
+    const oceanConfig = getOceanConfig(asset.credentialSubject?.chainId)
     if (!oceanConfig) return
 
     async function initFileInfo() {
@@ -134,7 +131,7 @@ export default function AssetActions({
 
     async function init() {
       try {
-        const datatokenInstance = new Datatoken(web3Provider as any)
+        const datatokenInstance = new Datatoken(web3Provider as any, chain.id)
         const dtBalance = await datatokenInstance.balance(
           service.datatokenAddress,
           accountId
@@ -178,14 +175,22 @@ export default function AssetActions({
   useEffect(() => {
     if (!asset || !accountId) return
 
-    setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountId))
+    setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountId, service))
   }, [accountId, asset])
 
   return (
     <>
-      <Button style="text" size="small" onClick={handleBack}>
-        Back
-      </Button>
+      <div
+        style={{
+          marginTop: '10px',
+          marginLeft: '10px'
+        }}
+      >
+        <Button style="text" size="small" onClick={handleBack}>
+          Back
+        </Button>
+      </div>
+
       <div className={styles.actions}>
         {isCompute ? (
           <Compute

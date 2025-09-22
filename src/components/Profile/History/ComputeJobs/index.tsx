@@ -22,7 +22,10 @@ const columns: TableOceanColumn<ComputeJobMetaData>[] = [
   {
     name: 'Dataset',
     selector: (row) => (
-      <AssetListTitle did={row.inputDID[0]} title={row.assetName} />
+      <AssetListTitle
+        did={row.assets ? row.assets[0].documentId : row.jobId}
+        title={row.assetName}
+      />
     )
   },
   {
@@ -79,22 +82,28 @@ export default function ComputeJobs({
       setLoadingInvoice(row.agreementId)
       let pdfUrlsResponse: Blob[]
       if (!jsonInvoices[row.agreementId]) {
-        const assetAlgo = await getAsset(row.algoDID, newCancelToken())
-        const asset = await getAsset(row.inputDID[0], newCancelToken())
+        const assetAlgo = await getAsset(
+          row.algorithm.documentId,
+          newCancelToken()
+        )
+        const asset = await getAsset(
+          row.assets ? row.assets[0].documentId : null,
+          newCancelToken()
+        )
         const priceAlgo = assetAlgo.stats.price.value
-        const priceAsset = asset.stats.price.value
-        const ownerAlgo = assetAlgo.event.from
-        const ownerAsset = asset.event.from
+        const priceAsset = Number(asset.indexedMetadata.stats[0].price[0].price)
+        const ownerAlgo = assetAlgo.indexedMetadata?.event.from
+        const ownerAsset = asset.indexedMetadata?.event.from
 
         const response = await decodeBuyComputeJob(
           row.agreementId,
           asset.id,
-          asset.chainId,
+          asset.credentialSubject.chainId,
           row.algoDID,
-          asset.stats.price.tokenSymbol,
-          assetAlgo.stats.price.tokenSymbol,
-          asset.stats.price.tokenAddress,
-          assetAlgo.stats.price.tokenAddress,
+          asset.indexedMetadata.stats[0].symbol,
+          assetAlgo.indexedMetadata.stats[0].symbol,
+          asset.indexedMetadata.stats[0].prices[0].token,
+          assetAlgo.indexedMetadata.stats[0].prices[0].token,
           priceAsset,
           priceAlgo,
           ownerAlgo,
@@ -118,22 +127,30 @@ export default function ComputeJobs({
     try {
       setLoadingInvoiceJson(row.agreementId)
       if (!jsonInvoices[row.agreementId]) {
-        const assetAlgo = await getAsset(row.algoDID, newCancelToken())
-        const asset = await getAsset(row.inputDID[0], newCancelToken())
+        const assetAlgo = await getAsset(
+          row.algorithm.documentId,
+          newCancelToken()
+        )
+        const asset = await getAsset(
+          row.assets ? row.assets[0].documentId : null,
+          newCancelToken()
+        )
         const priceAlgo = assetAlgo.stats.price.value
-        const priceAsset = asset.stats.price.value
-        const ownerAlgo = assetAlgo.event.from
-        const ownerAsset = asset.event.from
+        const priceAsset = Number(
+          asset.indexedMetadata?.stats[0]?.prices[0]?.price
+        )
+        const ownerAlgo = assetAlgo.indexedMetadata?.event.from
+        const ownerAsset = asset.indexedMetadata?.event.from
 
         const response = await decodeBuyComputeJob(
           row.agreementId,
           asset.id,
           asset.chainId,
           row.algoDID,
-          asset.stats.price.tokenSymbol,
-          assetAlgo.stats.price.tokenSymbol,
-          asset.stats.price.tokenAddress,
-          assetAlgo.stats.price.tokenAddress,
+          asset.indexedMetadata?.stats[0]?.symbol,
+          assetAlgo.indexedMetadata?.stats[0]?.symbol,
+          asset.indexedMetadata?.stats[0]?.prices[0].token,
+          assetAlgo.indexedMetadata?.stats[0]?.prices[0].token,
           priceAsset,
           priceAlgo,
           ownerAlgo,
@@ -151,9 +168,12 @@ export default function ComputeJobs({
 
   const columns: TableOceanColumn<ComputeJobMetaData>[] = [
     {
-      name: 'Dataset',
+      name: 'Algorithm',
       selector: (row) => (
-        <AssetListTitle did={row.inputDID[0]} title={row.assetName} />
+        <AssetListTitle
+          did={row.algorithm ? row.algorithm.documentId : null}
+          title={row.algorithm ? row.algorithm.documentId : null}
+        />
       )
     },
     {
@@ -166,12 +186,26 @@ export default function ComputeJobs({
     },
     {
       name: 'Created',
-      selector: (row) => <Time date={row.dateCreated} isUnix relative />
+      selector: (row) => (
+        <Time
+          date={((row as any).algoStartTimestamp * 1000).toString()}
+          isUnix
+          relative
+        />
+      )
     },
     {
       name: 'Finished',
       selector: (row) =>
-        row.dateFinished ? <Time date={row.dateFinished} isUnix relative /> : ''
+        row.dateFinished ? (
+          <Time
+            date={((row as any).algoStopTimestamp * 1000).toString()}
+            isUnix
+            relative
+          />
+        ) : (
+          ''
+        )
     },
     {
       name: 'Status',

@@ -1,7 +1,13 @@
 .loaderWrap {
+  margin-top: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+button .loaderWrap {
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .loader {
@@ -24,8 +30,13 @@
 }
 
 .loader.white {
-  border-color: rgba(255 255 255 / 0.3);
-  border-top-color: var(--brand-white);
+  border-color: rgba(255, 255, 255, 0.6);
+  border-top-color: #ffffff;
+}
+
+.loader.primary {
+  border-color: rgba(10, 75, 112, 0.3);
+  border-top-color: var(--publish-primary);
 }
 
 @keyframes loader {

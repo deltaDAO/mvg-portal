@@ -29,7 +29,7 @@ export default function Edit({ uri }: { uri: string }): ReactElement {
 
   const tabs = [
     {
-      title: 'Edit Metadata',
+      title: 'Edit Asset',
       content: <EditMetadata asset={asset} />
     },
     {

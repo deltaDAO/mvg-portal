@@ -1,7 +1,7 @@
 import { LoggerInstance } from '@oceanprotocol/lib'
 import axios from 'axios'
 import { toast } from 'react-toastify'
-import { dockerHubProxyUrl } from '../../app.config'
+import { dockerHubProxyUrl } from '../../app.config.cjs'
 export interface dockerContainerInfo {
   exists: boolean
   checksum: string

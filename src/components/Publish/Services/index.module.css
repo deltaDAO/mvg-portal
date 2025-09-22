@@ -1,0 +1,39 @@
+.consumerParametersContainer {
+  border: 1px solid var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: 24px 16px;
+  margin-bottom: var(--spacer);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.consumerParametersContainer > div {
+  margin-bottom: 0;
+}
+
+.consumerParametersContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+body .consumerParametersContainer .actions .primary {
+  background: var(--publish-accent-gradient);
+  box-shadow: var(--publish-shadow-sm);
+  border-top-right-radius: var(--publish-input-border-radius) !important;
+  border-top-left-radius: var(--publish-input-border-radius) !important;
+  border-bottom-left-radius: var(--publish-input-border-radius) !important;
+  border-bottom-right-radius: var(--publish-input-border-radius) !important;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  line-height: var(--publish-font-size);
+  color: var(--publish-primary);
+}
+
+.consumerParametersContainer .actions .primary:hover,
+.consumerParametersContainer .actions .primary:focus {
+  background: var(--publish-accent-gradient);
+  box-shadow: var(--publish-shadow-sm);
+}

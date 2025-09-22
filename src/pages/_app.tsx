@@ -4,7 +4,7 @@ import { UserPreferencesProvider } from '@context/UserPreferences'
 import UrqlProvider from '@context/UrqlProvider'
 import ConsentProvider from '@context/CookieConsent'
 import { SearchBarStatusProvider } from '@context/SearchBarStatus'
-import App from '../../src/components/App'
+import App from '../components/App'
 import '@oceanprotocol/typographies/css/ocean-typo.css'
 import '../stylesGlobal/styles.css'
 import Decimal from 'decimal.js'
@@ -13,6 +13,7 @@ import { WagmiConfig } from 'wagmi'
 import { ConnectKitProvider } from 'connectkit'
 import { connectKitTheme, wagmiClient } from '@utils/wallet'
 import { FilterProvider } from '@context/Filter'
+import { SsiWalletProvider } from '@context/SsiWallet'
 
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
   Decimal.set({ rounding: 1 })
@@ -30,9 +31,11 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
                 <ConsentProvider>
                   <SearchBarStatusProvider>
                     <FilterProvider>
-                      <App>
-                        <Component {...pageProps} />
-                      </App>
+                      <SsiWalletProvider>
+                        <App>
+                          <Component {...pageProps} />
+                        </App>
+                      </SsiWalletProvider>
                     </FilterProvider>
                   </SearchBarStatusProvider>
                 </ConsentProvider>

@@ -1,3 +1,4 @@
+import { AssetExtended } from 'src/@types/AssetExtended'
 import { datasetAquarius } from './datasetAquarius'
 
 export const asset: AssetExtended = {

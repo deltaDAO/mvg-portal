@@ -17,7 +17,7 @@ describe('AssetListTitle', () => {
 
   it('renders with passed DID', () => {
     render(
-      <AssetListTitle did="did:op:764b81877039fa2651b919fc91c399799acb837f270e6d17bfb7973fbe6e9408" />
+      <AssetListTitle did="did:ope:764b81877039fa2651b919fc91c399799acb837f270e6d17bfb7973fbe6e9408" />
     )
   })
 })

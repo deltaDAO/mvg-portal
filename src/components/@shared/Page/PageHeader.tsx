@@ -13,13 +13,15 @@ export default function PageHeader({
   center,
   description,
   isHome,
-  showSearch
+  showSearch,
+  isExtended
 }: {
-  title: string | ReactElement
+  title?: string | ReactElement
   center?: boolean
   description?: string
   isHome?: boolean
   showSearch?: boolean
+  isExtended?: boolean
 }): ReactElement {
   const styleClasses = cx({
     header: true,
@@ -27,7 +29,7 @@ export default function PageHeader({
   })
 
   return (
-    <header className={styleClasses}>
+    <header className={cx(styleClasses, isExtended && styles.headerExtended)}>
       {isHome ? (
         <div className={styles.homeTitleContainer}>
           <h1 className={styles.title}>{title}</h1>

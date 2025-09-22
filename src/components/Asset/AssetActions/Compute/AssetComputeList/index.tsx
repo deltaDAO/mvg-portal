@@ -25,13 +25,13 @@ export default function AssetComputeSelection({
           assets.map((asset: AssetSelectionAsset) => (
             <Link
               href={`/asset/${asset.did}`}
-              key={asset.did}
+              key={asset.serviceId}
               className={styles.row}
             >
               <div className={styles.info}>
                 <h3 className={styles.title}>
                   <Dotdotdot clamp={1} tagName="span">
-                    {asset.name}
+                    {asset.name} - {asset.serviceName}
                   </Dotdotdot>
                 </h3>
                 <Dotdotdot clamp={1} tagName="code" className={styles.did}>

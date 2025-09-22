@@ -1,3 +1,102 @@
-.textblock {
-  margin-top: var(--spacer);
+.textblock > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.fileUrlInput {
+  width: 100%;
+}
+
+.fileUrlInputUrl {
+  max-width: 410px;
+  width: 410px;
+}
+
+.headersContainer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.headerKeyInput {
+  max-width: 180px;
+  width: 100%;
+}
+
+.headerValueInput {
+  max-width: 200px;
+  width: 100%;
+}
+
+.filesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.filesContainer .addButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 14px;
+  gap: 4px;
+  height: 40px;
+  background: var(--publish-accent-gradient);
+  box-shadow: var(--publish-shadow-sm);
+  border-radius: 20px;
+  border: none;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  color: var(--publish-primary);
+  cursor: pointer;
+  text-transform: uppercase;
+  min-width: auto;
+}
+
+.filesContainer .addButton:hover,
+.filesContainer .addButton:focus {
+  background: var(--publish-accent-gradient);
+  transform: none;
+  box-shadow: var(--publish-shadow-sm);
+}
+
+.filesContainer .submitButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 16px;
+  gap: 4px;
+  height: 40px;
+  background: var(--publish-primary-gradient);
+  color: var(--publish-white);
+  box-shadow: var(--publish-shadow-sm);
+  border-radius: 20px;
+  border: none;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  cursor: pointer;
+  min-width: auto;
+}
+
+.filesContainer .submitButton:hover,
+.filesContainer .submitButton:focus {
+  background: var(--publish-primary-gradient);
+  transform: none;
+  box-shadow: var(--publish-shadow-sm);
+}
+
+.methodDropdown {
+  min-width: 80px;
+  height: 40px;
+  border-radius: 20px;
+  border: 1px solid var(--publish-input-border-color);
+  background: var(--publish-accent);
+  color: var(--publish-primary);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  padding: 0 15px;
 }

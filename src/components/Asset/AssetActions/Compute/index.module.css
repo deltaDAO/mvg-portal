@@ -24,3 +24,10 @@
 .feedback:empty {
   margin-top: 0;
 }
+
+.priceClass {
+  margin-bottom: 1rem;
+}
+.actionButton {
+  margin-top: 5rem;
+}

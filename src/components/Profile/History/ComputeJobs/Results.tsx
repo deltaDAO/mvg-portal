@@ -16,6 +16,7 @@ import { getAsset } from '@utils/aquarius'
 import { useAccount, useSigner } from 'wagmi'
 import { toast } from 'react-toastify'
 import { prettySize } from '@components/@shared/FormInput/InputElement/FilesInput/utils'
+import { customProviderUrl } from 'app.config.cjs'
 
 export default function Results({
   job
@@ -33,11 +34,15 @@ export default function Results({
 
   useEffect(() => {
     async function getAssetMetadata() {
-      const ddo = await getAsset(job.inputDID[0], newCancelToken())
-      setDatasetProvider(ddo.services[0].serviceEndpoint)
+      if (job.assets) {
+        const ddo = await getAsset(job.assets[0].documentId, newCancelToken())
+        setDatasetProvider(ddo.credentialSubject.services[0].serviceEndpoint)
+      } else {
+        setDatasetProvider(customProviderUrl)
+      }
     }
     getAssetMetadata()
-  }, [job.inputDID, newCancelToken])
+  }, [job.assets, newCancelToken])
 
   function getDownloadButtonValue(
     type: ComputeResultType,
@@ -68,10 +73,13 @@ export default function Results({
     if (!accountId || !job) return
 
     try {
+      const envPrefix = (job as any).environment.split('-')[0]
+      const compositeId = `${envPrefix}-${job.jobId}`
+
       const jobResult = await providerInstance.getComputeResultUrl(
         datasetProvider,
         signer,
-        job.jobId,
+        compositeId,
         resultIndex
       )
       await downloadFileBrowser(jobResult)

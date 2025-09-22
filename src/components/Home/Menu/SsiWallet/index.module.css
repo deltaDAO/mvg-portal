@@ -1,0 +1,341 @@
+.panelColumn {
+  width: 500px;
+  display: flex;
+  flex-direction: column;
+}
+.panelColumn h3 {
+  font-weight: 700;
+  font-size: 18px;
+  color: #303031;
+}
+.panelColumn label {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--publish-text-secondary);
+}
+
+.panelRow {
+  display: flex;
+  flex-direction: row;
+}
+
+.widthAuto {
+  width: auto;
+}
+
+.widthFitContent {
+  width: fit-content;
+}
+
+.marginRight2 {
+  margin-right: 2em;
+}
+
+.ssiPanel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  line-height: 137%;
+  text-align: center;
+  color: #fff;
+  transition: all 0.3s ease;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 20px;
+}
+.text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+@media screen and (max-width: 480px) {
+  .ssiPanel {
+    padding: 0.1em 0.2em;
+    font-size: 14px;
+  }
+
+  .marginRight2 {
+    margin-right: 0em;
+  }
+  .icon {
+    width: 12px;
+    height: 12px;
+  }
+  .text {
+    max-width: 40px;
+  }
+  .panelColumn {
+    width: 100%;
+  }
+  .panelColumn h3 {
+    font-size: 14px;
+  }
+  .panelColumn label {
+    font-size: 12px;
+  }
+}
+
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .ssiPanel {
+    padding: 0.4em 0.8em;
+  }
+  .text {
+    max-width: 80px;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1150px) {
+  .text {
+    font-size: 16px;
+  }
+}
+
+.connected {
+  color: #cbdce6;
+  background-color: transparent;
+}
+
+.connected:hover {
+  transform: scale(1.05);
+}
+
+.connected:hover .icon {
+  transform: scale(1.2);
+}
+
+.disconnected {
+  background-color: transparent;
+}
+
+.disconnected:hover {
+  transform: scale(1.05);
+}
+
+.disconnected:hover .icon {
+  transform: scale(1.2);
+}
+
+.marginBottom7px {
+  margin-bottom: 7.5px;
+}
+
+.marginBottom1 {
+  margin-bottom: 1em;
+}
+
+.marginBottom2 {
+  margin-bottom: 2em;
+}
+
+.marginBottom3 {
+  margin-bottom: 3em;
+}
+
+.padding1 {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+.width100p {
+  width: 100%;
+}
+
+.dialogBorder {
+  border: 1px solid rgba(48, 48, 49, 0.3);
+  border-radius: 10px;
+  padding: 24px;
+  width: 548px;
+}
+
+@media screen and (max-width: 768px) {
+  .dialogBorder {
+    padding: 1em 0.5em;
+  }
+}
+
+.closeButton {
+  border-radius: 20px;
+  padding: 4px 20px;
+  width: 79px;
+  height: 32px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-align: center;
+  color: #0a4b70;
+  box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(48, 48, 49, 0.12);
+}
+
+.resetButton {
+  border-radius: 20px;
+  padding: 4px 20px;
+  width: 169px;
+  height: 32px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-align: center;
+  color: #0a4b70;
+  box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+  background: linear-gradient(
+    135deg,
+    #fdd655 0%,
+    rgba(253, 214, 85, 0.8) 27.47%,
+    rgba(253, 214, 85, 0.7) 43.49%,
+    rgba(253, 214, 85, 0.8) 55.43%,
+    #fdd655 100%
+  );
+}
+
+.inputField {
+  border: 1px solid rgba(10, 75, 112, 0.5);
+  border-radius: 20px;
+  padding: 12px 30px;
+  width: 500px;
+  height: 40px;
+  font-weight: 400;
+  font-size: 14px;
+  color: #303031;
+  font-family: var(--font-family-base);
+
+  box-shadow: none;
+  background: var(--background-content);
+}
+
+.buttonStyles {
+  width: 300px;
+  height: 32px;
+  display: flex;
+  flex-direction: row;
+  margin: 0 auto;
+  gap: 8px;
+}
+
+@media screen and (max-width: 480px) {
+  .inputField {
+    height: 35px;
+    font-size: var(--font-size-small);
+  }
+  .dialogBorder {
+    width: 100%;
+  }
+  .closeButton {
+    border-radius: 20px;
+    padding: 4px 10px;
+    width: 20px;
+    font-size: 8px;
+  }
+
+  .resetButton {
+    border-radius: 20px;
+    padding: 4px 20px;
+    width: 160px;
+    height: 32px;
+    font-weight: 700;
+    font-size: 8px;
+  }
+
+  .inputField {
+    width: 100%;
+    height: 40px;
+    font-weight: 400;
+    font-size: 8px;
+  }
+  .buttonStyles {
+    width: 200px;
+  }
+}
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  .panelColumn {
+    width: 100%;
+  }
+  .panelColumn h3 {
+    font-size: 16px;
+  }
+  .panelColumn label {
+    font-size: 14px;
+  }
+  .dialogBorder {
+    width: 85%;
+  }
+  .closeButton {
+    border-radius: 20px;
+    padding: 4px 10px;
+    width: 20px;
+    font-size: 10px;
+  }
+
+  .resetButton {
+    border-radius: 20px;
+    width: 170px;
+    font-size: 10px;
+  }
+
+  .inputField {
+    width: 100%;
+    height: 40px;
+    font-weight: 400;
+    font-size: 10px;
+  }
+  .buttonStyles {
+    width: 300px;
+  }
+}
+
+@media screen and (min-width: 481px) and (max-width: 768px) and (height: 893px) {
+  .ssiPanel {
+    padding: 0.3em 0.3em;
+    font-size: 0.85em;
+    display: flex;
+    align-items: center;
+  }
+
+  .panelRow {
+    gap: 0.5em;
+    align-items: center;
+  }
+
+  .marginRight2 {
+    margin-right: 0.8em;
+  }
+
+  .dialogBorder {
+    padding: 0.8em;
+  }
+
+  .inputField {
+    height: 36px;
+    padding: calc(var(--spacer) / 5);
+  }
+
+  .panelRow > * {
+    vertical-align: middle;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+}
+
+.list {
+  margin: 1em 0em 0em 2em;
+}
+
+.listItem {
+  display: list-item;
+}

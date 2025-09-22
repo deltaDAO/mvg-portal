@@ -22,3 +22,17 @@
   justify-content: center;
   align-items: center;
 }
+
+@media screen and (min-width: 1200px) and (max-width: 1499px) {
+  .assetList {
+    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    gap: var(--spacer);
+  }
+}
+
+@media screen and (min-width: 1500px) {
+  .assetList {
+    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    gap: calc(var(--spacer) / 0.65);
+  }
+}

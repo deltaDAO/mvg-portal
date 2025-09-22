@@ -1,102 +1,216 @@
 .details {
-  --sub-section-spacing: calc(var(--spacer) / 2);
-
-  padding: calc(var(--spacer) / 4);
-  padding-right: var(--sub-section-spacing);
-  min-width: 17rem;
+  background: #ffffff;
+  padding: 2rem 1.75rem;
+  min-width: 22rem;
+  font-family: 'Inter', sans-serif;
+  color: #0f4c81;
 }
 
-@media (min-width: 40rem) {
-  .details {
-    padding: var(--sub-section-spacing);
-    margin-right: calc(var(--spacer) / 3);
-    min-width: 20rem;
-  }
-}
-
-.details > section[class*='feedback'] {
-  margin-top: var(--sub-section-spacing);
-}
-
+/* Profile & Bookmark links */
 .profileLink,
 .bookmarksLink {
   display: flex;
   align-items: center;
-  padding-top: calc(var(--sub-section-spacing) / 2);
+  gap: 0.75rem;
+  font-weight: 700;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  color: #0f4c81;
 }
 
 .profileLink img,
 .bookmarksLink svg {
+  width: 1.75rem;
+  height: 1.75rem;
   margin: 0;
-  margin-right: calc(var(--spacer) / 8);
+}
+.bookmarksButton {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 80%;
+  text-transform: uppercase;
+  text-align: center;
+  color: #0a4b70;
+}
+.profileButton {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 80%;
+  text-transform: uppercase;
+  text-align: center;
+  color: #0a4b70;
 }
 
 .bookmarksLink svg {
-  width: var(--font-size-large);
-  height: var(--font-size-large);
-  fill: var(--bookmark-icon-selected-fill-color);
+  fill: #f4c542;
 }
 
-.profileButton,
-.bookmarksButton {
-  composes: link from '../../../components/Header/Menu.module.css';
-}
-
+/* Divider between sections */
 .actions {
-  border-top: var(--menu-mobile-navigation-border-size) solid
-    var(--menu-mobile-navigation-border-color);
-  margin-top: var(--sub-section-spacing);
-  padding-top: var(--sub-section-spacing);
-  padding-bottom: calc(var(--sub-section-spacing) / 2);
-  font-size: var(--font-size-small);
-  color: var(--font-color-text);
+  border-top: 1px solid #e0e0e0;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Wallet name section */
+.walletInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 1.25rem;
 }
 
 .walletLogoWrap {
-  display: block;
+  font-weight: 600;
+  color: #0f4c81;
 }
 
+/* AddTokenList buttons */
+.walletInfo button {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #444;
+  background: none;
+  border: none;
+  padding: 0.35rem 0;
+  cursor: pointer;
+  gap: 0.5rem;
+}
+
+.walletInfo button:hover {
+  color: #0f4c81;
+}
+
+.walletLogo {
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+/* Disconnect + Switch Wallet */
 .actions p {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+}
+.walletActionRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.walletActionIcon {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+  width: 1.6rem;
+  height: 100%;
+  flex-shrink: 0;
   margin: 0;
 }
 
 .actions button,
 .actions button:hover {
-  display: block;
-  font-size: var(--font-size-mini);
-  margin-top: calc(var(--spacer) / 3);
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0f4c81;
+  background: none;
+  border: none;
   text-align: left;
+  padding: 0;
+  cursor: pointer;
 }
 
-.actions button:first-child {
-  margin-top: calc(var(--spacer) / 8);
+.actions button:hover {
+  text-decoration: underline;
 }
 
-.walletLogo {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: calc(var(--spacer) / 8);
-  margin-top: -0.2rem;
+/* --- Responsive Enhancements --- */
+
+/* Adjust spacing and text for smaller screens */
+@media (max-width: 480px) {
+  .details {
+    padding: 1.25rem 1rem;
+    min-width: auto;
+    width: 68vw;
+    font-size: 0.95rem;
+    border-radius: 1rem;
+  }
+
+  .profileLink,
+  .bookmarksLink {
+    font-size: 1rem;
+    gap: 0.5rem;
+  }
+
+  .profileLink img,
+  .bookmarksLink svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .bookmarksButton,
+  .profileButton {
+    font-size: 0.95rem;
+  }
+
+  .walletInfo {
+    font-size: 0.95rem;
+  }
+
+  .walletActionIcon {
+    width: 1.25rem;
+  }
+
+  .actions button {
+    font-size: 0.95rem;
+  }
 }
 
-.actions select {
-  margin-top: calc(var(--spacer) / 4);
-  min-width: 6rem;
+/* High-res screens (1440px and above) */
+@media (min-width: 1440px) {
+  .details {
+    min-width: 24rem;
+  }
+
+  .profileLink,
+  .bookmarksLink {
+    font-size: 1.35rem;
+  }
+
+  .walletInfo {
+    font-size: 1.2rem;
+  }
+
+  .walletActionIcon {
+    width: 1.8rem;
+  }
 }
 
-.walletInfo {
-  display: flex;
-  flex-direction: column;
-}
+/* Ultra-wide displays (4K) */
+@media (min-width: 2560px) {
+  .details {
+    padding: 3rem 2.5rem;
+    font-size: 1.25rem;
+  }
 
-.walletInfo button {
-  margin-top: calc(var(--spacer) / 5) !important;
-}
+  .walletActionIcon {
+    width: 2rem;
+  }
 
-.addToken {
-  margin-left: 0.3rem;
+  .profileLink img,
+  .bookmarksLink svg {
+    width: 2rem;
+    height: 2rem;
+  }
 }

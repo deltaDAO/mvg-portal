@@ -44,13 +44,15 @@ export default function Price({
                     values.pricing?.baseToken?.symbol
                   )
                 }
+                variant="publish"
                 {...field}
               />
               <Error meta={meta} />
             </div>
             <div className={styles.datatoken}>
               <h4>
-                = <strong>1</strong> {dataTokenOptions.symbol}
+                = <strong>{field.value || '0'}</strong>{' '}
+                {dataTokenOptions.symbol}
               </h4>
             </div>
           </div>

@@ -10,11 +10,14 @@ import styles from './index.module.css'
 import { useNetwork } from 'wagmi'
 import InputKeyValue from '../KeyValueInput'
 import Button from '@shared/atoms/Button'
+import PublishButton from '@shared/PublishButton'
 import Loader from '@shared/atoms/Loader'
 import { checkJson } from '@utils/codemirror'
 import { isGoogleUrl } from '@utils/url/index'
 import isUrl from 'is-url-superb'
 import MethodInput from '../MethodInput'
+import DeleteButton from '@shared/DeleteButton/DeleteButton'
+import { customProviderUrl } from 'app.config.cjs'
 
 export default function FilesInput(props: InputProps): ReactElement {
   const [field, meta, helpers] = useField(props.name)
@@ -24,15 +27,17 @@ export default function FilesInput(props: InputProps): ReactElement {
   const { chain } = useNetwork()
   const chainId = chain?.id
 
-  const providerUrl = props.form?.values?.services
-    ? props.form?.values?.services[0].providerUrl.url
-    : asset.services[0].serviceEndpoint
+  const providerUrl =
+    customProviderUrl ||
+    props.form?.values?.services?.[0]?.providerUrl?.url ||
+    asset.credentialSubject?.services?.[0]?.serviceEndpoint
 
-  const storageType = field.value[0].type
-  const query = field.value[0].query || undefined
-  const abi = field.value[0].abi || undefined
-  const headers = field.value[0].headers || undefined
-  const method = field.value[0].method || 'get'
+  const storageType = field.value?.[0]?.type
+  const query = field.value?.[0]?.query || undefined
+  const abi = field.value?.[0]?.abi || undefined
+  const headers = field.value?.[0]?.headers || undefined
+  const method = field.value?.[0]?.method || 'get'
+  const isValidated = field?.value?.[0]?.valid === true
 
   async function handleValidation(e: React.SyntheticEvent, url: string) {
     // File example 'https://oceanprotocol.com/tech-whitepaper.pdf'
@@ -108,6 +113,8 @@ export default function FilesInput(props: InputProps): ReactElement {
   }
 
   useEffect(() => {
+    if (!storageType) return
+
     storageType === 'graphql' && setDisabledButton(!providerUrl || !query)
 
     storageType === 'smartcontract' &&
@@ -122,10 +129,9 @@ export default function FilesInput(props: InputProps): ReactElement {
   }, [storageType, providerUrl, headers, query, abi, meta])
 
   return (
-    <>
-      {field?.value?.[0]?.valid === true ||
-      field?.value?.[0]?.type === 'hidden' ? (
-        <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
+    <div className={styles.filesContainer}>
+      {!field?.value?.[0] || !storageType ? (
+        <div></div>
       ) : (
         <>
           {props.methods && storageType === 'url' ? (
@@ -136,6 +142,7 @@ export default function FilesInput(props: InputProps): ReactElement {
               checkUrl={true}
               handleButtonClick={handleMethod}
               storageType={storageType}
+              disabled={isValidated}
             />
           ) : (
             <UrlInput
@@ -146,10 +153,17 @@ export default function FilesInput(props: InputProps): ReactElement {
               hideButton={
                 storageType === 'graphql' || storageType === 'smartcontract'
               }
+              hideError={true}
               checkUrl={true}
               handleButtonClick={handleValidation}
               storageType={storageType}
+              isValidated={isValidated}
+              onReset={handleClose}
             />
+          )}
+
+          {(isValidated || field?.value?.[0]?.type === 'hidden') && (
+            <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
           )}
 
           {props.innerFields && (
@@ -168,37 +182,72 @@ export default function FilesInput(props: InputProps): ReactElement {
                           }
                           {...innerField}
                           name={`${field.name}[0].${innerField.value}`}
-                          value={field.value[0][innerField.value]}
+                          value={field.value?.[0]?.[innerField.value]}
+                          disabled={isValidated}
+                          render={({ field: formikField, form, meta }: any) =>
+                            innerField.type === 'headers' ? (
+                              <InputKeyValue
+                                {...innerField}
+                                field={formikField}
+                                form={form}
+                                meta={meta}
+                                name={`${field.name}[0].${innerField.value}`}
+                                value={field.value?.[0]?.[innerField.value]}
+                                disabled={isValidated}
+                              />
+                            ) : (
+                              <Input
+                                {...innerField}
+                                field={formikField}
+                                form={form}
+                                meta={meta}
+                                name={`${field.name}[0].${innerField.value}`}
+                                value={field.value?.[0]?.[innerField.value]}
+                                disabled={isValidated}
+                              />
+                            )
+                          }
                         />
                       </>
                     )
                   })}
               </div>
 
-              <Button
-                style="primary"
-                onClick={(e: React.SyntheticEvent) => {
-                  e.preventDefault()
-                  handleValidation(e, field.value[0].url)
-                }}
-                disabled={disabledButton}
-              >
-                {isLoading ? (
-                  <Loader />
-                ) : (
-                  `submit ${
-                    storageType === 'graphql'
-                      ? 'query'
-                      : storageType === 'smartcontract'
-                      ? 'abi'
-                      : 'url'
-                  }`
-                )}
-              </Button>
+              {isLoading ? (
+                <Button
+                  style="publish"
+                  className={styles.submitButton}
+                  disabled={true}
+                >
+                  <Loader white />
+                </Button>
+              ) : (
+                <div
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
+                >
+                  <PublishButton
+                    icon="validate"
+                    text={`Submit ${
+                      storageType === 'graphql'
+                        ? 'query'
+                        : storageType === 'smartcontract'
+                        ? 'abi'
+                        : 'URL'
+                    }`}
+                    buttonStyle="gradient"
+                    onClick={(e: React.SyntheticEvent) => {
+                      e.preventDefault()
+                      handleValidation(e, field.value[0].url)
+                    }}
+                    disabled={disabledButton || isValidated}
+                  />
+                  {isValidated && <DeleteButton onClick={handleClose} />}
+                </div>
+              )}
             </>
           )}
         </>
       )}
-    </>
+    </div>
   )
 }
