@@ -48,7 +48,7 @@ export const credentialFieldOptions: Record<string, string[]> = {
     'gx:legalAddress.vcard:postal-code'
   ],
   'gx:Issuer': ['id', 'gaiaxTermsAndConditions'],
-  'gx:EORI': ['id', 'type', 'gx:eori'],
+  'gx:EORI': ['id', 'type', 'gx:eori', 'gx:country'],
   'gx:LeiCode': [
     '@context.schema',
     'id',
