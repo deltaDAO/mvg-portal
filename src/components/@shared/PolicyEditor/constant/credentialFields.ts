@@ -31,5 +31,31 @@ export const credentialFieldOptions: Record<string, string[]> = {
     'legalAddress.streetAddress',
     'legalAddress.postcalCode',
     'legalAddress.locality'
-  ]
+  ],
+  'gx:LegalPerson': [
+    'id',
+    'schema:name',
+    'gx:registrationNumber.id',
+    'gx:headquartersAddress.type',
+    'gx:headquartersAddress.gx:countryCode',
+    'gx:headquartersAddress.vcard:street-address',
+    'gx:headquartersAddress.vcard:locality',
+    'gx:headquartersAddress.vcard:postal-code',
+    'gx:legalAddress.type',
+    'gx:legalAddress.gx:countryCode',
+    'gx:legalAddress.vcard:street-address',
+    'gx:legalAddress.vcard:locality',
+    'gx:legalAddress.vcard:postal-code'
+  ],
+  'gx:Issuer': ['id', 'gaiaxTermsAndConditions'],
+  'gx:EORI': ['id', 'type', 'gx:eori'],
+  'gx:LeiCode': [
+    '@context.schema',
+    'id',
+    'type',
+    'schema:leiCode',
+    'gx:countryCode',
+    'gx:subdivisionCountryCode'
+  ],
+  'gx:VatID': ['id', 'type', 'gx:vatID', 'gx:countryCode']
 }
