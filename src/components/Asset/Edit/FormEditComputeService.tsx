@@ -1,4 +1,10 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+  ChangeEvent
+} from 'react'
 import { Field, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -25,9 +31,18 @@ const ALLOW_ANY_PUBLISHED_ALGORITHMS = 'Allow any published algorithms'
 const ALLOW_SELECTED_ALGORITHMS = 'Allow selected algorithms'
 const ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS =
   'Allow specific trusted algorithm publishers'
+const ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS =
+  'Allow all trusted algorithm publishers'
 
 const isAllowAnyPublishedAlgorithms = (value: string) =>
   value === ALLOW_ANY_PUBLISHED_ALGORITHMS
+
+const coerceAllowAllToString = (value: string | boolean): string =>
+  typeof value === 'string'
+    ? value
+    : value
+    ? ALLOW_ANY_PUBLISHED_ALGORITHMS
+    : ALLOW_SELECTED_ALGORITHMS
 
 export default function FormEditComputeService({
   chainId,
@@ -58,6 +73,10 @@ export default function FormEditComputeService({
     ? (values as any).publisherTrustedAlgorithmPublishersAddresses
     : (values as ServiceEditForm).publisherTrustedAlgorithmPublishersAddresses
 
+  const allowAllPublishedAlgorithmsStr = coerceAllowAllToString(
+    allowAllPublishedAlgorithms
+  )
+
   useEffect(() => {
     if (allowAllPublishedAlgorithms === undefined) {
       setFieldValue('allowAllPublishedAlgorithms', ALLOW_SELECTED_ALGORITHMS)
@@ -73,6 +92,52 @@ export default function FormEditComputeService({
     setFieldValue,
     publisherTrustedAlgorithmPublishers
   ])
+
+  useEffect(() => {
+    if (typeof allowAllPublishedAlgorithms !== 'string') {
+      setFieldValue(
+        'allowAllPublishedAlgorithms',
+        coerceAllowAllToString(allowAllPublishedAlgorithms)
+      )
+    }
+  }, [allowAllPublishedAlgorithms, setFieldValue])
+
+  const handleAllowAlgorithmsChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target
+    setFieldValue('allowAllPublishedAlgorithms', value)
+    if (isAllowAnyPublishedAlgorithms(value)) {
+      setFieldValue(
+        'publisherTrustedAlgorithmPublishers',
+        ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS
+      )
+      if (publisherTrustedAlgorithmPublishersAddresses) {
+        setFieldValue('publisherTrustedAlgorithmPublishersAddresses', '')
+        setAddressList([])
+      }
+    } else {
+      setFieldValue(
+        'publisherTrustedAlgorithmPublishers',
+        ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
+      )
+    }
+  }
+
+  const handlePublishersChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target
+    setFieldValue('publisherTrustedAlgorithmPublishers', value)
+    if (value === ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS) {
+      setFieldValue(
+        'allowAllPublishedAlgorithms',
+        ALLOW_ANY_PUBLISHED_ALGORITHMS
+      )
+      if (publisherTrustedAlgorithmPublishersAddresses) {
+        setFieldValue('publisherTrustedAlgorithmPublishersAddresses', '')
+        setAddressList([])
+      }
+    } else if (value === ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS) {
+      setFieldValue('allowAllPublishedAlgorithms', ALLOW_SELECTED_ALGORITHMS)
+    }
+  }
 
   useEffect(() => {
     const currentAddresses = publisherTrustedAlgorithmPublishersAddresses || ''
@@ -184,6 +249,7 @@ export default function FormEditComputeService({
           component={Input}
           name="allowAllPublishedAlgorithms"
           selectStyle="publish"
+          onChange={handleAllowAlgorithmsChange}
         />
 
         <Field
@@ -191,7 +257,9 @@ export default function FormEditComputeService({
           component={Input}
           name="publisherTrustedAlgorithms"
           options={allAlgorithms}
-          disabled={isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)}
+          disabled={isAllowAnyPublishedAlgorithms(
+            allowAllPublishedAlgorithmsStr
+          )}
         />
       </SectionContainer>
 
@@ -208,7 +276,10 @@ export default function FormEditComputeService({
           name="publisherTrustedAlgorithmPublishers"
           selectStyle="publish"
           className={styles.publisherTrustedAlgorithmPublishersInput}
-          disabled={isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)}
+          disabled={isAllowAnyPublishedAlgorithms(
+            allowAllPublishedAlgorithmsStr
+          )}
+          onChange={handlePublishersChange}
         />
 
         {(publisherTrustedAlgorithmPublishers ===
@@ -223,7 +294,7 @@ export default function FormEditComputeService({
                   value={addressInputValue}
                   onChange={(e) => setAddressInputValue(e.target.value)}
                   disabled={isAllowAnyPublishedAlgorithms(
-                    allowAllPublishedAlgorithms
+                    allowAllPublishedAlgorithmsStr
                   )}
                   className={styles.addressInput}
                 />
@@ -233,7 +304,7 @@ export default function FormEditComputeService({
                 style="gradient"
                 onClick={handleAddAddress}
                 disabled={isAllowAnyPublishedAlgorithms(
-                  allowAllPublishedAlgorithms
+                  allowAllPublishedAlgorithmsStr
                 )}
                 className={styles.addAddressButton}
               >
@@ -254,7 +325,7 @@ export default function FormEditComputeService({
                     <DeleteButton
                       onClick={() => handleDeleteAddress(address)}
                       disabled={isAllowAnyPublishedAlgorithms(
-                        allowAllPublishedAlgorithms
+                        allowAllPublishedAlgorithmsStr
                       )}
                     />
                   </div>

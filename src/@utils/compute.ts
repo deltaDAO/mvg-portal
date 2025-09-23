@@ -21,7 +21,6 @@ import {
   transformAssetToAssetSelection,
   transformAssetToAssetSelectionForComputeWizard
 } from './assetConverter'
-import { ComputeEditForm } from '../components/Asset/Edit/_types'
 import { getFileDidInfo } from './provider'
 import { toast } from 'react-toastify'
 import { Asset } from 'src/@types/Asset'
@@ -33,6 +32,13 @@ import {
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
 import { ServiceComputeOptions } from '@oceanprotocol/ddo-js'
+// Local form shape needed by compute transform
+type ComputeFormLike = {
+  allowAllPublishedAlgorithms: boolean | string
+  publisherTrustedAlgorithms: string[]
+  publisherTrustedAlgorithmPublishers: string
+  publisherTrustedAlgorithmPublishersAddresses?: string
+}
 
 async function getAssetMetadata(
   queryDtList: string[],
@@ -260,8 +266,7 @@ export async function getAlgorithmAssetSelectionListForComputeWizard(
 async function getJobs(
   providerUrls: string[],
   accountId: string,
-  assets?: Asset[],
-  cancelToken?: CancelToken
+  assets?: Asset[]
 ): Promise<ComputeJobMetaData[]> {
   const uniqueProviders = [...new Set(providerUrls)]
   const providersComputeJobsExtended: ComputeJobExtended[] = []
@@ -289,8 +294,14 @@ async function getJobs(
         }
         return 0
       })
-      providersComputeJobsExtended.forEach(async (job: any) => {
-        const did = job.assets ? job.assets[0].documentId : null
+      type LocalComputeJob = ComputeJobExtended & {
+        assets?: Array<{ documentId: string }>
+      }
+      providersComputeJobsExtended.forEach(async (job: ComputeJobExtended) => {
+        const jobWithAssets = job as LocalComputeJob
+        const did = jobWithAssets.assets
+          ? jobWithAssets.assets[0].documentId
+          : null
         if (assets) {
           const assetFiltered = assets.filter((x) => x.id === did)
           const asset = assetFiltered.length > 0 ? assetFiltered[0] : null
@@ -304,7 +315,6 @@ async function getJobs(
             computeJobs.push(compJob)
           }
         } else {
-          // const asset: Asset = await getAsset(did, cancelToken)
           const compJob: ComputeJobMetaData = {
             ...job,
             assetName: 'name',
@@ -355,8 +365,7 @@ export async function getComputeJobs(
 }
 
 export async function getAllComputeJobs(
-  accountId: string,
-  cancelToken?: CancelToken
+  accountId: string
 ): Promise<ComputeResults> {
   if (!accountId) return
   const computeResult: ComputeResults = {
@@ -365,12 +374,7 @@ export async function getAllComputeJobs(
   }
 
   const providerUrls = [customProviderUrl]
-  computeResult.computeJobs = await getJobs(
-    providerUrls,
-    accountId,
-    null,
-    cancelToken
-  )
+  computeResult.computeJobs = await getJobs(providerUrls, accountId, null)
   computeResult.isLoaded = true
 
   return computeResult
@@ -431,12 +435,18 @@ export async function createTrustedAlgorithmList(
 }
 
 export async function transformComputeFormToServiceComputeOptions(
-  values: ComputeEditForm,
+  values: ComputeFormLike,
   currentOptions: Compute,
   assetChainId: number,
   cancelToken: CancelToken
 ): Promise<Compute> {
-  const publisherTrustedAlgorithms = values.allowAllPublishedAlgorithms
+  const allowAny =
+    values.allowAllPublishedAlgorithms === true ||
+    values.allowAllPublishedAlgorithms === 'Allow any published algorithms' ||
+    values.publisherTrustedAlgorithmPublishers ===
+      'Allow all trusted algorithm publishers'
+
+  const publisherTrustedAlgorithms = allowAny
     ? [
         {
           did: '*',
@@ -450,22 +460,16 @@ export async function transformComputeFormToServiceComputeOptions(
         assetChainId,
         cancelToken
       )
-  const publisherTrustedAlgorithmPublishers: string[] =
-    values.publisherTrustedAlgorithmPublishers ===
-      'Allow specific trusted algorithm publishers' &&
-    values.publisherTrustedAlgorithmPublishersAddresses
-      ? values.publisherTrustedAlgorithmPublishersAddresses
-          .split(',')
-          .map((addr) => addr.trim())
-          .filter((addr) => addr.length > 0)
-      : values.publisherTrustedAlgorithmPublishers ===
-          'Allow specific trusted algorithm publishers' &&
-        !values.publisherTrustedAlgorithmPublishersAddresses
-      ? []
-      : values.publisherTrustedAlgorithmPublishers ===
-        'Allow all trusted algorithm publishers'
-      ? []
-      : ['*']
+  const publisherTrustedAlgorithmPublishers: string[] = allowAny
+    ? ['*']
+    : values.publisherTrustedAlgorithmPublishers ===
+        'Allow specific trusted algorithm publishers' &&
+      values.publisherTrustedAlgorithmPublishersAddresses
+    ? values.publisherTrustedAlgorithmPublishersAddresses
+        .split(',')
+        .map((addr: string) => addr.trim())
+        .filter((addr: string) => addr.length > 0)
+    : []
 
   const privacy: Compute = {
     ...currentOptions,
