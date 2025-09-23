@@ -15,7 +15,7 @@ import {
 } from '@oceanprotocol/lib'
 import { Signer, ethers } from 'ethers'
 import { getOceanConfig } from './ocean'
-import {
+import appConfig, {
   marketFeeAddress,
   consumeMarketOrderFee,
   consumeMarketFixedSwapFee,
@@ -32,36 +32,48 @@ export async function initializeProvider(
   providerFees?: ProviderFees
 ): Promise<ProviderInitialize> {
   if (providerFees) return
+
   try {
-    const command = {
-      documentId: asset.id,
-      serviceId: service.id,
-      consumerAddress: accountId,
-      policyServer: {
-        sessionId: '',
-        successRedirectUri: '',
-        errorRedirectUri: '',
-        responseRedirectUri: '',
-        presentationDefinitionUri: ''
+    // SSI-enabled flow
+    if (appConfig.ssiEnabled) {
+      const command = {
+        documentId: asset.id,
+        serviceId: service.id,
+        consumerAddress: accountId,
+        policyServer: {
+          sessionId: '',
+          successRedirectUri: '',
+          errorRedirectUri: '',
+          responseRedirectUri: '',
+          presentationDefinitionUri: ''
+        }
       }
-    }
-    const initializePs = await ProviderInstance.initializePSVerification(
-      customProviderUrl || service.serviceEndpoint,
-      command
-    )
-    console.log('Initialize PS response', initializePs)
-    if (initializePs?.success) {
-      const provider = await ProviderInstance.initialize(
-        asset.id,
-        service.id,
-        0,
-        accountId,
-        customProviderUrl || service.serviceEndpoint
+
+      const initializePs = await ProviderInstance.initializePSVerification(
+        customProviderUrl || service.serviceEndpoint,
+        command
       )
-      return provider
+
+      if (initializePs?.success) {
+        return await ProviderInstance.initialize(
+          asset.id,
+          service.id,
+          0,
+          accountId,
+          customProviderUrl || service.serviceEndpoint
+        )
+      }
+
+      throw new Error(`Provider initialization failed: ${initializePs.error}`)
     }
-    throw new Error(`Provider initialization failed: ${initializePs.error}`)
-  } catch (error) {
+    return await ProviderInstance.initialize(
+      asset.id,
+      service.id,
+      0,
+      accountId,
+      customProviderUrl || service.serviceEndpoint
+    )
+  } catch (error: any) {
     const message = getErrorMessage(error.message)
     LoggerInstance.log('[Initialize Provider] Error:', message)
     toast.error(message)
