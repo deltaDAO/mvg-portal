@@ -114,7 +114,16 @@ const validationRequestCredentials = {
         })
         .when('type', {
           is: 'customPolicy',
-          then: (shema) => shema.required('Required')
+          then: (shema) =>
+            shema
+              .required('Required')
+              .test(
+                'noSpaces',
+                'Policy name cannot contain spaces',
+                (value) => {
+                  return !value || !value.includes(' ')
+                }
+              )
         }),
       args: Yup.array().when('type', {
         is: 'parameterizedPolicy',
