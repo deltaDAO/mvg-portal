@@ -9,7 +9,7 @@
         "fields": [
           {
             "name": "name",
-            "label": "Parameter Name",
+            "label": "Policy Name",
             "placeholder": "e.g. iterations",
             "help": "The parameter name (this is sent as HTTP param or key towards algo).",
             "type": "text",
