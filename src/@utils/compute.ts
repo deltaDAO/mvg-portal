@@ -266,7 +266,8 @@ export async function getAlgorithmAssetSelectionListForComputeWizard(
 async function getJobs(
   providerUrls: string[],
   accountId: string,
-  assets?: Asset[]
+  assets?: Asset[],
+  cancelToken?: CancelToken
 ): Promise<ComputeJobMetaData[]> {
   const uniqueProviders = [...new Set(providerUrls)]
   const providersComputeJobsExtended: ComputeJobExtended[] = []
@@ -358,14 +359,20 @@ export async function getComputeJobs(
   assets?.forEach((asset: Asset) =>
     providerUrls.push(asset.credentialSubject.services[0].serviceEndpoint)
   )
-  computeResult.computeJobs = await getJobs(providerUrls, accountId, assets)
+  computeResult.computeJobs = await getJobs(
+    providerUrls,
+    accountId,
+    assets,
+    cancelToken
+  )
   computeResult.isLoaded = true
 
   return computeResult
 }
 
 export async function getAllComputeJobs(
-  accountId: string
+  accountId: string,
+  cancelToken?: CancelToken
 ): Promise<ComputeResults> {
   if (!accountId) return
   const computeResult: ComputeResults = {
@@ -374,7 +381,12 @@ export async function getAllComputeJobs(
   }
 
   const providerUrls = [customProviderUrl]
-  computeResult.computeJobs = await getJobs(providerUrls, accountId, null)
+  computeResult.computeJobs = await getJobs(
+    providerUrls,
+    accountId,
+    null,
+    cancelToken
+  )
   computeResult.isLoaded = true
 
   return computeResult
