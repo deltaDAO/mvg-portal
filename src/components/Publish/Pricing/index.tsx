@@ -10,7 +10,9 @@ import { useMarketMetadata } from '@context/MarketMetadata'
 import { useNetwork } from 'wagmi'
 
 export default function PricingFields(): ReactElement {
-  const { appConfig } = useMarketMetadata()
+  const {
+    appConfig: { allowFixedPricing, allowFreePricing, defaultTokenSymbol }
+  } = useMarketMetadata()
   const { chain } = useNetwork()
   const { approvedBaseTokens } = useMarketMetadata()
 
@@ -21,7 +23,7 @@ export default function PricingFields(): ReactElement {
 
   const defaultBaseToken =
     approvedBaseTokens?.find((token) =>
-      token.name.toLowerCase().includes('euro')
+      token.name.toLowerCase().includes(defaultTokenSymbol.toLowerCase())
     ) || approvedBaseTokens?.[0]
 
   const isBaseTokenSet = !!approvedBaseTokens?.find(
@@ -54,7 +56,7 @@ export default function PricingFields(): ReactElement {
 
   const updateTabs = useCallback(() => {
     return [
-      appConfig.allowFixedPricing === 'true'
+      allowFixedPricing === 'true'
         ? {
             title: content.create.fixed.title,
             content: (
@@ -66,18 +68,14 @@ export default function PricingFields(): ReactElement {
           }
         : undefined,
 
-      appConfig.allowFreePricing === 'true'
+      allowFreePricing === 'true'
         ? {
             title: content.create.free.title,
             content: <Free content={content.create.free} />
           }
         : undefined
     ].filter((tab) => tab !== undefined)
-  }, [
-    appConfig.allowFixedPricing,
-    appConfig.allowFreePricing,
-    approvedBaseTokens
-  ])
+  }, [allowFixedPricing, allowFreePricing, approvedBaseTokens])
 
   const [tabs, setTabs] = useState(updateTabs())
   const [tabIndex, setTabIndex] = useState(type === 'free' ? 1 : 0)

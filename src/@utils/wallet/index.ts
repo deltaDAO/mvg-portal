@@ -193,7 +193,7 @@ export async function getTokenBalance(
     const token = new Contract(tokenAddress, erc20ABI, web3Provider)
     const balance = await token.balanceOf(accountId)
 
-    return getAdjustDecimalsValue(balance, decimals)
+    return balance ? getAdjustDecimalsValue(balance, decimals) : null
   } catch (e) {
     LoggerInstance.error(`ERROR: Failed to get the balance: ${e.message}`)
   }

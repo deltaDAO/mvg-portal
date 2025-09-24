@@ -1,4 +1,8 @@
-import { allowFixedPricing, customProviderUrl } from '../../../app.config'
+import {
+  allowFixedPricing,
+  customProviderUrl,
+  defaultTokenSymbol
+} from '../../../app.config'
 import {
   FormPublishData,
   MetadataAlgorithmContainer,
@@ -114,7 +118,12 @@ export const initialValues: FormPublishData = {
     deny: []
   },
   pricing: {
-    baseToken: { address: '', name: '', symbol: 'EUROe', decimals: 6 },
+    baseToken: {
+      address: '',
+      name: '',
+      symbol: defaultTokenSymbol,
+      decimals: 18
+    },
     price: 0,
     type: allowFixedPricing === 'true' ? 'fixed' : 'free',
     freeAgreement: false

@@ -178,7 +178,7 @@
     }
   ],
   "announcement": {
-    "text": "We are currently conducting a survey on future features. Every participation helps us to improve Pontus-X. Click to take part in the [Pontus-X Onboarding Survey](https://deltadao.limesurvey.net/484573).",
+    "text": "",
     "state": "success"
   },
   "devPreviewAnnouncement": "You are visiting the SITE-TITLE-PLACEHOLDER Developer Preview. Please note that some functionalities are in beta and may not work as expected. Visit the [SITE-TITLE-PLACEHOLDER portal](SITE-LINK-PLACEHOLDER) instead.",
