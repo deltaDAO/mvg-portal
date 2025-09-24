@@ -19,7 +19,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
     <Page
       title={title}
       description={description}
-      uri={router.pathname}
+      uri={slug?.startsWith('/privacy/') ? slug : `/privacy/${slug}`}
       headerCenter
     >
       <Container narrow>
