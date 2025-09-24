@@ -8,7 +8,7 @@ export default function PageAssetDetails(): ReactElement {
   const { did } = router.query
   return (
     <AssetProvider did={did as string}>
-      <PageTemplateAssetDetails uri={router.asPath} />
+      <PageTemplateAssetDetails uri={router.pathname} />
     </AssetProvider>
   )
 }

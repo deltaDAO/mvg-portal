@@ -1,7 +1,6 @@
 import { ReactElement } from 'react'
 import Head from 'next/head'
 
-import { isBrowser } from '@utils/index'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { DatasetSchema } from './DatasetSchema'
 
@@ -30,13 +29,21 @@ export default function Seo({
 
   return (
     <Head>
-      <html lang="en" />
-
       <title>{pageTitle}</title>
 
-      {isBrowser && window?.location?.hostname !== 'portal.pontus-x.eu' && (
-        <meta name="robots" content="noindex,nofollow" />
-      )}
+      {/* Derive environment from configured siteUrl to avoid window usage */}
+      {(() => {
+        let isProd = false
+        try {
+          const host = new URL(siteContent?.siteUrl || '').hostname
+          isProd = host === 'portal.pontus-x.eu'
+        } catch {
+          isProd = false
+        }
+        return !isProd ? (
+          <meta name="robots" content="noindex,nofollow" />
+        ) : null
+      })()}
 
       <link rel="canonical" href={canonical} />
       <link rel="icon" href="/favicon.ico" sizes="any" />
@@ -64,9 +71,16 @@ export default function Seo({
       />
 
       <meta property="og:site_name" content={siteContent?.siteTitle} />
-      {isBrowser && window?.location?.hostname === 'portal.pontus-x.eu' && (
-        <meta name="twitter:creator" content="@deltaDAO" />
-      )}
+      {(() => {
+        try {
+          const host = new URL(siteContent?.siteUrl || '').hostname
+          return host === 'portal.pontus-x.eu' ? (
+            <meta name="twitter:creator" content="@deltaDAO" />
+          ) : null
+        } catch {
+          return null
+        }
+      })()}
       <meta name="twitter:card" content="summary_large_image" />
 
       {datasetSchema && (

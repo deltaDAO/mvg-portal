@@ -43,7 +43,7 @@ export default function PageProfile(): ReactElement {
 
   return (
     <Page
-      uri={router.route}
+      uri={router.pathname}
       title={accountTruncate(finalAccountId)}
       noPageHeader
     >

@@ -1,6 +1,14 @@
-import { gql, OperationResult, TypedDocumentNode, OperationContext } from 'urql'
+import {
+  gql,
+  OperationResult,
+  TypedDocumentNode,
+  OperationContext,
+  createClient,
+  dedupExchange,
+  fetchExchange,
+  Client
+} from 'urql'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { getUrqlClientInstance } from '@context/UrqlProvider'
 import { getOceanConfig } from './ocean'
 import { OrdersData_orders as OrdersData } from '../@types/subgraph/OrdersData'
 import { OpcFeesQuery as OpcFeesData } from '../@types/subgraph/OpcFeesQuery'
@@ -89,14 +97,38 @@ export function getQueryContext(chainId: number): OperationContext {
   }
 }
 
+let queryClient: Client | undefined
+
+function getQueryClient(): Client {
+  if (!queryClient) {
+    try {
+      const base = getSubgraphUri(1)
+      queryClient = createClient({
+        url: `${base}/subgraphs/name/oceanprotocol/ocean-subgraph`,
+        exchanges: [dedupExchange, fetchExchange]
+      })
+    } catch (e) {
+      LoggerInstance.error(
+        'Failed to init URQL query client',
+        (e as any)?.message || e
+      )
+      // Fallback dummy client to avoid crashing; callers always pass context.url
+      queryClient = createClient({
+        url: 'https://example.invalid',
+        exchanges: [dedupExchange, fetchExchange]
+      })
+    }
+  }
+  return queryClient
+}
+
 export async function fetchData(
   query: TypedDocumentNode,
   variables: any,
   context: OperationContext
 ): Promise<any> {
   try {
-    const client = getUrqlClientInstance()
-
+    const client = getQueryClient()
     const response = await client.query(query, variables, context).toPromise()
     return response
   } catch (error) {

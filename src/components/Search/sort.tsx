@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { addExistingParamsToUrl } from './utils'
 import styles from './sort.module.css'
 import {
@@ -44,9 +44,17 @@ export default function Sort({
 
   const router = useRouter()
 
-  const parsedUrl = queryString.parse(location.search, {
-    arrayFormat: 'separator'
-  })
+  const search =
+    typeof window !== 'undefined'
+      ? window.location.search
+      : router?.asPath?.includes('?')
+      ? `?${router.asPath.split('?')[1]}`
+      : ''
+
+  const parsedUrl = useMemo(
+    () => queryString.parse(search, { arrayFormat: 'separator' }),
+    [search]
+  )
 
   useEffect(() => {
     const initialFilters = getInitialFilters(

@@ -19,7 +19,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
     <Page
       title={title}
       description={description}
-      uri={router.asPath}
+      uri={router.pathname}
       headerCenter
     >
       <Container narrow>
