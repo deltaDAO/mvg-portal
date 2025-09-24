@@ -25,6 +25,7 @@ import SectionContainer from '@shared/SectionContainer/SectionContainer'
 import DeleteButton from '@shared/DeleteButton/DeleteButton'
 import Button from '@shared/atoms/Button'
 import AddAddress from '@images/add_param.svg'
+import { isAddress } from 'ethers/lib/utils'
 import styles from './index.module.css'
 
 const ALLOW_ANY_PUBLISHED_ALGORITHMS = 'Allow any published algorithms'
@@ -60,6 +61,7 @@ export default function FormEditComputeService({
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
   const [addressInputValue, setAddressInputValue] = useState('')
   const [addressList, setAddressList] = useState<string[]>([])
+  const [addressError, setAddressError] = useState('')
 
   const isPublishFormContext = values.services && Array.isArray(values.services)
 
@@ -150,21 +152,32 @@ export default function FormEditComputeService({
 
   const handleAddAddress = (e: React.FormEvent) => {
     e.preventDefault()
+    setAddressError('')
 
     if (!addressInputValue.trim()) {
+      setAddressError('Please enter an address')
       return
     }
 
     const newAddress = addressInputValue.trim()
-    if (!addressList.includes(newAddress)) {
-      const updatedAddresses = [...addressList, newAddress]
-      setAddressList(updatedAddresses)
-      setFieldValue(
-        'publisherTrustedAlgorithmPublishersAddresses',
-        updatedAddresses.join(',')
-      )
-      setAddressInputValue('')
+
+    if (!(newAddress === '*' || isAddress(newAddress))) {
+      setAddressError('Wallet address is invalid')
+      return
     }
+
+    if (addressList.includes(newAddress.toLowerCase())) {
+      setAddressError('Wallet address already added to the list')
+      return
+    }
+
+    const updatedAddresses = [...addressList, newAddress.toLowerCase()]
+    setAddressList(updatedAddresses)
+    setFieldValue(
+      'publisherTrustedAlgorithmPublishersAddresses',
+      updatedAddresses.join(',')
+    )
+    setAddressInputValue('')
   }
 
   const handleDeleteAddress = (addressToDelete: string) => {
@@ -292,7 +305,10 @@ export default function FormEditComputeService({
                   type="text"
                   placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
                   value={addressInputValue}
-                  onChange={(e) => setAddressInputValue(e.target.value)}
+                  onChange={(e) => {
+                    setAddressInputValue(e.target.value)
+                    if (addressError) setAddressError('')
+                  }}
                   disabled={isAllowAnyPublishedAlgorithms(
                     allowAllPublishedAlgorithmsStr
                   )}
@@ -311,6 +327,9 @@ export default function FormEditComputeService({
                 <AddAddress /> Add
               </Button>
             </div>
+            {addressError && (
+              <div className={styles.errorMessage}>{addressError}</div>
+            )}
 
             {addressList.length > 0 && (
               <div className={styles.addressListContainer}>

@@ -161,13 +161,13 @@ body .addAddressButton {
   justify-content: center;
   align-items: center;
   gap: 4px;
-  background: var(--publish-accent-gradient);
-  box-shadow: var(--publish-shadow-sm);
-  border-radius: var(--publish-input-border-radius);
-  font-family: var(--publish-font-family);
-  font-weight: var(--publish-font-weight-bold);
-  font-size: var(--publish-font-size);
-  color: var(--publish-primary);
+  background: var(--publish-primary-gradient);
+  box-shadow: 1px 2px 8px var(--box-shadow-color);
+  border-radius: 20px;
+  font-family: 'Helvetica';
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
   border: none;
   cursor: pointer;
   transition: 0.2s ease-out;
@@ -180,8 +180,9 @@ body .addAddressButton {
   height: var(--publish-input-height);
   min-width: 105px;
   transform: none;
-  background: var(--publish-accent-gradient);
-  box-shadow: var(--publish-shadow-sm);
+  background: var(--publish-primary-gradient);
+  opacity: 0.9;
+  box-shadow: 1px 2px 8px var(--box-shadow-color);
 }
 
 .addAddressButton svg {
@@ -268,6 +269,7 @@ body .addAddressButton {
   gap: var(--sp-2);
   align-items: flex-end;
   width: 100%;
+  position: relative;
 }
 
 /* Publish flow input container styling */
@@ -284,6 +286,17 @@ body .addAddressButton {
 
 .publisherTrustedAlgorithmPublishersInput {
   margin-bottom: var(--sp-2);
+}
+
+.errorMessage {
+  display: block;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: 10px;
+  color: var(--input-error-text-color);
+  line-height: 1.2;
+  margin-top: var(--sp-1);
+  margin-left: var(--sp-1);
 }
 
 /* Publish flow responsive adjustments */
