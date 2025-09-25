@@ -1,6 +1,8 @@
 import { FileInfo } from '@oceanprotocol/lib'
 import * as Yup from 'yup'
 import { isAddress } from 'ethers/lib/utils'
+import { MAX_DECIMALS } from '@utils/constants'
+import { getMaxDecimalsValidation } from '@utils/numbers'
 import { testLinks } from '@utils/yup'
 import { validationConsumerParameters } from '@shared/FormInput/InputElement/ConsumerParameters/_validation'
 
@@ -204,7 +206,16 @@ export const serviceValidationSchema = Yup.object().shape({
   description: Yup.string().required('Required').min(10),
   price: Yup.number()
     .required('Required')
-    .min(0.000001, 'Price must be greater than 0 for paid services'),
+    .min(1, 'Price must be at least 1 OCEAN')
+    .max(
+      1000000,
+      (param: { max: number }) => `Must be less than or equal to ${param.max}`
+    )
+    .test(
+      'maxDigitsAfterDecimal',
+      `Must have maximum ${MAX_DECIMALS} decimal digits`,
+      (param) => getMaxDecimalsValidation(MAX_DECIMALS).test(param?.toString())
+    ),
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({

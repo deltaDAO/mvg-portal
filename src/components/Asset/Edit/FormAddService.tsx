@@ -149,7 +149,8 @@ export default function FormAddService({
           {...getFieldContent('price', data)}
           component={Input}
           name="price"
-          min={0} // override the value from edit form
+          min={1}
+          step={0.01}
         />
 
         <Field

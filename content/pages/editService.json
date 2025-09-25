@@ -46,9 +46,10 @@
         "name": "price",
         "label": "New Price",
         "type": "number",
-        "min": "0",
-        "placeholder": "0",
-        "help": "Enter a new price.",
+        "min": "1",
+        "step": "0.01",
+        "placeholder": "1",
+        "help": "Enter a new price (minimum 1 OCEAN, maximum 1,000,000).",
         "required": true
       },
       {
