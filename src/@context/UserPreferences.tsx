@@ -16,6 +16,7 @@ import {
   setCookie,
   TWO_MONTHS_COOKIE_OPTIONS
 } from '@utils/cookies'
+import { isBrowser } from '@utils/index'
 
 interface UserPreferencesValue {
   debug: boolean
@@ -54,18 +55,17 @@ function UserPreferencesProvider({
   const { appConfig } = useMarketMetadata()
   // Set default values from localStorage
   const [debug, setDebug] = useState<boolean>(
-    getCookieValue('debug') === 'true'
+    isBrowser && getCookieValue('debug') === 'true'
   )
-  const [currency, setCurrency] = useState<string>(
-    localStorage?.currency || 'EUR'
-  )
+  const [currency, setCurrency] = useState<string>(() => {
+    if (!isBrowser) return 'EUR'
+    return (localStorage as any)?.currency || 'EUR'
+  })
   const [locale, setLocale] = useState<string>()
   const [bookmarks, setBookmarks] = useState(
-    getCookieValue('bookmarks')?.split(',') || []
+    isBrowser ? getCookieValue('bookmarks')?.split(',') || [] : []
   )
-  const [chainIds, setChainIds] = useState(
-    getCookieValue('chainIds')?.split(',').map(Number) || appConfig.chainIds
-  )
+  const [chainIds, setChainIds] = useState(appConfig.chainIds)
   const {
     defaultPrivacyPolicySlug,
     showOnboardingModuleByDefault,
@@ -73,39 +73,42 @@ function UserPreferencesProvider({
   } = appConfig
 
   const [privacyPolicySlug, setPrivacyPolicySlug] = useState<string>(
-    getCookieValue('privacyPolicySlug') || defaultPrivacyPolicySlug
+    isBrowser
+      ? getCookieValue('privacyPolicySlug') || defaultPrivacyPolicySlug
+      : defaultPrivacyPolicySlug
   )
 
   const [showPPC, setShowPPC] = useState<boolean>(
-    getCookieValue('showPPC') !== 'false'
+    isBrowser ? getCookieValue('showPPC') !== 'false' : true
   )
 
-  const [allowExternalContent, setAllowExternalContent] = useState<boolean>(
-    getCookieValue('allowExternalContent') === 'true'
-  )
+  // Initialize to a stable SSR-safe default, hydrate from cookie after mount
+  const [allowExternalContent, setAllowExternalContent] =
+    useState<boolean>(false)
 
   const [automationWallet, setAutomationWallet] = useState<string>(
-    typeof getCookieValue('automationWallet') !== 'undefined'
+    isBrowser && typeof getCookieValue('automationWallet') !== 'undefined'
       ? JSON.parse(getCookieValue('automationWallet'))?.automationWalletJSON
       : ''
   )
 
   const [automationWalletMode, setAutomationWalletMode] =
     useState<AUTOMATION_MODES>(
-      typeof getCookieValue('automationWallet') !== 'undefined'
+      isBrowser && typeof getCookieValue('automationWallet') !== 'undefined'
         ? JSON.parse(getCookieValue('automationWallet'))?.automationWalletMode
         : automationConfig.defaultMode
     )
 
   const [showOnboardingModule, setShowOnboardingModule] = useState<boolean>(
-    (typeof getCookieValue('onboardingModule') !== 'undefined' &&
+    (isBrowser &&
+      typeof getCookieValue('onboardingModule') !== 'undefined' &&
       JSON.parse(getCookieValue('onboardingModule'))?.showOnboardingModule ===
         'true') ??
       showOnboardingModuleByDefault
   )
 
   const [onboardingStep, setOnboardingStep] = useState<number>(
-    typeof getCookieValue('onboardingModule') !== 'undefined'
+    isBrowser && typeof getCookieValue('onboardingModule') !== 'undefined'
       ? Number(JSON.parse(getCookieValue('onboardingModule'))?.onboardingStep)
       : 0
   )
@@ -134,6 +137,18 @@ function UserPreferencesProvider({
       deleteCookie('chainIds')
     }
   }, [chainIds])
+
+  // Hydrate chainIds from cookie after mount to avoid SSR/CSR mismatch
+  useEffect(() => {
+    if (!isBrowser) return
+    const stored = getCookieValue('chainIds')
+    const fromCookie = stored?.split(',').map(Number)
+    if (fromCookie && fromCookie.length > 0) {
+      const same = fromCookie.toString() === chainIds.toString()
+      if (!same) setChainIds(fromCookie)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (privacyPolicySlug !== defaultPrivacyPolicySlug) {
@@ -166,6 +181,14 @@ function UserPreferencesProvider({
       deleteCookie('allowExternalContent')
     }
   }, [allowExternalContent])
+
+  // Hydrate allowExternalContent from cookie on client after mount
+  useEffect(() => {
+    if (!isBrowser) return
+    const stored = getCookieValue('allowExternalContent') === 'true'
+    if (stored !== allowExternalContent) setAllowExternalContent(stored)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   useEffect(() => {
     if (
@@ -214,7 +237,7 @@ function UserPreferencesProvider({
 
   // Get locale always from user's browser
   useEffect(() => {
-    if (!window) return
+    if (typeof window === 'undefined') return
     setLocale(window.navigator.language)
   }, [])
 
