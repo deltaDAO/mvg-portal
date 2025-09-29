@@ -262,7 +262,7 @@ svg.caret {
     /* height: 140px; */
   }
 }
-@media screen and (min-width: 1023px) and (max-width: 1055px) {
+@media screen and (min-width: 1023px) and (max-width: 1549px) {
   .container {
     /* width: 1500px; */
     height: 90px;

@@ -187,12 +187,44 @@ svg.caret {
     margin-top: 1rem;
     width: 100%;
   }
+  .demoText {
+    white-space: nowrap;
+    color: #fdd655;
+    margin-top: 0px;
+    margin-left: 10px;
+    font-size: 16px;
+    text-transform: uppercase;
+    align-content: baseline;
+    align-self: flex-end;
+  }
 }
 
 @media screen and (min-width: 1026px) and (max-width: 1250px) {
   .menu {
     margin-top: 1rem;
     width: 100%;
+  }
+  .demoText {
+    white-space: nowrap;
+    color: #fdd655;
+    margin-top: 0px;
+    margin-left: 10px;
+    font-size: 16px;
+    text-transform: uppercase;
+    align-content: baseline;
+    align-self: flex-end;
+  }
+}
+@media screen and (min-width: 1251px) and (max-width: 1549px) {
+  .demoText {
+    white-space: nowrap;
+    color: #fdd655;
+    margin-top: 0px;
+    margin-left: 40px;
+    font-size: 18px;
+    text-transform: uppercase;
+    align-content: baseline;
+    align-self: flex-end;
   }
 }
 
