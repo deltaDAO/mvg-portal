@@ -1,5 +1,5 @@
 import { ReactElement } from 'react'
-import type { Dataset } from './SelectServices'
+// import type { Dataset } from './SelectServices'
 import { UserCustomParameters } from '@oceanprotocol/lib'
 
 export interface FormComputeData {
@@ -8,8 +8,9 @@ export interface FormComputeData {
     accountId: string
     chainId: number
   }
-  algorithm: any
+  algorithm?: any
   dataset?: any // Added for algorithm flow - array of dataset IDs
+  // datasets?: any // Added for algorithm flow - array of dataset IDs
   computeEnv?: any
   mode?: 'free' | 'paid'
   cpu: number

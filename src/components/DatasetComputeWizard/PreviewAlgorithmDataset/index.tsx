@@ -28,6 +28,7 @@ interface Algorithm {
 
 interface FormValues {
   algorithm?: string
+  algorithms?: any
   algorithmServices?: AlgorithmService[]
 }
 
@@ -50,6 +51,8 @@ const PreviewAlgorithmDataset = ({
       return value['@value']
     return ''
   }
+  console.log('selected algo asset ', selectedAlgorithmAsset)
+  console.log('selected algo asset ', values)
 
   // Initialize from selectedAlgorithmAsset if provided, otherwise from form value
   useEffect(() => {
@@ -73,20 +76,7 @@ const PreviewAlgorithmDataset = ({
           })
         ) || []
 
-      setSelectedAlgorithm({
-        id: selectedAlgorithmAsset.id,
-        name:
-          extractString(
-            selectedAlgorithmAsset.credentialSubject?.metadata?.name
-          ) || 'Selected Algorithm',
-        description:
-          extractString(
-            selectedAlgorithmAsset.credentialSubject?.metadata?.description
-          ) || 'Algorithm services for compute',
-        expanded: true,
-        checked: true,
-        services: algorithmServices
-      })
+      setSelectedAlgorithm(values.algorithms)
       return
     }
 
@@ -138,11 +128,11 @@ const PreviewAlgorithmDataset = ({
         {/* Algorithm Section */}
         <div className={styles.algorithmContainer}>
           <div className={styles.algorithmHeader}>
-            <h2 className={styles.algorithmName}>{selectedAlgorithm.name}</h2>
+            <h2 className={styles.algorithmName}>{values.algorithms.name}</h2>
             <p className={styles.algorithmAddress}>{selectedAlgorithm.id}</p>
             <p className={styles.algorithmDescription}>
-              {selectedAlgorithm.description.slice(0, 40)}
-              {selectedAlgorithm.description.length > 40 ? '...' : ''}{' '}
+              {values.algorithms.description.slice(0, 40)}
+              {values.algorithms.description.length > 40 ? '...' : ''}{' '}
             </p>
           </div>
 
@@ -150,24 +140,32 @@ const PreviewAlgorithmDataset = ({
             {selectedAlgorithm.services.map((service) => (
               <div key={service.id} className={styles.serviceItem}>
                 <div className={styles.serviceHeader}>
-                  <h3 className={styles.serviceName}>{service.name}</h3>
+                  <h3 className={styles.serviceName}>
+                    {values.algorithms?.services[0].name}
+                  </h3>
                 </div>
                 <p className={styles.serviceDescription}>
-                  {service.serviceDescription.slice(0, 40)}
-                  {service.serviceDescription.length > 40 ? '...' : ''}
+                  {values.algorithms?.services[0].serviceDescription.slice(
+                    0,
+                    40
+                  )}
+                  {values.algorithms?.services[0].serviceDescription.length > 40
+                    ? '...'
+                    : ''}
                 </p>
                 <div className={styles.serviceDetails}>
                   <p>
-                    <strong>Type:</strong> {service.type}
+                    <strong>Type:</strong> {values.algorithms?.services[0].type}
                   </p>
                 </div>
                 <div className={styles.serviceDetails}>
                   <p>
                     <strong>Access duration:</strong>{' '}
-                    {Number(service.duration) === 0
+                    {Number(values.algorithms?.services[0].duration) === 0
                       ? 'Forever'
                       : `${Math.floor(
-                          Number(service.duration) / (60 * 60 * 24)
+                          Number(values.algorithms?.services[0].duration) /
+                            (60 * 60 * 24)
                         )} days`}
                   </p>
                 </div>

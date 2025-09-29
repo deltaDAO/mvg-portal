@@ -53,7 +53,8 @@ const SelectAlgorithmServices = ({
   selectedAlgorithmAsset,
   ddoListAlgorithms = []
 }: SelectAlgorithmServicesProps) => {
-  const { values } = useFormikContext<FormValues>()
+  const { values, setFieldValue } = useFormikContext<FormValues>()
+  console.log('values!!! ', values)
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm | null>(
     null
   )
@@ -65,13 +66,14 @@ const SelectAlgorithmServices = ({
     ): {
       algorithmAsset: Asset | null
       serviceIndexAlgo: number | null
+      serviceId: string | null
     } => {
       let algorithmId: string
-      let serviceId: string = ''
+      let serviceId: string | null = null
       try {
         const parsed = JSON.parse(algo)
         algorithmId = parsed?.algoDid || algo
-        serviceId = parsed?.serviceId || ''
+        serviceId = parsed?.serviceId || null
       } catch (e) {
         algorithmId = algo
       }
@@ -91,7 +93,7 @@ const SelectAlgorithmServices = ({
         }
       })
 
-      return { algorithmAsset: assetDdo, serviceIndexAlgo }
+      return { algorithmAsset: assetDdo, serviceIndexAlgo, serviceId }
     },
     [ddoListAlgorithms]
   )
@@ -111,13 +113,13 @@ const SelectAlgorithmServices = ({
               `Service for ${service.type}`,
             type: service.type,
             duration: service.timeout || 0,
-            price: '0',
+            price: service.price,
             symbol: 'OCEAN',
-            checked: i === 0 // Only first service is checked by default
+            checked: i === (selectedAlgorithmAsset.serviceIndex ?? 0)
           })
         ) || []
 
-      setSelectedAlgorithm({
+      const newAlgorithm = {
         id: selectedAlgorithmAsset.id,
         name:
           extractString(
@@ -128,8 +130,14 @@ const SelectAlgorithmServices = ({
             selectedAlgorithmAsset.credentialSubject?.metadata?.description
           ) || 'Algorithm services for compute',
         expanded: true,
-        checked: true,
+        checked: algorithmServices.some((s) => s.checked),
         services: algorithmServices
+      }
+
+      setSelectedAlgorithm(newAlgorithm)
+      setFieldValue('algorithms', {
+        ...newAlgorithm,
+        services: algorithmServices.filter((s) => s.checked)
       })
       return
     }
@@ -138,9 +146,8 @@ const SelectAlgorithmServices = ({
       setIsLoading(true)
       const fetchAlgorithmAssetExtended = async () => {
         try {
-          const { algorithmAsset, serviceIndexAlgo } = getAlgorithmAsset(
-            values.algorithm
-          )
+          const { algorithmAsset, serviceIndexAlgo, serviceId } =
+            getAlgorithmAsset(values.algorithm)
 
           if (!algorithmAsset) {
             setIsLoading(false)
@@ -163,7 +170,7 @@ const SelectAlgorithmServices = ({
 
           const algorithmServices: AlgorithmService[] =
             extendedAlgoAsset.credentialSubject?.services?.map(
-              (service: Service, i: number) => ({
+              (service: Service) => ({
                 id: service.id,
                 name: extractString(service.name) || service.type,
                 title: extractString(service.name) || service.type,
@@ -172,25 +179,29 @@ const SelectAlgorithmServices = ({
                   `Service for ${service.type}`,
                 type: service.type,
                 duration: service.timeout || 0,
-                price: '0',
+                price: service.price,
                 symbol: 'OCEAN',
-                checked: i === 0 // Only first service is checked by default
+                checked: serviceId ? service.id === serviceId : false
               })
             ) || []
 
-          setSelectedAlgorithm({
+          const newAlgorithm = {
             id: extendedAlgoAsset.id,
-            name:
-              extractString(
-                extendedAlgoAsset.credentialSubject?.metadata?.name
-              ) || 'Selected Algorithm',
-            description:
-              extractString(
-                extendedAlgoAsset.credentialSubject?.metadata?.description
-              ) || 'Algorithm services for compute',
+            name: extractString(
+              extendedAlgoAsset.credentialSubject?.metadata?.name
+            ),
+            description: extractString(
+              extendedAlgoAsset.credentialSubject?.metadata?.description
+            ),
             expanded: true,
-            checked: true,
+            checked: algorithmServices.some((s) => s.checked),
             services: algorithmServices
+          }
+
+          setSelectedAlgorithm(newAlgorithm)
+          setFieldValue('algorithms', {
+            ...newAlgorithm,
+            services: algorithmServices.filter((s) => s.checked)
           })
         } catch (error) {
           console.error('🔍 Error fetching algorithm asset:', error)
@@ -206,16 +217,22 @@ const SelectAlgorithmServices = ({
     selectedAlgorithm,
     values.algorithm,
     ddoListAlgorithms,
-    getAlgorithmAsset
+    getAlgorithmAsset,
+    setFieldValue
   ])
 
   const syncWithFormik = (_updated: Algorithm) => {}
 
   const toggleAlgorithm = () => {
     if (selectedAlgorithm) {
-      setSelectedAlgorithm({
+      const updatedAlgorithm = {
         ...selectedAlgorithm,
         expanded: !selectedAlgorithm.expanded
+      }
+      setSelectedAlgorithm(updatedAlgorithm)
+      setFieldValue('algorithms', {
+        ...updatedAlgorithm,
+        services: updatedAlgorithm.services.filter((s) => s.checked)
       })
     }
   }
@@ -228,10 +245,14 @@ const SelectAlgorithmServices = ({
         checked: newCheckedState,
         services: selectedAlgorithm.services.map((service, i) => ({
           ...service,
-          checked: newCheckedState && i === 0 // Only first service checked if algorithm is checked
+          checked: newCheckedState && i === 0
         }))
       }
       setSelectedAlgorithm(updatedAlgorithm)
+      setFieldValue('algorithms', {
+        ...updatedAlgorithm,
+        services: updatedAlgorithm.services.filter((s) => s.checked)
+      })
       syncWithFormik(updatedAlgorithm)
     }
   }
@@ -240,16 +261,20 @@ const SelectAlgorithmServices = ({
     if (selectedAlgorithm) {
       const updatedServices = selectedAlgorithm.services.map((service) => ({
         ...service,
-        checked: service.id === serviceId // Only the clicked service is checked
+        checked: service.id === serviceId
       }))
 
       const updatedAlgorithm = {
         ...selectedAlgorithm,
         services: updatedServices,
-        checked: true
+        checked: updatedServices.some((s) => s.checked)
       }
 
       setSelectedAlgorithm(updatedAlgorithm)
+      setFieldValue('algorithms', {
+        ...updatedAlgorithm,
+        services: updatedServices.filter((s) => s.checked)
+      })
       syncWithFormik(updatedAlgorithm)
     }
   }

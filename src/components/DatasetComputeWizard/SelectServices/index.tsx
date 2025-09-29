@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import styles from './index.module.css'
 import MinimizeIcon from '@images/minimize.svg'
 import ExpandIcon from '@images/expand.svg'
@@ -16,126 +16,112 @@ interface Service {
   checked?: boolean
 }
 
-export interface Dataset {
-  id: string
+export interface AlgorithmDataset {
+  did: string
   name: string
   description: string
   services: Service[]
   expanded?: boolean
   checked?: boolean
 }
+
 type FormValues = {
-  datasets?: string[]
-  dataset?: string[]
+  selectedAlgorithm?: any
+  selectedAsset?: any
+  algorithm?: string
 }
 
 const ServiceSelector = () => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const [datasets, setDatasets] = useState<Dataset[]>([])
+  const [datasets, setDatasets] = useState<AlgorithmDataset[]>([])
 
-  // Normalize incoming Formik values → local state
+  // Normalize algorithm dataset from Formik values
+  const normalizeDataset = useCallback((algo: any): AlgorithmDataset[] => {
+    if (!algo || !algo.did) return []
+
+    return [
+      {
+        did: algo.did || '',
+        name: algo.name || 'Unnamed Algorithm',
+        description: algo.description || 'No description available',
+        expanded: true,
+        checked: true,
+        services: (algo.services || []).map((s: any, index: number) => ({
+          id: s?.serviceId || `service-${index}`,
+          name: s?.serviceName || 'Unnamed Service',
+          title: s?.serviceType || 'Access',
+          serviceDescription:
+            s?.serviceDescription || 'No description available',
+          type: s?.serviceType || 'Access',
+          duration: s?.serviceDuration ?? 0,
+          price: String(s?.price ?? algo?.datasetPrice ?? 0),
+          symbol: s?.tokenSymbol || 'OCEAN',
+          checked: index === 0 // first service selected by default
+        }))
+      }
+    ]
+  }, [])
+
+  // Initialize datasets when selectedAlgorithm changes
   useEffect(() => {
-    if (!values.datasets || datasets.length > 0) return // only initialize once
+    if (values.selectedAlgorithm) {
+      const normalized = normalizeDataset(values.selectedAlgorithm)
+      setDatasets(normalized)
 
-    const normalized = values.datasets.map((d: any) => ({
-      id: d.did,
-      name: d.name,
-      description: d.description,
-      expanded: d.expanded ?? false,
-      checked: d.checked ?? false,
-      services: d.services.map((s: any) => ({
-        id: s.serviceId,
-        name: s.serviceName || 'Unnamed Service',
-        title: s.serviceType || 'Unnamed Service',
-        serviceDescription: s.serviceDescription || 'No description available',
-        type: s.serviceType || 'Access',
-        duration: s.serviceDuration || 'Forever',
-        price: String(s.price ?? d.datasetPrice ?? 0),
-        symbol: s.tokenSymbol || 'OCEAN',
-        checked: s.checked ?? false
-      }))
-    }))
+      if (normalized.length > 0 && normalized[0].services.length > 0) {
+        const selectedAlgo = normalized[0]
+        const selectedService = selectedAlgo.services.find((s) => s.checked)
 
-    setDatasets(normalized)
-  }, [values.datasets])
-
-  // Helper: push current datasets state → Formik
-  const syncWithFormik = (updated: Dataset[]) => {
-    const selectedDatasets = updated
-      .map((d) => ({
-        ...d,
-        services: d.services.filter((s) => s.checked)
-      }))
-      .filter((d) => d.services.length > 0) // keep only datasets with selected services
-
-    setFieldValue('datasets', selectedDatasets)
-  }
-
-  const toggleDataset = (datasetId: string) => {
-    const updated = datasets.map((dataset) =>
-      dataset.id === datasetId
-        ? { ...dataset, expanded: !dataset.expanded }
-        : dataset
-    )
-    setDatasets(updated)
-    syncWithFormik(updated)
-  }
-
-  const toggleDatasetCheckbox = (datasetId: string) => {
-    const updated = datasets.map((dataset) => {
-      if (dataset.id === datasetId) {
-        const newCheckedState = !dataset.checked
-        return {
-          ...dataset,
-          checked: newCheckedState,
-          services: dataset.services.map((service) => ({
-            ...service,
-            checked: newCheckedState
-          }))
-        }
-      }
-      return dataset
-    })
-    setDatasets(updated)
-    syncWithFormik(updated)
-  }
-
-  const toggleService = (datasetId: string, serviceId: string) => {
-    const updated = datasets.map((dataset) => {
-      if (dataset.id === datasetId) {
-        const updatedServices = dataset.services.map((service) =>
-          service.id === serviceId
-            ? { ...service, checked: !service.checked }
-            : service
+        setFieldValue('selectedAlgorithm', selectedAlgo)
+        setFieldValue('selectedAsset', selectedService)
+        setFieldValue(
+          'algorithm',
+          JSON.stringify({
+            algoDid: selectedAlgo.did,
+            serviceId: selectedService?.id || ''
+          })
         )
-
-        const allServicesChecked = updatedServices.every((s) => s.checked)
-        const someServicesChecked = updatedServices.some((s) => s.checked)
-
-        return {
-          ...dataset,
-          services: updatedServices,
-          checked: allServicesChecked
-            ? true
-            : someServicesChecked
-            ? undefined
-            : false
-        }
       }
-      return dataset
+    }
+  }, [values.selectedAlgorithm, normalizeDataset, setFieldValue])
+
+  // Handle service selection (only one at a time)
+  const toggleService = (datasetDid: string, serviceId: string) => {
+    const updated = datasets.map((dataset) => {
+      if (dataset.did === datasetDid) {
+        const updatedServices = dataset.services.map((service) => ({
+          ...service,
+          checked: service.id === serviceId // only one true
+        }))
+        return { ...dataset, services: updatedServices, checked: true }
+      }
+      return { ...dataset, checked: false }
     })
+
     setDatasets(updated)
-    syncWithFormik(updated)
+
+    const selectedAlgo = updated.find((d) => d.checked)
+    const selectedService = selectedAlgo?.services.find((s) => s.checked)
+
+    setFieldValue('selectedAlgorithm', selectedAlgo)
+    setFieldValue('selectedAsset', selectedService)
+    setFieldValue(
+      'algorithm',
+      selectedAlgo && selectedService
+        ? JSON.stringify({
+            algoDid: selectedAlgo.did,
+            serviceId: selectedService.id
+          })
+        : ''
+    )
   }
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Select Services</h1>
+      <h1 className={styles.title}>Select Algorithm & Service</h1>
 
-      {/* Header row */}
       <div className={styles.boxModel}>
         <div className={styles.header}>
-          <div className={styles.checkboxColumn}></div>
           <div className={styles.servicesColumn}>SERVICES</div>
           <div className={styles.titleColumn}>TITLE</div>
           <div className={styles.descriptionColumn}>DESCRIPTION</div>
@@ -144,89 +130,95 @@ const ServiceSelector = () => {
           <div className={styles.priceColumn}>PRICE</div>
         </div>
 
-        {/* Datasets and services */}
-        {datasets.map((dataset, index) => (
-          <div
-            key={dataset.id || `dataset-${index}`}
-            className={styles.dataset}
-          >
-            <div className={styles.datasetRow}>
-              <div className={styles.checkboxColumn}>
-                <input
-                  type="checkbox"
-                  className={styles.checkboxInput}
-                  checked={dataset.checked || false}
-                  onChange={() => toggleDatasetCheckbox(dataset.id)}
-                  onClick={(e) => e.stopPropagation()}
-                />
+        {datasets.length === 0 ? (
+          <div className={styles.empty}>No algorithm selected.</div>
+        ) : (
+          datasets.map((dataset, index) => (
+            <div
+              key={dataset.did || `algo-${index}`}
+              className={styles.dataset}
+            >
+              <div className={styles.datasetRow}>
+                <div
+                  className={styles.expandCollapseIcon}
+                  onClick={() =>
+                    setDatasets((prev) =>
+                      prev.map((d) =>
+                        d.did === dataset.did
+                          ? { ...d, expanded: !d.expanded }
+                          : d
+                      )
+                    )
+                  }
+                >
+                  {dataset.expanded ? (
+                    <MinimizeIcon className={styles.expandedIcon} />
+                  ) : (
+                    <ExpandIcon />
+                  )}
+                </div>
+                <div
+                  className={styles.datasetName}
+                  onClick={() =>
+                    setDatasets((prev) =>
+                      prev.map((d) =>
+                        d.did === dataset.did
+                          ? { ...d, expanded: !d.expanded }
+                          : d
+                      )
+                    )
+                  }
+                >
+                  {dataset.name}
+                </div>
               </div>
-              <div
-                className={styles.expandCollapseIcon}
-                onClick={() => toggleDataset(dataset.id)}
-              >
-                {dataset.expanded ? (
-                  <MinimizeIcon className={styles.expandedIcon} />
-                ) : (
-                  <ExpandIcon />
-                )}
-              </div>
-              <div
-                className={styles.datasetName}
-                onClick={() => toggleDataset(dataset.id)}
-              >
-                {dataset.name}
-              </div>
-              {/* Empty cells to align with header */}
-              <div className={styles.titleColumn}></div>
-              <div className={styles.descriptionColumn}></div>
-              <div className={styles.typeColumn}></div>
-              <div className={styles.durationColumn}></div>
-              <div className={styles.priceColumn}></div>
-            </div>
 
-            {dataset.expanded && (
-              <div className={styles.servicesContainer}>
-                {dataset.services.map((service, index) => (
-                  <div
-                    key={service.id || `${dataset.id}-service-${index}`}
-                    className={styles.service}
-                  >
-                    <div className={styles.checkboxColumn}>
-                      <input
-                        type="checkbox"
-                        className={styles.checkboxInput}
-                        checked={service.checked || false}
-                        onChange={() => toggleService(dataset.id, service.id)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
+              {dataset.expanded && (
+                <div className={styles.servicesContainer}>
+                  {dataset.services.map((service, idx) => (
+                    <div
+                      key={service.id || `${dataset.did}-service-${idx}`}
+                      className={styles.service}
+                    >
+                      <div className={styles.checkboxColumn}>
+                        <input
+                          type="radio"
+                          name={`service-${dataset.did}`}
+                          className={styles.checkboxInput}
+                          checked={service.checked || false}
+                          onChange={() =>
+                            toggleService(dataset.did, service.id)
+                          }
+                        />
+                      </div>
+                      <div className={styles.servicesColumn}>
+                        {service.name.slice(0, 15)}
+                        {service.name.length > 15 ? '...' : ''}
+                      </div>
+                      <div className={styles.titleColumn}>{service.title}</div>
+                      <div className={styles.descriptionColumn}>
+                        {service.serviceDescription.slice(0, 15)}
+                        {service.serviceDescription.length > 15 ? '...' : ''}
+                      </div>
+                      <div className={styles.typeColumn}>{service.type}</div>
+                      <div className={styles.durationColumn}>
+                        {Number(service.duration) === 0
+                          ? 'Forever'
+                          : `${Math.floor(
+                              Number(service.duration) / (60 * 60 * 24)
+                            )} days`}
+                      </div>
+                      <div className={styles.priceColumn}>
+                        {service.price}{' '}
+                        <span className={styles.symbol}>{service.symbol}</span>
+                      </div>
                     </div>
-                    <div className={styles.servicesColumn}>
-                      {service.name.slice(0, 15)}
-                      {service.name.length > 15 ? '...' : ''}
-                    </div>
-                    <div className={styles.titleColumn}>{service.title}</div>
-                    <div className={styles.descriptionColumn}>
-                      {service.serviceDescription.slice(0, 15)}
-                      {service.serviceDescription.length > 15 ? '...' : ''}
-                    </div>
-                    <div className={styles.typeColumn}>{service.type}</div>
-                    <div className={styles.durationColumn}>
-                      {Number(service.duration) === 0
-                        ? 'Forever'
-                        : `${Math.floor(
-                            Number(service.duration) / (60 * 60 * 24)
-                          )} days`}
-                    </div>
-                    <div className={styles.priceColumn}>
-                      {service.price}{' '}
-                      <span className={styles.symbol}>{service.symbol}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+                  ))}
+                </div>
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   )

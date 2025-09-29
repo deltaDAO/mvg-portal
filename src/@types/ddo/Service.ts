@@ -46,4 +46,5 @@ export interface Service {
   inputSchema?: RemoteObject
   // Required if type algorithm
   outputSchema?: RemoteObject
+  price?: string
 }
