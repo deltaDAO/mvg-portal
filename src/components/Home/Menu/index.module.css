@@ -143,6 +143,8 @@ svg.caret {
   transform: rotate(180deg);
 }
 .demoText {
+  font-family: var(--font-family-heading);
+  font-weight: 700;
   white-space: nowrap;
   color: #fdd655;
   margin-top: 0px;

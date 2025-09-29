@@ -229,6 +229,8 @@ svg.caret {
   height: 24px;
 }
 .demoText {
+  font-family: var(--font-family-heading);
+  font-weight: 700;
   white-space: nowrap;
   color: #fdd655;
   margin-top: 0px;
