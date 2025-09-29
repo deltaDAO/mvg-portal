@@ -78,6 +78,14 @@
           "isLive": true
         },
         {
+          "name": "SENSE Cityverse",
+          "link": "https://sense.pontus-x.eu",
+          "description": "SENSE connects cities through immersive VR/AR, data space and metaverse technology.",
+          "image": "sense.webp",
+          "category": "smart city",
+          "isLive": true
+        },
+        {
           "name": "Pontus-X Main Portal",
           "link": "https://portal.main.pontus-x.eu/",
           "description": "With deltaDAO's data and AI Marketplace, you have the freedom to decide how your data and AI services are offered.",
@@ -147,14 +155,6 @@
           "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
           "image": "PSNC.webp",
           "category": "agriculture",
-          "isLive": true
-        },
-        {
-          "name": "Car Repair 4.0",
-          "link": "https://portal.autowerkstatt40.org/",
-          "description": "Car Repair 4.0 develops a hub infrastructure that connects car workshops to Gaia-X ecosystems and enables AI-supported fault tracking.",
-          "image": "carrepair40.webp",
-          "category": "AI",
           "isLive": true
         }
       ]
