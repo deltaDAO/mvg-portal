@@ -899,7 +899,8 @@ export default function Review({
             verificationQueue.map((item, i) => {
               const needsSsi =
                 requiresSsi(item.asset?.credentialSubject?.credentials) ||
-                requiresSsi(item.service?.credentials)
+                requiresSsi(item.service?.credentials) ||
+                item.service
 
               return (
                 <PricingRow
