@@ -54,6 +54,10 @@ export default function PricingRow({
   const renderCredentialStatus = () => {
     if (!credentialStatus) return null
 
+    // Hide status text until we actually have a valid timestamp
+    if (credentialStatus === 'verified' && !expirationStatus.isValid)
+      return null
+
     switch (credentialStatus) {
       case 'checking':
         return <Loader message="Checking credentials..." noMargin={true} />
@@ -95,11 +99,18 @@ export default function PricingRow({
           <span className={isService ? styles.serviceName : styles.itemName}>
             {itemName}
           </span>
-          {!infoMessage && (
-            <div className={styles.credentialIcon}>
-              {renderCredentialStatus()}
-            </div>
-          )}
+          {(() => {
+            const shouldShowStatus =
+              !infoMessage &&
+              (credentialStatus === 'checking' ||
+                credentialStatus === 'failed' ||
+                (credentialStatus === 'verified' && expirationStatus.isValid))
+            return shouldShowStatus ? (
+              <div className={styles.credentialIcon}>
+                {renderCredentialStatus()}
+              </div>
+            ) : null
+          })()}
         </div>
       </div>
       <div className={styles.priceInfo}>

@@ -794,16 +794,7 @@ export default function ComputeWizard({
 
   const onSubmit = async (values: FormComputeData) => {
     try {
-      const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
-
-      if (appConfig.ssiEnabled && !skip) {
-        const isValid = await validateCredentials(asset.id, service.id)
-        if (!isValid) {
-          await refreshCredentials(asset.id, service.id)
-          toast.error('Credentials expired. Please re-verify your credentials.')
-          return
-        }
-      }
+      // SSI checks are handled explicitly in the Review step; do not re‑validate on submit.
 
       if (
         !(values.algorithm || values.dataset) ||

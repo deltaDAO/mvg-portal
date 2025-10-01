@@ -30,7 +30,6 @@ import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
-
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -874,15 +873,6 @@ export default function Review({
     )
   }
 
-  console.log('[compute-debug] Review component rendering')
-  console.log('[compute-debug] values.dataset:', values.dataset)
-  console.log('[compute-debug] values.algorithm:', values.algorithm)
-  console.log('[compute-debug] asset prop:', asset?.id)
-  console.log(
-    '[compute-debug] selectedAlgorithmAsset:',
-    selectedAlgorithmAsset?.id
-  )
-
   return (
     <div className={styles.container}>
       <div className={styles.titleContainer}>
@@ -899,8 +889,7 @@ export default function Review({
             verificationQueue.map((item, i) => {
               const needsSsi =
                 requiresSsi(item.asset?.credentialSubject?.credentials) ||
-                requiresSsi(item.service?.credentials) ||
-                item.service
+                requiresSsi(item.service?.credentials)
 
               return (
                 <PricingRow
@@ -917,10 +906,7 @@ export default function Review({
                         onAction: () => startVerification(i),
                         actionDisabled: false
                       }
-                    : {
-                        infoMessage:
-                          'No credential check needed for this asset.'
-                      })}
+                    : {})}
                   isService={true}
                   credentialStatus={item.status}
                   assetId={item.asset?.id}

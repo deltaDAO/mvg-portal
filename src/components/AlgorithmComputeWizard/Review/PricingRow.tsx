@@ -6,6 +6,7 @@ import CircleCheck from '@images/circle_check.svg'
 import CircleX from '@images/circle_x.svg'
 import { useCredentialExpiration } from '@hooks/useCredentialExpiration'
 import styles from './index.module.css'
+import Alert from '@shared/atoms/Alert'
 
 interface PricingRowProps {
   itemName: string
@@ -21,6 +22,7 @@ interface PricingRowProps {
   assetId?: string
   serviceId?: string
   onCredentialRefresh?: () => void
+  infoMessage?: string
 }
 
 export default function PricingRow({
@@ -36,13 +38,13 @@ export default function PricingRow({
   credentialStatus,
   assetId,
   serviceId,
-  onCredentialRefresh
+  onCredentialRefresh,
+  infoMessage
 }: PricingRowProps): ReactElement {
   const {
     credentialStatus: expirationStatus,
     timeRemainingText,
-    showExpirationWarning,
-    refreshCredentials
+    showExpirationWarning
   } = useCredentialExpiration(
     assetId || '',
     serviceId || '',
@@ -51,6 +53,10 @@ export default function PricingRow({
   )
   const renderCredentialStatus = () => {
     if (!credentialStatus) return null
+
+    // Hide any status text until we actually have a valid timestamp
+    if (credentialStatus === 'verified' && !expirationStatus.isValid)
+      return null
 
     switch (credentialStatus) {
       case 'checking':
@@ -93,15 +99,27 @@ export default function PricingRow({
           <span className={isService ? styles.serviceName : styles.itemName}>
             {itemName}
           </span>
-          {actionLabel && (
-            <div className={styles.credentialIcon}>
-              {renderCredentialStatus()}
-            </div>
-          )}
+          {(() => {
+            const shouldShowStatus =
+              !!actionLabel &&
+              (credentialStatus === 'checking' ||
+                credentialStatus === 'failed' ||
+                (credentialStatus === 'verified' && expirationStatus.isValid))
+            return shouldShowStatus ? (
+              <div className={styles.credentialIcon}>
+                {renderCredentialStatus()}
+              </div>
+            ) : null
+          })()}
         </div>
       </div>
       <div className={styles.priceInfo}>
         <PriceDisplay value={value} duration={duration} />
+        {infoMessage && !actionLabel && (
+          <div style={{ marginTop: '4px' }}>
+            <Alert state="info">{infoMessage}</Alert>
+          </div>
+        )}
         {actionLabel && onAction && (
           <div style={{ marginTop: '4px' }}>
             <Button

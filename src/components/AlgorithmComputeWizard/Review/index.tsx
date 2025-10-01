@@ -765,10 +765,7 @@ export default function Review({
                         onAction: () => startVerification(i),
                         actionDisabled: false
                       }
-                    : {
-                        infoMessage:
-                          'No credential check needed for this asset.'
-                      })}
+                    : {})}
                   isService={item.type === 'algorithm'}
                   credentialStatus={item.status}
                   assetId={item.asset?.id}
