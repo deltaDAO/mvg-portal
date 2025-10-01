@@ -117,13 +117,7 @@ const validationRequestCredentials = {
           then: (shema) =>
             shema
               .required('Required')
-              .test(
-                'noSpaces',
-                'Policy name cannot contain spaces',
-                (value) => {
-                  return !value || !value.includes(' ')
-                }
-              )
+              .matches(/^[A-Za-z]+$/, 'Only letters A–Z are allowed')
         }),
       args: Yup.array().when('type', {
         is: 'parameterizedPolicy',
