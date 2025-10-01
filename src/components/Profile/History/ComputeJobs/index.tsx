@@ -38,7 +38,8 @@ const columns: TableOceanColumn<ComputeJobMetaData>[] = [
   },
   {
     name: 'Created',
-    selector: (row) => <Time date={row.dateCreated} isUnix relative />
+    selector: (row) =>
+      row.dateCreated ? <Time date={row.dateCreated} isUnix relative /> : ''
   },
   {
     name: 'Finished',
@@ -186,13 +187,16 @@ export default function ComputeJobs({
     },
     {
       name: 'Created',
-      selector: (row) => (
-        <Time
-          date={((row as any).algoStartTimestamp * 1000).toString()}
-          isUnix
-          relative
-        />
-      )
+      selector: (row) =>
+        row.dateFinished ? (
+          <Time
+            date={((row as any).algoStartTimestamp * 1000).toString()}
+            isUnix
+            relative
+          />
+        ) : (
+          ''
+        )
     },
     {
       name: 'Finished',
