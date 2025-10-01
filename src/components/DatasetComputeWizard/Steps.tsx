@@ -5,9 +5,6 @@ import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { datasetSteps, algorithmSteps } from './_constants' // Updated import
 import SelectAlgorithm from './SelectAlgorithm'
 import SelectAlgorithmServices from './SelectAlgorithmServices'
-
-import SelectDataset from './SelectDataset'
-import SelectServices from './SelectServices'
 import PreviewAlgorithmDataset from './PreviewAlgorithmDataset'
 import SelectEnvironment from './SelectEnvironment'
 import ConfigureEnvironment from './ConfigureEnvironment'
@@ -166,9 +163,14 @@ export default function Steps({
   )
   switch (currentStep) {
     case 1:
-      return <SelectDataset asset={asset} algorithms={algorithms} />
+      return <SelectAlgorithm algorithms={algorithms} />
     case 2:
-      return <SelectServices />
+      return (
+        <SelectAlgorithmServices
+          selectedAlgorithmAsset={selectedAlgorithmAsset}
+          ddoListAlgorithms={ddoListAlgorithms}
+        />
+      )
     case 3:
       return (
         <PreviewAlgorithmDataset
