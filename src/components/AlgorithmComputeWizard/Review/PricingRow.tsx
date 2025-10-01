@@ -93,9 +93,11 @@ export default function PricingRow({
           <span className={isService ? styles.serviceName : styles.itemName}>
             {itemName}
           </span>
-          <div className={styles.credentialIcon}>
-            {renderCredentialStatus()}
-          </div>
+          {actionLabel && (
+            <div className={styles.credentialIcon}>
+              {renderCredentialStatus()}
+            </div>
+          )}
         </div>
       </div>
       <div className={styles.priceInfo}>

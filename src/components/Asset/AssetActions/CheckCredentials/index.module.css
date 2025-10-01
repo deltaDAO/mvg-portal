@@ -167,3 +167,14 @@
   margin-top: calc(var(--spacer) / 2);
   margin-bottom: 20px;
 }
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.retryButton {
+  margin-left: 8px;
+}

@@ -18,7 +18,6 @@ import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useCancelToken } from '@hooks/useCancelToken'
-import { getAsset } from '@utils/aquarius'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
@@ -30,6 +29,7 @@ import { useAsset } from '@context/Asset'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
+import { requiresSsi } from '@utils/credentials'
 
 interface VerificationItem {
   id: string
@@ -227,6 +227,9 @@ export default function Review({
 
     if (asset && service) {
       const isVerified = lookupVerifierSessionId?.(asset.id, service.id)
+      const datasetNeedsSsi =
+        requiresSsi(asset?.credentialSubject?.credentials) ||
+        requiresSsi(service?.credentials)
       const rawPrice = asset.accessDetails?.[0].validOrderTx
         ? '0'
         : asset.accessDetails?.[0].price
@@ -236,7 +239,11 @@ export default function Review({
         type: 'dataset',
         asset,
         service,
-        status: isVerified ? ('verified' as const) : ('unverified' as const),
+        status: datasetNeedsSsi
+          ? isVerified
+            ? ('verified' as const)
+            : ('unverified' as const)
+          : ('verified' as const),
         index: 0,
         price: rawPrice,
         duration: formatDuration(service.timeout || 0),
@@ -255,12 +262,20 @@ export default function Review({
       const details = selectedAlgorithmAsset.accessDetails?.[serviceIndex]
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
 
+      const algoNeedsSsi =
+        requiresSsi(selectedAlgorithmAsset?.credentialSubject?.credentials) ||
+        requiresSsi(algoService?.credentials)
+
       queue.push({
         id: selectedAlgorithmAsset.id,
         type: 'algorithm',
         asset: selectedAlgorithmAsset,
         service: algoService,
-        status: isVerified ? ('verified' as const) : ('unverified' as const),
+        status: algoNeedsSsi
+          ? isVerified
+            ? ('verified' as const)
+            : ('unverified' as const)
+          : ('verified' as const),
         index: queue.length,
         price: rawPrice,
         duration: '1 day',
@@ -283,7 +298,12 @@ export default function Review({
     const checkExpiration = () => {
       setVerificationQueue((prev) =>
         prev.map((item) => {
+          const needsSsi =
+            requiresSsi(item.asset?.credentialSubject?.credentials) ||
+            requiresSsi(item.service?.credentials)
+
           if (
+            needsSsi &&
             item.status === 'verified' &&
             item.asset?.id &&
             item.service?.id
@@ -749,10 +769,17 @@ export default function Review({
         !baseTokenBalance ||
         !compareAsBN(baseTokenBalance, `${price.value}`)
       ) {
+        console.log('[compute-debug] Insufficient balance:', {
+          symbol: price.symbol,
+          required: price.value,
+          available: baseTokenBalance,
+          balance
+        })
         sufficient = false
         break
       }
     }
+
     setIsBalanceSufficient(sufficient)
   }, [
     balance,
@@ -774,48 +801,86 @@ export default function Review({
     validateForm()
   }, [verificationQueue, setFieldValue, validateForm])
 
-  const PurchaseButton = () => (
-    <ButtonBuy
-      action="compute"
-      disabled={
-        isComputeButtonDisabled ||
-        !isValid ||
-        !isBalanceSufficient ||
-        !isAssetNetwork ||
-        !selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable ||
-        !isAccountIdWhitelisted
-      }
-      hasPreviousOrder={hasPreviousOrder}
-      hasDatatoken={hasDatatoken}
-      btSymbol={accessDetails.baseToken?.symbol}
-      dtSymbol={accessDetails.datatoken?.symbol}
-      dtBalance={dtBalance}
-      assetTimeout={assetTimeout}
-      assetType={asset.credentialSubject?.metadata.type}
-      hasPreviousOrderSelectedComputeAsset={
-        hasPreviousOrderSelectedComputeAsset
-      }
-      hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-      dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
-      dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
-      selectedComputeAssetType={selectedComputeAssetType}
-      stepText={stepText}
-      isLoading={isLoading}
-      type="submit"
-      priceType={accessDetails.type}
-      algorithmPriceType={selectedAlgorithmAsset?.accessDetails?.[0]?.type}
-      isBalanceSufficient={isBalanceSufficient}
-      isConsumable={isConsumable}
-      consumableFeedback={consumableFeedback}
-      isAlgorithmConsumable={
-        selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable
-      }
-      isSupportedOceanNetwork={isSupportedOceanNetwork}
-      hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
-      retry={retry}
-      isAccountConnected={isConnected}
-      computeWizard={true}
-    />
+  const PurchaseButton = () => {
+    const disabledConditions = {
+      isComputeButtonDisabled,
+      isValid,
+      isBalanceSufficient,
+      isAssetNetwork,
+      isAlgorithmPurchasable:
+        selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable,
+      isAccountIdWhitelisted
+    }
+
+    console.log(
+      '[compute-debug] PurchaseButton disabled conditions:',
+      disabledConditions
+    )
+    console.log(
+      '[compute-debug] verificationQueue statuses:',
+      verificationQueue.map((item) => ({
+        id: item.id,
+        type: item.type,
+        status: item.status
+      }))
+    )
+    console.log(
+      '[compute-debug] credentialsVerified field value:',
+      values.credentialsVerified
+    )
+
+    return (
+      <ButtonBuy
+        action="compute"
+        disabled={
+          isComputeButtonDisabled ||
+          !isValid ||
+          !isBalanceSufficient ||
+          !isAssetNetwork ||
+          !selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable ||
+          !isAccountIdWhitelisted
+        }
+        hasPreviousOrder={hasPreviousOrder}
+        hasDatatoken={hasDatatoken}
+        btSymbol={accessDetails.baseToken?.symbol}
+        dtSymbol={accessDetails.datatoken?.symbol}
+        dtBalance={dtBalance}
+        assetTimeout={assetTimeout}
+        assetType={asset.credentialSubject?.metadata.type}
+        hasPreviousOrderSelectedComputeAsset={
+          hasPreviousOrderSelectedComputeAsset
+        }
+        hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
+        dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+        dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+        selectedComputeAssetType={selectedComputeAssetType}
+        stepText={stepText}
+        isLoading={isLoading}
+        type="submit"
+        priceType={accessDetails.type}
+        algorithmPriceType={selectedAlgorithmAsset?.accessDetails?.[0]?.type}
+        isBalanceSufficient={isBalanceSufficient}
+        isConsumable={isConsumable}
+        consumableFeedback={consumableFeedback}
+        isAlgorithmConsumable={
+          selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable
+        }
+        isSupportedOceanNetwork={isSupportedOceanNetwork}
+        hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
+        retry={retry}
+        isAccountConnected={isConnected}
+        computeWizard={true}
+      />
+    )
+  }
+
+  console.log('[compute-debug] Review component rendering')
+  console.log('[compute-debug] values.dataset:', values.dataset)
+  console.log('[compute-debug] values.algorithm:', values.algorithm)
+  console.log('[compute-debug] asset prop:', asset?.id)
+  console.log(
+    '[compute-debug] selectedAlgorithmAsset:',
+    selectedAlgorithmAsset?.id
   )
 
   return (
@@ -832,6 +897,10 @@ export default function Review({
             </div>
           ) : (
             verificationQueue.map((item, i) => {
+              const needsSsi =
+                requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                requiresSsi(item.service?.credentials)
+
               return (
                 <PricingRow
                   key={`${item.type}-${item.id}-${i}`}
@@ -839,11 +908,18 @@ export default function Review({
                   itemName={item.name}
                   value={item.price}
                   duration={item.duration}
-                  actionLabel={`Check ${
-                    item.type === 'dataset' ? 'Dataset' : 'Algorithm'
-                  } Credentials`}
-                  onAction={() => startVerification(i)}
-                  actionDisabled={false}
+                  {...(needsSsi
+                    ? {
+                        actionLabel: `Check ${
+                          item.type === 'dataset' ? 'Dataset' : 'Algorithm'
+                        } Credentials`,
+                        onAction: () => startVerification(i),
+                        actionDisabled: false
+                      }
+                    : {
+                        infoMessage:
+                          'No credential check needed for this asset.'
+                      })}
                   isService={true}
                   credentialStatus={item.status}
                   assetId={item.asset?.id}

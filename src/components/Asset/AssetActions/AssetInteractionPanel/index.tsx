@@ -9,6 +9,7 @@ import { useSsiWallet } from '@context/SsiWallet'
 import appConfig from 'app.config.cjs'
 import Compute from '../Compute'
 import Download from '../Download'
+import { requiresSsi } from '@utils/credentials'
 
 interface AssetInteractionPanelProps {
   asset: AssetExtended
@@ -45,6 +46,10 @@ export default function AssetInteractionPanel({
 
   const hasVerifiedCredentials =
     verifierSessionCache && lookupVerifierSessionId(asset.id, service.id)
+
+  const ssiRequired =
+    requiresSsi(asset?.credentialSubject?.credentials) ||
+    requiresSsi(service?.credentials)
 
   const priceDisplay =
     accessDetails.type === 'free'
@@ -84,7 +89,7 @@ export default function AssetInteractionPanel({
       <div className={styles.actionButtonWrapper}>
         {appConfig.ssiEnabled ? (
           <>
-            {hasVerifiedCredentials ? (
+            {ssiRequired === false || hasVerifiedCredentials ? (
               isCompute ? (
                 <Compute
                   accountId={accountId}

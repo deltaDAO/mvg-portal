@@ -6,6 +6,7 @@ import CircleCheck from '@images/circle_check.svg'
 import CircleX from '@images/circle_x.svg'
 import { useCredentialExpiration } from '@hooks/useCredentialExpiration'
 import styles from './index.module.css'
+import Alert from '@shared/atoms/Alert'
 
 interface PricingRowProps {
   itemName: string
@@ -21,6 +22,7 @@ interface PricingRowProps {
   assetId?: string
   serviceId?: string
   onCredentialRefresh?: () => void
+  infoMessage?: string
 }
 
 export default function PricingRow({
@@ -36,7 +38,8 @@ export default function PricingRow({
   credentialStatus,
   assetId,
   serviceId,
-  onCredentialRefresh
+  onCredentialRefresh,
+  infoMessage
 }: PricingRowProps): ReactElement {
   const {
     credentialStatus: expirationStatus,
@@ -92,13 +95,20 @@ export default function PricingRow({
           <span className={isService ? styles.serviceName : styles.itemName}>
             {itemName}
           </span>
-          <div className={styles.credentialIcon}>
-            {renderCredentialStatus()}
-          </div>
+          {!infoMessage && (
+            <div className={styles.credentialIcon}>
+              {renderCredentialStatus()}
+            </div>
+          )}
         </div>
       </div>
       <div className={styles.priceInfo}>
         <PriceDisplay value={value} duration={duration} />
+        {infoMessage && !actionLabel && (
+          <div style={{ marginTop: '4px' }}>
+            <Alert state="info">{infoMessage}</Alert>
+          </div>
+        )}
         {actionLabel && onAction && (
           <div style={{ marginTop: '4px' }}>
             <Button

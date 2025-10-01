@@ -26,6 +26,7 @@ import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
+import { requiresSsi } from '@utils/credentials'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 
@@ -120,6 +121,9 @@ export default function Review({
       accessDetails.price ??
       null
   )
+
+  const debugClick = () => {}
+
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
   const selectedEnvId = values?.computeEnv?.id
@@ -178,12 +182,20 @@ export default function Review({
           ? '0'
           : details?.price || '0'
 
+      const datasetNeedsSsi =
+        requiresSsi(asset?.credentialSubject?.credentials) ||
+        requiresSsi(service?.credentials)
+
       queue.push({
         id: asset.id,
         type: 'dataset',
         asset,
         service,
-        status: isVerified ? ('verified' as const) : ('unverified' as const),
+        status: datasetNeedsSsi
+          ? isVerified
+            ? ('verified' as const)
+            : ('unverified' as const)
+          : ('verified' as const),
         index,
         price: rawPrice,
         duration: '1 day', // Default duration for datasets
@@ -199,12 +211,20 @@ export default function Review({
         ? '0'
         : asset.accessDetails?.[0].price
 
+      const algoNeedsSsi =
+        requiresSsi(asset?.credentialSubject?.credentials) ||
+        requiresSsi(service?.credentials)
+
       queue.push({
         id: asset.id,
         type: 'algorithm',
         asset,
         service,
-        status: isVerified ? ('verified' as const) : ('unverified' as const),
+        status: algoNeedsSsi
+          ? isVerified
+            ? ('verified' as const)
+            : ('unverified' as const)
+          : ('verified' as const),
         index: queue.length,
         price: rawPrice,
         duration: formatDuration(service.timeout || 0),
@@ -219,7 +239,13 @@ export default function Review({
     const checkExpiration = () => {
       setVerificationQueue((prev) =>
         prev.map((item) => {
+          // Only apply expiration checks for items that actually require SSI
+          const needsSsi =
+            requiresSsi(item.asset?.credentialSubject?.credentials) ||
+            requiresSsi(item.service?.credentials)
+
           if (
+            needsSsi &&
             item.status === 'verified' &&
             item.asset?.id &&
             item.service?.id
@@ -716,27 +742,40 @@ export default function Review({
               <Loader message="Loading assets..." noMargin={true} />
             </div>
           ) : (
-            verificationQueue.map((item, i) => (
-              <PricingRow
-                key={`${item.type}-${item.id}-${i}`}
-                label={
-                  item.type === 'dataset' ? `Dataset ${i + 1}` : 'ALGORITHM'
-                }
-                itemName={item.name}
-                value={item.price}
-                duration={item.duration}
-                actionLabel={`Check ${
-                  item.type === 'dataset' ? 'Dataset' : 'Algorithm'
-                } credentials`}
-                onAction={() => startVerification(i)}
-                actionDisabled={false}
-                isService={item.type === 'algorithm'}
-                credentialStatus={item.status}
-                assetId={item.asset?.id}
-                serviceId={item.service?.id}
-                onCredentialRefresh={() => startVerification(i)}
-              />
-            ))
+            verificationQueue.map((item, i) => {
+              const needsSsi =
+                requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                requiresSsi(item.service?.credentials)
+
+              return (
+                <PricingRow
+                  key={`${item.type}-${item.id}-${i}`}
+                  label={
+                    item.type === 'dataset' ? `Dataset ${i + 1}` : 'ALGORITHM'
+                  }
+                  itemName={item.name}
+                  value={item.price}
+                  duration={item.duration}
+                  {...(needsSsi
+                    ? {
+                        actionLabel: `Check ${
+                          item.type === 'dataset' ? 'Dataset' : 'Algorithm'
+                        } credentials`,
+                        onAction: () => startVerification(i),
+                        actionDisabled: false
+                      }
+                    : {
+                        infoMessage:
+                          'No credential check needed for this asset.'
+                      })}
+                  isService={item.type === 'algorithm'}
+                  credentialStatus={item.status}
+                  assetId={item.asset?.id}
+                  serviceId={item.service?.id}
+                  onCredentialRefresh={() => startVerification(i)}
+                />
+              )
+            })
           )}
 
           {/* Compute items and market fees */}
