@@ -14,6 +14,162 @@ interface ResourceValues {
   jobDuration: number
 }
 
+interface ResourceRowProps {
+  resourceId: string
+  label: string
+  unit: string
+  isFree: boolean
+  freeValues: ResourceValues
+  paidValues: ResourceValues
+  getLimits: (
+    id: string,
+    isFree: boolean
+  ) => { minValue: number; maxValue: number }
+  updateResource: (
+    type: 'cpu' | 'ram' | 'disk' | 'jobDuration',
+    value: number | string,
+    isFree: boolean
+  ) => void
+  fee?: { prices?: { id: string; price: number }[] }
+}
+
+function ResourceRow({
+  resourceId,
+  label,
+  unit,
+  isFree,
+  freeValues,
+  paidValues,
+  getLimits,
+  updateResource,
+  fee
+}: ResourceRowProps): ReactElement {
+  const { minValue, maxValue } = getLimits(resourceId, isFree)
+  const currentValue = isFree
+    ? freeValues[resourceId as keyof ResourceValues]
+    : paidValues[resourceId as keyof ResourceValues]
+  const [inputValue, setInputValue] = useState<string | number>(currentValue)
+  const [error, setError] = useState<string | null>(null)
+
+  // Sync inputValue with currentValue when currentValue changes
+  useEffect(() => {
+    setInputValue(currentValue)
+    setError(null)
+  }, [currentValue])
+
+  const handleBlur = () => {
+    if (inputValue === '') {
+      setError(
+        `Value cannot be empty. Please enter a number between ${minValue} and ${maxValue}.`
+      )
+      setInputValue(currentValue) // Revert to currentValue
+      return
+    }
+
+    const numValue = Number(inputValue)
+    if (isNaN(numValue)) {
+      setError(
+        `Please enter a valid number between ${minValue} and ${maxValue}.`
+      )
+      setInputValue(currentValue)
+      return
+    }
+
+    if (numValue < minValue || numValue > maxValue) {
+      setError(`Please enter a value between ${minValue} and ${maxValue}.`)
+      setInputValue(currentValue)
+      return
+    }
+
+    updateResource(
+      resourceId as 'cpu' | 'ram' | 'disk' | 'jobDuration',
+      numValue,
+      isFree
+    )
+    setError(null)
+  }
+
+  const handleCloseError = () => {
+    setError(null)
+    setInputValue(currentValue)
+  }
+
+  return (
+    <div
+      key={`${resourceId}-${isFree ? 'free' : 'paid'}`}
+      className={styles.resourceRow}
+    >
+      <div className={styles.resourceLabel}>{label}</div>
+      <div className={styles.sliderSection}>
+        <span className={styles.minLabel}>min</span>
+        <div className={styles.sliderContainer}>
+          <input
+            type="range"
+            min={minValue}
+            max={maxValue}
+            value={currentValue}
+            onChange={(e) =>
+              updateResource(
+                resourceId as 'cpu' | 'ram' | 'disk' | 'jobDuration',
+                Number(e.target.value),
+                isFree
+              )
+            }
+            className={styles.customSlider}
+          />
+          <div className={styles.sliderLine}></div>
+        </div>
+        <span className={styles.maxLabel}>max</span>
+      </div>
+      <div className={styles.inputSection}>
+        <input
+          type="number"
+          min={minValue}
+          max={maxValue}
+          value={inputValue}
+          onChange={(e) => {
+            setInputValue(e.target.value)
+            setError(null)
+          }}
+          onBlur={handleBlur}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleBlur()
+            }
+          }}
+          className={`${styles.input} ${styles.inputSmall} ${
+            error ? styles.inputError : ''
+          }`}
+          placeholder="value..."
+        />
+        <span className={styles.unit}>{unit}</span>
+      </div>
+      {error && (
+        <div className={styles.errorOverlay}>
+          <div className={styles.errorPopup}>
+            <span className={styles.errorMessage}>{error}</span>
+            <button className={styles.closeButton} onClick={handleCloseError}>
+              &times;
+            </button>
+          </div>
+        </div>
+      )}
+      {!isFree && (
+        <div className={styles.resourcePriceSection}>
+          <span className={styles.priceLabel}>price per time unit</span>
+          <input
+            type="text"
+            className={`${styles.input} ${styles.inputSmall}`}
+            placeholder="value..."
+            readOnly
+            value={fee?.prices?.find((p) => p.id === resourceId)?.price || 0}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function ConfigureEnvironment({
   allResourceValues,
   setAllResourceValues
@@ -37,12 +193,13 @@ export default function ConfigureEnvironment({
       if (paidValues?.mode === 'paid') return 'paid'
       if (freeValues?.mode === 'free') return 'free'
     }
-    return values.mode || 'free'
+    return values.mode || (values.computeEnv?.free ? 'free' : 'paid')
   })
 
   useEffect(() => {
     setFieldValue('mode', mode)
   }, [mode, setFieldValue])
+
   const [symbolMap, setSymbolMap] = useState<{ [address: string]: string }>({})
 
   // Get environment resource values
@@ -93,7 +250,33 @@ export default function ConfigureEnvironment({
   const [paidValues, setPaidValues] = useState<ResourceValues>(() =>
     getEnvResourceValues(false)
   )
+  const getLimits = (id: string, isFree: boolean) => {
+    const env = values.computeEnv
+    if (!env) return { minValue: 0, maxValue: 0 }
 
+    if (id === 'jobDuration') {
+      const maxDuration = env.maxJobDuration
+      return {
+        minValue: 1,
+        maxValue: Math.floor((maxDuration || 3600) / 60)
+      }
+    }
+
+    const resourceLimits = isFree ? env.free?.resources : env.resources
+    const resource = resourceLimits?.find((r) => r.id === id)
+
+    const convertToMB = (value: number) => {
+      if (id === 'ram' || id === 'disk') {
+        return Math.floor(value / 1_000_000)
+      }
+      return value
+    }
+
+    return {
+      minValue: convertToMB(resource?.min ?? 0),
+      maxValue: convertToMB(resource?.max ?? 0)
+    }
+  }
   const calculatePrice = useCallback(() => {
     if (mode === 'free') return 0
     if (!values.computeEnv) return 0
@@ -120,6 +303,9 @@ export default function ConfigureEnvironment({
     return totalPrice * paidValues.jobDuration
   }, [mode, values.computeEnv, chain?.id, paidValues])
 
+  const clamp = (val: number, min: number, max: number) =>
+    Math.max(min, Math.min(max, val))
+
   // Update values when environment changes
   useEffect(() => {
     const env = values.computeEnv
@@ -132,7 +318,7 @@ export default function ConfigureEnvironment({
     const freeEnvValues = getEnvResourceValues(true)
     const paidEnvValues = getEnvResourceValues(false)
 
-    setFreeValues({
+    const freeRaw = {
       cpu:
         freeExistingValues?.cpu && freeExistingValues.cpu > 0
           ? freeExistingValues.cpu
@@ -149,8 +335,9 @@ export default function ConfigureEnvironment({
         freeExistingValues?.jobDuration && freeExistingValues.jobDuration > 0
           ? freeExistingValues.jobDuration
           : freeEnvValues.jobDuration
-    })
-    setPaidValues({
+    }
+
+    const paidRaw = {
       cpu:
         paidExistingValues?.cpu && paidExistingValues.cpu > 0
           ? paidExistingValues.cpu
@@ -167,6 +354,50 @@ export default function ConfigureEnvironment({
         paidExistingValues?.jobDuration && paidExistingValues.jobDuration > 0
           ? paidExistingValues.jobDuration
           : paidEnvValues.jobDuration
+    }
+
+    const freeLimits = {
+      cpu: getLimits('cpu', true),
+      ram: getLimits('ram', true),
+      disk: getLimits('disk', true),
+      jobDuration: getLimits('jobDuration', true)
+    }
+
+    const paidLimits = {
+      cpu: getLimits('cpu', false),
+      ram: getLimits('ram', false),
+      disk: getLimits('disk', false),
+      jobDuration: getLimits('jobDuration', false)
+    }
+
+    setFreeValues({
+      cpu: clamp(freeRaw.cpu, freeLimits.cpu.minValue, freeLimits.cpu.maxValue),
+      ram: clamp(freeRaw.ram, freeLimits.ram.minValue, freeLimits.ram.maxValue),
+      disk: clamp(
+        freeRaw.disk,
+        freeLimits.disk.minValue,
+        freeLimits.disk.maxValue
+      ),
+      jobDuration: clamp(
+        freeRaw.jobDuration,
+        freeLimits.jobDuration.minValue,
+        freeLimits.jobDuration.maxValue
+      )
+    })
+
+    setPaidValues({
+      cpu: clamp(paidRaw.cpu, paidLimits.cpu.minValue, paidLimits.cpu.maxValue),
+      ram: clamp(paidRaw.ram, paidLimits.ram.minValue, paidLimits.ram.maxValue),
+      disk: clamp(
+        paidRaw.disk,
+        paidLimits.disk.minValue,
+        paidLimits.disk.maxValue
+      ),
+      jobDuration: clamp(
+        paidRaw.jobDuration,
+        paidLimits.jobDuration.minValue,
+        paidLimits.jobDuration.maxValue
+      )
     })
   }, [values.computeEnv, allResourceValues, getEnvResourceValues])
 
@@ -179,7 +410,20 @@ export default function ConfigureEnvironment({
     return sym
   }
 
-  // Update form values when mode changes
+  // Fetch token symbol
+  useEffect(() => {
+    const env = values.computeEnv
+    if (env) {
+      const chainId = chain?.id?.toString() || '11155111'
+      const fee = env.fees?.[chainId]?.[0]
+      const tokenAddress = fee?.feeToken
+      if (tokenAddress) {
+        fetchSymbol(tokenAddress)
+      }
+    }
+  }, [values.computeEnv, chain?.id])
+
+  // Update form values when mode or resource values change
   useEffect(() => {
     const currentValues = mode === 'free' ? freeValues : paidValues
     if (!currentValues) return
@@ -188,7 +432,18 @@ export default function ConfigureEnvironment({
     setFieldValue('ram', currentValues.ram)
     setFieldValue('disk', currentValues.disk)
     setFieldValue('jobDuration', currentValues.jobDuration)
-  }, [mode, freeValues, paidValues, setFieldValue])
+  }, [
+    mode,
+    freeValues.cpu,
+    freeValues.ram,
+    freeValues.disk,
+    freeValues.jobDuration,
+    paidValues.cpu,
+    paidValues.ram,
+    paidValues.disk,
+    paidValues.jobDuration,
+    setFieldValue
+  ])
 
   useEffect(() => {
     if (!setAllResourceValues || !values.computeEnv) return
@@ -263,112 +518,25 @@ export default function ConfigureEnvironment({
   const tokenAddress = fee?.feeToken
   const tokenSymbol = symbolMap[tokenAddress] || '...'
 
-  if (tokenAddress) fetchSymbol(tokenAddress)
-
-  const getLimits = (id: string, isFree: boolean) => {
-    const env = values.computeEnv
-    if (!env) return { minValue: 0, maxValue: 0 }
-
-    if (id === 'jobDuration') {
-      const maxDuration = isFree ? env.free?.maxJobDuration : env.maxJobDuration
-      return {
-        minValue: 1,
-        maxValue: Math.floor((maxDuration || 3600) / 60)
-      }
-    }
-
-    const resourceLimits = isFree ? env.free?.resources : env.resources
-    const resource = resourceLimits?.find((r) => r.id === id)
-
-    const convertToMB = (value: number) => {
-      if (id === 'ram' || id === 'disk') {
-        return Math.floor(value / 1_000_000)
-      }
-      return value
-    }
-
-    return {
-      minValue: convertToMB(resource?.min ?? 0),
-      maxValue: convertToMB(resource?.max ?? 0)
-    }
-  }
-
   const updateResource = (
     type: 'cpu' | 'ram' | 'disk' | 'jobDuration',
-    value: number,
+    value: number | string,
     isFree: boolean
   ) => {
-    if (isFree) {
-      setFreeValues((prev) => ({ ...prev, [type]: value }))
-    } else {
-      setPaidValues((prev) => ({ ...prev, [type]: value }))
+    const { minValue, maxValue } = getLimits(type, isFree)
+
+    // Allow empty string or invalid input temporarily, validate on blur
+    if (value === '' || isNaN(Number(value))) {
+      return
     }
-  }
 
-  const renderResourceRow = (
-    resourceId: string,
-    label: string,
-    unit: string,
-    isFree: boolean
-  ) => {
-    const { minValue, maxValue } = getLimits(resourceId, isFree)
-    const currentValue = isFree
-      ? freeValues[resourceId]
-      : paidValues[resourceId]
+    const validatedValue = clamp(Number(value), minValue, maxValue)
 
-    return (
-      <div
-        key={`${resourceId}-${isFree ? 'free' : 'paid'}`}
-        className={styles.resourceRow}
-      >
-        <div className={styles.resourceLabel}>{label}</div>
-        <div className={styles.sliderSection}>
-          <span className={styles.minLabel}>min</span>
-          <div className={styles.sliderContainer}>
-            <input
-              type="range"
-              min={minValue}
-              max={maxValue}
-              value={currentValue}
-              onChange={(e) =>
-                updateResource(
-                  resourceId as any,
-                  Number(e.target.value),
-                  isFree
-                )
-              }
-              className={styles.customSlider}
-            />
-            <div className={styles.sliderLine}></div>
-          </div>
-          <span className={styles.maxLabel}>max</span>
-        </div>
-        <div className={styles.inputSection}>
-          <input
-            type="text"
-            value={currentValue}
-            onChange={(e) =>
-              updateResource(resourceId as any, Number(e.target.value), isFree)
-            }
-            className={`${styles.input} ${styles.inputSmall}`}
-            placeholder="value..."
-          />
-          <span className={styles.unit}>{unit}</span>
-        </div>
-        {!isFree && (
-          <div className={styles.resourcePriceSection}>
-            <span className={styles.priceLabel}>price per time unit</span>
-            <input
-              type="text"
-              className={`${styles.input} ${styles.inputSmall}`}
-              placeholder="value..."
-              readOnly
-              value={fee?.prices?.find((p) => p.id === resourceId)?.price || 0}
-            />
-          </div>
-        )}
-      </div>
-    )
+    if (isFree) {
+      setFreeValues((prev) => ({ ...prev, [type]: validatedValue }))
+    } else {
+      setPaidValues((prev) => ({ ...prev, [type]: validatedValue }))
+    }
   }
 
   return (
@@ -376,27 +544,69 @@ export default function ConfigureEnvironment({
       <StepTitle title="C2D Environment Configuration" />
 
       {/* Free Compute Resources Section */}
-      <div className={styles.resourceSection}>
-        <div className={styles.sectionHeader}>
-          <input
-            type="radio"
-            id="free-resources"
-            checked={mode === 'free'}
-            onChange={() => setMode('free')}
-            className={styles.radioButton}
-          />
-          <label htmlFor="free-resources" className={styles.sectionTitle}>
-            Free compute resources
-          </label>
-        </div>
+      {freeAvailable && (
+        <div className={styles.resourceSection}>
+          <div className={styles.sectionHeader}>
+            <input
+              type="radio"
+              id="free-resources"
+              checked={mode === 'free'}
+              onChange={() => setMode('free')}
+              className={styles.radioButton}
+            />
+            <label htmlFor="free-resources" className={styles.sectionTitle}>
+              Free compute resources
+            </label>
+          </div>
 
-        <div className={styles.resourceContent}>
-          {renderResourceRow('cpu', 'CPU', 'Units', true)}
-          {renderResourceRow('ram', 'RAM', 'MB', true)}
-          {renderResourceRow('disk', 'DISK', 'MB', true)}
-          {renderResourceRow('jobDuration', 'JOB DURATION', 'Minutes', true)}
+          <div className={styles.resourceContent}>
+            <ResourceRow
+              resourceId="cpu"
+              label="CPU"
+              unit="Units"
+              isFree={true}
+              freeValues={freeValues}
+              paidValues={paidValues}
+              getLimits={getLimits}
+              updateResource={updateResource}
+              fee={fee}
+            />
+            <ResourceRow
+              resourceId="ram"
+              label="RAM"
+              unit="MB"
+              isFree={true}
+              freeValues={freeValues}
+              paidValues={paidValues}
+              getLimits={getLimits}
+              updateResource={updateResource}
+              fee={fee}
+            />
+            <ResourceRow
+              resourceId="disk"
+              label="DISK"
+              unit="MB"
+              isFree={true}
+              freeValues={freeValues}
+              paidValues={paidValues}
+              getLimits={getLimits}
+              updateResource={updateResource}
+              fee={fee}
+            />
+            <ResourceRow
+              resourceId="jobDuration"
+              label="JOB DURATION"
+              unit="Minutes"
+              isFree={true}
+              freeValues={freeValues}
+              paidValues={paidValues}
+              getLimits={getLimits}
+              updateResource={updateResource}
+              fee={fee}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Paid Compute Resources Section */}
       <div className={styles.resourceSection}>
@@ -414,10 +624,50 @@ export default function ConfigureEnvironment({
         </div>
 
         <div className={styles.resourceContent}>
-          {renderResourceRow('cpu', 'CPU', '', false)}
-          {renderResourceRow('ram', 'RAM', '', false)}
-          {renderResourceRow('disk', 'DISK', '', false)}
-          {renderResourceRow('jobDuration', 'JOB DURATION', '', false)}
+          <ResourceRow
+            resourceId="cpu"
+            label="CPU"
+            unit=""
+            isFree={false}
+            freeValues={freeValues}
+            paidValues={paidValues}
+            getLimits={getLimits}
+            updateResource={updateResource}
+            fee={fee}
+          />
+          <ResourceRow
+            resourceId="ram"
+            label="RAM"
+            unit=""
+            isFree={false}
+            freeValues={freeValues}
+            paidValues={paidValues}
+            getLimits={getLimits}
+            updateResource={updateResource}
+            fee={fee}
+          />
+          <ResourceRow
+            resourceId="disk"
+            label="DISK"
+            unit=""
+            isFree={false}
+            freeValues={freeValues}
+            paidValues={paidValues}
+            getLimits={getLimits}
+            updateResource={updateResource}
+            fee={fee}
+          />
+          <ResourceRow
+            resourceId="jobDuration"
+            label="JOB DURATION"
+            unit=""
+            isFree={false}
+            freeValues={freeValues}
+            paidValues={paidValues}
+            getLimits={getLimits}
+            updateResource={updateResource}
+            fee={fee}
+          />
         </div>
       </div>
 
@@ -432,6 +682,9 @@ export default function ConfigureEnvironment({
             className={`${styles.input} ${styles.inputLarge}`}
             placeholder="0"
           />
+          {/* {mode === 'paid' && (
+            <span className={styles.unit}>{tokenSymbol}</span>
+          )} */}
           <div className={styles.priceInfo}>
             <span>
               Calculated based on the unit price for each resource and the Job

@@ -304,7 +304,7 @@ body .input {
 body .inputSmall {
   width: 80px;
   height: 24px !important;
-  padding: 5px 20px !important;
+  padding: 5px 5px !important;
   font-size: 12px;
   line-height: 14px;
 }
@@ -331,6 +331,58 @@ body .inputSmall {
   color: var(--publish-text-secondary);
   margin-left: 4px;
   flex-shrink: 0;
+}
+
+/* css for error message */
+.inputError {
+  border: 1px solid red;
+}
+
+.errorOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* High z-index to ensure overlay is on top */
+}
+
+.errorPopup {
+  background-color: #ffe6e6;
+  border: 1px solid red;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: 400px; /* Larger width */
+  max-width: 90vw; /* Responsive max-width */
+  min-height: 100px; /* Minimum height for larger appearance */
+}
+
+.errorMessage {
+  color: red;
+  font-size: 1rem; /* Slightly larger font */
+  flex: 1; /* Allow message to take available space */
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 1.5rem; /* Larger close button */
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.closeButton:hover {
+  color: darkred;
 }
 
 /* Price Section for Paid Resources */

@@ -1,43 +1,42 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect, useMemo } from 'react'
 import { useFormikContext } from 'formik'
 import { useAccount } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
 import { useCancelToken } from '@hooks/useCancelToken'
 import DatasetSelection from '@shared/FormInput/InputElement/DatasetSelection'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
-import { getAlgorithmDatasetsForComputeSelection } from '@utils/aquarius'
-import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import Loader from '@shared/atoms/Loader'
 import styles from './index.module.css'
 
 type FormValues = {
-  dataset: string[]
+  dataset: string
+  selectedAlgorithm: any
+  algorithm: string
+  selectedAsset?: any
 }
 
-export interface DatasetSelectionDataset extends AssetSelectionAsset {
-  checked: boolean
-}
-
-export default function SelectDataset({
+export default function SelectAlgorithm({
   asset,
-  service,
-  accessDetails
+  algorithms
 }: {
   asset: AssetExtended
-  service: Service
-  accessDetails: AccessDetails
+  algorithms: AssetSelectionAsset[]
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const [selectedDatasetIds, setSelectedDatasetIds] = useState<string[]>([])
   const newCancelToken = useCancelToken()
-  const [datasetsForCompute, setDatasetsForCompute] = useState<any[]>()
+  const [datasetsForCompute, setDatasetsForCompute] = useState<any[]>([])
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(false)
+
+  const selectedDatasetId = useMemo(
+    () => values.dataset || '',
+    [values.dataset]
+  )
 
   function transformDatasets(
     datasets: AssetSelectionAsset[],
-    selectedIds: string[] = []
+    selectedId: string = ''
   ): any[] {
     const grouped: Record<string, any> = {}
 
@@ -45,25 +44,25 @@ export default function SelectDataset({
       if (!grouped[ds.did]) {
         grouped[ds.did] = {
           did: ds.did,
-          name: ds.name,
+          name: ds.name || ds.did, // fallback to DID instead of "Unnamed"
           symbol: ds.symbol,
           datasetPrice: 0,
           description: ds.description,
-          expanded: selectedIds.includes(ds.did),
-          checked: selectedIds.includes(ds.did),
+          expanded: selectedId === ds.did,
+          checked: selectedId === ds.did,
           services: []
         }
       }
 
       grouped[ds.did].services.push({
         serviceId: ds.serviceId,
-        serviceName: ds.serviceName,
-        serviceDescription: ds.serviceDescription,
-        serviceDuration: ds.serviceDuration,
+        serviceName: ds.serviceName || `${ds.serviceType} Service`,
+        serviceDescription: ds.serviceDescription || '',
+        serviceDuration: ds.serviceDuration || 'not coming',
         serviceType: ds.serviceType,
         price: ds.price,
         tokenSymbol: ds.tokenSymbol,
-        checked: ds.checked,
+        checked: false,
         isAccountIdWhitelisted: ds.isAccountIdWhitelisted,
         datetime: ds.datetime
       })
@@ -75,75 +74,65 @@ export default function SelectDataset({
   }
 
   useEffect(() => {
-    if (!accessDetails.type) return
+    if (asset.credentialSubject?.metadata.type !== 'dataset') return
 
     async function getDatasetsAllowedForCompute() {
       setIsLoadingDatasets(true)
       try {
-        const datasets = await getAlgorithmDatasetsForComputeSelection(
-          asset.id,
-          service.id,
-          service.serviceEndpoint,
-          accountId,
-          asset.credentialSubject?.chainId,
-          newCancelToken()
-        )
-
-        const groupedDatasets = transformDatasets(datasets)
-        setDatasetsForCompute(groupedDatasets)
+        const grouped = transformDatasets(algorithms, selectedDatasetId)
+        setDatasetsForCompute(grouped)
       } catch (error) {
-        console.error('Error fetching datasets:', error)
+        console.error('Error transforming datasets:', error)
         setDatasetsForCompute([])
       } finally {
         setIsLoadingDatasets(false)
       }
     }
 
-    if (asset.credentialSubject?.metadata.type === 'algorithm') {
-      getDatasetsAllowedForCompute()
-    }
-  }, [accessDetails, accountId, asset, newCancelToken, service])
-
-  // useEffect(() => {
-  //   // Initialize from form values if needed
-  //   if (Array.isArray(values.dataset)) {
-  //     const existingIds = values.dataset.map((env) => env.)
-  //     setSelectedDatasetIds(existingIds)
-  //   }
-  // }, [values.dataset])
+    getDatasetsAllowedForCompute()
+  }, [accountId, asset, algorithms, selectedDatasetId])
 
   const handleDatasetSelect = (did: string) => {
-    const updatedDatasetIds = selectedDatasetIds.includes(did)
-      ? selectedDatasetIds.filter((id) => id !== did)
-      : [...selectedDatasetIds, did]
+    const newSelectedId = selectedDatasetId === did ? '' : did
 
-    setSelectedDatasetIds(updatedDatasetIds)
-
-    const updatedDatasets = datasetsForCompute?.map((ds) => ({
+    const updatedDatasets = datasetsForCompute.map((ds) => ({
       ...ds,
-      checked: updatedDatasetIds.includes(ds.did),
-      expanded: updatedDatasetIds.includes(ds.did)
+      checked: ds.did === newSelectedId,
+      expanded: ds.did === newSelectedId,
+      services: ds.services.map((s) => ({ ...s, checked: false }))
     }))
+
     setDatasetsForCompute(updatedDatasets)
 
-    const selectedDatasets = updatedDatasets?.filter((ds) =>
-      updatedDatasetIds.includes(ds.did)
+    const selectedAlgorithm = updatedDatasets.find(
+      (ds) => ds.did === newSelectedId
     )
 
-    setFieldValue('datasets', selectedDatasets)
+    const algorithmValue =
+      newSelectedId && selectedAlgorithm
+        ? JSON.stringify({
+            algoDid: newSelectedId,
+            serviceId: selectedAlgorithm.services[0]?.serviceId || ''
+          })
+        : ''
+
+    setFieldValue('dataset', newSelectedId)
+    setFieldValue('selectedAlgorithm', selectedAlgorithm || {})
+    setFieldValue('algorithm', algorithmValue)
+    setFieldValue('selectedAsset', {})
   }
 
   return (
     <>
-      <StepTitle title="Select Datasets" />
+      <StepTitle title="Select Algorithm" />
       <div className={styles.environmentSelection}>
         {isLoadingDatasets ? (
-          <Loader message="Loading datasets..." />
+          <Loader message="Loading Algorithms..." />
         ) : (
           <DatasetSelection
             asset={asset}
             datasets={datasetsForCompute}
-            selected={selectedDatasetIds}
+            selected={selectedDatasetId ? [selectedDatasetId] : []}
             onChange={handleDatasetSelect}
           />
         )}

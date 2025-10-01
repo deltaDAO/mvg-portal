@@ -468,6 +468,7 @@ export default function ComputeWizard({
             algorithmsAssets,
             accountId
           ).then((algorithmSelectionList) => {
+            console.log('algo list!!!!, ', algorithmSelectionList)
             setAlgorithmList(algorithmSelectionList)
           })
         }
