@@ -198,6 +198,28 @@ const validationVpPolicy = {
   args: Yup.number().when('type', {
     is: 'argumentVpPolicy',
     then: (shema) => shema.required('Required')
+  }),
+  url: Yup.string().when('type', {
+    is: 'externalEvpForwardVpPolicy',
+    then: (shema) =>
+      shema
+        .required('Required')
+        .test('isValidUrl', 'Invalid URL format', (value) => {
+          if (!value) return false
+          const trimmedValue = value.trim()
+          if (
+            !trimmedValue.startsWith('http://') &&
+            !trimmedValue.startsWith('https://')
+          ) {
+            return false
+          }
+          try {
+            const url = new URL(trimmedValue)
+            return url.protocol === 'http:' || url.protocol === 'https:'
+          } catch {
+            return false
+          }
+        })
   })
 }
 
@@ -208,7 +230,33 @@ const validationCredentials = {
   vcPolicies: Yup.array().of(Yup.string().required('Required')),
   vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
-  deny: Yup.array().of(Yup.string()).nullable()
+  deny: Yup.array().of(Yup.string()).nullable(),
+  externalEvpForwardUrl: Yup.string().test(
+    'external-evp-url',
+    'Invalid URL format',
+    function (value) {
+      const vpPolicies = (this.parent as any)?.vpPolicies || []
+      const hasExternal = vpPolicies.some(
+        (p: any) => p?.type === 'externalEvpForwardVpPolicy'
+      )
+      if (!hasExternal) return true
+
+      if (!value) return false
+      const trimmedValue = value.trim()
+      if (
+        !trimmedValue.startsWith('http://') &&
+        !trimmedValue.startsWith('https://')
+      ) {
+        return false
+      }
+      try {
+        const url = new URL(trimmedValue)
+        return url.protocol === 'http:' || url.protocol === 'https:'
+      } catch {
+        return false
+      }
+    }
+  )
 }
 
 const validationService = {

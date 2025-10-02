@@ -1,4 +1,5 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
+import { Field } from 'formik'
 import Input from '../../FormInput'
 import styles from './Advanced.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
@@ -19,6 +20,9 @@ interface AdvancedOptionsProps {
   onMinCredentialsCountChange: (value: string) => void
   onLimitMaxCredentialsChange: () => void
   onMaxCredentialsCountChange: (value: string) => void
+  externalEvpForward: boolean
+  onExternalEvpForwardChange: () => void
+  onExternalEvpForwardUrlChange: (value: string) => void
 }
 
 export default function AdvancedOptions({
@@ -34,7 +38,10 @@ export default function AdvancedOptions({
   onLimitMinCredentialsChange,
   onMinCredentialsCountChange,
   onLimitMaxCredentialsChange,
-  onMaxCredentialsCountChange
+  onMaxCredentialsCountChange,
+  externalEvpForward,
+  onExternalEvpForwardChange,
+  onExternalEvpForwardUrlChange
 }: AdvancedOptionsProps): ReactElement {
   return (
     <div className={styles.container}>
@@ -154,6 +161,46 @@ export default function AdvancedOptions({
               className={styles.numberInput}
               disabled={!limitMaxCredentials}
             />
+          )}
+        </div>
+
+        <div className={styles.inputRow}>
+          <div className={styles.checkboxWithTooltip}>
+            <Input
+              name={`${name}.externalEvpForward`}
+              type="checkbox"
+              options={['External EVP forward']}
+              checked={externalEvpForward}
+              onChange={onExternalEvpForwardChange}
+              hideLabel={true}
+            />
+            <Tooltip
+              content={
+                <Markdown text="Submits the Enveloped Verifiable Presentation to an external service for verification. Provide the service URL when enabled." />
+              }
+            />
+          </div>
+          {externalEvpForward && (
+            <div className={styles.fullWidth}>
+              <Field name={`${name}.externalEvpForwardUrl`}>
+                {({ field, form }) => (
+                  <Input
+                    field={field}
+                    form={form}
+                    type="text"
+                    placeholder="https://service.example.com/evp"
+                    value={field.value || ''}
+                    onChange={(e) => {
+                      const val = (e.target as HTMLInputElement).value
+                      onExternalEvpForwardUrlChange(val)
+                      form.setFieldValue(field.name, val)
+                    }}
+                    pattern="^https?://.+"
+                    hideLabel={true}
+                  />
+                )}
+              </Field>
+            </div>
           )}
         </div>
       </div>

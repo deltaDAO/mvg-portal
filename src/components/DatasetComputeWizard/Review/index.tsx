@@ -887,10 +887,10 @@ export default function Review({
             </div>
           ) : (
             verificationQueue.map((item, i) => {
-              const needsSsi =
+              const hasSsiPolicy =
                 requiresSsi(item.asset?.credentialSubject?.credentials) ||
-                requiresSsi(item.service?.credentials) ||
-                item.service
+                requiresSsi(item.service?.credentials)
+              const needsSsi = hasSsiPolicy || item.service
 
               return (
                 <PricingRow
@@ -909,6 +909,11 @@ export default function Review({
                       }
                     : {})}
                   isService={true}
+                  infoMessage={
+                    !hasSsiPolicy
+                      ? 'No credentials required (never expires)'
+                      : undefined
+                  }
                   credentialStatus={item.status}
                   assetId={item.asset?.id}
                   serviceId={item.service?.id}

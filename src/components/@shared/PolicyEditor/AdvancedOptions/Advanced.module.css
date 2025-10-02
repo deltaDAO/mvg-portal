@@ -42,6 +42,11 @@
   gap: var(--sp-2);
 }
 
+.fullWidth {
+  width: 100%;
+  align-self: stretch;
+}
+
 .inputRow > div > div > div {
   margin-top: 0;
 }
@@ -59,4 +64,8 @@
   flex-direction: row;
   align-items: center;
   gap: var(--sp-1_5);
+}
+
+.externalEvpInput {
+  width: 100%;
 }

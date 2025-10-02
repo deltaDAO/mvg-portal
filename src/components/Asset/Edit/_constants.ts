@@ -69,10 +69,21 @@ function generateCredentials(
           const newVpPolicies: VpPolicyType[] = Array.isArray(value.vp_policies)
             ? value.vp_policies.map((policy) => {
                 if (isVpValue(policy)) {
+                  if (
+                    policy.policy === 'external-evp-forward' &&
+                    typeof policy.args === 'object' &&
+                    policy.args !== null &&
+                    'url' in (policy.args as any)
+                  ) {
+                    return {
+                      type: 'externalEvpForwardVpPolicy',
+                      url: (policy.args as any).url as string
+                    }
+                  }
                   const result: ArgumentVpPolicy = {
                     type: 'argumentVpPolicy',
                     policy: policy.policy,
-                    args: policy.args.toString()
+                    args: String(policy.args)
                   }
                   return result
                 } else {
