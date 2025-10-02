@@ -47,8 +47,8 @@ const PreviewSelectedServices = () => {
         name: s.name || 'Unnamed Service',
         title: s.name || 'Unnamed Service',
         serviceDescription: s.serviceDescription || 'No description available',
-        type: s.type || 'Access',
-        duration: s.duration || 'Forever',
+        type: s.type,
+        duration: s.duration,
         price: String(s.price ?? d.datasetPrice ?? 0),
         symbol: s.symbol || 'OCEAN',
         checked: s.checked ?? false

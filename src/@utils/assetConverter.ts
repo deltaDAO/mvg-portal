@@ -121,7 +121,7 @@ export async function transformAssetToAssetSelectionDataset(
           serviceId: service.id,
           serviceName: service.name,
           serviceDescription: service.description?.['@value'] || '',
-          ServiceType: service.type,
+          serviceType: service.type,
           serviceDuration: service.timeout,
           name: asset.credentialSubject.metadata.name,
           price:
