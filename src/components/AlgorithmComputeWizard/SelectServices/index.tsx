@@ -46,10 +46,10 @@ const ServiceSelector = () => {
       services: d.services.map((s: any) => ({
         id: s.serviceId,
         name: s.serviceName || 'Unnamed Service',
-        title: s.serviceType || 'Unnamed Service',
+        title: s.serviceName,
         serviceDescription: s.serviceDescription || 'No description available',
-        type: s.serviceType || 'Access',
-        duration: s.serviceDuration || 'Forever',
+        type: s.serviceType,
+        duration: s.serviceDuration,
         price: String(s.price ?? d.datasetPrice ?? 0),
         symbol: s.tokenSymbol || 'OCEAN',
         checked: s.checked ?? false
