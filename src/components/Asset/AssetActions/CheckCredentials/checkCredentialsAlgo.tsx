@@ -193,9 +193,14 @@ export function AssetActionCheckCredentialsAlgo({
                 setCheckCredentialState(CheckCredentialState.ReadDids)
               }
             } else {
+              // Cached credentials satisfy PD; normalize to IDs and allow user to review policy
               exchangeStateData.verifiableCredentials = resultCachedCredentials
-              exchangeStateData.selectedCredentials = resultCachedCredentials
-              setCheckCredentialState(CheckCredentialState.ReadDids)
+              exchangeStateData.selectedCredentials =
+                resultCachedCredentials.map(
+                  (credential) =>
+                    credential?.parsedDocument?.id || credential?.id
+                )
+              setShowVpDialog(true)
             }
 
             setExchangeStateData({ ...exchangeStateData })
@@ -218,8 +223,23 @@ export function AssetActionCheckCredentialsAlgo({
               break
             }
 
-            ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
-            setCachedCredentials(selectedCredentials)
+            // Cache full credential objects
+            ssiWalletCache.cacheCredentials(
+              asset.id,
+              selectedCredentials as any
+            )
+            setCachedCredentials(selectedCredentials as any)
+
+            // Normalize for use request → IDs only
+            exchangeStateData.selectedCredentials = (
+              selectedCredentials as any[]
+            )
+              .map((cred) =>
+                typeof cred === 'string'
+                  ? cred
+                  : cred?.parsedDocument?.id || cred?.id
+              )
+              .filter(Boolean)
 
             exchangeStateData.dids = await getWalletDids(
               selectedWallet.id,

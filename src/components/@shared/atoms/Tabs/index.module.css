@@ -140,6 +140,11 @@
   width: 100%;
 }
 
+.editTabPanel > div {
+  max-width: none !important;
+  width: 100%;
+}
+
 @media (min-width: 40rem) {
   .publishTabContent {
     padding: var(--sp-4) 0 var(--sp-4) 0;

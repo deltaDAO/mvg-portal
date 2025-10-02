@@ -755,11 +755,18 @@ export default function ComputeWizard({
       const skip = lookupVerifierSessionIdSkip(asset?.id, service?.id)
 
       if (appConfig.ssiEnabled && !skip) {
-        const isValid = await validateCredentials(asset.id, service.id)
-        if (!isValid) {
-          await refreshCredentials(asset.id, service.id)
-          toast.error('Credentials expired. Please re-verify your credentials.')
-          return
+        try {
+          const sessionId = lookupVerifierSessionId(asset.id, service.id)
+          const result = await checkVerifierSessionId(sessionId)
+          if (!result?.success) {
+            toast.error(
+              'Credentials expired. Please re-verify your credentials.'
+            )
+            return
+          }
+        } catch (error) {
+          resetCacheWallet()
+          throw error
         }
       }
 
