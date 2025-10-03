@@ -167,7 +167,13 @@ export default function Details({
                   title="Finished"
                   content={
                     <Time
-                      date={((job as any).algoStopTimestamp * 1000).toString()}
+                      date={
+                        Number((job as any).algoStopTimestamp) > 0
+                          ? (
+                              Number((job as any).algoStopTimestamp) * 1000
+                            ).toString()
+                          : (Number(job.dateFinished) * 1000).toString()
+                      }
                       isUnix
                       relative
                     />

@@ -235,7 +235,13 @@ export const serviceValidationSchema = Yup.object().shape({
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({
-        url: Yup.string().nullable(),
+        url: Yup.string()
+          .nullable()
+          .test(
+            'is-raw-url',
+            'URL must start with https://raw.',
+            (value) => !value || value.startsWith('https://raw.')
+          ),
         valid: Yup.boolean().nullable()
       })
     )

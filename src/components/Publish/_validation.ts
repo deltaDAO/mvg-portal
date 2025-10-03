@@ -273,7 +273,14 @@ const validationService = {
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({
-        url: testLinks(),
+        url: testLinks().test(
+          'is-raw-url',
+          'URL must start with https://raw.',
+          (value) => {
+            if (!value) return false
+            return value.startsWith('https://raw.')
+          }
+        ),
         valid: Yup.boolean().isTrue().required('File must be valid.')
       })
     )

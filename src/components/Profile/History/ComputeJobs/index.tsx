@@ -190,7 +190,11 @@ export default function ComputeJobs({
       selector: (row) =>
         row.dateFinished ? (
           <Time
-            date={((row as any).algoStartTimestamp * 1000).toString()}
+            date={
+              Number((row as any).algoStartTimestamp) > 0
+                ? (Number((row as any).algoStartTimestamp) * 1000).toString()
+                : (Number(row.dateCreated) * 1000).toString()
+            }
             isUnix
             relative
           />
@@ -203,7 +207,11 @@ export default function ComputeJobs({
       selector: (row) =>
         row.dateFinished ? (
           <Time
-            date={((row as any).algoStopTimestamp * 1000).toString()}
+            date={
+              Number((row as any).algoStopTimestamp) > 0
+                ? (Number((row as any).algoStopTimestamp) * 1000).toString()
+                : (Number(row.dateFinished) * 1000).toString()
+            }
             isUnix
             relative
           />
