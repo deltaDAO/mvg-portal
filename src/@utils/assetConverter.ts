@@ -37,8 +37,16 @@ export async function transformAssetToAssetSelection(
       )
 
       const { services } = asset.credentialSubject
-      // only loop through those services that appear in selectedAlgorithms
+      // only loop through services that are compute, match provider, and appear in selectedAlgorithms
       services.forEach((service, idx) => {
+        // enforce compute-only
+        if (service?.type !== 'compute') return
+        // enforce same provider as datasetProviderEndpoint
+        if (
+          normalizeUrl(service?.serviceEndpoint) !==
+          normalizeUrl(datasetProviderEndpoint)
+        )
+          return
         const key = `${asset.id}|${service.id}`
         if (
           selectedAlgorithms &&
@@ -78,7 +86,8 @@ export async function transformAssetToAssetSelectionDataset(
   assets: Asset[],
   accountId: string,
   selectedAlgorithms?: PublisherTrustedAlgorithmService[],
-  allow?: boolean
+  allow?: boolean,
+  allowedAlgorithm?: { algorithmDid: string; algorithmServiceId: string }
 ): Promise<any[]> {
   if (!assets) return []
   const algorithmList: any[] = []
@@ -104,8 +113,51 @@ export async function transformAssetToAssetSelectionDataset(
       )
 
       const { services } = asset.credentialSubject
-      // only loop through those services that appear in selectedAlgorithms
+      // only loop through services that are compute, same provider, and allowed for the selected algorithm
       services.forEach((service, idx) => {
+        // keep only compute services
+        if (service?.type !== 'compute') return
+        // enforce same provider as datasetProviderEndpoint
+        if (
+          normalizeUrl(service?.serviceEndpoint) !==
+          normalizeUrl(datasetProviderEndpoint)
+        )
+          return
+
+        if (allowedAlgorithm) {
+          const computeSection = (service as any)?.compute
+          const publishers = computeSection?.publisherTrustedAlgorithmPublishers
+          const algos = computeSection?.publisherTrustedAlgorithms
+
+          const allowsAllByPublishers = Array.isArray(publishers)
+            ? publishers.includes('*')
+            : false
+          let allowsAllByWildcardAlgo = false
+          if (Array.isArray(algos) && algos.length === 1) {
+            const a = algos[0]
+            allowsAllByWildcardAlgo =
+              a?.did === '*' &&
+              a?.containerSectionChecksum === '*' &&
+              a?.filesChecksum === '*' &&
+              a?.serviceId === '*'
+          }
+          const allowsSpecific = Array.isArray(algos)
+            ? algos.some(
+                (a: any) =>
+                  a?.did === allowedAlgorithm.algorithmDid &&
+                  (a?.serviceId === allowedAlgorithm.algorithmServiceId ||
+                    a?.serviceId === '*')
+              )
+            : false
+
+          if (
+            !allowsAllByPublishers &&
+            !allowsAllByWildcardAlgo &&
+            !allowsSpecific
+          )
+            return
+        }
+
         const key = `${asset.id}|${service.id}`
         if (
           selectedAlgorithms &&

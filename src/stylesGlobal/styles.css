@@ -45,7 +45,7 @@ a {
 
 p {
   margin: 0;
-  margin-bottom: calc(var(--spacer) / var(--line-height));
+  /* margin-bottom: calc(var(--spacer) / var(--line-height)); */
 }
 
 strong {

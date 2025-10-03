@@ -9,4 +9,10 @@
 
 .error {
   composes: error from '@shared/FormInput/index.module.css';
+  position: static;
+  top: auto;
+  left: auto;
+  right: auto;
+  z-index: auto;
+  margin-top: 6px;
 }

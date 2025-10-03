@@ -504,7 +504,9 @@ export async function getAlgorithmDatasetsForComputeSelection(
     datasetProviderUri,
     uniqueAssets,
     accountId,
-    []
+    [],
+    false,
+    { algorithmDid: algorithmId, algorithmServiceId: serviceId }
   )
   return datasets
 }
