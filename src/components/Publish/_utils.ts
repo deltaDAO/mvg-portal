@@ -402,8 +402,8 @@ export function generateCredentials(
         if (credential.type === 'externalEvpForwardVpPolicy') {
           return {
             policy: 'external-evp-forward',
-            args: { url: credential.url }
-          } as any
+            args: credential.url
+          }
         }
 
         return null

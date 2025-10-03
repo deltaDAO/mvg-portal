@@ -71,13 +71,11 @@ function generateCredentials(
                 if (isVpValue(policy)) {
                   if (
                     policy.policy === 'external-evp-forward' &&
-                    typeof policy.args === 'object' &&
-                    policy.args !== null &&
-                    'url' in (policy.args as any)
+                    typeof policy.args === 'string'
                   ) {
                     return {
                       type: 'externalEvpForwardVpPolicy',
-                      url: (policy.args as any).url as string
+                      url: policy.args
                     }
                   }
                   const result: ArgumentVpPolicy = {
