@@ -248,7 +248,8 @@ export async function transformAssetToAssetSelectionEdit(
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
             ? isAddressWhitelisted(asset, accountId, service)
-            : true
+            : true,
+          datetime: asset.indexedMetadata.event.datetime
         }
 
         algorithmList.push(assetEntry)
@@ -256,10 +257,13 @@ export async function transformAssetToAssetSelectionEdit(
     }
   }
 
-  // Sort so that checked = true appear first
-  algorithmList.sort((a, b) =>
-    b.checked === a.checked ? 0 : b.checked ? 1 : -1
-  )
+  // Sort: selected first; both selected and unselected are sorted by datetime (newest first)
+  algorithmList.sort((a, b) => {
+    if (a.checked !== b.checked) return a.checked ? -1 : 1
+    const aTime = a.datetime ? new Date(a.datetime).getTime() : 0
+    const bTime = b.datetime ? new Date(b.datetime).getTime() : 0
+    return bTime - aTime
+  })
 
   return algorithmList
 }

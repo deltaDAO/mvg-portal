@@ -68,6 +68,27 @@ export default function AssetSelection({
   const [currentPage, setCurrentPage] = useState(1)
 
   const assetsPerPage = 8
+  function isAssetSelected(
+    sel: string[] | undefined,
+    asset: AssetSelectionAsset
+  ) {
+    if (!sel || sel.length === 0) return false
+    for (const s of sel) {
+      if (s === asset.serviceId) return true
+      try {
+        const parsed = JSON.parse(s) as { algoDid?: string; serviceId?: string }
+        if (
+          parsed?.serviceId === asset.serviceId &&
+          (!parsed?.algoDid || parsed.algoDid === asset.did)
+        ) {
+          return true
+        }
+      } catch {
+        // ignore parse errors; not JSON
+      }
+    }
+    return false
+  }
 
   const handlePageOnChange = (page: number) => {
     const pageNumber = page + 1
@@ -88,9 +109,19 @@ export default function AssetSelection({
         : true
     )
 
+    // Sort: selected first; both selected and unselected are sorted by datetime (newest first)
+    result.sort((a, b) => {
+      const aSelected = isAssetSelected(selected, a) ? 1 : 0
+      const bSelected = isAssetSelected(selected, b) ? 1 : 0
+      if (aSelected !== bSelected) return bSelected - aSelected
+      const aTime = a.datetime ? new Date(a.datetime).getTime() : 0
+      const bTime = b.datetime ? new Date(b.datetime).getTime() : 0
+      return bTime - aTime
+    })
+
     setFilteredAssets(result)
     setCurrentPage(1)
-  }, [assets, searchValue])
+  }, [assets, searchValue, selected])
 
   const totalPages = Math.ceil(filteredAssets.length / assetsPerPage)
   const paginatedAssets = filteredAssets.slice(
@@ -120,12 +151,15 @@ export default function AssetSelection({
         ) : (
           <>
             {paginatedAssets.map((asset: AssetSelectionAsset) => (
-              <div className={styles.row} key={asset.serviceId}>
+              <div
+                className={styles.row}
+                key={`${asset.did}-${asset.serviceId}`}
+              >
                 <input
-                  id={slugify(asset.serviceId)}
+                  id={slugify(`${asset.did}-${asset.serviceId}`)}
                   className={styleClassesInput}
                   {...props}
-                  checked={selected && selected.includes(asset.serviceId)}
+                  checked={isAssetSelected(selected, asset)}
                   disabled={disabled || !asset.isAccountIdWhitelisted}
                   type={multiple ? 'checkbox' : 'radio'}
                   value={JSON.stringify({
@@ -138,7 +172,7 @@ export default function AssetSelection({
                     label: true,
                     priceOnRight
                   })}
-                  htmlFor={slugify(asset.serviceId)}
+                  htmlFor={slugify(`${asset.did}-${asset.serviceId}`)}
                   title={asset.name}
                 >
                   <div className={styles.labelContent}>

@@ -183,30 +183,48 @@ function getComputeSettingsInitialValues({
   publisherTrustedAlgorithms,
   publisherTrustedAlgorithmPublishers
 }: Compute): ComputeEditForm {
-  const allowAllPublishedAlgorithms = publisherTrustedAlgorithms === null
-  const publisherTrustedAlgorithmsForForm =
-    allowAllPublishedAlgorithms === true
-      ? null
-      : publisherTrustedAlgorithms.map((algo) =>
-          JSON.stringify({
-            algoDid: algo.did,
-            serviceId: algo.serviceId
-          })
-        )
+  // Detect wildcard-based "allow all" configuration
+  const hasWildcardPublishers =
+    Array.isArray(publisherTrustedAlgorithmPublishers) &&
+    publisherTrustedAlgorithmPublishers.includes('*')
 
-  const publisherTrustedAlgorithmPublishersValue = Array.isArray(
-    publisherTrustedAlgorithmPublishers
-  )
-    ? 'Allow specific trusted algorithm publishers'
-    : 'Allow all trusted algorithm publishers'
+  let hasWildcardAlgorithms = false
+  if (
+    Array.isArray(publisherTrustedAlgorithms) &&
+    publisherTrustedAlgorithms.length === 1
+  ) {
+    const a = (publisherTrustedAlgorithms as any)[0]
+    hasWildcardAlgorithms =
+      a?.did === '*' &&
+      a?.containerSectionChecksum === '*' &&
+      a?.filesChecksum === '*' &&
+      a?.serviceId === '*'
+  }
+
+  const allowAllPublishedAlgorithms =
+    hasWildcardPublishers || hasWildcardAlgorithms
+
+  const publisherTrustedAlgorithmsForForm = allowAllPublishedAlgorithms
+    ? []
+    : publisherTrustedAlgorithms.map((algo) =>
+        JSON.stringify({
+          algoDid: algo.did,
+          serviceId: algo.serviceId
+        })
+      )
+
+  const publisherTrustedAlgorithmPublishersValue = hasWildcardPublishers
+    ? 'Allow all trusted algorithm publishers'
+    : 'Allow specific trusted algorithm publishers'
 
   return {
     allowAllPublishedAlgorithms,
-    publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm || [],
+    publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm,
     publisherTrustedAlgorithmPublishers:
       publisherTrustedAlgorithmPublishersValue,
-    publisherTrustedAlgorithmPublishersAddresses:
-      publisherTrustedAlgorithmPublishers?.join(',') || ''
+    publisherTrustedAlgorithmPublishersAddresses: hasWildcardPublishers
+      ? ''
+      : publisherTrustedAlgorithmPublishers?.join(',') || ''
   }
 }
 
