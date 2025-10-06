@@ -35,7 +35,8 @@ function generateCredentials(
   const credentialForm: CredentialForm = {
     vpPolicies: [],
     allowInputValue: '',
-    denyInputValue: ''
+    denyInputValue: '',
+    externalEvpForwardUrl: ''
   }
   if (appConfig.ssiEnabled) {
     const requestCredentials: RequestCredentialForm[] = []
@@ -73,6 +74,7 @@ function generateCredentials(
                     policy.policy === 'external-evp-forward' &&
                     typeof policy.args === 'string'
                   ) {
+                    credentialForm.externalEvpForwardUrl = policy.args
                     return {
                       type: 'externalEvpForwardVpPolicy',
                       url: policy.args
@@ -183,7 +185,7 @@ function getComputeSettingsInitialValues({
   publisherTrustedAlgorithms,
   publisherTrustedAlgorithmPublishers
 }: Compute): ComputeEditForm {
-  // Detect wildcard-based "allow all" configuration
+  // Determine if "allow all" is set either via wildcard publishers or a wildcard algorithm entry
   const hasWildcardPublishers =
     Array.isArray(publisherTrustedAlgorithmPublishers) &&
     publisherTrustedAlgorithmPublishers.includes('*')
@@ -193,7 +195,7 @@ function getComputeSettingsInitialValues({
     Array.isArray(publisherTrustedAlgorithms) &&
     publisherTrustedAlgorithms.length === 1
   ) {
-    const a = (publisherTrustedAlgorithms as any)[0]
+    const a = publisherTrustedAlgorithms[0] as any
     hasWildcardAlgorithms =
       a?.did === '*' &&
       a?.containerSectionChecksum === '*' &&

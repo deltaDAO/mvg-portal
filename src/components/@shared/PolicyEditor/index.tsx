@@ -222,7 +222,8 @@ export function PolicyEditor(props): ReactElement {
 
   const [enabled, setEnabled] = useState(credentials.enabled || enabledView)
   const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(
-    credentials.advancedFeaturesEnabled || false
+    credentials.advancedFeaturesEnabled ||
+      (credentials.vpPolicies?.length ?? 0) > 0
   )
   const [holderBinding, setHolderBinding] = useState(() => {
     const hasHolderBinding = credentials.vpPolicies?.some(
@@ -598,7 +599,10 @@ export function PolicyEditor(props): ReactElement {
     if (!enabled) return
 
     if (!editAdvancedFeatures) {
-      if (credentials.vpPolicies !== undefined) {
+      if (
+        Array.isArray(credentials.vpPolicies) &&
+        credentials.vpPolicies.length === 0
+      ) {
         const { vpPolicies, ...credentialsWithoutVpPolicies } = credentials
         setCredentials(credentialsWithoutVpPolicies)
       }
