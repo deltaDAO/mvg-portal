@@ -210,9 +210,9 @@ export async function getFileDidInfo(
     )
     return response
   } catch (error) {
-    const message = getErrorMessage(error.message)
+    console.log('Error check did files', error)
+    const message = 'Failed to fetch file info from provider'
     LoggerInstance.error('[Initialize check file did] Error:', message)
-    toast.error(`[Initialize check file did] Error: ${message}`)
     throw new Error(`[Initialize check file did] Error: ${message}`)
   }
 }
