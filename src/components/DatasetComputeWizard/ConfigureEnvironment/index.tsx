@@ -290,7 +290,8 @@ export default function ConfigureEnvironment({
           : 0
       totalPrice += units * p.price
     }
-    return totalPrice * paidValues.jobDuration
+    const rawPrice = totalPrice * paidValues.jobDuration
+    return Math.round(rawPrice * 100) / 100
   }, [mode, values.computeEnv, chain?.id, paidValues])
 
   const clamp = (val: number, min: number, max: number) =>
