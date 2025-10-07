@@ -34,7 +34,7 @@ export async function requestCredentialPresentation(
 
     const action: PolicyServerInitiateAction = {
       action: PolicyServerActions.INITIATE,
-      ddo: asset,
+      documentId: asset.id,
       policyServer,
       serviceId,
       consumerAddress

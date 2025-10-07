@@ -29,7 +29,7 @@ export interface PolicyServerInitiateComputeActionData
 
 export interface PolicyServerInitiateAction {
   action: PolicyServerActions.INITIATE
-  ddo: any
+  documentId: string
   policyServer: PolicyServerInitiateActionData
   serviceId: string
   consumerAddress: string
