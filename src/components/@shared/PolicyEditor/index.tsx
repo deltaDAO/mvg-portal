@@ -256,7 +256,7 @@ export function PolicyEditor(props): ReactElement {
     const p = credentials.vpPolicies?.find(
       (p) => p?.type === 'externalEvpForwardVpPolicy'
     ) as any
-    return p?.url || ''
+    return p?.url || credentials.externalEvpForwardUrl || ''
   })
   const [limitMaxCredentials, setLimitMaxCredentials] = useState(() => {
     const maxCredsPolicy = credentials.vpPolicies?.find(
@@ -270,8 +270,8 @@ export function PolicyEditor(props): ReactElement {
       (p) => p?.type === 'externalEvpForwardVpPolicy'
     ) as any
     setExternalEvpForward(!!p)
-    setExternalEvpForwardUrl(p?.url || '')
-  }, [credentials.vpPolicies])
+    setExternalEvpForwardUrl(p?.url || credentials.externalEvpForwardUrl || '')
+  }, [credentials.vpPolicies, credentials.externalEvpForwardUrl])
   const [minimumCredentials, setMinimumCredentials] = useState(() => {
     const minCredsPolicy = credentials.vpPolicies?.find(
       (p) =>

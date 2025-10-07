@@ -104,7 +104,7 @@ const validationVpPolicy = {
     is: 'argumentVpPolicy',
     then: (shema) => shema.required('Required')
   }),
-  args: Yup.number().when('type', {
+  args: Yup.string().when('type', {
     is: 'argumentVpPolicy',
     then: (shema) => shema.required('Required')
   }),
@@ -140,7 +140,33 @@ const validationCredentials = {
   vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
   deny: Yup.array().of(Yup.string()).nullable(),
-  allowInputValue: Yup.string().nullable()
+  allowInputValue: Yup.string().nullable(),
+  externalEvpForwardUrl: Yup.string().test(
+    'external-evp-url',
+    'Invalid URL format',
+    function (value) {
+      const vpPolicies = (this.parent as any)?.vpPolicies || []
+      const hasExternal = vpPolicies.some(
+        (p: any) => p?.type === 'externalEvpForwardVpPolicy'
+      )
+      if (!hasExternal) return true
+
+      if (!value) return false
+      const trimmedValue = value.trim()
+      if (
+        !trimmedValue.startsWith('http://') &&
+        !trimmedValue.startsWith('https://')
+      ) {
+        return false
+      }
+      try {
+        const url = new URL(trimmedValue)
+        return url.protocol === 'http:' || url.protocol === 'https:'
+      } catch {
+        return false
+      }
+    }
+  )
 }
 
 export const metadataValidationSchema = Yup.object().shape({
@@ -240,7 +266,13 @@ export const serviceValidationSchema = Yup.object().shape({
           .test(
             'is-raw-url',
             'URL must start with https://raw.',
-            (value) => !value || value.startsWith('https://raw.')
+            (value, context) => {
+              const parent: any = context?.parent || {}
+              if (parent.isEncrypted === true || parent.type === 'hidden') {
+                return true
+              }
+              return !value || value.startsWith('https://raw.')
+            }
           ),
         valid: Yup.boolean().nullable()
       })
