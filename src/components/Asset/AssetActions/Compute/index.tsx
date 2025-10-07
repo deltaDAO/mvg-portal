@@ -302,6 +302,10 @@ export default function Compute({
               initializedProvider.datasets?.[i]?.providerFee
             )
             if (selectedResources.mode === 'paid') {
+              console.log(
+                'Escorw address',
+                initializedProvider.payment.escrowAddress
+              )
               const escrow = new EscrowContract(
                 ethers.utils.getAddress(
                   initializedProvider.payment.escrowAddress
@@ -344,13 +348,28 @@ export default function Compute({
               const depositedWei = ethers.BigNumber.from(funds[0] ?? '0')
 
               if (depositedWei.lt(amountWei)) {
-                console.log(`Depositing ${amountHuman} OCEAN to escrow...`)
+                console.log(
+                  `Depositing ${amountHuman} OCEAN to escrow...`,
+                  amountHuman
+                )
                 const depositTx = await escrow.deposit(
                   oceanTokenAddress,
                   amountHuman
                 )
                 await depositTx.wait()
                 console.log(`Deposited ${amountHuman} OCEAN`)
+                console.log(
+                  'Authorizing compute job...',
+                  amountHuman,
+                  selectedComputeEnv.consumerAddress
+                )
+                await escrow.authorize(
+                  oceanTokenAddress,
+                  selectedComputeEnv.consumerAddress,
+                  initializedProvider.payment.amount.toString(),
+                  selectedResources.jobDuration.toString(),
+                  '10'
+                )
               } else {
                 console.log(
                   `Skip deposit: escrow funds >= ${amountHuman} OCEAN`

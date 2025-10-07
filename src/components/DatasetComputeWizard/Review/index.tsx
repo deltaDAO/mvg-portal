@@ -167,8 +167,11 @@ export default function Review({
   const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
 
   const currentMode = paidResources?.mode === 'paid' ? 'paid' : 'free'
-  const c2dPrice =
+  const c2dPriceRaw =
     currentMode === 'paid' ? paidResources?.price : freeResources?.price
+
+  const c2dPrice =
+    c2dPriceRaw != null ? Math.round(Number(c2dPriceRaw) * 100) / 100 : 0
 
   // error message
   const errorMessages: string[] = []

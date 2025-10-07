@@ -24,7 +24,7 @@ interface ResourceRowProps {
   getLimits: (
     id: string,
     isFree: boolean
-  ) => { minValue: number; maxValue: number }
+  ) => { minValue: number; maxValue: number; step?: number }
   updateResource: (
     type: 'cpu' | 'ram' | 'disk' | 'jobDuration',
     value: number | string,
@@ -44,14 +44,13 @@ function ResourceRow({
   updateResource,
   fee
 }: ResourceRowProps): ReactElement {
-  const { minValue, maxValue } = getLimits(resourceId, isFree)
+  const { minValue, maxValue, step = 1 } = getLimits(resourceId, isFree)
   const currentValue = isFree
     ? freeValues[resourceId as keyof ResourceValues]
     : paidValues[resourceId as keyof ResourceValues]
   const [inputValue, setInputValue] = useState<string | number>(currentValue)
   const [error, setError] = useState<string | null>(null)
 
-  // Sync inputValue with currentValue when currentValue changes
   useEffect(() => {
     setInputValue(currentValue)
     setError(null)
@@ -62,7 +61,7 @@ function ResourceRow({
       setError(
         `Value cannot be empty. Please enter a number between ${minValue} and ${maxValue}.`
       )
-      setInputValue(currentValue) // Revert to currentValue
+      setInputValue(currentValue)
       return
     }
 
@@ -107,6 +106,7 @@ function ResourceRow({
             type="range"
             min={minValue}
             max={maxValue}
+            step={step}
             value={currentValue}
             onChange={(e) =>
               updateResource(
@@ -126,6 +126,7 @@ function ResourceRow({
           type="number"
           min={minValue}
           max={maxValue}
+          step={step}
           value={inputValue}
           onChange={(e) => {
             setInputValue(e.target.value)
@@ -202,7 +203,6 @@ export default function ConfigureEnvironment({
 
   const [symbolMap, setSymbolMap] = useState<{ [address: string]: string }>({})
 
-  // Get environment resource values
   const getEnvResourceValues = useCallback(
     (isFree: boolean = true) => {
       const env = values.computeEnv
@@ -212,33 +212,27 @@ export default function ConfigureEnvironment({
       const modeKey = isFree ? 'free' : 'paid'
       const envResourceValues = allResourceValues?.[`${envId}_${modeKey}`]
 
-      const convertToMB = (value: number) => {
-        return Math.floor(value / 1_000_000) // Convert bytes to MB
-      }
-
-      const resourceLimits = isFree ? env.free?.resources : env.resources
-
       return {
         cpu: isFree
           ? envResourceValues?.cpu || 0
           : envResourceValues?.cpu && envResourceValues.cpu > 0
           ? envResourceValues.cpu
-          : resourceLimits?.find((r) => r.id === 'cpu')?.min || 1,
+          : env.resources?.find((r) => r.id === 'cpu')?.min || 1,
         ram: isFree
           ? envResourceValues?.ram || 0
           : envResourceValues?.ram && envResourceValues.ram > 0
           ? envResourceValues.ram
-          : convertToMB(resourceLimits?.find((r) => r.id === 'ram')?.min || 0),
+          : env.resources?.find((r) => r.id === 'ram')?.min || 1,
         disk: isFree
           ? envResourceValues?.disk || 0
           : envResourceValues?.disk && envResourceValues.disk > 0
           ? envResourceValues.disk
-          : convertToMB(resourceLimits?.find((r) => r.id === 'disk')?.min || 0),
+          : env.resources?.find((r) => r.id === 'disk')?.min || 0,
         jobDuration: isFree
           ? envResourceValues?.jobDuration || 0
           : envResourceValues?.jobDuration && envResourceValues.jobDuration > 0
           ? envResourceValues.jobDuration
-          : resourceLimits?.find((r) => r.id === 'jobDuration')?.min || 60
+          : 1
       }
     },
     [values.computeEnv, allResourceValues]
@@ -250,33 +244,30 @@ export default function ConfigureEnvironment({
   const [paidValues, setPaidValues] = useState<ResourceValues>(() =>
     getEnvResourceValues(false)
   )
+
   const getLimits = (id: string, isFree: boolean) => {
     const env = values.computeEnv
     if (!env) return { minValue: 0, maxValue: 0 }
 
     if (id === 'jobDuration') {
-      const maxDuration = env.maxJobDuration
+      const maxDuration = isFree ? env.free.maxJobDuration : env.maxJobDuration
       return {
         minValue: 1,
-        maxValue: Math.floor((maxDuration || 3600) / 60)
+        maxValue: Math.floor(maxDuration || 3600),
+        step: 1
       }
     }
 
     const resourceLimits = isFree ? env.free?.resources : env.resources
     const resource = resourceLimits?.find((r) => r.id === id)
 
-    const convertToMB = (value: number) => {
-      if (id === 'ram' || id === 'disk') {
-        return Math.floor(value / 1_000_000)
-      }
-      return value
-    }
-
     return {
-      minValue: convertToMB(resource?.min ?? 0),
-      maxValue: convertToMB(resource?.max ?? 0)
+      minValue: resource?.min ?? 0,
+      maxValue: resource?.max ?? 0,
+      step: (id === 'ram' || id === 'disk') && !isFree ? 0.1 : 1
     }
   }
+
   const calculatePrice = useCallback(() => {
     if (mode === 'free') return 0
     if (!values.computeEnv) return 0
@@ -299,14 +290,13 @@ export default function ConfigureEnvironment({
           : 0
       totalPrice += units * p.price
     }
-    // Price is per time unit (per minute), so multiply by job duration
-    return totalPrice * paidValues.jobDuration
+    const rawPrice = totalPrice * paidValues.jobDuration
+    return Math.round(rawPrice * 100) / 100
   }, [mode, values.computeEnv, chain?.id, paidValues])
 
   const clamp = (val: number, min: number, max: number) =>
     Math.max(min, Math.min(max, val))
 
-  // Update values when environment changes
   useEffect(() => {
     const env = values.computeEnv
     if (!env) return
@@ -410,7 +400,6 @@ export default function ConfigureEnvironment({
     return sym
   }
 
-  // Fetch token symbol
   useEffect(() => {
     const env = values.computeEnv
     if (env) {
@@ -423,7 +412,6 @@ export default function ConfigureEnvironment({
     }
   }, [values.computeEnv, chain?.id])
 
-  // Update form values when mode or resource values change
   useEffect(() => {
     const currentValues = mode === 'free' ? freeValues : paidValues
     if (!currentValues) return
@@ -523,19 +511,22 @@ export default function ConfigureEnvironment({
     value: number | string,
     isFree: boolean
   ) => {
-    const { minValue, maxValue } = getLimits(type, isFree)
+    const { minValue, maxValue, step } = getLimits(type, isFree)
 
-    // Allow empty string or invalid input temporarily, validate on blur
     if (value === '' || isNaN(Number(value))) {
       return
     }
 
     const validatedValue = clamp(Number(value), minValue, maxValue)
+    const adjustedValue =
+      step && (type === 'ram' || type === 'disk') && !isFree
+        ? Number(validatedValue.toFixed(1))
+        : Math.floor(validatedValue)
 
     if (isFree) {
-      setFreeValues((prev) => ({ ...prev, [type]: validatedValue }))
+      setFreeValues((prev) => ({ ...prev, [type]: adjustedValue }))
     } else {
-      setPaidValues((prev) => ({ ...prev, [type]: validatedValue }))
+      setPaidValues((prev) => ({ ...prev, [type]: adjustedValue }))
     }
   }
 
@@ -543,7 +534,6 @@ export default function ConfigureEnvironment({
     <div className={styles.container}>
       <StepTitle title="C2D Environment Configuration" />
 
-      {/* Free Compute Resources Section */}
       {freeAvailable && (
         <div className={styles.resourceSection}>
           <div className={styles.sectionHeader}>
@@ -574,7 +564,7 @@ export default function ConfigureEnvironment({
             <ResourceRow
               resourceId="ram"
               label="RAM"
-              unit="MB"
+              unit="GB"
               isFree={true}
               freeValues={freeValues}
               paidValues={paidValues}
@@ -585,7 +575,7 @@ export default function ConfigureEnvironment({
             <ResourceRow
               resourceId="disk"
               label="DISK"
-              unit="MB"
+              unit="GB"
               isFree={true}
               freeValues={freeValues}
               paidValues={paidValues}
@@ -608,7 +598,6 @@ export default function ConfigureEnvironment({
         </div>
       )}
 
-      {/* Paid Compute Resources Section */}
       <div className={styles.resourceSection}>
         <div className={styles.sectionHeader}>
           <input
@@ -627,7 +616,7 @@ export default function ConfigureEnvironment({
           <ResourceRow
             resourceId="cpu"
             label="CPU"
-            unit=""
+            unit="Units"
             isFree={false}
             freeValues={freeValues}
             paidValues={paidValues}
@@ -638,7 +627,7 @@ export default function ConfigureEnvironment({
           <ResourceRow
             resourceId="ram"
             label="RAM"
-            unit=""
+            unit="GB"
             isFree={false}
             freeValues={freeValues}
             paidValues={paidValues}
@@ -649,7 +638,7 @@ export default function ConfigureEnvironment({
           <ResourceRow
             resourceId="disk"
             label="DISK"
-            unit=""
+            unit="GB"
             isFree={false}
             freeValues={freeValues}
             paidValues={paidValues}
@@ -660,7 +649,7 @@ export default function ConfigureEnvironment({
           <ResourceRow
             resourceId="jobDuration"
             label="JOB DURATION"
-            unit=""
+            unit="Minutes"
             isFree={false}
             freeValues={freeValues}
             paidValues={paidValues}
@@ -671,7 +660,6 @@ export default function ConfigureEnvironment({
         </div>
       </div>
 
-      {/* C2D Environment Price Section */}
       <div className={styles.priceSection}>
         <h3 className={styles.priceTitle}>C2D Environment Price</h3>
         <div className={styles.priceDisplay}>
