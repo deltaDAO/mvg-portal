@@ -194,7 +194,7 @@
             "value": "url",
             "title": "URL",
             "label": "File",
-            "placeholder": "e.g. https://raw.example/file.xyz",
+            "placeholder": "e.g. https://file.com/file.json",
             "help": "This URL will be stored encrypted after publishing. **Please make sure that the endpoint is accessible over the internet and is not protected by a firewall or by credentials.**",
             "computeHelp": "For a compute dataset, your file should match the file type required by the algorithm, and should not exceed 1 GB in file size. ",
             "prominentHelp": true,
