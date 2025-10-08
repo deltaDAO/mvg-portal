@@ -9,8 +9,7 @@ import {
   FileInfo,
   LoggerInstance,
   ZERO_ADDRESS,
-  UserCustomParameters,
-  ProviderInstance
+  UserCustomParameters
 } from '@oceanprotocol/lib'
 
 import { useAsset } from '@context/Asset'
@@ -67,7 +66,6 @@ export default function Download({
   isBalanceSufficient,
   dtBalance,
   isAccountIdWhitelisted,
-  fileIsLoading,
   consumableFeedback
 }: {
   accountId: string
@@ -97,9 +95,7 @@ export default function Download({
     accessDetails.type !== 'free'
   )
   const [isOwned, setIsOwned] = useState(false)
-  console.log('🚀 ~ Download ~ isOwned:', isOwned)
   const [isOwner, setIsOwner] = useState(false)
-  console.log('🚀 ~ Download ~ isOwner:', isOwner)
   const [validOrderTx, setValidOrderTx] = useState('')
   const [justBought, setJustBought] = useState(false)
 
@@ -327,7 +323,7 @@ export default function Download({
     setIsFullPriceLoading(false)
   }
 
-  const CalculateButton = ({ isValid }: { isValid?: boolean }) => (
+  const CalculateButton = () => (
     <CalculateButtonBuy
       type="submit"
       onClick={handleFullPrice}
@@ -557,7 +553,7 @@ export default function Download({
                         text="SSI credential verification passed"
                       />
                     </div>
-                    <CalculateButton isValid={true} />
+                    <CalculateButton />
                   </>
                 ) : (
                   <>
