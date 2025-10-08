@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  ocean-market:
+    build: .
+    ports:
+      - '8008:8008'
+    env_file:
+      - .env
+    restart: unless-stopped
