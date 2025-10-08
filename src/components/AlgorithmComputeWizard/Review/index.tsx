@@ -21,7 +21,7 @@ import { getAsset } from '@utils/aquarius'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
-import { consumeMarketOrderFee } from 'app.config.cjs'
+import { consumeMarketOrderFee, consumeMarketFee } from 'app.config.cjs'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
@@ -97,6 +97,7 @@ export default function Review({
   c2dPrice?: string
   isRequestingPrice?: boolean
 }): ReactElement {
+  console.log('accessdetails ', accessDetails)
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
@@ -126,6 +127,7 @@ export default function Review({
 
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
+  const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
   const selectedEnvId = values?.computeEnv?.id
   const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
   const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
@@ -396,6 +398,40 @@ export default function Review({
   }
 
   const currentVerificationItem = verificationQueue[currentVerificationIndex]
+  function calculateAlgorithmMarketFee(
+    consumeMarketFee: number | string,
+    algorithmPrice: number | string,
+    maxDecimals: number
+  ): string {
+    return new Decimal(consumeMarketFee)
+      .mul(new Decimal(algorithmPrice || 0))
+      .toDecimalPlaces(maxDecimals)
+      .div(100)
+      .toString()
+  }
+  // --- Calculate market fees for multiple datasets + one algorithm ---
+  const totalDatasetMarketFee =
+    selectedDatasetAsset?.reduce((acc, dataset) => {
+      const index = dataset.serviceIndex || 0
+      const details = dataset.accessDetails?.[index]
+      const datasetPrice = details?.validOrderTx ? '0' : details?.price || '0'
+
+      const fee = new Decimal(consumeMarketFee)
+        .mul(new Decimal(datasetPrice))
+        .toDecimalPlaces(MAX_DECIMALS)
+        .div(100)
+
+      return acc.add(fee)
+    }, new Decimal(0)) || new Decimal(0)
+
+  // Algorithm fee
+  const algorithmMarketFee = new Decimal(
+    calculateAlgorithmMarketFee(
+      consumeMarketFee,
+      accessDetails.validOrderTx ? '0' : accessDetails?.price,
+      MAX_DECIMALS
+    )
+  )
 
   const computeItems = [
     {
@@ -410,9 +446,18 @@ export default function Review({
   ]
 
   const marketFees = [
-    { name: 'CONSUME MARKET ORDER FEE DATASET (0%)', value: '0' },
-    { name: 'CONSUME MARKET ORDER FEE ALGORITHM (0%)', value: '0' },
-    { name: 'CONSUME MARKET ORDER FEE C2C (0%)', value: '0' }
+    {
+      name: `CONSUME MARKET ORDER FEE DATASET (${consumeMarketFee}%)`,
+      value: totalDatasetMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
+    },
+    {
+      name: `CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketFee}%)`,
+      value: algorithmMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
+    },
+    {
+      name: `CONSUME MARKET ORDER FEE C2D (${consumeMarketOrderFee}%)`,
+      value: '0'
+    }
   ]
 
   useEffect(() => {
@@ -732,6 +777,36 @@ export default function Review({
     validateForm()
   }, [verificationQueue, setFieldValue, validateForm])
 
+  useEffect(() => {
+    try {
+      // Parse dataset + algorithm market fees
+      const datasetMarketFeeTotal = new Decimal(marketFees[0]?.value || '0')
+      const algorithmMarketFeeTotal = new Decimal(marketFees[1]?.value || '0')
+
+      // Sum all prices from totalPrices array (extract 'value')
+      const totalPricesSum = totalPrices.reduce(
+        (acc, val) => acc.add(new Decimal(val.value || 0)),
+        new Decimal(0)
+      )
+
+      // Final combined total
+      const displayTotal = totalPricesSum
+        .add(datasetMarketFeeTotal)
+        .add(algorithmMarketFeeTotal)
+        .toDecimalPlaces(MAX_DECIMALS)
+
+      setTotalPriceToDisplay(displayTotal.toString())
+
+      console.log('--- PRICE DEBUG ---')
+      console.log('Total Prices:', totalPrices)
+      console.log('Dataset Market Fee:', datasetMarketFeeTotal.toString())
+      console.log('Algorithm Market Fee:', algorithmMarketFeeTotal.toString())
+      console.log('Final Total to Display:', displayTotal.toString())
+    } catch (error) {
+      console.error('Error calculating totalPriceToDisplay:', error)
+    }
+  }, [totalPrices, marketFees])
+
   return (
     <div className={styles.container}>
       <div className={styles.titleContainer}>
@@ -809,7 +884,8 @@ export default function Review({
             ) : totalPrices.length > 0 ? (
               <>
                 <span className={styles.totalValueNumber}>
-                  {totalPrices[0].value}
+                  {/* {totalPrices[0].value} */}
+                  {totalPriceToDisplay}
                 </span>
                 <span className={styles.totalValueSymbol}>
                   {' '}

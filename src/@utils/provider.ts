@@ -80,21 +80,42 @@ export async function initializeProviderForComputeMulti(
     algorithm.credentialSubject.services[svcIndexAlgo].timeout
   )
 
-  return await ProviderInstance.initializeCompute(
-    computeAssets,
-    computeAlgo,
-    computeEnv.id,
-    oceanTokenAddress,
-    validUntil,
-    customProviderUrl || datasets[0].service.serviceEndpoint,
-    accountId,
-    computeEnv.resources.map((res) => ({
-      id: res.id,
-      amount: selectedResources?.[res.id] || res.min
-    })),
-    datasets[0].asset.credentialSubject.chainId,
-    policiesServer
-  )
+  console.log('i am here')
+  console.log('selectedResources ', selectedResources)
+  console.log('computeEnv ', computeEnv)
+  if (selectedResources.mode === 'free') {
+    return await ProviderInstance.initializeCompute(
+      computeAssets,
+      computeAlgo,
+      computeEnv.id,
+      oceanTokenAddress,
+      validUntil,
+      customProviderUrl || datasets[0].service.serviceEndpoint,
+      accountId,
+      computeEnv.free.resources.map((res) => ({
+        id: res.id,
+        amount: selectedResources?.[res.id] || res.max
+      })),
+      datasets[0].asset.credentialSubject.chainId,
+      policiesServer
+    )
+  } else {
+    return await ProviderInstance.initializeCompute(
+      computeAssets,
+      computeAlgo,
+      computeEnv.id,
+      oceanTokenAddress,
+      validUntil,
+      customProviderUrl || datasets[0].service.serviceEndpoint,
+      accountId,
+      computeEnv.resources.map((res) => ({
+        id: res.id,
+        amount: selectedResources?.[res.id] || res.min
+      })),
+      datasets[0].asset.credentialSubject.chainId,
+      policiesServer
+    )
+  }
 }
 
 export async function initializeProviderForCompute(

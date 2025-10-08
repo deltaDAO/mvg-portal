@@ -326,6 +326,7 @@ export default function ComputeWizard({
 
       if (!initializedProvider)
         throw new Error('Error initializing provider for compute job')
+      console.log('initilize compute is passed')
 
       const datasetResponses = await Promise.all(
         datasetsForProvider.map(
@@ -694,11 +695,20 @@ export default function ComputeWizard({
       }
 
       setComputeStatusText(getComputeFeedback()[4])
-
-      const resourceRequests = selectedComputeEnv.resources.map((res) => ({
-        id: res.id,
-        amount: selectedResources[res.id] || res.min
-      }))
+      let resourceRequests
+      if (selectedResources.mode === 'free') {
+        console.log('in free mode check')
+        resourceRequests = selectedComputeEnv.free.resources.map((res) => ({
+          id: res.id,
+          amount: res.max
+        }))
+      } else {
+        console.log('in paid mode check')
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: selectedResources[res.id] || res.min
+        }))
+      }
 
       const policyServerAlgo: PolicyServerInitiateComputeActionData = {
         sessionId: lookupVerifierSessionId(
@@ -717,6 +727,7 @@ export default function ComputeWizard({
 
       let response
       if (selectedResources.mode === 'paid') {
+        console.log('in paid mode buy')
         response = await ProviderInstance.computeStart(
           service.serviceEndpoint,
           signer,
