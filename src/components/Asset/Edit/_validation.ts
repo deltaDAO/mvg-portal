@@ -261,19 +261,7 @@ export const serviceValidationSchema = Yup.object().shape({
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({
-        url: Yup.string()
-          .nullable()
-          .test(
-            'is-raw-url',
-            'URL must start with https://raw.',
-            (value, context) => {
-              const parent: any = context?.parent || {}
-              if (parent.isEncrypted === true || parent.type === 'hidden') {
-                return true
-              }
-              return !value || value.startsWith('https://raw.')
-            }
-          ),
+        url: Yup.string().nullable(),
         valid: Yup.boolean().nullable()
       })
     )
