@@ -9,7 +9,8 @@ import {
   FileInfo,
   LoggerInstance,
   ZERO_ADDRESS,
-  UserCustomParameters
+  UserCustomParameters,
+  ProviderInstance
 } from '@oceanprotocol/lib'
 
 import { useAsset } from '@context/Asset'
@@ -39,6 +40,7 @@ import { AssetActionCheckCredentials } from '../CheckCredentials'
 import ConsumerParameters, {
   parseConsumerParameterValues
 } from '../ConsumerParameters'
+import Loader from '@shared/atoms/Loader'
 import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import { Row } from '../Row'
 
@@ -46,7 +48,10 @@ import { AssetPrice } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
-import appConfig, { consumeMarketFixedSwapFee } from 'app.config.cjs'
+import appConfig, {
+  consumeMarketFixedSwapFee,
+  customProviderUrl
+} from 'app.config.cjs'
 import styles from './index.module.css'
 
 import { getDownloadValidationSchema } from './_validation'
@@ -92,8 +97,11 @@ export default function Download({
     accessDetails.type !== 'free'
   )
   const [isOwned, setIsOwned] = useState(false)
+  console.log('🚀 ~ Download ~ isOwned:', isOwned)
   const [isOwner, setIsOwner] = useState(false)
+  console.log('🚀 ~ Download ~ isOwner:', isOwner)
   const [validOrderTx, setValidOrderTx] = useState('')
+  const [justBought, setJustBought] = useState(false)
 
   const [orderPriceAndFees, setOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
@@ -109,7 +117,9 @@ export default function Download({
 
   useEffect(() => {
     const hasValidSession =
-      verifierSessionCache && lookupVerifierSessionId(asset.id, service.id)
+      verifierSessionCache &&
+      (lookupVerifierSessionId(asset.id, service.id) ||
+        lookupVerifierSessionIdSkip(asset.id, service.id))
     if (hasValidSession && !credentialCheckComplete) {
       setCredentialCheckComplete(true)
     }
@@ -118,7 +128,8 @@ export default function Download({
     asset.id,
     service.id,
     credentialCheckComplete,
-    lookupVerifierSessionId
+    lookupVerifierSessionId,
+    lookupVerifierSessionIdSkip
   ])
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
@@ -237,7 +248,9 @@ export default function Download({
           service,
           accessDetails,
           accountId,
-          lookupVerifierSessionId(asset.id, service.id),
+          // Prefer validated session; if only skip-session exists, use it
+          lookupVerifierSessionId(asset.id, service.id) ||
+            lookupVerifierSessionIdSkip(asset.id, service.id),
           validOrderTx,
           dataParams
         )
@@ -263,6 +276,7 @@ export default function Download({
         }
         setIsOwned(true)
         setValidOrderTx(tx.transactionHash)
+        setJustBought(true)
       }
     } catch (error) {
       LoggerInstance.error(error)
@@ -464,7 +478,10 @@ export default function Download({
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={(values) => {
         if (
-          !lookupVerifierSessionId(asset.id, service.id) &&
+          !(
+            lookupVerifierSessionId(asset.id, service.id) ||
+            lookupVerifierSessionIdSkip(asset.id, service.id)
+          ) &&
           appConfig.ssiEnabled
         ) {
           return
@@ -473,101 +490,129 @@ export default function Download({
       }}
     >
       <Form>
-        <aside className={styles.consume}>
-          {isUnsupportedPricing && (
-            <div className={styles.info}>
-              <AssetAction asset={asset} />
-            </div>
-          )}
-          {!isOwner &&
-            (isFullPriceLoading ? (
-              <>
-                <CalculateButton isValid={true} />
-              </>
-            ) : appConfig.ssiEnabled ? (
-              <>
-                {(() => {
-                  const hasValidSession =
-                    verifierSessionCache &&
-                    lookupVerifierSessionId(asset.id, service.id)
-                  return hasValidSession ? (
-                    <>
-                      {accessDetails.type === 'free' && (
+        {(() => {
+          function getLocalSessionImmediate(
+            did: string,
+            svcId: string
+          ): string {
+            try {
+              if (typeof window === 'undefined') return ''
+              const storage = localStorage.getItem('verifierSessionId')
+              const sessions = storage ? JSON.parse(storage) : {}
+              return (
+                sessions?.[`${did}_${svcId}`] ||
+                sessions?.[`${did}_${svcId}_skip`] ||
+                ''
+              )
+            } catch {
+              return ''
+            }
+          }
+          const sessionId =
+            lookupVerifierSessionId(asset.id, service.id) ||
+            lookupVerifierSessionIdSkip(asset.id, service.id)
+          const localSession = getLocalSessionImmediate(asset.id, service.id)
+          const hasSession = Boolean(
+            sessionId || localSession || credentialCheckComplete
+          )
+          const canRenderConsume = !appConfig.ssiEnabled || hasSession
+
+          if (!canRenderConsume) {
+            return (
+              <aside className={styles.consume}>
+                <AssetActionCheckCredentials asset={asset} service={service} />
+                {credentialCheckComplete && (
+                  <div style={{ marginTop: '10px', textAlign: 'center' }}>
+                    <Button
+                      type="button"
+                      style="primary"
+                      size="small"
+                      onClick={() => window.location.reload()}
+                    >
+                      Refresh to Show Download Button
+                    </Button>
+                  </div>
+                )}
+              </aside>
+            )
+          }
+
+          return (
+            <aside
+              className={`${styles.consume} ${
+                appConfig.ssiEnabled && hasSession ? styles.tighterStack : ''
+              }`}
+            >
+              {isUnsupportedPricing && (
+                <div className={styles.info}>
+                  <AssetAction asset={asset} />
+                </div>
+              )}
+              {!isOwner &&
+                (isFullPriceLoading ? (
+                  <>
+                    <div className={styles.noMarginAlert}>
+                      <Alert
+                        state="success"
+                        text="SSI credential verification passed"
+                      />
+                    </div>
+                    <CalculateButton isValid={true} />
+                  </>
+                ) : (
+                  <>
+                    {isPriceLoading && (
+                      <div className={styles.noMarginAlert}>
+                        <Loader
+                          message="Calculating price..."
+                          variant="primary"
+                        />
+                      </div>
+                    )}
+                    {accessDetails.type === 'free' && (
+                      <div className={styles.noMarginAlert}>
                         <Alert
                           state="info"
                           text="This dataset is free to use. Please note that network gas fees still apply, even when using free assets."
                         />
-                      )}
-                      {isOwned && (
-                        <div>
-                          <SuccessConfetti
-                            success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
-                          />
-                        </div>
-                      )}
-                      <AssetActionBuy />
-                    </>
-                  ) : (
-                    <>
-                      <AssetActionCheckCredentials
-                        asset={asset}
-                        service={service}
-                      />
-                      {credentialCheckComplete && (
-                        <div style={{ marginTop: '10px', textAlign: 'center' }}>
-                          <Button
-                            type="button"
-                            style="primary"
-                            size="small"
-                            onClick={() => window.location.reload()}
-                          >
-                            Refresh to Show Download Button
-                          </Button>
-                        </div>
-                      )}
-                    </>
-                  )
-                })()}
-              </>
-            ) : (
-              <>
-                {accessDetails.type === 'free' && (
-                  <div className={styles.noMarginAlert}>
-                    <Alert
-                      state="info"
-                      text="This dataset is free to use. Please note that network gas fees still apply, even when using free assets."
+                      </div>
+                    )}
+                    {justBought && (
+                      <div>
+                        <SuccessConfetti
+                          success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
+                        />
+                      </div>
+                    )}
+                    <AssetActionBuy />
+                  </>
+                ))}
+              {Array.isArray(service.consumerParameters) &&
+                service.consumerParameters.length > 0 && (
+                  <div className={styles.consumerParameters}>
+                    <ConsumerParameters
+                      services={[service]}
+                      isLoading={isLoading}
                     />
                   </div>
                 )}
-                {isOwned && (
-                  <div>
-                    <SuccessConfetti
-                      success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
-                    />
-                  </div>
-                )}
-                <AssetActionBuy />
-              </>
-            ))}
-          <div className={styles.consumerParameters}>
-            {/* TODO - */}
-            <ConsumerParameters services={[service]} isLoading={isLoading} />
-          </div>
-          {isOwned && (
-            <div className={styles.confettiContainer}>
-              <SuccessConfetti
-                success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
-              />
-            </div>
-          )}
-          {asset.credentialSubject?.metadata?.type === 'algorithm' && (
-            <AlgorithmDatasetsListForCompute
-              asset={asset}
-              service={service}
-              accessDetails={accessDetails}
-            />
-          )}
-        </aside>
+              {/* {justBought && (
+                <div className={styles.confettiContainer}>
+                  <SuccessConfetti
+                    success={`You successfully bought this ${asset.credentialSubject?.metadata?.type} and are now able to download it.`}
+                  />
+                </div>
+              )} */}
+              {asset.credentialSubject?.metadata?.type === 'algorithm' && (
+                <AlgorithmDatasetsListForCompute
+                  asset={asset}
+                  service={service}
+                  accessDetails={accessDetails}
+                />
+              )}
+            </aside>
+          )
+        })()}
       </Form>
     </Formik>
   )
