@@ -77,7 +77,7 @@ export async function checkVerifierSessionId(
       sessionId
     }
     const response = await axios.post(
-      `/provider/api/services/PolicyServerPassthrough`,
+      `${customProviderUrl}/api/services/PolicyServerPassthrough`,
       {
         policyServerPassthrough: action
       }

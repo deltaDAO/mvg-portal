@@ -5,6 +5,10 @@
   gap: var(--sp-8);
 }
 
+.tighterStack {
+  gap: var(--sp-2);
+}
+
 .consume :global([class*='FormInput_field']) {
   margin-bottom: 0;
 }

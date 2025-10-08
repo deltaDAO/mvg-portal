@@ -27,6 +27,8 @@ import Loader from '@shared/atoms/Loader'
 import { initializeProvider } from '@utils/order'
 import VerifiedPatch from '@images/circle_check.svg'
 import { useCredentialDialog } from '../Compute/CredentialDialogProvider'
+import Alert from '@shared/atoms/Alert'
+import { useUserPreferences } from '@context/UserPreferences'
 
 enum CheckCredentialState {
   Stop = 'Stop',
@@ -93,6 +95,7 @@ export function AssetActionCheckCredentials({
   const [showDidDialog, setShowDidDialog] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [isRetrying, setIsRetrying] = useState<boolean>(false)
+  const { setShowSsiWalletModule } = useUserPreferences()
 
   const {
     cacheVerifierSessionId,
@@ -316,10 +319,15 @@ export function AssetActionCheckCredentials({
           }
         }
       } catch (error) {
-        const errorMessage = error.message
-          ? `SSI credential validation was not successful: ${error.message}`
-          : 'An error occurred during SSI credential validation. Please check the console'
+        let details = ''
+        if (typeof error?.message === 'string') details = error.message
+        else if (error?.message?.error) details = error.message.error
+        else if (error?.data?.message?.error) details = error.data.message.error
+        else if (typeof error?.data?.message === 'string')
+          details = error.data.message
+        else details = 'Unknown error'
 
+        const errorMessage = `SSI credential validation was not successful: ${details}`
         setError(errorMessage)
         setCheckCredentialState(CheckCredentialState.Stop)
         handleResetWalletCache()
@@ -331,10 +339,14 @@ export function AssetActionCheckCredentials({
       setExchangeStateData(newExchangeStateData())
       setCheckCredentialState(CheckCredentialState.Stop)
 
-      const errorMessage =
-        error?.data?.message || error?.message || 'An error occurred'
+      let details = ''
+      if (error?.data?.message?.error) details = error.data.message.error
+      else if (typeof error?.data?.message === 'string')
+        details = error.data.message
+      else if (typeof error?.message === 'string') details = error.message
+      else details = 'An error occurred'
 
-      setError(errorMessage)
+      setError(details)
 
       if (error?.data?.message) {
         LoggerInstance.error(error?.data?.message)
@@ -419,64 +431,164 @@ export function AssetActionCheckCredentials({
       />
       {!showVpDialog && !showDidDialog && (
         <div className={styles.buttonWrapper}>
-          {autoStart ? (
+          {checkCredentialState !== CheckCredentialState.Stop ? (
             <div className={styles.loaderContainer}>
               <Loader message={getLoaderMessage()} variant="primary" />
               {error && (
-                <Button
-                  type="button"
-                  onClick={handleRetry}
-                  style="publish"
-                  className={styles.retryButton}
-                >
-                  Retry
-                </Button>
+                <>
+                  <div className={styles.marginTop1}>
+                    <Alert state="error" text={error} />
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={handleRetry}
+                    style="publish"
+                    className={styles.retryButton}
+                  >
+                    Retry
+                  </Button>
+                </>
               )}
             </div>
           ) : (
-            <Button
-              type="button"
-              onClick={() => {
-                setCheckCredentialState(
-                  CheckCredentialState.StartCredentialExchange
+            <>
+              {error ? (
+                error.toLowerCase()?.includes('missing required fields') ? (
+                  <div className={styles.walletWarning}>
+                    <div className={styles.walletWarningAlert}>
+                      <Alert
+                        state="warning"
+                        text="No credentials found for this wallet. Switch SSI wallet to one that holds the required credentials."
+                      />
+                    </div>
+                    <div className={styles.leftAlign}>
+                      <Button
+                        type="button"
+                        style="primary"
+                        onClick={() => setShowSsiWalletModule(true)}
+                      >
+                        Switch SSI Wallet
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className={styles.marginTop1}>
+                      <Alert state="error" text={error} />
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={handleRetry}
+                      style="publish"
+                      className={styles.retryButton}
+                    >
+                      Retry
+                    </Button>
+                  </>
                 )
-              }}
-              disabled={!selectedWallet?.id}
-              style="publish"
-            >
-              Check Credentials
-            </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => {
+                    if (!selectedWallet?.id) {
+                      setShowSsiWalletModule(true)
+                      return
+                    }
+                    setCheckCredentialState(
+                      CheckCredentialState.StartCredentialExchange
+                    )
+                  }}
+                  style="publish"
+                  disabled={
+                    !showVpDialog &&
+                    !showDidDialog &&
+                    checkCredentialState === CheckCredentialState.Stop &&
+                    requiredCredentials?.length > 0 &&
+                    !requiredCredentials?.some((c) =>
+                      isCredentialCached(cachedCredentials, c)
+                    )
+                  }
+                >
+                  Check Credentials
+                </Button>
+              )}
+            </>
           )}
         </div>
       )}
 
-      <div
-        className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
-      >
-        {requiredCredentials
-          ?.sort((credential1, credential2) =>
-            credential1.localeCompare(credential2)
-          )
-          .map((credential) => {
-            return (
-              <Fragment key={credential}>
-                {isCredentialCached(cachedCredentials, credential) ? (
-                  <VerifiedPatch
-                    key={credential}
-                    className={`${styles.marginTop6px} ${styles.fillGreen}`}
-                  />
-                ) : (
-                  <div
-                    key={credential}
-                    className={`${styles.marginTop6px} ${styles.fillRed}`}
-                  ></div>
-                )}
+      {(() => {
+        const hasAnyCached = requiredCredentials?.some((c) =>
+          isCredentialCached(cachedCredentials, c)
+        )
+        const showMissingWarning =
+          !showVpDialog &&
+          !showDidDialog &&
+          checkCredentialState === CheckCredentialState.Stop &&
+          requiredCredentials?.length > 0 &&
+          !hasAnyCached &&
+          !error
+        const showVerifiedRibbon =
+          !showVpDialog &&
+          !showDidDialog &&
+          checkCredentialState === CheckCredentialState.Stop &&
+          requiredCredentials?.length > 0 &&
+          hasAnyCached &&
+          !error
 
-                {credential}
-              </Fragment>
-            )
-          })}
-      </div>
+        if (showMissingWarning) return null
+
+        if (!requiredCredentials?.length) return null
+
+        return (
+          <div
+            className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
+          >
+            {requiredCredentials
+              ?.sort((credential1, credential2) =>
+                credential1.localeCompare(credential2)
+              )
+              .map((credential) => {
+                return (
+                  <Fragment key={credential}>
+                    {isCredentialCached(cachedCredentials, credential) ? (
+                      <VerifiedPatch
+                        key={credential}
+                        className={`${styles.marginTop6px} ${styles.fillGreen}`}
+                      />
+                    ) : (
+                      <div
+                        key={credential}
+                        className={`${styles.marginTop6px} ${styles.fillRed}`}
+                      ></div>
+                    )}
+                    {credential}
+                  </Fragment>
+                )
+              })}
+            {showVerifiedRibbon && (
+              <div className={styles.marginTop1}>
+                <Alert state="success" text="Credentials verified." />
+              </div>
+            )}
+          </div>
+        )
+      })()}
+      {!showVpDialog &&
+        !showDidDialog &&
+        checkCredentialState === CheckCredentialState.Stop &&
+        requiredCredentials?.length > 0 &&
+        !requiredCredentials.some((c) =>
+          isCredentialCached(cachedCredentials, c)
+        ) &&
+        !error && (
+          <div className={styles.marginTop1}>
+            <Alert
+              state="warning"
+              text="No required credentials found in your SSI wallet. Obtain the listed credentials, then press Check Credentials again."
+            />
+          </div>
+        )}
     </div>
   )
 }

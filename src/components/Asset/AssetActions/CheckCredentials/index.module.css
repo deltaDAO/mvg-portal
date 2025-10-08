@@ -98,9 +98,31 @@
 
 .buttonWrapper {
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
+  gap: 12px;
   margin-top: calc(var(--spacer) / 2);
+  width: 100%;
+}
+
+.walletWarning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: calc(var(--spacer) / 2);
+}
+
+.walletWarningAlert {
+  width: 100%;
+  max-width: 640px;
+}
+
+.leftAlign {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
 }
 
 .checkCredentialsButton {

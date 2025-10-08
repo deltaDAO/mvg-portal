@@ -39,6 +39,11 @@
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 100000;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+.dialogBorder::backdrop {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .dialogWidth {

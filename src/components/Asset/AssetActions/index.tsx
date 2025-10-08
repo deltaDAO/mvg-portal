@@ -52,7 +52,11 @@ export default function AssetActions({
   const { isAssetNetwork } = useAsset()
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
-  const { verifierSessionCache, lookupVerifierSessionId } = useSsiWallet()
+  const {
+    verifierSessionCache,
+    lookupVerifierSessionId,
+    lookupVerifierSessionIdSkip
+  } = useSsiWallet()
   const [isComputePopupOpen, setIsComputePopupOpen] = useState<boolean>(false)
 
   // TODO: using this for the publish preview works fine, but produces a console warning
@@ -192,7 +196,9 @@ export default function AssetActions({
   }, [accountId, asset])
 
   const hasVerifiedCredentials =
-    verifierSessionCache && lookupVerifierSessionId(asset.id, service.id)
+    verifierSessionCache &&
+    (lookupVerifierSessionId(asset.id, service.id) ||
+      lookupVerifierSessionIdSkip(asset.id, service.id))
 
   const priceDisplay =
     accessDetails.type === 'free'
