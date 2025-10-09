@@ -6,8 +6,10 @@
   "homepage": "https://github.com/OceanProtocolEnterprise",
   "type": "module",
   "scripts": {
-    "start": "next start -p 8008",
+    "start": "npm run pregenerate && next dev -p 8008",
+    "start-docker": "next start -p 8008",
     "build": "next build",
+    "build-docker": "npm run pregenerate && next build",
     "build:static": "npm run build && next export",
     "serve": "serve -s public/",
     "pregenerate": "bash scripts/pregenerate.sh",

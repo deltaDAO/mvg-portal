@@ -23,7 +23,7 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+RUN npm run build-docker
 
 # --- Production runner (slim, fast) ---
 FROM node:22-bookworm AS runner
@@ -46,4 +46,4 @@ COPY --from=builder /app/package-lock.json ./package-lock.json
 RUN npm ci --omit=dev --ignore-scripts
 EXPOSE 8008
 
-CMD ["npm", "run", "start"]
+CMD ["npm", "run", "start-docker"]
