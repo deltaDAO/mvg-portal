@@ -1,9 +1,12 @@
 version: '3.8'
 services:
   ocean-market:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ocean-market
     ports:
       - '8008:8008'
-    env_file:
-      - .env
+    environment:
+      NODE_ENV: production
     restart: unless-stopped
