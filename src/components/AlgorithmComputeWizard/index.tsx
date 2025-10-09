@@ -657,7 +657,7 @@ export default function ComputeWizard({
         console.log('in free mode check')
         resourceRequests = selectedComputeEnv.resources.map((res) => ({
           id: res.id,
-          amount: selectedResources[res.id]
+          amount: res.inUse
         }))
         console.log('resourceRequests ', resourceRequests)
       } else {
