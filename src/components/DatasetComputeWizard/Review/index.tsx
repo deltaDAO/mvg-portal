@@ -21,7 +21,7 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
-import { consumeMarketOrderFee } from 'app.config.cjs'
+import { consumeMarketOrderFee, consumeMarketFee } from 'app.config.cjs'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { Asset } from 'src/@types/Asset'
@@ -161,6 +161,7 @@ export default function Review({
   )
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
+  const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const selectedEnvId = values?.computeEnv?.id
   const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
@@ -175,6 +176,8 @@ export default function Review({
 
   // error message
   const errorMessages: string[] = []
+  console.log('accessdetails!!!!', accessDetails)
+  console.log('asset!!!!', asset)
 
   // if (!isBalanceSufficient) {
   //   errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
@@ -232,9 +235,7 @@ export default function Review({
       const datasetNeedsSsi =
         requiresSsi(asset?.credentialSubject?.credentials) ||
         requiresSsi(service?.credentials)
-      const rawPrice = asset.accessDetails?.[0].validOrderTx
-        ? '0'
-        : asset.accessDetails?.[0].price
+      const rawPrice = accessDetails?.validOrderTx ? '0' : accessDetails.price
 
       queue.push({
         id: asset.id,
@@ -466,6 +467,28 @@ export default function Review({
       window.removeEventListener('credentialUpdated', handleCredentialUpdate)
     }
   }, [])
+  function calculateDatasetMarketFee(
+    consumeMarketFee: number | string,
+    datasetPrice: number | string,
+    maxDecimals: number
+  ): string {
+    return new Decimal(consumeMarketFee)
+      .mul(new Decimal(datasetPrice || 0))
+      .toDecimalPlaces(maxDecimals)
+      .div(100)
+      .toString()
+  }
+  function calculateAlgorithmMarketFee(
+    consumeMarketFee: number | string,
+    algorithmPrice: number | string,
+    maxDecimals: number
+  ): string {
+    return new Decimal(consumeMarketFee)
+      .mul(new Decimal(algorithmPrice || 0))
+      .toDecimalPlaces(maxDecimals)
+      .div(100)
+      .toString()
+  }
 
   const computeItems = [
     {
@@ -480,9 +503,28 @@ export default function Review({
   ]
 
   const marketFees = [
-    { name: 'CONSUME MARKET ORDER FEE DATASET (0%)', value: '0' },
-    { name: 'CONSUME MARKET ORDER FEE ALGORITHM (0%)', value: '0' },
-    { name: 'CONSUME MARKET ORDER FEE C2C (0%)', value: '0' }
+    {
+      name: `CONSUME MARKET ORDER FEE DATASET (${consumeMarketFee}%)`,
+      value: calculateDatasetMarketFee(
+        consumeMarketFee,
+        accessDetails?.validOrderTx ? '0' : accessDetails?.price,
+        MAX_DECIMALS
+      )
+    },
+    {
+      name: `CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketFee}%)`,
+      value: calculateAlgorithmMarketFee(
+        consumeMarketFee,
+        algoOrderPrice ||
+          selectedAlgorithmAsset?.accessDetails[serviceIndex]?.price ||
+          0,
+        MAX_DECIMALS
+      )
+    },
+    {
+      name: `CONSUME MARKET ORDER FEE C2D (${consumeMarketOrderFee}%)`,
+      value: '0'
+    }
   ]
 
   function getAlgorithmAsset(algo: string): {
@@ -803,6 +845,64 @@ export default function Review({
     validateForm()
   }, [verificationQueue, setFieldValue, validateForm])
 
+  useEffect(() => {
+    console.log('[totalPriceToDisplay] Triggered useEffect')
+    console.log('totalPrices:', totalPrices)
+    console.log('consumeMarketFee:', consumeMarketFee)
+    console.log('accessDetails.price:', accessDetails?.price)
+    console.log('algoOrderPrice:', algoOrderPrice)
+    console.log('selectedAlgorithmAsset:', selectedAlgorithmAsset)
+    console.log('serviceIndex:', serviceIndex)
+
+    if (!totalPrices || totalPrices.length === 0) {
+      console.log(
+        '[totalPriceToDisplay] totalPrices empty, skipping calculation'
+      )
+      return
+    }
+
+    const datasetFee = new Decimal(
+      calculateDatasetMarketFee(
+        consumeMarketFee,
+        accessDetails?.validOrderTx ? '0' : accessDetails?.price,
+        MAX_DECIMALS
+      )
+    )
+    console.log('datasetFee:', datasetFee.toString())
+
+    const algorithmFee = new Decimal(
+      calculateAlgorithmMarketFee(
+        consumeMarketFee,
+        algoOrderPrice ||
+          selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.price ||
+          0,
+        MAX_DECIMALS
+      )
+    )
+    console.log('algorithmFee:', algorithmFee.toString())
+
+    const sumTotalPrices = totalPrices.reduce((acc, item) => {
+      console.log('Adding totalPrices item:', item)
+      return acc.add(new Decimal(item.value || 0))
+    }, new Decimal(0))
+    console.log('sumTotalPrices:', sumTotalPrices.toString())
+
+    const finalTotal = sumTotalPrices.add(datasetFee).add(algorithmFee)
+    console.log(
+      'finalTotal:',
+      finalTotal.toDecimalPlaces(MAX_DECIMALS).toString()
+    )
+
+    setTotalPriceToDisplay(finalTotal.toDecimalPlaces(MAX_DECIMALS).toString())
+  }, [
+    totalPrices,
+    consumeMarketFee,
+    accessDetails?.price,
+    algoOrderPrice,
+    selectedAlgorithmAsset,
+    serviceIndex
+  ])
+
   const PurchaseButton = () => {
     const disabledConditions = {
       isComputeButtonDisabled,
@@ -950,7 +1050,8 @@ export default function Review({
             ) : totalPrices.length > 0 ? (
               <>
                 <span className={styles.totalValueNumber}>
-                  {totalPrices[0].value}
+                  {/* {totalPrices[0].value} */}
+                  {totalPriceToDisplay}
                 </span>
                 <span className={styles.totalValueSymbol}>
                   {' '}

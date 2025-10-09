@@ -253,7 +253,7 @@ export default function ConfigureEnvironment({
       const maxDuration = isFree ? env.free.maxJobDuration : env.maxJobDuration
       return {
         minValue: 1,
-        maxValue: Math.floor(maxDuration || 3600),
+        maxValue: Math.floor((maxDuration || 3600) / 60),
         step: 1
       }
     }
@@ -264,7 +264,7 @@ export default function ConfigureEnvironment({
     return {
       minValue: resource?.min ?? 0,
       maxValue: resource?.max ?? 0,
-      step: (id === 'ram' || id === 'disk') && !isFree ? 0.1 : 1
+      step: id === 'ram' || id === 'disk' ? 0.1 : 1
     }
   }
 
@@ -513,13 +513,12 @@ export default function ConfigureEnvironment({
   ) => {
     const { minValue, maxValue, step } = getLimits(type, isFree)
 
-    if (value === '' || isNaN(Number(value))) {
-      return
-    }
+    if (value === '' || isNaN(Number(value))) return
 
     const validatedValue = clamp(Number(value), minValue, maxValue)
+
     const adjustedValue =
-      step && (type === 'ram' || type === 'disk') && !isFree
+      step && (type === 'ram' || type === 'disk')
         ? Number(validatedValue.toFixed(1))
         : Math.floor(validatedValue)
 

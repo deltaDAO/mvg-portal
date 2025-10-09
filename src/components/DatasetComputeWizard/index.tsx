@@ -326,6 +326,7 @@ export default function ComputeWizard({
 
       if (!initializedProvider)
         throw new Error('Error initializing provider for compute job')
+      console.log('initilize compute is passed')
 
       const datasetResponses = await Promise.all(
         datasetsForProvider.map(
@@ -694,11 +695,21 @@ export default function ComputeWizard({
       }
 
       setComputeStatusText(getComputeFeedback()[4])
-
-      const resourceRequests = selectedComputeEnv.resources.map((res) => ({
-        id: res.id,
-        amount: selectedResources[res.id] || res.min
-      }))
+      let resourceRequests
+      if (selectedResources.mode === 'free') {
+        console.log('in free mode check')
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: res.inUse
+        }))
+        console.log('resourceRequests ', resourceRequests)
+      } else {
+        console.log('in paid mode check')
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: selectedResources[res.id] || res.min
+        }))
+      }
 
       const policyServerAlgo: PolicyServerInitiateComputeActionData = {
         sessionId: lookupVerifierSessionId(
@@ -717,6 +728,7 @@ export default function ComputeWizard({
 
       let response
       if (selectedResources.mode === 'paid') {
+        console.log('in paid mode buy')
         response = await ProviderInstance.computeStart(
           service.serviceEndpoint,
           signer,
@@ -732,13 +744,15 @@ export default function ComputeWizard({
           policiesServer
         )
       } else {
+        console.log('in free mode buy 1')
         const algorithm: ComputeAlgorithm = {
           documentId: actualAlgorithmAsset.id,
           serviceId: actualAlgoService.id,
           meta: actualAlgorithmAsset.credentialSubject?.metadata
             ?.algorithm as any
         }
-
+        console.log('algo for free ', algorithm)
+        console.log('in free mode buy 2')
         response = await ProviderInstance.freeComputeStart(
           service.serviceEndpoint,
           signer,
