@@ -253,7 +253,7 @@ export default function ConfigureEnvironment({
       const maxDuration = isFree ? env.free.maxJobDuration : env.maxJobDuration
       return {
         minValue: 1,
-        maxValue: Math.floor(maxDuration || 3600),
+        maxValue: Math.floor((maxDuration || 3600) / 60),
         step: 1
       }
     }
