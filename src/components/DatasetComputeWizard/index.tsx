@@ -698,10 +698,11 @@ export default function ComputeWizard({
       let resourceRequests
       if (selectedResources.mode === 'free') {
         console.log('in free mode check')
-        resourceRequests = selectedComputeEnv.free.resources.map((res) => ({
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
           id: res.id,
-          amount: res.max
+          amount: selectedResources[res.id]
         }))
+        console.log('resourceRequests ', resourceRequests)
       } else {
         console.log('in paid mode check')
         resourceRequests = selectedComputeEnv.resources.map((res) => ({
@@ -743,13 +744,15 @@ export default function ComputeWizard({
           policiesServer
         )
       } else {
+        console.log('in free mode buy 1')
         const algorithm: ComputeAlgorithm = {
           documentId: actualAlgorithmAsset.id,
           serviceId: actualAlgoService.id,
           meta: actualAlgorithmAsset.credentialSubject?.metadata
             ?.algorithm as any
         }
-
+        console.log('algo for free ', algorithm)
+        console.log('in free mode buy 2')
         response = await ProviderInstance.freeComputeStart(
           service.serviceEndpoint,
           signer,

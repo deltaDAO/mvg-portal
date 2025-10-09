@@ -652,11 +652,21 @@ export default function ComputeWizard({
       }
 
       setComputeStatusText(getComputeFeedback()[4])
-
-      const resourceRequests = selectedComputeEnv.resources.map((res) => ({
-        id: res.id,
-        amount: selectedResources[res.id] || res.min
-      }))
+      let resourceRequests
+      if (selectedResources.mode === 'free') {
+        console.log('in free mode check')
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: selectedResources[res.id]
+        }))
+        console.log('resourceRequests ', resourceRequests)
+      } else {
+        console.log('in paid mode check')
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: selectedResources[res.id] || res.min
+        }))
+      }
 
       const policyServerAlgo: PolicyServerInitiateComputeActionData = {
         sessionId: lookupVerifierSessionId(
