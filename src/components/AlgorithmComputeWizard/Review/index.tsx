@@ -447,15 +447,15 @@ export default function Review({
 
   const marketFees = [
     {
-      name: `CONSUME MARKET ORDER FEE DATASET (${consumeMarketFee}%)`,
+      name: `COMMUNITY FEE DATASET (${consumeMarketFee}%)`,
       value: totalDatasetMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
     },
     {
-      name: `CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketFee}%)`,
+      name: `COMMUNITY FEE ALGORITHM (${consumeMarketFee}%)`,
       value: algorithmMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
     },
     {
-      name: `CONSUME MARKET ORDER FEE C2D (${consumeMarketOrderFee}%)`,
+      name: `COMMUNITY FEE C2D (${consumeMarketOrderFee}%)`,
       value: '0'
     }
   ]

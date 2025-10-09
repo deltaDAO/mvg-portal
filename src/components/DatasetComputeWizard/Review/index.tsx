@@ -504,7 +504,7 @@ export default function Review({
 
   const marketFees = [
     {
-      name: `CONSUME MARKET ORDER FEE DATASET (${consumeMarketFee}%)`,
+      name: `COMMUNITY FEE DATASET (${consumeMarketFee}%)`,
       value: calculateDatasetMarketFee(
         consumeMarketFee,
         accessDetails?.validOrderTx ? '0' : accessDetails?.price,
@@ -512,7 +512,7 @@ export default function Review({
       )
     },
     {
-      name: `CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketFee}%)`,
+      name: `COMMUNITY FEE ALGORITHM (${consumeMarketFee}%)`,
       value: calculateAlgorithmMarketFee(
         consumeMarketFee,
         algoOrderPrice ||
@@ -522,7 +522,7 @@ export default function Review({
       )
     },
     {
-      name: `CONSUME MARKET ORDER FEE C2D (${consumeMarketOrderFee}%)`,
+      name: `COMMUNITY FEE C2D (${consumeMarketOrderFee}%)`,
       value: '0'
     }
   ]
