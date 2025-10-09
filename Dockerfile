@@ -1,9 +1,15 @@
 # --- Base stage with shared tools ---
-FROM node:22-alpine3.18 AS base
+FROM node:22-bookworm AS base
 WORKDIR /app
 
-# Install bash and git (needed for build and pregenerate scripts)
-RUN apk add --no-cache bash git
+# Install build tooling required by npm/node-gyp (bash, git, python, compiler toolchain)
+RUN apt-get update && apt-get install -y \
+  bash \
+  git \
+  python3 \
+  make \
+  g++ \
+  && rm -rf /var/lib/apt/lists/*
 
 # --- Dependencies stage ---
 FROM base AS deps
@@ -12,6 +18,7 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 # --- Builder stage (runs scripts & build) ---
+    
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -19,9 +26,16 @@ COPY . .
 RUN npm run build
 
 # --- Production runner (slim, fast) ---
-FROM node:22-alpine3.18 AS runner
+FROM node:22-bookworm AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+
+# Install build tooling required by npm/node-gyp (python, compiler toolchain)
+RUN apt-get update && apt-get install -y \
+  python3 \
+  make \
+  g++ \
+  && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
