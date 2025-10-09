@@ -660,11 +660,18 @@ export default function Compute({
       }
 
       setComputeStatusText(getComputeFeedback()[4])
-
-      const resourceRequests = selectedComputeEnv.resources.map((res) => ({
-        id: res.id,
-        amount: selectedResources[res.id] || res.min
-      }))
+      let resourceRequests
+      if (selectedResources.mode === 'free') {
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: res.inUse
+        }))
+      } else {
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: selectedResources[res.id] || res.min
+        }))
+      }
 
       const policyServerAlgo: PolicyServerInitiateComputeActionData = {
         sessionId: lookupVerifierSessionId(
