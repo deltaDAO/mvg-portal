@@ -187,9 +187,20 @@ const validationRequestCredentials = {
 
 const validationVpPolicy = {
   type: Yup.string().required('Required'),
-  name: Yup.string().when('type', {
+  name: Yup.mixed().when('type', {
     is: 'staticVpPolicy',
-    then: (shema) => shema.required('Required')
+    then: (shema) =>
+      shema.test('static-name', 'Required', (value) => {
+        if (typeof value === 'string') return value.trim().length > 0
+        if (
+          value &&
+          typeof value === 'object' &&
+          typeof (value as any).policy === 'string'
+        ) {
+          return (value as any).policy.trim().length > 0
+        }
+        return false
+      })
   }),
   policy: Yup.string().when('type', {
     is: 'argumentVpPolicy',
@@ -202,24 +213,12 @@ const validationVpPolicy = {
   url: Yup.string().when('type', {
     is: 'externalEvpForwardVpPolicy',
     then: (shema) =>
-      shema
-        .required('Required')
-        .test('isValidUrl', 'Invalid URL format', (value) => {
-          if (!value) return false
-          const trimmedValue = value.trim()
-          if (
-            !trimmedValue.startsWith('http://') &&
-            !trimmedValue.startsWith('https://')
-          ) {
-            return false
-          }
-          try {
-            const url = new URL(trimmedValue)
-            return url.protocol === 'http:' || url.protocol === 'https:'
-          } catch {
-            return false
-          }
-        })
+      shema.test('isValidUrlOpt', 'Invalid URL format', (value) => {
+        if (!value) return true
+        const trimmedValue = value.trim()
+        const pattern = /^https?:\/\/\S+$/i
+        return pattern.test(trimmedValue)
+      })
   })
 }
 
@@ -243,18 +242,8 @@ const validationCredentials = {
 
       if (!value) return false
       const trimmedValue = value.trim()
-      if (
-        !trimmedValue.startsWith('http://') &&
-        !trimmedValue.startsWith('https://')
-      ) {
-        return false
-      }
-      try {
-        const url = new URL(trimmedValue)
-        return url.protocol === 'http:' || url.protocol === 'https:'
-      } catch {
-        return false
-      }
+      const pattern = /^https?:\/\/\S+$/i
+      return pattern.test(trimmedValue)
     }
   )
 }

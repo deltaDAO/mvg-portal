@@ -152,6 +152,13 @@ export default function Edit({
           (values?.additionalDdos as AdditionalVerifiableCredentials[]) || []
       }
 
+      // Also propagate updated credential policies to each service's credentials
+      updatedAsset.credentialSubject.services =
+        updatedAsset.credentialSubject.services.map((svc) => ({
+          ...svc,
+          credentials: generateCredentials(values?.credentials, true)
+        }))
+
       stringifyCredentialPolicies(updatedAsset.credentialSubject.credentials)
       updatedAsset.credentialSubject.services.forEach((service) => {
         stringifyCredentialPolicies(service.credentials)

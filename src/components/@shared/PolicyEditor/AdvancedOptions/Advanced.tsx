@@ -195,7 +195,6 @@ export default function AdvancedOptions({
                       onExternalEvpForwardUrlChange(val)
                       form.setFieldValue(field.name, val)
                     }}
-                    pattern="^https?://.+"
                     hideLabel={true}
                   />
                 )}
