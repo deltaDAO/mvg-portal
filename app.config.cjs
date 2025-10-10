@@ -101,8 +101,7 @@ module.exports = {
     process.env.NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL ||
     'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
 
-  ipfsApiKey: process.env.NEXT_PUBLIC_IPFS_API_KEY,
-  ipfsSecretApiKey: process.env.NEXT_PUBLIC_IPFS_SECRET_API_KEY,
+  ipfsJWT: process.env.NEXT_PUBLIC_IPFS_JWT,
   ipfsGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY,
   ipfsUnpinFiles: process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES
     ? process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES === 'true'

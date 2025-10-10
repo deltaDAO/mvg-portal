@@ -34,7 +34,6 @@
     "@oceanprotocol/lib": "^4.3.3",
     "@oceanprotocol/typographies": "^0.1.0",
     "@oceanprotocol/use-dark-mode": "^2.4.3",
-    "@pinata/sdk": "^2.1.0",
     "@rdfjs/dataset": "^2.0.2",
     "@rdfjs/formats-common": "^3.1.0",
     "@tippyjs/react": "^4.2.6",
@@ -60,7 +59,7 @@
     "is-url-superb": "^6.1.0",
     "jose": "^5.9.6",
     "js-cookie": "^3.0.5",
-    "jspdf": "^2.5.2",
+    "jspdf": "^3.0.3",
     "match-sorter": "^6.3.1",
     "myetherwallet-blockies": "^0.1.1",
     "next": "^15.2.3",
@@ -134,6 +133,8 @@
     "typescript": "^5.2.2"
   },
   "overrides": {
+    "form-data": ">=2.5.4",
+    "tough-cookie": ">=4.1.3",
     "graphql": "15.8.0"
   },
   "repository": {
