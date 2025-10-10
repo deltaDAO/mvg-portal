@@ -44,6 +44,10 @@ export function SsiWallet(): ReactElement {
   const { isConnected } = useAccount()
   const { data: signer } = useSigner()
 
+  function getKeyLabel(key: SsiKeyDesc): string {
+    return key?.algorithm || key.keyId.id
+  }
+
   const fetchWallets = useCallback(async () => {
     try {
       if (sessionToken) {
@@ -63,7 +67,8 @@ export function SsiWallet(): ReactElement {
     try {
       const dids = await getWalletDids(selectedWallet.id, sessionToken.token)
       setWalletDids(dids)
-      if (!selectedDid) setSelectedDid(dids[0]?.did) // pre-select the first DID if exists
+      // Always set selected DID to the first from current wallet to avoid stale selection after API change
+      setSelectedDid(dids[0]?.did)
     } catch (error) {
       LoggerInstance.error(error)
     }
@@ -151,6 +156,23 @@ export function SsiWallet(): ReactElement {
       (wallet) => wallet.id === (event.target.value as string)
     )
     setSelectedWallet(result)
+    // Sync keys & DIDs to the newly selected wallet
+    if (result && sessionToken) {
+      setSelectedKey(undefined as any)
+      setSelectedDid(undefined as any)
+      getWalletDids(result.id, sessionToken.token)
+        .then((dids) => {
+          setWalletDids(dids)
+          setSelectedDid(dids?.[0]?.did)
+        })
+        .catch((error) => LoggerInstance.error(error))
+      getWalletKeys(result, sessionToken.token)
+        .then((keys) => {
+          setSsiKey(keys)
+          setSelectedKey(keys?.[0])
+        })
+        .catch((error) => LoggerInstance.error(error))
+    }
   }
 
   function handleKeySelection(event: any) {
@@ -235,7 +257,7 @@ export function SsiWallet(): ReactElement {
                       value={`${keys.keyId.id}`}
                       className={styles.panelRow}
                     >
-                      {keys.keyId.id} ({keys.algorithm})
+                      {getKeyLabel(keys)}
                     </option>
                   )
                 })}
