@@ -16,12 +16,12 @@ import {
 } from 'src/@types/SsiWallet'
 
 export interface SsiWalletContext {
-  sessionToken: SsiWalletSession
-  setSessionToken: (token: SsiWalletSession) => void
-  selectedWallet: SsiWalletDesc
-  setSelectedWallet: (wallet: SsiWalletDesc) => void
-  selectedKey: SsiKeyDesc
-  setSelectedKey: (key: SsiKeyDesc) => void
+  sessionToken?: SsiWalletSession
+  setSessionToken: (token?: SsiWalletSession) => void
+  selectedWallet?: SsiWalletDesc
+  setSelectedWallet: (wallet?: SsiWalletDesc) => void
+  selectedKey?: SsiKeyDesc
+  setSelectedKey: (key?: SsiKeyDesc) => void
   lookupVerifierSessionId: (did: string, serviceId: string) => string
   lookupVerifierSessionIdSkip: (did: string, serviceId: string) => string
   cacheVerifierSessionId: (
@@ -36,8 +36,8 @@ export interface SsiWalletContext {
   setSsiWalletCache: (cache: SsiWalletCache) => void
   cachedCredentials: SsiVerifiableCredential[]
   setCachedCredentials: (credentials: SsiVerifiableCredential[]) => void
-  selectedDid: string
-  setSelectedDid: (did: string) => void
+  selectedDid?: string
+  setSelectedDid: (did?: string) => void
 }
 
 const SessionTokenStorage = 'sessionToken'
