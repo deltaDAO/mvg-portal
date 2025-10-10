@@ -22,8 +22,6 @@ module.exports = {
 
   customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
 
-  infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
-
   defaultDatatokenCap:
     '115792089237316195423570985008687907853269984665640564039457',
   defaultDatatokenTemplateIndex: 2,
