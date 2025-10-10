@@ -94,6 +94,10 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@storybook/addon-essentials": "^6.5.16",
+    "@storybook/builder-webpack5": "^6.5.16",
+    "@storybook/manager-webpack5": "^6.5.16",
+    "@storybook/react": "^9.1.10",
     "@svgr/webpack": "^6.5.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^14.0.0",
