@@ -24,11 +24,7 @@ const customJestConfig = {
     '@content/(.*)$': '<rootDir>/@content/$1'
   },
   collectCoverage: true,
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.{stories,test}.{ts,tsx}',
-    '!src/@types/**/*.{ts,tsx}'
-  ],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/@types/**/*.{ts,tsx}'],
   // Add ignores so ESM packages are not transformed by Jest
   // note: this does not work with Next.js, hence workaround further down
   // see: https://github.com/vercel/next.js/issues/35634#issuecomment-1115250297
