@@ -69,6 +69,19 @@ function generateCredentials(
 
           const newVpPolicies: VpPolicyType[] = Array.isArray(value.vp_policies)
             ? value.vp_policies.map((policy) => {
+                if (
+                  typeof policy === 'object' &&
+                  policy !== null &&
+                  'policy' in policy &&
+                  !('args' in policy)
+                ) {
+                  const result: StaticVpPolicy = {
+                    type: 'staticVpPolicy',
+                    name: (policy as any).policy
+                  }
+                  return result
+                }
+
                 if (isVpValue(policy)) {
                   if (
                     policy.policy === 'external-evp-forward' &&
@@ -80,6 +93,22 @@ function generateCredentials(
                       url: policy.args
                     }
                   }
+
+                  if (
+                    (policy.policy === 'holder-binding' ||
+                      policy.policy === 'presentation-definition') &&
+                    (policy.args === undefined ||
+                      policy.args === null ||
+                      (typeof policy.args === 'string' &&
+                        policy.args.length === 0))
+                  ) {
+                    const result: StaticVpPolicy = {
+                      type: 'staticVpPolicy',
+                      name: policy.policy
+                    }
+                    return result
+                  }
+
                   const result: ArgumentVpPolicy = {
                     type: 'argumentVpPolicy',
                     policy: policy.policy,
@@ -89,7 +118,7 @@ function generateCredentials(
                 } else {
                   const result: StaticVpPolicy = {
                     type: 'staticVpPolicy',
-                    name: policy
+                    name: policy as string
                   }
                   return result
                 }
