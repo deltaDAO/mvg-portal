@@ -11,8 +11,7 @@ export default async function handler(
     try {
       const data = await serverSideUploadToIpfs(
         JSON.parse(req.body),
-        appConfig.ipfsApiKey,
-        appConfig.ipfsSecretApiKey
+        appConfig.ipfsJWT
       )
       res.status(200).json({ success: true, data })
     } catch (error) {
@@ -24,11 +23,7 @@ export default async function handler(
     }
   } else if (req.method === 'DELETE') {
     try {
-      await serverSideDeleteIpfsFile(
-        req.body,
-        appConfig.ipfsApiKey,
-        appConfig.ipfsSecretApiKey
-      )
+      await serverSideDeleteIpfsFile(req.body, appConfig.ipfsJWT)
       res.status(200).json({ success: true })
     } catch (error) {
       LoggerInstance.error(error.message)
