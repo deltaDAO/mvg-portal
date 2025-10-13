@@ -22,8 +22,6 @@ module.exports = {
 
   customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
 
-  infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
-
   defaultDatatokenCap:
     '115792089237316195423570985008687907853269984665640564039457',
   defaultDatatokenTemplateIndex: 2,
@@ -101,8 +99,7 @@ module.exports = {
     process.env.NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL ||
     'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
 
-  ipfsApiKey: process.env.NEXT_PUBLIC_IPFS_API_KEY,
-  ipfsSecretApiKey: process.env.NEXT_PUBLIC_IPFS_SECRET_API_KEY,
+  ipfsJWT: process.env.NEXT_PUBLIC_IPFS_JWT,
   ipfsGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY,
   ipfsUnpinFiles: process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES
     ? process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES === 'true'
