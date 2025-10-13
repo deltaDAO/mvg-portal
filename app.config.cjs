@@ -15,10 +15,10 @@ module.exports = {
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
-  chainIds: [1, 10, 11155111, 11155420, 560048],
+  chainIds: [1, 10, 11155111, 11155420],
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: [1, 10, 11155111, 11155420, 560048],
+  chainIdsSupported: [1, 10, 11155111, 11155420],
 
   customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
 
