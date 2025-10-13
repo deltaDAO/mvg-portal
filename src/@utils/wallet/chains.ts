@@ -57,7 +57,7 @@ export const getSupportedChains = (chainIdsSupported: number[]): Chain[] => {
   // Override RPC URL if env var is set (for dev/test)
   return filteredChains.map((chain) => {
     if (
-      (chain.id === 11155111 || chain.id === 11155420 || chain.id === 560048) &&
+      (chain.id === 11155111 || chain.id === 11155420) &&
       process.env.NEXT_PUBLIC_NODE_URI
     ) {
       return {
