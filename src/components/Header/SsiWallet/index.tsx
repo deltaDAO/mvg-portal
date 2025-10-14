@@ -48,7 +48,8 @@ export function SsiWallet(): ReactElement {
   const [isLoadingSsiData, setIsLoadingSsiData] = useState<boolean>(false)
 
   function getKeyLabel(key: SsiKeyDesc): string {
-    return key?.algorithm || key.keyId.id
+    const anyKey = key as unknown as { name?: string; keyId: { id: string } }
+    return anyKey?.name || key.keyId.id
   }
 
   const fetchWallets = useCallback(async () => {

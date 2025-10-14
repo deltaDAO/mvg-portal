@@ -45,7 +45,8 @@ export function SsiWallet(): ReactElement {
   const { data: signer } = useSigner()
 
   function getKeyLabel(key: SsiKeyDesc): string {
-    return key?.algorithm || key.keyId.id
+    const anyKey = key as unknown as { name?: string; keyId: { id: string } }
+    return anyKey?.name || key.keyId.id
   }
 
   const fetchWallets = useCallback(async () => {
@@ -69,6 +70,11 @@ export function SsiWallet(): ReactElement {
       setWalletDids(dids)
       // Always set selected DID to the first from current wallet to avoid stale selection after API change
       setSelectedDid(dids[0]?.did)
+      LoggerInstance.log(
+        '[SSI] fetched DIDs for wallet',
+        selectedWallet?.id,
+        dids
+      )
     } catch (error) {
       LoggerInstance.error(error)
     }
@@ -82,6 +88,11 @@ export function SsiWallet(): ReactElement {
       const keys = await getWalletKeys(selectedWallet, sessionToken.token)
       setSsiKey(keys)
       setSelectedKey(selectedKey || keys[0])
+      LoggerInstance.log(
+        '[SSI] fetched keys for wallet',
+        selectedWallet?.id,
+        keys
+      )
     } catch (error) {
       setSessionToken(undefined)
       LoggerInstance.error(error)
