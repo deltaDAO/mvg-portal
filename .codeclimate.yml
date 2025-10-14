@@ -42,7 +42,6 @@ exclude_patterns:
   - '**/*.d.ts'
   - '**/@types/'
   - '**/_types.*'
-  - '**/*.stories.*'
   - '**/*.test.*'
   - '.storybook/'
   - '.jest/'

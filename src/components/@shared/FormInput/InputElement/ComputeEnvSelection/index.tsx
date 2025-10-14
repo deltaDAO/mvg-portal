@@ -9,9 +9,7 @@ export default function ComputeEnvSelection({
 }: {
   computeEnvs: ComputeEnvironmentExtended[]
   setAllResourceValues?: React.Dispatch<
-    React.SetStateAction<{
-      [envId: string]: ResourceType
-    }>
+    React.SetStateAction<{ [envId: string]: ResourceType }>
   >
 }): JSX.Element {
   const [selectedEnvId, setSelectedEnvId] = useState<string>()
@@ -22,11 +20,9 @@ export default function ComputeEnvSelection({
   const [resourceValues, setResourceValues] = useState<{
     [envId: string]: ResourceType
   }>({})
-
-  const formatMB = (bytes: number) => Math.floor(bytes / 1_000_000)
-  const formatMinutes = (seconds: number) => Math.floor(seconds / 60)
-
   const [symbolMap, setSymbolMap] = useState<{ [address: string]: string }>({})
+
+  const formatMinutes = (seconds: number) => Math.floor(seconds / 60)
 
   const fetchSymbol = async (address: string) => {
     if (symbolMap[address]) return symbolMap[address]
@@ -49,7 +45,6 @@ export default function ComputeEnvSelection({
       const getDefault = (id: string) => {
         if (mode === 'free') return 0
         const r = env.resources?.find((r) => r.id === id)
-        if (id === 'ram' || id === 'disk') return formatMB(r.min)
         return r?.min ?? 0
       }
       reset[env.id] = {
@@ -76,17 +71,10 @@ export default function ComputeEnvSelection({
         const tokenSymbol = symbolMap[tokenAddress] || '...'
         if (tokenAddress) fetchSymbol(tokenAddress)
 
-        const getDefault = (id: string) => {
-          // Try to get min for paid, 0 for free
-          if (mode === 'free') return 0
-          const r = env.resources?.find((r) => r.id === id)
-          if (id === 'ram' || id === 'disk') return formatMB(r.min)
-          return r?.min ?? 0
-        }
         const currentRes = resourceValues[env.id] ?? {
-          cpu: getDefault('cpu'),
-          ram: getDefault('ram'),
-          disk: getDefault('disk'),
+          cpu: 0,
+          ram: 0,
+          disk: 0,
           jobDuration: 0,
           price: 0,
           mode
@@ -94,7 +82,6 @@ export default function ComputeEnvSelection({
 
         const resourceLimits =
           mode === 'free' ? env.free?.resources : env.resources
-
         const getLimits = (id: string) =>
           resourceLimits?.find((r) => r.id === id) ?? { max: 0, min: 0 }
 
@@ -129,7 +116,6 @@ export default function ComputeEnvSelection({
                     : 0
                 newPrice += units * p.price
               }
-
               newPrice *= formatMinutes(newRes.jobDuration)
             }
 
@@ -138,16 +124,16 @@ export default function ComputeEnvSelection({
               [env.id]: { ...newRes, price: mode === 'free' ? 0 : newPrice }
             }
 
-            if (setAllResourceValues) {
-              setAllResourceValues(updated)
-            }
-
+            if (setAllResourceValues) setAllResourceValues(updated)
             return updated
           })
         }
 
         return (
-          <div key={env.id} style={{ border: '1px solid #ccc', margin: '1em' }}>
+          <div
+            key={env.id}
+            style={{ border: '1px solid #ccc', margin: '1em', padding: '1em' }}
+          >
             <label title={env.id}>
               <input
                 type="radio"
@@ -168,21 +154,21 @@ export default function ComputeEnvSelection({
             </label>
 
             {freeAvailable && (
-              <div>
+              <div style={{ marginTop: '0.5em' }}>
                 <label>
                   <input
                     type="radio"
                     checked={mode === 'free'}
                     onChange={() => setMode('free')}
-                  />
+                  />{' '}
                   Free
                 </label>
-                <label>
+                <label style={{ marginLeft: '1em' }}>
                   <input
                     type="radio"
                     checked={mode === 'paid'}
                     onChange={() => setMode('paid')}
-                  />
+                  />{' '}
                   Paid
                 </label>
               </div>
@@ -194,34 +180,37 @@ export default function ComputeEnvSelection({
                 type="range"
                 min={getLimits('cpu').min}
                 max={getLimits('cpu').max}
+                step={0.1}
                 value={currentRes.cpu}
                 onChange={(e) => updateRes('cpu', Number(e.target.value))}
               />
-              <span>{currentRes.cpu} units</span>
+              <span>{currentRes.cpu} cores</span>
             </div>
 
             <div>
               <label>RAM: </label>
               <input
                 type="range"
-                min={formatMB(getLimits('ram').min)}
-                max={formatMB(getLimits('ram').max)}
+                min={getLimits('ram').min}
+                max={getLimits('ram').max}
+                step={0.1}
                 value={currentRes.ram}
                 onChange={(e) => updateRes('ram', Number(e.target.value))}
               />
-              <span>{currentRes.ram} MB</span>
+              <span>{currentRes.ram} GB</span>
             </div>
 
             <div>
               <label>DISK: </label>
               <input
                 type="range"
-                min={formatMB(getLimits('disk').min)}
-                max={formatMB(getLimits('disk').max)}
+                min={getLimits('disk').min}
+                max={getLimits('disk').max}
+                step={0.1}
                 value={currentRes.disk}
                 onChange={(e) => updateRes('disk', Number(e.target.value))}
               />
-              <span>{currentRes.disk} MB</span>
+              <span>{currentRes.disk} GB</span>
             </div>
 
             <div>
@@ -247,7 +236,8 @@ export default function ComputeEnvSelection({
                   </div>
                 ))}
                 <div>
-                  <strong>Total Cost:</strong> {currentRes.price} {tokenSymbol}
+                  <strong>Total Cost:</strong> {currentRes.price.toFixed(2)}{' '}
+                  {tokenSymbol}
                 </div>
               </>
             )}
