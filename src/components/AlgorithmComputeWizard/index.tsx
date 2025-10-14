@@ -200,8 +200,16 @@ export default function ComputeWizard({
 
   function resetCacheWallet() {
     ssiWalletCache.clearCredentials()
-    setCachedCredentials(undefined)
+    setCachedCredentials([])
     clearVerifierSessionCache()
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith('credential_')) {
+          localStorage.removeItem(key)
+        }
+      }
+    } catch {}
   }
 
   useEffect(() => {
@@ -731,6 +739,7 @@ export default function ComputeWizard({
       setRefetchJobs(!refetchJobs)
       setSuccessJobId(response?.jobId || response?.id || 'N/A')
       setShowSuccess(true)
+      resetCacheWallet()
       // Trigger refetch of compute jobs on the asset page
       onComputeJobCreated?.()
     } catch (error) {
@@ -999,6 +1008,7 @@ export default function ComputeWizard({
                         style="gradient"
                         onClick={() => {
                           setShowSuccess(false)
+                          resetCacheWallet()
                           // Close the modal
                           onClose?.()
                         }}
