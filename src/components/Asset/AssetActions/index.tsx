@@ -55,7 +55,10 @@ export default function AssetActions({
   const {
     verifierSessionCache,
     lookupVerifierSessionId,
-    lookupVerifierSessionIdSkip
+    lookupVerifierSessionIdSkip,
+    ssiWalletCache,
+    setCachedCredentials,
+    clearVerifierSessionCache
   } = useSsiWallet()
   const [isComputePopupOpen, setIsComputePopupOpen] = useState<boolean>(false)
 
@@ -210,7 +213,22 @@ export default function AssetActions({
     setIsComputePopupOpen(true)
   }
 
+  function resetCacheWallet() {
+    ssiWalletCache.clearCredentials()
+    setCachedCredentials(undefined as any)
+    clearVerifierSessionCache()
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith('credential_')) {
+          localStorage.removeItem(key)
+        }
+      }
+    } catch {}
+  }
+
   const closeComputePopup = () => {
+    resetCacheWallet()
     setIsComputePopupOpen(false)
   }
   return (

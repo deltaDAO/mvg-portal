@@ -8,7 +8,6 @@ import {
   LoggerInstance,
   ComputeAlgorithm,
   ProviderComputeInitializeResults,
-  unitsToAmount,
   ProviderFees,
   UserCustomParameters,
   EscrowContract
@@ -42,13 +41,11 @@ import {
 import { useUserPreferences } from '@context/UserPreferences'
 import { getDummySigner } from '@utils/wallet'
 import { parseConsumerParameterValues } from '../Asset/AssetActions/ConsumerParameters'
-import { BigNumber, ethers, Signer } from 'ethers'
+import { ethers, Signer } from 'ethers'
 import { useAccount } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
 import { useSsiWallet } from '@context/SsiWallet'
-import { checkVerifierSessionId } from '@utils/wallet/policyServer'
-import { useCredentialValidation } from '@hooks/useCredentialValidation'
-import appConfig, { oceanTokenAddress } from 'app.config.cjs'
+import { oceanTokenAddress } from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 
@@ -97,7 +94,7 @@ export default function ComputeWizard({
   onClose?: () => void
   onComputeJobCreated?: () => void
 }): ReactElement {
-  const { debug } = useUserPreferences()
+  useUserPreferences()
   const { isAssetNetwork } = useAsset()
   const { isConnected } = useAccount()
   const newCancelToken = useCancelToken()
@@ -125,7 +122,7 @@ export default function ComputeWizard({
     useState<AssetExtended>()
   const [hasAlgoAssetDatatoken, setHasAlgoAssetDatatoken] = useState<boolean>()
   const [algorithmDTBalance, setAlgorithmDTBalance] = useState<string>()
-  const [validAlgorithmOrderTx, setValidAlgorithmOrderTx] = useState('')
+  const [validAlgorithmOrderTx] = useState('')
 
   const [validOrderTx, setValidOrderTx] = useState('')
 
@@ -144,13 +141,11 @@ export default function ComputeWizard({
   const [retry, setRetry] = useState<boolean>(false)
   const {
     lookupVerifierSessionId,
-    lookupVerifierSessionIdSkip,
     ssiWalletCache,
     setCachedCredentials,
     clearVerifierSessionCache
   } = useSsiWallet()
 
-  const { validateCredentials, refreshCredentials } = useCredentialValidation()
   const [svcIndex, setSvcIndex] = useState(0)
 
   const [allResourceValues, setAllResourceValues] = useState<{
@@ -204,8 +199,18 @@ export default function ComputeWizard({
 
   function resetCacheWallet() {
     ssiWalletCache.clearCredentials()
-    setCachedCredentials(undefined)
+    setCachedCredentials([])
     clearVerifierSessionCache()
+    try {
+      let removed = 0
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith('credential_')) {
+          localStorage.removeItem(key)
+          removed++
+        }
+      }
+    } catch {}
   }
 
   useEffect(() => {
@@ -777,6 +782,7 @@ export default function ComputeWizard({
       setRefetchJobs(!refetchJobs)
       setSuccessJobId(response?.jobId || response?.id || 'N/A')
       setShowSuccess(true)
+      resetCacheWallet()
       // Trigger refetch of compute jobs on the asset page
       onComputeJobCreated?.()
     } catch (error) {
@@ -1005,6 +1011,7 @@ export default function ComputeWizard({
                       style="gradient"
                       onClick={() => {
                         setShowSuccess(false)
+                        resetCacheWallet()
                         // Close the modal
                         onClose?.()
                       }}
