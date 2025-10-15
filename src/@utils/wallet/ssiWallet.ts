@@ -334,12 +334,17 @@ export async function usePresentationRequest(
   did: string,
   presentationRequest: string,
   selectedCredentials: string[],
-  token: string
+  token: string,
+  timeoutMs = 30000 // default 30 seconds
 ): Promise<{ redirectUri: string }> {
   const api = getSsiWalletApi()
   if (!api) {
     throw new Error('No SSI Wallet API configured')
   }
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), timeoutMs)
+
   try {
     const response = await axios.post(
       `${api}/wallet-api/wallet/${walletId}/exchange/usePresentationRequest`,
@@ -352,13 +357,22 @@ export async function usePresentationRequest(
         headers: {
           Authorization: `Bearer ${token}`
         },
-        withCredentials: true
+        withCredentials: true,
+        signal: controller.signal
       }
     )
 
     return response.data
-  } catch (error) {
-    throw error.response
+  } catch (error: any) {
+    if (axios.isCancel(error)) {
+      throw new Error('Presentation request timed out')
+    }
+    if (axios.isAxiosError(error) && error.response) {
+      throw error.response
+    }
+    throw error
+  } finally {
+    clearTimeout(timeout)
   }
 }
 
