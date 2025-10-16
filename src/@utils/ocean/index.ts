@@ -9,7 +9,7 @@ import { ConfigHelper, Config } from '@oceanprotocol/lib'
 */
 export function sanitizeDevelopmentConfig(config: Config): Config {
   return {
-    nodeUri: process.env.NEXT_PUBLIC_NODE_URI || config.nodeUri,
+    nodeUri: config.nodeUri || process.env.NEXT_PUBLIC_NODE_URI,
     oceanNodeUri: process.env.NEXT_PUBLIC_PROVIDER_URL || config.oceanNodeUri,
     fixedRateExchangeAddress:
       process.env.NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS,
