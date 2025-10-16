@@ -30,15 +30,25 @@ export default function WalletNetworkSwitcher(): ReactElement {
   )
 
   return (
-    <>
-      <p className={styles.text}>
-        This asset is published on {ddoNetworkName} but your wallet is connected
-        to {walletNetworkName}. Connect to {ddoNetworkName} to interact with
-        this asset.
-      </p>
-      <Button size="small" onClick={() => switchNetwork()}>
-        Switch to {ddoNetworkName}
-      </Button>
-    </>
+    <div className={styles.networkWarning}>
+      <div className={styles.tooltipWrapper}>
+        <p className={styles.text}>Switch Network</p>
+        <div className={styles.tooltip}>
+          This asset is published on {ddoNetworkName} but your wallet is
+          connected to {walletNetworkName}. Connect to {ddoNetworkName} to
+          interact with this asset.
+        </div>
+      </div>
+
+      <div className={styles.tooltipWrapper}>
+        <button className={styles.button} onClick={() => switchNetwork()}>
+          Switch Network
+        </button>
+        <div className={styles.tooltip}>
+          Click to switch your wallet to {ddoNetworkName} network to interact
+          with this asset.
+        </div>
+      </div>
+    </div>
   )
 }
