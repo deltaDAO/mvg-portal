@@ -11,7 +11,8 @@ import {
   ProviderFees,
   ProviderInstance,
   ProviderInitialize,
-  getErrorMessage
+  getErrorMessage,
+  allowance
 } from '@oceanprotocol/lib'
 import { Signer, ethers } from 'ethers'
 import { getOceanConfig } from './ocean'
@@ -24,6 +25,7 @@ import appConfig, {
 import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import { da } from 'date-fns/locale'
 
 export async function initializeProvider(
   asset: AssetExtended,
@@ -196,10 +198,9 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
+        console.log('ORDER PRICE AND FEES', orderPriceAndFees)
         const approveAmount = (
-          Number(orderPriceAndFees?.price) +
-          Number(orderPriceAndFees?.opcFee) +
-          5
+          Number(orderPriceAndFees?.price) + Number(orderPriceAndFees?.opcFee)
         ) // just added more amount to test
           .toString()
         freParams.maxBaseTokenAmount = (
@@ -207,6 +208,14 @@ export async function order(
           (Number(freParams.maxBaseTokenAmount) +
             Number(orderPriceAndFees?.opcFee))
         ).toString()
+        console.log('all arguments for approve', {
+          signer,
+          config,
+          accountId,
+          tokenAddress: accessDetails.baseToken.address,
+          amount: approveAmount,
+          spender: accessDetails.datatoken.address
+        })
         const tx: any = await approve(
           signer,
           config,
@@ -216,6 +225,7 @@ export async function order(
           approveAmount,
           false
         )
+
         console.log('[order] TEMPLATE 2 approve tx sent')
 
         const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
@@ -223,8 +233,20 @@ export async function order(
           '[order] TEMPLATE 2 approve tx confirmed:',
           txApprove?.transactionHash
         )
+        console.log('approve done')
+        await new Promise((resolve) => setTimeout(resolve, 3000)) // wait 3 sec
+        const checkAllowance = await allowance(
+          signer,
+          accessDetails.baseToken.address,
+          accountId,
+          accessDetails.datatoken.address
+        )
+        console.log('checkAllowance', checkAllowance)
+        console.log('going to buy')
+        console.log('txApprove', txApprove)
+        // TODO put if check allowance not found redo allow
         if (!txApprove) return
-
+        console.log('datatoken address ', accessDetails.datatoken.address)
         const buyTx = await datatoken.buyFromFreAndOrder(
           accessDetails.datatoken.address,
           orderParams,
