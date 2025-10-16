@@ -49,25 +49,26 @@ export const getSupportedChains = (chainIdsSupported: number[]): Chain[] => {
   // Include custom chains
   const allChains = [...baseChains, opSepolia, ethereumHoodi]
 
-  // Filter chains by allowed IDs
-  const filteredChains = allChains.filter((chain) =>
-    chainIdsSupported.includes(chain.id)
-  )
+  // Load RPC map from .env
+  const rpcMap: Record<string, string> = process.env.NEXT_PUBLIC_NODE_URI_MAP
+    ? JSON.parse(process.env.NEXT_PUBLIC_NODE_URI_MAP)
+    : {}
 
-  // Override RPC URL if env var is set (for dev/test)
-  return filteredChains.map((chain) => {
-    if (
-      (chain.id === 11155111 || chain.id === 11155420) &&
-      process.env.NEXT_PUBLIC_NODE_URI
-    ) {
-      return {
-        ...chain,
-        rpcUrls: {
-          public: { http: [process.env.NEXT_PUBLIC_NODE_URI] },
-          default: { http: [process.env.NEXT_PUBLIC_NODE_URI] }
+  // Filter chains by allowed IDs and override RPCs if set in env
+  const filteredChains = allChains
+    .filter((chain) => chainIdsSupported.includes(chain.id))
+    .map((chain) => {
+      const mappedRpc = rpcMap[chain.id.toString()]
+      if (mappedRpc) {
+        return {
+          ...chain,
+          rpcUrls: {
+            public: { http: [mappedRpc] },
+            default: { http: [mappedRpc] }
+          }
         }
       }
-    }
-    return chain
-  })
+      return chain
+    })
+  return filteredChains
 }

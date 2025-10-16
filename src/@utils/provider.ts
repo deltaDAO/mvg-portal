@@ -14,7 +14,7 @@ import {
   getErrorMessage
 } from '@oceanprotocol/lib'
 // if customProviderUrl is set, we need to call provider using this custom endpoint
-import { customProviderUrl, oceanTokenAddress } from '../../app.config.cjs'
+import { customProviderUrl } from '../../app.config.cjs'
 import { KeyValuePair } from '@shared/FormInput/InputElement/KeyValueInput'
 import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
@@ -26,6 +26,7 @@ import {
   PolicyServerInitiateActionData,
   PolicyServerInitiateComputeActionData
 } from 'src/@types/PolicyServer'
+import { getOceanConfig } from '@utils/ocean'
 
 export async function initializeProviderForComputeMulti(
   datasets: {
@@ -41,6 +42,9 @@ export async function initializeProviderForComputeMulti(
   selectedResources: ResourceType,
   svcIndexAlgo: number
 ) {
+  const { oceanTokenAddress } = getOceanConfig(
+    algorithm.credentialSubject.chainId
+  )
   const computeAssets = datasets.map(({ asset, service, accessDetails }) => ({
     documentId: asset.id,
     serviceId: service.id,
@@ -109,6 +113,9 @@ export async function initializeProviderForCompute(
   datasetSessionId: string,
   algoSessionId: string
 ): Promise<ProviderComputeInitializeResults> {
+  const { oceanTokenAddress } = getOceanConfig(
+    algorithm.credentialSubject.chainId
+  )
   const computeAsset: ComputeAsset = {
     documentId: dataset.id,
     serviceId: datasetService.id,

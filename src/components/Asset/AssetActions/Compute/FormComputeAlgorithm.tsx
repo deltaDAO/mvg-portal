@@ -153,6 +153,15 @@ export default function FormStartComputeAlgo({
     assets: AssetExtended[]
     services: Service[]
   }> {
+    // Defensive check — ensure datasets is an array before mapping
+    if (!Array.isArray(datasets) || datasets.length === 0) {
+      console.warn(
+        '[getDatasetAssets] datasets is not an array or is empty:',
+        datasets
+      )
+      return { assets: [], services: [] }
+    }
+
     const newCancelTokenInstance = newCancelToken()
     const servicesCollected: Service[] = []
 

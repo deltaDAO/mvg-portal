@@ -60,13 +60,14 @@ import { AssetExtended } from '../../../../@types/AssetExtended'
 import { AssetActionCheckCredentials } from '../CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
-import appConfig, { oceanTokenAddress } from 'app.config.cjs'
+import appConfig from 'app.config.cjs' // here we need to work
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 import { CredentialDialogProvider } from './CredentialDialogProvider'
 import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
 import FormStartComputeAlgo from './FormComputeAlgorithm'
 import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function Compute({
   accountId,
@@ -93,6 +94,8 @@ export default function Compute({
 }): ReactElement {
   const { address } = useAccount()
   const { chainIds } = useUserPreferences()
+  const config = getOceanConfig(asset.credentialSubject.chainId)
+  const { oceanTokenAddress } = config
 
   const newCancelToken = useCancelToken()
 

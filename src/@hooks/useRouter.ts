@@ -18,15 +18,29 @@ function useFactoryRouter() {
     providerFee: '0'
   })
 
-  useEffect(() => {
-    if (!signer || !chain?.id) return
-    const config = getOceanConfig(chain.id)
-    if (!config) return
-    setFactoryRouter(
-      new FactoryRouter(config?.routerFactoryAddress, signer, config.chainId)
+  // Helper to fetch token details
+  const fetchTokenDetails = async (tokenAddress: string) => {
+    const tokenAbi = [
+      'function decimals() view returns (uint8)',
+      'function symbol() view returns (string)',
+      'function name() view returns (string)'
+    ]
+    const tokenContract = new ethers.Contract(
+      tokenAddress,
+      tokenAbi,
+      signer?.provider
     )
-  }, [signer, chain?.id])
 
+    const [decimals, symbol, name] = await Promise.all([
+      tokenContract.decimals(),
+      tokenContract.symbol(),
+      tokenContract.name()
+    ])
+
+    return { address: tokenAddress, decimals, symbol, name }
+  }
+
+  // Fetch fees with try/catch
   const fetchFees = async (router: FactoryRouter) => {
     try {
       const [opcFees, consumeFee, providerFee] = await Promise.all([
@@ -40,92 +54,97 @@ function useFactoryRouter() {
         consumeFee: ethers.utils.formatUnits(consumeFee, 18),
         providerFee: ethers.utils.formatUnits(providerFee, 18)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching fees:', error)
+      if (error.code === 'NETWORK_ERROR') {
+        console.warn('Network changed detected, reloading page...')
+        window.location.reload() // Reload the page to reset state
+      }
+      return {
+        swapOceanFee: '0',
+        swapNonOceanFee: '0',
+        consumeFee: '0',
+        providerFee: '0'
+      }
     }
   }
 
+  // Initialize FactoryRouter when signer or chain changes
   useEffect(() => {
+    if (!signer || !chain?.id) return
+    const config = getOceanConfig(chain.id)
+    if (!config) return
+
+    try {
+      setFactoryRouter(
+        new FactoryRouter(config?.routerFactoryAddress, signer, config.chainId)
+      )
+    } catch (error: any) {
+      console.error('Error initializing FactoryRouter:', error)
+      if (error.code === 'NETWORK_ERROR') {
+        window.location.reload()
+      }
+    }
+  }, [signer, chain?.id])
+
+  // Fetch fees whenever factoryRouter changes
+  useEffect(() => {
+    if (!factoryRouter) return
     const fetchData = async () => {
       const result = await fetchFees(factoryRouter)
       setFees(result)
     }
-    if (factoryRouter) {
-      fetchData()
-    }
+    fetchData()
   }, [factoryRouter])
 
-  const fetchTokenDetails = async (tokenAddress: string) => {
-    const tokenAbi = [
-      'function decimals() view returns (uint8)',
-      'function symbol() view returns (string)',
-      'function name() view returns (string)'
-    ]
-    const tokenContract = new ethers.Contract(
-      tokenAddress,
-      tokenAbi,
-      signer.provider
-    )
-
-    const [decimals, symbol, name] = await Promise.all([
-      tokenContract.decimals(),
-      tokenContract.symbol(),
-      tokenContract.name()
-    ])
-
-    return { address: tokenAddress, decimals, symbol, name }
-  }
-
+  // Fetch approved tokens
   useEffect(() => {
+    if (!factoryRouter) return
     const fetchApprovedTokens = async () => {
-      if (!factoryRouter) return
-
       try {
-        const approvedTokens = await factoryRouter.contract.getApprovedTokens()
+        const approvedTokensAddresses =
+          await factoryRouter.contract.getApprovedTokens()
         const tokenDetails = await Promise.all(
-          approvedTokens.map((tokenAddress) => fetchTokenDetails(tokenAddress))
+          approvedTokensAddresses.map((tokenAddress) =>
+            fetchTokenDetails(tokenAddress)
+          )
         )
         setApprovedTokens(tokenDetails)
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error fetching approved tokens:', error)
+        if (error.code === 'NETWORK_ERROR') window.location.reload()
       }
     }
-
-    if (factoryRouter) {
-      fetchApprovedTokens()
-    }
+    fetchApprovedTokens()
   }, [factoryRouter])
+
   const getOpcData = async (chainIds: number[]) => {
-    const fetchOpcData = async (chainIds: number[]) => {
-      const validChainIds = chainIds.filter((chainId) => {
-        const config = getOceanConfig(chainId)
-        return !!config?.routerFactoryAddress
-      })
-      const opcData = await Promise.all(
-        validChainIds.map(async (chainId) => {
-          const fees = await fetchFees(factoryRouter)
-          const approvedTokensAddresses =
-            await factoryRouter.contract.getApprovedTokens()
-          const tokenDetails: TokenDetails[] = await Promise.all(
-            approvedTokensAddresses.map((tokenAddress) =>
-              fetchTokenDetails(tokenAddress)
-            )
+    if (!factoryRouter) return []
+
+    const validChainIds = chainIds.filter((chainId) => {
+      const config = getOceanConfig(chainId)
+      return !!config?.routerFactoryAddress
+    })
+
+    const opcData: OpcFee[] = await Promise.all(
+      validChainIds.map(async (chainId) => {
+        const currentFees = await fetchFees(factoryRouter)
+        const approvedTokensAddresses =
+          await factoryRouter.contract.getApprovedTokens()
+        const tokenDetails: TokenDetails[] = await Promise.all(
+          approvedTokensAddresses.map((tokenAddress) =>
+            fetchTokenDetails(tokenAddress)
           )
-          return {
-            chainId,
-            approvedTokens: tokenDetails.map((token) => token.address),
-            swapApprovedFee: fees.swapOceanFee,
-            swapNotApprovedFee: fees.swapNonOceanFee
-          }
-        })
-      )
-
-      return opcData as OpcFee[]
-    }
-
-    if (factoryRouter) {
-      return fetchOpcData(chainIds)
-    }
+        )
+        return {
+          chainId,
+          approvedTokens: tokenDetails.map((token) => token.address),
+          swapApprovedFee: currentFees.swapOceanFee,
+          swapNotApprovedFee: currentFees.swapNonOceanFee
+        }
+      })
+    )
+    return opcData
   }
 
   return { approvedTokens, fees, signer, getOpcData }

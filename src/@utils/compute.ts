@@ -30,6 +30,7 @@ import {
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
 import { ServiceComputeOptions } from '@oceanprotocol/ddo-js'
+import { useNetwork } from 'wagmi'
 
 async function getAssetMetadata(
   queryDtList: string[],
@@ -238,6 +239,8 @@ async function getJobs(
   assets?: Asset[],
   cancelToken?: CancelToken
 ): Promise<ComputeJobMetaData[]> {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const { chain } = useNetwork()
   const uniqueProviders = [...new Set(providerUrls)]
   const providersComputeJobsExtended: ComputeJobExtended[] = []
   const computeJobs: ComputeJobMetaData[] = []
@@ -284,7 +287,7 @@ async function getJobs(
             ...job,
             assetName: 'name',
             assetDtSymbol: 'symbol',
-            networkId: 11155111
+            networkId: chain?.id || 11155111
           }
           computeJobs.push(compJob)
         }

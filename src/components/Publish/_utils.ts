@@ -26,8 +26,7 @@ import appConfig, {
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
-  defaultDatatokenCap,
-  oceanTokenAddress
+  defaultDatatokenCap
 } from '../../../app.config.cjs'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
@@ -70,6 +69,7 @@ import { State } from 'src/@types/ddo/State'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { CancelToken } from 'axios'
 import { ComputeEditForm } from '@components/Asset/Edit/_types'
+import { getOceanConfig } from '@utils/ocean'
 
 function cleanupVpPolicies(value: any): void {
   if (!value.vp_policies || value.vp_policies.length === 0) {
@@ -703,7 +703,9 @@ export async function transformPublishFormToDdo(
         price: {
           value: values?.pricing.type === 'free' ? 0 : values.pricing.price,
           tokenSymbol: values.pricing?.baseToken?.symbol || 'OCEAN',
-          tokenAddress: values.pricing?.baseToken?.address || oceanTokenAddress
+          tokenAddress:
+            values.pricing?.baseToken?.address ||
+            getOceanConfig(chainId).oceanTokenAddress
         }
       }
     },
@@ -884,16 +886,21 @@ export async function createTokensAndPricing(
 
   switch (values.pricing.type) {
     case 'fixed': {
+      const baseTokenAddress =
+        config.oceanTokenAddress ??
+        process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS ??
+        values.pricing.baseToken.address
+      const baseTokenDecimals =
+        config.oceanTokenAddress || process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
+          ? 18
+          : values.pricing.baseToken.decimals
+
       const freParams: FreCreationParams = {
         fixedRateAddress: config.fixedRateExchangeAddress,
-        baseTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
-          ? process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
-          : values.pricing.baseToken.address,
+        baseTokenAddress,
         owner: accountId,
         marketFeeCollector: marketFeeAddress,
-        baseTokenDecimals: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
-          ? 18
-          : values.pricing.baseToken.decimals,
+        baseTokenDecimals,
         datatokenDecimals: 18,
         fixedRate: values.pricing.price.toString(),
         marketFee: publisherMarketFixedSwapFee,
@@ -915,18 +922,15 @@ export async function createTokensAndPricing(
       const nftCreatedEvent = getEventFromTx(trxReceipt, 'NFTCreated')
       const tokenCreatedEvent = getEventFromTx(trxReceipt, 'TokenCreated')
 
-      erc721Address = nftCreatedEvent.args.newTokenAddress
-      datatokenAddress = tokenCreatedEvent.args.newTokenAddress
-      txHash = trxReceipt.transactionHash
+      erc721Address = nftCreatedEvent?.args?.newTokenAddress
+      datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
+      txHash = trxReceipt?.transactionHash
 
       LoggerInstance.log('[publish] createNftErcWithFixedRate tx', txHash)
 
       break
     }
     case 'free': {
-      // maxTokens -  how many tokens cand be dispensed when someone requests . If maxTokens=2 then someone can't request 3 in one tx
-      // maxBalance - how many dt the user has in it's wallet before the dispenser will not dispense dt
-      // both will be just 1 for the market
       const dispenserParams: DispenserCreationParams = {
         dispenserAddress: config.dispenserAddress,
         maxTokens: parseEther('1').toString(),
@@ -949,15 +953,17 @@ export async function createTokensAndPricing(
       const nftCreatedEvent = getEventFromTx(trxReceipt, 'NFTCreated')
       const tokenCreatedEvent = getEventFromTx(trxReceipt, 'TokenCreated')
 
-      erc721Address = nftCreatedEvent.args.newTokenAddress
-      datatokenAddress = tokenCreatedEvent.args.newTokenAddress
-      txHash = trxReceipt.transactionHash
-
+      erc721Address = nftCreatedEvent?.args?.newTokenAddress
+      datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
+      txHash = trxReceipt?.transactionHash
       LoggerInstance.log('[publish] createNftErcWithDispenser tx', txHash)
 
       break
     }
+    default:
+      console.warn('⚠️ Unknown pricing type:', values.pricing.type)
   }
+  console.groupEnd()
 
   return { erc721Address, datatokenAddress, txHash }
 }

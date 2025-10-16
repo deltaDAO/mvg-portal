@@ -63,7 +63,7 @@ export default function ComputeEnvSelection({
   return (
     <div>
       {computeEnvs?.map((env) => {
-        const chainId = '11155111'
+        const chainId = chain?.id.toString() || '11155111'
         const fee = env.fees?.[chainId]?.[0]
         const freeAvailable = !!env.free
         const isSelected = selectedEnvId === env.id

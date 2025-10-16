@@ -14,14 +14,26 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
     throw new Error('Chain ID must be a number')
   }
 
-  // Get config from ocean lib
   const config = getOceanConfig(chainId)
+  if (!config) {
+    console.error(`[DEBUG] No Ocean config found for chainId ${chainId}`)
+    throw new Error(`No Ocean config found for chainId ${chainId}`)
+  }
+
   try {
     const privateKey =
       '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+
+    if (!config.nodeUri) {
+      console.error('[DEBUG] Node URI missing in config')
+      throw new Error('Missing nodeUri in Ocean config')
+    }
+
     const provider = new ethers.providers.JsonRpcProvider(config.nodeUri)
-    return new ethers.Wallet(privateKey, provider)
-  } catch (error) {
+    const wallet = new ethers.Wallet(privateKey, provider)
+    return wallet
+  } catch (error: any) {
+    console.error('[DEBUG] Failed to create dummy signer:', error)
     throw new Error(`Failed to create dummy signer: ${error.message}`)
   }
 }
@@ -29,7 +41,7 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
 // Wagmi client
 const chains = [...getSupportedChains(chainIdsSupported)]
 if (process.env.NEXT_PUBLIC_MARKET_DEVELOPMENT === 'true') {
-  chains.push({ ...localhost, id: 8996 })
+  chains.push({ ...localhost, id: 11155420 })
 }
 export const wagmiClient = createClient(
   getDefaultClient({
