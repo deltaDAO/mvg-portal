@@ -234,19 +234,49 @@ export async function order(
           txApprove?.transactionHash
         )
         console.log('approve done')
-        await new Promise((resolve) => setTimeout(resolve, 3000)) // wait 3 sec
-        const checkAllowance = await allowance(
-          signer,
-          accessDetails.baseToken.address,
-          accountId,
-          accessDetails.datatoken.address
+        // --- wait until allowance is actually reflected ---
+        const decimals = accessDetails.baseToken?.decimals || 18
+
+        // ensure approveAmount is a proper BigNumber
+        const parsedApproveAmount = ethers.utils.parseUnits(
+          approveAmount,
+          decimals
         )
-        console.log('checkAllowance', checkAllowance)
-        console.log('going to buy')
-        console.log('txApprove', txApprove)
-        // TODO put if check allowance not found redo allow
-        if (!txApprove) return
-        console.log('datatoken address ', accessDetails.datatoken.address)
+
+        let currentAllowance: ethers.BigNumber = ethers.BigNumber.from(0)
+
+        while (currentAllowance.lt(parsedApproveAmount)) {
+          // get allowance in BigNumber directly
+          const allowanceValue = await allowance(
+            signer,
+            accessDetails.baseToken.address,
+            accountId,
+            accessDetails.datatoken.address
+          )
+
+          try {
+            // parse allowance safely
+            currentAllowance = ethers.utils.parseUnits(allowanceValue, decimals)
+          } catch (err) {
+            console.log('allowance not ready yet, retrying...', allowanceValue)
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+            continue
+          }
+
+          if (currentAllowance.lt(parsedApproveAmount)) {
+            console.log(
+              'waiting for allowance to be updated...',
+              currentAllowance.toString()
+            )
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+          }
+        }
+
+        console.log(
+          'allowance confirmed on-chain:',
+          currentAllowance.toString()
+        )
+
         const buyTx = await datatoken.buyFromFreAndOrder(
           accessDetails.datatoken.address,
           orderParams,
