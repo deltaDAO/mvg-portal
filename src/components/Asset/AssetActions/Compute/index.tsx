@@ -345,6 +345,27 @@ export default function Compute({
                 const approveTx = await erc20.approve(escrowAddress, amountWei)
                 await approveTx.wait()
                 console.log(`Approved ${amountHuman} OCEAN`)
+                // Wait until allowance actually reflected on-chain
+                while (true) {
+                  const allowanceNow = await erc20.allowance(
+                    owner,
+                    escrowAddress
+                  )
+                  if (allowanceNow.gte(amountWei)) {
+                    console.log(
+                      `Allowance confirmed on-chain: ${ethers.utils.formatUnits(
+                        allowanceNow,
+                        18
+                      )} OCEAN`
+                    )
+                    break
+                  }
+                  console.log(
+                    'Waiting for allowance confirmation...',
+                    allowanceNow.toString()
+                  )
+                  await new Promise((resolve) => setTimeout(resolve, 1000))
+                }
               } else {
                 console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
               }
