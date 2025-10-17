@@ -66,11 +66,11 @@ function extractLeftValueFromRule(rule: any): string {
 
   const cleaned =
     raw.startsWith('lower(') && raw.endsWith(')') ? raw.slice(6, -1) : raw
-
   const normalized = cleaned.replace(/\["([^"]+)"\]/g, '.$1')
 
-  const parts = normalized.split('.')
-  return parts[parts.length - 1] || ''
+  return normalized.startsWith('input.credentialData.credentialSubject.')
+    ? normalized.replace('input.credentialData.credentialSubject.', '')
+    : normalized
 }
 
 function generateRules(arg: any, policy: string): PolicyRule[] {
