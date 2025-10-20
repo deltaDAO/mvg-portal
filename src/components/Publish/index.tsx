@@ -24,7 +24,7 @@ import { validationSchema } from './_validation'
 import appConfig, { customProviderUrl } from '../../../app.config.cjs'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
-import { ethers, Contract } from 'ethers'
+import { ethers } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
 import ContainerForm from '../@shared/atoms/ContainerForm'
 
