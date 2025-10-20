@@ -239,8 +239,6 @@ async function getJobs(
   assets?: Asset[],
   cancelToken?: CancelToken
 ): Promise<ComputeJobMetaData[]> {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const { chain } = useNetwork()
   const uniqueProviders = [...new Set(providerUrls)]
   const providersComputeJobsExtended: ComputeJobExtended[] = []
   const computeJobs: ComputeJobMetaData[] = []
@@ -287,7 +285,7 @@ async function getJobs(
             ...job,
             assetName: 'name',
             assetDtSymbol: 'symbol',
-            networkId: chain?.id || 11155111
+            networkId: 11155111
           }
           computeJobs.push(compJob)
         }
