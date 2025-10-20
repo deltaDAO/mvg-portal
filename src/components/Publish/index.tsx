@@ -24,7 +24,7 @@ import { validationSchema } from './_validation'
 import appConfig, { customProviderUrl } from '../../../app.config.cjs'
 import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
-import { ethers } from 'ethers'
+import { ethers, Contract } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
 import ContainerForm from '../@shared/atoms/ContainerForm'
 
@@ -199,6 +199,24 @@ export default function PublishPage({
     try {
       if (!ddo || !ipfsUpload)
         throw new Error('No DDO received. Please try again.')
+
+      const userAddress = await signer.getAddress()
+      let attempts = 0
+      const maxAttempts = 60
+
+      while (attempts < maxAttempts) {
+        try {
+          const nftTemp = new Nft(signer, ddo.credentialSubject.chainId)
+          await nftTemp.getNftPermissions(erc721Address, userAddress)
+          break
+        } catch (e) {
+          attempts++
+          if (attempts >= maxAttempts) {
+            throw new Error('Timeout waiting for permissions to be set')
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+        }
+      }
 
       // Set metadata for the NFT
       const nft = new Nft(signer, ddo.credentialSubject.chainId)
