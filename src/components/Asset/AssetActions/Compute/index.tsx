@@ -318,7 +318,6 @@ export default function Compute({
         )
       )
       if (selectedResources.mode === 'paid') {
-        console.log('Escorw address', initializedProvider.payment.escrowAddress)
         const escrow = new EscrowContract(
           ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
           signer,

@@ -111,7 +111,6 @@ export async function order(
     accountId,
     providerFees
   )
-  console.log('provider fees ', providerFees)
   const serviceIndex = asset.credentialSubject?.services.findIndex(
     (s: Service) => s.id === service.id
   )
@@ -132,7 +131,6 @@ export async function order(
   } as OrderParams
   switch (accessDetails.type) {
     case 'fixed': {
-      console.log('accessdetails!!!!! ', accessDetails)
       const freParams = {
         exchangeContract: config.fixedRateExchangeAddress,
         exchangeId: accessDetails.addressOrId,
@@ -146,7 +144,6 @@ export async function order(
       if (accessDetails.templateId === 1) {
         if (!hasDatatoken) {
           const approveAmount = orderPriceAndFees?.price
-          console.log('[order] TEMPLATE 1 APPROVE AMOUNT:', approveAmount)
 
           const tx: any = await approve(
             signer,
@@ -157,22 +154,14 @@ export async function order(
             approveAmount,
             false
           )
-          console.log('[order] TEMPLATE 1 approve tx sent')
 
           const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
-          console.log(
-            '[order] TEMPLATE 1 approve tx confirmed:',
-            txApprove?.transactionHash
-          )
+
           if (!txApprove) return
 
           const fre = new FixedRateExchange(
             config.fixedRateExchangeAddress,
             signer
-          )
-          console.log(
-            '[order] TEMPLATE 1 buying datatoken with price:',
-            orderPriceAndFees?.price
           )
 
           const freTx = await fre.buyDatatokens(
@@ -183,10 +172,6 @@ export async function order(
             '0'
           )
           const buyDtTx = await freTx.wait()
-          console.log(
-            '[order] TEMPLATE 1 buyDatatokens confirmed:',
-            buyDtTx.transactionHash
-          )
         }
 
         return await datatoken.startOrder(
@@ -198,7 +183,6 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
-        console.log('ORDER PRICE AND FEES', orderPriceAndFees)
         const approveAmount = (
           Number(orderPriceAndFees?.price) + Number(orderPriceAndFees?.opcFee)
         ) // just added more amount to test
@@ -208,14 +192,7 @@ export async function order(
           (Number(freParams.maxBaseTokenAmount) +
             Number(orderPriceAndFees?.opcFee))
         ).toString()
-        console.log('all arguments for approve', {
-          signer,
-          config,
-          accountId,
-          tokenAddress: accessDetails.baseToken.address,
-          amount: approveAmount,
-          spender: accessDetails.datatoken.address
-        })
+
         const tx: any = await approve(
           signer,
           config,
@@ -226,14 +203,11 @@ export async function order(
           false
         )
 
-        console.log('[order] TEMPLATE 2 approve tx sent')
-
         const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
         console.log(
           '[order] TEMPLATE 2 approve tx confirmed:',
           txApprove?.transactionHash
         )
-        console.log('approve done')
         // --- wait until allowance is actually reflected ---
         const decimals = accessDetails.baseToken?.decimals || 18
 
@@ -408,44 +382,21 @@ export async function handleComputeOrder(
   LoggerInstance.log('[compute] Using initializeData:', initializeData)
 
   try {
-    // Debug key data
-    console.log('🧩 accountId:', accountId)
-    console.log('🧩 hasDatatoken:', hasDatatoken)
-    console.log('🧩 accessDetails:', accessDetails)
-    console.log('🧩 orderPriceAndFees:', orderPriceAndFees)
-    console.log('🧩 computeConsumerAddress:', computeConsumerAddress)
-    console.log('🧩 initializeData:', initializeData)
-    console.log('🧩 asset id:', asset?.id)
-    console.log('🧩 service id:', service?.id)
-    console.log('🧩 providerFee:', initializeData?.providerFee)
-    console.log('🧩 signer address:', await signer.getAddress())
-    console.log('🧩 chainId:', await signer.getChainId())
-
-    // Return early when valid order is found, and no provider fees are to be paid
     if (accessDetails.validOrderTx) {
-      console.log(
-        '✅ Returning existing validOrderTx:',
-        accessDetails.validOrderTx
-      )
       return accessDetails.validOrderTx
     }
 
     if (!initializeData) {
-      console.error('❌ initializeData is missing')
+      console.error('initializeData is missing')
       throw new Error('No initializeData found, please try again.')
     }
 
     if (initializeData?.validOrder && !initializeData.providerFee) {
-      console.log('✅ Has validOrder with no providerFee, reusing order')
       return accessDetails.validOrderTx
     }
 
     // Approve potential Provider fee amount first
     if (initializeData?.providerFee?.providerFeeAmount !== '0') {
-      console.log(
-        '💰 Approving provider fee:',
-        initializeData.providerFee.providerFeeAmount
-      )
       try {
         const txApproveProvider = await approveProviderFee(
           asset,
@@ -454,7 +405,6 @@ export async function handleComputeOrder(
           signer,
           initializeData.providerFee.providerFeeAmount
         )
-        console.log('✅ txApproveProvider result:', txApproveProvider)
 
         if (!txApproveProvider)
           throw new Error('Failed to approve provider fees!')
@@ -464,17 +414,16 @@ export async function handleComputeOrder(
           txApproveProvider
         )
       } catch (approveErr) {
-        console.error('❌ Error during approveProviderFee:', approveErr)
+        console.error('Error during approveProviderFee:', approveErr)
         throw approveErr
       }
     } else {
-      console.log('ℹ️ No provider fee approval required.')
+      console.log('No provider fee approval required.')
     }
 
     // Reuse order flow
     if (initializeData?.validOrder) {
       LoggerInstance.log('[compute] Calling reuseOrder ...', initializeData)
-      console.log('🔁 Reusing valid order:', initializeData.validOrder)
       try {
         const txReuseOrder = await reuseOrder(
           signer,
@@ -485,15 +434,12 @@ export async function handleComputeOrder(
           initializeData.validOrder,
           initializeData.providerFee
         )
-        console.log('✅ reuseOrder tx object:', txReuseOrder)
-
         if (!txReuseOrder) throw new Error('Failed to reuse order!')
 
         const tx = await txReuseOrder.wait()
-        console.log('✅ reuseOrder confirmed tx:', tx)
         return tx?.transactionHash
       } catch (reuseErr) {
-        console.error('❌ reuseOrder failed:', reuseErr)
+        console.error('reuseOrder failed:', reuseErr)
         throw reuseErr
       }
     }
@@ -506,8 +452,8 @@ export async function handleComputeOrder(
       asset,
       service
     )
-    console.log('🚀 Starting new order flow...')
-    console.log('🚀 Params ->', {
+    console.log('Starting new order flow...')
+    console.log('Params ->', {
       assetId: asset?.id || asset?.['@id'],
       serviceId: service?.id,
       accountId,
@@ -528,14 +474,12 @@ export async function handleComputeOrder(
         initializeData.providerFee,
         computeConsumerAddress
       )
-      console.log('📦 order() returned tx object:', txStartOrder)
 
       const tx = await txStartOrder.wait()
-      console.log('✅ order confirmed tx:', tx)
       return tx?.transactionHash
     } catch (orderErr: any) {
-      console.error('❌ order() call failed:', orderErr)
-      console.error('🧠 Error details:', {
+      console.error('order() call failed:', orderErr)
+      console.error('Error details:', {
         reason: orderErr.reason,
         code: orderErr.code,
         method: orderErr.method,
@@ -546,7 +490,7 @@ export async function handleComputeOrder(
       throw orderErr
     }
   } catch (error: any) {
-    console.error('❌ Top-level handleComputeOrder error:', error)
+    console.error('Top-level handleComputeOrder error:', error)
     toast.error(error?.message || 'Unknown error during compute order')
     LoggerInstance.error(`[compute] ${error?.message}`)
   }

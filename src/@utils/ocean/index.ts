@@ -9,13 +9,12 @@ import { ConfigHelper, Config } from '@oceanprotocol/lib'
 */
 export function sanitizeDevelopmentConfig(config: Config): Config {
   return {
-    nodeUri: config.nodeUri || process.env.NEXT_PUBLIC_NODE_URI,
+    nodeUri: config.nodeUri,
     oceanNodeUri: process.env.NEXT_PUBLIC_PROVIDER_URL || config.oceanNodeUri,
     fixedRateExchangeAddress:
       process.env.NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS,
     dispenserAddress: process.env.NEXT_PUBLIC_DISPENSER_ADDRESS,
-    oceanTokenAddress:
-      config.oceanTokenAddress || process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
+    oceanTokenAddress: config.oceanTokenAddress,
     nftFactoryAddress: process.env.NEXT_PUBLIC_NFT_FACTORY_ADDRESS,
     routerFactoryAddress: process.env.NEXT_PUBLIC_ROUTER_FACTORY_ADDRESS,
     accessListFactory: process.env.NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS
@@ -53,7 +52,6 @@ export function getOceanConfig(network: string | number): Config {
   if (rpcMap[networkKey]) {
     config.nodeUri = rpcMap[networkKey]
   }
-  console.log('config ', config)
   return config as Config
 }
 export function getDevelopmentConfig(): Config {
