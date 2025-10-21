@@ -17,23 +17,23 @@ export const validationConsumerParameters: {
   [key in keyof FormConsumerParameter]: SchemaLike
 } = {
   name: Yup.string()
-    .test('unique', 'Parameter names must be unique', (name, context) => {
-      const [parentFormObj, nextParentFormObj] = (
-        context as TestContextExtended
-      ).from
+    // .test('unique', 'Parameter names must be unique', (name, context) => {
+    //   const [parentFormObj, nextParentFormObj] = (
+    //     context as TestContextExtended
+    //   ).from
 
-      if (
-        !nextParentFormObj?.value?.consumerParameters ||
-        nextParentFormObj.value.consumerParameters.length === 1
-      )
-        return true
+    //   if (
+    //     !nextParentFormObj?.value?.consumerParameters ||
+    //     nextParentFormObj.value.consumerParameters.length === 1
+    //   )
+    //     return true
 
-      const { consumerParameters } = nextParentFormObj.value
-      const occasions = consumerParameters.filter(
-        (params) => params.name === name
-      )
-      return occasions.length === 1
-    })
+    //   const { consumerParameters } = nextParentFormObj.value
+    //   const occasions = consumerParameters.filter(
+    //     (params) => params.name === name
+    //   )
+    //   return occasions.length === 1
+    // })
     .min(4, (param) => `Name must be at least ${param.min} characters`)
     .max(50, (param) => `Name must have maximum ${param.max} characters`)
     .required('Required'),
