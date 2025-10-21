@@ -887,13 +887,10 @@ export async function createTokensAndPricing(
   switch (values.pricing.type) {
     case 'fixed': {
       const baseTokenAddress =
-        config.oceanTokenAddress ??
-        process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS ??
-        values.pricing.baseToken.address
-      const baseTokenDecimals =
-        config.oceanTokenAddress || process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
-          ? 18
-          : values.pricing.baseToken.decimals
+        config.oceanTokenAddress ?? values.pricing.baseToken.address
+      const baseTokenDecimals = config.oceanTokenAddress
+        ? 18
+        : values.pricing.baseToken.decimals
 
       const freParams: FreCreationParams = {
         fixedRateAddress: config.fixedRateExchangeAddress,

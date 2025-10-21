@@ -17,7 +17,9 @@ export function sanitizeDevelopmentConfig(config: Config): Config {
     oceanTokenAddress: config.oceanTokenAddress,
     nftFactoryAddress: process.env.NEXT_PUBLIC_NFT_FACTORY_ADDRESS,
     routerFactoryAddress: process.env.NEXT_PUBLIC_ROUTER_FACTORY_ADDRESS,
-    accessListFactory: process.env.NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS
+    accessListFactory:
+      config.accessListFactory ||
+      process.env.NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS
   } as Config
 }
 
