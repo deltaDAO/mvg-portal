@@ -76,7 +76,8 @@
 
 @media screen and (min-width: 75rem) {
   .menu {
-    padding: calc(var(--spacer) / 1.5);
+    padding: calc(var(--spacer) / 0.8);
+    padding-top: 18px;
   }
 }
 /* @media screen and (max-width: 75rem) {

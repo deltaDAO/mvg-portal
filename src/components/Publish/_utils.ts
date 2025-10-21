@@ -512,9 +512,9 @@ export async function transformPublishFormToDdo(
     dockerImageCustom,
     dockerImageCustomTag,
     dockerImageCustomEntrypoint,
-    dockerImageCustomChecksum,
-    usesConsumerParameters,
-    consumerParameters
+    dockerImageCustomChecksum
+    // usesConsumerParameters,
+    // consumerParameters
   } = metadata
   const { access, files, links, providerUrl, timeout, credentials } =
     services[0]
@@ -533,9 +533,9 @@ export async function transformPublishFormToDdo(
   const linksTransformed = links?.length &&
     links[0].valid && [sanitizeUrl(links[0].url)]
 
-  const consumerParametersTransformed = usesConsumerParameters
-    ? transformConsumerParameters(consumerParameters)
-    : undefined
+  // const consumerParametersTransformed = usesConsumerParameters
+  //   ? transformConsumerParameters(consumerParameters)
+  //   : undefined
 
   let license: License
   if (
@@ -605,8 +605,8 @@ export async function transformPublishFormToDdo(
               dockerImage === 'custom'
                 ? dockerImageCustomChecksum
                 : algorithmContainerPresets.checksum
-          },
-          consumerParameters: consumerParametersTransformed
+          }
+          // consumerParameters: consumerParametersTransformed
         }
       }),
     copyrightHolder: '',
