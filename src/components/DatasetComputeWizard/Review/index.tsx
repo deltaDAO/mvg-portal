@@ -998,7 +998,7 @@ export default function Review({
               return (
                 <PricingRow
                   key={`${item.type}-${item.id}-${i}`}
-                  label={item.type === 'dataset' ? 'DATASET' : 'ALGORITHM'}
+                  label={item?.asset?.credentialSubject?.metadata?.name}
                   itemName={item.name}
                   value={item.price}
                   duration={item.duration}
