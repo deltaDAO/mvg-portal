@@ -76,7 +76,8 @@
 
 @media screen and (min-width: 75rem) {
   .menu {
-    padding: calc(var(--spacer) / 1.5);
+    padding: calc(var(--spacer) / 0.8);
+    padding-top: 18px;
   }
 }
 /* @media screen and (max-width: 75rem) {
@@ -234,8 +235,8 @@ svg.caret {
   white-space: nowrap;
   color: #fdd655;
   margin-top: 0px;
-  margin-left: 80px;
-  font-size: 22px;
+  margin-left: 60px;
+  font-size: 18px;
   text-transform: uppercase;
   align-content: baseline;
   align-self: flex-end;

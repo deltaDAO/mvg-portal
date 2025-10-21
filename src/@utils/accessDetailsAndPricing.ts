@@ -226,22 +226,28 @@ export async function getAccessDetails(
   // if there is 0 dispensers and at least 1 fixed rate => use first fixed rate to get the price details
   const fixedRates = await datatoken.getFixedRates(datatokenAddress)
   if (fixedRates.length > 0) {
-    const freAddress = fixedRates[0].contractAddress
-    const exchangeId = fixedRates[0].id
-    const fre = new FixedRateExchange(freAddress, signer, chainId)
-    const exchange = await fre.getExchange(exchangeId)
+    try {
+      const freAddress = fixedRates[0].contractAddress
+      const exchangeId = fixedRates[0].id
+      const fre = new FixedRateExchange(freAddress, signer, chainId)
 
-    return {
-      ...accessDetails,
-      type: 'fixed',
-      addressOrId: exchangeId,
-      price: exchange.fixedRate,
-      baseToken: {
-        address: exchange.baseToken,
-        name: await datatoken.getName(exchange.baseToken), // reuse the datatoken instance since it is ERC20
-        symbol: await datatoken.getSymbol(exchange.baseToken),
-        decimals: parseInt(exchange.btDecimals)
+      const exchange = await fre.getExchange(exchangeId)
+
+      return {
+        ...accessDetails,
+        type: 'fixed',
+        addressOrId: exchangeId,
+        price: exchange.fixedRate,
+        baseToken: {
+          address: exchange.baseToken,
+          name: await datatoken.getName(exchange.baseToken), // reuse the datatoken instance since it is ERC20
+          symbol: await datatoken.getSymbol(exchange.baseToken),
+          decimals: parseInt(exchange.btDecimals)
+        }
       }
+    } catch (error) {
+      console.log('Error fetching fixed rate exchange', error)
+      return accessDetails
     }
   }
 

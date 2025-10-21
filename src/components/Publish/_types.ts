@@ -55,8 +55,8 @@ export interface FormPublishData {
     dockerImageCustomTag?: string
     dockerImageCustomEntrypoint?: string
     dockerImageCustomChecksum?: string
-    usesConsumerParameters?: boolean
-    consumerParameters?: FormConsumerParameter[]
+    // usesConsumerParameters?: boolean
+    // consumerParameters?: FormConsumerParameter[]
     dataSubjectConsent?: boolean
     service?: {
       usesConsumerParameters?: boolean

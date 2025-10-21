@@ -240,11 +240,11 @@ export default function MetadataFields(): ReactElement {
             )}
           </SectionContainer>
 
-          <ConsumerParametersSection
+          {/* <ConsumerParametersSection
             title="Custom Parameters"
             fieldNamePrefix="metadata"
             type="publishConsumerParameters"
-          />
+          /> */}
         </>
       )}
 

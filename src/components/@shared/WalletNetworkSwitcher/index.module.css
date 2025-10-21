@@ -1,5 +1,98 @@
+.networkWarning {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.1rem;
+  margin-top: 5px;
+  padding-left: 5px;
+  max-width: 100%;
+  box-sizing: border-box;
+  justify-content: space-between;
+}
+
+.tooltipWrapper {
+  position: relative;
+  display: inline-block;
+}
+
 .text {
   color: var(--color-secondary);
-  margin-top: calc(var(--spacer) / 4);
-  margin-bottom: calc(var(--spacer) / 2);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 15ch;
+  margin-top: 1rem;
+}
+
+.tooltip {
+  visibility: hidden;
+  opacity: 0;
+  width: 260px;
+  background-color: var(--color-background-tooltip, #333);
+  color: #fff;
+  text-align: left;
+  border-radius: 6px;
+  padding: 0.6rem;
+  position: absolute;
+  z-index: 10;
+  bottom: 130%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.3s ease;
+  line-height: 1.4;
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -6px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--color-background-tooltip, #333) transparent transparent
+    transparent;
+}
+
+.tooltipWrapper:hover .tooltip {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.button {
+  background-color: var(--color-primary, #007bff);
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.4rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 15ch;
+}
+
+.button:hover {
+  background-color: var(--color-primary-hover, #0056d2);
+}
+
+@media (max-width: 768px) {
+  .networkWarning {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .tooltip {
+    width: 220px;
+    font-size: 0.8rem;
+  }
 }

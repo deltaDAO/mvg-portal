@@ -30,6 +30,7 @@ import {
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
 import { ServiceComputeOptions } from '@oceanprotocol/ddo-js'
+import { useNetwork } from 'wagmi'
 
 async function getAssetMetadata(
   queryDtList: string[],
