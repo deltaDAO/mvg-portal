@@ -4,13 +4,14 @@ import Details from './Details'
 import Tooltip from '@shared/atoms/Tooltip'
 import styles from './index.module.css'
 import { useAccount } from 'wagmi'
+import Network from './Network'
 
 export default function Wallet(): ReactElement {
   const { address: accountId } = useAccount()
 
   return (
     <div className={styles.wallet}>
-      {/* <Network /> */}
+      <Network />
       <Tooltip
         content={<Details />}
         trigger="click focus mouseenter"
