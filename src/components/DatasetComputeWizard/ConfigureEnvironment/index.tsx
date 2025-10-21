@@ -250,7 +250,7 @@ export default function ConfigureEnvironment({
     if (!env) return { minValue: 0, maxValue: 0 }
 
     if (id === 'jobDuration') {
-      const maxDuration = isFree ? env.free.maxJobDuration : env.maxJobDuration
+      const maxDuration = isFree ? env.free?.maxJobDuration : env.maxJobDuration
       return {
         minValue: 1,
         maxValue: Math.floor((maxDuration || 3600) / 60),
@@ -260,10 +260,13 @@ export default function ConfigureEnvironment({
 
     const resourceLimits = isFree ? env.free?.resources : env.resources
     const resource = resourceLimits?.find((r) => r.id === id)
+    if (!resource) return { minValue: 0, maxValue: 0 }
+
+    const available = Math.max(0, (resource.max || 0) - (resource.inUse || 0))
 
     return {
-      minValue: resource?.min ?? 0,
-      maxValue: resource?.max ?? 0,
+      minValue: resource.min ?? 0,
+      maxValue: available,
       step: id === 'ram' || id === 'disk' ? 0.1 : 1
     }
   }
