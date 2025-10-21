@@ -45,7 +45,7 @@ import { ethers, Signer } from 'ethers'
 import { useAccount } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
 import { useSsiWallet } from '@context/SsiWallet'
-import { oceanTokenAddress } from 'app.config.cjs'
+// import { oceanTokenAddress } from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 
@@ -67,6 +67,7 @@ import { FormComputeData } from './_types'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function ComputeWizard({
   accountId,
@@ -97,6 +98,8 @@ export default function ComputeWizard({
   useUserPreferences()
   const { isAssetNetwork } = useAsset()
   const { isConnected } = useAccount()
+  const config = getOceanConfig(asset.credentialSubject.chainId)
+  const { oceanTokenAddress } = config
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
 
@@ -342,71 +345,7 @@ export default function ComputeWizard({
               accessDetails,
               initializedProvider.datasets?.[i]?.providerFee
             )
-            if (selectedResources.mode === 'paid') {
-              const escrow = new EscrowContract(
-                ethers.utils.getAddress(
-                  initializedProvider.payment.escrowAddress
-                ),
-                signer,
-                asset.credentialSubject.chainId
-              )
 
-              const amountHuman = String(selectedResources.price) // ex. "4"
-              const amountWei = ethers.utils.parseUnits(amountHuman, 18)
-
-              const erc20 = new ethers.Contract(
-                oceanTokenAddress,
-                [
-                  'function approve(address spender, uint256 amount) returns (bool)',
-                  'function allowance(address owner, address spender) view returns (uint256)'
-                ],
-                signer
-              )
-
-              const owner = await signer.getAddress()
-              const escrowAddress = (
-                escrow.contract.target ?? escrow.contract.address
-              ).toString()
-
-              const currentAllowanceWei = await erc20.allowance(
-                owner,
-                escrowAddress
-              )
-              if (currentAllowanceWei.lt(amountWei)) {
-                console.log(`Approving ${amountHuman} OCEAN to escrow...`)
-                const approveTx = await erc20.approve(escrowAddress, amountWei)
-                await approveTx.wait()
-                console.log(`Approved ${amountHuman} OCEAN`)
-              } else {
-                console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
-              }
-
-              const funds = await escrow.getUserFunds(owner, oceanTokenAddress)
-              const depositedWei = ethers.BigNumber.from(funds[0] ?? '0')
-
-              if (depositedWei.lt(amountWei)) {
-                console.log(`Depositing ${amountHuman} OCEAN to escrow...`)
-                const depositTx = await escrow.deposit(
-                  oceanTokenAddress,
-                  amountHuman
-                )
-                await depositTx.wait()
-                console.log(`Deposited ${amountHuman} OCEAN`)
-              } else {
-                console.log(
-                  `Skip deposit: escrow funds >= ${amountHuman} OCEAN`
-                )
-              }
-
-              // await escrow.verifyFundsForEscrowPayment(
-              //   oceanTokenAddress,
-              //   selectedComputeEnv.consumerAddress,
-              //   await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
-              //   initializedProvider.payment.amount.toString(),
-              //   initializedProvider.payment.minLockSeconds.toString(),
-              //   '10'
-              // )
-            }
             return {
               actualDatasetAsset: asset,
               actualDatasetService: service,
@@ -417,6 +356,95 @@ export default function ComputeWizard({
           }
         )
       )
+      if (selectedResources.mode === 'paid') {
+        console.log('Escorw address', initializedProvider.payment.escrowAddress)
+        const escrow = new EscrowContract(
+          ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
+          signer,
+          asset.credentialSubject.chainId
+        )
+
+        const amountHuman = String(selectedResources.price) // ex. "4"
+        const amountWei = ethers.utils.parseUnits(amountHuman, 18)
+
+        const erc20 = new ethers.Contract(
+          oceanTokenAddress,
+          [
+            'function approve(address spender, uint256 amount) returns (bool)',
+            'function allowance(address owner, address spender) view returns (uint256)'
+          ],
+          signer
+        )
+
+        const owner = await signer.getAddress()
+        const escrowAddress = (
+          escrow.contract.target ?? escrow.contract.address
+        ).toString()
+
+        const currentAllowanceWei = await erc20.allowance(owner, escrowAddress)
+        if (currentAllowanceWei.lt(amountWei)) {
+          console.log(`Approving ${amountHuman} OCEAN to escrow...`)
+          const approveTx = await erc20.approve(escrowAddress, amountWei)
+          await approveTx.wait()
+          console.log(`Approved ${amountHuman} OCEAN`)
+          // Wait until allowance actually reflected on-chain
+          while (true) {
+            const allowanceNow = await erc20.allowance(owner, escrowAddress)
+            if (allowanceNow.gte(amountWei)) {
+              console.log(
+                `Allowance confirmed on-chain: ${ethers.utils.formatUnits(
+                  allowanceNow,
+                  18
+                )} OCEAN`
+              )
+              break
+            }
+            console.log(
+              'Waiting for allowance confirmation...',
+              allowanceNow.toString()
+            )
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+          }
+        } else {
+          console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
+        }
+
+        const funds = await escrow.getUserFunds(owner, oceanTokenAddress)
+        const depositedWei = ethers.BigNumber.from(funds[0] ?? '0')
+
+        if (depositedWei.lt(amountWei)) {
+          console.log(
+            `Depositing ${amountHuman} OCEAN to escrow...`,
+            amountHuman
+          )
+          const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
+          await depositTx.wait()
+          console.log(`Deposited ${amountHuman} OCEAN`)
+          console.log(
+            'Authorizing compute job...',
+            amountHuman,
+            selectedComputeEnv.consumerAddress
+          )
+          await escrow.authorize(
+            oceanTokenAddress,
+            selectedComputeEnv.consumerAddress,
+            initializedProvider.payment.amount.toString(),
+            selectedResources.jobDuration.toString(),
+            '10'
+          )
+        } else {
+          console.log(`Skip deposit: escrow funds >= ${amountHuman} OCEAN`)
+        }
+
+        // await escrow.verifyFundsForEscrowPayment(
+        //   oceanTokenAddress,
+        //   selectedComputeEnv.consumerAddress,
+        //   await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
+        //   initializedProvider.payment.amount.toString(),
+        //   initializedProvider.payment.minLockSeconds.toString(),
+        //   '10'
+        // )
+      }
 
       setComputeStatusText(
         getComputeFeedback(
