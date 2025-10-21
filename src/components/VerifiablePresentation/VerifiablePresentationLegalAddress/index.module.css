@@ -1,0 +1,12 @@
+.description {
+  display: block;
+  color: var(--color-secondary);
+  font-size: var(--font-size-small);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.description:hover {
+  white-space: wrap;
+}

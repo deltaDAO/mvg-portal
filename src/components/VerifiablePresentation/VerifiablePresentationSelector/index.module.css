@@ -1,0 +1,35 @@
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: calc(var(--spacer) / 4);
+  position: absolute;
+  left: calc(var(--spacer) / 4);
+  bottom: calc(var(--spacer) / 4);
+}
+
+.action {
+  background: none;
+  border: none;
+  will-change: transform;
+  /* Better looks */
+}
+
+.action:hover {
+  cursor: pointer;
+}
+
+.disabled {
+  fill: var(--ocean-grey-light);
+}
+
+.disabled:hover {
+  cursor: not-allowed;
+}
+
+.leftAction {
+  transform: rotate(90deg);
+}
+
+.rightAction {
+  transform: rotate(-90deg);
+}

@@ -1,0 +1,28 @@
+.contents {
+  margin: 0;
+  overflow: scroll;
+}
+
+.container {
+  position: relative;
+  border: var(--border-size-sm) solid var(--border-color);
+  border-radius: var(--border-radius);
+  margin: var(--spacer);
+  margin-bottom: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: flex-end;
+  padding: calc(var(--spacer) / 2);
+  background: var(--background-highlight);
+}
+
+.credentials {
+  padding: calc(var(--spacer) / 2);
+  border: var(--border-size-sm) solid var(--border-color);
+  border-radius: var(--border-radius);
+  position: absolute;
+  right: var(--spacer);
+  top: var(--spacer);
+  background: var(--background-content);
+}

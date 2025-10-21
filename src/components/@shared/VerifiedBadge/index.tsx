@@ -47,6 +47,7 @@ export function Badge({
 }
 
 export default function VerifiedBadge({
+  name,
   className,
   isValid,
   idMatch,
@@ -55,6 +56,7 @@ export default function VerifiedBadge({
   apiVersion,
   timestamp
 }: {
+  name?: string
   className?: string
   isValid?: boolean
   idMatch?: boolean
@@ -74,15 +76,20 @@ export default function VerifiedBadge({
   return (
     <div className={styles.container}>
       {isLoading ? (
-        <Loader message="Verifying Service Credential" />
+        <Loader message={`Verifying ${name ?? 'Service'} Credential`} />
       ) : (
         <div className={styleClasses}>
-          <Badge isValid={isValid} verifiedService="Service Credential" />
           <Badge
-            isValid={idMatch}
-            isIdMatchVerifiable={isIdMatchVerifiable}
-            verifiedService="Credential ID match"
+            isValid={isValid}
+            verifiedService={`${name ?? 'Service'} Credential`}
           />
+          {idMatch && (
+            <Badge
+              isValid={idMatch}
+              isIdMatchVerifiable={isIdMatchVerifiable}
+              verifiedService="Credential ID match"
+            />
+          )}
           <div className={styles.details}>
             {apiVersion && (
               <span className={styles.apiVersion}>

@@ -1,0 +1,31 @@
+.base {
+  display: flex;
+  column-gap: var(--spacer);
+  padding: calc(var(--spacer) / 8);
+  padding-left: var(--spacer);
+  margin-top: calc(var(--spacer) / 4);
+  margin-bottom: calc(var(--spacer) / 4);
+  align-items: center;
+  border-radius: var(--border-radius);
+  border-width: 1px;
+  border-style: solid;
+}
+
+.base svg {
+  margin: 0;
+}
+
+.warn {
+  border-color: var(--brand-alert-red);
+  background-color: rgb(from var(--brand-alert-red) r g b / 0.3);
+}
+
+.info {
+  border-color: var(--brand-alert-yellow);
+  background-color: rgb(from var(--brand-alert-yellow) r g b / 0.3);
+}
+
+.contents {
+  flex: 1;
+  padding-right: var(--spacer);
+}
