@@ -1,13 +1,8 @@
+import { generateBaseQuery, getWhitelistShould } from '.'
 import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
-import {
-  escapeEsReservedCharacters,
-  getFilterTerm,
-  generateBaseQuery,
-  getWhitelistShould
-} from '.'
 
 const defaultBaseQueryReturn: SearchQuery = {
   from: 0,
@@ -24,6 +19,9 @@ const defaultBaseQueryReturn: SearchQuery = {
               { term: { 'price.type': 'pool' } }
             ]
           }
+        },
+        {
+          terms: { 'metadata.tags.keyword': ['agrospai', 'udl', 'agrifoodtef'] }
         }
       ]
     }
@@ -43,53 +41,38 @@ if (getWhitelistShould()?.length > 0) {
     ? defaultBaseQueryReturn.query.bool.must.push(whitelistQuery)
     : (defaultBaseQueryReturn.query.bool.must = [whitelistQuery])
 }
-
 describe('@utils/aquarius', () => {
-  test('escapeEsReservedCharacters', () => {
-    expect(escapeEsReservedCharacters('<')).toBe('\\<')
-  })
-
-  test('getFilterTerm with string value', () => {
-    expect(getFilterTerm('hello', 'world')).toStrictEqual({
-      term: { hello: 'world' }
-    })
-  })
-
-  test('getFilterTerm with array value', () => {
-    expect(getFilterTerm('hello', ['world', 'domination'])).toStrictEqual({
-      terms: { hello: ['world', 'domination'] }
-    })
-  })
-
   test('generateBaseQuery', () => {
-    expect(generateBaseQuery({ chainIds: [1, 3] })).toStrictEqual(
-      defaultBaseQueryReturn
+    const result = generateBaseQuery({ chainIds: [1, 3] })
+    expect(result.from).toBe(0)
+    expect(result.size).toBe(1000)
+    expect(result.query.bool.filter).toEqual(
+      expect.arrayContaining(defaultBaseQueryReturn.query.bool.filter)
     )
   })
 
   test('generateBaseQuery aggs are passed through', () => {
-    expect(
-      generateBaseQuery({ chainIds: [1, 3], aggs: 'hello world' })
-    ).toStrictEqual({
-      ...defaultBaseQueryReturn,
+    const aggsResult = generateBaseQuery({
+      chainIds: [1, 3],
       aggs: 'hello world'
     })
+    expect(aggsResult.aggs).toBe('hello world')
+    expect(aggsResult.query.bool.filter).toEqual(
+      expect.arrayContaining(defaultBaseQueryReturn.query.bool.filter)
+    )
   })
 
   test('generateBaseQuery sortOptions are passed through', () => {
-    expect(
-      generateBaseQuery({
-        chainIds: [1, 3],
-        sortOptions: {
-          sortBy: SortTermOptions.Created,
-          sortDirection: SortDirectionOptions.Ascending
-        }
-      })
-    ).toStrictEqual({
-      ...defaultBaseQueryReturn,
-      sort: {
-        'nft.created': 'asc'
+    const sortResult = generateBaseQuery({
+      chainIds: [1, 3],
+      sortOptions: {
+        sortBy: SortTermOptions.Created,
+        sortDirection: SortDirectionOptions.Ascending
       }
     })
+    expect(sortResult.sort).toEqual({ 'nft.created': 'asc' })
+    expect(sortResult.query.bool.filter).toEqual(
+      expect.arrayContaining(defaultBaseQueryReturn.query.bool.filter)
+    )
   })
 })

@@ -16,7 +16,7 @@ export interface UseAddressConfig {
   }
   featured: { assets: string[]; title: string }[]
   verifiedAddresses: {
-    [key: string]: string
+    [key: string]: { name: string; credentials: string[] }
   }
   isAddressWhitelisted: (address: string) => boolean
   isDDOWhitelisted: (ddo: AssetExtended) => boolean
@@ -72,8 +72,8 @@ export function useAddressConfig(): UseAddressConfig {
     const addressKey = Object.keys(verifiedAddresses).find(
       (key) => key.toLowerCase() === address.toLowerCase()
     )
-    const addressName = verifiedAddresses[addressKey]
-    return addressName
+    const data = verifiedAddresses[addressKey]
+    return data.name
   }
 
   return {

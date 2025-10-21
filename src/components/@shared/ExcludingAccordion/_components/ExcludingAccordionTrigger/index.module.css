@@ -1,0 +1,22 @@
+.trigger {
+  display: flex;
+  flex-direction: row;
+  column-gap: var(--spacer);
+}
+
+.trigger:focus,
+.trigger:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.openCaret {
+  display: flex;
+  margin: 0;
+  transform: rotate(-90deg);
+}
+
+.closedCaret {
+  display: flex;
+  margin: 0;
+}

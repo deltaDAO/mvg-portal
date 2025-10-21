@@ -1,0 +1,5 @@
+.accordion {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
+}

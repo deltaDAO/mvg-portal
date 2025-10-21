@@ -23,7 +23,9 @@
       "@images/*": ["./src/@images/*"],
       "@utils/*": ["./src/@utils/*"],
       "@content/*": ["./@content/*"]
-    }
+    },
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", ".next", "*.js"]
