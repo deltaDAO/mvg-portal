@@ -2,13 +2,11 @@ import { useVerifiablePresentations } from '@hooks/useVerifiablePresentations'
 import { GaiaXVerifiablePresentationArray } from '@utils/verifiablePresentations/types'
 import { type ReactNode, createContext, useContext } from 'react'
 import { Address } from 'wagmi'
-import { getVerifiablePresentations } from '../@utils/verifiablePresentations/api'
-import { useAddressConfig } from '@hooks/useAddressConfig'
 
 interface VerifiablePresentationContextProps {
   address: Address
   credentials: GaiaXVerifiablePresentationArray
-  error: Error
+  error: unknown
 }
 
 const VerifiablePresentationContext = createContext(
