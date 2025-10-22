@@ -262,12 +262,29 @@ export default function AssetContent({
                         <h4>Choose service to see Price:</h4>
                         <div className={styles.servicesGrid}>
                           {availableServices.map((service, index) => (
-                            <ServiceCard
+                            <div
                               key={service.id}
-                              service={service}
-                              accessDetails={asset.accessDetails[index]}
-                              onClick={() => setSelectedService(index)}
-                            />
+                              onClick={() => {
+                                if (!isAssetNetwork) {
+                                  console.log(
+                                    '[UI] Click blocked: wrong network.'
+                                  )
+                                  return
+                                }
+                                setSelectedService(index)
+                              }}
+                              className={`${
+                                isAssetNetwork
+                                  ? 'cursor-pointer hover:opacity-100'
+                                  : 'opacity-50 cursor-not-allowed'
+                              }`}
+                            >
+                              <ServiceCard
+                                service={service}
+                                accessDetails={asset.accessDetails[index]}
+                                onClick={() => {}}
+                              />
+                            </div>
                           ))}
                         </div>
                       </div>
