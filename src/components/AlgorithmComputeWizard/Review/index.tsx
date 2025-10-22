@@ -213,9 +213,14 @@ export default function Review({
 
     if (service && asset) {
       const isVerified = lookupVerifierSessionId?.(asset?.id, service.id)
-      const rawPrice = asset.accessDetails?.[0].validOrderTx
-        ? '0'
-        : asset.accessDetails?.[0].price
+      let rawPrice
+      if (asset.credentialSubject.metadata.algorithm) {
+        rawPrice = accessDetails?.validOrderTx ? '0' : accessDetails.price
+      } else {
+        rawPrice = asset.accessDetails?.[0].validOrderTx
+          ? '0'
+          : asset.accessDetails?.[0].price
+      }
 
       const algoNeedsSsi =
         requiresSsi(asset?.credentialSubject?.credentials) ||
