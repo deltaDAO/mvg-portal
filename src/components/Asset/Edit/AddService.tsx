@@ -112,6 +112,7 @@ export default function AddService({
       // --------------------------------------------------
       // 1. Create Datatoken
       // --------------------------------------------------
+      console.log('[AddService] Creating Datatoken...')
       const nft = new Nft(signer)
 
       const datatokenAddress = await nft.createDatatoken(
@@ -128,11 +129,53 @@ export default function AddService({
         defaultDatatokenTemplateIndex
       )
 
+      console.log('[AddService] Datatoken created:', datatokenAddress)
       LoggerInstance.log('Datatoken created.', datatokenAddress)
+
+      // Wait until the datatoken contract is live and callable
+      console.log(
+        '[AddService] Waiting for datatoken deployment confirmation...'
+      )
+      const dtContract = new ethers.Contract(
+        datatokenAddress,
+        ['function isERC20Deployer(address user) view returns (bool)'],
+        signer
+      )
+
+      let deployerReady = false
+      for (let retries = 0; retries < 20; retries++) {
+        try {
+          const ok = await dtContract.isERC20Deployer(accountId)
+          if (ok) {
+            deployerReady = true
+            console.log(
+              '[AddService] Deployer ready after',
+              retries,
+              'retries.'
+            )
+            break
+          } else {
+            console.log(
+              `[AddService] isERC20Deployer returned false (retry ${retries})`
+            )
+          }
+        } catch (err) {
+          console.log(
+            `[AddService] isERC20Deployer call reverted (retry ${retries})...`
+          )
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5s
+      }
+
+      if (!deployerReady) {
+        console.error('[AddService] Deployer not ready after waiting.')
+        throw new Error('Deployer permission not confirmed on chain.')
+      }
 
       // --------------------------------------------------
       // 2. Create Pricing
       // --------------------------------------------------
+      console.log('[AddService] Proceeding to pricing creation...')
       const datatoken = new Datatoken(signer)
 
       let pricingTransactionReceipt
@@ -179,13 +222,19 @@ export default function AddService({
         )
       }
 
+      console.log(
+        '[AddService] Waiting for pricing transaction confirmation...'
+      )
       await pricingTransactionReceipt.wait()
       LoggerInstance.log('Pricing scheme created.')
+      console.log('[AddService] Pricing confirmed on chain.')
 
       // --------------------------------------------------
-      // 2. Update DDO
+      // 3. Update DDO
       // --------------------------------------------------
-      let newFiles = asset.credentialSubject?.services[0].files // by default it could be the same file as in other services
+      console.log('[AddService] Updating DDO...')
+
+      let newFiles = asset.credentialSubject?.services[0].files
       if (values.files[0]?.url) {
         const file = {
           nftAddress: asset.credentialSubject.nftAddress,
@@ -234,7 +283,6 @@ export default function AddService({
         state: State.Active
       }
 
-      // update asset with new service
       const updatedAsset = { ...asset }
       updatedAsset.credentialSubject.services.push(newService)
 
@@ -243,12 +291,12 @@ export default function AddService({
         stringifyCredentialPolicies(service.credentials)
       })
 
-      // delete custom helper properties injected in the market so we don't write them on chain
       delete (updatedAsset as AssetExtended).accessDetails
       delete (updatedAsset as AssetExtended).views
       delete (updatedAsset as AssetExtended).offchain
       delete (updatedAsset as any).credentialSubject.stats
 
+      console.log('[AddService] Uploading to IPFS...')
       const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,
         signer,
@@ -258,7 +306,8 @@ export default function AddService({
         ssiWalletContext
       )
 
-      if (ipfsUpload /* && values.assetState !== assetState */) {
+      if (ipfsUpload) {
+        console.log('[AddService] IPFS upload successful. Setting metadata...')
         const nft = new Nft(signer, updatedAsset.credentialSubject.chainId)
 
         await nft.setMetadata(
@@ -274,14 +323,17 @@ export default function AddService({
         )
 
         LoggerInstance.log('Version 5.0.0 Asset updated. ID:', updatedAsset.id)
+        console.log('[AddService] Metadata set successfully.')
       }
 
       // Edit succeeded
       setSuccess(content.form.success)
       resetForm()
+      console.log('[AddService] Success! Form reset.')
     } catch (error) {
       LoggerInstance.error(error.message)
       setError(error.message)
+      console.error('[AddService] Error caught:', error)
     }
   }
 
