@@ -24,6 +24,11 @@ export default function EscrowWithdrawModal({
     }
   }
 
+  function handleMaxClick() {
+    setAmount(escrowFunds)
+    setError('')
+  }
+
   async function handleWithdraw() {
     if (!amount || Number(amount) <= 0) {
       setError('Please enter a valid withdrawal amount.')
@@ -40,7 +45,6 @@ export default function EscrowWithdrawModal({
     setError('')
     setIsLoading(true)
     try {
-      // const escrowAddress = '0x4D49eEedFac8Ea03328c0E4871b680C06d892092' // TODO get from conf is from op
       const escrowAddress = '0x86F2BB9F8f18B5a836b342199a3eC89F282E4018'
       const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
       const { oceanTokenAddress } = getOceanConfig(chain?.id)
@@ -63,14 +67,25 @@ export default function EscrowWithdrawModal({
         <div style={{ marginBottom: '10px', fontSize: '14px' }}>
           Available: <strong>{escrowFunds}</strong>
         </div>
-        <input
-          type="number"
-          placeholder="Amount"
-          value={amount}
-          onChange={handleInputChange}
-          className={styles.input}
-          disabled={isLoading}
-        />
+        <div className={styles.inputRow}>
+          <input
+            type="number"
+            placeholder="Amount"
+            value={amount}
+            onChange={handleInputChange}
+            className={styles.input}
+            disabled={isLoading}
+            style={{ flex: 1 }}
+          />
+          <button
+            type="button"
+            className={`${styles.button} ${styles.maxButton}`}
+            onClick={handleMaxClick}
+            disabled={isLoading}
+          >
+            Max
+          </button>
+        </div>
         {error && (
           <div style={{ color: 'red', fontSize: '13px', marginBottom: 8 }}>
             {error}

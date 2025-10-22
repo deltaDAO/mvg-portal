@@ -79,3 +79,21 @@
   font-size: 15px;
   font-weight: 400;
 }
+
+.inputRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* Optional: smaller button style for Max */
+.maxButton {
+  background: #fafafa;
+  color: #2778f1;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-weight: 600;
+  margin-top: 6px;
+}
