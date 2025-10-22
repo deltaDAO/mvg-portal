@@ -1,0 +1,81 @@
+/* EscrowWithdrawModal.module.css */
+
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(20, 33, 61, 0.4);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalBox {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0px 8px 32px rgba(20, 33, 61, 0.24);
+  padding: 32px 24px;
+  max-width: 350px;
+  width: 100%;
+  text-align: center;
+  animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modalTitle {
+  margin-bottom: 6px;
+  color: #14213d;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  margin: 18px 0 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d1d1;
+  font-size: 16px;
+}
+
+.button {
+  background: #276ef1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 22px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 15px;
+  margin-right: 8px;
+  box-shadow: 0px 2px 8px rgba(39, 110, 241, 0.14);
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background: #1854b8;
+}
+
+.closeButton {
+  background: transparent;
+  color: #4a4a4a;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 400;
+}
