@@ -211,6 +211,7 @@ const InputElement = forwardRef(
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
             accountId={accountId}
+            selected={(field?.value as unknown as string[]) || []}
             {...field}
             {...props}
           />

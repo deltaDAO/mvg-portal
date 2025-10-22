@@ -53,7 +53,7 @@ export default function AssetSelection({
   ...props
 }: {
   assets: AssetSelectionAsset[]
-  selected?: string[]
+  selected?: string | string[]
   multiple?: boolean
   disabled?: boolean
   accountId?: string
@@ -66,26 +66,26 @@ export default function AssetSelection({
   const { address: userAccount } = useAccount()
 
   const [currentPage, setCurrentPage] = useState(1)
-
   const assetsPerPage = 8
+
   function isAssetSelected(
-    sel: string[] | undefined,
+    sel: string | string[] | undefined,
     asset: AssetSelectionAsset
   ) {
-    if (!sel || sel.length === 0) return false
-    for (const s of sel) {
-      if (s === asset.serviceId) return true
-      try {
-        const parsed = JSON.parse(s) as { algoDid?: string; serviceId?: string }
-        if (
-          parsed?.serviceId === asset.serviceId &&
-          (!parsed?.algoDid || parsed.algoDid === asset.did)
-        ) {
-          return true
-        }
-      } catch {
-        // ignore parse errors; not JSON
-      }
+    if (!sel) return false
+
+    const assetValue = JSON.stringify({
+      algoDid: asset.did,
+      serviceId: asset.serviceId
+    })
+
+    // Handle both single string and array cases
+    if (typeof sel === 'string') {
+      // Single selection (radio): compare directly
+      return sel === assetValue
+    } else if (Array.isArray(sel)) {
+      // Multiple selection (checkbox): check if assetValue is in array
+      return sel.includes(assetValue)
     }
     return false
   }
