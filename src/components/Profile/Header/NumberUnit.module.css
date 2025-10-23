@@ -32,6 +32,7 @@
 .unit {
   font-size: var(--font-size-small);
   color: var(--color-secondary);
+  width: 10rem;
 }
 
 .unit a {

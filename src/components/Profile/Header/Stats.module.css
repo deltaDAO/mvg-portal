@@ -1,7 +1,7 @@
 .stats {
   display: grid;
   gap: var(--spacer);
-  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
   margin-top: var(--spacer);
 }
 

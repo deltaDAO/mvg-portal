@@ -24,19 +24,19 @@ export default function Stats(): ReactElement {
       />
       <NumberUnit label="Published" value={assetsTotal} />
       <NumberUnit label="Downloads" value={downloadsTotal} />
-      <NumberUnit label="Revenue Ocean" value={revenue} />
+      <NumberUnit label="Revenue" value={`${revenue} Ocean`} />
       {ownAccount && (
         <>
-          <div onClick={() => setShowModal(true)} style={{ cursor: 'pointer' }}>
-            <NumberUnit
-              label="Escrow Available Funds (Click to Withdraw)"
-              value={parseFloat(escrowAvailableFunds).toFixed(2)}
-            />
-          </div>
           <NumberUnit
             label="Escrow Locked Funds"
-            value={parseFloat(escrowLockedFunds).toFixed(2)}
+            value={`${parseFloat(escrowLockedFunds).toFixed(2)} Ocean`}
           />
+          <div onClick={() => setShowModal(true)} style={{ cursor: 'pointer' }}>
+            <NumberUnit
+              label="Escrow Available Funds 👉 Click to Withdraw 👈"
+              value={`${parseFloat(escrowAvailableFunds).toFixed(2)} Ocean`}
+            />
+          </div>
         </>
       )}
 
