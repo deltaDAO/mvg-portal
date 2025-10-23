@@ -11,8 +11,8 @@
   padding-top: calc(var(--spacer) / 7);
   padding-bottom: calc(var(--spacer) / 7);
   display: grid;
-  grid-template-columns: 5% 1fr 10%;
-  column-gap: calc(var(--spacer) / 10);
+  grid-template-columns: 5% 70% 25%;
+  column-gap: 0;
 }
 
 .priceRow:last-child {
@@ -25,6 +25,8 @@
   text-align: left;
   color: var(--color-secondary);
   font-size: var(--font-size-base);
+
+  margin-top: -10px;
 }
 
 .type {

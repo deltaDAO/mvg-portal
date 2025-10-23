@@ -8,6 +8,9 @@ import BoxSelection, { BoxSelectionOption } from './BoxSelection'
 import Datatoken from './Datatoken'
 import classNames from 'classnames/bind'
 import AssetSelection, { AssetSelectionAsset } from './AssetSelection'
+import EnvironmentSelection, {
+  EnvironmentSelectionEnvironment
+} from './EnvironmentSelection'
 import Nft from './Nft'
 import InputRadio from './Radio'
 import ContainerInput from '@shared/FormInput/InputElement/ContainerInput'
@@ -33,6 +36,9 @@ const DefaultInput = forwardRef(
       prefix,
       postfix,
       additionalComponent,
+      selectStyle,
+      hideLabel,
+      computeHelp,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -78,6 +84,9 @@ const InputElement = forwardRef(
       postfixes,
       actions,
       variant = 'default',
+      selectStyle,
+      hideLabel,
+      computeHelp,
       /* eslint-enable @typescript-eslint/no-unused-vars */
       ...props
     }: InputProps,
@@ -85,12 +94,12 @@ const InputElement = forwardRef(
   ): ReactElement => {
     const styleClasses = cx({
       select:
-        props.selectStyle !== 'publish' &&
-        props.selectStyle !== 'custom' &&
-        props.selectStyle !== 'serviceLanguage',
-      publishSelect: props.selectStyle === 'publish',
-      customSelect: props.selectStyle === 'custom',
-      serviceLanguageSelect: props.selectStyle === 'serviceLanguage',
+        selectStyle !== 'publish' &&
+        selectStyle !== 'custom' &&
+        selectStyle !== 'serviceLanguage',
+      publishSelect: selectStyle === 'publish',
+      customSelect: selectStyle === 'custom',
+      serviceLanguageSelect: selectStyle === 'serviceLanguage',
       [size]: size
     })
 
@@ -102,16 +111,17 @@ const InputElement = forwardRef(
             : (options as string[]).sort((a: string, b: string) =>
                 a.localeCompare(b)
               )
+        const { ...selectProps } = props
         return (
           <select
-            id={props.name}
+            id={selectProps.name}
             className={styleClasses}
-            {...props}
+            {...selectProps}
             multiple={multiple}
           >
             {field !== undefined && field.value === '' && (
               <option value="" disabled hidden>
-                {props.placeholder}
+                {selectProps.placeholder}
               </option>
             )}
             {sortedOptions &&
@@ -177,10 +187,11 @@ const InputElement = forwardRef(
       case 'publishConsumerParameters':
         return <PublishConsumerParameters {...field} form={form} {...props} />
 
-      case 'textarea':
+      case 'textarea': {
         return (
           <textarea id={props.name} className={styles.textarea} {...props} />
         )
+      }
 
       case 'radio':
       case 'checkbox':
@@ -200,6 +211,16 @@ const InputElement = forwardRef(
           <AssetSelection
             assets={options as AssetSelectionAsset[]}
             accountId={accountId}
+            selected={(field?.value as unknown as string[]) || []}
+            {...field}
+            {...props}
+          />
+        )
+
+      case 'environmentSelection':
+        return (
+          <EnvironmentSelection
+            environments={options as EnvironmentSelectionEnvironment[]}
             {...field}
             {...props}
           />
@@ -221,6 +242,7 @@ const InputElement = forwardRef(
             assets={options as AssetSelectionAsset[]}
             accountId={accountId}
             multiple
+            selected={(field?.value as unknown as string[]) || []}
             {...field}
             {...props}
           />

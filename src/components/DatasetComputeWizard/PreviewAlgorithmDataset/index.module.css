@@ -1,0 +1,215 @@
+.container {
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  padding: 20px;
+  padding-left: 0;
+}
+
+.title {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 22px;
+  color: #303031;
+}
+
+.previewContainer {
+  border-radius: 20px;
+  padding: 20px;
+  background: #fff;
+  max-height: 500px;
+  overflow-y: auto;
+  max-width: 1090px;
+}
+
+/* Custom scrollbar */
+.previewContainer::-webkit-scrollbar {
+  width: 8px;
+}
+
+.previewContainer::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.previewContainer::-webkit-scrollbar-thumb {
+  background: #fdd655;
+  border-radius: 4px;
+}
+
+.previewContainer::-webkit-scrollbar-thumb:hover {
+  background: #fbcb05;
+}
+
+.algorithmContainer {
+  margin-bottom: 2rem;
+}
+
+.algorithmHeader {
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 1052px;
+  height: 119px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(10, 75, 112, 0.04);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.algorithmName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  color: #303031;
+  margin-bottom: 8px;
+}
+
+.algorithmAddress {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(48, 48, 49, 0.5);
+  margin-bottom: 8px;
+}
+
+.algorithmDescription {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(48, 48, 49, 0.7);
+  line-height: 1.5;
+}
+
+.servicesList {
+  margin-left: 16px;
+}
+
+.serviceItem {
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 1000px;
+  height: 145px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: #fff;
+  margin-bottom: 1rem;
+}
+
+.serviceItem:last-child {
+  margin-bottom: 0;
+}
+
+.serviceHeader {
+  margin-bottom: 8px;
+}
+
+.serviceName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  color: #303031;
+  margin: 0;
+}
+
+.serviceDescription {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 117%;
+  color: rgba(48, 48, 49, 0.7);
+  margin-bottom: 0;
+}
+
+.serviceDetails {
+  display: flex;
+  gap: 24px;
+}
+
+.serviceDetails p {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(48, 48, 49, 0.7);
+  margin: 0;
+}
+
+.serviceDetails strong {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  color: #303031;
+}
+
+.datasetContainer {
+  margin-bottom: 1rem;
+}
+
+.datasetHeader {
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 1052px;
+  height: 119px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(10, 75, 112, 0.04);
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+}
+
+.datasetName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  color: #303031;
+  margin-bottom: 8px;
+}
+
+.datasetAddress {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(48, 48, 49, 0.5);
+  margin-bottom: 8px;
+}
+
+.datasetDescription {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  color: rgba(48, 48, 49, 0.7);
+  line-height: 1.5;
+}
+@media screen and (min-width: 600px) and (max-width: 1028px) {
+  .algorithmAddress {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30ch;
+    display: block;
+  }
+
+  .serviceDescription,
+  .algorithmDescription {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 30ch;
+    display: block;
+  }
+}
+
+@media screen and (min-width: 200px) and (max-width: 599px) {
+  .algorithmAddress {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20ch;
+    display: block;
+  }
+
+  .serviceDescription,
+  .algorithmDescription {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 20ch;
+    display: block;
+  }
+}

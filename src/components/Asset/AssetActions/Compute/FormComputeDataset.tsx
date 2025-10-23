@@ -27,6 +27,9 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { ResourceType } from 'src/@types/ResourceType'
 import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
+import ComputeHistory from './History'
+import ComputeJobs from '../../../Profile/History/ComputeJobs'
+import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
 
 export default function FormStartCompute({
   asset,
@@ -64,7 +67,10 @@ export default function FormStartCompute({
   onRunInitPriceAndFees,
   onCheckAlgoDTBalance,
   allResourceValues,
-  setAllResourceValues
+  setAllResourceValues,
+  jobs,
+  isLoadingJobs,
+  refetchJobs
 }: {
   asset: AssetExtended
   service: Service
@@ -108,6 +114,9 @@ export default function FormStartCompute({
       [envId: string]: ResourceType
     }>
   >
+  jobs?: any[]
+  isLoadingJobs?: boolean
+  refetchJobs?: () => void
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -119,6 +128,7 @@ export default function FormStartCompute({
     setFieldValue,
     values
   }: FormikContextType<ComputeDatasetForm> = useFormikContext()
+  console.log('Field values ', values)
   const { isAssetNetwork } = useAsset() // TODO - is this needed?
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
@@ -243,7 +253,7 @@ export default function FormStartCompute({
         disk,
         jobDuration,
         price: 0,
-        mode: allResourceValues[selectedEnv.id].mode
+        mode: values.mode
       }
 
       setAllResourceValues((prev) => ({
@@ -552,9 +562,9 @@ export default function FormStartCompute({
                 price={new Decimal(consumeMarketOrderFee)
                   .mul(
                     new Decimal(datasetOrderPrice || accessDetails.price || 0)
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
                   )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
                   .toString()} // consume market order fee fee amount
                 symbol={datasetSymbol}
                 type={`CONSUME MARKET ORDER FEE DATASET (${consumeMarketOrderFee}%)`}
@@ -569,9 +579,9 @@ export default function FormStartCompute({
                           ?.price ||
                         0
                     )
+                      .toDecimalPlaces(MAX_DECIMALS)
+                      .div(100)
                   )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
                   .toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
                 type={`CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketOrderFee}%)`}
@@ -601,28 +611,105 @@ export default function FormStartCompute({
           )}
           <div style={{ textAlign: 'center' }}>
             {appConfig.ssiEnabled && selectedAlgorithmAsset ? (
-              verifierSessionCache &&
-              lookupVerifierSessionId(
-                `${selectedAlgorithmAsset?.id}`,
-                selectedAlgorithmAsset?.credentialSubject?.services?.[
-                  serviceIndex
-                ]?.id
-              ) ? (
-                <PurchaseButton />
-              ) : (
-                <div style={{ marginTop: '60px', marginLeft: '10px' }}>
-                  <AssetActionCheckCredentialsAlgo
-                    asset={selectedAlgorithmAsset}
-                    service={
-                      selectedAlgorithmAsset?.credentialSubject?.services?.[
-                        serviceIndex
-                      ]
-                    }
-                  />
-                </div>
-              )
+              (() => {
+                const hasAlgorithmSession =
+                  verifierSessionCache &&
+                  lookupVerifierSessionId(
+                    `${selectedAlgorithmAsset?.id}`,
+                    selectedAlgorithmAsset?.credentialSubject?.services?.[
+                      serviceIndex
+                    ]?.id
+                  )
+                console.log('FormComputeDataset algorithm credential check:', {
+                  ssiEnabled: appConfig.ssiEnabled,
+                  selectedAlgorithmAsset: !!selectedAlgorithmAsset,
+                  verifierSessionCache: !!verifierSessionCache,
+                  algorithmId: selectedAlgorithmAsset?.id,
+                  serviceId:
+                    selectedAlgorithmAsset?.credentialSubject?.services?.[
+                      serviceIndex
+                    ]?.id,
+                  sessionId: lookupVerifierSessionId(
+                    `${selectedAlgorithmAsset?.id}`,
+                    selectedAlgorithmAsset?.credentialSubject?.services?.[
+                      serviceIndex
+                    ]?.id
+                  ),
+                  hasAlgorithmSession: !!hasAlgorithmSession
+                })
+                return hasAlgorithmSession ? (
+                  <>
+                    <FormErrorGroup
+                      errorFields={[
+                        'termsAndConditions',
+                        'acceptPublishingLicense'
+                      ]}
+                    >
+                      <Field
+                        component={Input}
+                        name="termsAndConditions"
+                        type="checkbox"
+                        options={['Terms and Conditions']}
+                        prefixes={['I agree to the']}
+                        actions={['/terms']}
+                        disabled={isLoading}
+                        hideLabel={true}
+                      />
+                      <Field
+                        component={Input}
+                        name="acceptPublishingLicense"
+                        type="checkbox"
+                        options={['Publishing License']}
+                        prefixes={['I agree the']}
+                        disabled={isLoading}
+                        hideLabel={true}
+                      />
+                    </FormErrorGroup>
+                    <PurchaseButton />
+                  </>
+                ) : (
+                  <div style={{ marginTop: '60px', marginLeft: '10px' }}>
+                    <AssetActionCheckCredentialsAlgo
+                      asset={selectedAlgorithmAsset}
+                      service={
+                        selectedAlgorithmAsset?.credentialSubject?.services?.[
+                          serviceIndex
+                        ]
+                      }
+                    />
+                  </div>
+                )
+              })()
             ) : (
-              <PurchaseButton />
+              <>
+                <FormErrorGroup
+                  errorFields={[
+                    'termsAndConditions',
+                    'acceptPublishingLicense'
+                  ]}
+                >
+                  <Field
+                    component={Input}
+                    name="termsAndConditions"
+                    type="checkbox"
+                    options={['Terms and Conditions']}
+                    prefixes={['I agree to the']}
+                    actions={['/terms']}
+                    disabled={isLoading}
+                    hideLabel={true}
+                  />
+                  <Field
+                    component={Input}
+                    name="acceptPublishingLicense"
+                    type="checkbox"
+                    options={['Publishing License']}
+                    prefixes={['I agree the']}
+                    disabled={isLoading}
+                    hideLabel={true}
+                  />
+                </FormErrorGroup>
+                <PurchaseButton />
+              </>
             )}
           </div>
         </>
@@ -667,28 +754,25 @@ export default function FormStartCompute({
         />
       )}
 
+      {/* Compute Jobs Section */}
+      {accountId &&
+        accessDetails.datatoken &&
+        asset.credentialSubject.metadata.type !== 'algorithm' && (
+          <ComputeHistory title="Your Compute Jobs" refetchJobs={refetchJobs}>
+            <ComputeJobs
+              minimal
+              jobs={jobs || []}
+              isLoading={isLoadingJobs || false}
+              refetchJobs={refetchJobs}
+            />
+          </ComputeHistory>
+        )}
+
       {/* {isFullPriceLoading ? (
         <CalculateButton />
       ) : ( */}
       <>
         <AssetActionBuy asset={asset} />
-        <Field
-          component={Input}
-          name="termsAndConditions"
-          type="checkbox"
-          options={['Terms and Conditions']}
-          prefixes={['I agree to the']}
-          actions={['/terms']}
-          disabled={isLoading}
-        />
-        <Field
-          component={Input}
-          name="acceptPublishingLicense"
-          type="checkbox"
-          options={['Publishing License']}
-          prefixes={['I agree the']}
-          disabled={isLoading}
-        />
       </>
     </Form>
   )

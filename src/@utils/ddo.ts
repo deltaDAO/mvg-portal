@@ -272,14 +272,13 @@ export function isAddressWhitelisted(
 ): boolean {
   if (!ddo || !accountId) return false
 
-  if (!ddo.credentialSubject.credentials) {
-    LoggerInstance.error('The asset has no credentials property')
-    return false
+  // If SSI is not configured at asset or service level, allow access (no credential check required)
+  if (!ddo.credentialSubject?.credentials) {
+    return true
   }
 
-  if (!service || (service && !service.credentials)) {
-    LoggerInstance.error('The selected service has no credentials property')
-    return false
+  if (!service || !service.credentials) {
+    return true
   }
 
   const assetAccessGranted = checkCredentials(

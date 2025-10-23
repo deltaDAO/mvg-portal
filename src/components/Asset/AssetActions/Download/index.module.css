@@ -1,7 +1,26 @@
 .consume {
   width: auto;
-  margin-bottom: calc(var(--spacer) / 2);
-  margin-top: -1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-8);
+}
+
+.tighterStack {
+  gap: var(--sp-2);
+}
+
+.consume :global([class*='FormInput_field']) {
+  margin-bottom: 0;
+}
+
+.consume :global([class*='FormInput_field']:has([type='checkbox']):last-child) {
+  margin-bottom: 0;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 16px;
 }
 
 .info {
@@ -46,10 +65,6 @@
   margin-right: auto;
 }
 
-.confettiContainer {
-  margin-top: calc(var(--spacer) / 2);
-}
-
 .calculation {
   min-width: 12rem;
 }
@@ -63,4 +78,8 @@
 
 .calculation .price {
   font-size: var(--font-size-small) !important;
+}
+
+.marginBottom {
+  margin-bottom: var(--sp-8);
 }

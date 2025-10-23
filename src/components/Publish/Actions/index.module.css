@@ -11,6 +11,11 @@
   align-items: center;
 }
 
+/* Add spacing above the publish success area only here */
+.actions :global([class*='successWrapper']) {
+  margin-top: var(--sp-4);
+}
+
 .actionsMultiple {
   justify-content: center;
 }

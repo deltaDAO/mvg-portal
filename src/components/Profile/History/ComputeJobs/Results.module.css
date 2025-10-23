@@ -1,18 +1,49 @@
 .results {
-  composes: asset from './Details.module.css';
-  border-bottom-left-radius: var(--border-radius) !important;
+  border: 1px solid rgba(48, 48, 49, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  /* height: 165px; */
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: #fff;
+  margin-top: 1.5rem;
 }
 
 .title {
-  font-size: var(--font-size-base);
-  color: var(--font-color-text);
-  margin-bottom: calc(var(--spacer) / 3);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  color: #303031;
+  margin-bottom: 1rem;
 }
 
 .downloadButton {
-  text-transform: none;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 100%;
+  color: #303031;
+  margin-bottom: 0.5rem;
+}
+
+.alert {
+  display: flex;
+  flex-direction: row;
+}
+.rightAlert {
+  margin-top: 1rem;
+  width: 4px;
+  background: #fdd655;
 }
 
 .help {
-  margin-top: calc(var(--spacer) / 3);
+  width: 222px;
+  height: 34px;
+  margin-top: 1rem;
+  background: #fff6d1;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 129%;
+  color: #000;
 }

@@ -16,6 +16,7 @@ export interface TabsProps {
   selectedIndex?: number
   onIndexSelected?: (index: number) => void
   variant?: 'default' | 'publish'
+  isEditPage?: boolean
 }
 
 export default function Tabs({
@@ -25,7 +26,8 @@ export default function Tabs({
   showRadio,
   selectedIndex,
   onIndexSelected,
-  variant = 'default'
+  variant = 'default',
+  isEditPage = false
 }: TabsProps): ReactElement {
   return (
     <ReactTabs
@@ -83,7 +85,9 @@ export default function Tabs({
         {items.map((item, index) => (
           <TabPanel
             key={index}
-            className={variant === 'publish' ? styles.publishTabPanel : ''}
+            className={`${
+              variant === 'publish' ? styles.publishTabPanel : ''
+            } ${isEditPage ? styles.editTabPanel : ''}`}
           >
             {item.content}
           </TabPanel>

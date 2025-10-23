@@ -1,10 +1,8 @@
-import { ChangeEvent, useEffect, useState } from 'react'
-import Dotdotdot from 'react-dotdotdot'
+import { useEffect, useState } from 'react'
+import cs from 'classnames'
 import slugify from 'slugify'
 import PriceUnit from '@shared/Price/PriceUnit'
 import External from '@images/external.svg'
-import SearchIcon from '@images/search.svg'
-import InputElement from '@shared/FormInput/InputElement'
 import Loader from '@shared/atoms/Loader'
 import Tooltip from '@components/@shared/atoms/Tooltip'
 import WhitelistIndicator from '@components/Asset/AssetActions/Compute/WhitelistIndicator'
@@ -13,6 +11,7 @@ import styles from './index.module.css'
 import classNames from 'classnames/bind'
 import Pagination from '@components/@shared/Pagination'
 import { useAccount } from 'wagmi'
+import SearchSection from '@shared/SearchSection'
 
 const cx = classNames.bind(styles)
 
@@ -20,6 +19,8 @@ export interface AssetSelectionAsset {
   did: string
   serviceId: string
   serviceName: string
+  description?: string
+  serviceDescription?: string
   name: string
   price: number
   tokenSymbol: string
@@ -27,6 +28,8 @@ export interface AssetSelectionAsset {
   symbol: string
   isAccountIdWhitelisted: boolean
   datetime?: string
+  serviceDuration?: number
+  serviceType?: string
 }
 
 export interface PublisherTrustedAlgorithmService {
@@ -46,13 +49,15 @@ export default function AssetSelection({
   multiple,
   disabled,
   accountId,
+  priceOnRight,
   ...props
 }: {
   assets: AssetSelectionAsset[]
-  selected?: string[]
+  selected?: string | string[]
   multiple?: boolean
   disabled?: boolean
   accountId?: string
+  priceOnRight?: boolean
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
   const [filteredAssets, setFilteredAssets] = useState<AssetSelectionAsset[]>(
@@ -61,8 +66,29 @@ export default function AssetSelection({
   const { address: userAccount } = useAccount()
 
   const [currentPage, setCurrentPage] = useState(1)
-
   const assetsPerPage = 8
+
+  function isAssetSelected(
+    sel: string | string[] | undefined,
+    asset: AssetSelectionAsset
+  ) {
+    if (!sel) return false
+
+    const assetValue = JSON.stringify({
+      algoDid: asset.did,
+      serviceId: asset.serviceId
+    })
+
+    // Handle both single string and array cases
+    if (typeof sel === 'string') {
+      // Single selection (radio): compare directly
+      return sel === assetValue
+    } else if (Array.isArray(sel)) {
+      // Multiple selection (checkbox): check if assetValue is in array
+      return sel.includes(assetValue)
+    }
+    return false
+  }
 
   const handlePageOnChange = (page: number) => {
     const pageNumber = page + 1
@@ -83,9 +109,19 @@ export default function AssetSelection({
         : true
     )
 
+    // Sort: selected first; both selected and unselected are sorted by datetime (newest first)
+    result.sort((a, b) => {
+      const aSelected = isAssetSelected(selected, a) ? 1 : 0
+      const bSelected = isAssetSelected(selected, b) ? 1 : 0
+      if (aSelected !== bSelected) return bSelected - aSelected
+      const aTime = a.datetime ? new Date(a.datetime).getTime() : 0
+      const bTime = b.datetime ? new Date(b.datetime).getTime() : 0
+      return bTime - aTime
+    })
+
     setFilteredAssets(result)
     setCurrentPage(1)
-  }, [assets, searchValue])
+  }, [assets, searchValue, selected])
 
   const totalPages = Math.ceil(filteredAssets.length / assetsPerPage)
   const paginatedAssets = filteredAssets.slice(
@@ -100,34 +136,13 @@ export default function AssetSelection({
     multiple ? styles.checkbox : styles.radio
   }`
 
-  function handleSearchInput(e: ChangeEvent<HTMLInputElement>) {
-    setSearchValue(e.target.value)
-    setCurrentPage(1)
-  }
-
   return (
-    <div className={styleClassesWrapper}>
-      <div className={styles.searchContainer}>
-        <input
-          type="search"
-          name="search"
-          placeholder="Search by title, datatoken, or DID..."
-          value={searchValue}
-          onChange={handleSearchInput}
-          className={styles.search}
-          disabled={disabled}
-        />
-        <div className={styles.searchButtonContainer}>
-          <button
-            type="button"
-            className={styles.searchButton}
-            disabled={disabled}
-          >
-            <SearchIcon className={styles.searchIcon} />
-            <span className={styles.searchButtonText}>Search</span>
-          </button>
-        </div>
-      </div>
+    <div className={cs(styles.root, styleClassesWrapper)}>
+      <SearchSection
+        value={searchValue}
+        onChange={setSearchValue}
+        disabled={disabled}
+      />
       <div className={styles.scroll}>
         {!assets ? (
           <Loader />
@@ -136,13 +151,15 @@ export default function AssetSelection({
         ) : (
           <>
             {paginatedAssets.map((asset: AssetSelectionAsset) => (
-              <div className={styles.row} key={asset.serviceId}>
+              <div
+                className={styles.row}
+                key={`${asset.did}-${asset.serviceId}`}
+              >
                 <input
-                  id={slugify(asset.serviceId)}
+                  id={slugify(`${asset.did}-${asset.serviceId}`)}
                   className={styleClassesInput}
                   {...props}
-                  checked={selected && selected.includes(asset.serviceId)}
-                  defaultChecked={asset.checked}
+                  checked={isAssetSelected(selected, asset)}
                   disabled={disabled || !asset.isAccountIdWhitelisted}
                   type={multiple ? 'checkbox' : 'radio'}
                   value={JSON.stringify({
@@ -151,22 +168,17 @@ export default function AssetSelection({
                   })}
                 />
                 <label
-                  className={styles.label}
-                  htmlFor={slugify(asset.serviceId)}
+                  className={cx({
+                    label: true,
+                    priceOnRight
+                  })}
+                  htmlFor={slugify(`${asset.did}-${asset.serviceId}`)}
                   title={asset.name}
                 >
                   <div className={styles.labelContent}>
                     <div className={styles.titleRow}>
                       <h3 className={styles.title}>
-                        <Dotdotdot
-                          clamp={1}
-                          tagName="span"
-                          className={cx({
-                            disabled: !asset.isAccountIdWhitelisted
-                          })}
-                        >
-                          {asset.name} - {asset.serviceName}
-                        </Dotdotdot>
+                        {asset.name} - {asset.serviceName}
                         <a
                           className={styles.link}
                           href={`/asset/${asset.did}`}
@@ -177,42 +189,39 @@ export default function AssetSelection({
                         </a>
                       </h3>
                     </div>
-
-                    <Dotdotdot
-                      clamp={1}
-                      tagName="code"
-                      className={cx({
-                        did: true,
-                        disabled: !asset.isAccountIdWhitelisted
-                      })}
-                    >
+                    <div className={styles.didContainer}>
                       {asset.symbol} | {asset.did}
-                    </Dotdotdot>
+                    </div>
                   </div>
 
-                  <PriceUnit
-                    price={asset.price}
-                    size="small"
-                    className={cx({
-                      price: true,
-                      disabled: !asset.isAccountIdWhitelisted
-                    })}
-                    symbol={asset.tokenSymbol}
-                  />
+                  <div className={styles.priceContainer}>
+                    <PriceUnit
+                      price={asset.price}
+                      size="small"
+                      className={cx({
+                        price: true,
+                        disabled: !asset.isAccountIdWhitelisted
+                      })}
+                      symbol={asset.tokenSymbol}
+                    />
 
-                  {!asset.isAccountIdWhitelisted && (
-                    <Tooltip
-                      content={
-                        <WhitelistIndicator
-                          accountId={accountId || userAccount}
-                          isAccountIdWhitelisted={false}
-                          minimal
+                    {!asset.isAccountIdWhitelisted && (
+                      <Tooltip
+                        content={
+                          <WhitelistIndicator
+                            accountId={accountId || userAccount}
+                            isAccountIdWhitelisted={false}
+                            minimal
+                          />
+                        }
+                      >
+                        <Badge
+                          isValid={false}
+                          verifiedService="Access denied"
                         />
-                      }
-                    >
-                      <Badge isValid={false} verifiedService="Access denied" />
-                    </Tooltip>
-                  )}
+                      </Tooltip>
+                    )}
+                  </div>
                 </label>
               </div>
             ))}

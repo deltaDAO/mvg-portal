@@ -12,17 +12,14 @@
   white-space: nowrap;
 }
 .free {
-  color: #00adb2; /* Green color for "Free" */
+  color: var(--clr-teal);
   font-weight: 700;
 }
 
 .symbol {
   font-size: 14px;
   font-weight: 700;
-  color: #00adb2;
-  /* font-weight: var(--font-weight-base);
-  color: var(--color-secondary); */
-  /* font-size: var(--font-size-base); */
+  color: var(--clr-teal);
 }
 
 .price.large {

@@ -101,6 +101,10 @@
   --loader-top-border-color: transparent;
   --loader-border-size: var(--border-size);
   --loader-message-color: var(--color-secondary);
+  --loader-ordering-spinner-width: 18px;
+  --loader-ordering-spinner-height: 18px;
+  --loader-ordering-spinner-border-color: rgba(48, 48, 49, 0.5);
+  --loader-ordering-spinner-border-top-color: #0a4b70;
 
   /* Box template */
   --box-template-background: var(--background-content);
@@ -182,15 +186,27 @@
   /* Additional tokens for PolicyEditor */
   --radius-xl: 20px;
   --radius-sm: 2px;
+  --sp-10: 40px;
+  --sp-9: 36px;
+  --sp-8_5: 34px;
   --sp-8: 32px;
+  --sp-7_5: 30px;
   --sp-7: 28px;
+  --sp-6_5: 26px;
   --sp-6: 24px;
+  --sp-5_5: 22px;
   --sp-5: 20px;
+  --sp-4_5: 18px;
   --sp-4: 16px;
+  --sp-3_5: 14px;
+  --sp-3: 12px;
   --sp-2_5: 10px;
   --sp-2: 8px;
   --sp-1_5: 6px;
   --sp-1: 4px;
+  --sp-0_5: 2px;
+  --sp-0_25: 1px;
+  --sp-0: 0px;
   --line-accent: 3px;
   --shadow-md: 1px 4px 8px rgba(0, 0, 0, 0.15);
 

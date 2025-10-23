@@ -25,7 +25,8 @@ export default function SsiWalletManager() {
     sessionToken,
     selectedWallet,
     setSelectedWallet,
-    setSelectedKey
+    setSelectedKey,
+    setSelectedDid
   } = useSsiWallet()
 
   const [overrideApi, setOverrideApi] = useState(() => {
@@ -34,11 +35,10 @@ export default function SsiWalletManager() {
 
   const fetchWallets = async (session: SsiWalletSession) => {
     try {
-      if (sessionToken) {
-        const wallets = await getWallets(session.token)
-        setSelectedWallet(wallets[0])
-        return wallets[0]
-      }
+      if (!session) return selectedWallet
+      const wallets = await getWallets(session.token)
+      setSelectedWallet(wallets[0])
+      return wallets[0]
     } catch (error) {
       return selectedWallet
     }
@@ -48,9 +48,7 @@ export default function SsiWalletManager() {
     wallet: SsiWalletDesc,
     session: SsiWalletSession
   ) => {
-    if (!selectedWallet || !sessionToken) {
-      return
-    }
+    if (!wallet || !session) return
     try {
       const keys = await getWalletKeys(wallet, session.token)
       setSelectedKey(keys[0])
@@ -67,6 +65,8 @@ export default function SsiWalletManager() {
       setSsiWalletApiOverride(overrideApi)
       const session = await connectToWallet(signer!)
       setSessionToken(session)
+      setSelectedDid(undefined)
+      setSelectedKey(undefined)
       const wallet = await fetchWallets(session)
       await fetchKeys(wallet, session)
       setShowSsiWalletModule(false)

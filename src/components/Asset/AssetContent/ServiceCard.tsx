@@ -1,4 +1,4 @@
-import { ReactElement } from 'react'
+import { ReactElement, useState } from 'react'
 import styles from './ServiceCard.module.css'
 import { Service } from 'src/@types/ddo/Service'
 
@@ -11,17 +11,38 @@ export default function ServiceCard({
   accessDetails: AccessDetails
   onClick: () => void
 }): ReactElement {
+  const [expanded, setExpanded] = useState(false)
+
   if (!accessDetails) return null
+
+  const description = service.description?.['@value']
 
   return (
     <div onClick={onClick} className={styles.service}>
       <span className={styles.serviceTitle}>{service.name || 'Unknown'} </span>
       <br />
-      <div>
-        {service.description?.['@value'] ? (
-          <span className={styles.serviceDescription}>
-            {service.description?.['@value']}
-          </span>
+      <div className={styles.descriptionWrapper}>
+        {description ? (
+          <>
+            <span
+              className={`${styles.serviceDescription} ${
+                expanded ? styles.expanded : styles.collapsed
+              }`}
+            >
+              {description}
+            </span>
+            {description.length > 50 && (
+              <span
+                className={styles.toggle}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setExpanded(!expanded)
+                }}
+              >
+                {expanded ? 'Show less' : 'Show more'}
+              </span>
+            )}
+          </>
         ) : (
           <span className={styles.serviceDescriptionPlaceholder}>
             No description available.
@@ -45,7 +66,7 @@ export default function ServiceCard({
       <br />
       <div className={styles.selectButtonWrapper}>
         <button className={styles.selectButton}>Select</button>
-      </div>{' '}
+      </div>
     </div>
   )
 }

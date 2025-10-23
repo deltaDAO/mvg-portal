@@ -1,19 +1,49 @@
 .assetListBox {
   display: flex;
   flex-direction: column;
-  gap: var(--spacer);
-  margin-bottom: var(--spacer);
+  border: 1px solid rgba(48, 48, 49, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: #fff;
 }
 
 .assetBox {
-  composes: box from '@shared/atoms/Box.module.css';
-  padding: var(--spacer);
-  background: var(--background-color);
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  background: white;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+.assetDetails {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--color-secondary);
+}
+
+.symbol {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(76, 163, 211, 0.7);
+  text-transform: uppercase;
+}
+
+.divider {
+  height: 1rem;
+  width: 1px;
+  background-color: rgba(76, 163, 211, 0.7);
+}
+
+.did {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 14px;
+  color: rgba(76, 163, 211, 0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .assetHeader {
@@ -23,36 +53,142 @@
 }
 
 .assetTitle {
-  font-size: var(--font-size-base);
-  font-weight: bold;
+  display: flex;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  color: #303031;
   margin: 0;
-  color: var(--font-color-text);
 }
 
 .assetLink svg {
-  margin-left: 0.25rem;
-  fill: var(--color-highlight);
-  width: 0.75em;
-  height: 0.75em;
-}
-
-.assetMetaBlock {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: var(--font-size-small);
-  color: var(--color-secondary);
-  word-break: break-all;
+  margin-top: 0.1rem;
+  margin-left: 0.55rem;
+  width: 1em;
+  height: 1em;
 }
 
 .assetLabel {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--font-color-text);
   min-width: 6rem;
 }
+.assetDivider {
+  border: none;
+  border-top: 1px solid #ccc; /* or var(--color-border) */
+  margin: 0.75rem 0;
+}
 
-.assetCode {
-  font-family: monospace;
-  font-size: 0.875rem;
-  color: var(--color-secondary);
+/* Dialog styles */
+
+.dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: none;
+  border-radius: 16px;
+  padding: 20px;
+  width: 90%;
+  max-width: 800px;
+  background: white;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  z-index: 999;
+}
+
+.dialogContent {
+  padding: 2rem;
+  position: relative;
+}
+
+.dialogHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialogHeader h2 {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 24px;
+  line-height: 108%;
+  color: #0a4b70;
+}
+
+.closeIconAbsolute {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  fill: #0f172a;
+  transition: transform 0.2s ease;
+  z-index: 9999;
+}
+
+.closeIconAbsolute:hover {
+  transform: scale(1.1);
+  fill: #004b9e;
+}
+
+@media (max-width: 768px) {
+  .closeIconAbsolute {
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 24px;
+    height: 24px;
+  }
+}
+
+/* Meta info section */
+
+.meta {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.mobileCloseButton {
+  display: none;
+}
+.jobDID {
+}
+
+@media (max-width: 768px) {
+  .mobileCloseButton {
+    display: block;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    border: none;
+    z-index: 10000;
+    cursor: pointer;
+    border-radius: 20px;
+    padding: 8px 20px;
+    width: 79px;
+    height: 40px;
+    font-family: var(--font-family);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 114%;
+    text-align: center;
+    color: #0a4b70;
+    box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+    background: rgba(48, 48, 49, 0.12);
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+  }
+
+  .mobileCloseButton:hover {
+    background-color: #003c5e;
+    color: white;
+  }
+  .jobDID {
+    font-size: 14px;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    margin-top: 0.5rem;
+  }
 }

@@ -1,5 +1,7 @@
 .field {
-  margin-bottom: calc(var(--spacer) * var(--line-height) + 20px);
+  /* margin-bottom: calc(var(--spacer) * var(--line-height)); */
+  /* margin-bottom: calc(var(--spacer) * var(--line-height) + 20px); */
+  /* margin: 10px; */
   position: relative;
 }
 
@@ -27,7 +29,7 @@
   color: var(--input-error-text-color);
   line-height: 1.2;
   position: absolute;
-  top: 105%;
+  top: 99%;
   left: 0;
   right: auto;
   z-index: 1;

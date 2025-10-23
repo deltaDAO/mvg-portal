@@ -16,12 +16,12 @@ import {
 } from 'src/@types/SsiWallet'
 
 export interface SsiWalletContext {
-  sessionToken: SsiWalletSession
-  setSessionToken: (token: SsiWalletSession) => void
-  selectedWallet: SsiWalletDesc
-  setSelectedWallet: (wallet: SsiWalletDesc) => void
-  selectedKey: SsiKeyDesc
-  setSelectedKey: (key: SsiKeyDesc) => void
+  sessionToken?: SsiWalletSession
+  setSessionToken: (token?: SsiWalletSession) => void
+  selectedWallet?: SsiWalletDesc
+  setSelectedWallet: (wallet?: SsiWalletDesc) => void
+  selectedKey?: SsiKeyDesc
+  setSelectedKey: (key?: SsiKeyDesc) => void
   lookupVerifierSessionId: (did: string, serviceId: string) => string
   lookupVerifierSessionIdSkip: (did: string, serviceId: string) => string
   cacheVerifierSessionId: (
@@ -36,8 +36,8 @@ export interface SsiWalletContext {
   setSsiWalletCache: (cache: SsiWalletCache) => void
   cachedCredentials: SsiVerifiableCredential[]
   setCachedCredentials: (credentials: SsiVerifiableCredential[]) => void
-  selectedDid: string
-  setSelectedDid: (did: string) => void
+  selectedDid?: string
+  setSelectedDid: (did?: string) => void
 }
 
 const SessionTokenStorage = 'sessionToken'
@@ -112,15 +112,12 @@ export function SsiWalletProvider({
     let storageString = localStorage.getItem(VerifierSessionIdStorage)
     let sessions
     try {
-      sessions = JSON.parse(storageString) as Record<string, string>
-      if (!sessions) {
-        sessions = {}
-      }
-    } catch (error) {
+      sessions = storageString ? JSON.parse(storageString) : {}
+    } catch {
       sessions = {}
     }
-    sessions[`${did}_${serviceId}`] = sessionId
-    sessions[`${did}_${serviceId}_skip`] = skipCheck
+    const key = skipCheck ? `${did}_${serviceId}_skip` : `${did}_${serviceId}`
+    sessions[key] = sessionId
     storageString = JSON.stringify(sessions)
     localStorage.setItem(VerifierSessionIdStorage, storageString)
     setVerifierSessionCache(sessions)

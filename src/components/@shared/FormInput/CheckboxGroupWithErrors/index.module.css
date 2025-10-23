@@ -1,0 +1,9 @@
+.errorGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.errorGroup.hasErrors {
+  gap: var(--sp-4);
+}

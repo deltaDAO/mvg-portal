@@ -4,8 +4,8 @@ import { createContext, useContext } from 'react'
 
 const CredentialDialogContext = createContext(null)
 
-export function CredentialDialogProvider({ children }) {
-  const dialogState = useCredentialDialogState()
+export function CredentialDialogProvider({ children, autoStart = false }) {
+  const dialogState = useCredentialDialogState(autoStart)
   return (
     <CredentialDialogContext.Provider value={dialogState}>
       {children}

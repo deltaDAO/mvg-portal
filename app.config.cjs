@@ -39,6 +39,7 @@ module.exports = {
   // consume market fee that is taken upon ordering an asset, it is an absolute value, it is specified on order
   consumeMarketOrderFee:
     process.env.NEXT_PUBLIC_CONSUME_MARKET_ORDER_FEE || '0',
+  consumeMarketFee: process.env.NEXT_PUBLIC_CONSUME_MARKET_FEE || '0',
   // fee recieved by the consume market when a dt is bought from a fixed rate exchange, percent
   consumeMarketFixedSwapFee:
     process.env.NEXT_PUBLIC_CONSUME_MARKET_FIXED_SWAP_FEE || '0',

@@ -1,0 +1,33 @@
+.statusTag {
+  display: inline-block;
+}
+
+.free {
+  border: 1px solid #00adb2;
+  border-radius: 20px;
+  padding: 2px 8px;
+  width: fit-content;
+  height: fit-content;
+  box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(0, 173, 178, 0.01);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 100%;
+  text-align: center;
+  color: #00adb2;
+}
+
+.paid {
+  border: 1px solid #45c01f;
+  border-radius: 20px;
+  padding: 2px 8px;
+  width: fit-content;
+  height: fit-content;
+  box-shadow: 1px 2px 8px 0 rgba(0, 0, 0, 0.15);
+  background: rgba(69, 192, 31, 0.01);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 100%;
+  text-align: center;
+  color: #45c01f;
+}

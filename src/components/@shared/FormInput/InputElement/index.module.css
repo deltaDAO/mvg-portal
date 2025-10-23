@@ -1,33 +1,34 @@
 .input {
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  color: var(--input-font-color);
-  border: var(--input-border-size) solid var(--input-border-color);
-  box-shadow: var(--input-box-shadow);
+  font-size: var(--publish-font-size);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  color: var(--publish-text-secondary);
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  box-shadow: var(--publish-shadow);
   width: 100%;
-  background: var(--background-content);
-  padding: var(--input-padding);
+  background: var(--publish-white);
+  padding: var(--publish-input-padding);
   margin: 0;
-  border-radius: var(--input-border-radius);
+  border-radius: var(--publish-input-border-radius);
   transition: 0.2s ease-out;
-  height: auto;
+  height: var(--publish-input-height);
   min-width: 0;
   appearance: none;
   display: block;
 }
 
 .input:focus {
-  border-color: var(--font-color-text);
-  box-shadow: none;
+  border-color: var(--publish-primary);
+  box-shadow: 0 0 0 2px rgba(10, 75, 112, 0.2);
   outline: 0;
 }
 
 .input::placeholder {
-  font-family: var(--font-family-base);
-  font-size: var(--font-size-base);
-  color: var(--input-placeholder-font-color);
-  font-weight: var(--font-weight-base);
+  font-family: var(--publish-font-family);
+  font-size: var(--publish-font-size);
+  color: var(--publish-text-secondary);
+  font-weight: var(--publish-font-weight-normal);
   transition: 0.2s ease-out;
   opacity: 0.7;
 }
@@ -51,12 +52,13 @@
 .textarea {
   composes: input;
   height: auto;
+  min-height: 80px;
 }
 
 .select {
   composes: input;
   height: 43px;
-  padding: 15px 48px 15px 25px;
+  padding: 8px 48px 8px 25px;
   font-weight: var(--font-weight-bold);
 
   background-image: linear-gradient(

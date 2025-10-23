@@ -1,0 +1,699 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 32px;
+  width: 100%;
+  max-width: 769px;
+  margin: 0 auto;
+}
+
+.container h2 {
+  margin: 0;
+  color: var(--publish-text);
+  font-size: var(--publish-font-size-xl);
+  font-weight: var(--publish-font-weight-bold);
+  text-align: left;
+  width: 100%;
+}
+
+/* Resource Sections */
+.resourceSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 16px;
+  width: 100%;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 6px;
+  width: 100%;
+  height: 18px;
+}
+
+.radioButton {
+  width: 18px;
+  height: 18px;
+  border-radius: 100px;
+  border: 1px solid var(--publish-accent);
+  cursor: pointer;
+  position: relative;
+  background: var(--publish-white);
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.radioButton:checked {
+  background: var(--publish-accent);
+}
+
+.radioButton:checked::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  left: calc(50% - 8px / 2);
+  top: calc(50% - 8px / 2);
+  background: var(--publish-white);
+  border-radius: 20px;
+}
+
+.sectionTitle {
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: 16px;
+  line-height: 18px;
+  color: var(--publish-text-secondary);
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.resourceContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Resource Rows */
+.resourceRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 40px;
+  width: 100%;
+  height: 24px;
+}
+
+.resourceLabel {
+  width: 106px;
+  height: 16px;
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: 14px;
+  line-height: 16px;
+  text-transform: uppercase;
+  color: var(--publish-text);
+  flex-shrink: 0;
+}
+
+/* Slider Section */
+.sliderSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 8px;
+  width: 259px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* Input Section */
+.inputSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.minLabel {
+  width: 20px;
+  height: 14px;
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--publish-text-secondary);
+  flex-shrink: 0;
+}
+
+.sliderContainer {
+  position: relative;
+  width: 200px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.sliderLine {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: #e5e5e5;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+body .customSlider {
+  width: 200px;
+  height: 16px;
+  background: transparent;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.customSlider::-webkit-slider-track {
+  width: 200px;
+  height: 2px;
+  background: transparent;
+  border: none;
+  border-radius: 1px;
+  outline: none;
+  box-shadow: none;
+}
+
+.customSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #0a4b70;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.customSlider::-webkit-slider-thumb:hover {
+  background: #0a4b70;
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.customSlider::-moz-range-track {
+  width: 200px;
+  height: 2px;
+  background: transparent;
+  border: none;
+  border-radius: 1px;
+  outline: none;
+  box-shadow: none;
+}
+
+.customSlider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #0a4b70;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.customSlider::-moz-range-thumb:hover {
+  background: #0a4b70;
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.customSlider::-ms-track {
+  width: 200px;
+  height: 2px;
+  background: transparent;
+  border: none;
+  border-radius: 1px;
+  outline: none;
+  box-shadow: none;
+  color: transparent;
+}
+
+.customSlider::-ms-thumb {
+  width: 16px;
+  height: 16px;
+  background: #0a4b70;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.customSlider::-ms-thumb:hover {
+  background: #0a4b70;
+  transform: scale(1.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.maxLabel {
+  width: 23px;
+  height: 14px;
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--publish-text-secondary);
+  flex-shrink: 0;
+}
+
+body .input {
+  box-sizing: border-box;
+  border: 1px solid var(--publish-border);
+  filter: drop-shadow(var(--publish-shadow));
+  border-radius: var(--publish-border-radius);
+  background: var(--publish-white);
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  color: var(--publish-text-secondary);
+  text-align: center;
+  padding: 8px 16px;
+  flex-shrink: 0;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--publish-primary);
+}
+
+/* Input size variants */
+body .inputSmall {
+  width: 80px;
+  height: 24px !important;
+  padding: 5px 5px !important;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.inputLarge {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 30px;
+  gap: 10px;
+  width: 200px;
+  height: 40px;
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--publish-text);
+}
+
+.unit {
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--publish-text-secondary);
+  margin-left: 4px;
+  flex-shrink: 0;
+}
+
+/* Price Section for Paid Resources */
+.resourcePriceSection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0;
+  gap: 8px;
+  width: 193px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.inputError {
+  border: 1px solid red;
+}
+
+.errorOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent backdrop */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* High z-index to ensure overlay is on top */
+}
+
+.errorPopup {
+  background-color: #ffe6e6;
+  border: 1px solid red;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  width: 400px; /* Larger width */
+  max-width: 90vw; /* Responsive max-width */
+  min-height: 100px; /* Minimum height for larger appearance */
+}
+
+.errorMessage {
+  color: red;
+  font-size: 1rem; /* Slightly larger font */
+  flex: 1; /* Allow message to take available space */
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: red;
+  font-size: 1.5rem; /* Larger close button */
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.closeButton:hover {
+  color: darkred;
+}
+.priceLabel {
+  width: 105px;
+  height: 14px;
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: 12px;
+  line-height: 14px;
+  color: var(--publish-text-secondary);
+  flex-shrink: 0;
+}
+
+/* Paid section specific styling */
+.resourceSection:nth-child(3) .resourceControls {
+  width: 758px;
+}
+
+/* C2D Environment Price Section */
+.priceSection {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0;
+  gap: 24px;
+  width: 100%;
+  height: 66px;
+}
+
+.priceTitle {
+  width: 156px;
+  height: 16px;
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--publish-text-secondary);
+  margin: 0;
+}
+
+.priceDisplay {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  padding: 0;
+  gap: 24px;
+  width: 100%;
+  height: 66px;
+}
+
+.priceInfo {
+  width: 545px;
+  height: 34px;
+  background: var(--publish-background-highlight);
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+}
+
+.priceInfo::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 34px;
+  left: 0;
+  top: 0;
+  background: var(--publish-accent);
+}
+
+.priceInfo span {
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--publish-text-secondary);
+  width: 513px;
+  height: 18px;
+  position: absolute;
+  left: 16px;
+  top: 8px;
+}
+
+/* Action Buttons - matching publish component */
+.actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+  gap: 16px;
+  width: 100%;
+  margin-top: 32px;
+}
+
+.actions button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  gap: 8px;
+  border-radius: var(--publish-border-radius);
+  font-family: var(--font-family-base);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-bold);
+  font-size: 14px;
+  line-height: 16px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.actions button:first-child {
+  background: var(--publish-background);
+  color: var(--publish-text);
+  border: 1px solid var(--publish-border);
+}
+
+.actions button:first-child:hover {
+  background: var(--publish-background-highlight);
+}
+
+.actions button:last-child {
+  background: var(--publish-primary);
+  color: var(--publish-white);
+}
+
+.actions button:last-child:hover {
+  background: var(--publish-primary-hover);
+}
+/* Tablet View (768px – 1024px) */
+@media screen and (max-width: 1024px) {
+  .container {
+    max-width: 95%;
+    gap: 24px;
+  }
+
+  .resourceRow {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 20px;
+    height: auto;
+  }
+
+  .resourceLabel {
+    width: 90px;
+    font-size: 13px;
+  }
+
+  .sliderSection {
+    flex: 1;
+    min-width: 180px;
+  }
+
+  .sliderContainer {
+    width: 100%;
+  }
+
+  .inputSection {
+    flex: 0 0 auto;
+  }
+
+  .inputSmall {
+    width: 70px;
+  }
+
+  .resourcePriceSection {
+    flex: 1 1 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 6px;
+  }
+
+  .priceLabel {
+    width: auto;
+    font-size: 12px;
+  }
+
+  .priceSection {
+    gap: 16px;
+    height: auto;
+  }
+
+  .priceDisplay {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    height: auto;
+  }
+
+  .priceInfo {
+    flex: 1 1 100%;
+    padding: 8px 12px;
+  }
+
+  .actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .actions button {
+    flex: 1 1 auto;
+    min-width: 140px;
+  }
+}
+
+/* Mobile View (up to 767px) */
+@media screen and (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+    gap: 20px;
+  }
+
+  .container h2 {
+    font-size: var(--publish-font-size-lg);
+    text-align: center;
+  }
+
+  .resourceRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    height: auto;
+  }
+
+  .resourceLabel {
+    width: 100%;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .sliderSection {
+    width: 100%;
+  }
+
+  .sliderContainer {
+    width: 100%;
+  }
+
+  .inputSection {
+    width: 100%;
+  }
+
+  .inputSmall {
+    width: 100%;
+    text-align: left;
+  }
+
+  .resourcePriceSection {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    gap: 6px;
+  }
+
+  .priceSection {
+    gap: 16px;
+    height: auto;
+  }
+
+  .priceDisplay {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    height: auto;
+  }
+
+  .priceInfo {
+    width: 100%;
+    padding: 8px 12px;
+  }
+
+  .priceInfo span {
+    font-size: 12px;
+    line-height: 16px;
+    width: 100%;
+    position: relative;
+    left: 0;
+    top: 0;
+  }
+
+  .inputLarge {
+    width: 100%;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}

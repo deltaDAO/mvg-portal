@@ -19,12 +19,12 @@ export default function FormActions({
 
   return (
     <footer className={styles.actions}>
-      <Button style="primary" disabled={isSubmitDisabled} onClick={handleClick}>
-        Submit
-      </Button>
       <Link href={`/asset/${asset?.id}`} key={asset?.id}>
         Cancel
       </Link>
+      <Button style="publish" disabled={isSubmitDisabled} onClick={handleClick}>
+        Submit
+      </Button>
     </footer>
   )
 }

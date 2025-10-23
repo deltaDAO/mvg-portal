@@ -36,7 +36,11 @@ export default function Results({
     async function getAssetMetadata() {
       if (job.assets) {
         const ddo = await getAsset(job.assets[0].documentId, newCancelToken())
-        setDatasetProvider(ddo.credentialSubject.services[0].serviceEndpoint)
+        if (ddo?.credentialSubject?.services?.[0]?.serviceEndpoint) {
+          setDatasetProvider(ddo.credentialSubject.services[0].serviceEndpoint)
+        } else {
+          setDatasetProvider(customProviderUrl)
+        }
       } else {
         setDatasetProvider(customProviderUrl)
       }
@@ -92,7 +96,7 @@ export default function Results({
 
   return (
     <div className={styles.results}>
-      <h4 className={styles.title}>Results</h4>
+      <div className={styles.title}>Results</div>
       {isFinished ? (
         <ul>
           {job.results &&
@@ -121,7 +125,12 @@ export default function Results({
       ) : (
         <p> Waiting for results...</p>
       )}
-      <FormHelp className={styles.help}>{content.compute.storage}</FormHelp>
+      <div className={styles.alert}>
+        <div className={styles.rightAlert}></div>
+        <div>
+          <FormHelp className={styles.help}>{content.compute.storage}</FormHelp>
+        </div>
+      </div>
     </div>
   )
 }

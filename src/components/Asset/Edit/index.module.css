@@ -1,7 +1,52 @@
 .container {
-  composes: box from '@shared/atoms/Box.module.css';
+  display: block;
+  color: var(--box-template-font-color);
+  background: var(--box-template-background);
+  border-radius: var(--box-template-border-radius);
+  border: var(--box-template-border-size) solid var(--box-template-border-color);
+  box-shadow: var(--box-template-box-shadow);
   padding: 0;
   position: relative;
+}
+
+/* Publish flow container styling */
+.containerPublish {
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-form-container-padding-top-extended);
+  background: var(--publish-white);
+  box-shadow: var(--publish-shadow);
+  max-width: none !important;
+  width: 100% !important;
+}
+
+/* Override tab panel max-width for edit page */
+.containerPublish :global(.react-tabs__tab-panel) {
+  max-width: none;
+  width: 100%;
+}
+
+.containerPublish :global([class*='publishTabPanel']) {
+  max-width: none;
+  width: 100%;
+}
+
+/* Make form use full width */
+.containerPublish form {
+  width: 100%;
+}
+
+/* Publish flow styling */
+.container.publish {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-4xl);
+  max-width: var(--publish-container-width);
+  margin: 0 auto;
+  font-family: var(--publish-font-family);
 }
 
 .grid {
@@ -60,6 +105,38 @@
   margin: 20px;
 }
 
+/* Publish flow form styling */
+.container.publish .form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-2xl);
+  width: 100%;
+  margin: 0;
+}
+
+/* Publish flow section styling */
+.container.publish .section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-md);
+  width: 100%;
+}
+
+/* Publish flow section content styling */
+.container.publish .sectionContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: var(--publish-spacing-md);
+  width: 100%;
+  align-self: stretch;
+}
+
 .license {
   display: flex;
   align-items: center;
@@ -76,23 +153,36 @@
 }
 
 body .addAddressButton {
-  min-height: 40px;
-  height: 40px;
+  min-height: var(--publish-input-height);
+  height: var(--publish-input-height);
   min-width: 105px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   gap: 4px;
+  background: var(--publish-primary-gradient);
+  box-shadow: 1px 2px 8px var(--box-shadow-color);
+  border-radius: 20px;
+  font-family: 'Helvetica';
+  font-weight: 700;
+  font-size: 14px;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease-out;
 }
 
 .addAddressButton:hover,
 .addAddressButton:focus,
 .addAddressButton:focus-visible {
-  min-height: 40px;
-  height: 40px;
+  min-height: var(--publish-input-height);
+  height: var(--publish-input-height);
   min-width: 105px;
   transform: none;
+  background: var(--publish-primary-gradient);
+  opacity: 0.9;
+  box-shadow: 1px 2px 8px var(--box-shadow-color);
 }
 
 .addAddressButton svg {
@@ -101,15 +191,34 @@ body .addAddressButton {
 
 .addressInput {
   width: 100%;
-  height: 40px;
-  border: 1px solid var(--publish-border);
-  border-radius: 20px;
-  padding: 0px 30px;
-  font-family: 'Helvetica';
-  font-size: 14px;
-  line-height: 16px;
-  color: #303031;
-  background: #ffffff;
+  height: var(--publish-input-height);
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-input-padding);
+  font-family: var(--publish-font-family);
+  font-size: var(--publish-font-size);
+  font-weight: var(--publish-font-weight-normal);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+  background: var(--publish-white);
+  box-shadow: var(--publish-shadow);
+  transition: 0.2s ease-out;
+}
+
+.addressInput:focus {
+  border-color: var(--publish-primary);
+  box-shadow: 0 0 0 2px rgba(10, 75, 112, 0.2);
+  outline: 0;
+}
+
+.addressInput::placeholder {
+  font-family: var(--publish-font-family);
+  font-size: var(--publish-font-size);
+  color: var(--publish-text-secondary);
+  font-weight: var(--publish-font-weight-normal);
+  transition: 0.2s ease-out;
+  opacity: 0.7;
 }
 
 .addressListContainer {
@@ -118,17 +227,28 @@ body .addAddressButton {
   gap: var(--sp-2);
 }
 
+/* Publish flow address list styling */
+.container.publish .addressListContainer {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) * 0.5);
+  margin-top: var(--publish-spacing-sm);
+}
+
 .addressDisplay {
   flex: 1;
-  height: 40px;
-  border: 1px solid var(--publish-border);
-  border-radius: 20px;
-  padding: 0px 30px;
-  font-family: 'Helvetica';
-  font-size: 14px;
-  line-height: 16px;
-  color: #303031;
-  background: #f5f5f5;
+  height: var(--publish-input-height);
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-input-padding);
+  font-family: var(--publish-font-family);
+  font-size: var(--publish-font-size);
+  font-weight: var(--publish-font-weight-normal);
+  line-height: var(--publish-line-height-base);
+  color: var(--publish-text-secondary);
+  background: var(--publish-neutral-light);
+  box-shadow: var(--publish-shadow);
 }
 
 .addressItem {
@@ -137,9 +257,25 @@ body .addAddressButton {
   align-items: center;
 }
 
+/* Publish flow address item styling */
+.container.publish .addressItem {
+  display: flex;
+  gap: calc(var(--spacer) * 0.5);
+  align-items: center;
+}
+
 .inputContainer {
   display: flex;
   gap: var(--sp-2);
+  align-items: flex-end;
+  width: 100%;
+  position: relative;
+}
+
+/* Publish flow input container styling */
+.container.publish .inputContainer {
+  display: flex;
+  gap: calc(var(--spacer) * 0.5);
   align-items: flex-end;
   width: 100%;
 }
@@ -150,4 +286,51 @@ body .addAddressButton {
 
 .publisherTrustedAlgorithmPublishersInput {
   margin-bottom: var(--sp-2);
+}
+
+.errorMessage {
+  display: block;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-bold);
+  font-size: 10px;
+  color: var(--input-error-text-color);
+  line-height: 1.2;
+  margin-top: var(--sp-1);
+  margin-left: var(--sp-1);
+}
+
+/* Publish flow responsive adjustments */
+@media (max-width: 1200px) {
+  .container.publish {
+    width: 100%;
+    padding: 0 var(--publish-spacing-lg);
+  }
+}
+
+@media (max-width: 768px) {
+  .container.publish {
+    gap: var(--publish-spacing-2xl);
+  }
+
+  .container.publish .form {
+    gap: var(--publish-spacing-lg);
+  }
+
+  .container.publish .section {
+    gap: var(--publish-spacing-sm);
+  }
+
+  .container.publish .sectionContent {
+    gap: var(--publish-spacing-sm);
+  }
+
+  .container.publish .inputContainer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .container.publish .addressItem {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }

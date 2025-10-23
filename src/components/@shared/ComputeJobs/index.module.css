@@ -1,0 +1,138 @@
+.container {
+  margin-top: 3rem;
+  border: 1px solid rgba(48, 48, 49, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: #fff;
+}
+
+.title {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 22px;
+  color: #303031;
+  margin-bottom: 20px;
+}
+
+.jobsTable {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tableHeader {
+  display: flex;
+  border-bottom: 1px solid rgba(48, 48, 49, 0.1);
+  padding: 0 0 16px 0;
+  height: 34px;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-transform: uppercase;
+  color: #303031;
+}
+
+.statusColumn {
+  flex: 2;
+}
+
+.actionsColumn {
+  flex: 1;
+}
+
+.finishedColumn {
+  flex: 1;
+}
+
+.jobRow {
+  display: flex;
+  border-bottom: 1px solid rgba(48, 48, 49, 0.1);
+  padding: 0 0 16px 0;
+  height: 40px;
+  margin-top: 8px;
+}
+
+.jobRow:last-child {
+  border-bottom: none;
+}
+
+.statusCell {
+  display: flex;
+  flex: 2;
+}
+
+.actionsCell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 117%;
+  color: #4ca3d3;
+}
+
+.finishedCell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 117%;
+  color: #303031;
+}
+
+.loading,
+.error,
+.empty {
+  padding: 20px;
+  text-align: center;
+  font-size: 16px;
+  color: #666;
+}
+
+.error {
+  color: #ff4d4f;
+}
+
+.empty {
+  color: #888;
+}
+
+.statusContent {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.statusIcon {
+  margin-right: 8px;
+  width: 13px;
+  height: 13px;
+  display: flex-start;
+}
+
+.statusText {
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 117%;
+  color: #303031;
+}
+.sales {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  border-top: 1px solid rgba(48, 48, 49, 0.1);
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: #303031;
+  text-align: center; /* Center text horizontally */
+  padding-top: 1rem;
+}
+.salesTag {
+  color: #00adb2;
+}

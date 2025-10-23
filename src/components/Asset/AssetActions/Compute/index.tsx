@@ -35,8 +35,6 @@ import {
 } from '@utils/compute'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import AlgorithmDatasetsListForCompute from './AlgorithmDatasetsListForCompute'
-import ComputeHistory from './History'
-import ComputeJobs from '../../../Profile/History/ComputeJobs'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { Decimal } from 'decimal.js'
 import {
@@ -306,7 +304,6 @@ export default function Compute({
               accessDetails,
               initializedProvider.datasets?.[i]?.providerFee
             )
-
             return {
               actualDatasetAsset: asset,
               actualDatasetService: service,
@@ -487,7 +484,9 @@ export default function Compute({
       }
 
       try {
-        type === 'init' && setIsLoadingJobs(true)
+        if (type === 'init') {
+          setIsLoadingJobs(true)
+        }
         const computeJobs = await getComputeJobs(
           asset.credentialSubject?.chainId !== undefined
             ? [asset.credentialSubject.chainId]
@@ -501,7 +500,9 @@ export default function Compute({
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
         LoggerInstance.error(error.message)
-        setIsLoadingJobs(false)
+        if (type === 'init') {
+          setIsLoadingJobs(false)
+        }
       }
     },
     [address, accountId, asset, service, chainIds, newCancelToken]
@@ -509,6 +510,15 @@ export default function Compute({
 
   useEffect(() => {
     fetchJobs('init')
+
+    const refreshInterval = 10000
+    const interval = setInterval(() => {
+      fetchJobs('poll')
+    }, refreshInterval)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [refetchJobs])
 
   // Output errors in toast UI
@@ -743,6 +753,16 @@ export default function Compute({
       setIsOrdered(true)
       setRefetchJobs(!refetchJobs)
     } catch (error) {
+      if (
+        error?.message?.includes('user rejected transaction') ||
+        error?.message?.includes('User denied') ||
+        error?.message?.includes('MetaMask Tx Signature: User denied')
+      ) {
+        toast.info('Transaction was cancelled by user')
+        setRetry(true)
+        return
+      }
+
       let message: string
       try {
         message =
@@ -839,6 +859,15 @@ export default function Compute({
 
       await startJob(userCustomParameters, datasetServices)
     } catch (error) {
+      if (
+        error?.message?.includes('user rejected transaction') ||
+        error?.message?.includes('User denied') ||
+        error?.message?.includes('MetaMask Tx Signature: User denied')
+      ) {
+        toast.info('Transaction was cancelled by user')
+        return
+      }
+
       toast.error(error.message)
       LoggerInstance.error(error)
     }
@@ -846,33 +875,6 @@ export default function Compute({
 
   return (
     <>
-      <div
-        className={`${styles.info} ${
-          isUnsupportedPricing ? styles.warning : null
-        }`}
-      >
-        <FileIcon
-          file={file}
-          isAccountWhitelisted={isAccountIdWhitelisted}
-          isLoading={fileIsLoading}
-          small
-        />
-        {isUnsupportedPricing ? (
-          <Alert
-            text={`No pricing schema available for this asset.`}
-            state="info"
-          />
-        ) : (
-          <div className={styles.priceClass}>
-            <Price
-              price={price}
-              orderPriceAndFees={datasetOrderPriceAndFees}
-              size="large"
-            />
-          </div>
-        )}
-      </div>
-
       {isUnsupportedPricing ? null : asset.credentialSubject?.metadata.type ===
         'algorithm' ? (
         <Formik
@@ -1092,16 +1094,13 @@ export default function Compute({
                       checkAssetDTBalance(selectedAlgorithmAsset)
                     }
                     computeEnvs={computeEnvs}
+                    jobs={jobs}
+                    isLoadingJobs={isLoadingJobs}
+                    refetchJobs={() => setRefetchJobs(!refetchJobs)}
                   />
                 </CredentialDialogProvider>
               ) : (
-                <div className={styles.actionButton}>
-                  {' '}
-                  <AssetActionCheckCredentials
-                    asset={asset}
-                    service={service}
-                  />
-                </div>
+                <AssetActionCheckCredentials asset={asset} service={service} />
               )}
             </>
           ) : (
@@ -1163,38 +1162,19 @@ export default function Compute({
                   checkAssetDTBalance(selectedAlgorithmAsset)
                 }
                 computeEnvs={computeEnvs}
+                jobs={jobs}
+                isLoadingJobs={isLoadingJobs}
+                refetchJobs={() => setRefetchJobs(!refetchJobs)}
               />
             </CredentialDialogProvider>
           )}
         </Formik>
       )}
-
       <footer className={styles.feedback}>
         {isOrdered && (
           <SuccessConfetti success="Your job started successfully! Watch the progress below or on your profile." />
         )}
       </footer>
-      {accountId && (
-        <WhitelistIndicator
-          accountId={accountId}
-          isAccountIdWhitelisted={isAccountIdWhitelisted}
-        />
-      )}
-      {accountId &&
-        accessDetails.datatoken &&
-        asset.credentialSubject.metadata.type !== 'algorithm' && (
-          <ComputeHistory
-            title="Your Compute Jobs"
-            refetchJobs={() => setRefetchJobs(!refetchJobs)}
-          >
-            <ComputeJobs
-              minimal
-              jobs={jobs}
-              isLoading={isLoadingJobs}
-              refetchJobs={() => setRefetchJobs(!refetchJobs)}
-            />
-          </ComputeHistory>
-        )}
     </>
   )
 }

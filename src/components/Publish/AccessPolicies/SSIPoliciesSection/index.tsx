@@ -23,11 +23,20 @@ export default function SSIPoliciesSection({
       values.credentials?.vcPolicies?.length > 0 ||
       values.credentials?.vpPolicies?.length > 0
 
-    setEnabled(hasCurrentPolicies)
+    const isManuallyEnabled = values.credentials?.enabled === true
+
+    if (hasCurrentPolicies && !isManuallyEnabled) {
+      setEnabled(true)
+    } else if (isManuallyEnabled) {
+      setEnabled(true)
+    } else {
+      setEnabled(false)
+    }
   }, [
     values.credentials?.requestCredentials,
     values.credentials?.vcPolicies,
-    values.credentials?.vpPolicies
+    values.credentials?.vpPolicies,
+    values.credentials?.enabled
   ])
 
   const handleToggleSSI = () => {
@@ -36,9 +45,7 @@ export default function SSIPoliciesSection({
 
     setFieldValue('credentials.enabled', newEnabled)
 
-    if (newEnabled) {
-      setFieldValue('credentials.vcPolicies', defaultPolicies)
-    } else {
+    if (!newEnabled) {
       setFieldValue('credentials.requestCredentials', [])
       setFieldValue('credentials.vcPolicies', [])
       setFieldValue('credentials.vpPolicies', [])
@@ -76,6 +83,7 @@ export default function SSIPoliciesSection({
             isAsset={true}
             buttonStyle="ocean"
             enabledView={true}
+            hideDefaultPolicies={false}
           />
         </SectionContainer>
       )}

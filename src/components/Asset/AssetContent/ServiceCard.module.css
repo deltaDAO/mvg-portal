@@ -7,6 +7,7 @@
   background: #fff;
   position: relative;
   min-height: 145px;
+  min-width: 250px;
 }
 
 .service:hover {
@@ -23,11 +24,11 @@
 .free {
   font-weight: 700;
   font-size: 14px;
-  color: #00adb2;
+  color: var(--clr-teal);
   text-transform: uppercase;
 }
 .tokenSymbol {
-  color: #00adb2;
+  color: var(--clr-teal);
 }
 .access {
   font-family: var(--font-family);
@@ -43,17 +44,57 @@
   color: #303031;
   line-height: 180%;
 }
+.descriptionWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-direction: row;
+}
+
 .serviceDescription {
   font-family: var(--font-family);
   font-weight: 400;
   font-size: 14px;
-  line-height: 124%;
+  line-height: 129%;
   color: var(--publish-text-secondary);
+  word-break: break-word;
+}
+
+.serviceDescription.collapsed {
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 1; /* 1 line only */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.serviceDescription.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.toggle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #00adb2;
+  cursor: pointer;
+  border: 1px solid #00adb2;
+  border-radius: 10px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.toggle:hover {
+  background: rgba(0, 150, 136, 0.1);
+}
+
+.serviceDescription p {
+  margin-bottom: 0;
+}
+
+.toggle:hover {
+  background: rgba(0, 150, 136, 0.1);
 }
 .serviceDescriptionPlaceholder {
   font-family: var(--font-family);

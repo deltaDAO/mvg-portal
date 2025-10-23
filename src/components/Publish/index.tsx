@@ -304,10 +304,10 @@ export default function PublishPage({
         await handleSubmit(values)
       }}
     >
-      {({ values }) => (
+      {(formikContext) => (
         <>
           <PageHeader
-            title={<Title networkId={values.user.chainId} />}
+            title={<Title networkId={formikContext.values.user.chainId} />}
             description={content.description}
             isExtended
           />

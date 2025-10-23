@@ -86,11 +86,13 @@
   --publish-background-highlight: rgba(253, 214, 85, 0.15);
   --publish-background-neutral: rgba(48, 48, 49, 0.02);
   --publish-background-subtle: rgba(48, 48, 49, 0.08);
+  --publish-background-hover: rgba(10, 75, 112, 0.04);
 
   /* Additional colors for PolicyEditor */
   --clr-navy: #0a4b70;
   --clr-amber: #fdd655;
   --clr-error: #ff360d;
+  --clr-teal: #00adb2;
   --clr-slate-70: rgba(48, 48, 49, 0.7);
   --clr-slate-50: rgba(48, 48, 49, 0.5);
   --clr-slate-12: rgba(48, 48, 49, 0.12);

@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef, useState } from 'react'
+import { ReactElement, useEffect, useRef } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
@@ -18,12 +18,13 @@ import { deleteIpfsFile, uploadFileItemToIPFS } from '@utils/ipfs'
 import { FileItem } from '@utils/fileItem'
 import { License } from '../../../@types/ddo/License'
 import { RemoteObject } from '../../../@types/ddo/RemoteObject'
-import { PolicyEditor } from '@components/@shared/PolicyEditor'
-import { getDefaultPolicies } from '@components/Publish/_utils'
+import SSIPoliciesSection from './SSIPoliciesSection'
 import { AdditionalDdosFields } from '@components/@shared/AdditionalDdos'
+import ContainerForm from '@components/@shared/atoms/ContainerForm'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
+import AccessRulesSection from '@components/Publish/AccessPolicies/AccessRulesSection'
 
 const { data } = content.form
 const assetTypeOptionsTitles = getFieldContent('type', data).options
@@ -32,7 +33,6 @@ export default function FormEditMetadata(): ReactElement {
   const { asset } = useAsset()
   const { values, setFieldValue } = useFormikContext<MetadataEditForm>()
   const firstPageLoad = useRef<boolean>(true)
-  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
   // BoxSelection component is not a Formik component
   // so we need to handle checked state manually.
@@ -50,24 +50,6 @@ export default function FormEditMetadata(): ReactElement {
       icon: <IconAlgorithm />
     }
   ]
-
-  useEffect(() => {
-    if (appConfig.ssiEnabled) {
-      getDefaultPolicies()
-        .then((policies) => {
-          const newVcPolicies = [
-            ...new Set(policies.concat(values.credentials.vcPolicies))
-          ]
-          setFieldValue('credentials.vcPolicies', newVcPolicies)
-          setDefaultPolicies(policies)
-        })
-        .catch((error) => {
-          LoggerInstance.error(error)
-          setFieldValue('credentials.vcPolicies', [])
-          setDefaultPolicies([])
-        })
-    }
-  }, [])
 
   useEffect(() => {
     const providerUrl = asset.credentialSubject?.services[0].serviceEndpoint
@@ -98,7 +80,11 @@ export default function FormEditMetadata(): ReactElement {
           }
         ])
       })
-  }, [])
+  }, [
+    asset.credentialSubject?.metadata?.links,
+    asset.credentialSubject?.services,
+    setFieldValue
+  ])
 
   async function handleLicenseFileUpload(
     fileItem: FileItem,
@@ -166,119 +152,114 @@ export default function FormEditMetadata(): ReactElement {
     } else {
       setFieldValue('licenseUrl', [{ url: '', type: 'url' }])
     }
-  }, [values.useRemoteLicense])
+  }, [values.useRemoteLicense, setFieldValue, values.uploadedLicense])
 
   return (
     <Form>
-      <Field
-        {...getFieldContent('type', data)}
-        component={Input}
-        name="metadata.type"
-        options={assetTypeOptions}
-        disabled={true} // just for view purposes
-      />
-      <Field {...getFieldContent('name', data)} component={Input} name="name" />
-      <Field
-        {...getFieldContent('description', data)}
-        component={Input}
-        name="description"
-      />
-      <Field
-        {...getFieldContent('links', data)}
-        component={Input}
-        name="links"
-      />
-      <Field {...getFieldContent('tags', data)} component={Input} name="tags" />
-      <Field
-        {...getFieldContent('author', data)}
-        component={Input}
-        name="author"
-      />
-      {asset.credentialSubject?.metadata?.type === 'algorithm' && (
-        <>
-          <Field
-            {...getFieldContent('usesConsumerParameters', data)}
-            component={Input}
-            name="usesConsumerParameters"
-          />
-          {(values as unknown as MetadataEditForm).usesConsumerParameters && (
-            <Field
-              {...getFieldContent(
-                'consumerParameters',
-                consumerParametersContent.consumerParameters.fields
-              )}
-              component={Input}
-              name="consumerParameters"
-            />
-          )}
-        </>
-      )}
-
-      <Field
-        {...getFieldContent('allow', data)}
-        component={Input}
-        name="credentials.allow"
-      />
-      <Field
-        {...getFieldContent('deny', data)}
-        component={Input}
-        name="credentials.deny"
-      />
-
-      {appConfig.ssiEnabled ? (
-        <PolicyEditor
-          label="SSI Policies"
-          credentials={values.credentials}
-          setCredentials={(newCredentials) =>
-            setFieldValue('credentials', newCredentials)
-          }
-          defaultPolicies={defaultPolicies}
-          name="credentials"
-          help="Self-sovereign identity (SSI) is used to verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
-          enabledView={values.credentials.requestCredentials?.length > 0}
-          isAsset={true}
+      <ContainerForm style="publish">
+        <Field
+          {...getFieldContent('type', data)}
+          component={Input}
+          name="metadata.type"
+          options={assetTypeOptions}
+          disabled={true}
         />
-      ) : (
-        <></>
-      )}
+        <Field
+          {...getFieldContent('name', data)}
+          component={Input}
+          name="name"
+        />
+        <Field
+          {...getFieldContent('description', data)}
+          component={Input}
+          name="description"
+        />
+        <Field
+          {...getFieldContent('links', data)}
+          component={Input}
+          name="links"
+        />
 
-      <Field
-        {...getFieldContent('assetState', data)}
-        component={Input}
-        name="assetState"
-      />
+        <Field
+          {...getFieldContent('tags', data)}
+          component={Input}
+          name="tags"
+        />
 
-      {/*
-       Licensing and Terms
-      */}
-      <Field
-        {...getFieldContent('licenseTypeSelection', content.form.data)}
-        component={Input}
-        name="useRemoteLicense"
-      />
+        <Field
+          {...getFieldContent('author', data)}
+          component={Input}
+          name="author"
+        />
+        {asset.credentialSubject?.metadata?.type === 'algorithm' && (
+          <>
+            <Field
+              {...getFieldContent('usesConsumerParameters', data)}
+              component={Input}
+              name="usesConsumerParameters"
+            />
+            {(values as unknown as MetadataEditForm).usesConsumerParameters && (
+              <Field
+                {...getFieldContent(
+                  'consumerParameters',
+                  consumerParametersContent.consumerParameters.fields
+                )}
+                component={Input}
+                name="consumerParameters"
+              />
+            )}
+          </>
+        )}
 
-      {values.useRemoteLicense ? (
-        <>
-          <Label htmlFor="license">License *</Label>
-          <FileUpload
-            fileName={values.uploadedLicense?.name}
-            buttonLabel="Upload"
-            setFileItem={handleLicenseFileUpload}
-          ></FileUpload>
-        </>
-      ) : (
-        <>
-          <Field
-            {...getFieldContent('license', content.form.data)}
-            component={Input}
-            name="licenseUrl"
-          />
-        </>
-      )}
+        <AccessRulesSection fieldPrefix="credentials" />
 
-      <AdditionalDdosFields />
+        <SSIPoliciesSection
+          defaultPolicies={[
+            'signature',
+            'not-before',
+            'revoked-status-list',
+            'expired',
+            'signature_sd-jwt-vc'
+          ]}
+          isAsset={true}
+          hideDefaultPolicies={false}
+        />
 
-      <FormActions />
+        <Field
+          {...getFieldContent('assetState', data)}
+          component={Input}
+          name="assetState"
+        />
+
+        <Field
+          {...getFieldContent('licenseTypeSelection', content.form.data)}
+          component={Input}
+          name="useRemoteLicense"
+        />
+
+        {values.useRemoteLicense ? (
+          <>
+            <Label htmlFor="license">License *</Label>
+            <FileUpload
+              fileName={values.uploadedLicense?.name}
+              buttonLabel="Upload"
+              setFileItem={handleLicenseFileUpload}
+            ></FileUpload>
+          </>
+        ) : (
+          <>
+            <Field
+              {...getFieldContent('license', content.form.data)}
+              component={Input}
+              name="licenseUrl"
+            />
+          </>
+        )}
+
+        <AdditionalDdosFields />
+
+        <FormActions />
+      </ContainerForm>
     </Form>
   )
 }

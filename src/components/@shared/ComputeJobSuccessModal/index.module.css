@@ -1,0 +1,49 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacer);
+}
+
+.successMessage {
+  font-size: var(--font-size-base);
+  color: var(--font-color-text);
+  line-height: 1.5;
+}
+
+.jobDetails {
+  background: var(--background-highlight);
+  border-radius: var(--border-radius);
+  padding: var(--spacer);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
+}
+
+.detailRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacer);
+}
+
+.label {
+  font-weight: var(--font-weight-bold);
+  color: var(--font-color-heading);
+  min-width: 80px;
+}
+
+.value {
+  color: var(--font-color-text);
+  text-align: right;
+  word-break: break-all;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacer);
+}
+
+.closeButton {
+  min-width: 120px;
+}

@@ -17,8 +17,10 @@ import {
 import { getServiceById } from './ddo'
 import { SortTermOptions } from '../@types/aquarius/SearchQuery'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
-import { transformAssetToAssetSelection } from './assetConverter'
-import { ComputeEditForm } from '../components/Asset/Edit/_types'
+import {
+  transformAssetToAssetSelection,
+  transformAssetToAssetSelectionForComputeWizard
+} from './assetConverter'
 import { getFileDidInfo } from './provider'
 import { toast } from 'react-toastify'
 import { Asset } from 'src/@types/Asset'
@@ -31,6 +33,13 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
 import { ServiceComputeOptions } from '@oceanprotocol/ddo-js'
 import { useNetwork } from 'wagmi'
+// Local form shape needed by compute transform
+type ComputeFormLike = {
+  allowAllPublishedAlgorithms: boolean | string
+  publisherTrustedAlgorithms: string[]
+  publisherTrustedAlgorithmPublishers: string
+  publisherTrustedAlgorithmPublishersAddresses?: string
+}
 
 async function getAssetMetadata(
   queryDtList: string[],
@@ -192,7 +201,7 @@ export async function getAlgorithmsForAsset(
   token: CancelToken
 ): Promise<Asset[]> {
   if (
-    !service.compute ||
+    !service?.compute ||
     (service.compute.publisherTrustedAlgorithms?.length === 0 &&
       service.compute.publisherTrustedAlgorithmPublishers?.length === 0)
   ) {
@@ -233,6 +242,28 @@ export async function getAlgorithmAssetSelectionList(
   return algorithmSelectionList
 }
 
+export async function getAlgorithmAssetSelectionListForComputeWizard(
+  service: Service,
+  algorithms: Asset[],
+  accountId: string
+): Promise<AssetSelectionAsset[]> {
+  if (!algorithms || algorithms?.length === 0) return []
+
+  let algorithmSelectionList: AssetSelectionAsset[]
+  if (!service.compute) {
+    algorithmSelectionList = []
+  } else {
+    algorithmSelectionList =
+      await transformAssetToAssetSelectionForComputeWizard(
+        service?.serviceEndpoint,
+        algorithms,
+        accountId,
+        service.compute.publisherTrustedAlgorithms
+      )
+  }
+  return algorithmSelectionList
+}
+
 async function getJobs(
   providerUrls: string[],
   accountId: string,
@@ -265,8 +296,14 @@ async function getJobs(
         }
         return 0
       })
-      providersComputeJobsExtended.forEach(async (job: any) => {
-        const did = job.assets ? job.assets[0].documentId : null
+      type LocalComputeJob = ComputeJobExtended & {
+        assets?: Array<{ documentId: string }>
+      }
+      providersComputeJobsExtended.forEach(async (job: ComputeJobExtended) => {
+        const jobWithAssets = job as LocalComputeJob
+        const did = jobWithAssets.assets
+          ? jobWithAssets.assets[0].documentId
+          : null
         if (assets) {
           const assetFiltered = assets.filter((x) => x.id === did)
           const asset = assetFiltered.length > 0 ? assetFiltered[0] : null
@@ -280,7 +317,6 @@ async function getJobs(
             computeJobs.push(compJob)
           }
         } else {
-          // const asset: Asset = await getAsset(did, cancelToken)
           const compJob: ComputeJobMetaData = {
             ...job,
             assetName: 'name',
@@ -324,7 +360,12 @@ export async function getComputeJobs(
   assets?.forEach((asset: Asset) =>
     providerUrls.push(asset.credentialSubject.services[0].serviceEndpoint)
   )
-  computeResult.computeJobs = await getJobs(providerUrls, accountId, assets)
+  computeResult.computeJobs = await getJobs(
+    providerUrls,
+    accountId,
+    assets,
+    cancelToken
+  )
   computeResult.isLoaded = true
 
   return computeResult
@@ -407,12 +448,18 @@ export async function createTrustedAlgorithmList(
 }
 
 export async function transformComputeFormToServiceComputeOptions(
-  values: ComputeEditForm,
+  values: ComputeFormLike,
   currentOptions: Compute,
   assetChainId: number,
   cancelToken: CancelToken
 ): Promise<Compute> {
-  const publisherTrustedAlgorithms = values.allowAllPublishedAlgorithms
+  const allowAny =
+    values.allowAllPublishedAlgorithms === true ||
+    values.allowAllPublishedAlgorithms === 'Allow any published algorithms' ||
+    values.publisherTrustedAlgorithmPublishers ===
+      'Allow all trusted algorithm publishers'
+
+  const publisherTrustedAlgorithms = allowAny
     ? [
         {
           did: '*',
@@ -426,15 +473,16 @@ export async function transformComputeFormToServiceComputeOptions(
         assetChainId,
         cancelToken
       )
-  const publisherTrustedAlgorithmPublishers: string[] =
-    values.publisherTrustedAlgorithmPublishers ===
-      'Allow specific trusted algorithm publishers' &&
-    values.publisherTrustedAlgorithmPublishersAddresses
-      ? values.publisherTrustedAlgorithmPublishersAddresses
-          .split(',')
-          .map((addr) => addr.trim())
-          .filter((addr) => addr.length > 0)
-      : ['*']
+  const publisherTrustedAlgorithmPublishers: string[] = allowAny
+    ? ['*']
+    : values.publisherTrustedAlgorithmPublishers ===
+        'Allow specific trusted algorithm publishers' &&
+      values.publisherTrustedAlgorithmPublishersAddresses
+    ? values.publisherTrustedAlgorithmPublishersAddresses
+        .split(',')
+        .map((addr: string) => addr.trim())
+        .filter((addr: string) => addr.length > 0)
+    : []
 
   const privacy: Compute = {
     ...currentOptions,

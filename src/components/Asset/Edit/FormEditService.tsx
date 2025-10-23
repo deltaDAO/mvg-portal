@@ -1,21 +1,20 @@
-import { ReactElement, useEffect, useState, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import { Field, Form, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import FormActions from './FormActions'
 import { getFieldContent } from '@utils/form'
 import consumerParametersContent from '../../../../content/publish/consumerParameters.json'
+import content from '../../../../content/publish/form.json'
 import { ServiceEditForm } from './_types'
 import IconDownload from '@images/download.svg'
 import IconCompute from '@images/compute.svg'
 import FormEditComputeService from './FormEditComputeService'
 import { defaultServiceComputeOptions } from './_constants'
-import styles from './index.module.css'
 import { Service } from 'src/@types/ddo/Service'
-import { getDefaultPolicies } from '@components/Publish/_utils'
-import appConfig from 'app.config.cjs'
-import { PolicyEditor } from '@components/@shared/PolicyEditor'
-import { LoggerInstance } from '@oceanprotocol/lib'
 import { supportedLanguages } from '../languageType'
+import ContainerForm from '@components/@shared/atoms/ContainerForm'
+import SSIPoliciesSection from './SSIPoliciesSection'
+import AccessRulesSection from '@components/Publish/AccessPolicies/AccessRulesSection'
 
 export default function FormEditService({
   data,
@@ -32,7 +31,6 @@ export default function FormEditService({
 }): ReactElement {
   const formUniqueId = service.id // because BoxSelection component is not a Formik component
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
-  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
 
   const accessTypeOptionsTitles = getFieldContent('access', data).options
 
@@ -68,6 +66,21 @@ export default function FormEditService({
     }
   }, [setFieldValue, values.language])
 
+  // Initialize files field to show encrypted file exists
+  useEffect(() => {
+    if (service.files && service.files.length > 0) {
+      // Service files are encrypted, show placeholder
+      setFieldValue('files', [
+        {
+          url: '[Encrypted file - URL not available for editing]',
+          type: 'url',
+          valid: true,
+          isEncrypted: true
+        }
+      ])
+    }
+  }, [service.files, setFieldValue])
+
   const handleLanguageChange = (languageName: string) => {
     const selectedLanguage = supportedLanguages.find(
       (lang) => lang.name === languageName
@@ -88,145 +101,114 @@ export default function FormEditService({
     return language?.name || ''
   }
 
-  useEffect(() => {
-    if (appConfig.ssiEnabled) {
-      getDefaultPolicies()
-        .then((policies) => {
-          const newVcPolicies = [
-            ...new Set(policies.concat(values.credentials.vcPolicies))
-          ]
-          setFieldValue('credentials.vcPolicies', newVcPolicies)
-          setDefaultPolicies(policies)
-        })
-        .catch((error) => {
-          LoggerInstance.error(error)
-          setFieldValue('credentials.vcPolicies', [])
-          setDefaultPolicies([])
-        })
-    }
-  }, [])
-
   return (
-    <Form className={styles.form}>
-      <Field {...getFieldContent('name', data)} component={Input} name="name" />
-      <Field
-        {...getFieldContent('description', data)}
-        component={Input}
-        name="description"
-      />
-      <Field
-        {...getFieldContent('language', data)}
-        component={Input}
-        name="language"
-        type="select"
-        options={languageOptions}
-        value={getCurrentLanguageName()}
-        onChange={(e) => handleLanguageChange(e.target.value)}
-      />
-      <Field
-        {...getFieldContent('direction', data)}
-        component={Input}
-        name="direction"
-        readOnly
-      />
-
-      <Field
-        {...getFieldContent('access', data)}
-        component={Input}
-        name="access"
-        options={accessTypeOptions}
-        disabled={true}
-      />
-
-      {values.access === 'compute' && assetType === 'dataset' && (
-        <FormEditComputeService
-          chainId={chainId}
-          serviceEndpoint={service.serviceEndpoint} // if we allow editing serviceEndpoint, we need to update it here
-          serviceCompute={service.compute || defaultServiceComputeOptions}
-        />
-      )}
-
-      <Field
-        {...getFieldContent('price', data)}
-        component={Input}
-        name="price"
-        disabled={accessDetails.type === 'free'}
-      />
-
-      <Field
-        {...getFieldContent('paymentCollector', data)}
-        component={Input}
-        name="paymentCollector"
-      />
-
-      <Field
-        {...getFieldContent('providerUrl', data)}
-        component={Input}
-        name="providerUrl"
-        disabled={true} // TODO tied with files and compute - not editable now
-      />
-
-      <Field
-        {...getFieldContent('files', data)}
-        component={Input}
-        name="files"
-      />
-
-      <Field
-        {...getFieldContent('timeout', data)}
-        component={Input}
-        name="timeout"
-      />
-
-      <Field
-        {...getFieldContent('state', data)}
-        component={Input}
-        name="state"
-      />
-
-      <Field
-        {...getFieldContent('allow', data)}
-        component={Input}
-        name="credentials.allow"
-      />
-      <Field
-        {...getFieldContent('deny', data)}
-        component={Input}
-        name="credentials.deny"
-      />
-
-      {appConfig.ssiEnabled ? (
-        <PolicyEditor
-          label="SSI Policies"
-          credentials={values.credentials}
-          setCredentials={(newCredentials) =>
-            setFieldValue('credentials', newCredentials)
-          }
-          defaultPolicies={defaultPolicies}
-          name="credentials"
-          help="Self-sovereign identity (SSI) is used to verify the consumer of an asset. Indicate which SSI policy is required for this asset (static, parameterized, custom URL, other)."
-          enabledView={values.credentials.requestCredentials?.length > 0}
-        />
-      ) : (
-        <></>
-      )}
-
-      <Field
-        {...getFieldContent('usesConsumerParameters', data)}
-        component={Input}
-        name="usesConsumerParameters"
-      />
-      {values.usesConsumerParameters && (
+    <Form>
+      <ContainerForm style="publish">
         <Field
-          {...getFieldContent(
-            'consumerParameters',
-            consumerParametersContent.consumerParameters.fields
-          )}
+          {...getFieldContent('name', data)}
           component={Input}
-          name="consumerParameters"
+          name="name"
         />
-      )}
-      <FormActions />
+        <Field
+          {...getFieldContent('description', data)}
+          component={Input}
+          name="description"
+        />
+        <Field
+          {...getFieldContent('language', data)}
+          component={Input}
+          name="language"
+          type="select"
+          options={languageOptions}
+          value={getCurrentLanguageName()}
+          onChange={(e) => handleLanguageChange(e.target.value)}
+        />
+        <Field
+          {...getFieldContent('direction', data)}
+          component={Input}
+          name="direction"
+          readOnly
+        />
+
+        <Field
+          {...getFieldContent('access', data)}
+          component={Input}
+          name="access"
+          options={accessTypeOptions}
+          disabled={true}
+        />
+
+        {values.access === 'compute' && assetType === 'dataset' && (
+          <FormEditComputeService
+            chainId={chainId}
+            serviceEndpoint={service.serviceEndpoint} // if we allow editing serviceEndpoint, we need to update it here
+            serviceCompute={service.compute || defaultServiceComputeOptions}
+          />
+        )}
+
+        <Field
+          {...getFieldContent('price', data)}
+          component={Input}
+          name="price"
+          disabled={accessDetails.type === 'free'}
+        />
+
+        <Field
+          {...getFieldContent('paymentCollector', data)}
+          component={Input}
+          name="paymentCollector"
+        />
+
+        <Field
+          {...getFieldContent('providerUrl', data)}
+          component={Input}
+          name="providerUrl"
+          disabled={true}
+        />
+
+        <Field
+          {...getFieldContent('files', content.services.fields)}
+          component={Input}
+          name="files"
+        />
+
+        <Field
+          {...getFieldContent('timeout', data)}
+          component={Input}
+          name="timeout"
+        />
+
+        <Field
+          {...getFieldContent('state', data)}
+          component={Input}
+          name="state"
+        />
+
+        <AccessRulesSection fieldPrefix="credentials" />
+
+        <SSIPoliciesSection
+          defaultPolicies={[]}
+          isAsset={false}
+          hideDefaultPolicies={true}
+        />
+
+        <Field
+          {...getFieldContent('usesConsumerParameters', data)}
+          component={Input}
+          name="usesConsumerParameters"
+        />
+        {values.usesConsumerParameters && (
+          <Field
+            {...getFieldContent(
+              'consumerParameters',
+              consumerParametersContent.consumerParameters.fields
+            )}
+            component={Input}
+            name="consumerParameters"
+          />
+        )}
+        <FormActions />
+      </ContainerForm>
     </Form>
   )
 }

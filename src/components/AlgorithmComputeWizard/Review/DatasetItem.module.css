@@ -1,0 +1,52 @@
+.datasetItem {
+  margin-bottom: 1rem;
+}
+
+.datasetHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  gap: var(--sp-2);
+}
+
+.datasetName {
+  font-weight: 500;
+  color: var(--publish-text);
+}
+
+.credentialStatus {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.checkIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.validText {
+  font-size: 14px;
+  color: var(--ocean-blue);
+  font-weight: 500;
+}
+
+.verifiedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--clr-teal);
+}
+
+.servicesList {
+  margin-left: 1rem;
+}
+
+.serviceItem {
+  color: var(--publish-text-secondary);
+  font-size: 14px;
+  margin-bottom: 0.25rem;
+}

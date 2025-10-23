@@ -1,19 +1,20 @@
 import { ReactElement, useEffect, useState } from 'react'
-import styles from './AlgorithmDatasetsListForCompute.module.css'
+import { useFormikContext } from 'formik'
+import { useAccount } from 'wagmi'
 import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { useCancelToken } from '@hooks/useCancelToken'
-import { useAccount } from 'wagmi'
+import { truncateDid } from '@utils/string'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { useFormikContext } from 'formik'
-import Pagination from '@components/@shared/Pagination'
+import styles from './index.module.css'
+import Pagination from '@shared/Pagination'
+
+const ASSETS_PER_PAGE = 5
 
 type FormValues = {
   dataset: string[]
 }
-
-const ASSETS_PER_PAGE = 5
 
 export default function AlgorithmDatasetsListForComputeSelection({
   asset,
@@ -25,13 +26,12 @@ export default function AlgorithmDatasetsListForComputeSelection({
   accessDetails: AccessDetails
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const newCancelToken = useCancelToken()
   const { values, setFieldValue } = useFormikContext<FormValues>()
-
   const [datasetsForCompute, setDatasetsForCompute] = useState<
     AssetSelectionAsset[]
   >([])
   const [currentPage, setCurrentPage] = useState(1)
+  const newCancelToken = useCancelToken()
 
   useEffect(() => {
     if (!accessDetails.type) return
@@ -46,6 +46,7 @@ export default function AlgorithmDatasetsListForComputeSelection({
         newCancelToken()
       )
       setDatasetsForCompute(datasets)
+      console.log('Dataset list for algo...', JSON.stringify(datasets, null, 2))
 
       // Auto-select first if nothing is selected
       if (
@@ -71,9 +72,6 @@ export default function AlgorithmDatasetsListForComputeSelection({
   const handlePageChange = (page: number) => {
     setCurrentPage(page + 1)
   }
-
-  const truncateDid = (did: string) =>
-    did.length > 25 ? `${did.slice(0, 12)}...${did.slice(-8)}` : did
 
   return (
     <div className={styles.datasetsContainer}>

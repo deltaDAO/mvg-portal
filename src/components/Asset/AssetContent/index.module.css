@@ -244,6 +244,12 @@
 .serviceDisplay {
   margin-top: 3rem;
 }
+.descriptionWrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  flex-direction: row;
+}
 
 .description {
   font-family: var(--font-family);
@@ -251,11 +257,36 @@
   font-size: 14px;
   line-height: 129%;
   color: var(--publish-text-secondary);
+  word-break: break-word;
+}
+
+.description.collapsed {
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 1; /* 1 line only */
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.description.expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.toggle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #00adb2;
+  cursor: pointer;
+  border: 1px solid #00adb2;
+  border-radius: 10px;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.toggle:hover {
+  background: rgba(0, 150, 136, 0.1);
 }
 
 .description p {
@@ -288,4 +319,60 @@
   .invoiceDropdown.open .dropdownMenu {
     position: static;
   }
+}
+
+/* ComputeWizard Overlay Styles */
+.computeWizardOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.computeWizardContainer {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.computeWizardContainer > div:last-child {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.computeWizardHeader {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+  background: #f8f9fa;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+  background: #e9ecef;
+  color: #333;
 }

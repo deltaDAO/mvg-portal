@@ -38,13 +38,6 @@ export default function EditServices({
                 ? 'Add a new service'
                 : `Edit service ${asset.credentialSubject?.services[selectedService].name}`}
             </h3>
-            <Button
-              size="small"
-              style="text"
-              onClick={() => setSelectedService(undefined)}
-            >
-              Cancel
-            </Button>
           </div>
 
           {selectedService === -1 ? (

@@ -162,9 +162,13 @@ export default function FilesInput(props: InputProps): ReactElement {
             />
           )}
 
-          {(isValidated || field?.value?.[0]?.type === 'hidden') && (
-            <FileInfoDetails file={field.value[0]} handleClose={handleClose} />
-          )}
+          {(isValidated || field?.value?.[0]?.type === 'hidden') &&
+            field?.value?.[0] && (
+              <FileInfoDetails
+                file={field.value[0]}
+                handleClose={handleClose}
+              />
+            )}
 
           {props.innerFields && (
             <>
@@ -172,43 +176,39 @@ export default function FilesInput(props: InputProps): ReactElement {
                 {props.innerFields &&
                   props.innerFields.map((innerField: any, i: number) => {
                     return (
-                      <>
-                        <Field
-                          key={i}
-                          component={
-                            innerField.type === 'headers'
-                              ? InputKeyValue
-                              : Input
-                          }
-                          {...innerField}
-                          name={`${field.name}[0].${innerField.value}`}
-                          value={field.value?.[0]?.[innerField.value]}
-                          disabled={isValidated}
-                          render={({ field: formikField, form, meta }: any) =>
-                            innerField.type === 'headers' ? (
-                              <InputKeyValue
-                                {...innerField}
-                                field={formikField}
-                                form={form}
-                                meta={meta}
-                                name={`${field.name}[0].${innerField.value}`}
-                                value={field.value?.[0]?.[innerField.value]}
-                                disabled={isValidated}
-                              />
-                            ) : (
-                              <Input
-                                {...innerField}
-                                field={formikField}
-                                form={form}
-                                meta={meta}
-                                name={`${field.name}[0].${innerField.value}`}
-                                value={field.value?.[0]?.[innerField.value]}
-                                disabled={isValidated}
-                              />
-                            )
-                          }
-                        />
-                      </>
+                      <Field
+                        key={i}
+                        component={
+                          innerField.type === 'headers' ? InputKeyValue : Input
+                        }
+                        {...innerField}
+                        name={`${field.name}[0].${innerField.value}`}
+                        value={field.value?.[0]?.[innerField.value]}
+                        disabled={isValidated}
+                        render={({ field: formikField, form, meta }: any) =>
+                          innerField.type === 'headers' ? (
+                            <InputKeyValue
+                              {...innerField}
+                              field={formikField}
+                              form={form}
+                              meta={meta}
+                              name={`${field.name}[0].${innerField.value}`}
+                              value={field.value?.[0]?.[innerField.value]}
+                              disabled={isValidated}
+                            />
+                          ) : (
+                            <Input
+                              {...innerField}
+                              field={formikField}
+                              form={form}
+                              meta={meta}
+                              name={`${field.name}[0].${innerField.value}`}
+                              value={field.value?.[0]?.[innerField.value]}
+                              disabled={isValidated}
+                            />
+                          )
+                        }
+                      />
                     )
                   })}
               </div>
@@ -219,7 +219,7 @@ export default function FilesInput(props: InputProps): ReactElement {
                   className={styles.submitButton}
                   disabled={true}
                 >
-                  <Loader white />
+                  <Loader variant="white" />
                 </Button>
               ) : (
                 <div

@@ -73,7 +73,19 @@
 }
 
 .radio {
-  composes: radio from '../../FormInput/InputElement/Radio/index.module.css';
+  position: relative;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  min-height: 0;
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: -2px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #fdd655;
+  background: white;
+  border-radius: 50%;
 }
 
 .publishTabListWrapper {
@@ -121,6 +133,16 @@
 
 .publishTabContent {
   padding: 0;
+}
+
+.editTabPanel {
+  max-width: none !important;
+  width: 100%;
+}
+
+.editTabPanel > div {
+  max-width: none !important;
+  width: 100%;
 }
 
 @media (min-width: 40rem) {

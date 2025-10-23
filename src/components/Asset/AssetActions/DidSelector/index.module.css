@@ -8,55 +8,8 @@
   flex-direction: row;
 }
 
-.widthAuto {
-  width: auto;
-}
-
-.widthFitContent {
-  width: fit-content;
-}
-
-.marginRight2 {
-  margin-right: 2em;
-}
-
-.ssiPanel {
-  padding: 1em;
-  color: white;
-}
-
-.connected {
-  background-color: green;
-}
-
-.connected:hover {
-  background-color: darkgreen;
-  cursor: pointer;
-}
-
-.disconnected {
-  background-color: red;
-}
-
-.disconnected:hover {
-  background-color: darkred;
-  cursor: pointer;
-}
-
-.marginBottom7px {
-  margin-bottom: 7.5px;
-}
-
 .marginBottom2 {
   margin-bottom: 2em;
-}
-
-.marginBottom3 {
-  margin-bottom: 3em;
-}
-
-.padding1 {
-  padding: 1em;
 }
 
 .width100p {
@@ -64,31 +17,92 @@
 }
 
 .dialogBorder {
-  border: 1px solid var(--border-color);
-  border-bottom-left-radius: var(--border-radius);
-  border-bottom-right-radius: var(--border-radius);
-  border-top: 0;
-  padding: 2em;
+  border: 1px solid rgba(48, 48, 49, 0.3);
+  border-radius: 10px;
+  padding: var(--publish-spacing-lg);
+  background: var(--publish-white);
 }
 
-.closeButton {
-  padding: calc(var(--spacer) / 3) var(--spacer);
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  border-radius: var(--button-border-radius);
+.dialogBorder h3 {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size-lg);
+  color: var(--publish-text);
+  margin-bottom: var(--sp-8);
+}
+
+.dialogBorder label {
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  color: var(--publish-text);
+  margin: 0 0 var(--publish-spacing-md) 0;
 }
 
 .inputField {
-  font-size: var(--font-size-base);
-  font-family: var(--font-family-base);
-  font-weight: var(--font-weight-bold);
-  color: var(--input-font-color);
-  border: var(--input-border-size) solid var(--input-border-color);
-  box-shadow: none;
+  box-sizing: border-box;
   width: 100%;
-  background: var(--background-content);
-  padding: calc(var(--spacer) / 3);
-  border-radius: var(--input-border-radius);
-  height: 43px;
+  border: var(--publish-input-border-size) solid var(--publish-border);
+  border-radius: var(--publish-input-border-radius);
+  padding: var(--publish-input-padding-compact);
+  padding-bottom: 8px;
+  box-shadow: var(--publish-shadow);
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  color: var(--publish-text);
+  background: var(--publish-white);
+  appearance: none;
+  background-image: linear-gradient(
+      45deg,
+      transparent 50%,
+      var(--publish-primary) 50%
+    ),
+    linear-gradient(135deg, var(--publish-primary) 50%, transparent 50%);
+  background-position: calc(100% - 15px) calc(50% + 2px),
+    calc(100% - 10px) calc(50% + 2px);
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: var(--publish-primary);
+  box-shadow: var(--publish-shadow), 0 0 0 3px rgba(10, 75, 112, 0.1);
+}
+
+.acceptButton {
+  border-radius: var(--publish-border-radius);
+  padding: 4px 20px;
+  width: 94px;
+  height: var(--publish-input-height);
+  box-shadow: var(--publish-shadow-sm);
+  background: var(--publish-accent-gradient);
+  border: none;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  color: var(--publish-primary);
+  cursor: pointer;
+}
+
+.abortButton {
+  border-radius: var(--publish-border-radius);
+  padding: 4px 20px;
+  width: 79px;
+  height: var(--publish-input-height);
+  box-shadow: var(--publish-shadow-sm);
+  background: var(--clr-slate-12);
+  border: none;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  font-size: var(--publish-font-size);
+  color: var(--publish-text);
+  cursor: pointer;
+}
+
+.panelRow:last-child {
+  justify-content: center;
+  gap: var(--sp-4);
+  margin-top: var(--publish-spacing-lg);
 }

@@ -1,6 +1,8 @@
 import { FileInfo } from '@oceanprotocol/lib'
 import * as Yup from 'yup'
 import { isAddress } from 'ethers/lib/utils'
+import { MAX_DECIMALS } from '@utils/constants'
+import { getMaxDecimalsValidation } from '@utils/numbers'
 import { testLinks } from '@utils/yup'
 import { validationConsumerParameters } from '@shared/FormInput/InputElement/ConsumerParameters/_validation'
 
@@ -21,7 +23,10 @@ const validationRequestCredentials = {
         })
         .when('type', {
           is: 'customPolicy',
-          then: (shema) => shema.required('Required')
+          then: (shema) =>
+            shema
+              .required('Required')
+              .matches(/^[A-Za-z]+$/, 'Only letters A–Z are allowed')
         }),
       args: Yup.array().when('type', {
         is: 'parameterizedPolicy',
@@ -91,17 +96,39 @@ const validationRequestCredentials = {
 
 const validationVpPolicy = {
   type: Yup.string().required('Required'),
-  name: Yup.string().when('type', {
+  name: Yup.mixed().when('type', {
     is: 'staticVpPolicy',
-    then: (shema) => shema.required('Required')
+    then: (shema) =>
+      shema.test('static-name', 'Required', (value) => {
+        if (typeof value === 'string') return value.trim().length > 0
+        if (
+          value &&
+          typeof value === 'object' &&
+          typeof (value as any).policy === 'string'
+        ) {
+          return (value as any).policy.trim().length > 0
+        }
+        return false
+      })
   }),
   policy: Yup.string().when('type', {
     is: 'argumentVpPolicy',
     then: (shema) => shema.required('Required')
   }),
-  args: Yup.number().when('type', {
+  args: Yup.string().when('type', {
     is: 'argumentVpPolicy',
     then: (shema) => shema.required('Required')
+  }),
+  url: Yup.string().when('type', {
+    is: 'externalEvpForwardVpPolicy',
+    then: (shema) =>
+      shema.test('isValidUrlOpt', 'Invalid URL format', (value) => {
+        // Optional here to avoid transient invalid state; main enforcement occurs on credentials.externalEvpForwardUrl
+        if (!value) return true
+        const trimmedValue = value.trim()
+        const pattern = /^https?:\/\/\S+$/i
+        return pattern.test(trimmedValue)
+      })
   })
 }
 
@@ -112,7 +139,25 @@ const validationCredentials = {
   vcPolicies: Yup.array().of(Yup.string().required('Required')),
   vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
-  deny: Yup.array().of(Yup.string()).nullable()
+  deny: Yup.array().of(Yup.string()).nullable(),
+  allowInputValue: Yup.string().nullable(),
+  externalEvpForwardUrl: Yup.string().test(
+    'external-evp-url',
+    'Invalid URL format',
+    function (value) {
+      const vpPolicies = (this.parent as any)?.vpPolicies || []
+      const hasExternal = vpPolicies.some(
+        (p: any) => p?.type === 'externalEvpForwardVpPolicy'
+      )
+      if (!hasExternal) return true
+
+      if (!value) return false
+      const trimmedValue = value.trim()
+      // Accept any http(s) URL format without strict parsing to avoid false negatives
+      const pattern = /^https?:\/\/\S+$/i
+      return pattern.test(trimmedValue)
+    }
+  )
 }
 
 export const metadataValidationSchema = Yup.object().shape({
@@ -124,9 +169,8 @@ export const metadataValidationSchema = Yup.object().shape({
     Yup.object().shape({
       url: testLinks(true),
       valid: Yup.boolean().test((value, context) => {
-        // allow user to submit if the value is null
         const { valid, url } = context.parent
-        // allow user to continue if the url is empty
+
         if (!url) return true
         return valid
       })
@@ -143,6 +187,7 @@ export const metadataValidationSchema = Yup.object().shape({
       .nullable()
       .transform((value) => value || null)
   }),
+  credentials: Yup.object().shape(validationCredentials),
   allow: Yup.array().of(Yup.string()).nullable(),
   deny: Yup.array().of(Yup.string()).nullable(),
   retireAsset: Yup.string(),
@@ -184,8 +229,7 @@ export const metadataValidationSchema = Yup.object().shape({
         type: Yup.string().required('Required')
       })
     )
-    .nullable(),
-  credentials: Yup.object().shape(validationCredentials)
+    .nullable()
 })
 
 export const serviceValidationSchema = Yup.object().shape({
@@ -193,17 +237,23 @@ export const serviceValidationSchema = Yup.object().shape({
     .min(4, (param) => `Name must be at least ${param.min} characters`)
     .required('Required'),
   description: Yup.string().required('Required').min(10),
-  price: Yup.number().required('Required'),
+  price: Yup.number()
+    .required('Required')
+    .min(1, 'Price must be at least 1 OCEAN')
+    .max(
+      1000000,
+      (param: { max: number }) => `Must be less than or equal to ${param.max}`
+    )
+    .test(
+      'maxDigitsAfterDecimal',
+      `Must have maximum ${MAX_DECIMALS} decimal digits`,
+      (param) => getMaxDecimalsValidation(MAX_DECIMALS).test(param?.toString())
+    ),
   files: Yup.array<FileInfo[]>()
     .of(
       Yup.object().shape({
-        url: testLinks(true),
-        valid: Yup.boolean().test((value, context) => {
-          const { type } = context.parent
-          // allow user to submit if the value type is hidden
-          if (type === 'hidden') return true
-          return value || false
-        })
+        url: Yup.string().nullable(),
+        valid: Yup.boolean().nullable()
       })
     )
     .nullable(),
@@ -225,10 +275,8 @@ export const serviceValidationSchema = Yup.object().shape({
       return isAddress(value)
     }
   ),
-  allowAllPublishedAlgorithms: Yup.boolean().nullable(),
+  allowAllPublishedAlgorithms: Yup.string().nullable(),
   publisherTrustedAlgorithms: Yup.array().nullable(),
-  publisherTrustedAlgorithmPublishers: Yup.array().nullable(),
-  allow: Yup.array().of(Yup.string()).nullable(),
-  deny: Yup.array().of(Yup.string()).nullable(),
+  publisherTrustedAlgorithmPublishers: Yup.string().nullable(),
   credentials: Yup.object().shape(validationCredentials)
 })

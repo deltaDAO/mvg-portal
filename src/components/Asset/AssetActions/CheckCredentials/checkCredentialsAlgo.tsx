@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Button from '@components/@shared/atoms/Button'
+import Loader from '@components/@shared/atoms/Loader'
 import { useSsiWallet } from '@context/SsiWallet'
 import { toast } from 'react-toastify'
 import {
@@ -40,12 +41,14 @@ export function AssetActionCheckCredentialsAlgo({
   asset,
   service,
   type,
-  onVerified
+  onVerified,
+  onError
 }: {
   asset: Asset
   service: Service
   type?: string
   onVerified?: () => void
+  onError?: () => void
 }) {
   const { address: accountId } = useAccount()
   const {
@@ -58,8 +61,16 @@ export function AssetActionCheckCredentialsAlgo({
     showVpDialog,
     setShowVpDialog,
     showDidDialog,
-    setShowDidDialog
+    setShowDidDialog,
+    credentialError,
+    setCredentialError,
+    isCheckingCredentials,
+    setIsCheckingCredentials,
+    autoStart
   } = useCredentialDialog()
+
+  const [error, setError] = useState<string | null>(null)
+  const [isRetrying, setIsRetrying] = useState<boolean>(false)
 
   const {
     cacheVerifierSessionId,
@@ -70,13 +81,28 @@ export function AssetActionCheckCredentialsAlgo({
     sessionToken
   } = useSsiWallet()
 
+  // Auto-start credential exchange if autoStart is true
+  useEffect(() => {
+    if (autoStart && selectedWallet?.id) {
+      setCheckCredentialState(CheckCredentialState.StartCredentialExchange)
+    }
+  }, [autoStart, selectedWallet?.id])
+
   function handleResetWalletCache() {
     setCheckCredentialState(CheckCredentialState.Stop)
+    setIsCheckingCredentials(false)
   }
 
   useEffect(() => {
     async function handleCredentialExchange() {
       try {
+        // Clear any previous errors when starting new credential check
+        if (
+          checkCredentialState === CheckCredentialState.StartCredentialExchange
+        ) {
+          setCredentialError(null)
+          setIsCheckingCredentials(true)
+        }
         switch (checkCredentialState) {
           case CheckCredentialState.StartCredentialExchange: {
             parseCredentialPolicies(asset.credentialSubject?.credentials)
@@ -89,6 +115,7 @@ export function AssetActionCheckCredentialsAlgo({
               accountId,
               service.id
             )
+
             if (
               presentationResult.openid4vc &&
               typeof presentationResult.openid4vc === 'object' &&
@@ -101,6 +128,16 @@ export function AssetActionCheckCredentialsAlgo({
                 (presentationResult.openid4vc as any).redirectUri
               )
               cacheVerifierSessionId(asset.id, service.id, id, true)
+              if (typeof window !== 'undefined' && window.localStorage) {
+                const credentialKey = `credential_${asset.id}_${service.id}`
+                const timestamp = Date.now().toString()
+                window.localStorage.setItem(credentialKey, timestamp)
+                window.dispatchEvent(
+                  new CustomEvent('credentialUpdated', {
+                    detail: { credentialKey }
+                  })
+                )
+              }
               onVerified?.()
               break
             }
@@ -114,7 +151,6 @@ export function AssetActionCheckCredentialsAlgo({
             )
             const { state } = searchParams
             exchangeStateData.sessionId = state
-
             const presentationDefinition = await getPd(state)
             const resultRequiredCredentials =
               presentationDefinition.input_descriptors.map(
@@ -157,9 +193,14 @@ export function AssetActionCheckCredentialsAlgo({
                 setCheckCredentialState(CheckCredentialState.ReadDids)
               }
             } else {
+              // Cached credentials satisfy PD; normalize to IDs and allow user to review policy
               exchangeStateData.verifiableCredentials = resultCachedCredentials
-              exchangeStateData.selectedCredentials = resultCachedCredentials
-              setCheckCredentialState(CheckCredentialState.ReadDids)
+              exchangeStateData.selectedCredentials =
+                resultCachedCredentials.map(
+                  (credential) =>
+                    credential?.parsedDocument?.id || credential?.id
+                )
+              setShowVpDialog(true)
             }
 
             setExchangeStateData({ ...exchangeStateData })
@@ -182,8 +223,23 @@ export function AssetActionCheckCredentialsAlgo({
               break
             }
 
-            ssiWalletCache.cacheCredentials(asset.id, selectedCredentials)
-            setCachedCredentials(selectedCredentials)
+            // Cache full credential objects
+            ssiWalletCache.cacheCredentials(
+              asset.id,
+              selectedCredentials as any
+            )
+            setCachedCredentials(selectedCredentials as any)
+
+            // Normalize for use request → IDs only
+            exchangeStateData.selectedCredentials = (
+              selectedCredentials as any[]
+            )
+              .map((cred) =>
+                typeof cred === 'string'
+                  ? cred
+                  : cred?.parsedDocument?.id || cred?.id
+              )
+              .filter(Boolean)
 
             exchangeStateData.dids = await getWalletDids(
               selectedWallet.id,
@@ -218,9 +274,21 @@ export function AssetActionCheckCredentialsAlgo({
                 'errorMessage' in result ||
                 result.redirectUri.includes('error')
               ) {
+                console.error(
+                  'Algorithm credential verification failed:',
+                  result
+                )
                 toast.error('Validation was not successful as use presentation')
                 handleResetWalletCache()
               } else {
+                console.log(
+                  'Algorithm credential verification successful, caching session:',
+                  {
+                    assetId: asset.id,
+                    serviceId: service.id,
+                    sessionId: exchangeStateData.sessionId
+                  }
+                )
                 cacheVerifierSessionId(
                   asset.id,
                   service.id,
@@ -229,31 +297,37 @@ export function AssetActionCheckCredentialsAlgo({
                 onVerified?.() // ✅ Verification successful → move to next
               }
             } catch (error) {
+              console.error('Algorithm credential verification error:', error)
+              setError('Validation was not successful')
               handleResetWalletCache()
-              toast.error('Validation was not successful')
             }
+            console.log('Resetting algorithm component state to Stop')
             setExchangeStateData({
               ...exchangeStateData,
               ...newExchangeStateData()
             })
             setCheckCredentialState(CheckCredentialState.Stop)
+            setIsCheckingCredentials(false)
             break
           }
 
           case CheckCredentialState.AbortSelection: {
             setExchangeStateData(newExchangeStateData())
             setCheckCredentialState(CheckCredentialState.Stop)
+            setIsCheckingCredentials(false)
             break
           }
         }
       } catch (error: any) {
-        console.log(error)
-        toast.error(
-          error?.message
-            ? `SSI credential validation was not successful: ${error.message}`
-            : 'An error occurred during SSI credential validation. Please check the console'
-        )
+        const errorMessage = error?.message
+          ? `SSI credential validation was not successful: ${error.message}`
+          : 'An error occurred during SSI credential validation. Please check the console'
+
+        setError(errorMessage)
+        setCredentialError(errorMessage)
+        setIsCheckingCredentials(false)
         handleResetWalletCache()
+        onError?.()
       }
     }
 
@@ -270,6 +344,38 @@ export function AssetActionCheckCredentialsAlgo({
     exchangeStateData.selectedDid = selectedDid.did
     setExchangeStateData({ ...exchangeStateData })
     setCheckCredentialState(CheckCredentialState.ResolveCredentials)
+  }
+
+  function getLoaderMessage() {
+    const assetName = asset.credentialSubject?.metadata?.name || 'asset'
+    const serviceName = service.name || 'service'
+    const assetType = type === 'dataset' ? 'Dataset' : 'Algorithm'
+
+    if (error) {
+      return error
+    }
+
+    if (isRetrying) {
+      return `Retrying ${assetType.toLowerCase()} credential check for ${assetName}...`
+    }
+
+    switch (checkCredentialState) {
+      case CheckCredentialState.StartCredentialExchange:
+        return `Connecting to policy server for ${assetType} ${assetName}...`
+      case CheckCredentialState.ReadDids:
+        return `Selecting credentials for ${serviceName}...`
+      case CheckCredentialState.ResolveCredentials:
+        return `Verifying access to ${assetType} ${assetName}...`
+      default:
+        return `Checking ${assetType.toLowerCase()} credentials for ${assetName}...`
+    }
+  }
+
+  function handleRetry() {
+    setError(null)
+    setIsRetrying(true)
+    setCheckCredentialState(CheckCredentialState.StartCredentialExchange)
+    setTimeout(() => setIsRetrying(false), 1000)
   }
 
   return (
@@ -297,32 +403,52 @@ export function AssetActionCheckCredentialsAlgo({
           dids={exchangeStateData.dids}
         />
       )}
-      <div className={styles.buttonWrapperAlgo}>
-        <Button
-          type="button"
-          style="primary"
-          onClick={() =>
-            setCheckCredentialState(
-              CheckCredentialState.StartCredentialExchange
-            )
-          }
-          disabled={!selectedWallet?.id}
+      {!showVpDialog && !showDidDialog && (
+        <div className={styles.buttonWrapperAlgo}>
+          {autoStart ? (
+            <div className={styles.loaderContainer}>
+              <Loader message={getLoaderMessage()} variant="primary" />
+              {error && (
+                <Button
+                  type="button"
+                  onClick={handleRetry}
+                  style="publish"
+                  className={styles.retryButton}
+                >
+                  Retry
+                </Button>
+              )}
+            </div>
+          ) : (
+            <Button
+              type="button"
+              style="publish"
+              onClick={() => {
+                setCheckCredentialState(
+                  CheckCredentialState.StartCredentialExchange
+                )
+              }}
+              disabled={!selectedWallet?.id}
+            >
+              {type === 'dataset'
+                ? `Check Dataset Credentials for ${service.name}`
+                : 'Check Algorithm Credentials'}
+            </Button>
+          )}
+        </div>
+      )}
+      {requiredCredentials && requiredCredentials.length > 0 && (
+        <div
+          className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
         >
-          {type === 'dataset'
-            ? `Check Dataset Credentials for ${service.name}`
-            : 'Check Algorithm Credentials'}
-        </Button>
-      </div>
-      <div
-        className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginTop1}`}
-      >
-        {requiredCredentials?.map((cred) => (
-          <React.Fragment key={cred}>
-            <div className={`${styles.marginTop6px} ${styles.fillGreen}`} />
-            {cred}
-          </React.Fragment>
-        ))}
-      </div>
+          {requiredCredentials.map((cred) => (
+            <React.Fragment key={cred}>
+              <div className={`${styles.marginTop6px} ${styles.fillGreen}`} />
+              {cred}
+            </React.Fragment>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

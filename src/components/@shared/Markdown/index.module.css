@@ -30,6 +30,10 @@
   font-size: var(--font-size-base);
 }
 
+.markdown p {
+  margin: 0;
+}
+
 .markdown ul,
 .markdown ol {
   margin: 0;

@@ -32,7 +32,12 @@ function generateCredentials(
   credentials: Credential,
   type?: string
 ): CredentialForm {
-  const credentialForm: CredentialForm = {}
+  const credentialForm: CredentialForm = {
+    vpPolicies: [],
+    allowInputValue: '',
+    denyInputValue: '',
+    externalEvpForwardUrl: ''
+  }
   if (appConfig.ssiEnabled) {
     const requestCredentials: RequestCredentialForm[] = []
     let vcPolicies: string[] = []
@@ -62,24 +67,63 @@ function generateCredentials(
             requestCredentials.push(newRequestCredential)
           })
 
-          const newVpPolicies: VpPolicyType[] = value.vp_policies.map(
-            (policy) => {
-              if (isVpValue(policy)) {
-                const result: ArgumentVpPolicy = {
-                  type: 'argumentVpPolicy',
-                  policy: policy.policy,
-                  args: policy.args.toString()
+          const newVpPolicies: VpPolicyType[] = Array.isArray(value.vp_policies)
+            ? value.vp_policies.map((policy) => {
+                if (
+                  typeof policy === 'object' &&
+                  policy !== null &&
+                  'policy' in policy &&
+                  !('args' in policy)
+                ) {
+                  const result: StaticVpPolicy = {
+                    type: 'staticVpPolicy',
+                    name: (policy as any).policy
+                  }
+                  return result
                 }
-                return result
-              } else {
-                const result: StaticVpPolicy = {
-                  type: 'staticVpPolicy',
-                  name: policy
+
+                if (isVpValue(policy)) {
+                  if (
+                    policy.policy === 'external-evp-forward' &&
+                    typeof policy.args === 'string'
+                  ) {
+                    credentialForm.externalEvpForwardUrl = policy.args
+                    return {
+                      type: 'externalEvpForwardVpPolicy',
+                      url: policy.args
+                    }
+                  }
+
+                  if (
+                    (policy.policy === 'holder-binding' ||
+                      policy.policy === 'presentation-definition') &&
+                    (policy.args === undefined ||
+                      policy.args === null ||
+                      (typeof policy.args === 'string' &&
+                        policy.args.length === 0))
+                  ) {
+                    const result: StaticVpPolicy = {
+                      type: 'staticVpPolicy',
+                      name: policy.policy
+                    }
+                    return result
+                  }
+
+                  const result: ArgumentVpPolicy = {
+                    type: 'argumentVpPolicy',
+                    policy: policy.policy,
+                    args: String(policy.args)
+                  }
+                  return result
+                } else {
+                  const result: StaticVpPolicy = {
+                    type: 'staticVpPolicy',
+                    name: policy as string
+                  }
+                  return result
                 }
-                return result
-              }
-            }
-          )
+              })
+            : []
 
           vcPolicies = [
             ...vcPolicies,
@@ -170,30 +214,48 @@ function getComputeSettingsInitialValues({
   publisherTrustedAlgorithms,
   publisherTrustedAlgorithmPublishers
 }: Compute): ComputeEditForm {
-  const allowAllPublishedAlgorithms = publisherTrustedAlgorithms === null
-  const publisherTrustedAlgorithmsForForm =
-    allowAllPublishedAlgorithms === true
-      ? null
-      : publisherTrustedAlgorithms.map((algo) =>
-          JSON.stringify({
-            algoDid: algo.did,
-            serviceId: algo.serviceId
-          })
-        )
+  // Determine if "allow all" is set either via wildcard publishers or a wildcard algorithm entry
+  const hasWildcardPublishers =
+    Array.isArray(publisherTrustedAlgorithmPublishers) &&
+    publisherTrustedAlgorithmPublishers.includes('*')
 
-  const publisherTrustedAlgorithmPublishersValue =
-    publisherTrustedAlgorithmPublishers &&
-    publisherTrustedAlgorithmPublishers.length > 0
-      ? 'Allow specific trusted algorithm publishers'
-      : 'Allow all trusted algorithm publishers'
+  let hasWildcardAlgorithms = false
+  if (
+    Array.isArray(publisherTrustedAlgorithms) &&
+    publisherTrustedAlgorithms.length === 1
+  ) {
+    const a = publisherTrustedAlgorithms[0] as any
+    hasWildcardAlgorithms =
+      a?.did === '*' &&
+      a?.containerSectionChecksum === '*' &&
+      a?.filesChecksum === '*' &&
+      a?.serviceId === '*'
+  }
+
+  const allowAllPublishedAlgorithms =
+    hasWildcardPublishers || hasWildcardAlgorithms
+
+  const publisherTrustedAlgorithmsForForm = allowAllPublishedAlgorithms
+    ? []
+    : publisherTrustedAlgorithms.map((algo) =>
+        JSON.stringify({
+          algoDid: algo.did,
+          serviceId: algo.serviceId
+        })
+      )
+
+  const publisherTrustedAlgorithmPublishersValue = hasWildcardPublishers
+    ? 'Allow all trusted algorithm publishers'
+    : 'Allow specific trusted algorithm publishers'
 
   return {
     allowAllPublishedAlgorithms,
-    publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm || [],
+    publisherTrustedAlgorithms: publisherTrustedAlgorithmsForForm,
     publisherTrustedAlgorithmPublishers:
       publisherTrustedAlgorithmPublishersValue,
-    publisherTrustedAlgorithmPublishersAddresses:
-      publisherTrustedAlgorithmPublishers?.join(',') || ''
+    publisherTrustedAlgorithmPublishersAddresses: hasWildcardPublishers
+      ? ''
+      : publisherTrustedAlgorithmPublishers?.join(',') || ''
   }
 }
 
@@ -225,6 +287,8 @@ export const getNewServiceInitialValues = (
     credentials: {
       allow: [],
       deny: [],
+      allowInputValue: '',
+      denyInputValue: '',
       requestCredentials: [],
       vcPolicies: [],
       vpPolicies: []
@@ -247,7 +311,9 @@ export const getServiceInitialValues = (
     direction: service.description?.['@direction'],
     language: service.description?.['@language'],
     access: service.type as 'access' | 'compute',
-    price: parseFloat(accessDetails.price),
+    price: isNaN(parseFloat(accessDetails.price))
+      ? 0.000001
+      : parseFloat(accessDetails.price),
     paymentCollector: accessDetails.paymentCollector,
     providerUrl: {
       url: service.serviceEndpoint,

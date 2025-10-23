@@ -26,6 +26,7 @@ import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
 import { ethers } from 'ethers'
+import { isAddress } from 'ethers/lib/utils.js'
 import { convertLinks } from '@utils/links'
 import { License } from 'src/@types/ddo/License'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
@@ -49,6 +50,39 @@ export default function Edit({
 
   async function handleSubmit(values: MetadataEditForm, resetForm: () => void) {
     try {
+      const processAddress = (
+        inputValue: string,
+        fieldName: 'allow' | 'deny'
+      ) => {
+        const trimmedValue = inputValue?.trim()
+        if (
+          !trimmedValue ||
+          trimmedValue.length < 40 ||
+          !trimmedValue.startsWith('0x')
+        ) {
+          return
+        }
+
+        try {
+          if (isAddress(trimmedValue)) {
+            const lowerCaseAddress = trimmedValue.toLowerCase()
+            const currentList = values.credentials[fieldName] || []
+
+            if (!currentList.includes(lowerCaseAddress)) {
+              const newList = [...currentList, lowerCaseAddress]
+              values.credentials[fieldName] = newList
+            }
+          }
+        } catch (error) {}
+      }
+
+      if (values.credentials.allowInputValue) {
+        processAddress(values.credentials.allowInputValue, 'allow')
+      }
+      if (values.credentials.denyInputValue) {
+        processAddress(values.credentials.denyInputValue, 'deny')
+      }
+
       const linksTransformed = values.links?.length &&
         values.links[0].valid && [sanitizeUrl(values.links[0].url)]
 
@@ -117,6 +151,12 @@ export default function Edit({
         additionalDdos:
           (values?.additionalDdos as AdditionalVerifiableCredentials[]) || []
       }
+
+      updatedAsset.credentialSubject.services =
+        updatedAsset.credentialSubject.services.map((svc) => ({
+          ...svc,
+          credentials: generateCredentials(values?.credentials, true)
+        }))
 
       stringifyCredentialPolicies(updatedAsset.credentialSubject.credentials)
       updatedAsset.credentialSubject.services.forEach((service) => {

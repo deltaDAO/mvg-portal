@@ -13,7 +13,9 @@ describe('@shared/AssetTeaser', () => {
     expect(screen.getByText('This is a test.')).toBeInTheDocument()
   })
   it('renders asset teaser with no description', () => {
-    asset.credentialSubject?.metadata?.description = null
+    if (asset.credentialSubject?.metadata) {
+      asset.credentialSubject.metadata.description = null
+    }
     render(<AssetTeaser asset={asset} />)
     expect(
       screen.queryByText('This is a test description')

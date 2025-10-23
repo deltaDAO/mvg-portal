@@ -1,4 +1,10 @@
-import { ReactElement, useCallback, useEffect, useState, useRef } from 'react'
+import {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+  ChangeEvent
+} from 'react'
 import { Field, useFormikContext } from 'formik'
 import Input from '@shared/FormInput'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
@@ -19,19 +25,25 @@ import SectionContainer from '@shared/SectionContainer/SectionContainer'
 import DeleteButton from '@shared/DeleteButton/DeleteButton'
 import Button from '@shared/atoms/Button'
 import AddAddress from '@images/add_param.svg'
+import { isAddress } from 'ethers/lib/utils'
 import styles from './index.module.css'
 
 const ALLOW_ANY_PUBLISHED_ALGORITHMS = 'Allow any published algorithms'
 const ALLOW_SELECTED_ALGORITHMS = 'Allow selected algorithms'
-const ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS =
-  'Allow all trusted algorithm publishers'
 const ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS =
   'Allow specific trusted algorithm publishers'
+const ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS =
+  'Allow all trusted algorithm publishers'
 
 const isAllowAnyPublishedAlgorithms = (value: string) =>
   value === ALLOW_ANY_PUBLISHED_ALGORITHMS
-const isAllowAllTrustedAlgorithmPublishers = (value: string) =>
-  value === ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS
+
+const coerceAllowAllToString = (value: string | boolean): string =>
+  typeof value === 'string'
+    ? value
+    : value
+    ? ALLOW_ANY_PUBLISHED_ALGORITHMS
+    : ALLOW_SELECTED_ALGORITHMS
 
 export default function FormEditComputeService({
   chainId,
@@ -44,11 +56,12 @@ export default function FormEditComputeService({
 }): ReactElement {
   const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
-  const { values, setFieldValue } = useFormikContext<Record<string, any>>()
+  const { values, setFieldValue, setFieldTouched } =
+    useFormikContext<Record<string, any>>()
   const [allAlgorithms, setAllAlgorithms] = useState<AssetSelectionAsset[]>()
   const [addressInputValue, setAddressInputValue] = useState('')
   const [addressList, setAddressList] = useState<string[]>([])
-  const isUpdatingRef = useRef(false)
+  const [addressError, setAddressError] = useState('')
 
   const isPublishFormContext = values.services && Array.isArray(values.services)
 
@@ -62,6 +75,10 @@ export default function FormEditComputeService({
     ? (values as any).publisherTrustedAlgorithmPublishersAddresses
     : (values as ServiceEditForm).publisherTrustedAlgorithmPublishersAddresses
 
+  const allowAllPublishedAlgorithmsStr = coerceAllowAllToString(
+    allowAllPublishedAlgorithms
+  )
+
   useEffect(() => {
     if (allowAllPublishedAlgorithms === undefined) {
       setFieldValue('allowAllPublishedAlgorithms', ALLOW_SELECTED_ALGORITHMS)
@@ -74,9 +91,55 @@ export default function FormEditComputeService({
     }
   }, [
     allowAllPublishedAlgorithms,
-    publisherTrustedAlgorithmPublishers,
-    setFieldValue
+    setFieldValue,
+    publisherTrustedAlgorithmPublishers
   ])
+
+  useEffect(() => {
+    if (typeof allowAllPublishedAlgorithms !== 'string') {
+      setFieldValue(
+        'allowAllPublishedAlgorithms',
+        coerceAllowAllToString(allowAllPublishedAlgorithms)
+      )
+    }
+  }, [allowAllPublishedAlgorithms, setFieldValue])
+
+  const handleAllowAlgorithmsChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target
+    setFieldValue('allowAllPublishedAlgorithms', value)
+    if (isAllowAnyPublishedAlgorithms(value)) {
+      setFieldValue(
+        'publisherTrustedAlgorithmPublishers',
+        ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS
+      )
+      if (publisherTrustedAlgorithmPublishersAddresses) {
+        setFieldValue('publisherTrustedAlgorithmPublishersAddresses', '')
+        setAddressList([])
+      }
+    } else {
+      setFieldValue(
+        'publisherTrustedAlgorithmPublishers',
+        ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
+      )
+    }
+  }
+
+  const handlePublishersChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const { value } = e.target
+    setFieldValue('publisherTrustedAlgorithmPublishers', value)
+    if (value === ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS) {
+      setFieldValue(
+        'allowAllPublishedAlgorithms',
+        ALLOW_ANY_PUBLISHED_ALGORITHMS
+      )
+      if (publisherTrustedAlgorithmPublishersAddresses) {
+        setFieldValue('publisherTrustedAlgorithmPublishersAddresses', '')
+        setAddressList([])
+      }
+    } else if (value === ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS) {
+      setFieldValue('allowAllPublishedAlgorithms', ALLOW_SELECTED_ALGORITHMS)
+    }
+  }
 
   useEffect(() => {
     const currentAddresses = publisherTrustedAlgorithmPublishersAddresses || ''
@@ -89,21 +152,32 @@ export default function FormEditComputeService({
 
   const handleAddAddress = (e: React.FormEvent) => {
     e.preventDefault()
+    setAddressError('')
 
     if (!addressInputValue.trim()) {
+      setAddressError('Please enter an address')
       return
     }
 
     const newAddress = addressInputValue.trim()
-    if (!addressList.includes(newAddress)) {
-      const updatedAddresses = [...addressList, newAddress]
-      setAddressList(updatedAddresses)
-      setFieldValue(
-        'publisherTrustedAlgorithmPublishersAddresses',
-        updatedAddresses.join(',')
-      )
-      setAddressInputValue('')
+
+    if (!(newAddress === '*' || isAddress(newAddress))) {
+      setAddressError('Wallet address is invalid')
+      return
     }
+
+    if (addressList.includes(newAddress.toLowerCase())) {
+      setAddressError('Wallet address already added to the list')
+      return
+    }
+
+    const updatedAddresses = [...addressList, newAddress.toLowerCase()]
+    setAddressList(updatedAddresses)
+    setFieldValue(
+      'publisherTrustedAlgorithmPublishersAddresses',
+      updatedAddresses.join(',')
+    )
+    setAddressInputValue('')
   }
 
   const handleDeleteAddress = (addressToDelete: string) => {
@@ -111,76 +185,13 @@ export default function FormEditComputeService({
       (address) => address !== addressToDelete
     )
     setAddressList(updatedAddresses)
+
     setFieldValue(
       'publisherTrustedAlgorithmPublishersAddresses',
       updatedAddresses.join(',')
     )
+    setFieldTouched('publisherTrustedAlgorithmPublishersAddresses', true)
   }
-
-  useEffect(() => {
-    if (isUpdatingRef.current) return
-
-    if (isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)) {
-      if (
-        !isAllowAllTrustedAlgorithmPublishers(
-          publisherTrustedAlgorithmPublishers
-        )
-      ) {
-        isUpdatingRef.current = true
-        setFieldValue(
-          'publisherTrustedAlgorithmPublishers',
-          ALLOW_ALL_TRUSTED_ALGORITHM_PUBLISHERS
-        )
-        setTimeout(() => {
-          isUpdatingRef.current = false
-        }, 0)
-      }
-    } else if (allowAllPublishedAlgorithms === ALLOW_SELECTED_ALGORITHMS) {
-      if (
-        publisherTrustedAlgorithmPublishers !==
-        ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
-      ) {
-        isUpdatingRef.current = true
-        setFieldValue(
-          'publisherTrustedAlgorithmPublishers',
-          ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
-        )
-        setTimeout(() => {
-          isUpdatingRef.current = false
-        }, 0)
-      }
-    }
-  }, [allowAllPublishedAlgorithms, setFieldValue])
-
-  useEffect(() => {
-    if (isUpdatingRef.current) return
-
-    if (
-      isAllowAllTrustedAlgorithmPublishers(publisherTrustedAlgorithmPublishers)
-    ) {
-      if (!isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)) {
-        isUpdatingRef.current = true
-        setFieldValue(
-          'allowAllPublishedAlgorithms',
-          ALLOW_ANY_PUBLISHED_ALGORITHMS
-        )
-        setTimeout(() => {
-          isUpdatingRef.current = false
-        }, 0)
-      }
-    } else if (
-      publisherTrustedAlgorithmPublishers ===
-      ALLOW_SPECIFIC_TRUSTED_ALGORITHM_PUBLISHERS
-    ) {
-      if (allowAllPublishedAlgorithms !== ALLOW_SELECTED_ALGORITHMS) {
-        isUpdatingRef.current = true
-        setFieldValue('allowAllPublishedAlgorithms', ALLOW_SELECTED_ALGORITHMS)
-        setTimeout(() => {
-          isUpdatingRef.current = false
-        }, 0)
-      }
-    }
-  }, [publisherTrustedAlgorithmPublishers, setFieldValue])
 
   const getAlgorithmList = useCallback(
     async (
@@ -251,6 +262,7 @@ export default function FormEditComputeService({
           component={Input}
           name="allowAllPublishedAlgorithms"
           selectStyle="publish"
+          onChange={handleAllowAlgorithmsChange}
         />
 
         <Field
@@ -258,7 +270,9 @@ export default function FormEditComputeService({
           component={Input}
           name="publisherTrustedAlgorithms"
           options={allAlgorithms}
-          disabled={isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)}
+          disabled={isAllowAnyPublishedAlgorithms(
+            allowAllPublishedAlgorithmsStr
+          )}
         />
       </SectionContainer>
 
@@ -275,7 +289,10 @@ export default function FormEditComputeService({
           name="publisherTrustedAlgorithmPublishers"
           selectStyle="publish"
           className={styles.publisherTrustedAlgorithmPublishersInput}
-          disabled={isAllowAnyPublishedAlgorithms(allowAllPublishedAlgorithms)}
+          disabled={isAllowAnyPublishedAlgorithms(
+            allowAllPublishedAlgorithmsStr
+          )}
+          onChange={handlePublishersChange}
         />
 
         {(publisherTrustedAlgorithmPublishers ===
@@ -288,9 +305,12 @@ export default function FormEditComputeService({
                   type="text"
                   placeholder="e.g. 0xea9889df0f0f9f7f4f6fsdffa3a5a6a7aa"
                   value={addressInputValue}
-                  onChange={(e) => setAddressInputValue(e.target.value)}
+                  onChange={(e) => {
+                    setAddressInputValue(e.target.value)
+                    if (addressError) setAddressError('')
+                  }}
                   disabled={isAllowAnyPublishedAlgorithms(
-                    allowAllPublishedAlgorithms
+                    allowAllPublishedAlgorithmsStr
                   )}
                   className={styles.addressInput}
                 />
@@ -300,13 +320,16 @@ export default function FormEditComputeService({
                 style="gradient"
                 onClick={handleAddAddress}
                 disabled={isAllowAnyPublishedAlgorithms(
-                  allowAllPublishedAlgorithms
+                  allowAllPublishedAlgorithmsStr
                 )}
                 className={styles.addAddressButton}
               >
                 <AddAddress /> Add
               </Button>
             </div>
+            {addressError && (
+              <div className={styles.errorMessage}>{addressError}</div>
+            )}
 
             {addressList.length > 0 && (
               <div className={styles.addressListContainer}>
@@ -321,7 +344,7 @@ export default function FormEditComputeService({
                     <DeleteButton
                       onClick={() => handleDeleteAddress(address)}
                       disabled={isAllowAnyPublishedAlgorithms(
-                        allowAllPublishedAlgorithms
+                        allowAllPublishedAlgorithmsStr
                       )}
                     />
                   </div>

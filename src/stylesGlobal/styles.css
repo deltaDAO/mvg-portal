@@ -45,7 +45,7 @@ a {
 
 p {
   margin: 0;
-  margin-bottom: calc(var(--spacer) / var(--line-height));
+  /* margin-bottom: calc(var(--spacer) / var(--line-height)); */
 }
 
 strong {
@@ -180,7 +180,7 @@ textarea {
   height: 40px;
   border: 1px solid rgba(10, 75, 112, 0.5);
   border-radius: 20px;
-  padding: 15px 25px;
+  padding: 8px 25px;
   background: white;
 }
 

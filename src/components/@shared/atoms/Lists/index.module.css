@@ -1,12 +1,26 @@
 .item {
+  position: relative;
   display: list-item;
   margin-top: calc(var(--spacer) / 8);
   color: var(--font-color-text);
-  list-style-position: inside;
+  list-style: none;
+  padding-left: 1.5rem;
 }
 
 .ulItem {
-  list-style-type: square;
+  padding-left: 1;
+}
+
+/* ✅ Correct selector for <li class="item ulItem"> */
+.item.ulItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.1rem;
+  width: 10px;
+  height: 10px;
+  background-color: #0a4b70;
+  border-radius: 50%;
 }
 
 .olItem {

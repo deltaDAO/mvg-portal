@@ -257,9 +257,9 @@ export async function getAccessDetails(
 
 export function getAvailablePrice(accessDetails: AccessDetails): AssetPrice {
   const price: AssetPrice = {
-    value: Number(accessDetails.price),
-    tokenSymbol: accessDetails.baseToken?.symbol,
-    tokenAddress: accessDetails.baseToken?.address
+    value: Number(accessDetails?.price || 0),
+    tokenSymbol: accessDetails?.baseToken?.symbol,
+    tokenAddress: accessDetails?.baseToken?.address
   }
 
   return price

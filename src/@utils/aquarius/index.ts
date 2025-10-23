@@ -10,7 +10,10 @@ import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
-import { transformAssetToAssetSelection } from '../assetConverter'
+import {
+  transformAssetToAssetSelection,
+  transformAssetToAssetSelectionDataset
+} from '../assetConverter'
 import addressConfig from '../../../address.config.cjs'
 import { isValidDid } from '@utils/ddo'
 import { Filters } from '@context/Filter'
@@ -399,6 +402,111 @@ export async function getAlgorithmDatasetsForCompute(
     uniqueAssets,
     accountId,
     []
+  )
+  return datasets
+}
+
+export async function getAlgorithmDatasetsForComputeSelection(
+  algorithmId: string,
+  serviceId: string,
+  datasetProviderUri: string,
+  accountId: string,
+  datasetChainId?: number,
+  cancelToken?: CancelToken
+): Promise<AssetSelectionAsset[]> {
+  const baseQueryParams = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            algorithmId
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            serviceId
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const baseQueryParams2 = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            '*'
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            '*'
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const baseQueryParams3 = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithmPublishers.keyword':
+            '*'
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const query = generateBaseQuery(baseQueryParams)
+  const query2 = generateBaseQuery(baseQueryParams2)
+  const query3 = generateBaseQuery(baseQueryParams3)
+  const [res1, res2, res3] = await Promise.all([
+    queryMetadata(query, cancelToken),
+    queryMetadata(query2, cancelToken),
+    queryMetadata(query3, cancelToken)
+  ])
+
+  // Combine results and deduplicate by ID
+  const combined = [
+    ...(res1?.results || []),
+    ...(res2?.results || []),
+    ...(res3?.results || [])
+  ]
+  const datasetsOnly = combined.filter(
+    (asset) => asset?.credentialSubject?.metadata?.type === 'dataset'
+  )
+  const uniqueAssetsMap = new Map<string, any>()
+  datasetsOnly.forEach((asset) => {
+    if (!uniqueAssetsMap.has(asset.id)) {
+      uniqueAssetsMap.set(asset.id, asset)
+    }
+  })
+
+  const uniqueAssets = Array.from(uniqueAssetsMap.values())
+  const datasets = await transformAssetToAssetSelectionDataset(
+    datasetProviderUri,
+    uniqueAssets,
+    accountId,
+    [],
+    false,
+    { algorithmDid: algorithmId, algorithmServiceId: serviceId }
   )
   return datasets
 }

@@ -84,21 +84,42 @@ export async function initializeProviderForComputeMulti(
     algorithm.credentialSubject.services[svcIndexAlgo].timeout
   )
 
-  return await ProviderInstance.initializeCompute(
-    computeAssets,
-    computeAlgo,
-    computeEnv.id,
-    oceanTokenAddress,
-    validUntil,
-    customProviderUrl || datasets[0].service.serviceEndpoint,
-    accountId,
-    computeEnv.resources.map((res) => ({
-      id: res.id,
-      amount: selectedResources?.[res.id] || res.min
-    })),
-    datasets[0].asset.credentialSubject.chainId,
-    policiesServer
-  )
+  console.log('i am here')
+  console.log('selectedResources ', selectedResources)
+  console.log('computeEnv ', computeEnv)
+  if (selectedResources.mode === 'free') {
+    return await ProviderInstance.initializeCompute(
+      computeAssets,
+      computeAlgo,
+      computeEnv.id,
+      oceanTokenAddress,
+      validUntil,
+      customProviderUrl || datasets[0].service.serviceEndpoint,
+      accountId,
+      computeEnv.free.resources.map((res) => ({
+        id: res.id,
+        amount: selectedResources?.[res.id] || res.max
+      })),
+      datasets[0].asset.credentialSubject.chainId,
+      policiesServer
+    )
+  } else {
+    return await ProviderInstance.initializeCompute(
+      computeAssets,
+      computeAlgo,
+      computeEnv.id,
+      oceanTokenAddress,
+      validUntil,
+      customProviderUrl || datasets[0].service.serviceEndpoint,
+      accountId,
+      computeEnv.resources.map((res) => ({
+        id: res.id,
+        amount: selectedResources?.[res.id] || res.min
+      })),
+      datasets[0].asset.credentialSubject.chainId,
+      policiesServer
+    )
+  }
 }
 
 export async function initializeProviderForCompute(
@@ -217,9 +238,9 @@ export async function getFileDidInfo(
     )
     return response
   } catch (error) {
-    const message = getErrorMessage(error.message)
+    console.log('Error check did files', error)
+    const message = 'Failed to fetch file info from provider'
     LoggerInstance.error('[Initialize check file did] Error:', message)
-    toast.error(`[Initialize check file did] Error: ${message}`)
     throw new Error(`[Initialize check file did] Error: ${message}`)
   }
 }
