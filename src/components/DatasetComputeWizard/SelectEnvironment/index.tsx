@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useState, useEffect, useCallback } from 'react'
 import { useFormikContext } from 'formik'
 import { useAccount } from 'wagmi'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
@@ -6,17 +6,33 @@ import StepTitle from '@shared/StepTitle'
 import EnvironmentSelection from '@shared/FormInput/InputElement/EnvironmentSelection'
 import { FormComputeData } from '../_types'
 import styles from './index.module.css'
-
-interface SelectEnvironmentProps {
-  computeEnvs: ComputeEnvironment[]
-}
+import { getComputeEnvironments } from '@utils/provider'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from 'src/@types/ddo/Service'
 
 export default function SelectEnvironment({
-  computeEnvs
-}: SelectEnvironmentProps): ReactElement {
+  service,
+  asset
+}: {
+  asset?: AssetExtended
+  service?: Service
+}): ReactElement {
   const { address: accountId } = useAccount()
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const [selectedEnvId, setSelectedEnvId] = useState<string>()
+  const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
+
+  const initializeComputeEnvironment = useCallback(async () => {
+    const computeEnvs = await getComputeEnvironments(
+      service.serviceEndpoint,
+      asset.credentialSubject?.chainId
+    )
+    setComputeEnvs(computeEnvs || [])
+  }, [asset, service])
+
+  useEffect(() => {
+    initializeComputeEnvironment()
+  }, [initializeComputeEnvironment])
 
   // Initialize selected environment from form values
   useEffect(() => {
