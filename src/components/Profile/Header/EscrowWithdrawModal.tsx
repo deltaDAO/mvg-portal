@@ -5,6 +5,8 @@ import { EscrowContract } from '@oceanprotocol/lib'
 import { useNetwork, useSigner } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
 import { useProfile } from '@context/Profile'
+import { utils } from 'ethers'
+import { a } from 'react-spring'
 
 export default function EscrowWithdrawModal({
   escrowFunds,
@@ -49,6 +51,7 @@ export default function EscrowWithdrawModal({
     try {
       const { oceanTokenAddress, escrowAddress } = getOceanConfig(chain?.id)
       const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
+      // Convert amount to wei (18 decimals):
       await escrow.withdraw([oceanTokenAddress], [amount])
       if (refreshEscrowFunds) await refreshEscrowFunds()
       onClose()

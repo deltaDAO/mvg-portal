@@ -32,8 +32,8 @@ interface ProfileProviderValue {
   sales: number
   ownAccount: boolean
   revenue: number
-  escrowAvailableFunds: string
-  escrowLockedFunds: string
+  escrowAvailableFunds: number
+  escrowLockedFunds: number
   handlePageChange: (pageNumber: number) => void
   refreshEscrowFunds?: () => void
 }
@@ -56,8 +56,8 @@ function ProfileProvider({
   const { chainIds } = useUserPreferences()
   const { appConfig } = useMarketMetadata()
   const [revenue, setRevenue] = useState(0)
-  const [escrowAvailableFunds, setEscrowAvailableFunds] = useState('0')
-  const [escrowLockedFunds, setEscrowLockedFunds] = useState('0')
+  const [escrowAvailableFunds, setEscrowAvailableFunds] = useState(0)
+  const [escrowLockedFunds, setEscrowLockedFunds] = useState(0)
 
   const [isEthAddress, setIsEthAddress] = useState<boolean>()
   //
@@ -240,16 +240,20 @@ function ProfileProvider({
 
   async function getEscrowFunds() {
     if (!accountId || !isEthAddress || !signer || !chain?.id) {
-      setEscrowAvailableFunds('0')
-      setEscrowLockedFunds('0')
+      setEscrowAvailableFunds(0)
+      setEscrowLockedFunds(0)
       return
     }
     try {
       const { oceanTokenAddress, escrowAddress } = getOceanConfig(chain?.id)
       const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
       const funds = await escrow.getUserFunds(accountId, oceanTokenAddress)
-      const availableFunds = formatUnits(funds.available, 18)
-      const lockedFunds = formatUnits(funds.locked, 18)
+      const availableFunds = parseInt(formatUnits(funds.available, 18), 10)
+      const lockedFunds = parseInt(formatUnits(funds.locked, 18), 10)
+      console.log('[profile] Fetched escrow funds:', {
+        availableFunds,
+        lockedFunds
+      })
       setEscrowLockedFunds(lockedFunds)
       setEscrowAvailableFunds(availableFunds)
     } catch (error) {
