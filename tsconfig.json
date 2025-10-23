@@ -22,7 +22,8 @@
       "@context/*": ["./src/@context/*"],
       "@images/*": ["./src/@images/*"],
       "@utils/*": ["./src/@utils/*"],
-      "@content/*": ["./@content/*"]
+      "@content/*": ["./@content/*"],
+      "@/*": ["./src/*"]
     },
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true

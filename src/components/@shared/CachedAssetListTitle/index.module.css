@@ -1,0 +1,21 @@
+.title {
+  line-height: var(--line-height);
+  margin: 0;
+  display: inline;
+  overflow: ellipsis;
+}
+
+.title a {
+  font-size: var(--font-size-base);
+  color: var(--font-color-heading);
+}
+
+.title a:hover,
+.title a:focus {
+  color: var(--color-primary);
+}
+
+.deleted {
+  font-size: var(--font-size-base);
+  color: var(--brand-alert-red);
+}

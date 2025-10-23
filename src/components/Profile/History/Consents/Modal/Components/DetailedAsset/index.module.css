@@ -1,0 +1,25 @@
+.publisher > div {
+  margin-right: 0;
+}
+
+.publisher {
+  display: inline-flex;
+  gap: 0.2rem;
+}
+
+.title {
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.assetInfoContainer {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 2);
+}
+
+.assetName {
+  margin: 0;
+  color: black;
+  font-weight: light;
+}

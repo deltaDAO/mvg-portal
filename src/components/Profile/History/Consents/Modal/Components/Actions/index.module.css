@@ -1,0 +1,34 @@
+.actions {
+  display: flex;
+  column-gap: 0.5rem;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.action {
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  border: var(--border-size-sm) solid transparent;
+}
+
+.confirm {
+  background-color: var(--color-agrospai-dark);
+  color: var(--color-agrospai-light);
+}
+
+.confirm:hover,
+.confirm:focus {
+  background-color: var(--color-agrospai-light);
+  color: var(--color-agrospai-dark);
+  border: var(--border-size-sm) solid var(--color-agrospai-dark);
+}
+
+.reject {
+  background-color: var(--brand-alert-red);
+}
+
+.reject:hover,
+.reject:focus {
+  background-color: var(--brand-alert-yellow);
+  color: var(--brand-alert-orange);
+  border: var(--border-size-sm) solid var(--brand-alert-red);
+}

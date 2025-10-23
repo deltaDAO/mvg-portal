@@ -1,0 +1,32 @@
+.requestContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.requestContainer > p {
+  margin: 0;
+}
+
+.requestList {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 3);
+  margin: 0;
+}
+
+.requestList > .requestItem {
+  display: list-item;
+  margin-left: var(--spacer);
+  text-align: left;
+}
+
+.requestItem > * {
+  display: inline;
+  gap: 1em;
+  margin: 0;
+}
+
+.title {
+  font-weight: 600;
+  font-size: 1em;
+}

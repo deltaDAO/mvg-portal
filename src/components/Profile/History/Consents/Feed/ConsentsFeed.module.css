@@ -1,0 +1,68 @@
+.buttons {
+  display: flex;
+  flex-direction: row;
+  column-gap: calc(var(--spacer) * 1.5);
+  margin: 0 auto;
+  align-items: center;
+}
+
+.refresh {
+  margin: 0;
+}
+
+.toggle {
+  margin: auto;
+  align-items: center;
+  display: flex;
+  justify-content: baseline;
+  cursor: pointer;
+  color: var(--button-text-font-color);
+}
+
+.refresh svg {
+  display: inline-block;
+  fill: currentColor;
+  width: 1em;
+  height: 1em;
+  margin-right: calc(var(--spacer) / 6);
+  margin-bottom: -0.1rem;
+}
+
+.columnItem {
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.onlyPending {
+  display: flex;
+  flex-direction: row;
+  cursor: pointer;
+}
+
+.onlyPending > input[type='checkbox'] {
+  cursor: pointer;
+}
+
+.centered {
+  display: flex;
+  margin: 0 auto;
+}
+
+.tabs {
+  width: 100%;
+}

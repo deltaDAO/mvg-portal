@@ -1,15 +1,18 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
-import Tabs from '@shared/atoms/Tabs'
-import PublishedList from './PublishedList'
-import Downloads from './Downloads'
-import ComputeJobs from './ComputeJobs'
-import styles from './index.module.css'
-import { getComputeJobs } from '@utils/compute'
+import { useAutomation } from '@context/Automation/AutomationProvider'
 import { useUserPreferences } from '@context/UserPreferences'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { LoggerInstance } from '@oceanprotocol/lib'
+import Tabs from '@shared/atoms/Tabs'
+import { getComputeJobs } from '@utils/compute'
+import { useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/router'
+import { useCallback, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
-import { useAutomation } from '../../../@context/Automation/AutomationProvider'
+import ComputeJobs from './ComputeJobs'
+import ConsentsContent from './Consents/ConsentsContent'
+import Downloads from './Downloads'
+import styles from './index.module.css'
+import PublishedList from './PublishedList'
 
 interface HistoryTab {
   title: string
@@ -25,7 +28,7 @@ function getTabs(
   jobs: ComputeJobMetaData[],
   isLoadingJobs: boolean,
   refetchJobs: boolean,
-  setRefetchJobs: any
+  setRefetchJobs: (value: boolean) => void
 ): HistoryTab[] {
   const defaultTabs: HistoryTab[] = [
     {
@@ -47,8 +50,12 @@ function getTabs(
       />
     )
   }
+  const consentsTab: HistoryTab = {
+    title: 'Consents',
+    content: <ConsentsContent />
+  }
   if (accountId === userAccountId || accountId === autoWalletAccountId) {
-    defaultTabs.push(computeTab)
+    defaultTabs.push(computeTab, consentsTab)
   }
 
   return defaultTabs
@@ -57,23 +64,44 @@ function getTabs(
 const tabsIndexList = {
   published: 0,
   downloads: 1,
-  computeJobs: 2
+  computeJobs: 2,
+  consents: 3
 }
 
-export default function HistoryPage({
-  accountIdentifier
-}: {
+interface Props {
   accountIdentifier: string
-}): ReactElement {
+}
+
+export default function HistoryPage({ accountIdentifier }: Props) {
+  const router = useRouter()
   const { address: accountId } = useAccount()
   const { autoWallet } = useAutomation()
   const { chainIds } = useUserPreferences()
+
   const newCancelToken = useCancelToken()
 
   const [refetchJobs, setRefetchJobs] = useState(false)
   const [isLoadingJobs, setIsLoadingJobs] = useState(false)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
-  const [tabIndex, setTabIndex] = useState<number>()
+
+  const searchParams = useSearchParams()
+
+  const getDefaultIndex = useCallback((): number => {
+    const url = new URL(location.href)
+    const defaultTabString = url.searchParams.get('defaultTab')
+    const defaultTabIndex = tabsIndexList?.[defaultTabString]
+
+    if (!defaultTabIndex) return 0
+    if (
+      defaultTabIndex === tabsIndexList.computeJobs &&
+      accountId !== accountIdentifier
+    )
+      return 0
+
+    return defaultTabIndex
+  }, [accountId, accountIdentifier])
+
+  const tabIndex = searchParams.get('tab') ?? getDefaultIndex()
 
   const fetchJobs = useCallback(
     async (type: string) => {
@@ -122,25 +150,6 @@ export default function HistoryPage({
     }
   }, [accountId, refetchJobs, fetchJobs])
 
-  const getDefaultIndex = useCallback((): number => {
-    const url = new URL(location.href)
-    const defaultTabString = url.searchParams.get('defaultTab')
-    const defaultTabIndex = tabsIndexList?.[defaultTabString]
-
-    if (!defaultTabIndex) return 0
-    if (
-      defaultTabIndex === tabsIndexList.computeJobs &&
-      accountId !== accountIdentifier
-    )
-      return 0
-
-    return defaultTabIndex
-  }, [accountId, accountIdentifier])
-
-  useEffect(() => {
-    setTabIndex(getDefaultIndex())
-  }, [getDefaultIndex])
-
   const tabs = getTabs(
     accountIdentifier,
     accountId,
@@ -151,12 +160,25 @@ export default function HistoryPage({
     setRefetchJobs
   )
 
+  const updateTab = useCallback(
+    (newTab: number) => {
+      const params = new URLSearchParams(window.location.search)
+      params.set('tab', newTab.toString())
+      router.push(
+        `${window.location.pathname}?${params.toString()}`,
+        undefined,
+        { shallow: true }
+      )
+    },
+    [router]
+  )
+
   return (
     <Tabs
       items={tabs}
       className={styles.tabs}
-      selectedIndex={tabIndex || 0}
-      onIndexSelected={setTabIndex}
+      selectedIndex={Number(tabIndex) || 0}
+      onIndexSelected={updateTab}
     />
   )
 }

@@ -1,0 +1,48 @@
+.item {
+  cursor: pointer;
+}
+
+.item:hover {
+  scale: 1.1;
+}
+
+.button {
+  display: flex;
+  border: var(--border-size-sm) solid var(--button-border-color);
+  border-radius: var(--border-radius);
+  fill: var(--brand-grey-lighter);
+  background-color: var(--brand-grey-light);
+  justify-items: center;
+  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 1.5);
+  gap: calc(var(--spacer) / 4);
+  color: var(--brand-grey-lighter);
+  transition: background-color 0.2s, color 0.2s;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+}
+
+.button:hover,
+.button:focus {
+  cursor: pointer;
+  border: var(--border-size-sm) solid var(--brand-grey-dimmed);
+  background-color: var(--brand-grey);
+  outline: none;
+}
+
+.button > svg {
+  stroke-width: 0.2em;
+  margin: 0;
+  width: 0.95em;
+}
+
+.deleteButton {
+  background-color: var(--brand-alert-red);
+}
+
+.deleteButton:hover,
+.deleteButton:focus {
+  border: var(--border-size-sm) solid var(--brand-alert-red);
+  background-color: var(--brand-alert-yellow);
+  color: var(--brand-alert-orange);
+  outline: none;
+}

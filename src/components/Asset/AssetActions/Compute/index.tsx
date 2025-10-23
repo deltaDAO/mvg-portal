@@ -1,70 +1,71 @@
-import { useState, ReactElement, useEffect, useCallback } from 'react'
+import { useAsset } from '@context/Asset'
+import { useMarketMetadata } from '@context/MarketMetadata'
+import { useUserPreferences } from '@context/UserPreferences'
+import { useAbortController } from '@hooks/useAbortController'
+import { useCancelToken } from '@hooks/useCancelToken'
+import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import {
   Asset,
-  DDO,
-  FileInfo,
-  Datatoken,
-  ProviderInstance,
-  ComputeAsset,
-  ZERO_ADDRESS,
-  ComputeEnvironment,
-  LoggerInstance,
-  ComputeAlgorithm,
-  ComputeOutput,
-  ProviderComputeInitializeResults,
-  unitsToAmount,
-  ProviderFees,
   AssetPrice,
+  ComputeAlgorithm,
+  ComputeAsset,
+  ComputeEnvironment,
+  ComputeOutput,
+  DDO,
+  Datatoken,
+  FileInfo,
+  LoggerInstance,
+  ProviderComputeInitializeResults,
+  ProviderFees,
+  ProviderInstance,
   UserCustomParameters,
-  getErrorMessage
+  ZERO_ADDRESS,
+  getErrorMessage,
+  unitsToAmount
 } from '@oceanprotocol/lib'
-import { toast } from 'react-toastify'
-import Price from '@shared/Price'
-import FileIcon from '@shared/FileIcon'
 import Alert from '@shared/atoms/Alert'
+import FileIcon from '@shared/FileIcon'
+import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
+import Price from '@shared/Price'
+import SuccessConfetti from '@shared/SuccessConfetti'
+import {
+  getAvailablePrice,
+  getOrderPriceAndFees
+} from '@utils/accessDetailsAndPricing'
+import {
+  getAlgorithmAssetSelectionList,
+  getAlgorithmsForAsset,
+  getComputeJobs,
+  isOrderable
+} from '@utils/compute'
+import { getServiceByName, secondsToString } from '@utils/ddo'
+import { getComputeFeedback } from '@utils/feedback'
+import { handleComputeOrder } from '@utils/order'
+import {
+  getComputeEnvironments,
+  initializeProviderForCompute
+} from '@utils/provider'
+import { getDummySigner } from '@utils/wallet'
+import { Decimal } from 'decimal.js'
+import { Signer } from 'ethers'
 import { Formik } from 'formik'
+import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { toast } from 'react-toastify'
+import { useAccount } from 'wagmi'
+import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
+import ComputeJobs from '../../../Profile/History/ComputeJobs'
+import { parseConsumerParameterValues } from '../ConsumerParameters'
 import {
   ComputeDatasetForm,
   getComputeValidationSchema,
   getInitialValues
 } from './_constants'
-import FormStartComputeDataset from './FormComputeDataset'
-import styles from './index.module.css'
-import SuccessConfetti from '@shared/SuccessConfetti'
-import { getServiceByName, secondsToString } from '@utils/ddo'
-import {
-  isOrderable,
-  getAlgorithmAssetSelectionList,
-  getAlgorithmsForAsset,
-  getComputeJobs
-} from '@utils/compute'
-import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import AlgorithmDatasetsListForCompute from './AlgorithmDatasetsListForCompute'
+import AssetConsents from './Consents/AssetConsents'
+import FormStartComputeDataset from './FormComputeDataset'
 import ComputeHistory from './History'
-import ComputeJobs from '../../../Profile/History/ComputeJobs'
-import { useCancelToken } from '@hooks/useCancelToken'
-import { Decimal } from 'decimal.js'
-import { useAbortController } from '@hooks/useAbortController'
-import {
-  getAvailablePrice,
-  getOrderPriceAndFees
-} from '@utils/accessDetailsAndPricing'
-import { handleComputeOrder } from '@utils/order'
-import { getComputeFeedback } from '@utils/feedback'
-import {
-  getComputeEnvironments,
-  initializeProviderForCompute
-} from '@utils/provider'
-import { useUserPreferences } from '@context/UserPreferences'
-import { getDummySigner } from '@utils/wallet'
-import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import { useAsset } from '@context/Asset'
+import styles from './index.module.css'
 import WhitelistIndicator from './WhitelistIndicator'
-import { parseConsumerParameterValues } from '../ConsumerParameters'
-import { useAutomation } from '../../../../@context/Automation/AutomationProvider'
-import { Signer } from 'ethers'
-import { useAccount } from 'wagmi'
-import { useMarketMetadata } from '@context/MarketMetadata'
 
 const refreshInterval = 10000 // 10 sec.
 
@@ -568,6 +569,7 @@ export default function Compute({
             algorithmDid={asset.id}
             asset={asset}
           />
+          <AssetConsents asset={asset} />
         </>
       ) : (
         <Formik

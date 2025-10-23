@@ -1,0 +1,44 @@
+.reasonTextbox {
+  background: var(--brand-grey-lighter);
+  border-radius: var(--border-radius);
+  border: none;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: calc(var(--spacer) / 3);
+  width: 100%;
+  font-family: inherit;
+}
+
+.reasonTextbox:focus {
+  outline: 1px solid var(--brand-grey-light);
+}
+
+.feedback {
+  display: flex;
+  align-items: center;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 1rem;
+  padding: calc(var(--spacer) / 4);
+  width: 100%;
+  border-radius: var(--border-radius);
+  gap: calc(var(--spacer) / 2);
+  color: var(--brand-grey-dimmed);
+  font-weight: 600;
+}
+
+.feedback > svg {
+  margin: 0;
+}
+
+.errorMessage {
+  background-color: var(--brand-alert-red);
+}
+
+.successMessage {
+  background-color: var(--brand-alert-green);
+  fill: var(--brand-grey-dimmed);
+  overflow: hidden;
+}
+
+.successMessage code {
+  color: var(--brand-grey-dimmed);
+}

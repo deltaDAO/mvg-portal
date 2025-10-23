@@ -1,0 +1,13 @@
+.selector {
+  background: var(--brand-grey-lighter);
+  padding: calc(var(--spacer) / 3);
+  border: none;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: var(--border-radius);
+  display: flex;
+  width: 100%;
+}
+
+.selector:focus ~ selected {
+  outline: 1px solid var(--brand-grey-light);
+}

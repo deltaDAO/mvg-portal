@@ -1,0 +1,15 @@
+.title {
+  margin: 0;
+}
+
+.content {
+  display: flex;
+  gap: calc(var(--spacer) / 8);
+  align-items: center;
+}
+
+.arrow {
+  width: 0.7em;
+  height: 0.7em;
+  fill: var(--link-font-color);
+}

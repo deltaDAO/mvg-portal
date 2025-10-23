@@ -1,0 +1,29 @@
+.badge {
+  display: flex;
+  padding: calc(var(--spacer) / 6) calc(var(--spacer) / 4);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  color: var(--brand-grey-dimmed);
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-bold);
+  width: 10rem;
+}
+
+.badge-pending {
+  background-color: var(--brand-alert-orange);
+}
+
+.badge-accepted {
+  background-color: var(--brand-alert-green);
+  color: black;
+}
+
+.badge-resolved {
+  background-color: var(--brand-alert-yellow);
+  color: black;
+}
+
+.badge-denied {
+  background-color: var(--brand-alert-red);
+}

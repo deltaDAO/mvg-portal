@@ -1,0 +1,83 @@
+.publisher {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+}
+
+.publisher > div {
+  margin: 0px;
+}
+
+.requestInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0 calc(var(--spacer) / 2);
+}
+
+.reason {
+  word-wrap: break-word;
+  overflow-y: scroll;
+  max-height: 10rem;
+  border: 1px solid var(--border-color);
+  padding: 0 calc(var(--spacer) / 2);
+  border-radius: var(--border-radius);
+  text-align: justify;
+  margin: calc(var(--spacer) / 2) 0;
+}
+
+.reasonTextbox {
+  padding: calc(var(--spacer) / 3);
+  width: 100%;
+  font-family: inherit;
+}
+
+.reasonTextbox:focus {
+  outline: none;
+}
+
+.requestContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0rem;
+}
+
+.requestContainer > p {
+  margin: 0;
+}
+
+.request_list > li {
+  display: list-item;
+  margin-left: var(--spacer);
+  text-align: justify;
+}
+
+.request_list > li > span {
+  display: inline;
+  gap: 1em;
+}
+
+.request_list > li > span > div {
+  margin-right: 0;
+  vertical-align: bottom;
+}
+
+.error {
+  display: flex;
+  column-gap: calc(var(--spacer) / 4);
+  background-color: pink;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--brand-alert-red);
+  padding: calc(var(--spacer) / 4);
+}
+
+.error > svg {
+  padding: 0;
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
+}

@@ -1,0 +1,10 @@
+.publisher {
+  display: flex;
+  flex-direction: row;
+  justify-items: center;
+  gap: 0.2rem;
+}
+
+.publisher > div {
+  margin: 0px;
+}

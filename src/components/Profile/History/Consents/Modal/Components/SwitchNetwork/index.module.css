@@ -1,0 +1,19 @@
+.chainMessage {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 4);
+  justify-content: flex-start;
+  flex: 1;
+  color: var(--font-color-light);
+  font-size: var(--font-size-small);
+}
+
+.chainMessage > svg {
+  margin: 0;
+  height: 1em;
+  width: 1em;
+}
+
+.button {
+  font-size: var(--font-size-small);
+}

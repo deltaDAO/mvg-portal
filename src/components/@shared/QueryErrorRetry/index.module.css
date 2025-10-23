@@ -1,0 +1,37 @@
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.errorTextContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 1rem;
+  line-height: 1.5;
+  gap: 0.25rem;
+}
+
+.errorText {
+  color: var(--brand-alert-red);
+  font-style: italic;
+  white-space: normal;
+}
+
+.button {
+  color: var(--brand-alert-red);
+  border: solid 1px var(--brand-alert-red);
+  border-radius: 0.5rem;
+  padding: 0.5rem !important;
+}
+
+.button:hover {
+  color: var(--brand-alert-red);
+  border: solid 1px var(--brand-alert-red);
+  border-radius: 0.5rem;
+  padding: 0.5rem !important;
+}
