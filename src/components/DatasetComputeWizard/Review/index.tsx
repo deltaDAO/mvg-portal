@@ -559,7 +559,6 @@ export default function Review({
     return { algorithmAsset: assetDdo, serviceIndexAlgo }
   }
 
-  // test push
   // Pre-select computeEnv and/or algo if there is only one available option
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
