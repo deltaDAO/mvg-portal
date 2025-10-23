@@ -599,13 +599,13 @@ export default function Download({
                   />
                 </div>
               )} */}
-              {asset.credentialSubject?.metadata?.type === 'algorithm' && (
+              {/* {asset.credentialSubject?.metadata?.type === 'algorithm' && (
                 <AlgorithmDatasetsListForCompute
                   asset={asset}
                   service={service}
                   accessDetails={accessDetails}
                 />
-              )}
+              )} */}
             </aside>
           )
         })()}
