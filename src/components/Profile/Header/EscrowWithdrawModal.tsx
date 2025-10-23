@@ -4,11 +4,13 @@ import styles from './EscrowWithdrawModal.module.css'
 import { EscrowContract } from '@oceanprotocol/lib'
 import { useNetwork, useSigner } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
+import { useProfile } from '@context/Profile'
 
 export default function EscrowWithdrawModal({
   escrowFunds,
   onClose
 }): ReactElement {
+  const { refreshEscrowFunds } = useProfile()
   const { data: signer } = useSigner()
   const { chain } = useNetwork()
   const [amount, setAmount] = useState('')
@@ -45,13 +47,10 @@ export default function EscrowWithdrawModal({
     setError('')
     setIsLoading(true)
     try {
-      const escrowAddress = '0x86F2BB9F8f18B5a836b342199a3eC89F282E4018'
+      const { oceanTokenAddress, escrowAddress } = getOceanConfig(chain?.id)
       const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
-      const { oceanTokenAddress } = getOceanConfig(chain?.id)
       await escrow.withdraw([oceanTokenAddress], [amount])
-      alert(
-        `Withdrawing ${amount} ocean tokens, reload the page to see updates.`
-      )
+      if (refreshEscrowFunds) await refreshEscrowFunds()
       onClose()
     } catch (err) {
       setError(err.message || 'Withdrawal failed. Please try again.')

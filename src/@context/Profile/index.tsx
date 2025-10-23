@@ -35,6 +35,7 @@ interface ProfileProviderValue {
   escrowAvailableFunds: string
   escrowLockedFunds: string
   handlePageChange: (pageNumber: number) => void
+  refreshEscrowFunds?: () => void
 }
 
 const ProfileContext = createContext({} as ProfileProviderValue)
@@ -237,34 +238,26 @@ function ProfileProvider({
     getUserSalesNumber()
   }, [accountId, chainIds])
 
-  useEffect(() => {
-    async function getEscrowFunds() {
-      if (!accountId || !isEthAddress || !signer || !chain?.id) {
-        setEscrowAvailableFunds('0')
-        setEscrowLockedFunds('0')
-        return
-      }
-      try {
-        // const escrowAddress = '0x4D49eEedFac8Ea03328c0E4871b680C06d892092' // TODO get from conf is from op
-        const escrowAddress = '0x86F2BB9F8f18B5a836b342199a3eC89F282E4018'
-        console.log('before')
-        const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
-        const { oceanTokenAddress } = getOceanConfig(chain?.id)
-        const funds = await escrow.getUserFunds(accountId, oceanTokenAddress)
-        const availableFunds = formatUnits(funds.available, 18) // '18' decimals for OCEAN, adjust as needed
-        const lockedFunds = formatUnits(funds.locked, 18)
-        console.log('locked funds:', lockedFunds)
-        setEscrowLockedFunds(lockedFunds)
-        setEscrowAvailableFunds(availableFunds)
-        console.log('avaiable funds:', availableFunds)
-        setEscrowAvailableFunds(availableFunds)
-        LoggerInstance.log(`[profile] Fetched escrow funds: ${funds}.`, funds)
-      } catch (error) {
-        console.log('Error fetching escrow funds:', error)
-        LoggerInstance.error(error.message)
-      }
+  async function getEscrowFunds() {
+    if (!accountId || !isEthAddress || !signer || !chain?.id) {
+      setEscrowAvailableFunds('0')
+      setEscrowLockedFunds('0')
+      return
     }
+    try {
+      const { oceanTokenAddress, escrowAddress } = getOceanConfig(chain?.id)
+      const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
+      const funds = await escrow.getUserFunds(accountId, oceanTokenAddress)
+      const availableFunds = formatUnits(funds.available, 18)
+      const lockedFunds = formatUnits(funds.locked, 18)
+      setEscrowLockedFunds(lockedFunds)
+      setEscrowAvailableFunds(availableFunds)
+    } catch (error) {
+      LoggerInstance.error(error.message)
+    }
+  }
 
+  useEffect(() => {
     getEscrowFunds()
   }, [accountId, signer, isEthAddress, chain])
 
@@ -282,7 +275,8 @@ function ProfileProvider({
         sales,
         revenue,
         escrowAvailableFunds,
-        escrowLockedFunds
+        escrowLockedFunds,
+        refreshEscrowFunds: getEscrowFunds
       }}
     >
       {children}

@@ -23,10 +23,15 @@ export function sanitizeDevelopmentConfig(config: Config): Config {
   } as Config
 }
 
-export function getOceanConfig(network: string | number): Config {
+export function getOceanConfig(network: string | number): any {
   // Load the RPC map from .env
   const rpcMap: Record<string, string> = process.env.NEXT_PUBLIC_NODE_URI_MAP
     ? JSON.parse(process.env.NEXT_PUBLIC_NODE_URI_MAP)
+    : {}
+
+  const escrowMap: Record<string, string> = process.env
+    .NEXT_PUBLIC_ESCROW_ADDRESSES
+    ? JSON.parse(process.env.NEXT_PUBLIC_ESCROW_ADDRESSES)
     : {}
 
   if (!network) {
@@ -44,7 +49,7 @@ export function getOceanConfig(network: string | number): Config {
       network === 8996
       ? undefined
       : process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
-  ) as Config
+  ) as any
   if (network === 8996) {
     config = { ...config, ...sanitizeDevelopmentConfig(config) }
   }
@@ -53,6 +58,10 @@ export function getOceanConfig(network: string | number): Config {
   const networkKey = network.toString()
   if (rpcMap[networkKey]) {
     config.nodeUri = rpcMap[networkKey]
+  }
+
+  if (escrowMap[networkKey]) {
+    config.escrowAddress = escrowMap[networkKey]
   }
   return config as Config
 }
