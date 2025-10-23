@@ -29,7 +29,7 @@ export default function EscrowWithdrawModal({
   }
 
   function handleMaxClick() {
-    setAmount(escrowFunds)
+    setAmount(escrowFunds.toString())
     setError('')
   }
 
