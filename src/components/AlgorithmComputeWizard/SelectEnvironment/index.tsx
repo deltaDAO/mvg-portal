@@ -1,11 +1,11 @@
 import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
-import { useAccount } from 'wagmi'
-import { ComputeEnvironment } from '@oceanprotocol/lib'
+import { ComputeEnvironment, ProviderInstance } from '@oceanprotocol/lib'
 import StepTitle from '@shared/StepTitle'
 import EnvironmentSelection from '@shared/FormInput/InputElement/EnvironmentSelection'
 import { FormComputeData } from '../_types'
 import styles from './index.module.css'
+import { customProviderUrl } from 'app.config.cjs'
 
 interface SelectEnvironmentProps {
   computeEnvs: ComputeEnvironment[]
@@ -14,7 +14,6 @@ interface SelectEnvironmentProps {
 export default function SelectEnvironment({
   computeEnvs
 }: SelectEnvironmentProps): ReactElement {
-  const { address: accountId } = useAccount()
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const [selectedEnvId, setSelectedEnvId] = useState<string>()
 
@@ -25,9 +24,12 @@ export default function SelectEnvironment({
     }
   }, [values.computeEnv])
 
-  const handleEnvironmentSelect = (envId: string) => {
+  const handleEnvironmentSelect = async (envId: string) => {
     setSelectedEnvId(envId)
-    const selectedEnv = computeEnvs.find((env) => env.id === envId)
+    const allComputeEnvs = await ProviderInstance.getComputeEnvironments(
+      customProviderUrl
+    )
+    const selectedEnv = allComputeEnvs.find((env) => env.id === envId)
     setFieldValue('computeEnv', selectedEnv)
   }
 
