@@ -5,8 +5,6 @@ import { EscrowContract } from '@oceanprotocol/lib'
 import { useNetwork, useSigner } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
 import { useProfile } from '@context/Profile'
-import { utils } from 'ethers'
-import { a } from 'react-spring'
 
 export default function EscrowWithdrawModal({
   escrowFunds,
