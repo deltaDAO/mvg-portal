@@ -29,12 +29,12 @@ export default function Stats(): ReactElement {
         <>
           <NumberUnit
             label="Escrow Locked Funds"
-            value={`${escrowLockedFunds} Ocean`}
+            value={`${parseInt(escrowLockedFunds, 10)} Ocean`}
           />
           <div onClick={() => setShowModal(true)} style={{ cursor: 'pointer' }}>
             <NumberUnit
               label="Escrow Available Funds 👉 Click to Withdraw 👈"
-              value={`${escrowAvailableFunds} Ocean`}
+              value={`${parseInt(escrowAvailableFunds, 10)} Ocean`}
             />
           </div>
         </>
@@ -42,7 +42,7 @@ export default function Stats(): ReactElement {
 
       {showModal && (
         <EscrowWithdrawModal
-          escrowFunds={escrowAvailableFunds}
+          escrowFunds={parseInt(escrowAvailableFunds, 10)}
           onClose={() => setShowModal(false)}
         />
       )}
