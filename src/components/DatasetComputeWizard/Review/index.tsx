@@ -493,6 +493,28 @@ export default function Review({
   const computeItems = [
     {
       name: 'C2D RESOURCES',
+      value: values.jobPrice || '0',
+      duration: formatDuration(
+        currentMode === 'paid'
+          ? (paidResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+          : (freeResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+      )
+    }
+  ]
+  const escrowFunds = [
+    {
+      name: 'AMOUNT AVAILABLE IN THE ESCROW ACCOUNT',
+      value: Number(values.escrowFunds).toFixed(3) || '0',
+      duration: formatDuration(
+        currentMode === 'paid'
+          ? (paidResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+          : (freeResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+      )
+    }
+  ]
+  const amountDeposit = [
+    {
+      name: 'AMOUNT TO DEPOSIT IN THE ESCROW ACCOUNT',
       value: c2dPrice ? c2dPrice.toString() : '0',
       duration: formatDuration(
         currentMode === 'paid'
@@ -520,10 +542,6 @@ export default function Review({
           0,
         MAX_DECIMALS
       )
-    },
-    {
-      name: `COMMUNITY FEE C2D (${consumeMarketOrderFee}%)`,
-      value: '0'
     }
   ]
 
@@ -1028,6 +1046,22 @@ export default function Review({
 
           {/* Compute items and market fees */}
           {computeItems.map((item) => (
+            <PricingRow
+              key={item.name}
+              itemName={item.name}
+              value={item.value}
+              duration={item.duration}
+            />
+          ))}
+          {escrowFunds.map((item) => (
+            <PricingRow
+              key={item.name}
+              itemName={item.name}
+              value={item.value}
+              duration={item.duration}
+            />
+          ))}
+          {amountDeposit.map((item) => (
             <PricingRow
               key={item.name}
               itemName={item.name}

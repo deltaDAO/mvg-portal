@@ -5,6 +5,7 @@ import { ResourceType } from 'src/@types/ResourceType'
 import { useNetwork, useSigner } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
+import { useProfile } from '@context/Profile'
 import styles from './index.module.css'
 
 interface ResourceValues {
@@ -182,6 +183,7 @@ export default function ConfigureEnvironment({
 }): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const { chain } = useNetwork()
+  const { escrowAvailableFunds } = useProfile()
   const { data: signer } = useSigner()
 
   const [mode, setMode] = useState<'free' | 'paid'>(() => {
@@ -437,6 +439,25 @@ export default function ConfigureEnvironment({
   ])
 
   useEffect(() => {
+    if (mode === 'paid') {
+      const jobPrice = calculatePrice()
+      const availableEscrow = parseFloat(escrowAvailableFunds.toString() || '0')
+
+      const actualPaymentAmount = Math.max(0, jobPrice - availableEscrow)
+
+      setFieldValue('jobPrice', jobPrice)
+      setFieldValue('escrowFunds', escrowAvailableFunds)
+      setFieldValue('actualPaymentAmount', actualPaymentAmount)
+      setFieldValue('escrowCoveredAmount', Math.min(availableEscrow, jobPrice))
+    } else {
+      setFieldValue('jobPrice', 0)
+      setFieldValue('escrowFunds', 0)
+      setFieldValue('actualPaymentAmount', 0)
+      setFieldValue('escrowCoveredAmount', 0)
+    }
+  }, [mode, calculatePrice, escrowAvailableFunds, setFieldValue])
+
+  useEffect(() => {
     if (!setAllResourceValues || !values.computeEnv) return
 
     const env = values.computeEnv
@@ -445,6 +466,9 @@ export default function ConfigureEnvironment({
     const currentValues = mode === 'free' ? freeValues : paidValues
 
     let currentPrice = 0
+    let actualPaymentAmount = 0
+    let escrowCoveredAmount = 0
+
     if (mode === 'paid') {
       const chainId = chain?.id?.toString() || '11155111'
       const fee = env.fees?.[chainId]?.[0]
@@ -463,6 +487,12 @@ export default function ConfigureEnvironment({
           totalPrice += units * p.price
         }
         currentPrice = totalPrice * currentValues.jobDuration
+
+        const availableEscrow = parseFloat(
+          escrowAvailableFunds.toString() || '0'
+        )
+        actualPaymentAmount = Math.max(0, currentPrice - availableEscrow)
+        escrowCoveredAmount = Math.min(availableEscrow, currentPrice)
       }
     }
 
@@ -475,7 +505,10 @@ export default function ConfigureEnvironment({
         disk: currentValues.disk,
         jobDuration: currentValues.jobDuration,
         mode,
-        price: currentPrice.toString()
+        price: actualPaymentAmount.toString(),
+        fullJobPrice: currentPrice.toString(),
+        actualPaymentAmount: actualPaymentAmount.toString(),
+        escrowCoveredAmount: escrowCoveredAmount.toString()
       }
     }))
   }, [
@@ -490,7 +523,8 @@ export default function ConfigureEnvironment({
     paidValues.ram,
     paidValues.disk,
     paidValues.jobDuration,
-    setAllResourceValues
+    setAllResourceValues,
+    escrowAvailableFunds
   ])
 
   if (!values.computeEnv) {
@@ -683,6 +717,45 @@ export default function ConfigureEnvironment({
           </div>
         </div>
       </div>
+
+      {mode === 'paid' && (
+        <div className={styles.escrowValidation}>
+          {(() => {
+            const jobPrice = calculatePrice()
+            const availableEscrow = parseFloat(
+              escrowAvailableFunds.toString() || '0'
+            )
+
+            if (jobPrice > availableEscrow) {
+              const deltaAmount = jobPrice - availableEscrow
+              return (
+                <div className={styles.insufficientEscrow}>
+                  <p>
+                    Insufficient escrow balance. An additional{' '}
+                    <strong>{deltaAmount.toFixed(2)} Ocean</strong> will be
+                    added to your escrow account to cover this job.
+                  </p>
+                  <p className={styles.escrowBreakdown}>
+                    Job cost: {jobPrice.toFixed(2)} Ocean | Available escrow:{' '}
+                    {availableEscrow.toFixed(2)} Ocean | Additional needed:{' '}
+                    {deltaAmount.toFixed(2)} Ocean
+                  </p>
+                </div>
+              )
+            } else {
+              return (
+                <div className={styles.sufficientEscrow}>
+                  <p>Sufficient escrow balance available for this job.</p>
+                  <p className={styles.escrowBreakdown}>
+                    Job cost: {jobPrice.toFixed(2)} Ocean | Available escrow:{' '}
+                    {availableEscrow.toFixed(2)} Ocean
+                  </p>
+                </div>
+              )
+            }
+          })()}
+        </div>
+      )}
     </div>
   )
 }

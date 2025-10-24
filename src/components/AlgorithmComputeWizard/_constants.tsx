@@ -82,7 +82,9 @@ export const initialValues: FormComputeData = {
   algorithmDetails: null,
   computeResources: null,
   marketFees: null,
-  totalPrice: '0'
+  totalPrice: '0',
+  escrowFunds: '0',
+  jobPrice: '0'
 }
 
 export interface ComputeDatasetForm {
