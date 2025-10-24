@@ -337,3 +337,11 @@
   margin: 0;
   padding-left: 1.2rem;
 }
+
+.greenValue {
+  color: #16a34a;
+}
+
+.redValue {
+  color: #dc2626;
+}

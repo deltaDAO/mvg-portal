@@ -444,8 +444,8 @@ export default function Review({
       value: values.jobPrice || '0',
       duration: formatDuration(
         currentMode === 'paid'
-          ? (paidResources?.jobDuration || 0) * 60 // Convert minutes to seconds
-          : (freeResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+          ? (paidResources?.jobDuration || 0) * 60
+          : (freeResources?.jobDuration || 0) * 60
       )
     }
   ]
@@ -455,8 +455,8 @@ export default function Review({
       value: Number(values.escrowFunds).toFixed(3) || '0',
       duration: formatDuration(
         currentMode === 'paid'
-          ? (paidResources?.jobDuration || 0) * 60 // Convert minutes to seconds
-          : (freeResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+          ? (paidResources?.jobDuration || 0) * 60
+          : (freeResources?.jobDuration || 0) * 60
       )
     }
   ]
@@ -466,8 +466,8 @@ export default function Review({
       value: c2dPrice || '0',
       duration: formatDuration(
         currentMode === 'paid'
-          ? (paidResources?.jobDuration || 0) * 60 // Convert minutes to seconds
-          : (freeResources?.jobDuration || 0) * 60 // Convert minutes to seconds
+          ? (paidResources?.jobDuration || 0) * 60
+          : (freeResources?.jobDuration || 0) * 60
       )
     }
   ]
@@ -904,14 +904,17 @@ export default function Review({
               itemName={item.name}
               value={item.value}
               duration={item.duration}
+              valueType="escrow"
             />
           ))}
+
           {amountDeposit.map((item) => (
             <PricingRow
               key={item.name}
               itemName={item.name}
               value={item.value}
               duration={item.duration}
+              valueType="deposit"
             />
           ))}
 

@@ -5,17 +5,30 @@ interface PriceDisplayProps {
   value: string | number
   symbol?: string
   duration?: string
+  valueType?: 'escrow' | 'deposit' | 'default'
 }
 
 export default function PriceDisplay({
   value,
   symbol = 'OCEAN',
-  duration
+  duration,
+  valueType = 'default'
 }: PriceDisplayProps): ReactElement {
+  const numericValue = Number(value)
+
+  let colorClass = ''
+  if (valueType === 'escrow' && numericValue !== 0) {
+    colorClass = 'greenValue'
+  } else if (valueType === 'deposit' && numericValue !== 0) {
+    colorClass = 'redValue'
+  }
+
   return (
     <div className={styles.priceInfo}>
       <span className={styles.price}>
-        <span className={styles.priceNumber}>{value}</span>
+        <span className={`${styles.priceNumber} ${styles[colorClass] || ''}`}>
+          {value}
+        </span>
         <span className={styles.priceSymbol}> {symbol}</span>
       </span>
       {duration && <span className={styles.duration}>for {duration}</span>}
