@@ -178,7 +178,7 @@ export default function Steps({
         />
       )
     case 4:
-      return <SelectEnvironment service={service} asset={asset} />
+      return <SelectEnvironment computeEnvs={computeEnvs} />
     case 5:
       return (
         <ConfigureEnvironment

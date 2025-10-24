@@ -21,7 +21,7 @@ export const datasetSteps: StepContent[] = [
   {
     step: 2,
     title: 'Select C2D Environment',
-    component: <SelectEnvironment />
+    component: <SelectEnvironment computeEnvs={[]} />
   },
   {
     step: 3,
