@@ -36,13 +36,15 @@ export default function PageHeader({
           {description && (
             <Markdown text={description} className={styles.subtitle} />
           )}
-          <Button
-            style="primary"
-            href="https://onboarding.delta-dao.com/"
-            disableExternalLinkIndicator={true}
-          >
-            {'Join the ecosystem — Get onboarded now'}
-          </Button>
+          <div className={styles.cta}>
+            <Button
+              style="primary"
+              href="https://onboarding.delta-dao.com/"
+              disableExternalLinkIndicator={true}
+            >
+              {'Join the Pontus-X Ecosystem'}
+            </Button>
+          </div>
           <div className={styles.logoContainer}>
             <h4 className={styles.logoContainerTitle}>powered by</h4>
             <a
