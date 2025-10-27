@@ -527,6 +527,39 @@ body .inputSmall {
 .actions button:last-child:hover {
   background: var(--publish-primary-hover);
 }
+
+.escrowInfo {
+  display: flex;
+  flex-direction: row;
+}
+.escrowValidation {
+  /* margin-top: 20px; */
+  padding: 15px;
+  border-radius: 8px;
+  align-self: center;
+}
+
+.insufficientEscrow {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.sufficientEscrow {
+  background-color: #d1ecf1;
+  border: 1px solid #bee5eb;
+  color: #0c5460;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.escrowBreakdown {
+  font-size: 0.9em;
+  margin-top: 8px;
+  opacity: 0.8;
+}
 /* Tablet View (768px – 1024px) */
 @media screen and (max-width: 1024px) {
   .container {

@@ -63,6 +63,8 @@ export interface FormComputeData {
     c2d: string
   }
   totalPrice?: string
+  escrowFunds: string
+  jobPrice: string
   // New field for algorithm services
   algorithmServices?: Array<{
     id: string
