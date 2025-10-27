@@ -84,3 +84,8 @@
 .networkAlert {
   margin: var(--spacer) auto;
 }
+
+.cta {
+  margin-top: var(--spacer);
+  margin-bottom: calc(var(--spacer) * 2);
+}

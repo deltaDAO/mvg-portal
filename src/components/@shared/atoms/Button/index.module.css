@@ -45,15 +45,10 @@
 .primary,
 .primary:focus,
 .primary:active {
-  border: var(--border-size-md) solid var(--button-primary-border-color);
-  background: var(--button-primary-background);
-  transform: none;
+  background-image: var(--button-primary-background);
 }
-
 .primary:hover {
-  background: var(--button-primary-hover-background);
-  border-color: var(--button-primary-hover-border-color);
-  transform: none;
+  background-image: var(--button-primary-hover-background);
 }
 
 .ghost,

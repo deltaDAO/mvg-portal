@@ -6,6 +6,7 @@ import classNames from 'classnames/bind'
 import { ReactElement } from 'react'
 import NetworkStatus from '../NetworkStatus'
 import styles from './PageHeader.module.css'
+import Button from '../atoms/Button'
 
 const cx = classNames.bind(styles)
 
@@ -35,6 +36,15 @@ export default function PageHeader({
           {description && (
             <Markdown text={description} className={styles.subtitle} />
           )}
+          <div className={styles.cta}>
+            <Button
+              style="primary"
+              href="https://onboarding.delta-dao.com/"
+              disableExternalLinkIndicator={true}
+            >
+              {'Get onboarded now'}
+            </Button>
+          </div>
           <div className={styles.logoContainer}>
             <h4 className={styles.logoContainerTitle}>powered by</h4>
             <a
