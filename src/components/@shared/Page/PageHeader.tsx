@@ -42,7 +42,7 @@ export default function PageHeader({
               href="https://onboarding.delta-dao.com/"
               disableExternalLinkIndicator={true}
             >
-              {'Join the Pontus-X Ecosystem'}
+              {'Get onboarded now'}
             </Button>
           </div>
           <div className={styles.logoContainer}>
