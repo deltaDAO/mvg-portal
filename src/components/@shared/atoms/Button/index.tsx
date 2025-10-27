@@ -21,6 +21,7 @@ export interface ButtonProps {
   rel?: string
   title?: string
   arrow?: boolean
+  disableExternalLinkIndicator?: boolean
 }
 
 export default function Button({
@@ -31,6 +32,7 @@ export default function Button({
   size,
   style,
   arrow,
+  disableExternalLinkIndicator,
   ...props
 }: ButtonProps): ReactElement {
   const styleClasses = cx({
@@ -56,7 +58,7 @@ export default function Button({
       {...props}
     >
       {children}
-      &nbsp;&#8599;
+      {!disableExternalLinkIndicator && <>&nbsp;&#8599;</>}
     </a>
   ) : (
     <button className={styleClasses} {...props}>
