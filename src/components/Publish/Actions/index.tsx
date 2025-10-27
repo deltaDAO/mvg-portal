@@ -94,10 +94,6 @@ export default function Actions({
             const currentList = values.credentials[fieldName] || []
 
             if (!currentList.includes(lowerCaseAddress)) {
-              console.log(
-                `Auto-committing typed ${fieldName} address before navigation:`,
-                lowerCaseAddress
-              )
               const newList = [...currentList, lowerCaseAddress]
               setFieldValue(`credentials.${fieldName}`, newList)
               setFieldValue(`credentials.${fieldName}InputValue`, '')

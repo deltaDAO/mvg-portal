@@ -176,8 +176,6 @@ export default function Review({
 
   // error message
   const errorMessages: string[] = []
-  console.log('accessdetails!!!!', accessDetails)
-  console.log('asset!!!!', asset)
 
   // if (!isBalanceSufficient) {
   //   errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
@@ -831,12 +829,6 @@ export default function Review({
         !baseTokenBalance ||
         !compareAsBN(baseTokenBalance, `${price.value}`)
       ) {
-        console.log('[compute-debug] Insufficient balance:', {
-          symbol: price.symbol,
-          required: price.value,
-          available: baseTokenBalance,
-          balance
-        })
         sufficient = false
         break
       }
@@ -864,18 +856,7 @@ export default function Review({
   }, [verificationQueue, setFieldValue, validateForm])
 
   useEffect(() => {
-    console.log('[totalPriceToDisplay] Triggered useEffect')
-    console.log('totalPrices:', totalPrices)
-    console.log('consumeMarketFee:', consumeMarketFee)
-    console.log('accessDetails.price:', accessDetails?.price)
-    console.log('algoOrderPrice:', algoOrderPrice)
-    console.log('selectedAlgorithmAsset:', selectedAlgorithmAsset)
-    console.log('serviceIndex:', serviceIndex)
-
     if (!totalPrices || totalPrices.length === 0) {
-      console.log(
-        '[totalPriceToDisplay] totalPrices empty, skipping calculation'
-      )
       return
     }
 
@@ -886,7 +867,6 @@ export default function Review({
         MAX_DECIMALS
       )
     )
-    console.log('datasetFee:', datasetFee.toString())
 
     const algorithmFee = new Decimal(
       calculateAlgorithmMarketFee(
@@ -897,19 +877,12 @@ export default function Review({
         MAX_DECIMALS
       )
     )
-    console.log('algorithmFee:', algorithmFee.toString())
 
     const sumTotalPrices = totalPrices.reduce((acc, item) => {
-      console.log('Adding totalPrices item:', item)
       return acc.add(new Decimal(item.value || 0))
     }, new Decimal(0))
-    console.log('sumTotalPrices:', sumTotalPrices.toString())
 
     const finalTotal = sumTotalPrices.add(datasetFee).add(algorithmFee)
-    console.log(
-      'finalTotal:',
-      finalTotal.toDecimalPlaces(MAX_DECIMALS).toString()
-    )
 
     setTotalPriceToDisplay(finalTotal.toDecimalPlaces(MAX_DECIMALS).toString())
   }, [
@@ -931,23 +904,6 @@ export default function Review({
         selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable,
       isAccountIdWhitelisted
     }
-
-    console.log(
-      '[compute-debug] PurchaseButton disabled conditions:',
-      disabledConditions
-    )
-    console.log(
-      '[compute-debug] verificationQueue statuses:',
-      verificationQueue.map((item) => ({
-        id: item.id,
-        type: item.type,
-        status: item.status
-      }))
-    )
-    console.log(
-      '[compute-debug] credentialsVerified field value:',
-      values.credentialsVerified
-    )
 
     return (
       <ButtonBuy

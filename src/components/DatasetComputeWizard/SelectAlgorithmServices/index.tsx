@@ -54,7 +54,6 @@ const SelectAlgorithmServices = ({
   ddoListAlgorithms = []
 }: SelectAlgorithmServicesProps) => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  console.log('values!!! ', values)
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm | null>(
     null
   )

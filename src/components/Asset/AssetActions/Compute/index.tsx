@@ -348,12 +348,6 @@ export default function Compute({
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
             if (allowanceNow.gte(amountWei)) {
-              console.log(
-                `Allowance confirmed on-chain: ${ethers.utils.formatUnits(
-                  allowanceNow,
-                  18
-                )} OCEAN`
-              )
               break
             }
             console.log(

@@ -128,7 +128,6 @@ export default function FormStartCompute({
     setFieldValue,
     values
   }: FormikContextType<ComputeDatasetForm> = useFormikContext()
-  console.log('Field values ', values)
   const { isAssetNetwork } = useAsset() // TODO - is this needed?
 
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
@@ -620,23 +619,7 @@ export default function FormStartCompute({
                       serviceIndex
                     ]?.id
                   )
-                console.log('FormComputeDataset algorithm credential check:', {
-                  ssiEnabled: appConfig.ssiEnabled,
-                  selectedAlgorithmAsset: !!selectedAlgorithmAsset,
-                  verifierSessionCache: !!verifierSessionCache,
-                  algorithmId: selectedAlgorithmAsset?.id,
-                  serviceId:
-                    selectedAlgorithmAsset?.credentialSubject?.services?.[
-                      serviceIndex
-                    ]?.id,
-                  sessionId: lookupVerifierSessionId(
-                    `${selectedAlgorithmAsset?.id}`,
-                    selectedAlgorithmAsset?.credentialSubject?.services?.[
-                      serviceIndex
-                    ]?.id
-                  ),
-                  hasAlgorithmSession: !!hasAlgorithmSession
-                })
+
                 return hasAlgorithmSession ? (
                   <>
                     <FormErrorGroup

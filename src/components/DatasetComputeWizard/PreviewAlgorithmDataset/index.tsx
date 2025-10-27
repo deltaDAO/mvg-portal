@@ -51,8 +51,6 @@ const PreviewAlgorithmDataset = ({
       return value['@value']
     return ''
   }
-  console.log('selected algo asset ', selectedAlgorithmAsset)
-  console.log('selected algo asset ', values)
 
   // Initialize from selectedAlgorithmAsset if provided, otherwise from form value
   useEffect(() => {

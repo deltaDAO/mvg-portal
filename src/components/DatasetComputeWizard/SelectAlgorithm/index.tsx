@@ -14,7 +14,6 @@ interface SelectAlgorithmProps {
 export default function SelectAlgorithm({
   algorithms
 }: SelectAlgorithmProps): ReactElement {
-  console.log('Algorithms ', algorithms)
   const { address: accountId } = useAccount()
   const { values } = useFormikContext<FormComputeData>()
 

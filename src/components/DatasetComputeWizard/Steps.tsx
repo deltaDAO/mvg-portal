@@ -130,37 +130,6 @@ export default function Steps({
 
   const currentStep = values?.user?.stepCurrent ?? 1
 
-  console.log(
-    'Steps component - currentStep:',
-    currentStep,
-    'isAlgorithm:',
-    isAlgorithm,
-    'values.user:',
-    formikValues.user,
-    'step type:',
-    typeof currentStep
-  )
-  console.log('🚀 ~ Steps ~ selectedAlgorithmAsset:', selectedAlgorithmAsset)
-  console.log(
-    '🚀 ~ Steps ~ selectedAlgorithmAsset?.credentialSubject?.services:',
-    selectedAlgorithmAsset?.credentialSubject?.services
-  )
-  console.log(
-    '🚀 ~ Steps ~ selectedAlgorithmAsset?.credentialSubject?.metadata:',
-    selectedAlgorithmAsset?.credentialSubject?.metadata
-  )
-  console.log(
-    '🔍 ~ Steps ~ Selected Algorithm:',
-    selectedAlgorithmAsset?.credentialSubject?.metadata?.name || 'No name'
-  )
-  console.log(
-    '🔍 ~ Steps ~ Selected Algorithm Services:',
-    selectedAlgorithmAsset?.credentialSubject?.services?.map((s) => ({
-      id: s.id,
-      name: s.name,
-      type: s.type
-    })) || 'No services'
-  )
   switch (currentStep) {
     case 1:
       return <SelectAlgorithm algorithms={algorithms} />
