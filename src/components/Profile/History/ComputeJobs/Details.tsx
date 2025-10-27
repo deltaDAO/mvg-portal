@@ -122,6 +122,33 @@ export default function Details({
 }): ReactElement {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const isMobile = useIsMobile()
+  function formatDuration(seconds: number): string {
+    if (isNaN(seconds) || seconds < 0) return '—'
+
+    const units = [
+      { label: 'year', secs: 365 * 24 * 3600 },
+      { label: 'month', secs: 30 * 24 * 3600 },
+      { label: 'day', secs: 24 * 3600 },
+      { label: 'hour', secs: 3600 },
+      { label: 'minute', secs: 60 },
+      { label: 'second', secs: 1 }
+    ]
+
+    let remaining = seconds
+    const parts: string[] = []
+
+    for (const { label, secs } of units) {
+      const value = Math.floor(remaining / secs)
+      if (value > 0) {
+        parts.push(`${value} ${label}${value > 1 ? 's' : ''}`)
+        remaining -= value * secs
+      }
+    }
+    if (parts.length === 0 && remaining > 0) {
+      parts.push(`${remaining.toFixed(3)} seconds`)
+    }
+    return parts.slice(0, 3).join(' ')
+  }
 
   return (
     <>
@@ -178,6 +205,14 @@ export default function Details({
                       relative
                     />
                   }
+                />
+              )}
+              {job.dateFinished && job.dateCreated && (
+                <MetaItem
+                  title="Duration"
+                  content={formatDuration(
+                    Number(job.dateFinished) - Number(job.dateCreated)
+                  )}
                 />
               )}
 
