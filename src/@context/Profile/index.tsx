@@ -92,10 +92,6 @@ function ProfileProvider({
         )
         setAssets(result.results)
         setAssetsTotal(result.totalResults)
-        LoggerInstance.log(
-          `[profile] Fetched ${result.totalResults} assets.`,
-          result.results
-        )
 
         // Hint: this would only make sense if we "search" in all subcomponents
         // against this provider's state, meaning filtering via js rather then sending
@@ -160,11 +156,6 @@ function ProfileProvider({
 
       setDownloads(downloadedAssets)
       setDownloadsTotal(totalResults)
-
-      LoggerInstance.log(
-        `[profile] Fetched ${downloadedAssets.length} download orders.`,
-        downloadedAssets
-      )
     },
     [accountId, chainIds, ownAccount]
   )
@@ -227,10 +218,6 @@ function ProfileProvider({
         )
         setRevenue(totalRevenue)
         setSales(totalOrders)
-        LoggerInstance.log(
-          `[profile] Fetched sales number: ${totalOrders}.`,
-          totalOrders
-        )
       } catch (error) {
         LoggerInstance.error(error.message)
       }
@@ -252,10 +239,6 @@ function ProfileProvider({
       // const lockedFunds = parseInt(formatUnits(funds.locked, 18), 10)
       const availableFunds = formatUnits(funds.available, 18)
       const lockedFunds = formatUnits(funds.locked, 18)
-      console.log('[profile] Fetched escrow funds:', {
-        availableFunds,
-        lockedFunds
-      })
       setEscrowLockedFunds(lockedFunds)
       setEscrowAvailableFunds(availableFunds)
     } catch (error) {
