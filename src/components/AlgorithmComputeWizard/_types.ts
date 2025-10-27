@@ -60,8 +60,6 @@ export interface FormComputeData {
     c2d: string
   }
   totalPrice?: string
-  escrowFunds: string
-  jobPrice: string
   algorithmServices?: Array<{
     id?: string
     name?: string

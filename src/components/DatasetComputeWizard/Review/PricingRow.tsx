@@ -19,7 +19,6 @@ interface PricingRowProps {
   onAction?: () => void
   actionDisabled?: boolean
   credentialStatus?: 'verified' | 'checking' | 'failed' | 'unverified'
-  valueType?: 'escrow' | 'deposit' | 'default'
   assetId?: string
   serviceId?: string
   onCredentialRefresh?: () => void
@@ -40,8 +39,7 @@ export default function PricingRow({
   assetId,
   serviceId,
   onCredentialRefresh,
-  infoMessage,
-  valueType
+  infoMessage
 }: PricingRowProps): ReactElement {
   const {
     credentialStatus: expirationStatus,
@@ -116,7 +114,7 @@ export default function PricingRow({
         </div>
       </div>
       <div className={styles.priceInfo}>
-        <PriceDisplay value={value} duration={duration} valueType={valueType} />
+        <PriceDisplay value={value} duration={duration} />
         {infoMessage && !actionLabel && (
           <div style={{ marginTop: '4px' }}>
             <Alert state="info">{infoMessage}</Alert>
