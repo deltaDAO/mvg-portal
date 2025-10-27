@@ -18,7 +18,11 @@ export default function PriceDisplay({
         <span className={styles.priceNumber}>{value}</span>
         <span className={styles.priceSymbol}> {symbol}</span>
       </span>
-      {duration && <span className={styles.duration}>for {duration}</span>}
+      {duration && (
+        <span className={styles.duration}>
+          for {duration === '0s' ? 'forever' : duration}
+        </span>
+      )}
     </div>
   )
 }
