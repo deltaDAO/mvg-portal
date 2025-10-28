@@ -25,7 +25,6 @@ import appConfig, {
 import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { da } from 'date-fns/locale'
 
 export async function initializeProvider(
   asset: AssetExtended,
@@ -140,7 +139,6 @@ export async function order(
         swapMarketFee: consumeMarketFixedSwapFee,
         marketFeeAddress
       } as FreOrderParams
-
       if (accessDetails.templateId === 1) {
         if (!hasDatatoken) {
           const approveAmount = orderPriceAndFees?.price
@@ -183,7 +181,10 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
-        const providerFeeWei = providerFees?.providerFeeAmount || '0'
+        const providerFeeWei =
+          providerFees?.providerFeeAmount ||
+          orderPriceAndFees.providerFee?.providerFeeAmount ||
+          '0'
         const baseTokenDecimals = accessDetails.baseToken?.decimals || 18
         const providerFeeHuman = ethers.utils.formatUnits(
           providerFeeWei,
