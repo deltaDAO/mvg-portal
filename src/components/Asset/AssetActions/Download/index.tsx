@@ -40,21 +40,18 @@ import ConsumerParameters, {
   parseConsumerParameterValues
 } from '../ConsumerParameters'
 import Loader from '@shared/atoms/Loader'
-import AlgorithmDatasetsListForCompute from '../Compute/AlgorithmDatasetsListForCompute'
 import { Row } from '../Row'
 
 import { AssetPrice } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
-import appConfig, {
-  consumeMarketFixedSwapFee,
-  customProviderUrl
-} from 'app.config.cjs'
+import appConfig, { consumeMarketFixedSwapFee } from 'app.config.cjs'
 import styles from './index.module.css'
 
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
+import { formatUnits } from 'ethers/lib/utils.js'
 
 export default function Download({
   accountId,
@@ -146,11 +143,7 @@ export default function Download({
 
     // get full price and fees
     async function init() {
-      if (
-        accessDetails.addressOrId === ZERO_ADDRESS ||
-        accessDetails.type === 'free'
-      )
-        return
+      if (accessDetails.addressOrId === ZERO_ADDRESS) return
 
       try {
         !orderPriceAndFees && setIsPriceLoading(true)
@@ -413,6 +406,15 @@ export default function Download({
                 ).toFixed(1)}%)`}
               />
               <Row
+                price={
+                  formatUnits(
+                    orderPriceAndFees?.providerFee?.providerFeeAmount
+                  ) || '0'
+                }
+                symbol={price.tokenSymbol}
+                type={`PROVIDER FEE`}
+              />
+              <Row
                 price={new Decimal(
                   new Decimal(
                     Number(orderPriceAndFees?.price) || price.value || 0
@@ -428,6 +430,13 @@ export default function Download({
                     )
                   )
                   .add(new Decimal(orderPriceAndFees?.opcFee || 0))
+                  .add(
+                    new Decimal(
+                      formatUnits(
+                        orderPriceAndFees?.providerFee?.providerFeeAmount || 0
+                      )
+                    )
+                  )
                   .toString()}
                 symbol={price.tokenSymbol}
               />
@@ -569,7 +578,21 @@ export default function Download({
                       <div className={styles.noMarginAlert}>
                         <Alert
                           state="info"
-                          text="This dataset is free to use. Please note that network gas fees still apply, even when using free assets."
+                          text={
+                            parseFloat(
+                              formatUnits(
+                                orderPriceAndFees?.providerFee
+                                  ?.providerFeeAmount || '0',
+                                18
+                              )
+                            ) > 0
+                              ? `This dataset is free to use. Please note that a provider fee of ${formatUnits(
+                                  orderPriceAndFees?.providerFee
+                                    ?.providerFeeAmount || '0',
+                                  18
+                                )} OCEAN applies, as well as possible network gas fees.`
+                              : `This dataset is free to use. Please note that network gas fees still apply, even when using free assets.`
+                          }
                         />
                       </div>
                     )}

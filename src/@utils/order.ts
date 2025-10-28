@@ -20,12 +20,12 @@ import appConfig, {
   marketFeeAddress,
   consumeMarketOrderFee,
   consumeMarketFixedSwapFee,
-  customProviderUrl
+  customProviderUrl,
+  oceanTokenAddress
 } from '../../app.config.cjs'
 import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { da } from 'date-fns/locale'
 
 export async function initializeProvider(
   asset: AssetExtended,
@@ -140,7 +140,6 @@ export async function order(
         swapMarketFee: consumeMarketFixedSwapFee,
         marketFeeAddress
       } as FreOrderParams
-
       if (accessDetails.templateId === 1) {
         if (!hasDatatoken) {
           const approveAmount = orderPriceAndFees?.price
@@ -183,7 +182,10 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
-        const providerFeeWei = providerFees?.providerFeeAmount || '0'
+        const providerFeeWei =
+          providerFees?.providerFeeAmount ||
+          orderPriceAndFees.providerFee?.providerFeeAmount ||
+          '0'
         const baseTokenDecimals = accessDetails.baseToken?.decimals || 18
         const providerFeeHuman = ethers.utils.formatUnits(
           providerFeeWei,
@@ -251,10 +253,6 @@ export async function order(
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
         }
-        console.log('Try to buy with:', {
-          orderParams,
-          freParams
-        })
         const buyTx = await datatoken.buyFromFreAndOrder(
           accessDetails.datatoken.address,
           orderParams,
@@ -285,6 +283,29 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
+        console.log('providerFee', providerFees, orderPriceAndFees)
+        const providerFeeWei =
+          providerFees?.providerFeeAmount ||
+          orderPriceAndFees.providerFee?.providerFeeAmount ||
+          '0'
+        const baseTokenDecimals = accessDetails.baseToken?.decimals || 18
+        const providerFeeHuman = ethers.utils.formatUnits(
+          providerFeeWei,
+          baseTokenDecimals
+        )
+        console.log('approvedAmount', providerFeeHuman)
+        const tx: any = await approve(
+          signer,
+          config,
+          accountId,
+          oceanTokenAddress,
+          accessDetails.datatoken.address,
+          providerFeeHuman,
+          false
+        )
+
+        const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
+        console.log('[order] TEMPLATE 2 free approve tx confirmed:', txApprove)
         return await datatoken.buyFromDispenserAndOrder(
           service.datatokenAddress,
           orderParams,
