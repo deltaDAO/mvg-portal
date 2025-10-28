@@ -143,11 +143,7 @@ export default function Download({
 
     // get full price and fees
     async function init() {
-      if (
-        accessDetails.addressOrId === ZERO_ADDRESS ||
-        accessDetails.type === 'free'
-      )
-        return
+      if (accessDetails.addressOrId === ZERO_ADDRESS) return
 
       try {
         !orderPriceAndFees && setIsPriceLoading(true)
@@ -582,7 +578,21 @@ export default function Download({
                       <div className={styles.noMarginAlert}>
                         <Alert
                           state="info"
-                          text="This dataset is free to use. Please note that network gas fees still apply, even when using free assets."
+                          text={
+                            parseFloat(
+                              formatUnits(
+                                orderPriceAndFees?.providerFee
+                                  ?.providerFeeAmount || '0',
+                                18
+                              )
+                            ) > 0
+                              ? `This dataset is free to use. Please note that a provider fee of ${formatUnits(
+                                  orderPriceAndFees?.providerFee
+                                    ?.providerFeeAmount || '0',
+                                  18
+                                )} OCEAN applies, as well as possible network gas fees.`
+                              : `This dataset is free to use. Please note that network gas fees still apply, even when using free assets.`
+                          }
                         />
                       </div>
                     )}
