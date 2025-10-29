@@ -350,10 +350,6 @@ export default function Compute({
             if (allowanceNow.gte(amountWei)) {
               break
             }
-            console.log(
-              'Waiting for allowance confirmation...',
-              allowanceNow.toString()
-            )
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
         } else {

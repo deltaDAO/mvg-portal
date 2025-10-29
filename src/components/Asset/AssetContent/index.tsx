@@ -12,10 +12,9 @@ import MetaMain from './MetaMain'
 import styles from './index.module.css'
 import NetworkName from '@shared/NetworkName'
 import content from '../../../../content/purgatory.json'
-import Button from '@shared/atoms/Button'
 import RelatedAssets from '../RelatedAssets'
 import Web3Feedback from '@components/@shared/Web3Feedback'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { decodePublish } from '@utils/invoice/publishInvoice'
 import ServiceCard from './ServiceCard'
 import { getPdf } from '@utils/invoice/createInvoice'
@@ -23,9 +22,7 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
 import MetaInfo from './MetaMain/MetaInfo'
 import EditIcon from '@images/edit.svg'
-import { useRouter } from 'next/router'
 import ComputeJobs from '@components/@shared/ComputeJobs'
-import ComputeWizard from '@components/DatasetComputeWizard'
 
 export default function AssetContent({
   asset
@@ -34,9 +31,8 @@ export default function AssetContent({
 }): ReactElement {
   const { isInPurgatory, purgatoryData, isOwner, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
   const { allowExternalContent, debug } = useUserPreferences()
-  const [receipts, setReceipts] = useState([])
+  const [receipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
   const [selectedService, setSelectedService] = useState<number | undefined>()
 
@@ -45,16 +41,8 @@ export default function AssetContent({
   const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
   const [jsonInvoice, setJsonInvoice] = useState(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [showCompute, setShowCompute] = useState(false)
-  const [showComputeWizard, setShowComputeWizard] = useState(false)
-  const [dtBalance, setDtBalance] = useState<string>('0')
-  const [fileMetadata, setFileMetadata] = useState<any>(null)
-  const [isAccountIdWhitelisted, setIsAccountIdWhitelisted] =
-    useState<boolean>(false)
   const [computeJobsRefetchTrigger, setComputeJobsRefetchTrigger] = useState(0)
-  const router = useRouter()
   const [expanded, setExpanded] = useState(false)
-
   const availableServices =
     asset.credentialSubject?.services?.filter(
       (service) => service.state === 0
@@ -64,13 +52,6 @@ export default function AssetContent({
   const computeServiceIndex = asset.credentialSubject?.services?.findIndex(
     (service) => service.type === 'compute'
   )
-
-  function handleComputeClick() {
-    if (computeServiceIndex !== undefined && computeServiceIndex >= 0) {
-      setSelectedService(computeServiceIndex)
-      setShowCompute(true)
-    }
-  }
 
   async function handleGeneratePdf(id: string, tx: string) {
     try {
@@ -233,10 +214,12 @@ export default function AssetContent({
             <MetaFull ddo={asset} />
             {debug === true && <DebugOutput title="DDO" output={asset} />}
           </div>
-          <ComputeJobs
-            asset={asset}
-            refetchTrigger={computeJobsRefetchTrigger}
-          />
+          {computeServiceIndex !== undefined && computeServiceIndex >= 0 && (
+            <ComputeJobs
+              asset={asset}
+              refetchTrigger={computeJobsRefetchTrigger}
+            />
+          )}
         </div>
 
         <div className={styles.actions}>

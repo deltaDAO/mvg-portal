@@ -368,10 +368,6 @@ export default function ComputeWizard({
           if (allowanceNow.gte(amountWei)) {
             break
           }
-          console.log(
-            'Waiting for allowance confirmation...',
-            allowanceNow.toString()
-          )
           await new Promise((resolve) => setTimeout(resolve, 1000))
         }
         // } else {
