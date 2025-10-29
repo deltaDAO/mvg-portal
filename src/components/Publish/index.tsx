@@ -296,6 +296,7 @@ export default function PublishPage({
     <Formik
       initialValues={initialValues}
       validationSchema={validationSchema}
+      validateOnMount
       onSubmit={async (values) => {
         // kick off publishing
         await handleSubmit(values)

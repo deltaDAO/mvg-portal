@@ -39,6 +39,11 @@ export default function Tooltip(props: TippyProps): ReactElement {
 
   const styleClasses = `${stylesTooltip.tooltip} ${className || ''}`
 
+  const appendTarget =
+    typeof window !== 'undefined'
+      ? (document.querySelector('body') as any)
+      : undefined
+
   return (
     <Tippy
       interactive
@@ -55,9 +60,7 @@ export default function Tooltip(props: TippyProps): ReactElement {
           </div>
         </animated.div>
       )}
-      appendTo={
-        typeof document !== 'undefined' && document.querySelector('body')
-      }
+      appendTo={appendTarget}
       onMount={onMount}
       onHide={onHide}
       // animation

@@ -6,11 +6,11 @@ import {
   fetchExchange
 } from 'urql'
 import { refocusExchange } from '@urql/exchange-refocus'
-import { useState, useEffect, ReactNode, ReactElement } from 'react'
+import { ReactNode, ReactElement } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 
-let urqlClient: Client
+let urqlClient: Client | undefined
 
 function createUrqlClient(subgraphUri: string) {
   const client = createClient({
@@ -21,7 +21,22 @@ function createUrqlClient(subgraphUri: string) {
 }
 
 export function getUrqlClientInstance(): Client {
-  return urqlClient
+  return urqlClient as Client
+}
+
+// Initialize at module load to be available during SSR
+try {
+  const oceanConfig = getOceanConfig(1)
+  if (!oceanConfig?.subgraphUri) {
+    LoggerInstance.error(
+      'No subgraphUri defined, preventing UrqlProvider from initialization.'
+    )
+  } else {
+    urqlClient = createUrqlClient(oceanConfig.subgraphUri)
+    LoggerInstance.log(`[URQL] Client connected to ${oceanConfig.subgraphUri}`)
+  }
+} catch (e) {
+  LoggerInstance.error('Failed to initialize URQL client', (e as any)?.message)
 }
 
 export default function UrqlClientProvider({
@@ -29,31 +44,11 @@ export default function UrqlClientProvider({
 }: {
   children: ReactNode
 }): ReactElement {
-  //
-  // Set a default client here based on ETH Mainnet, as that's required for
-  // urql to work.
-  // Throughout code base this client is then used and altered by passing
-  // a new queryContext holding different subgraph URLs.
-  //
-  const [client, setClient] = useState<Client>()
-
-  useEffect(() => {
-    const oceanConfig = getOceanConfig(1)
-
-    if (!oceanConfig?.subgraphUri) {
-      LoggerInstance.error(
-        'No subgraphUri defined, preventing UrqlProvider from initialization.'
-      )
-      return
-    }
-
-    const newClient = createUrqlClient(oceanConfig.subgraphUri)
-    urqlClient = newClient
-    setClient(newClient)
-    LoggerInstance.log(`[URQL] Client connected to ${oceanConfig.subgraphUri}`)
-  }, [])
-
-  return client ? <Provider value={client}>{children}</Provider> : <></>
+  return urqlClient ? (
+    <Provider value={urqlClient}>{children}</Provider>
+  ) : (
+    <>{children}</>
+  )
 }
 
 export { UrqlClientProvider }
