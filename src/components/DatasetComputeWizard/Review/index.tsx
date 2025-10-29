@@ -30,6 +30,8 @@ import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
+import { Signer } from 'ethers'
+import { formatUnits } from 'ethers/lib/utils.js'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -46,6 +48,7 @@ export default function Review({
   isRequestingPrice = false,
   asset,
   service,
+  signer,
   accessDetails,
   algorithms,
   ddoListAlgorithms,
@@ -82,10 +85,13 @@ export default function Review({
   setAllResourceValues,
   jobs,
   isLoadingJobs,
-  refetchJobs
+  refetchJobs,
+  datasetProviderFeeProp,
+  algorithmProviderFeeProp
 }: {
   asset?: AssetExtended
   service?: Service
+  signer?: Signer
   accessDetails?: AccessDetails
   algorithms?: AssetSelectionAsset[]
   ddoListAlgorithms?: Asset[]
@@ -132,6 +138,8 @@ export default function Review({
   isLoadingJobs?: boolean
   refetchJobs?: () => void
   isRequestingPrice?: boolean
+  datasetProviderFeeProp?: string
+  algorithmProviderFeeProp?: string
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -159,7 +167,14 @@ export default function Review({
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
   )
+  const [loading, setLoading] = useState(false)
   const [serviceIndex, setServiceIndex] = useState(0)
+  const [datasetProviderFee, setDatasetProviderFee] = useState(
+    datasetProviderFeeProp || null
+  )
+  const [algorithmProviderFee, setAlgorithmProviderFee] = useState(
+    algorithmProviderFeeProp || null
+  )
   const [totalPrices, setTotalPrices] = useState([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
   const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
@@ -519,6 +534,18 @@ export default function Review({
           ? (paidResources?.jobDuration || 0) * 60
           : (freeResources?.jobDuration || 0) * 60
       )
+    }
+  ]
+  const datasetProviderFees = [
+    {
+      name: 'DATASET PROVIDER FEES',
+      value: datasetProviderFee ? formatUnits(datasetProviderFee) : '0'
+    }
+  ]
+  const algorithmProviderFees = [
+    {
+      name: 'ALGORITHM PROVIDER FEES',
+      value: algorithmProviderFee ? formatUnits(algorithmProviderFee) : '0'
     }
   ]
 
@@ -882,7 +909,19 @@ export default function Review({
       return acc.add(new Decimal(item.value || 0))
     }, new Decimal(0))
 
-    const finalTotal = sumTotalPrices.add(datasetFee).add(algorithmFee)
+    const finalTotal = sumTotalPrices
+      .add(datasetFee)
+      .add(algorithmFee)
+      .add(
+        datasetProviderFees[0]?.value
+          ? new Decimal(datasetProviderFees[0].value)
+          : new Decimal(0)
+      )
+      .add(
+        algorithmProviderFees[0]?.value
+          ? new Decimal(algorithmProviderFees[0].value)
+          : new Decimal(0)
+      )
 
     setTotalPriceToDisplay(finalTotal.toDecimalPlaces(MAX_DECIMALS).toString())
   }, [
@@ -891,64 +930,18 @@ export default function Review({
     accessDetails?.price,
     algoOrderPrice,
     selectedAlgorithmAsset,
-    serviceIndex
+    serviceIndex,
+    datasetProviderFees,
+    algorithmProviderFees
   ])
+  useEffect(() => {
+    if (datasetProviderFeeProp) setDatasetProviderFee(datasetProviderFeeProp)
+  }, [datasetProviderFeeProp])
 
-  const PurchaseButton = () => {
-    const disabledConditions = {
-      isComputeButtonDisabled,
-      isValid,
-      isBalanceSufficient,
-      isAssetNetwork,
-      isAlgorithmPurchasable:
-        selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable,
-      isAccountIdWhitelisted
-    }
-
-    return (
-      <ButtonBuy
-        action="compute"
-        disabled={
-          isComputeButtonDisabled ||
-          !isValid ||
-          !isBalanceSufficient ||
-          !isAssetNetwork ||
-          !selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable ||
-          !isAccountIdWhitelisted
-        }
-        hasPreviousOrder={hasPreviousOrder}
-        hasDatatoken={hasDatatoken}
-        btSymbol={accessDetails.baseToken?.symbol}
-        dtSymbol={accessDetails.datatoken?.symbol}
-        dtBalance={dtBalance}
-        assetTimeout={assetTimeout}
-        assetType={asset.credentialSubject?.metadata.type}
-        hasPreviousOrderSelectedComputeAsset={
-          hasPreviousOrderSelectedComputeAsset
-        }
-        hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-        dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
-        dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
-        selectedComputeAssetType={selectedComputeAssetType}
-        stepText={stepText}
-        isLoading={isLoading}
-        type="submit"
-        priceType={accessDetails.type}
-        algorithmPriceType={selectedAlgorithmAsset?.accessDetails?.[0]?.type}
-        isBalanceSufficient={isBalanceSufficient}
-        isConsumable={isConsumable}
-        consumableFeedback={consumableFeedback}
-        isAlgorithmConsumable={
-          selectedAlgorithmAsset?.accessDetails?.[0]?.isPurchasable
-        }
-        isSupportedOceanNetwork={isSupportedOceanNetwork}
-        hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
-        retry={retry}
-        isAccountConnected={isConnected}
-        computeWizard={true}
-      />
-    )
-  }
+  useEffect(() => {
+    if (algorithmProviderFeeProp)
+      setAlgorithmProviderFee(algorithmProviderFeeProp)
+  }, [algorithmProviderFeeProp])
 
   return (
     <div className={styles.container}>
@@ -1032,6 +1025,24 @@ export default function Review({
           {marketFees.map((fee) => (
             <PricingRow key={fee.name} itemName={fee.name} value={fee.value} />
           ))}
+          {datasetProviderFee
+            ? datasetProviderFees.map((fee) => (
+                <PricingRow
+                  key={fee.name}
+                  itemName={fee.name}
+                  value={fee.value}
+                />
+              ))
+            : null}
+          {algorithmProviderFee
+            ? algorithmProviderFees.map((fee) => (
+                <PricingRow
+                  key={fee.name}
+                  itemName={fee.name}
+                  value={fee.value}
+                />
+              ))
+            : null}
         </div>
 
         {/* Total Payment Section */}

@@ -123,7 +123,13 @@ export default function ComputeWizard({
 
   const [validOrderTx, setValidOrderTx] = useState('')
   const [validAlgorithmOrderTx] = useState('')
-
+  const [extraFeesLoaded, setExtraFeesLoaded] = useState(false)
+  const [datasetProviderFee, setDatasetProviderFee] = useState<string | null>(
+    null
+  )
+  const [algorithmProviderFee, setAlgorithmProviderFee] = useState<
+    string | null
+  >(null)
   const [isConsumablePrice, setIsConsumablePrice] = useState(true)
   const [isConsumableaAlgorithmPrice] = useState(true)
   const [computeStatusText, setComputeStatusText] = useState('')
@@ -961,6 +967,130 @@ export default function ComputeWizard({
     fetchData()
   }, [asset, accountId, newCancelToken])
 
+  async function initComputeProvider(
+    formikValues: FormComputeData
+  ): Promise<any> {
+    try {
+      if (
+        !asset || // this is the algorithm asset
+        !accountId ||
+        !signer ||
+        !formikValues?.computeEnv ||
+        !selectedDatasetAsset ||
+        selectedDatasetAsset.length === 0
+      )
+        throw new Error(
+          'Missing required parameters for provider initialization.'
+        )
+
+      // 🧮 1️⃣ Prepare datasets (multiple)
+      const datasetServices: { asset: AssetExtended; service: Service }[] =
+        selectedDatasetAsset.map((ds, i) => {
+          const datasetEntry = formikValues.dataset?.[i]
+          const selectedServiceId = datasetEntry?.includes('|')
+            ? datasetEntry.split('|')[1]
+            : ds.credentialSubject.services?.[0]?.id
+
+          const selectedService =
+            ds.credentialSubject.services.find(
+              (s) => s.id === selectedServiceId
+            ) || ds.credentialSubject.services?.[0]
+
+          return {
+            asset: ds,
+            service: selectedService
+          }
+        })
+
+      const datasetsForProvider = datasetServices.map(({ asset, service }) => {
+        const datasetIndex = asset.credentialSubject.services.findIndex(
+          (s) => s.id === service.id
+        )
+        if (datasetIndex === -1)
+          throw new Error(`ServiceId ${service.id} not found in ${asset.id}`)
+
+        return {
+          asset,
+          service,
+          accessDetails: asset.accessDetails[datasetIndex],
+          sessionId: lookupVerifierSessionId(asset.id, service.id)
+        }
+      })
+
+      // 🧩 2️⃣ Algorithm details (your current asset)
+      const algorithmAsset = asset
+      const algoServices = algorithmAsset.credentialSubject.services || []
+      const algoServiceId = service?.id || algoServices?.[0]?.id // fallback if no service selected
+
+      const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
+      if (algoIndex === -1)
+        throw new Error(`Algorithm serviceId ${algoServiceId} not found.`)
+
+      const algoService = algoServices[algoIndex]
+      const algoSessionId = lookupVerifierSessionId(
+        algorithmAsset.id,
+        algoService.id
+      )
+
+      // ⚙️ 3️⃣ Compute environment + resources
+      const selectedComputeEnv = formikValues.computeEnv
+      const selectedResources =
+        allResourceValues?.[`${selectedComputeEnv.id}_paid`] ||
+        allResourceValues?.[`${selectedComputeEnv.id}_free`]
+
+      // 🚀 4️⃣ Initialize Provider
+      const initializedProvider = await initializeProviderForComputeMulti(
+        datasetsForProvider,
+        algorithmAsset,
+        algoSessionId,
+        signer,
+        selectedComputeEnv,
+        selectedResources,
+        algoIndex
+      )
+
+      if (!initializedProvider)
+        throw new Error('Provider initialization failed.')
+
+      // 💰 5️⃣ Extract fees
+      const datasetFees =
+        initializedProvider?.datasets?.map(
+          (ds) => ds?.providerFee?.providerFeeAmount || '0'
+        ) || []
+
+      // Sum all dataset fees as BigNumber (optional, if you want total)
+      const totalDatasetFee = datasetFees.reduce(
+        (acc, fee) => acc + Number(fee),
+        0
+      )
+      const algorithmFee =
+        initializedProvider?.algorithm?.providerFee?.providerFeeAmount || null
+
+      setDatasetProviderFee(totalDatasetFee.toString())
+      setAlgorithmProviderFee(algorithmFee)
+
+      // 💾 6️⃣ Save provider response
+      setInitializedProviderResponse(initializedProvider)
+      setExtraFeesLoaded(true)
+
+      toast.success('Compute provider initialized successfully.')
+      console.log('✅ Initialized Provider:', initializedProvider)
+
+      // Return it for handleInitCompute or compute start
+      return initializedProvider
+    } catch (error: any) {
+      console.error('❌ Error initializing provider:', error)
+      toast.error(error.message || 'Failed to initialize provider.')
+      throw error
+    }
+  }
+
+  async function handleInitCompute(formikValues: FormComputeData) {
+    setIsOrdering(true)
+    await initComputeProvider(formikValues)
+    setIsOrdering(false)
+  }
+
   if (!asset) {
     return null
   }
@@ -1100,6 +1230,8 @@ export default function ComputeWizard({
                         isAlgorithm={isAlgorithm}
                         formikValues={formikContext.values}
                         setFieldValue={formikContext.setFieldValue}
+                        datasetProviderFeeProp={datasetProviderFee}
+                        algorithmProviderFeeProp={algorithmProviderFee}
                       />
                     </CredentialDialogProvider>
                     {/* <AlgorithmDatasetsListForCompute
@@ -1156,6 +1288,11 @@ export default function ComputeWizard({
                       retry={retry}
                       isAccountConnected={isConnected}
                       computeWizard={true}
+                      extraFeesLoaded={extraFeesLoaded}
+                      isInitLoading={isOrdering}
+                      onInitCompute={() =>
+                        handleInitCompute(formikContext.values)
+                      }
                     />
                   </>
                 )}

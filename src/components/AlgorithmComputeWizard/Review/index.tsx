@@ -29,7 +29,7 @@ import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
-
+import { formatUnits } from 'ethers/lib/utils.js'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -62,7 +62,9 @@ export default function Review({
   isConsumable,
   algoOrderPriceAndFees,
   allResourceValues,
-  setAllResourceValues
+  setAllResourceValues,
+  datasetProviderFeeProp,
+  algorithmProviderFeeProp
 }: {
   asset: AssetExtended
   service: Service
@@ -96,6 +98,8 @@ export default function Review({
   algoOrderPrice?: string
   c2dPrice?: string
   isRequestingPrice?: boolean
+  datasetProviderFeeProp?: string
+  algorithmProviderFeeProp?: string
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -124,7 +128,14 @@ export default function Review({
 
   const debugClick = () => {}
 
+  const [loading, setLoading] = useState(false)
   const [serviceIndex, setServiceIndex] = useState(0)
+  const [datasetProviderFee, setDatasetProviderFee] = useState(
+    datasetProviderFeeProp || null
+  )
+  const [algorithmProviderFee, setAlgorithmProviderFee] = useState(
+    algorithmProviderFeeProp || null
+  )
   const [totalPrices, setTotalPrices] = useState([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
   const selectedEnvId = values?.computeEnv?.id
@@ -468,6 +479,18 @@ export default function Review({
           ? (paidResources?.jobDuration || 0) * 60
           : (freeResources?.jobDuration || 0) * 60
       )
+    }
+  ]
+  const datasetProviderFees = [
+    {
+      name: 'DATASET PROVIDER FEES',
+      value: datasetProviderFee ? formatUnits(datasetProviderFee) : '0'
+    }
+  ]
+  const algorithmProviderFees = [
+    {
+      name: 'ALGORITHM PROVIDER FEES',
+      value: algorithmProviderFee ? formatUnits(algorithmProviderFee) : '0'
     }
   ]
 
@@ -823,13 +846,32 @@ export default function Review({
       const displayTotal = totalPricesSum
         .add(datasetMarketFeeTotal)
         .add(algorithmMarketFeeTotal)
+        .add(
+          algorithmProviderFees[0].value
+            ? new Decimal(algorithmProviderFees[0].value)
+            : new Decimal(0)
+        )
+        .add(
+          datasetProviderFees[0].value
+            ? new Decimal(datasetProviderFees[0].value)
+            : new Decimal(0)
+        )
         .toDecimalPlaces(MAX_DECIMALS)
 
       setTotalPriceToDisplay(displayTotal.toString())
     } catch (error) {
       console.error('Error calculating totalPriceToDisplay:', error)
     }
-  }, [totalPrices, marketFees])
+  }, [totalPrices, marketFees, datasetProviderFees, algorithmProviderFees])
+
+  useEffect(() => {
+    if (datasetProviderFeeProp) setDatasetProviderFee(datasetProviderFeeProp)
+  }, [datasetProviderFeeProp])
+
+  useEffect(() => {
+    if (algorithmProviderFeeProp)
+      setAlgorithmProviderFee(algorithmProviderFeeProp)
+  }, [algorithmProviderFeeProp])
 
   return (
     <div className={styles.container}>
@@ -914,6 +956,24 @@ export default function Review({
           {marketFees.map((fee) => (
             <PricingRow key={fee.name} itemName={fee.name} value={fee.value} />
           ))}
+          {datasetProviderFee
+            ? datasetProviderFees.map((fee) => (
+                <PricingRow
+                  key={fee.name}
+                  itemName={fee.name}
+                  value={fee.value}
+                />
+              ))
+            : null}
+          {algorithmProviderFee
+            ? algorithmProviderFees.map((fee) => (
+                <PricingRow
+                  key={fee.name}
+                  itemName={fee.name}
+                  value={fee.value}
+                />
+              ))
+            : null}
         </div>
 
         {/* Total Payment Section */}
