@@ -16,7 +16,6 @@ const ComputeJobs = ({
   asset?: AssetExtended
   refetchTrigger?: number
 }) => {
-  const [showDetails, setShowDetails] = useState<string | null>(null)
   const [jobs, setJobs] = useState<ComputeJobMetaData[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -78,15 +77,6 @@ const ComputeJobs = ({
     }
 
     fetchComputeJobs('init')
-
-    const refreshInterval = 10000
-    const interval = setInterval(() => {
-      fetchComputeJobs('poll')
-    }, refreshInterval)
-
-    return () => {
-      clearInterval(interval)
-    }
   }, [accountId, newCancelToken, refetchTrigger, asset?.id])
 
   if (isLoading) {

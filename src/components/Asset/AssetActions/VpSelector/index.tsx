@@ -104,15 +104,26 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
     ssiVerifiableCredentials,
     assetAllowCredentials
   } = props
-
   const selectorDialog = useRef<HTMLDialogElement>(null)
   const [selections, setSelections] = useState<boolean[]>([])
-
+  useEffect(() => {
+    if (showDialog) {
+      const dialog = selectorDialog.current
+      if (dialog && !dialog.open) {
+        dialog.show()
+      }
+    } else {
+      try {
+        selectorDialog.current.close()
+      } catch (e) {
+        console.error('[VpSelector] close error', e)
+      }
+    }
+  }, [showDialog])
   function handleAcceptSelection() {
     const selectedCredentials = ssiVerifiableCredentials
       .filter((credential, index) => selections[index])
       .map((credential) => credential.id)
-
     setShowDialog(false)
     acceptSelection(selectedCredentials)
   }

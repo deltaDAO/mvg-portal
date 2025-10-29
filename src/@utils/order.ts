@@ -235,21 +235,15 @@ export async function order(
             accountId,
             accessDetails.datatoken.address
           )
-          console.log('allowance', allowanceValue)
           try {
             // parse allowance safely
             currentAllowance = ethers.utils.parseUnits(allowanceValue, decimals)
           } catch (err) {
-            console.log('allowance not ready yet, retrying...', allowanceValue)
             await new Promise((resolve) => setTimeout(resolve, 1000))
             continue
           }
 
           if (currentAllowance.lt(parsedApproveAmount)) {
-            console.log(
-              'waiting for allowance to be updated...',
-              currentAllowance.toString()
-            )
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
         }

@@ -75,7 +75,7 @@ function useBalance(): BalanceProviderValue {
         },
         approved: await getApprovedTokenBalances(address)
       }
-
+      console.log('user balance', newBalance)
       setBalance(newBalance)
     } catch (error) {
       LoggerInstance.error('[useBalance] Error: ', error.message)
