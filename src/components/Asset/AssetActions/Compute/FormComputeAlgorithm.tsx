@@ -132,7 +132,6 @@ export default function FormStartComputeAlgo({
     const svc = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
     return lookupVerifierSessionId?.(asset.id, svc?.id)
   }).length
-  console.log('Field values ', values)
   const allVerified = selectedDatasetAsset.every((asset) => {
     const service = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
     return lookupVerifierSessionId?.(asset.id, service?.id)
@@ -439,8 +438,6 @@ export default function FormStartComputeAlgo({
   ])
 
   const PurchaseButton = () => {
-    console.log('purchase is called! ')
-
     return (
       <ButtonBuy
         action="compute"

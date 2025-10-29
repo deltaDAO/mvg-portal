@@ -97,7 +97,6 @@ export default function Review({
   c2dPrice?: string
   isRequestingPrice?: boolean
 }): ReactElement {
-  console.log('accessdetails ', accessDetails)
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
@@ -827,12 +826,6 @@ export default function Review({
         .toDecimalPlaces(MAX_DECIMALS)
 
       setTotalPriceToDisplay(displayTotal.toString())
-
-      console.log('--- PRICE DEBUG ---')
-      console.log('Total Prices:', totalPrices)
-      console.log('Dataset Market Fee:', datasetMarketFeeTotal.toString())
-      console.log('Algorithm Market Fee:', algorithmMarketFeeTotal.toString())
-      console.log('Final Total to Display:', displayTotal.toString())
     } catch (error) {
       console.error('Error calculating totalPriceToDisplay:', error)
     }

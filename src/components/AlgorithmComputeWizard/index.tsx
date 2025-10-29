@@ -333,7 +333,6 @@ export default function ComputeWizard({
         )
       )
       if (selectedResources.mode === 'paid') {
-        console.log('Escorw address', initializedProvider.payment.escrowAddress)
         const escrow = new EscrowContract(
           ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
           signer,
@@ -367,12 +366,6 @@ export default function ComputeWizard({
         while (true) {
           const allowanceNow = await erc20.allowance(owner, escrowAddress)
           if (allowanceNow.gte(amountWei)) {
-            console.log(
-              `Allowance confirmed on-chain: ${ethers.utils.formatUnits(
-                allowanceNow,
-                18
-              )} OCEAN`
-            )
             break
           }
           console.log(
@@ -687,14 +680,11 @@ export default function ComputeWizard({
       setComputeStatusText(getComputeFeedback()[4])
       let resourceRequests
       if (selectedResources.mode === 'free') {
-        console.log('in free mode check')
         resourceRequests = selectedComputeEnv.resources.map((res) => ({
           id: res.id,
           amount: res.inUse
         }))
-        console.log('resourceRequests ', resourceRequests)
       } else {
-        console.log('in paid mode check')
         resourceRequests = selectedComputeEnv.resources.map((res) => ({
           id: res.id,
           amount: selectedResources[res.id] || res.min

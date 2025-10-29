@@ -266,9 +266,6 @@ export default function AssetContent({
                               key={service.id}
                               onClick={() => {
                                 if (!isAssetNetwork) {
-                                  console.log(
-                                    '[UI] Click blocked: wrong network.'
-                                  )
                                   return
                                 }
                                 setSelectedService(index)

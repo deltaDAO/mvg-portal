@@ -84,9 +84,6 @@ export async function initializeProviderForComputeMulti(
     algorithm.credentialSubject.services[svcIndexAlgo].timeout
   )
 
-  console.log('i am here')
-  console.log('selectedResources ', selectedResources)
-  console.log('computeEnv ', computeEnv)
   if (selectedResources.mode === 'free') {
     return await ProviderInstance.initializeCompute(
       computeAssets,

@@ -77,7 +77,6 @@ function useBalance(): BalanceProviderValue {
       }
 
       setBalance(newBalance)
-      LoggerInstance.log('[useBalance] Balance: ', newBalance)
     } catch (error) {
       LoggerInstance.error('[useBalance] Error: ', error.message)
     }

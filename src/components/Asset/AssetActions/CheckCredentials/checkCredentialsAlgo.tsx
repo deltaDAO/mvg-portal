@@ -281,14 +281,6 @@ export function AssetActionCheckCredentialsAlgo({
                 toast.error('Validation was not successful as use presentation')
                 handleResetWalletCache()
               } else {
-                console.log(
-                  'Algorithm credential verification successful, caching session:',
-                  {
-                    assetId: asset.id,
-                    serviceId: service.id,
-                    sessionId: exchangeStateData.sessionId
-                  }
-                )
                 cacheVerifierSessionId(
                   asset.id,
                   service.id,
@@ -301,7 +293,6 @@ export function AssetActionCheckCredentialsAlgo({
               setError('Validation was not successful')
               handleResetWalletCache()
             }
-            console.log('Resetting algorithm component state to Stop')
             setExchangeStateData({
               ...exchangeStateData,
               ...newExchangeStateData()

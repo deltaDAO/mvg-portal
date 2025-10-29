@@ -20,12 +20,12 @@ import appConfig, {
   marketFeeAddress,
   consumeMarketOrderFee,
   consumeMarketFixedSwapFee,
-  customProviderUrl
+  customProviderUrl,
+  oceanTokenAddress
 } from '../../app.config.cjs'
 import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
-import { da } from 'date-fns/locale'
 
 export async function initializeProvider(
   asset: AssetExtended,
@@ -140,7 +140,6 @@ export async function order(
         swapMarketFee: consumeMarketFixedSwapFee,
         marketFeeAddress
       } as FreOrderParams
-
       if (accessDetails.templateId === 1) {
         if (!hasDatatoken) {
           const approveAmount = orderPriceAndFees?.price
@@ -183,14 +182,27 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
+        const providerFeeWei =
+          providerFees?.providerFeeAmount ||
+          orderPriceAndFees.providerFee?.providerFeeAmount ||
+          '0'
+        const baseTokenDecimals = accessDetails.baseToken?.decimals || 18
+        const providerFeeHuman = ethers.utils.formatUnits(
+          providerFeeWei,
+          baseTokenDecimals
+        )
         const approveAmount = (
-          Number(orderPriceAndFees?.price) + Number(orderPriceAndFees?.opcFee)
+          Number(orderPriceAndFees?.price) +
+          Number(orderPriceAndFees?.opcFee) +
+          Number(providerFeeHuman)
         ) // just added more amount to test
           .toString()
+        console.log('approvedAmount', approveAmount)
         freParams.maxBaseTokenAmount = (
           Number(freParams.maxBaseTokenAmount) +
           (Number(freParams.maxBaseTokenAmount) +
-            Number(orderPriceAndFees?.opcFee))
+            Number(orderPriceAndFees?.opcFee)) +
+          Number(providerFeeHuman)
         ).toString()
 
         const tx: any = await approve(
@@ -202,12 +214,8 @@ export async function order(
           approveAmount,
           false
         )
-
         const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
-        console.log(
-          '[order] TEMPLATE 2 approve tx confirmed:',
-          txApprove?.transactionHash
-        )
+        console.log('[order] TEMPLATE 2 approve tx confirmed:', txApprove)
         // --- wait until allowance is actually reflected ---
         const decimals = accessDetails.baseToken?.decimals || 18
 
@@ -227,7 +235,7 @@ export async function order(
             accountId,
             accessDetails.datatoken.address
           )
-
+          console.log('allowance', allowanceValue)
           try {
             // parse allowance safely
             currentAllowance = ethers.utils.parseUnits(allowanceValue, decimals)
@@ -245,12 +253,6 @@ export async function order(
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
         }
-
-        console.log(
-          'allowance confirmed on-chain:',
-          currentAllowance.toString()
-        )
-
         const buyTx = await datatoken.buyFromFreAndOrder(
           accessDetails.datatoken.address,
           orderParams,
@@ -281,6 +283,29 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
+        console.log('providerFee', providerFees, orderPriceAndFees)
+        const providerFeeWei =
+          providerFees?.providerFeeAmount ||
+          orderPriceAndFees.providerFee?.providerFeeAmount ||
+          '0'
+        const baseTokenDecimals = accessDetails.baseToken?.decimals || 18
+        const providerFeeHuman = ethers.utils.formatUnits(
+          providerFeeWei,
+          baseTokenDecimals
+        )
+        console.log('approvedAmount', providerFeeHuman)
+        const tx: any = await approve(
+          signer,
+          config,
+          accountId,
+          oceanTokenAddress,
+          accessDetails.datatoken.address,
+          providerFeeHuman,
+          false
+        )
+
+        const txApprove = typeof tx !== 'number' ? await tx.wait() : tx
+        console.log('[order] TEMPLATE 2 free approve tx confirmed:', txApprove)
         return await datatoken.buyFromDispenserAndOrder(
           service.datatokenAddress,
           orderParams,
@@ -452,15 +477,6 @@ export async function handleComputeOrder(
       asset,
       service
     )
-    console.log('Starting new order flow...')
-    console.log('Params ->', {
-      assetId: asset?.id || asset?.['@id'],
-      serviceId: service?.id,
-      accountId,
-      hasDatatoken,
-      providerFee: initializeData?.providerFee,
-      consumer: computeConsumerAddress
-    })
 
     try {
       const txStartOrder = await order(
