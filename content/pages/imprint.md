@@ -12,7 +12,7 @@ Germany<br/><br/>
 **E-Mail**: [contact@delta-dao.com](mailto:contact@delta-dao.com)<br/><br/>
 
 **Members of the Board**: Frederic Schwill, Kai Meinke, Albert Peci<br/>
-**Chairman of the Supervisory Board**: Dr. Sven Hildebrandt<br/><br/>
+**Chairwoman of the Supervisory Board**: Susanne S. Geber<br/><br/>
 
 **Commercial register**: Handelsregister B des Amtsgerichts Hamburg, HRB 170364<br/>
 **USt – IdNr**: DE346013532<br/><br/>
