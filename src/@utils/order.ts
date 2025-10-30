@@ -105,12 +105,6 @@ export async function order(
 ): Promise<ethers.providers.TransactionResponse> {
   const datatoken = new Datatoken(signer, asset.credentialSubject?.chainId)
   const config = getOceanConfig(asset.credentialSubject?.chainId)
-  const initializeData = await initializeProvider(
-    asset,
-    service,
-    accountId,
-    providerFees
-  )
   const serviceIndex = asset.credentialSubject?.services.findIndex(
     (s: Service) => s.id === service.id
   )
@@ -120,7 +114,7 @@ export async function order(
   const orderParams = {
     consumer: computeConsumerAddress || accountId,
     serviceIndex,
-    _providerFee: providerFees || initializeData.providerFee,
+    _providerFee: providerFees || orderPriceAndFees?.providerFee,
     _consumeMarketFee: {
       consumeMarketFeeAddress: marketFeeAddress,
       consumeMarketFeeAmount: consumeMarketOrderFee,
@@ -321,25 +315,16 @@ export async function order(
  */
 export async function reuseOrder(
   signer: Signer,
-  asset: AssetExtended,
-  service: Service,
   accessDetails: AccessDetails,
-  accountId: string,
   validOrderTx: string,
-  providerFees?: ProviderFees
+  providerFees: ProviderFees
 ): Promise<ethers.providers.TransactionResponse> {
   const datatoken = new Datatoken(signer)
-  const initializeData = await initializeProvider(
-    asset,
-    service,
-    accountId,
-    providerFees
-  )
 
   const tx = await datatoken.reuseOrder(
     accessDetails.datatoken.address,
     validOrderTx,
-    providerFees || initializeData.providerFee
+    providerFees
   )
 
   return tx
@@ -446,10 +431,7 @@ export async function handleComputeOrder(
       try {
         const txReuseOrder = await reuseOrder(
           signer,
-          asset,
-          service,
           accessDetails,
-          accountId,
           initializeData.validOrder,
           initializeData.providerFee
         )
