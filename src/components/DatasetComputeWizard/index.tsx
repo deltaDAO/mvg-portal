@@ -1029,11 +1029,11 @@ export default function ComputeWizard({
       if (!initializedProvider)
         throw new Error('Provider initialization failed.')
       setAlgorithmProviderFee(
-        initializedProvider?.algorithm?.providerFee?.providerFeeAmount || null
+        initializedProvider?.algorithm?.providerFee?.providerFeeAmount || '0'
       )
       setDatasetProviderFee(
         initializedProvider?.datasets?.[0]?.providerFee?.providerFeeAmount ||
-          null
+          '0'
       )
       setInitializedProviderResponse(initializedProvider)
       setExtraFeesLoaded(true)

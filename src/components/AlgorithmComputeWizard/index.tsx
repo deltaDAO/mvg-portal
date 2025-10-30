@@ -1055,10 +1055,10 @@ export default function ComputeWizard({
           ? datasetFees.reduce((acc, fee) => acc + Number(fee || 0), 0)
           : null
       const algorithmFee =
-        initializedProvider?.algorithm?.providerFee?.providerFeeAmount || null
+        initializedProvider?.algorithm?.providerFee?.providerFeeAmount || '0'
 
       setDatasetProviderFee(
-        totalDatasetFee !== null ? totalDatasetFee.toString() : null
+        totalDatasetFee !== null ? totalDatasetFee.toString() : '0'
       )
       setAlgorithmProviderFee(algorithmFee)
       setInitializedProviderResponse(initializedProvider)
