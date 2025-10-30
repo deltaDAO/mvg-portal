@@ -66,7 +66,9 @@ export default function Steps({
   formikValues, // Updated type below
   setFieldValue,
   datasetProviderFeeProp,
-  algorithmProviderFeeProp
+  algorithmProviderFeeProp,
+  isBalanceSufficient,
+  setIsBalanceSufficient
 }: {
   asset: AssetExtended
   service: Service
@@ -125,6 +127,8 @@ export default function Steps({
   setFieldValue: (field: string, value: any) => void
   datasetProviderFeeProp?: string
   algorithmProviderFeeProp?: string
+  isBalanceSufficient: boolean
+  setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
@@ -191,6 +195,8 @@ export default function Steps({
             computeEnvs={computeEnvs}
             datasetProviderFeeProp={datasetProviderFeeProp}
             algorithmProviderFeeProp={algorithmProviderFeeProp}
+            isBalanceSufficient={isBalanceSufficient}
+            setIsBalanceSufficient={setIsBalanceSufficient}
           />
           {/* <ButtonBuy
             action="compute"

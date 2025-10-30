@@ -130,6 +130,7 @@ export default function ComputeWizard({
   const [algorithmProviderFee, setAlgorithmProviderFee] = useState<
     string | null
   >(null)
+  const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const [isConsumablePrice, setIsConsumablePrice] = useState(true)
   const [isConsumableaAlgorithmPrice] = useState(true)
   const [computeStatusText, setComputeStatusText] = useState('')
@@ -1228,6 +1229,8 @@ export default function ComputeWizard({
                         setFieldValue={formikContext.setFieldValue}
                         datasetProviderFeeProp={datasetProviderFee}
                         algorithmProviderFeeProp={algorithmProviderFee}
+                        isBalanceSufficient={isBalanceSufficient}
+                        setIsBalanceSufficient={setIsBalanceSufficient}
                       />
                     </CredentialDialogProvider>
                     {/* <AlgorithmDatasetsListForCompute
@@ -1250,7 +1253,8 @@ export default function ComputeWizard({
                       disabled={
                         isComputeButtonDisabled ||
                         !isAssetNetwork ||
-                        !isAccountIdWhitelisted
+                        !isAccountIdWhitelisted ||
+                        !isBalanceSufficient
                       }
                       hasPreviousOrder={!!validOrderTx}
                       hasDatatoken={hasDatatoken}
@@ -1274,7 +1278,7 @@ export default function ComputeWizard({
                       type="submit"
                       priceType={accessDetails.type}
                       algorithmPriceType={asset?.accessDetails?.[0]?.type}
-                      // isBalanceSufficient={isBalanceSufficient}
+                      isBalanceSufficient={isBalanceSufficient}
                       isConsumable={isConsumablePrice}
                       consumableFeedback={consumableFeedback}
                       isAlgorithmConsumable={

@@ -87,7 +87,8 @@ export default function Review({
   isLoadingJobs,
   refetchJobs,
   datasetProviderFeeProp,
-  algorithmProviderFeeProp
+  algorithmProviderFeeProp,
+  setIsBalanceSufficient
 }: {
   asset?: AssetExtended
   service?: Service
@@ -140,6 +141,8 @@ export default function Review({
   isRequestingPrice?: boolean
   datasetProviderFeeProp?: string
   algorithmProviderFeeProp?: string
+  isBalanceSufficient: boolean
+  setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -177,7 +180,6 @@ export default function Review({
   )
   const [totalPrices, setTotalPrices] = useState([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
-  const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
   const selectedEnvId = values?.computeEnv?.id
   const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
   const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
@@ -844,7 +846,7 @@ export default function Review({
       const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
       if (
         !baseTokenBalance ||
-        !compareAsBN(baseTokenBalance, `${price.value}`)
+        !compareAsBN(baseTokenBalance, totalPriceToDisplay)
       ) {
         sufficient = false
         break
@@ -861,7 +863,8 @@ export default function Review({
     totalPrices,
     allResourceValues,
     values.computeEnv,
-    c2dPrice
+    c2dPrice,
+    totalPriceToDisplay
   ])
   useEffect(() => {
     const allVerified =

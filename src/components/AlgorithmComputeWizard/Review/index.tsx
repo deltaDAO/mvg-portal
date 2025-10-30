@@ -64,7 +64,8 @@ export default function Review({
   allResourceValues,
   setAllResourceValues,
   datasetProviderFeeProp,
-  algorithmProviderFeeProp
+  algorithmProviderFeeProp,
+  setIsBalanceSufficient
 }: {
   asset: AssetExtended
   service: Service
@@ -100,6 +101,8 @@ export default function Review({
   isRequestingPrice?: boolean
   datasetProviderFeeProp?: string
   algorithmProviderFeeProp?: string
+  isBalanceSufficient: boolean
+  setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -794,12 +797,13 @@ export default function Review({
       const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
       if (
         !baseTokenBalance ||
-        !compareAsBN(baseTokenBalance, `${price.value}`)
+        !compareAsBN(baseTokenBalance, totalPriceToDisplay)
       ) {
         sufficient = false
         break
       }
     }
+    setIsBalanceSufficient(sufficient)
   }, [
     balance,
     dtBalance,
@@ -809,7 +813,8 @@ export default function Review({
     totalPrices,
     allResourceValues,
     values.computeEnv,
-    values?.mode
+    values?.mode,
+    totalPriceToDisplay
   ])
   useEffect(() => {
     const allVerified =

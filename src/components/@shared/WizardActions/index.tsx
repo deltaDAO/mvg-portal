@@ -241,7 +241,9 @@ export default function WizardActions({
         <Button
           style="gradient"
           onClick={onInitCompute}
-          disabled={isInitLoading || disabled || !isValid}
+          disabled={
+            isInitLoading || disabled || !isValid || !isBalanceSufficient
+          }
         >
           {isInitLoading ? 'Calculating...' : 'Calculate Extra Fees'}
         </Button>
