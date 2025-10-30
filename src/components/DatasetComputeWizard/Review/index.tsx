@@ -562,7 +562,11 @@ export default function Review({
       )
     },
     {
-      name: `MARKETPLACE FEE (${0}%)`,
+      name: `MARKETPLACE FEE DATASET (${0}%)`,
+      value: '0'
+    },
+    {
+      name: `MARKETPLACE FEE ALGORITHM (${0}%)`,
       value: '0'
     }
   ]
