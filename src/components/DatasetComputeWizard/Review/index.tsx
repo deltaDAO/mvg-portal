@@ -141,8 +141,8 @@ export default function Review({
   isRequestingPrice?: boolean
   datasetProviderFeeProp?: string
   algorithmProviderFeeProp?: string
-  isBalanceSufficient: boolean
-  setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
+  isBalanceSufficient?: boolean
+  setIsBalanceSufficient?: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
