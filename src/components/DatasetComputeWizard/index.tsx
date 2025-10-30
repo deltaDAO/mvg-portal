@@ -902,8 +902,6 @@ export default function ComputeWizard({
     }
   }
 
-  // copied from compute
-
   useEffect(() => {
     if (!asset || !accountId) return
 
@@ -1013,13 +1011,11 @@ export default function ComputeWizard({
         actualAlgoService.id
       )
 
-      // ⚙️ Compute environment
       const selectedComputeEnv = formikValues.computeEnv
       const selectedResources =
         allResourceValues?.[`${selectedComputeEnv.id}_paid`] ||
         allResourceValues?.[`${selectedComputeEnv.id}_free`]
 
-      // 🚀 Initialize Provider
       const initializedProvider = await initializeProviderForComputeMulti(
         datasetsForProvider,
         actualAlgorithmAsset,
@@ -1032,7 +1028,6 @@ export default function ComputeWizard({
 
       if (!initializedProvider)
         throw new Error('Provider initialization failed.')
-
       setAlgorithmProviderFee(
         initializedProvider?.algorithm?.providerFee?.providerFeeAmount || null
       )
@@ -1040,12 +1035,11 @@ export default function ComputeWizard({
         initializedProvider?.datasets?.[0]?.providerFee?.providerFeeAmount ||
           null
       )
-
       setInitializedProviderResponse(initializedProvider)
       setExtraFeesLoaded(true)
       toast.success('Compute provider initialized successfully.')
     } catch (error) {
-      console.error('❌ Error initializing provider:', error)
+      console.error('Error initializing provider:', error)
       toast.error(error.message || 'Failed to initialize provider.')
     }
   }
