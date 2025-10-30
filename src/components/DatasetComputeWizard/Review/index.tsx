@@ -88,6 +88,7 @@ export default function Review({
   refetchJobs,
   datasetProviderFeeProp,
   algorithmProviderFeeProp,
+  isBalanceSufficient,
   setIsBalanceSufficient
 }: {
   asset?: AssetExtended
@@ -194,9 +195,9 @@ export default function Review({
   // error message
   const errorMessages: string[] = []
 
-  // if (!isBalanceSufficient) {
-  //   errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
-  // }
+  if (!isBalanceSufficient) {
+    errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
+  }
   // if (!isValid) {
   //   errorMessages.push('Form is not complete!')
   // }
@@ -559,6 +560,10 @@ export default function Review({
           0,
         MAX_DECIMALS
       )
+    },
+    {
+      name: `MARKETPLACE FEE (${0}%)`,
+      value: '0'
     }
   ]
 
@@ -943,97 +948,120 @@ export default function Review({
       </div>
       <div className={styles.contentContainer}>
         <div className={styles.pricingBreakdown}>
-          {/* Render all items from verification queue */}
-          {!selectedAlgorithmAsset ? (
-            <div className={styles.loaderWrap}>
-              <Loader message="Loading assets..." noMargin={true} />
-            </div>
-          ) : (
-            verificationQueue.map((item, i) => {
-              const hasSsiPolicy =
-                requiresSsi(item.asset?.credentialSubject?.credentials) ||
-                requiresSsi(item.service?.credentials)
-              const needsSsi = hasSsiPolicy || item.service
+          <div className={styles.assetSection}>
+            <h3 className={styles.assetHeading}>Assets</h3>
 
-              return (
-                <PricingRow
-                  key={`${item.type}-${item.id}-${i}`}
-                  label={item?.asset?.credentialSubject?.metadata?.name}
-                  itemName={item.name}
-                  value={item.price}
-                  duration={item.duration}
-                  {...(needsSsi
-                    ? {
-                        actionLabel: `Check ${
-                          item.type === 'dataset' ? 'Dataset' : 'Algorithm'
-                        } Credentials`,
-                        onAction: () => startVerification(i),
-                        actionDisabled: false
+            <div className={styles.assetList}>
+              {!selectedAlgorithmAsset ? (
+                <div className={styles.loaderWrap}>
+                  <Loader message="Loading assets..." noMargin={true} />
+                </div>
+              ) : (
+                verificationQueue.map((item, i) => {
+                  const hasSsiPolicy =
+                    requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                    requiresSsi(item.service?.credentials)
+                  const needsSsi = hasSsiPolicy || item.service
+
+                  return (
+                    <PricingRow
+                      key={`${item.type}-${item.id}-${i}`}
+                      label={item?.asset?.credentialSubject?.metadata?.name}
+                      itemName={item.name}
+                      value={item.price}
+                      duration={item.duration}
+                      {...(needsSsi
+                        ? {
+                            actionLabel: `Check ${
+                              item.type === 'dataset' ? 'Dataset' : 'Algorithm'
+                            } Credentials`,
+                            onAction: () => startVerification(i),
+                            actionDisabled: false
+                          }
+                        : {})}
+                      isService={true}
+                      infoMessage={
+                        !hasSsiPolicy
+                          ? 'No credentials required (never expires)'
+                          : undefined
                       }
-                    : {})}
-                  isService={true}
-                  infoMessage={
-                    !hasSsiPolicy
-                      ? 'No credentials required (never expires)'
-                      : undefined
-                  }
-                  credentialStatus={item.status}
-                  assetId={item.asset?.id}
-                  serviceId={item.service?.id}
-                  onCredentialRefresh={() => startVerification(i)}
+                      credentialStatus={item.status}
+                      assetId={item.asset?.id}
+                      serviceId={item.service?.id}
+                      onCredentialRefresh={() => startVerification(i)}
+                    />
+                  )
+                })
+              )}
+            </div>
+          </div>
+
+          <div className={styles.c2dSection}>
+            <h3 className={styles.c2dHeading}>C2D Resources</h3>
+
+            <div className={styles.c2dList}>
+              {computeItems.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  duration={item.duration}
                 />
-              )
-            })
-          )}
+              ))}
 
-          {/* Compute items and market fees */}
-          {computeItems.map((item) => (
-            <PricingRow
-              key={item.name}
-              itemName={item.name}
-              value={item.value}
-              duration={item.duration}
-            />
-          ))}
-          {escrowFunds.map((item) => (
-            <PricingRow
-              key={item.name}
-              itemName={item.name}
-              value={item.value}
-              valueType="escrow"
-            />
-          ))}
+              {escrowFunds.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  valueType="escrow"
+                />
+              ))}
 
-          {amountDeposit.map((item) => (
-            <PricingRow
-              key={item.name}
-              itemName={item.name}
-              value={item.value}
-              valueType="deposit"
-            />
-          ))}
+              {amountDeposit.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  valueType="deposit"
+                />
+              ))}
+            </div>
+          </div>
 
-          {marketFees.map((fee) => (
-            <PricingRow key={fee.name} itemName={fee.name} value={fee.value} />
-          ))}
-          {datasetProviderFee
-            ? datasetProviderFees.map((fee) => (
+          <div className={styles.marketFeesSection}>
+            <h3 className={styles.marketFeesHeading}>Fees</h3>
+
+            <div className={styles.marketFeesList}>
+              {marketFees.map((fee) => (
                 <PricingRow
                   key={fee.name}
                   itemName={fee.name}
                   value={fee.value}
                 />
-              ))
-            : null}
-          {algorithmProviderFee
-            ? algorithmProviderFees.map((fee) => (
-                <PricingRow
-                  key={fee.name}
-                  itemName={fee.name}
-                  value={fee.value}
-                />
-              ))
-            : null}
+              ))}
+
+              {datasetProviderFee
+                ? datasetProviderFees.map((fee) => (
+                    <PricingRow
+                      key={fee.name}
+                      itemName={fee.name}
+                      value={fee.value}
+                    />
+                  ))
+                : null}
+
+              {algorithmProviderFee
+                ? algorithmProviderFees.map((fee) => (
+                    <PricingRow
+                      key={fee.name}
+                      itemName={fee.name}
+                      value={fee.value}
+                    />
+                  ))
+                : null}
+            </div>
+          </div>
         </div>
 
         {/* Total Payment Section */}
@@ -1061,15 +1089,7 @@ export default function Review({
             )}
           </span>
         </div>
-        {errorMessages.length > 0 && (
-          <div className={styles.errorMessage}>
-            <ul>
-              {errorMessages.map((msg, idx) => (
-                <li key={idx}>{msg}</li>
-              ))}
-            </ul>
-          </div>
-        )}
+
         <div className={styles.termsSection}>
           <FormErrorGroup
             errorFields={['termsAndConditions', 'acceptPublishingLicense']}
@@ -1097,6 +1117,15 @@ export default function Review({
             />
           </FormErrorGroup>
         </div>
+        {errorMessages.length > 0 && (
+          <div className={styles.errorMessage}>
+            <ul>
+              {errorMessages.map((msg, idx) => (
+                <li key={idx}>{msg}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
       {/* <PurchaseButton /> */}
 
