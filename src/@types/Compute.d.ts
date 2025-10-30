@@ -11,6 +11,7 @@ declare global {
     providerUrl?: string
     assets?: any
     algorithm?: any
+    payment?: any
   }
 
   interface AlgorithmOption {
