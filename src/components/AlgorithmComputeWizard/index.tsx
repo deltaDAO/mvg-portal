@@ -969,7 +969,7 @@ export default function ComputeWizard({
   ): Promise<any> {
     try {
       if (
-        !asset || // this is the algorithm asset
+        !asset ||
         !accountId ||
         !signer ||
         !formikValues?.computeEnv ||
@@ -980,7 +980,6 @@ export default function ComputeWizard({
           'Missing required parameters for provider initialization.'
         )
 
-      // 🧮 1️⃣ Prepare datasets (multiple)
       const datasetServices: { asset: AssetExtended; service: Service }[] =
         selectedDatasetAsset.map((ds, i) => {
           const datasetEntry = formikValues.dataset?.[i]
@@ -1014,10 +1013,9 @@ export default function ComputeWizard({
         }
       })
 
-      // 🧩 2️⃣ Algorithm details (your current asset)
       const algorithmAsset = asset
       const algoServices = algorithmAsset.credentialSubject.services || []
-      const algoServiceId = service?.id || algoServices?.[0]?.id // fallback if no service selected
+      const algoServiceId = service?.id || algoServices?.[0]?.id
 
       const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
       if (algoIndex === -1)
@@ -1029,13 +1027,11 @@ export default function ComputeWizard({
         algoService.id
       )
 
-      // ⚙️ 3️⃣ Compute environment + resources
       const selectedComputeEnv = formikValues.computeEnv
       const selectedResources =
         allResourceValues?.[`${selectedComputeEnv.id}_paid`] ||
         allResourceValues?.[`${selectedComputeEnv.id}_free`]
 
-      // 🚀 4️⃣ Initialize Provider
       const initializedProvider = await initializeProviderForComputeMulti(
         datasetsForProvider,
         algorithmAsset,
@@ -1049,34 +1045,29 @@ export default function ComputeWizard({
       if (!initializedProvider)
         throw new Error('Provider initialization failed.')
 
-      // 💰 5️⃣ Extract fees
       const datasetFees =
         initializedProvider?.datasets?.map(
-          (ds) => ds?.providerFee?.providerFeeAmount || '0'
+          (ds) => ds?.providerFee?.providerFeeAmount || null
         ) || []
 
-      // Sum all dataset fees as BigNumber (optional, if you want total)
-      const totalDatasetFee = datasetFees.reduce(
-        (acc, fee) => acc + Number(fee),
-        0
-      )
+      const totalDatasetFee =
+        datasetFees.length > 0 && datasetFees.some((f) => f !== null)
+          ? datasetFees.reduce((acc, fee) => acc + Number(fee || 0), 0)
+          : null
       const algorithmFee =
         initializedProvider?.algorithm?.providerFee?.providerFeeAmount || null
 
-      setDatasetProviderFee(totalDatasetFee.toString())
+      setDatasetProviderFee(
+        totalDatasetFee !== null ? totalDatasetFee.toString() : null
+      )
       setAlgorithmProviderFee(algorithmFee)
-
-      // 💾 6️⃣ Save provider response
       setInitializedProviderResponse(initializedProvider)
       setExtraFeesLoaded(true)
-
       toast.success('Compute provider initialized successfully.')
-      console.log('✅ Initialized Provider:', initializedProvider)
 
-      // Return it for handleInitCompute or compute start
       return initializedProvider
     } catch (error: any) {
-      console.error('❌ Error initializing provider:', error)
+      console.error('Error initializing provider:', error)
       toast.error(error.message || 'Failed to initialize provider.')
       throw error
     }
