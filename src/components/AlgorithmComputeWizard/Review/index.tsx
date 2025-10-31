@@ -478,13 +478,13 @@ export default function Review({
   ]
   const datasetProviderFees = [
     {
-      name: 'DATASET PROVIDER FEE',
+      name: 'PROVIDER FEE DATASET',
       value: datasetProviderFee ? formatUnits(datasetProviderFee) : '0'
     }
   ]
   const algorithmProviderFees = [
     {
-      name: 'ALGORITHM PROVIDER FEE',
+      name: 'PROVIDER FEE ALGORITHM',
       value: algorithmProviderFee ? formatUnits(algorithmProviderFee) : '0'
     }
   ]
