@@ -57,7 +57,7 @@ export default function WizardActions({
   showSuccessConfetti = false,
   scrollToRef,
   formikContext,
-  isContinueDisabled = false,
+  isContinueDisabled,
   rightAlignFirstStep = true,
   isSubmitDisabled = false,
   action,

@@ -166,6 +166,13 @@ const ServiceSelector = () => {
     setDatasets(updated)
     syncWithFormik(updated)
   }
+  useEffect(() => {
+    if (datasets.length === 0) return
+    const anyServiceSelected = datasets.some((ds) =>
+      ds.services.some((s) => s.checked)
+    )
+    setFieldValue('serviceSelected', anyServiceSelected)
+  }, [datasets, setFieldValue])
 
   return (
     <div className={styles.container}>

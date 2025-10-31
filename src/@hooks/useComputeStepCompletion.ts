@@ -20,7 +20,7 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
       // 6-step algorithm flow: mark each step completed only when its dedicated flag is set
       switch (step) {
         case 1:
-          return Boolean(values.step1Completed)
+          return Boolean(values.step1Completed || values.datasets.length)
         case 2:
           return Boolean(values.step2Completed)
         case 3:

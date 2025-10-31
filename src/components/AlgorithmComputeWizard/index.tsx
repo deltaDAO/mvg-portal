@@ -1257,6 +1257,18 @@ export default function ComputeWizard({
                         !isAccountIdWhitelisted ||
                         !isBalanceSufficient
                       }
+                      isContinueDisabled={
+                        (formikContext.values.user.stepCurrent === 1 &&
+                          !(
+                            formikContext.values.datasets?.length > 0 ||
+                            formikContext.values.withoutDataset
+                          )) ||
+                        (formikContext.values.user.stepCurrent === 2 &&
+                          !(
+                            formikContext.values.serviceSelected ||
+                            formikContext.values.withoutDataset
+                          ))
+                      }
                       hasPreviousOrder={!!validOrderTx}
                       hasDatatoken={hasDatatoken}
                       btSymbol={accessDetails.baseToken?.symbol}

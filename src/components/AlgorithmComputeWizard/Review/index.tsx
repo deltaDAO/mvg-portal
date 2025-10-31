@@ -192,40 +192,40 @@ export default function Review({
   }
   useEffect(() => {
     const queue: VerificationItem[] = []
+    if (!values.withoutDataset) {
+      selectedDatasetAsset?.forEach((asset, index) => {
+        const service =
+          asset.credentialSubject?.services?.[asset.serviceIndex || 0]
+        const isVerified = lookupVerifierSessionId?.(asset.id, service?.id)
+        const details = asset.accessDetails?.[asset.serviceIndex || 0]
+        const rawPrice =
+          details?.validOrderTx && details.validOrderTx !== ''
+            ? '0'
+            : details?.price || '0'
 
-    selectedDatasetAsset?.forEach((asset, index) => {
-      const service =
-        asset.credentialSubject?.services?.[asset.serviceIndex || 0]
-      const isVerified = lookupVerifierSessionId?.(asset.id, service?.id)
-      const details = asset.accessDetails?.[asset.serviceIndex || 0]
-      const rawPrice =
-        details?.validOrderTx && details.validOrderTx !== ''
-          ? '0'
-          : details?.price || '0'
+        const datasetNeedsSsi =
+          requiresSsi(asset?.credentialSubject?.credentials) ||
+          requiresSsi(service?.credentials)
 
-      const datasetNeedsSsi =
-        requiresSsi(asset?.credentialSubject?.credentials) ||
-        requiresSsi(service?.credentials)
-
-      queue.push({
-        id: asset.id,
-        type: 'dataset',
-        asset,
-        service,
-        status: datasetNeedsSsi
-          ? isVerified
-            ? ('verified' as const)
-            : ('unverified' as const)
-          : ('verified' as const),
-        index,
-        price: rawPrice,
-        duration: '1 day', // Default duration for datasets
-        name:
-          asset.credentialSubject?.services?.[asset.serviceIndex || 0]?.name ||
-          `Dataset ${queue.length + 1}`
+        queue.push({
+          id: asset.id,
+          type: 'dataset',
+          asset,
+          service,
+          status: datasetNeedsSsi
+            ? isVerified
+              ? ('verified' as const)
+              : ('unverified' as const)
+            : ('verified' as const),
+          index,
+          price: rawPrice,
+          duration: '1 day', // Default duration for datasets
+          name:
+            asset.credentialSubject?.services?.[asset.serviceIndex || 0]
+              ?.name || `Dataset ${queue.length + 1}`
+        })
       })
-    })
-
+    }
     if (service && asset) {
       const isVerified = lookupVerifierSessionId?.(asset?.id, service.id)
       let rawPrice
@@ -599,7 +599,7 @@ export default function Review({
   }, [datasets, computeEnvs, setFieldValue, values.algorithm])
 
   useEffect(() => {
-    if (!values.dataset || !isConsumable) return
+    if (values.withoutDataset || !values.dataset || !isConsumable) return
 
     async function fetchDatasetAssetsExtended() {
       const { assets, services } = await getDatasetAssets(values.dataset)
@@ -890,7 +890,43 @@ export default function Review({
             <h3 className={styles.assetListHeading}>Assets</h3>
 
             <div className={styles.assetListBox}>
-              {selectedDatasetAsset.length === 0 ? (
+              {values.withoutDataset ? (
+                verificationQueue.map((item, i) => {
+                  const hasSsiPolicy =
+                    requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                    requiresSsi(item.service?.credentials)
+                  const needsSsi = hasSsiPolicy || item.service
+
+                  return (
+                    <PricingRow
+                      key={`${item.type}-${item.id}-${i}`}
+                      label={item.asset?.credentialSubject?.metadata?.name}
+                      itemName={item.name}
+                      value={item.price}
+                      duration={item.duration}
+                      {...(needsSsi
+                        ? {
+                            actionLabel: `Check ${
+                              item.type === 'dataset' ? 'Dataset' : 'Algorithm'
+                            } Credentials`,
+                            onAction: () => startVerification(i),
+                            actionDisabled: false
+                          }
+                        : {})}
+                      isService={item.type === 'algorithm'}
+                      infoMessage={
+                        !hasSsiPolicy
+                          ? 'No credentials required (never expires)'
+                          : undefined
+                      }
+                      credentialStatus={item.status}
+                      assetId={item.asset?.id}
+                      serviceId={item.service?.id}
+                      onCredentialRefresh={() => startVerification(i)}
+                    />
+                  )
+                })
+              ) : selectedDatasetAsset?.length === 0 ? (
                 <div className={styles.loaderWrap}>
                   <Loader message="Loading Assets..." noMargin={true} />
                 </div>
