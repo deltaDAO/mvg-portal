@@ -107,6 +107,7 @@ export default function ComputeWizard({
   const { chainIds } = useUserPreferences()
 
   const [isOrdering, setIsOrdering] = useState(false)
+  const [isInitLoading, setIsInitLoading] = useState(false)
   const [error, setError] = useState<string>()
   const [showSuccess, setShowSuccess] = useState(false)
   const [successJobId, setSuccessJobId] = useState<string>()
@@ -975,10 +976,12 @@ export default function ComputeWizard({
         !formikValues?.computeEnv ||
         !selectedDatasetAsset ||
         selectedDatasetAsset.length === 0
-      )
+      ) {
+        setIsInitLoading(false)
         throw new Error(
           'Missing required parameters for provider initialization.'
         )
+      }
 
       const datasetServices: { asset: AssetExtended; service: Service }[] =
         selectedDatasetAsset.map((ds, i) => {
@@ -1002,8 +1005,10 @@ export default function ComputeWizard({
         const datasetIndex = asset.credentialSubject.services.findIndex(
           (s) => s.id === service.id
         )
-        if (datasetIndex === -1)
+        if (datasetIndex === -1) {
+          setIsInitLoading(false)
           throw new Error(`ServiceId ${service.id} not found in ${asset.id}`)
+        }
 
         return {
           asset,
@@ -1018,8 +1023,10 @@ export default function ComputeWizard({
       const algoServiceId = service?.id || algoServices?.[0]?.id
 
       const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
-      if (algoIndex === -1)
+      if (algoIndex === -1) {
+        setIsInitLoading(false)
         throw new Error(`Algorithm serviceId ${algoServiceId} not found.`)
+      }
 
       const algoService = algoServices[algoIndex]
       const algoSessionId = lookupVerifierSessionId(
@@ -1042,8 +1049,10 @@ export default function ComputeWizard({
         algoIndex
       )
 
-      if (!initializedProvider)
+      if (!initializedProvider) {
+        setIsInitLoading(false)
         throw new Error('Provider initialization failed.')
+      }
 
       const datasetFees =
         initializedProvider?.datasets?.map(
@@ -1063,10 +1072,11 @@ export default function ComputeWizard({
       setAlgorithmProviderFee(algorithmFee)
       setInitializedProviderResponse(initializedProvider)
       setExtraFeesLoaded(true)
-      toast.success('Compute provider initialized successfully.')
-
+      toast.info('Compute provider initialized successfully.')
+      setIsInitLoading(false)
       return initializedProvider
     } catch (error: any) {
+      setIsInitLoading(false)
       console.error('Error initializing provider:', error)
       toast.error(error.message || 'Failed to initialize provider.')
       throw error
@@ -1074,9 +1084,9 @@ export default function ComputeWizard({
   }
 
   async function handleInitCompute(formikValues: FormComputeData) {
-    setIsOrdering(true)
+    setIsInitLoading(true)
     await initComputeProvider(formikValues)
-    setIsOrdering(false)
+    setIsInitLoading(false)
   }
 
   if (!asset) {
@@ -1280,7 +1290,7 @@ export default function ComputeWizard({
                       isAccountConnected={isConnected}
                       computeWizard={true}
                       extraFeesLoaded={extraFeesLoaded}
-                      isInitLoading={isOrdering}
+                      isInitLoading={isInitLoading}
                       onInitCompute={() =>
                         handleInitCompute(formikContext.values)
                       }
