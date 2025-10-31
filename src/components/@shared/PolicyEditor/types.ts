@@ -83,6 +83,10 @@ export interface CredentialForm {
   enabled?: boolean
   advancedFeaturesEnabled?: boolean
   externalEvpForwardUrl?: string
+  vpRequiredCredentials?: {
+    required: ({ credential_type: string } | { any_of: string[] })[]
+    anyOfEnabled: boolean
+  }
 }
 
 export interface PolicyEditorProps {

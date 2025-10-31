@@ -69,3 +69,97 @@
 .externalEvpInput {
   width: 100%;
 }
+
+.checkboxWithTooltip {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5em;
+}
+
+.checkboxLabel {
+  margin-left: 0.5em;
+  font-weight: 500;
+}
+
+.requiredCredentialsSection {
+  border-radius: 8px;
+  background: #f7fafd;
+  margin: 1em 0;
+  padding: 1em;
+  border: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.sectionLabel {
+  font-size: 1.07em;
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+
+.vpCredentialRows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4em;
+}
+
+.vpCredentialRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.vpCredentialSelect {
+  min-width: 220px;
+  padding: 4px 12px;
+  border-radius: 4px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  font-size: 1em;
+}
+
+.addButton {
+  margin: 0.5em 0 0.6em 0;
+  background: #f7fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.96em;
+  transition: background 0.15s;
+}
+
+.addButton:hover {
+  background: #e8eef5;
+}
+
+.deleteButton {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 0.96em;
+  color: #dc2626;
+  transition: background 0.15s;
+}
+
+.deleteButton:hover {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.anyOfSection {
+  margin: 0.5em 0;
+  padding-left: 1em;
+  border-left: 2px solid #bee3f8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+
+.anyOfLabel {
+  font-weight: 600;
+  margin-bottom: 0.3em;
+}
