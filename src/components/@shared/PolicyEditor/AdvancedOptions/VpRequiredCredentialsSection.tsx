@@ -2,6 +2,9 @@ import React from 'react'
 import styles from './Advanced.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
+import Button from '@shared/atoms/Button'
+import DeleteButton from '@shared/DeleteButton/DeleteButton'
+import Input from '@components/@shared/FormInput'
 
 export type VpCredentialEntry =
   | { id: string; credential_type: string }
@@ -261,39 +264,35 @@ const VpRequiredCredentialsSection = ({
                   </option>
                 ))}
             </select>
-            <button
-              type="button"
+            <DeleteButton
               className={styles.deleteButton}
               onClick={() =>
                 handleRemoveCredential(
                   required.findIndex((el) => el.id === entry.id)
                 )
               }
-            >
-              Delete
-            </button>
+            ></DeleteButton>
           </div>
         ))}
-      <button
+      <Button
         type="button"
         className={styles.addButton}
         onClick={handleAddCredential}
         disabled={availableForRequired.length === 0}
       >
         Add new credential
-      </button>
+      </Button>
       <div className={styles.checkboxWithTooltip}>
-        <label>
-          <input
-            type="checkbox"
-            checked={anyOfEnabled}
-            onChange={(e) => handleToggleAnyOf(e.target.checked)}
-            disabled={availableForAnyOf.length === 0}
-          />
-          <span className={styles.checkboxLabel}>
-            Add optional group (Any of)
-          </span>
-        </label>
+        <Input
+          name="vpRequiredCredentialsAnyOf"
+          type="checkbox"
+          options={['Add optional group (Any of)']}
+          checked={anyOfEnabled}
+          onChange={(e) =>
+            handleToggleAnyOf((e.target as HTMLInputElement).checked)
+          }
+          disabled={availableForAnyOf.length === 0}
+        />
         <Tooltip
           content={
             <Markdown text="When enabled, the presented credentials must match any of the types below." />
@@ -340,24 +339,21 @@ const VpRequiredCredentialsSection = ({
                         </option>
                       ))}
                   </select>
-                  <button
-                    type="button"
+                  <DeleteButton
                     className={styles.deleteButton}
                     onClick={() => handleRemoveAnyOfCredential(idx)}
-                  >
-                    Delete
-                  </button>
+                  ></DeleteButton>
                 </div>
               ))
             )}
-          <button
+          <Button
             type="button"
             className={styles.addButton}
             onClick={handleAddAnyOfCredential}
             disabled={availableForAnyOf.length === 0}
           >
             Add new
-          </button>
+          </Button>
         </div>
       )}
     </div>
