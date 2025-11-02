@@ -251,7 +251,7 @@ export default function Review({
     }
 
     setVerificationQueue(queue)
-  }, [selectedDatasetAsset, asset, service, lookupVerifierSessionId])
+  }, [selectedDatasetAsset, asset, service])
 
   useEffect(() => {
     const checkExpiration = () => {
@@ -938,15 +938,17 @@ export default function Review({
                       itemName={item.name}
                       value={item.price}
                       duration={item.duration}
-                      {...(needsSsi
-                        ? {
-                            actionLabel: `Check ${
-                              item.type === 'dataset' ? 'Dataset' : 'Algorithm'
-                            } Credentials`,
-                            onAction: () => startVerification(i),
-                            actionDisabled: false
-                          }
-                        : {})}
+                      actionLabel={
+                        item.status === 'unverified'
+                          ? 'Check Credentials'
+                          : item.status === 'checking'
+                          ? 'Verifying...'
+                          : item.status === 'failed'
+                          ? 'Retry'
+                          : 'Verified'
+                      }
+                      onAction={() => startVerification(i)}
+                      actionDisabled={item.status === 'checking'}
                       isService={item.type === 'algorithm'}
                       infoMessage={
                         !hasSsiPolicy

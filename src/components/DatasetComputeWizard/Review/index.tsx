@@ -297,13 +297,7 @@ export default function Review({
     }
 
     setVerificationQueue(queue)
-  }, [
-    asset,
-    service,
-    selectedAlgorithmAsset,
-    serviceIndex,
-    lookupVerifierSessionId
-  ])
+  }, [asset, service, selectedAlgorithmAsset, serviceIndex])
 
   useEffect(() => {
     const checkExpiration = () => {
