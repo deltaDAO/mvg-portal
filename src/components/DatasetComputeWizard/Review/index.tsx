@@ -258,11 +258,7 @@ export default function Review({
         type: 'dataset',
         asset,
         service,
-        status: datasetNeedsSsi
-          ? isVerified
-            ? ('verified' as const)
-            : ('unverified' as const)
-          : ('verified' as const),
+        status: isVerified ? ('verified' as const) : ('unverified' as const),
         index: 0,
         price: rawPrice,
         duration: formatDuration(service.timeout || 0),
@@ -290,11 +286,7 @@ export default function Review({
         type: 'algorithm',
         asset: selectedAlgorithmAsset,
         service: algoService,
-        status: algoNeedsSsi
-          ? isVerified
-            ? ('verified' as const)
-            : ('unverified' as const)
-          : ('verified' as const),
+        status: isVerified ? ('verified' as const) : ('unverified' as const),
         index: queue.length,
         price: rawPrice,
         duration: '1 day',
@@ -974,15 +966,17 @@ export default function Review({
                       itemName={item.name}
                       value={item.price}
                       duration={item.duration}
-                      {...(needsSsi
-                        ? {
-                            actionLabel: `Check ${
-                              item.type === 'dataset' ? 'Dataset' : 'Algorithm'
-                            } Credentials`,
-                            onAction: () => startVerification(i),
-                            actionDisabled: false
-                          }
-                        : {})}
+                      actionLabel={
+                        item.status === 'unverified'
+                          ? 'Check Credentials'
+                          : item.status === 'checking'
+                          ? 'Verifying...'
+                          : item.status === 'failed'
+                          ? 'Retry'
+                          : 'Verified'
+                      }
+                      onAction={() => startVerification(i)}
+                      actionDisabled={item.status === 'checking'}
                       isService={true}
                       infoMessage={
                         !hasSsiPolicy
