@@ -5,6 +5,10 @@ import styles from './Advanced.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 import cs from 'classnames'
+import VpRequiredCredentialsSection, {
+  VpCredentialEntry
+} from './VpRequiredCredentialsSection'
+import fields from '../editor.json'
 
 interface AdvancedOptionsProps {
   name: string
@@ -23,6 +27,11 @@ interface AdvancedOptionsProps {
   externalEvpForward: boolean
   onExternalEvpForwardChange: () => void
   onExternalEvpForwardUrlChange: (value: string) => void
+
+  vpRequiredCredentialsEnabled: boolean
+  onVpRequiredCredentialsEnabledChange: (v: boolean) => void
+  vpRequiredCredentials: VpCredentialEntry[]
+  onVpRequiredCredentialsChange: (value: VpCredentialEntry[]) => void
 }
 
 export default function AdvancedOptions({
@@ -41,8 +50,21 @@ export default function AdvancedOptions({
   onMaxCredentialsCountChange,
   externalEvpForward,
   onExternalEvpForwardChange,
-  onExternalEvpForwardUrlChange
+  onExternalEvpForwardUrlChange,
+  vpRequiredCredentialsEnabled,
+  onVpRequiredCredentialsEnabledChange,
+  vpRequiredCredentials,
+  onVpRequiredCredentialsChange
 }: AdvancedOptionsProps): ReactElement {
+  const typeField = fields.find((f) => f.name === 'type')
+  const credentialTypeOptions =
+    typeField && Array.isArray(typeField.options)
+      ? typeField.options.map((opt) => ({
+          label: opt,
+          value: opt
+        }))
+      : []
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -201,6 +223,35 @@ export default function AdvancedOptions({
               </Field>
             </div>
           )}
+
+          <div className={styles.inputRow}>
+            <div className={styles.checkboxWithTooltip}>
+              <Input
+                name={`${name}.vpRequiredCredentialsEnabled`}
+                type="checkbox"
+                options={['VP required credentials']}
+                checked={vpRequiredCredentialsEnabled}
+                onChange={() =>
+                  onVpRequiredCredentialsEnabledChange(
+                    !vpRequiredCredentialsEnabled
+                  )
+                }
+                hideLabel={true}
+              />
+              <Tooltip
+                content={
+                  <Markdown text="Specify which verifiable credentials are mandatory and which are optional" />
+                }
+              />
+            </div>
+            {vpRequiredCredentialsEnabled && (
+              <VpRequiredCredentialsSection
+                required={vpRequiredCredentials}
+                onChange={onVpRequiredCredentialsChange}
+                credentialOptions={credentialTypeOptions}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useFormikContext } from 'formik'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect } from 'react'
 import { FormPublishData } from '../_types'
 import AccessRulesSection from './AccessRulesSection'
 import SSIPoliciesSection from './SSIPoliciesSection'
@@ -9,10 +9,11 @@ export function AccessPolicies(): ReactElement {
 
   // Removed default policy loading - users must manually select policies
 
-  if (!values.accessPolicyPageVisited) {
-    setFieldValue('accessPolicyPageVisited', true)
-  }
-
+  useEffect(() => {
+    if (!values.accessPolicyPageVisited) {
+      setFieldValue('accessPolicyPageVisited', true)
+    }
+  }, [values.accessPolicyPageVisited, setFieldValue])
   return (
     <>
       <AccessRulesSection />

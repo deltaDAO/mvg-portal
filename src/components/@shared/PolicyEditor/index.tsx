@@ -1,5 +1,4 @@
 import { getFieldContent } from '@utils/form'
-import { Field } from 'formik'
 import cs from 'classnames'
 import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
@@ -13,8 +12,7 @@ import {
   PolicyEditorProps,
   PolicyType,
   RequestCredentialForm,
-  StaticPolicy,
-  VpPolicyType
+  StaticPolicy
 } from './types'
 import fields from './editor.json'
 import Tooltip from '@shared/atoms/Tooltip'
@@ -27,6 +25,7 @@ import AdvancedOptions from './AdvancedOptions/Advanced'
 import CustomPolicyBlock from './PolicyBlocks/Custom'
 
 import AddIcon from '@images/add_param.svg'
+import { VpCredentialEntry } from './AdvancedOptions/VpRequiredCredentialsSection'
 
 interface PolicyViewProps {
   policy: PolicyType
@@ -36,13 +35,6 @@ interface PolicyViewProps {
   onDeletePolicy: () => void
   onValueChange: () => void
   credentialType?: string
-}
-
-interface VpPolicyViewProps {
-  policy: VpPolicyType
-  name: string
-  index: number
-  onDeletePolicy: () => void
 }
 
 function PolicyView(props: PolicyViewProps): ReactElement {
@@ -88,124 +80,6 @@ function PolicyView(props: PolicyViewProps): ReactElement {
   }
 }
 
-function StaticVpPolicyView(props: VpPolicyViewProps): ReactElement {
-  const { index, onDeletePolicy, name }: VpPolicyViewProps = props
-  return (
-    <>
-      <label>{{ ...getFieldContent('staticVpPolicy', fields) }.label}</label>
-      <div className={`${styles.editorPanel} ${styles.marginBottom1em}`}>
-        <div
-          className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-        >
-          <div className={`${styles.flexGrow}`}>
-            <Field
-              {...getFieldContent('name', fields)}
-              component={Input}
-              name={`${name}.vpPolicies[${index}].name`}
-            />
-          </div>
-          <Button
-            type="button"
-            style="ghost"
-            onClick={onDeletePolicy}
-            className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-          >
-            Delete
-          </Button>
-        </div>
-      </div>
-    </>
-  )
-}
-
-function ArgumentVpPolicyView(props: VpPolicyViewProps): ReactElement {
-  const { index, onDeletePolicy, name }: VpPolicyViewProps = props
-  return (
-    <>
-      <label>{{ ...getFieldContent('argumentVpPolicy', fields) }.label}</label>
-      <div className={`${styles.editorPanel} ${styles.marginBottom1em}`}>
-        <div
-          className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-        >
-          <div
-            className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100} ${styles.flexGrow}`}
-          >
-            <div className={styles.flexGrow}>
-              <Field
-                {...getFieldContent('policy', fields)}
-                component={Input}
-                name={`${name}.vpPolicies[${index}].policy`}
-              />
-            </div>
-            <div className={styles.flexGrow}>
-              <Field
-                {...getFieldContent('args', fields)}
-                component={Input}
-                name={`${name}.vpPolicies[${index}].args`}
-              />
-            </div>
-            <Button
-              type="button"
-              style="ghost"
-              onClick={onDeletePolicy}
-              className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-            >
-              Delete
-            </Button>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
-
-function ExternalEvpForwardVpPolicyView(
-  props: VpPolicyViewProps
-): ReactElement {
-  const { index, onDeletePolicy, name }: VpPolicyViewProps = props
-  return (
-    <>
-      <label>External EVP forward</label>
-      <div className={`${styles.editorPanel} ${styles.marginBottom1em}`}>
-        <div
-          className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-        >
-          <div className={`${styles.flexGrow}`}>
-            <Field
-              {...getFieldContent('policyUrl', fields)}
-              component={Input}
-              name={`${name}.vpPolicies[${index}].url`}
-              placeholder="https://service.example.com/evp"
-            />
-          </div>
-          <Button
-            type="button"
-            style="ghost"
-            onClick={onDeletePolicy}
-            className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-          >
-            Delete
-          </Button>
-        </div>
-      </div>
-    </>
-  )
-}
-
-function VpPolicyView(props: VpPolicyViewProps): ReactElement {
-  const { policy }: VpPolicyViewProps = props
-  switch (policy?.type) {
-    case 'staticVpPolicy':
-      return StaticVpPolicyView(props)
-    case 'argumentVpPolicy':
-      return ArgumentVpPolicyView(props)
-    case 'externalEvpForwardVpPolicy':
-      return ExternalEvpForwardVpPolicyView(props)
-    default:
-      return <></>
-  }
-}
-
 export function PolicyEditor(props): ReactElement {
   const {
     credentials,
@@ -219,7 +93,26 @@ export function PolicyEditor(props): ReactElement {
     buttonStyle = 'primary',
     hideDefaultPolicies = false
   }: PolicyEditorProps = props
-
+  const [vpRequiredCredentials, setVpRequiredCredentials] = useState<
+    VpCredentialEntry[]
+  >(
+    Array.isArray(credentials.vpRequiredCredentials)
+      ? credentials.vpRequiredCredentials
+      : []
+  )
+  const [vpRequiredCredentialsEnabled, setVpRequiredCredentialsEnabled] =
+    useState<boolean>(
+      Array.isArray(credentials.vpRequiredCredentials) &&
+        credentials.vpRequiredCredentials.length > 0
+    )
+  useEffect(() => {
+    if (
+      !vpRequiredCredentialsEnabled &&
+      credentials.vpRequiredCredentials?.required?.length
+    )
+      console.log('Clearing vpRequiredCredentials')
+    setCredentials({ ...credentials, vpRequiredCredentials: [] })
+  }, [vpRequiredCredentialsEnabled])
   const [enabled, setEnabled] = useState(credentials.enabled || enabledView)
   const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(
     credentials.advancedFeaturesEnabled ||
@@ -290,8 +183,6 @@ export function PolicyEditor(props): ReactElement {
 
   const [defaultPolicyStates, setDefaultPolicyStates] = useState(() => {
     const currentVcPolicies = credentials.vcPolicies || []
-    const hasExistingPolicies = currentVcPolicies.length > 0
-
     // Initialize all policies as unchecked
     const initialState = {
       'not-before': currentVcPolicies.includes('not-before'),
@@ -387,10 +278,6 @@ export function PolicyEditor(props): ReactElement {
     return descriptions[policy] || 'Policy verification rule.'
   }
 
-  const filteredDefaultPolicies = defaultPolicies.filter(
-    (policy) => policy.length > 0
-  )
-
   useEffect(() => {
     const hasExistingCredentials =
       (credentials.vpPolicies && credentials.vpPolicies.length > 0) ||
@@ -429,31 +316,6 @@ export function PolicyEditor(props): ReactElement {
       setEditAdvancedFeatures(true)
     }
   }, [credentials.enabled, hasUserSetEnabled, editAdvancedFeatures])
-
-  function handlePolicyEditorToggle(value: boolean) {
-    setHasUserSetEnabled(true)
-    if (!value) {
-      const updatedCredentials = {
-        ...credentials,
-        enabled: false,
-        requestCredentials: [],
-        vcPolicies: [],
-        vpPolicies: []
-      }
-      setCredentials(updatedCredentials)
-      setEditAdvancedFeatures(false)
-    } else {
-      const updatedCredentials = {
-        ...credentials,
-        enabled: true
-      }
-      if (credentials.vpPolicies?.length) {
-        updatedCredentials.vpPolicies = credentials.vpPolicies
-      }
-      setCredentials(updatedCredentials)
-    }
-    setEnabled(value)
-  }
 
   function handleNewRequestCredential() {
     const newRequestCredential: RequestCredentialForm = {
@@ -761,6 +623,10 @@ export function PolicyEditor(props): ReactElement {
   ])
 
   useEffect(() => {
+    setCredentials({ ...credentials, vpRequiredCredentials })
+  }, [vpRequiredCredentials])
+
+  useEffect(() => {
     if (!enabled) return
 
     const hasCompletedCredentials = credentials.requestCredentials?.some(
@@ -981,6 +847,13 @@ export function PolicyEditor(props): ReactElement {
           onExternalEvpForwardUrlChange={(value) =>
             setExternalEvpForwardUrl(value)
           }
+          vpRequiredCredentialsEnabled={vpRequiredCredentialsEnabled}
+          onVpRequiredCredentialsEnabledChange={(enabled) => {
+            setVpRequiredCredentialsEnabled(enabled)
+            if (!enabled) setVpRequiredCredentials([])
+          }}
+          vpRequiredCredentials={vpRequiredCredentials}
+          onVpRequiredCredentialsChange={setVpRequiredCredentials}
         />
       )}
     </>

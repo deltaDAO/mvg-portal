@@ -6,7 +6,6 @@ import IconCompute from '@images/compute.svg'
 import content from '../../../../content/publish/form.json'
 import { getFieldContent } from '@utils/form'
 import { FormPublishData } from '../_types'
-import { useMarketMetadata } from '@context/MarketMetadata'
 import { supportedLanguages } from '@components/Asset/languageType'
 import FormEditComputeService from '@components/Asset/Edit/FormEditComputeService'
 import AccessRulesSection from '../AccessPolicies/AccessRulesSection'
@@ -21,8 +20,6 @@ const accessTypeOptionsTitles = getFieldContent(
 ).options
 
 export default function ServicesFields(): ReactElement {
-  const { appConfig } = useMarketMetadata()
-
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
 

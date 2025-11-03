@@ -59,11 +59,7 @@ import {
   VpPolicyType
 } from '@components/@shared/PolicyEditor/types'
 import { SsiWalletContext } from '@context/SsiWallet'
-import {
-  getWalletKey,
-  isSessionValid,
-  signMessage
-} from '@utils/wallet/ssiWallet'
+import { isSessionValid, signMessage } from '@utils/wallet/ssiWallet'
 import { isCredentialPolicyBased } from '@utils/credentials'
 import { State } from 'src/@types/ddo/State'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
@@ -292,6 +288,17 @@ function generateSsiPolicy(policy: PolicyType): any {
   return result
 }
 
+function safeJsonParse(value) {
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value)
+    } catch {
+      return value // fallback to original string if invalid JSON
+    }
+  }
+  return value
+}
+
 export function parseCredentialPolicies(credentials: Credential) {
   if (!credentials) {
     return
@@ -318,12 +325,10 @@ export function parseCredentialPolicies(credentials: Credential) {
             return requestCredentials
           }
         )
-
         cleanupVpPolicies(value)
         return value
       })
     }
-
     return credential
   })
 }
@@ -361,9 +366,7 @@ export function stringifyCredentialPolicies(credentials: Credential) {
 }
 
 export function generateCredentials(
-  updatedCredentials: CredentialForm,
-  isServiceCredentials: boolean = false,
-  mainCredentials?: CredentialForm
+  updatedCredentials: CredentialForm
 ): Credential {
   const newCredentials: Credential = {
     allow: [],
@@ -409,6 +412,22 @@ export function generateCredentials(
         return null
       }
     )
+    const requiredVpPolicies: any[] = []
+
+    if ((updatedCredentials?.vpRequiredCredentials as any)?.length > 0) {
+      for (const entry of updatedCredentials.vpRequiredCredentials as any) {
+        if ('credential_type' in entry) {
+          requiredVpPolicies.push({ policy: entry.credential_type })
+        } else if ('any_of' in entry) {
+          requiredVpPolicies.push({ any_of: entry.any_of })
+        }
+      }
+
+      vpPolicies.push({
+        policy: 'vp_required_credentials',
+        args: JSON.stringify({ required: requiredVpPolicies })
+      })
+    }
 
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
@@ -628,11 +647,7 @@ export async function transformPublishFormToDdo(
     files[0].valid &&
     (await getEncryptedFiles(file, chainId, providerUrl.url))
 
-  const newServiceCredentials = generateCredentials(
-    credentials,
-    true,
-    values.credentials
-  )
+  const newServiceCredentials = generateCredentials(credentials)
   const valuesCompute: ComputeEditForm = {
     allowAllPublishedAlgorithms:
       values.allowAllPublishedAlgorithms === 'Allow any published algorithms',
