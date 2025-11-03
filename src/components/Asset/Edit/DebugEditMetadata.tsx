@@ -52,7 +52,6 @@ export default function DebugEditMetadata({
             ? undefined
             : transformConsumerParameters(values.consumerParameters)
       }
-
       const updatedCredentials: Credential = generateCredentials(
         values.credentials
       )

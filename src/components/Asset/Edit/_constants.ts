@@ -160,6 +160,85 @@ function generateCredentials(
   return credentialForm
 }
 
+function safeParse(val: any) {
+  if (typeof val === 'string') {
+    try {
+      return JSON.parse(val)
+    } catch {
+      return val
+    }
+  }
+  return val
+}
+
+function syncVpRequiredPoliciesAndCredentials(credentialForm: any) {
+  function genId() {
+    return Math.random().toString(36).slice(2)
+  }
+
+  // Safe parse on args for every policy
+  if (Array.isArray(credentialForm.vpPolicies)) {
+    credentialForm.vpPolicies = credentialForm.vpPolicies.map((vp) =>
+      vp && typeof vp === 'object' && 'args' in vp
+        ? { ...vp, args: safeParse((vp as any).args) }
+        : vp
+    )
+  }
+
+  // Build vpRequiredCredentials from the canonical policy (if available)
+  const foundPolicy = credentialForm.vpPolicies.find(
+    (vp: any) =>
+      typeof vp === 'object' &&
+      vp.policy === 'vp_required_credentials' &&
+      'args' in vp &&
+      vp.args &&
+      typeof vp.args === 'object'
+  )
+
+  // Build from policy if present, else from current UI state
+  const newVpRequiredCredentials: any[] = []
+  if (foundPolicy && Array.isArray(foundPolicy.args.required)) {
+    foundPolicy.args.required.forEach((req: any) => {
+      if (req.policy) {
+        newVpRequiredCredentials.push({
+          id: genId(),
+          credential_type: req.policy
+        })
+      }
+      if (Array.isArray(req.any_of)) {
+        newVpRequiredCredentials.push({
+          any_of: req.any_of
+        })
+      }
+    })
+  }
+
+  credentialForm.vpRequiredCredentials = newVpRequiredCredentials
+
+  // If there is a UI edit to the required credentials, keep vpPolicies up to date!
+  if (foundPolicy) {
+    // Build required from current credentials state
+    foundPolicy.args.required = credentialForm.vpRequiredCredentials.map(
+      (item: any) =>
+        'credential_type' in item
+          ? { policy: item.credential_type }
+          : { any_of: item.any_of }
+    )
+  }
+  if (credentialForm?.vpPolicies && Array.isArray(credentialForm.vpPolicies)) {
+    credentialForm.vpPolicies = credentialForm.vpPolicies.filter(
+      (vp: any) =>
+        !(
+          vp &&
+          vp.type === 'argumentVpPolicy' &&
+          vp.args &&
+          Array.isArray(vp.args.required) &&
+          vp.args.required.length > 0
+        )
+    )
+  }
+}
+
 export function getInitialValues(
   metadata: Metadata,
   credentials: Credential,
@@ -188,6 +267,9 @@ export function getInitialValues(
   }
 
   const credentialForm = generateCredentials(credentials, 'edit')
+
+  syncVpRequiredPoliciesAndCredentials(credentialForm)
+
   return {
     name: metadata?.name,
     description: metadata?.description?.['@value'],

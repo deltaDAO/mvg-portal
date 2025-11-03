@@ -155,7 +155,7 @@ export default function Edit({
       updatedAsset.credentialSubject.services =
         updatedAsset.credentialSubject.services.map((svc) => ({
           ...svc,
-          credentials: generateCredentials(values?.credentials, true)
+          credentials: generateCredentials(values?.credentials)
         }))
 
       stringifyCredentialPolicies(updatedAsset.credentialSubject.credentials)
