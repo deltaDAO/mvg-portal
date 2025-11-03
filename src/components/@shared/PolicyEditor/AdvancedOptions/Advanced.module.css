@@ -40,6 +40,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--sp-2);
+  width: 100%;
 }
 
 .fullWidth {
@@ -64,17 +65,18 @@
   flex-direction: row;
   align-items: center;
   gap: var(--sp-1_5);
+  margin-bottom: 0.5em;
 }
 
 .externalEvpInput {
   width: 100%;
 }
 
-.checkboxWithTooltip {
+/* .checkboxWithTooltip {
   display: flex;
   align-items: center;
   margin-bottom: 0.5em;
-}
+} */
 
 .checkboxLabel {
   margin-left: 0.5em;
@@ -82,20 +84,19 @@
 }
 
 .requiredCredentialsSection {
-  border-radius: 8px;
-  background: #f7fafd;
-  margin: 1em 0;
-  padding: 1em;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.2em;
+  width: 100%;
+  padding: var(--sp-6);
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
+  background: var(--brand-white);
 }
 
 .sectionLabel {
-  font-size: 1.07em;
-  font-weight: 600;
-  margin-bottom: 0.5em;
+  font-size: var(--font-size-large);
+  font-weight: var(--font-weight-bold);
+  color: var(--clr-slate-70);
+  margin-bottom: var(--sp-4);
 }
 
 .vpCredentialRows {
@@ -108,6 +109,7 @@
   display: flex;
   align-items: center;
   gap: 0.5em;
+  margin: 1rem;
 }
 
 .vpCredentialSelect {
@@ -120,29 +122,30 @@
 }
 
 .addButton {
-  margin: 0.5em 0 0.6em 0;
-  background: #f7fafc;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  padding: 4px 10px;
-  cursor: pointer;
-  font-size: 0.96em;
-  transition: background 0.15s;
+  background: var(--publish-primary-gradient);
+  color: var(--brand-white);
+  border: none;
+  border-radius: 20px;
+  margin: 10px;
 }
 
 .addButton:hover {
-  background: #e8eef5;
+  background: var(--publish-primary-gradient);
+  opacity: 0.9;
 }
 
 .deleteButton {
-  background: #fff;
-  border: 1px solid #cbd5e1;
-  border-radius: 4px;
-  padding: 4px 10px;
-  cursor: pointer;
-  font-size: 0.96em;
-  color: #dc2626;
-  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-1);
+  height: 40px;
+  border-radius: 20px !important;
+  background: transparent;
+  color: var(--clr-navy);
+  border: 1px solid var(--clr-navy);
+  text-transform: none;
+  padding: 9px 14px;
+  transition: all 0.3s ease;
 }
 
 .deleteButton:hover {
