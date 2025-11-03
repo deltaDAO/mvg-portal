@@ -35,7 +35,7 @@ interface VerificationItem {
   type: 'dataset' | 'algorithm'
   asset: AssetExtended
   service: Service
-  status: 'verified' | 'checking' | 'failed' | 'unverified'
+  status: 'verified' | 'checking' | 'failed' | 'expired' | 'unverified'
   index: number
   price: string
   duration: string
@@ -280,7 +280,7 @@ export default function Review({
               const isExpired = now - timestamp > 5 * 60 * 1000 // 5 minutes
 
               if (isExpired) {
-                return { ...item, status: 'failed' as const }
+                return { ...item, status: 'expired' as const }
               }
             } else {
               return { ...item, status: 'failed' as const }

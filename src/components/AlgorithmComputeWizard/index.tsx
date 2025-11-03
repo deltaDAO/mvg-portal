@@ -1267,7 +1267,9 @@ export default function ComputeWizard({
                           !(
                             formikContext.values.serviceSelected ||
                             formikContext.values.withoutDataset
-                          ))
+                          )) ||
+                        (formikContext.values.user.stepCurrent === 4 &&
+                          !formikContext.values.computeEnv)
                       }
                       hasPreviousOrder={!!validOrderTx}
                       hasDatatoken={hasDatatoken}

@@ -18,7 +18,12 @@ interface PricingRowProps {
   actionLabel?: string
   onAction?: () => void
   actionDisabled?: boolean
-  credentialStatus?: 'verified' | 'checking' | 'failed' | 'unverified'
+  credentialStatus?:
+    | 'verified'
+    | 'checking'
+    | 'failed'
+    | 'expired'
+    | 'unverified'
   valueType?: 'escrow' | 'deposit' | 'default'
   assetId?: string
   serviceId?: string
@@ -85,7 +90,16 @@ export default function PricingRow({
         return (
           <div className={styles.credentialStatusContainer}>
             <CircleX className={styles.credentialIcon} />
-            <span className={styles.verifiedText}>Credentials expired</span>
+            <span className={styles.verifiedText}>
+              Not Allowed! Check Credentials First
+            </span>
+          </div>
+        )
+      case 'expired':
+        return (
+          <div className={styles.credentialStatusContainer}>
+            <CircleX className={styles.credentialIcon} />
+            <span className={styles.verifiedText}>Credentials Expired</span>
           </div>
         )
       default:

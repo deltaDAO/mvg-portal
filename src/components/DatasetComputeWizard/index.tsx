@@ -1227,8 +1227,12 @@ export default function ComputeWizard({
                   showSuccessConfetti={false}
                   rightAlignFirstStep={false}
                   isContinueDisabled={
-                    formikContext.values.user.stepCurrent === 1 &&
-                    !formikContext.values.algorithm
+                    (formikContext.values.user.stepCurrent === 1 &&
+                      !formikContext.values.algorithm) ||
+                    (formikContext.values.user.stepCurrent === 4 &&
+                      !formikContext.values.computeEnv) ||
+                    (formikContext.values.user.stepCurrent === 2 &&
+                      !formikContext.values.serviceSelected)
                   }
                   isSubmitDisabled={isComputeButtonDisabled}
                   action="compute"
