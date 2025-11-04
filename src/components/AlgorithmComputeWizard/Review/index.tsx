@@ -299,13 +299,15 @@ export default function Review({
 
   const startVerification = (index: number) => {
     const hasExpiredCredentials = verificationQueue.some(
-      (item) => item.status === 'failed'
+      (item) => item.status === 'failed' || item.status === 'expired'
     )
 
     if (hasExpiredCredentials) {
       const expiredIndices = verificationQueue
         .map((item, i) => ({ item, index: i }))
-        .filter(({ item }) => item.status === 'failed')
+        .filter(
+          ({ item }) => item.status === 'failed' || item.status === 'expired'
+        )
         .map(({ index }) => index)
 
       const firstExpiredIndex = expiredIndices[0]
@@ -355,14 +357,15 @@ export default function Review({
 
       const hasExpiredCredentials = updatedQueue.some(
         (item) =>
-          item.status === 'failed' &&
-          item.asset?.id &&
-          item.service?.id &&
-          typeof window !== 'undefined' &&
-          window.localStorage &&
-          window.localStorage.getItem(
-            `credential_${item.asset.id}_${item.service.id}`
-          ) !== null
+          item.status === 'failed' ||
+          (item.status === 'expired' &&
+            item.asset?.id &&
+            item.service?.id &&
+            typeof window !== 'undefined' &&
+            window.localStorage &&
+            window.localStorage.getItem(
+              `credential_${item.asset.id}_${item.service.id}`
+            ) !== null)
       )
 
       let nextIndex = -1
@@ -370,15 +373,15 @@ export default function Review({
       if (hasExpiredCredentials) {
         nextIndex = updatedQueue.findIndex(
           (item, index) =>
-            index > currentVerificationIndex &&
-            item.status === 'failed' &&
-            item.asset?.id &&
-            item.service?.id &&
-            typeof window !== 'undefined' &&
-            window.localStorage &&
-            window.localStorage.getItem(
-              `credential_${item.asset.id}_${item.service.id}`
-            ) !== null
+            (index > currentVerificationIndex && item.status === 'failed') ||
+            (item.status === 'expired' &&
+              item.asset?.id &&
+              item.service?.id &&
+              typeof window !== 'undefined' &&
+              window.localStorage &&
+              window.localStorage.getItem(
+                `credential_${item.asset.id}_${item.service.id}`
+              ) !== null)
         )
       } else {
         nextIndex = updatedQueue.findIndex(
@@ -903,10 +906,14 @@ export default function Review({
                           ? 'Verifying...'
                           : item.status === 'failed'
                           ? 'Retry'
+                          : item.status === 'expired'
+                          ? 'Check Credentials'
                           : 'Verified'
                       }
                       onAction={() => startVerification(i)}
-                      actionDisabled={item.status === 'checking'}
+                      actionDisabled={
+                        item.status === 'checking' || item.status === 'verified'
+                      }
                       isService={item.type === 'algorithm'}
                       infoMessage={
                         !hasSsiPolicy
@@ -945,10 +952,14 @@ export default function Review({
                           ? 'Verifying...'
                           : item.status === 'failed'
                           ? 'Retry'
+                          : item.status === 'expired'
+                          ? 'Check Credentials'
                           : 'Verified'
                       }
                       onAction={() => startVerification(i)}
-                      actionDisabled={item.status === 'checking'}
+                      actionDisabled={
+                        item.status === 'checking' || item.status === 'verified'
+                      }
                       isService={item.type === 'algorithm'}
                       infoMessage={
                         !hasSsiPolicy

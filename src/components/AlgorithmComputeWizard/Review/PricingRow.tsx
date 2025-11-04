@@ -120,6 +120,7 @@ export default function PricingRow({
               !!actionLabel &&
               (credentialStatus === 'checking' ||
                 credentialStatus === 'failed' ||
+                credentialStatus === 'expired' ||
                 (credentialStatus === 'verified' && expirationStatus.isValid))
             return shouldShowStatus ? (
               <div className={styles.credentialIcon}>
