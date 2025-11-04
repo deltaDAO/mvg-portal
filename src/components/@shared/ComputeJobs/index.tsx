@@ -8,6 +8,7 @@ import Details from '@components/Profile/History/ComputeJobs/Details'
 import FinishedIcon from '@images/finished.svg'
 import InProgress from '@images/inProgress.svg'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import Button from '../atoms/Button'
 
 const ComputeJobs = ({
   asset,
@@ -22,60 +23,60 @@ const ComputeJobs = ({
   const { address: accountId } = useAccount()
   const newCancelToken = useCancelToken()
 
-  useEffect(() => {
-    const fetchComputeJobs = async (type: string = 'init') => {
-      if (!accountId) {
-        console.log('No account ID available')
-        setIsLoading(false)
-        return
-      }
-
-      try {
-        if (type === 'init') {
-          setIsLoading(true)
-        }
-        setError(null)
-        const response = await getAllComputeJobs(accountId, newCancelToken())
-
-        if (response?.computeJobs) {
-          const allJobs = response.computeJobs
-
-          const matchingJobs = Object.entries(allJobs)
-            .filter(([jobId, job]: [string, ComputeJobMetaData]) => {
-              if (!job.assets || !Array.isArray(job.assets)) {
-                console.warn(`Job ${jobId} has no assets array.`)
-                return false
-              }
-
-              const hasMatch = job.assets.some(
-                (assetObj: { documentId: string }) => {
-                  return assetObj.documentId === asset?.id
-                }
-              )
-
-              const hasAlgorithmMatch =
-                job.algorithm && job.algorithm.documentId === asset?.id
-
-              return hasMatch || hasAlgorithmMatch
-            })
-            .map(([, job]) => job)
-
-          setJobs(matchingJobs)
-        } else {
-          console.warn('No compute jobs found in response')
-          setJobs([])
-        }
-      } catch (err) {
-        console.error('Error fetching compute jobs:', err)
-        setError('Failed to load compute jobs. Please try again.')
-        setJobs([])
-      } finally {
-        if (type === 'init') {
-          setIsLoading(false)
-        }
-      }
+  async function fetchComputeJobs(type: string = 'init') {
+    if (!accountId) {
+      console.log('No account ID available')
+      setIsLoading(false)
+      return
     }
 
+    try {
+      if (type === 'init') {
+        setIsLoading(true)
+      }
+      setError(null)
+      const response = await getAllComputeJobs(accountId, newCancelToken())
+
+      if (response?.computeJobs) {
+        const allJobs = response.computeJobs
+
+        const matchingJobs = Object.entries(allJobs)
+          .filter(([jobId, job]: [string, ComputeJobMetaData]) => {
+            if (!job.assets || !Array.isArray(job.assets)) {
+              console.warn(`Job ${jobId} has no assets array.`)
+              return false
+            }
+
+            const hasMatch = job.assets.some(
+              (assetObj: { documentId: string }) => {
+                return assetObj.documentId === asset?.id
+              }
+            )
+
+            const hasAlgorithmMatch =
+              job.algorithm && job.algorithm.documentId === asset?.id
+
+            return hasMatch || hasAlgorithmMatch
+          })
+          .map(([, job]) => job)
+
+        setJobs(matchingJobs)
+      } else {
+        console.warn('No compute jobs found in response')
+        setJobs([])
+      }
+    } catch (err) {
+      console.error('Error fetching compute jobs:', err)
+      setError('Failed to load compute jobs. Please try again.')
+      setJobs([])
+    } finally {
+      if (type === 'init') {
+        setIsLoading(false)
+      }
+    }
+  }
+
+  useEffect(() => {
     fetchComputeJobs('init')
   }, [accountId, newCancelToken, refetchTrigger, asset?.id])
 
@@ -100,7 +101,15 @@ const ComputeJobs = ({
   if (jobs.length === 0) {
     return (
       <div className={styles.container}>
-        <h1 className={styles.title}>Your Compute Jobs</h1>
+        <div className={styles.headerRow}>
+          <h1 className={styles.title}>Your Compute Jobs</h1>
+          <Button
+            className={styles.refreshButton}
+            onClick={() => fetchComputeJobs('refresh')}
+          >
+            Refresh
+          </Button>
+        </div>
         <div className={styles.empty}>No compute jobs found</div>
       </div>
     )
@@ -108,13 +117,23 @@ const ComputeJobs = ({
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Your Compute Jobs</h1>
+      <div className={styles.headerRow}>
+        <h1 className={styles.title}>Your Compute Jobs</h1>
+        <Button
+          className={styles.refreshButton}
+          onClick={() => fetchComputeJobs('refresh')}
+        >
+          Refresh
+        </Button>
+      </div>
+
       <div className={styles.jobsTable}>
         <div className={styles.tableHeader}>
           <div className={styles.statusColumn}>STATUS</div>
           <div className={styles.actionsColumn}>ACTIONS</div>
           <div className={styles.finishedColumn}>FINISHED</div>
         </div>
+
         {jobs.map((job) => {
           const dateFinishedMs = job.dateFinished
             ? Number(job.dateFinished) * 1000
@@ -146,9 +165,6 @@ const ComputeJobs = ({
           )
         })}
       </div>
-      {/* <div className={styles.sales}>
-        {sales} <span className={styles.salesTag}>Sales</span>
-      </div> */}
     </div>
   )
 }

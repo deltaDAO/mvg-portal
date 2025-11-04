@@ -136,3 +136,23 @@
 .salesTag {
   color: #00adb2;
 }
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.refreshButton {
+  background-color: var(--color-primary, #007bff);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-right: 14px;
+  margin-bottom: 16px;
+}
