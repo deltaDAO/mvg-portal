@@ -95,6 +95,7 @@ export default function SelectDataset({
           asset.credentialSubject?.chainId,
           newCancelToken()
         )
+        console.log('get datasets! ', datasets)
 
         const groupedDatasets = transformDatasets(datasets)
         setDatasetsForCompute(groupedDatasets)

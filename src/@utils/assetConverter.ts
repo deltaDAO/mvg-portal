@@ -184,7 +184,8 @@ export async function transformAssetToAssetSelectionDataset(
           isAccountIdWhitelisted: !allow
             ? isAddressWhitelisted(asset, accountId, service)
             : true,
-          datetime: asset.indexedMetadata.event.datetime
+          datetime: asset.indexedMetadata.event.datetime,
+          userParameters: service.consumerParameters
         }
         // put selected ones up front
         algorithmList.unshift(assetEntry)
