@@ -137,7 +137,6 @@ function generateCredentials(
     credentialForm.vcPolicies = vcPolicies
     credentialForm.vpPolicies = vpPolicies
   }
-
   let allowAddresses = []
   credentials.allow?.forEach((allowCredential) => {
     if (isCredentialAddressBased(allowCredential)) {
@@ -163,7 +162,11 @@ function generateCredentials(
 function safeParse(val: any) {
   if (typeof val === 'string') {
     try {
-      return JSON.parse(val)
+      const result = JSON.parse(val)
+      if (Array.isArray(result.required)) {
+        result.required.forEach((item, idx) => console.log(idx, item))
+      }
+      return result
     } catch {
       return val
     }
@@ -180,7 +183,7 @@ function syncVpRequiredPoliciesAndCredentials(credentialForm: any) {
   if (Array.isArray(credentialForm.vpPolicies)) {
     credentialForm.vpPolicies = credentialForm.vpPolicies.map((vp) =>
       vp && typeof vp === 'object' && 'args' in vp
-        ? { ...vp, args: safeParse((vp as any).args) }
+        ? { ...vp, args: safeParse(vp.args) }
         : vp
     )
   }
@@ -199,10 +202,17 @@ function syncVpRequiredPoliciesAndCredentials(credentialForm: any) {
   const newVpRequiredCredentials: any[] = []
   if (foundPolicy && Array.isArray(foundPolicy.args.required)) {
     foundPolicy.args.required.forEach((req: any) => {
+      // Support policy, credential_type, any_of
       if (req.policy) {
         newVpRequiredCredentials.push({
           id: genId(),
           credential_type: req.policy
+        })
+      }
+      if (req.credential_type) {
+        newVpRequiredCredentials.push({
+          id: genId(),
+          credential_type: req.credential_type
         })
       }
       if (Array.isArray(req.any_of)) {
@@ -221,10 +231,11 @@ function syncVpRequiredPoliciesAndCredentials(credentialForm: any) {
     foundPolicy.args.required = credentialForm.vpRequiredCredentials.map(
       (item: any) =>
         'credential_type' in item
-          ? { policy: item.credential_type }
+          ? { credential_type: item.credential_type }
           : { any_of: item.any_of }
     )
   }
+  // Remove duplicate or stale argumentVpPolicy with non-empty required array
   if (credentialForm?.vpPolicies && Array.isArray(credentialForm.vpPolicies)) {
     credentialForm.vpPolicies = credentialForm.vpPolicies.filter(
       (vp: any) =>
@@ -265,9 +276,7 @@ export function getInitialValues(
       valid: true
     }
   }
-
   const credentialForm = generateCredentials(credentials, 'edit')
-
   syncVpRequiredPoliciesAndCredentials(credentialForm)
 
   return {
