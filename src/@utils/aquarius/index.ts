@@ -408,7 +408,8 @@ export async function getAlgorithmDatasetsForCompute(
 
 function isAccountAllowed(ddo: any, accountId: string): boolean {
   const checkAllowList = (allowList: any[]): boolean => {
-    if (!allowList || allowList.length === 0) return false
+    // If not present or is empty, treat as unrestricted
+    if (!allowList || allowList.length === 0) return true
     return allowList.some((allowEntry) => {
       if (allowEntry.type !== 'address' || !allowEntry.values) return false
       return allowEntry.values.some(
@@ -431,20 +432,19 @@ function isAccountAllowed(ddo: any, accountId: string): boolean {
     })
   }
 
-  // Check root credentials allow
+  // Root credentials allow/deny
   if (ddo.credentials?.allow && !checkAllowList(ddo.credentials.allow)) {
     return false
   }
-  // Check root credentials deny
   if (ddo.credentials?.deny && checkDenyList(ddo.credentials.deny)) {
     return false
   }
 
-  // Check service level credentials
+  // Service level allow/deny: pass if undefined or empty
   const services = ddo.credentialSubject?.services || []
   for (const service of services) {
     if (
-      service.credentials?.allow &&
+      typeof service.credentials?.allow !== 'undefined' && // Only check if allow exists
       !checkAllowList(service.credentials.allow)
     ) {
       return false
