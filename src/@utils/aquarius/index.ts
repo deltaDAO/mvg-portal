@@ -406,6 +406,57 @@ export async function getAlgorithmDatasetsForCompute(
   return datasets
 }
 
+function isAccountAllowed(ddo: any, accountId: string): boolean {
+  const checkAllowList = (allowList: any[]): boolean => {
+    if (!allowList || allowList.length === 0) return false
+    return allowList.some((allowEntry) => {
+      if (allowEntry.type !== 'address' || !allowEntry.values) return false
+      return allowEntry.values.some(
+        (val) =>
+          val.address === '*' ||
+          val.address.toLowerCase() === accountId.toLowerCase()
+      )
+    })
+  }
+
+  const checkDenyList = (denyList: any[]): boolean => {
+    if (!denyList || denyList.length === 0) return false
+    return denyList.some((denyEntry) => {
+      if (denyEntry.type !== 'address' || !denyEntry.values) return false
+      return denyEntry.values.some(
+        (val) =>
+          val.address === '*' ||
+          val.address.toLowerCase() === accountId.toLowerCase()
+      )
+    })
+  }
+
+  // Check root credentials allow
+  if (ddo.credentials?.allow && !checkAllowList(ddo.credentials.allow)) {
+    return false
+  }
+  // Check root credentials deny
+  if (ddo.credentials?.deny && checkDenyList(ddo.credentials.deny)) {
+    return false
+  }
+
+  // Check service level credentials
+  const services = ddo.credentialSubject?.services || []
+  for (const service of services) {
+    if (
+      service.credentials?.allow &&
+      !checkAllowList(service.credentials.allow)
+    ) {
+      return false
+    }
+    if (service.credentials?.deny && checkDenyList(service.credentials.deny)) {
+      return false
+    }
+  }
+
+  return true
+}
+
 export async function getAlgorithmDatasetsForComputeSelection(
   algorithmId: string,
   serviceId: string,
@@ -492,8 +543,11 @@ export async function getAlgorithmDatasetsForComputeSelection(
   const datasetsOnly = combined.filter(
     (asset) => asset?.credentialSubject?.metadata?.type === 'dataset'
   )
+  const allowedDatasets = datasetsOnly.filter((asset) =>
+    isAccountAllowed(asset, accountId)
+  )
   const uniqueAssetsMap = new Map<string, any>()
-  datasetsOnly.forEach((asset) => {
+  allowedDatasets.forEach((asset) => {
     if (!uniqueAssetsMap.has(asset.id)) {
       uniqueAssetsMap.set(asset.id, asset)
     }
