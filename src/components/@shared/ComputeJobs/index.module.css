@@ -172,19 +172,15 @@
   outline: none !important;
   box-shadow: none !important;
 }
-
-/* Keep button color fixed when disabled */
 .refreshButton:disabled {
   background-color: var(--color-primary) !important;
   opacity: 0.7;
   cursor: not-allowed;
 }
-
-/* Loader styling inside button */
 .refreshLoader {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 1rem;
-  filter: brightness(0) invert(1); /* makes white spinner visible */
+  filter: brightness(0) invert(1);
 }
