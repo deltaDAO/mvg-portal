@@ -71,6 +71,7 @@ export type VpPolicyType =
   | StaticVpPolicy
   | ArgumentVpPolicy
   | ExternalEvpForwardVpPolicy
+  | any
 
 export interface CredentialForm {
   allow?: string[]
