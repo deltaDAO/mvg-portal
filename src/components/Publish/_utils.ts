@@ -417,7 +417,7 @@ export function generateCredentials(
     if ((updatedCredentials?.vpRequiredCredentials as any)?.length > 0) {
       for (const entry of updatedCredentials.vpRequiredCredentials as any) {
         if ('credential_type' in entry) {
-          requiredVpPolicies.push({ credential_type: entry.credential_type })
+          requiredVpPolicies.push({ policy: entry.credential_type })
         } else if ('any_of' in entry) {
           requiredVpPolicies.push({ any_of: entry.any_of })
         }
