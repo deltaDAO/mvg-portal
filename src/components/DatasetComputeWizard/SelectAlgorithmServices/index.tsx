@@ -138,6 +138,11 @@ const SelectAlgorithmServices = ({
         ...newAlgorithm,
         services: algorithmServices.filter((s) => s.checked)
       })
+      setFieldValue(
+        'serviceSelected',
+        algorithmServices.some((s) => s.checked)
+      )
+
       return
     }
 
@@ -202,6 +207,10 @@ const SelectAlgorithmServices = ({
             ...newAlgorithm,
             services: algorithmServices.filter((s) => s.checked)
           })
+          setFieldValue(
+            'serviceSelected',
+            algorithmServices.some((s) => s.checked)
+          )
         } catch (error) {
           console.error('🔍 Error fetching algorithm asset:', error)
         } finally {
@@ -252,6 +261,10 @@ const SelectAlgorithmServices = ({
         ...updatedAlgorithm,
         services: updatedAlgorithm.services.filter((s) => s.checked)
       })
+      const anyServiceSelected = updatedAlgorithm.services.some(
+        (s) => s.checked
+      )
+      setFieldValue('serviceSelected', anyServiceSelected)
       syncWithFormik(updatedAlgorithm)
     }
   }
@@ -274,6 +287,10 @@ const SelectAlgorithmServices = ({
         ...updatedAlgorithm,
         services: updatedServices.filter((s) => s.checked)
       })
+      const anyServiceSelected = updatedAlgorithm.services.some(
+        (s) => s.checked
+      )
+      setFieldValue('serviceSelected', anyServiceSelected)
       syncWithFormik(updatedAlgorithm)
     }
   }

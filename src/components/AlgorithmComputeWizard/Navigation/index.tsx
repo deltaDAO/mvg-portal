@@ -15,7 +15,7 @@ export default function Navigation({
 }): ReactElement {
   const { values, setFieldValue }: FormikContextType<FormComputeData> =
     useFormikContext()
-  const isAlgorithmFlow = values?.user?.stepCurrent <= 6 // wizard has 6 steps for algorithm
+  const isAlgorithmFlow = true // wizard has 6 steps for algorithm
   const { getSuccessClass, getLastCompletedStep } =
     useComputeStepCompletion(isAlgorithmFlow)
   const currentStep = values.user.stepCurrent

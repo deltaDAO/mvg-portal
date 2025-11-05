@@ -381,6 +381,8 @@ export function AssetActionCheckCredentialsAlgo({
           }
           ssiVerifiableCredentials={exchangeStateData.verifiableCredentials}
           assetAllowCredentials={asset.credentialSubject?.credentials?.allow}
+          asset={asset}
+          service={service}
         />
       )}
       {showDidDialog && (

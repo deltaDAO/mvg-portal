@@ -113,6 +113,7 @@ export default function ComputeWizard({
   const { chainIds } = useUserPreferences()
 
   const [isOrdering, setIsOrdering] = useState(false)
+  const [isInitLoading, setIsInitLoading] = useState(false)
   const [error, setError] = useState<string>()
   const [showSuccess, setShowSuccess] = useState(false)
   const [successJobId, setSuccessJobId] = useState<string>()
@@ -128,6 +129,14 @@ export default function ComputeWizard({
   const [validAlgorithmOrderTx] = useState('')
 
   const [validOrderTx, setValidOrderTx] = useState('')
+  const [extraFeesLoaded, setExtraFeesLoaded] = useState(false)
+  const [datasetProviderFee, setDatasetProviderFee] = useState<string | null>(
+    null
+  )
+  const [algorithmProviderFee, setAlgorithmProviderFee] = useState<
+    string | null
+  >(null)
+  const [isBalanceSufficient, setIsBalanceSufficient] = useState<boolean>(true)
 
   const [isConsumablePrice, setIsConsumablePrice] = useState(true)
   const [computeStatusText, setComputeStatusText] = useState('')
@@ -894,8 +903,6 @@ export default function ComputeWizard({
     }
   }
 
-  // copied from compute
-
   useEffect(() => {
     if (!asset || !accountId) return
 
@@ -955,6 +962,104 @@ export default function ComputeWizard({
 
     fetchData()
   }, [asset, accountId, newCancelToken])
+
+  async function initComputeProvider(
+    formikValues: FormComputeData
+  ): Promise<void> {
+    try {
+      if (
+        !asset ||
+        !service ||
+        !selectedAlgorithmAsset ||
+        !accountId ||
+        !computeEnvs ||
+        !formikValues.computeEnv
+      ) {
+        setIsInitLoading(false)
+        throw new Error(
+          'Missing required parameters for provider initialization.'
+        )
+      }
+      const datasetServices = [{ asset, service }]
+      const datasetsForProvider = datasetServices.map(({ asset, service }) => {
+        const datasetIndex = asset.credentialSubject.services.findIndex(
+          (s) => s.id === service.id
+        )
+        if (datasetIndex === -1) {
+          setIsInitLoading(false)
+          throw new Error(`ServiceId ${service.id} not found in ${asset.id}`)
+        }
+        return {
+          asset,
+          service,
+          accessDetails: asset.accessDetails[datasetIndex],
+          sessionId: lookupVerifierSessionId(asset.id, service.id)
+        }
+      })
+
+      const actualAlgorithmAsset = selectedAlgorithmAsset
+      const algoServices = actualAlgorithmAsset.credentialSubject.services || []
+      const algoServiceId =
+        selectedAlgorithmAsset.id.split('|')[1] ||
+        algoServices[svcIndex]?.id ||
+        service.id
+
+      const algoIndex = algoServices.findIndex((s) => s.id === algoServiceId)
+      if (algoIndex === -1) {
+        setIsInitLoading(false)
+        throw new Error('Algorithm serviceId not found.')
+      }
+      const actualAlgoService = algoServices[algoIndex]
+      const actualAlgoAccessDetails =
+        actualAlgorithmAsset.accessDetails[algoIndex]
+
+      const algoSessionId = lookupVerifierSessionId(
+        actualAlgorithmAsset.id,
+        actualAlgoService.id
+      )
+
+      const selectedComputeEnv = formikValues.computeEnv
+      const selectedResources =
+        allResourceValues?.[`${selectedComputeEnv.id}_paid`] ||
+        allResourceValues?.[`${selectedComputeEnv.id}_free`]
+
+      const initializedProvider = await initializeProviderForComputeMulti(
+        datasetsForProvider,
+        actualAlgorithmAsset,
+        algoSessionId,
+        signer,
+        selectedComputeEnv,
+        selectedResources,
+        algoIndex
+      )
+
+      if (!initializedProvider) {
+        setIsInitLoading(false)
+        throw new Error('Provider initialization failed.')
+      }
+      setAlgorithmProviderFee(
+        initializedProvider?.algorithm?.providerFee?.providerFeeAmount || '0'
+      )
+      setDatasetProviderFee(
+        initializedProvider?.datasets?.[0]?.providerFee?.providerFeeAmount ||
+          '0'
+      )
+      setInitializedProviderResponse(initializedProvider)
+      setExtraFeesLoaded(true)
+      toast.info('Compute provider initialized successfully.')
+      setIsInitLoading(false)
+    } catch (error) {
+      setIsInitLoading(false)
+      console.error('Error initializing provider:', error)
+      toast.error(error.message || 'Failed to initialize provider.')
+    }
+  }
+
+  async function handleInitCompute(formikValues: FormComputeData) {
+    setIsOrdering(true)
+    await initComputeProvider(formikValues)
+    setIsOrdering(false)
+  }
 
   if (!asset) {
     return null
@@ -1039,6 +1144,7 @@ export default function ComputeWizard({
                     <Steps
                       asset={asset}
                       service={service}
+                      signer={signer}
                       accessDetails={accessDetails}
                       datasets={datasetList}
                       algorithms={algorithmList}
@@ -1100,6 +1206,10 @@ export default function ComputeWizard({
                       refetchJobs={() => setRefetchJobs(!refetchJobs)}
                       formikValues={formikContext.values}
                       setFieldValue={formikContext.setFieldValue}
+                      datasetProviderFeeProp={datasetProviderFee}
+                      algorithmProviderFeeProp={algorithmProviderFee}
+                      isBalanceSufficient={isBalanceSufficient}
+                      setIsBalanceSufficient={setIsBalanceSufficient}
                     />
                   </CredentialDialogProvider>
                   {/* <AlgorithmDatasetsListForCompute
@@ -1117,15 +1227,20 @@ export default function ComputeWizard({
                   showSuccessConfetti={false}
                   rightAlignFirstStep={false}
                   isContinueDisabled={
-                    formikContext.values.user.stepCurrent === 1 &&
-                    !formikContext.values.algorithm
+                    (formikContext.values.user.stepCurrent === 1 &&
+                      !formikContext.values.algorithm) ||
+                    (formikContext.values.user.stepCurrent === 4 &&
+                      !formikContext.values.computeEnv) ||
+                    (formikContext.values.user.stepCurrent === 2 &&
+                      !formikContext.values.serviceSelected)
                   }
                   isSubmitDisabled={isComputeButtonDisabled}
                   action="compute"
                   disabled={
                     isComputeButtonDisabled ||
                     !isAssetNetwork ||
-                    !isAccountIdWhitelisted
+                    !isAccountIdWhitelisted ||
+                    !isBalanceSufficient
                   }
                   hasPreviousOrder={!!validOrderTx}
                   hasDatatoken={hasDatatoken}
@@ -1147,7 +1262,7 @@ export default function ComputeWizard({
                   type="submit"
                   priceType={accessDetails.type}
                   algorithmPriceType={asset?.accessDetails?.[0]?.type}
-                  // isBalanceSufficient={isBalanceSufficient}
+                  isBalanceSufficient={isBalanceSufficient}
                   isConsumable={isConsumablePrice}
                   consumableFeedback={consumableFeedback}
                   isAlgorithmConsumable={
@@ -1157,6 +1272,9 @@ export default function ComputeWizard({
                   retry={retry}
                   isAccountConnected={isConnected}
                   computeWizard={true}
+                  extraFeesLoaded={extraFeesLoaded}
+                  isInitLoading={isInitLoading}
+                  onInitCompute={() => handleInitCompute(formikContext.values)}
                 />
               )}
             </SectionContainer>

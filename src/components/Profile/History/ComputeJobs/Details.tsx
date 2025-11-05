@@ -215,6 +215,16 @@ export default function Details({
                   )}
                 />
               )}
+              {job.dateFinished && (
+                <MetaItem
+                  title="Job Cost"
+                  content={
+                    job?.payment?.cost
+                      ? `${job.payment.cost.toString()} OCEAN`
+                      : 'FREE'
+                  }
+                />
+              )}
 
               {job.dateFinished ? (
                 // When finished date exists, show JobDID on new line

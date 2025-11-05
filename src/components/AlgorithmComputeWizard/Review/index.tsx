@@ -29,13 +29,13 @@ import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
-
+import { formatUnits } from 'ethers/lib/utils.js'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
   asset: AssetExtended
   service: Service
-  status: 'verified' | 'checking' | 'failed' | 'unverified'
+  status: 'verified' | 'checking' | 'failed' | 'expired' | 'unverified'
   index: number
   price: string
   duration: string
@@ -62,7 +62,11 @@ export default function Review({
   isConsumable,
   algoOrderPriceAndFees,
   allResourceValues,
-  setAllResourceValues
+  setAllResourceValues,
+  datasetProviderFeeProp,
+  algorithmProviderFeeProp,
+  isBalanceSufficient,
+  setIsBalanceSufficient
 }: {
   asset: AssetExtended
   service: Service
@@ -96,7 +100,12 @@ export default function Review({
   algoOrderPrice?: string
   c2dPrice?: string
   isRequestingPrice?: boolean
+  datasetProviderFeeProp?: string
+  algorithmProviderFeeProp?: string
+  isBalanceSufficient: boolean
+  setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
+  console.log('Review render', isBalanceSufficient)
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
@@ -124,7 +133,14 @@ export default function Review({
 
   const debugClick = () => {}
 
+  const [loading, setLoading] = useState(false)
   const [serviceIndex, setServiceIndex] = useState(0)
+  const [datasetProviderFee, setDatasetProviderFee] = useState(
+    datasetProviderFeeProp || null
+  )
+  const [algorithmProviderFee, setAlgorithmProviderFee] = useState(
+    algorithmProviderFeeProp || null
+  )
   const [totalPrices, setTotalPrices] = useState([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
   const selectedEnvId = values?.computeEnv?.id
@@ -153,9 +169,9 @@ export default function Review({
   // error message
   const errorMessages: string[] = []
 
-  // if (!isBalanceSufficient) {
-  //   errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
-  // }
+  if (!isBalanceSufficient) {
+    errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
+  }
   // if (!isValid) {
   //   errorMessages.push('Form is not complete!')
   // }
@@ -176,40 +192,36 @@ export default function Review({
   }
   useEffect(() => {
     const queue: VerificationItem[] = []
+    if (!values.withoutDataset) {
+      selectedDatasetAsset?.forEach((asset, index) => {
+        const service =
+          asset.credentialSubject?.services?.[asset.serviceIndex || 0]
+        const isVerified = lookupVerifierSessionId?.(asset.id, service?.id)
+        const details = asset.accessDetails?.[asset.serviceIndex || 0]
+        const rawPrice =
+          details?.validOrderTx && details.validOrderTx !== ''
+            ? '0'
+            : details?.price || '0'
 
-    selectedDatasetAsset?.forEach((asset, index) => {
-      const service =
-        asset.credentialSubject?.services?.[asset.serviceIndex || 0]
-      const isVerified = lookupVerifierSessionId?.(asset.id, service?.id)
-      const details = asset.accessDetails?.[asset.serviceIndex || 0]
-      const rawPrice =
-        details?.validOrderTx && details.validOrderTx !== ''
-          ? '0'
-          : details?.price || '0'
+        const datasetNeedsSsi =
+          requiresSsi(asset?.credentialSubject?.credentials) ||
+          requiresSsi(service?.credentials)
 
-      const datasetNeedsSsi =
-        requiresSsi(asset?.credentialSubject?.credentials) ||
-        requiresSsi(service?.credentials)
-
-      queue.push({
-        id: asset.id,
-        type: 'dataset',
-        asset,
-        service,
-        status: datasetNeedsSsi
-          ? isVerified
-            ? ('verified' as const)
-            : ('unverified' as const)
-          : ('verified' as const),
-        index,
-        price: rawPrice,
-        duration: '1 day', // Default duration for datasets
-        name:
-          asset.credentialSubject?.services?.[asset.serviceIndex || 0]?.name ||
-          `Dataset ${queue.length + 1}`
+        queue.push({
+          id: asset.id,
+          type: 'dataset',
+          asset,
+          service,
+          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          index,
+          price: rawPrice,
+          duration: '1 day', // Default duration for datasets
+          name:
+            asset.credentialSubject?.services?.[asset.serviceIndex || 0]
+              ?.name || `Dataset ${queue.length + 1}`
+        })
       })
-    })
-
+    }
     if (service && asset) {
       const isVerified = lookupVerifierSessionId?.(asset?.id, service.id)
       let rawPrice
@@ -230,11 +242,7 @@ export default function Review({
         type: 'algorithm',
         asset,
         service,
-        status: algoNeedsSsi
-          ? isVerified
-            ? ('verified' as const)
-            : ('unverified' as const)
-          : ('verified' as const),
+        status: isVerified ? ('verified' as const) : ('unverified' as const),
         index: queue.length,
         price: rawPrice,
         duration: formatDuration(service.timeout || 0),
@@ -243,7 +251,7 @@ export default function Review({
     }
 
     setVerificationQueue(queue)
-  }, [selectedDatasetAsset, asset, service, lookupVerifierSessionId])
+  }, [selectedDatasetAsset, asset, service])
 
   useEffect(() => {
     const checkExpiration = () => {
@@ -272,7 +280,7 @@ export default function Review({
               const isExpired = now - timestamp > 5 * 60 * 1000 // 5 minutes
 
               if (isExpired) {
-                return { ...item, status: 'failed' as const }
+                return { ...item, status: 'expired' as const }
               }
             } else {
               return { ...item, status: 'failed' as const }
@@ -291,13 +299,15 @@ export default function Review({
 
   const startVerification = (index: number) => {
     const hasExpiredCredentials = verificationQueue.some(
-      (item) => item.status === 'failed'
+      (item) => item.status === 'failed' || item.status === 'expired'
     )
 
     if (hasExpiredCredentials) {
       const expiredIndices = verificationQueue
         .map((item, i) => ({ item, index: i }))
-        .filter(({ item }) => item.status === 'failed')
+        .filter(
+          ({ item }) => item.status === 'failed' || item.status === 'expired'
+        )
         .map(({ index }) => index)
 
       const firstExpiredIndex = expiredIndices[0]
@@ -347,14 +357,15 @@ export default function Review({
 
       const hasExpiredCredentials = updatedQueue.some(
         (item) =>
-          item.status === 'failed' &&
-          item.asset?.id &&
-          item.service?.id &&
-          typeof window !== 'undefined' &&
-          window.localStorage &&
-          window.localStorage.getItem(
-            `credential_${item.asset.id}_${item.service.id}`
-          ) !== null
+          item.status === 'failed' ||
+          (item.status === 'expired' &&
+            item.asset?.id &&
+            item.service?.id &&
+            typeof window !== 'undefined' &&
+            window.localStorage &&
+            window.localStorage.getItem(
+              `credential_${item.asset.id}_${item.service.id}`
+            ) !== null)
       )
 
       let nextIndex = -1
@@ -362,15 +373,15 @@ export default function Review({
       if (hasExpiredCredentials) {
         nextIndex = updatedQueue.findIndex(
           (item, index) =>
-            index > currentVerificationIndex &&
-            item.status === 'failed' &&
-            item.asset?.id &&
-            item.service?.id &&
-            typeof window !== 'undefined' &&
-            window.localStorage &&
-            window.localStorage.getItem(
-              `credential_${item.asset.id}_${item.service.id}`
-            ) !== null
+            (index > currentVerificationIndex && item.status === 'failed') ||
+            (item.status === 'expired' &&
+              item.asset?.id &&
+              item.service?.id &&
+              typeof window !== 'undefined' &&
+              window.localStorage &&
+              window.localStorage.getItem(
+                `credential_${item.asset.id}_${item.service.id}`
+              ) !== null)
         )
       } else {
         nextIndex = updatedQueue.findIndex(
@@ -451,23 +462,25 @@ export default function Review({
   const escrowFunds = [
     {
       name: 'AMOUNT AVAILABLE IN THE ESCROW ACCOUNT',
-      value: Number(values.escrowFunds).toFixed(3) || '0',
-      duration: formatDuration(
-        currentMode === 'paid'
-          ? (paidResources?.jobDuration || 0) * 60
-          : (freeResources?.jobDuration || 0) * 60
-      )
+      value: Number(values.escrowFunds).toFixed(3) || '0'
     }
   ]
   const amountDeposit = [
     {
       name: 'AMOUNT TO DEPOSIT IN THE ESCROW ACCOUNT',
-      value: c2dPrice || '0',
-      duration: formatDuration(
-        currentMode === 'paid'
-          ? (paidResources?.jobDuration || 0) * 60
-          : (freeResources?.jobDuration || 0) * 60
-      )
+      value: c2dPrice || '0'
+    }
+  ]
+  const datasetProviderFees = [
+    {
+      name: 'PROVIDER FEE DATASET',
+      value: datasetProviderFee ? formatUnits(datasetProviderFee) : '0'
+    }
+  ]
+  const algorithmProviderFees = [
+    {
+      name: 'PROVIDER FEE ALGORITHM',
+      value: algorithmProviderFee ? formatUnits(algorithmProviderFee) : '0'
     }
   ]
 
@@ -479,6 +492,14 @@ export default function Review({
     {
       name: `COMMUNITY FEE ALGORITHM (${consumeMarketFee}%)`,
       value: algorithmMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
+    },
+    {
+      name: `MARKETPLACE FEE DATASET (${0}%)`,
+      value: '0'
+    },
+    {
+      name: `MARKETPLACE FEE ALGORITHM (${0}%)`,
+      value: '0'
     }
   ]
 
@@ -573,7 +594,7 @@ export default function Review({
   }, [datasets, computeEnvs, setFieldValue, values.algorithm])
 
   useEffect(() => {
-    if (!values.dataset || !isConsumable) return
+    if (values.withoutDataset || !values.dataset || !isConsumable) return
 
     async function fetchDatasetAssetsExtended() {
       const { assets, services } = await getDatasetAssets(values.dataset)
@@ -781,12 +802,13 @@ export default function Review({
       const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
       if (
         !baseTokenBalance ||
-        !compareAsBN(baseTokenBalance, `${price.value}`)
+        !compareAsBN(baseTokenBalance, totalPriceToDisplay)
       ) {
         sufficient = false
         break
       }
     }
+    setIsBalanceSufficient(sufficient)
   }, [
     balance,
     dtBalance,
@@ -796,7 +818,8 @@ export default function Review({
     totalPrices,
     allResourceValues,
     values.computeEnv,
-    values?.mode
+    values?.mode,
+    totalPriceToDisplay
   ])
   useEffect(() => {
     const allVerified =
@@ -823,13 +846,32 @@ export default function Review({
       const displayTotal = totalPricesSum
         .add(datasetMarketFeeTotal)
         .add(algorithmMarketFeeTotal)
+        .add(
+          algorithmProviderFees[0].value
+            ? new Decimal(algorithmProviderFees[0].value)
+            : new Decimal(0)
+        )
+        .add(
+          datasetProviderFees[0].value
+            ? new Decimal(datasetProviderFees[0].value)
+            : new Decimal(0)
+        )
         .toDecimalPlaces(MAX_DECIMALS)
 
       setTotalPriceToDisplay(displayTotal.toString())
     } catch (error) {
       console.error('Error calculating totalPriceToDisplay:', error)
     }
-  }, [totalPrices, marketFees])
+  }, [totalPrices, marketFees, datasetProviderFees, algorithmProviderFees])
+
+  useEffect(() => {
+    if (datasetProviderFeeProp) setDatasetProviderFee(datasetProviderFeeProp)
+  }, [datasetProviderFeeProp])
+
+  useEffect(() => {
+    if (algorithmProviderFeeProp)
+      setAlgorithmProviderFee(algorithmProviderFeeProp)
+  }, [algorithmProviderFeeProp])
 
   return (
     <div className={styles.container}>
@@ -839,81 +881,166 @@ export default function Review({
 
       <div className={styles.contentContainer}>
         <div className={styles.pricingBreakdown}>
-          {/* Render all items from verification queue */}
-          {selectedDatasetAsset.length === 0 ? (
-            <div className={styles.loaderWrap}>
-              <Loader message="Loading assets..." noMargin={true} />
-            </div>
-          ) : (
-            verificationQueue.map((item, i) => {
-              const hasSsiPolicy =
-                requiresSsi(item.asset?.credentialSubject?.credentials) ||
-                requiresSsi(item.service?.credentials)
-              const needsSsi = hasSsiPolicy || item.service
+          <div className={styles.assetList}>
+            <h3 className={styles.assetListHeading}>Assets</h3>
 
-              return (
-                <PricingRow
-                  key={`${item.type}-${item.id}-${i}`}
-                  label={item.asset?.credentialSubject?.metadata?.name}
-                  itemName={item.name}
-                  value={item.price}
-                  duration={item.duration}
-                  {...(needsSsi
-                    ? {
-                        actionLabel: `Check ${
-                          item.type === 'dataset' ? 'Dataset' : 'Algorithm'
-                        } credentials`,
-                        onAction: () => startVerification(i),
-                        actionDisabled: false
+            <div className={styles.assetListBox}>
+              {values.withoutDataset ? (
+                verificationQueue.map((item, i) => {
+                  const hasSsiPolicy =
+                    requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                    requiresSsi(item.service?.credentials)
+                  const needsSsi = hasSsiPolicy || item.service
+
+                  return (
+                    <PricingRow
+                      key={`${item.type}-${item.id}-${i}`}
+                      label={item.asset?.credentialSubject?.metadata?.name}
+                      itemName={item.name}
+                      value={item.price}
+                      duration={item.duration}
+                      actionLabel={
+                        item.status === 'unverified'
+                          ? 'Check Credentials'
+                          : item.status === 'checking'
+                          ? 'Verifying...'
+                          : item.status === 'failed'
+                          ? 'Retry'
+                          : item.status === 'expired'
+                          ? 'Check Credentials'
+                          : 'Verified'
                       }
-                    : {})}
-                  isService={item.type === 'algorithm'}
-                  infoMessage={
-                    !hasSsiPolicy
-                      ? 'No credentials required (never expires)'
-                      : undefined
-                  }
-                  credentialStatus={item.status}
-                  assetId={item.asset?.id}
-                  serviceId={item.service?.id}
-                  onCredentialRefresh={() => startVerification(i)}
+                      onAction={() => startVerification(i)}
+                      actionDisabled={
+                        item.status === 'checking' || item.status === 'verified'
+                      }
+                      isService={item.type === 'algorithm'}
+                      infoMessage={
+                        !hasSsiPolicy
+                          ? 'No credentials required (never expires)'
+                          : undefined
+                      }
+                      credentialStatus={item.status}
+                      assetId={item.asset?.id}
+                      serviceId={item.service?.id}
+                      onCredentialRefresh={() => startVerification(i)}
+                    />
+                  )
+                })
+              ) : selectedDatasetAsset?.length === 0 ? (
+                <div className={styles.loaderWrap}>
+                  <Loader message="Loading Assets..." noMargin={true} />
+                </div>
+              ) : (
+                verificationQueue.map((item, i) => {
+                  const hasSsiPolicy =
+                    requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                    requiresSsi(item.service?.credentials)
+                  const needsSsi = hasSsiPolicy || item.service
+
+                  return (
+                    <PricingRow
+                      key={`${item.type}-${item.id}-${i}`}
+                      label={item.asset?.credentialSubject?.metadata?.name}
+                      itemName={item.name}
+                      value={item.price}
+                      duration={item.duration}
+                      actionLabel={
+                        item.status === 'unverified'
+                          ? 'Check Credentials'
+                          : item.status === 'checking'
+                          ? 'Verifying...'
+                          : item.status === 'failed'
+                          ? 'Retry'
+                          : item.status === 'expired'
+                          ? 'Check Credentials'
+                          : 'Verified'
+                      }
+                      onAction={() => startVerification(i)}
+                      actionDisabled={
+                        item.status === 'checking' || item.status === 'verified'
+                      }
+                      isService={item.type === 'algorithm'}
+                      infoMessage={
+                        !hasSsiPolicy
+                          ? 'No credentials required (never expires)'
+                          : undefined
+                      }
+                      credentialStatus={item.status}
+                      assetId={item.asset?.id}
+                      serviceId={item.service?.id}
+                      onCredentialRefresh={() => startVerification(i)}
+                    />
+                  )
+                })
+              )}
+            </div>
+          </div>
+
+          <div className={styles.c2dSection}>
+            <h3 className={styles.c2dHeading}>C2D Resources</h3>
+
+            <div className={styles.c2dBox}>
+              {computeItems.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  duration={item.duration}
                 />
-              )
-            })
-          )}
+              ))}
 
-          {/* Compute items and market fees */}
-          {computeItems.map((item) => (
-            <PricingRow
-              key={item.name}
-              itemName={item.name}
-              value={item.value}
-              duration={item.duration}
-            />
-          ))}
-          {escrowFunds.map((item) => (
-            <PricingRow
-              key={item.name}
-              itemName={item.name}
-              value={item.value}
-              duration={item.duration}
-              valueType="escrow"
-            />
-          ))}
+              {escrowFunds.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  valueType="escrow"
+                />
+              ))}
 
-          {amountDeposit.map((item) => (
-            <PricingRow
-              key={item.name}
-              itemName={item.name}
-              value={item.value}
-              duration={item.duration}
-              valueType="deposit"
-            />
-          ))}
+              {amountDeposit.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  valueType="deposit"
+                />
+              ))}
+            </div>
+          </div>
 
-          {marketFees.map((fee) => (
-            <PricingRow key={fee.name} itemName={fee.name} value={fee.value} />
-          ))}
+          <div className={styles.marketFeesSection}>
+            <h3 className={styles.marketFeesHeading}>Fees</h3>
+
+            <div className={styles.marketFeesBox}>
+              {marketFees.map((fee) => (
+                <PricingRow
+                  key={fee.name}
+                  itemName={fee.name}
+                  value={fee.value}
+                />
+              ))}
+
+              {datasetProviderFee &&
+                datasetProviderFees.map((fee) => (
+                  <PricingRow
+                    key={fee.name}
+                    itemName={fee.name}
+                    value={fee.value}
+                  />
+                ))}
+
+              {algorithmProviderFee &&
+                algorithmProviderFees.map((fee) => (
+                  <PricingRow
+                    key={fee.name}
+                    itemName={fee.name}
+                    value={fee.value}
+                  />
+                ))}
+            </div>
+          </div>
         </div>
 
         {/* Total Payment Section */}
@@ -941,15 +1068,6 @@ export default function Review({
             )}
           </span>
         </div>
-        {errorMessages.length > 0 && (
-          <div className={styles.errorMessage}>
-            <ul>
-              {errorMessages.map((msg, idx) => (
-                <li key={idx}>{msg}</li>
-              ))}
-            </ul>
-          </div>
-        )}
 
         <div className={styles.termsSection}>
           <FormErrorGroup
@@ -978,6 +1096,15 @@ export default function Review({
             />
           </FormErrorGroup>
         </div>
+        {errorMessages.length > 0 && (
+          <div className={styles.errorMessage}>
+            <ul>
+              {errorMessages.map((msg, idx) => (
+                <li key={idx}>{msg}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Unified credentials modal */}

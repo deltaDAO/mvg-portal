@@ -17,10 +17,12 @@ import { FormComputeData, StepContent } from './_types'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 import ButtonBuy from '../Asset/AssetActions/ButtonBuy'
 import { useFormikContext } from 'formik'
+import { Signer } from 'ethers'
 
 export default function Steps({
   asset,
   service,
+  signer,
   accessDetails,
   algorithms,
   ddoListAlgorithms,
@@ -60,10 +62,15 @@ export default function Steps({
   refetchJobs, // Updated type below
   setFieldValue,
   isAlgorithm,
-  formikValues
+  formikValues,
+  datasetProviderFeeProp,
+  algorithmProviderFeeProp,
+  isBalanceSufficient,
+  setIsBalanceSufficient
 }: {
   asset: AssetExtended
   service: Service
+  signer?: Signer
   accessDetails: AccessDetails
   datasets?: AssetSelectionAsset[]
   algorithms?: AssetSelectionAsset[]
@@ -117,6 +124,10 @@ export default function Steps({
   refetchJobs?: () => void
   formikValues?: FormComputeData // Updated to FormComputeData
   setFieldValue: (field: string, value: any) => void
+  datasetProviderFeeProp?: string
+  algorithmProviderFeeProp?: string
+  isBalanceSufficient: boolean
+  setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
@@ -161,6 +172,7 @@ export default function Steps({
           <Review
             asset={asset}
             service={service}
+            signer={signer}
             isRequestingPrice={false}
             accessDetails={accessDetails}
             isLoading={isLoading}
@@ -197,6 +209,10 @@ export default function Steps({
             algoOrderPriceAndFees={algoOrderPriceAndFees}
             retry={retry}
             computeEnvs={computeEnvs}
+            datasetProviderFeeProp={datasetProviderFeeProp}
+            algorithmProviderFeeProp={algorithmProviderFeeProp}
+            isBalanceSufficient={isBalanceSufficient}
+            setIsBalanceSufficient={setIsBalanceSufficient}
           />
         </CredentialDialogProvider>
       )

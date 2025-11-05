@@ -67,6 +67,7 @@ export const initialValues: FormComputeData = {
     accountId: ''
   },
   algorithm: null,
+  algorithms: null,
   dataset: [], // Added for algorithm flow
   computeEnv: null,
   mode: 'free',
@@ -81,6 +82,7 @@ export const initialValues: FormComputeData = {
   termsAndConditions: false,
   acceptPublishingLicense: false,
   credentialsVerified: false,
+  serviceSelected: false,
   step1Completed: false,
   step2Completed: false,
   step3Completed: false,

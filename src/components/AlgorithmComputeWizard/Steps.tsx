@@ -64,7 +64,11 @@ export default function Steps({
   isLoadingJobs,
   refetchJobs,
   formikValues, // Updated type below
-  setFieldValue
+  setFieldValue,
+  datasetProviderFeeProp,
+  algorithmProviderFeeProp,
+  isBalanceSufficient,
+  setIsBalanceSufficient
 }: {
   asset: AssetExtended
   service: Service
@@ -121,6 +125,10 @@ export default function Steps({
   refetchJobs?: () => void
   formikValues?: FormComputeData // Updated to FormComputeData
   setFieldValue: (field: string, value: any) => void
+  datasetProviderFeeProp?: string
+  algorithmProviderFeeProp?: string
+  isBalanceSufficient: boolean
+  setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
@@ -185,6 +193,10 @@ export default function Steps({
             isConsumable={isConsumable}
             algoOrderPriceAndFees={algoOrderPriceAndFees}
             computeEnvs={computeEnvs}
+            datasetProviderFeeProp={datasetProviderFeeProp}
+            algorithmProviderFeeProp={algorithmProviderFeeProp}
+            isBalanceSufficient={isBalanceSufficient}
+            setIsBalanceSufficient={setIsBalanceSufficient}
           />
           {/* <ButtonBuy
             action="compute"

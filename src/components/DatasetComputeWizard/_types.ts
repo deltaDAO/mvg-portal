@@ -9,6 +9,7 @@ export interface FormComputeData {
     chainId: number
   }
   algorithm?: any
+  algorithms?: any
   dataset?: any // Added for algorithm flow - array of dataset IDs
   // datasets?: any // Added for algorithm flow - array of dataset IDs
   computeEnv?: any
@@ -24,6 +25,7 @@ export interface FormComputeData {
   termsAndConditions: boolean
   acceptPublishingLicense: boolean
   credentialsVerified: boolean
+  serviceSelected?: boolean
   step1Completed: boolean
   step2Completed: boolean
   step3Completed: boolean

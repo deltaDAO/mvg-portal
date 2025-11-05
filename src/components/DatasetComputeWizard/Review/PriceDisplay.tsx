@@ -27,7 +27,7 @@ export default function PriceDisplay({
     <div className={styles.priceInfo}>
       <span className={styles.price}>
         <span className={`${styles.priceNumber} ${styles[colorClass] || ''}`}>
-          {value}
+          {Number(value).toFixed(3)}
         </span>
         <span className={styles.priceSymbol}> {symbol}</span>
       </span>

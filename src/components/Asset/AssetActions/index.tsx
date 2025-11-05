@@ -286,6 +286,7 @@ export default function AssetActions({
                 style="primary"
                 onClick={handleComputeClick}
                 className={styles.computeButton}
+                disabled={!isAccountIdWhitelisted}
               >
                 Start Compute
               </Button>
@@ -312,6 +313,7 @@ export default function AssetActions({
               style="primary"
               onClick={handleComputeClick}
               className={styles.computeButton}
+              disabled={!isAccountIdWhitelisted}
             >
               Start Compute
             </Button>

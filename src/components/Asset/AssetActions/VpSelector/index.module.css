@@ -241,3 +241,24 @@
   gap: var(--sp-4);
   margin-top: var(--publish-spacing-lg);
 }
+
+.scrollableList {
+  max-height: 600px;
+  max-width: 1000px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.scrollableList::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollableList::-webkit-scrollbar-thumb {
+  background: var(--publish-accent-gradient);
+  border-radius: 3px;
+}
+
+.scrollableList::-webkit-scrollbar-thumb:hover {
+  background: var(--publish-accent-gradient);
+}

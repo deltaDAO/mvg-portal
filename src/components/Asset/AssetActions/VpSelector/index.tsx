@@ -6,6 +6,8 @@ import {
   CredentialAddressBased,
   CredentialPolicyBased
 } from 'src/@types/ddo/Credentials'
+import { Asset } from 'src/@types/Asset'
+import { Service } from 'src/@types/ddo/Service'
 
 export interface VpSelectorProps {
   showDialog: boolean
@@ -14,6 +16,8 @@ export interface VpSelectorProps {
   abortSelection: () => void
   ssiVerifiableCredentials: SsiVerifiableCredential[]
   assetAllowCredentials: (CredentialAddressBased | CredentialPolicyBased)[]
+  asset: Asset
+  service: Service
 }
 
 interface VpFieldProps {
@@ -102,7 +106,9 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
     acceptSelection,
     abortSelection,
     ssiVerifiableCredentials,
-    assetAllowCredentials
+    assetAllowCredentials,
+    asset,
+    service
   } = props
   const selectorDialog = useRef<HTMLDialogElement>(null)
   const [selections, setSelections] = useState<boolean[]>([])
@@ -178,7 +184,8 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         <div className={styles.vptitle}>Verifiable Credentials to present</div>
         {/* dynamic datat has to fetch here */}
         <div className={styles.dataInfo}>
-          Asset: Dataset 1, Service: Service 1
+          Asset: {asset.credentialSubject.metadata.name}, Service:{' '}
+          {service.name}
         </div>
 
         {(() => {
@@ -204,22 +211,20 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         })()}
 
         <div
-          className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStretch}`}
+          className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStretch} ${styles.scrollableList}`}
         >
           {ssiVerifiableCredentials
             ?.sort(sortCredentials)
-            .map((credential, index) => {
-              return (
-                <React.Fragment key={credential.id}>
-                  <VpField
-                    credential={credential}
-                    onChange={handleOnChange}
-                    index={index}
-                    checked={selections[index] || false}
-                  />
-                </React.Fragment>
-              )
-            })}
+            .map((credential, index) => (
+              <React.Fragment key={credential.id}>
+                <VpField
+                  credential={credential}
+                  onChange={handleOnChange}
+                  index={index}
+                  checked={selections[index] || false}
+                />
+              </React.Fragment>
+            ))}
         </div>
 
         <div className={styles.panelRow}>

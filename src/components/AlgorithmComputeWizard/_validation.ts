@@ -8,7 +8,17 @@ export const validationSchema: Yup.SchemaOf<FormComputeData> = Yup.object()
       accountId: Yup.string().required(),
       chainId: Yup.number().required()
     }),
-    dataset: Yup.array().min(1, 'At least one dataset is required'),
+    withoutDataset: Yup.boolean(),
+    dataset: Yup.array().when('withoutDataset', {
+      is: false,
+      then: (schema) => schema.min(1, 'At least one dataset is required'),
+      otherwise: (schema) => schema.notRequired()
+    }),
+    datasets: Yup.array().when('withoutDataset', {
+      is: false,
+      then: (schema) => schema.min(1, 'At least one dataset is required'),
+      otherwise: (schema) => schema.notRequired()
+    }),
     computeEnv: Yup.object().nullable().required('Environment is required'),
     cpu: Yup.number().min(0).required('CPU is required'),
     gpu: Yup.number().min(0).required('GPU is required'),

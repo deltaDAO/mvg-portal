@@ -45,6 +45,9 @@ interface WizardActionsProps {
   hasProviderFee?: boolean
   retry?: boolean
   computeWizard?: boolean
+  extraFeesLoaded?: boolean
+  isInitLoading?: boolean
+  onInitCompute?: () => void
 }
 
 export default function WizardActions({
@@ -54,7 +57,7 @@ export default function WizardActions({
   showSuccessConfetti = false,
   scrollToRef,
   formikContext,
-  isContinueDisabled = false,
+  isContinueDisabled,
   rightAlignFirstStep = true,
   isSubmitDisabled = false,
   action,
@@ -85,7 +88,10 @@ export default function WizardActions({
   retry,
   isSupportedOceanNetwork,
   isAccountConnected,
-  computeWizard
+  computeWizard,
+  extraFeesLoaded,
+  isInitLoading,
+  onInitCompute
 }: WizardActionsProps): ReactElement {
   const {
     isValid,
@@ -229,6 +235,23 @@ export default function WizardActions({
       computeWizard={computeWizard}
     />
   )
+  const ComputeButton = () => {
+    if (!extraFeesLoaded) {
+      return (
+        <Button
+          style="gradient"
+          onClick={onInitCompute}
+          disabled={
+            isInitLoading || disabled || !isValid || !isBalanceSufficient
+          }
+        >
+          {isInitLoading ? 'Calculating...' : 'Calculate Extra Fees'}
+        </Button>
+      )
+    }
+
+    return <PurchaseButton />
+  }
 
   return (
     <footer className={actionsClassName}>
@@ -250,7 +273,7 @@ export default function WizardActions({
           // <Button type="submit" style="publish" disabled={isSubmitDisabled}>
           //   {isSubmitting ? <Loader variant="primary" /> : 'find'}
           // </Button>
-          <PurchaseButton />
+          <ComputeButton />
         )
         // null
       }

@@ -419,6 +419,8 @@ export function AssetActionCheckCredentials({
         }
         ssiVerifiableCredentials={exchangeStateData.verifiableCredentials}
         assetAllowCredentials={asset.credentialSubject?.credentials?.allow}
+        asset={asset}
+        service={service}
       />
       <DidSelector
         setShowDialog={setShowDidDialog}

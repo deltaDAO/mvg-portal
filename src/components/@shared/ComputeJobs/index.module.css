@@ -136,3 +136,51 @@
 .salesTag {
   color: #00adb2;
 }
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.refreshButton {
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  margin-right: 14px;
+  margin-bottom: 16px;
+  user-select: none;
+}
+
+.refreshButton:hover {
+  background-color: var(--color-primary);
+  opacity: 0.9;
+}
+
+.refreshButton:active,
+.refreshButton:focus,
+.refreshButton:focus-visible,
+.refreshButton:visited {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+.refreshButton:disabled {
+  background-color: var(--color-primary) !important;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.refreshLoader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1rem;
+  filter: brightness(0) invert(1);
+}

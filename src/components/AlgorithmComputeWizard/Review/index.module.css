@@ -324,11 +324,9 @@
 }
 
 .errorMessage {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid #e74c3c;
-  background: #fdecea;
-  color: #c0392b;
+  padding: 0.5rem;
+  border: 1px solid #e7d33c;
+  background-color: rgba(253, 214, 85, 0.15);
   border-radius: 8px;
   font-size: 0.9rem;
 }
@@ -344,4 +342,83 @@
 
 .redValue {
   color: #dc2626;
+}
+
+.assetList {
+  margin-top: 0rem;
+}
+
+.assetListHeading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary, #222);
+}
+
+.assetListBox {
+  border: 1px solid var(--border-color, #e1e4e8);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  background-color: var(--surface, #fafafa);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.assetListBox > *:not(:last-child) {
+  border-bottom: 1px solid var(--border-color-light, #f0f0f0);
+  padding-bottom: 0.75rem;
+}
+.c2dSection {
+  margin-top: 1rem;
+}
+
+.c2dHeading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary, #222);
+}
+
+.c2dBox {
+  border: 1px solid var(--border-color, #e1e4e8);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  background-color: var(--surface, #fafafa);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.c2dBox > *:not(:last-child) {
+  border-bottom: 1px solid var(--border-color-light, #f0f0f0);
+  padding-bottom: 0.75rem;
+}
+.marketFeesSection {
+  margin-top: 1rem;
+}
+
+.marketFeesHeading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary, #222);
+}
+
+.marketFeesBox {
+  border: 1px solid var(--border-color, #e1e4e8);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  background-color: var(--surface, #fafafa);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.marketFeesBox > *:not(:last-child) {
+  border-bottom: 1px solid var(--border-color-light, #f0f0f0);
+  padding-bottom: 0.75rem;
 }

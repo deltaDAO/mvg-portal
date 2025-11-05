@@ -14,6 +14,7 @@ import styles from './index.module.css'
 type FormValues = {
   dataset: string[]
   datasets: any[]
+  withoutDataset: boolean
 }
 
 export interface DatasetSelectionDataset extends AssetSelectionAsset {
@@ -136,16 +137,46 @@ export default function SelectDataset({
   return (
     <>
       <StepTitle title="Select Datasets" />
+
       <div className={styles.environmentSelection}>
+        <div
+          className={`${styles.noDatasetOption} ${
+            values.withoutDataset ? styles.active : ''
+          }`}
+        >
+          <label className={styles.noDatasetLabel}>
+            <span>Proceed without Dataset Selection</span>
+            <input
+              type="checkbox"
+              disabled={true}
+              className={styles.noDatasetCheckbox}
+              checked={values.withoutDataset || false}
+              onChange={(e) => {
+                const { checked } = e.target
+                setFieldValue('withoutDataset', checked)
+                if (checked) setFieldValue('datasets', [])
+              }}
+            />
+          </label>
+        </div>
+
         {isLoadingDatasets ? (
           <Loader message="Loading datasets..." />
         ) : (
-          <DatasetSelection
-            asset={asset}
-            datasets={datasetsForCompute}
-            selected={selectedDatasetIds}
-            onChange={handleDatasetSelect}
-          />
+          <div
+            className={`${styles.datasetSelectionWrapper} ${
+              values.withoutDataset ? styles.disabled : ''
+            }`}
+          >
+            <DatasetSelection
+              asset={asset}
+              datasets={datasetsForCompute}
+              selected={selectedDatasetIds}
+              onChange={
+                !values.withoutDataset ? handleDatasetSelect : undefined
+              }
+            />
+          </div>
         )}
       </div>
     </>
