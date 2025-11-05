@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
+import { ProviderInstance } from '@oceanprotocol/lib'
 import { customProviderUrl } from 'app.config.cjs'
 import axios from 'axios'
 import { Asset } from 'src/@types/Asset'
 import {
-  PolicyServerInitiateAction,
   PolicyServerResponse,
   PolicyServerCheckSessionIdAction,
   PolicyServerInitiateActionData,
@@ -23,7 +23,6 @@ export async function requestCredentialPresentation(
 }> {
   try {
     const sessionId = crypto.randomUUID()
-
     const policyServer: PolicyServerInitiateActionData = {
       sessionId,
       successRedirectUri: ``,
@@ -31,29 +30,19 @@ export async function requestCredentialPresentation(
       responseRedirectUri: ``,
       presentationDefinitionUri: ``
     }
-
-    const action: PolicyServerInitiateAction = {
-      action: PolicyServerActions.INITIATE,
+    const command = {
       documentId: asset.id,
-      policyServer,
       serviceId,
-      consumerAddress
+      consumerAddress,
+      policyServer
     }
-    const response = await axios.post(
-      `${customProviderUrl}/api/services/PolicyServerPassthrough`,
-      {
-        policyServerPassthrough: action
-      }
+    const initializePs = await ProviderInstance.initializePSVerification(
+      customProviderUrl,
+      command
     )
-
-    if (response.data.length === 0) {
-      // eslint-disable-next-line no-throw-literal
-      throw { success: false, message: 'No openid4vc url found' }
-    }
-
     return {
-      success: response.data?.success,
-      openid4vc: response.data?.message,
+      success: initializePs?.success,
+      openid4vc: initializePs?.message,
       policyServerData: policyServer
     }
   } catch (error) {
