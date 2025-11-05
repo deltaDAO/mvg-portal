@@ -145,7 +145,7 @@
 }
 
 .refreshButton {
-  background-color: var(--color-primary, #007bff);
+  background-color: var(--color-primary);
   color: white;
   border: none;
   border-radius: 6px;
@@ -155,4 +155,15 @@
   transition: all 0.2s ease-in-out;
   margin-right: 14px;
   margin-bottom: 16px;
+}
+.refreshButton:hover {
+  background-color: var(--color-primary);
+}
+
+.refreshButton:active,
+.refreshButton:focus {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+  outline: none;
+  box-shadow: none;
 }
