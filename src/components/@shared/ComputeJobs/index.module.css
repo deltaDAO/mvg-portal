@@ -155,15 +155,36 @@
   transition: all 0.2s ease-in-out;
   margin-right: 14px;
   margin-bottom: 16px;
+  user-select: none;
 }
+
 .refreshButton:hover {
   background-color: var(--color-primary);
+  opacity: 0.9;
 }
 
 .refreshButton:active,
-.refreshButton:focus {
+.refreshButton:focus,
+.refreshButton:focus-visible,
+.refreshButton:visited {
   background-color: var(--color-primary) !important;
   color: white !important;
-  outline: none;
-  box-shadow: none;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Keep button color fixed when disabled */
+.refreshButton:disabled {
+  background-color: var(--color-primary) !important;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Loader styling inside button */
+.refreshLoader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1rem;
+  filter: brightness(0) invert(1); /* makes white spinner visible */
 }
