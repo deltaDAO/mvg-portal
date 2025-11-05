@@ -211,22 +211,20 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         })()}
 
         <div
-          className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStretch}`}
+          className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStretch} ${styles.scrollableList}`}
         >
           {ssiVerifiableCredentials
             ?.sort(sortCredentials)
-            .map((credential, index) => {
-              return (
-                <React.Fragment key={credential.id}>
-                  <VpField
-                    credential={credential}
-                    onChange={handleOnChange}
-                    index={index}
-                    checked={selections[index] || false}
-                  />
-                </React.Fragment>
-              )
-            })}
+            .map((credential, index) => (
+              <React.Fragment key={credential.id}>
+                <VpField
+                  credential={credential}
+                  onChange={handleOnChange}
+                  index={index}
+                  checked={selections[index] || false}
+                />
+              </React.Fragment>
+            ))}
         </div>
 
         <div className={styles.panelRow}>
