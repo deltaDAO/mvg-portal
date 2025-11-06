@@ -26,6 +26,7 @@ export interface FormComputeData {
   acceptPublishingLicense: boolean
   credentialsVerified: boolean
   userParametersDataset: boolean
+  userUpdatedParameters: any
   serviceSelected?: boolean
   step1Completed: boolean
   step2Completed: boolean

@@ -3,16 +3,13 @@
 import { useEffect, useState } from 'react'
 import { useFormikContext } from 'formik'
 import styles from './index.module.css'
-import {
-  DatasetItem,
-  DatasetService,
-  UserParameter
-} from '../types/DatasetSelection'
+import { DatasetItem, UserParameter } from '../types/DatasetSelection'
 
 interface FormValues {
   datasets?: DatasetItem[]
   dataset?: string[]
   userParametersDataset?: boolean
+  userUpdatedParameters?: any[]
 }
 
 const PreviewUserParameters = () => {
@@ -20,14 +17,12 @@ const PreviewUserParameters = () => {
   const [datasetsWithParams, setDatasetsWithParams] = useState<DatasetItem[]>(
     []
   )
-  const [expandedParams, setExpandedParams] = useState<{
-    [key: string]: boolean
-  }>({})
+  const [localParams, setLocalParams] = useState<any[]>([])
 
   useEffect(() => {
     if (!values.datasets) return
 
-    const filteredDatasets = values.datasets
+    const filtered = values.datasets
       .map((d) => {
         const servicesWithParams = (d.services ?? []).filter(
           (s) => s.checked && s.userParameters && s.userParameters.length > 0
@@ -36,112 +31,147 @@ const PreviewUserParameters = () => {
       })
       .filter((d) => d.services.length > 0)
 
-    setDatasetsWithParams(filteredDatasets)
+    setDatasetsWithParams(filtered)
 
-    const anyUserParameters = filteredDatasets.some((d) =>
-      d.services.some((s) => s.userParameters && s.userParameters.length > 0)
+    const anyParams = filtered.some((d) =>
+      d.services.some((s) => s.userParameters?.length > 0)
     )
-    setFieldValue('userParametersDataset', anyUserParameters)
-
-    const datasetPairs = filteredDatasets.flatMap((d) =>
-      d.services.map((s) => `${d.did}|${s.serviceId}`)
-    )
-    setFieldValue('dataset', datasetPairs)
+    setFieldValue('userParametersDataset', anyParams)
   }, [values.datasets, setFieldValue])
 
-  const toggleParam = (key: string) => {
-    setExpandedParams((prev) => ({ ...prev, [key]: !prev[key] }))
+  useEffect(() => {
+    if (!datasetsWithParams.length) return
+    if (values.userUpdatedParameters?.length) {
+      setLocalParams(values.userUpdatedParameters)
+    } else {
+      const initial = datasetsWithParams.flatMap((dataset) =>
+        dataset.services.map((service) => ({
+          did: dataset.did,
+          serviceId: service.serviceId,
+          userParameters: service.userParameters.map((p) => ({ ...p }))
+        }))
+      )
+      setLocalParams(initial)
+      setFieldValue('userUpdatedParameters', initial)
+    }
+  }, [datasetsWithParams, setFieldValue, values.userUpdatedParameters])
+
+  const handleParamChange = (
+    datasetDid: string,
+    serviceId: string,
+    paramIndex: number,
+    field: keyof UserParameter,
+    value: string | boolean
+  ) => {
+    setLocalParams((prev) => {
+      const updated = prev.map((item) => {
+        if (item.did === datasetDid && item.serviceId === serviceId) {
+          const newParams = [...item.userParameters]
+          newParams[paramIndex] = {
+            ...newParams[paramIndex],
+            [field]: value
+          }
+          return { ...item, userParameters: newParams }
+        }
+        return item
+      })
+      setFieldValue('userUpdatedParameters', updated)
+      return updated
+    })
   }
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Preview User Parameters</h1>
+      <h1 className={styles.title}>Edit User Parameters</h1>
 
-      <div className={styles.previewContainer}>
+      {datasetsWithParams.length === 0 && (
+        <p className={styles.noParamsText}>
+          No user parameters found for selected datasets.
+        </p>
+      )}
+
+      <div className={styles.datasetsContainer}>
         {datasetsWithParams.map((dataset) =>
-          dataset.services.map((service) => (
-            <div
-              key={`${dataset.did}-${service.serviceId}`}
-              className={styles.datasetServiceCard}
-            >
-              <h2 className={styles.datasetServiceTitle}>
-                <span className={styles.datasetName}>
-                  Dataset: {dataset.name}
-                </span>
-                <span className={styles.separator}> | </span>
-                <span className={styles.serviceName}>
-                  Service: {service.serviceName}
-                </span>
-              </h2>
+          dataset.services.map((service) => {
+            const updatedService = localParams.find(
+              (u) => u.did === dataset.did && u.serviceId === service.serviceId
+            ) ?? { userParameters: service.userParameters }
 
-              <div className={styles.parametersList}>
-                {service.userParameters.map(
-                  (param: UserParameter, index: number) => {
-                    const key = `${dataset.did}-${service.serviceId}-${param.name}`
-                    const isExpanded = !!expandedParams[key]
+            return (
+              <div
+                key={`${dataset.did}-${service.serviceId}`}
+                className={styles.card}
+              >
+                <h2 className={styles.cardHeader}>
+                  <span className={styles.datasetName}>{dataset.name}</span>
+                  <span className={styles.separator}> | </span>
+                  <span className={styles.serviceName}>
+                    {service.serviceName}
+                  </span>
+                </h2>
 
-                    return (
-                      <div key={key} className={styles.parameterItem}>
-                        <button
-                          type="button"
-                          className={styles.parameterButton}
-                          onClick={() => toggleParam(key)}
-                        >
-                          {`Parameter ${index + 1}`} {/* <-- Updated line */}
-                          <span className={styles.arrow}>
-                            {isExpanded ? '▲' : '▼'}
-                          </span>
-                        </button>
+                {updatedService.userParameters.map(
+                  (param: UserParameter, index: number) => (
+                    <div key={index} className={styles.paramGroup}>
+                      <h3 className={styles.paramTitle}>
+                        Parameter {index + 1}
+                      </h3>
+                      <div className={styles.paramFields}>
+                        {[
+                          'name',
+                          'label',
+                          'description',
+                          'type',
+                          'default'
+                        ].map((fieldKey) => (
+                          <div
+                            key={fieldKey}
+                            className={styles.paramFieldContainer}
+                          >
+                            <label className={styles.paramLabel}>
+                              {fieldKey.charAt(0).toUpperCase() +
+                                fieldKey.slice(1)}
+                            </label>
+                            <input
+                              className={styles.paramInput}
+                              type="text"
+                              value={(param as any)[fieldKey] ?? ''}
+                              onChange={(e) =>
+                                handleParamChange(
+                                  dataset.did,
+                                  service.serviceId,
+                                  index,
+                                  fieldKey as keyof UserParameter,
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        ))}
 
-                        {isExpanded && (
-                          <table className={styles.parameterTable}>
-                            <tbody>
-                              <tr>
-                                <td>
-                                  <strong>Name</strong>
-                                </td>
-                                <td>{param.name}</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <strong>Label</strong>
-                                </td>
-                                <td>{param.label}</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <strong>Description</strong>
-                                </td>
-                                <td>{param.description}</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <strong>Type</strong>
-                                </td>
-                                <td>{param.type}</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <strong>Default</strong>
-                                </td>
-                                <td>{param.default}</td>
-                              </tr>
-                              <tr>
-                                <td>
-                                  <strong>Required</strong>
-                                </td>
-                                <td>{param.required ? 'Yes' : 'No'}</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        )}
+                        <div className={styles.paramFieldContainer}>
+                          <label className={styles.paramLabel}>Required</label>
+                          <input
+                            type="checkbox"
+                            checked={param.required ?? false}
+                            onChange={(e) =>
+                              handleParamChange(
+                                dataset.did,
+                                service.serviceId,
+                                index,
+                                'required',
+                                e.target.checked
+                              )
+                            }
+                          />
+                        </div>
                       </div>
-                    )
-                  }
+                    </div>
+                  )
                 )}
               </div>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
     </div>

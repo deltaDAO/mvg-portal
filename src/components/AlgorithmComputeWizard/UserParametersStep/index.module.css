@@ -1,35 +1,43 @@
 .container {
-  max-width: 1000px;
-  padding: 20px;
-  font-family: 'Inter', Arial, sans-serif;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  font-family: 'Inter', sans-serif;
 }
 
 .title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   margin-bottom: 24px;
-  color: #1f2937;
+  color: #111827;
+  text-align: center;
 }
 
-.previewContainer {
+.noParamsText {
+  text-align: center;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+.datasetsContainer {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
 }
 
-.datasetServiceCard {
-  background: #f9fafb;
+.card {
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  padding: 20px 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.datasetServiceTitle {
+.cardHeader {
   font-size: 18px;
   font-weight: 600;
+  color: #1f2937;
   margin-bottom: 16px;
-  color: #111827;
 }
 
 .datasetName {
@@ -41,60 +49,53 @@
 }
 
 .separator {
-  margin: 0 8px;
-  color: #6b7280;
+  color: #9ca3af;
+  margin: 0 6px;
 }
 
-.parametersList {
+.paramGroup {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.paramTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1f2937;
+}
+
+.paramFields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.paramFieldContainer {
   display: flex;
   flex-direction: column;
-  gap: 12px;
 }
 
-.parameterItem {
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  overflow: hidden;
-  background: #ffffff;
-}
-
-.parameterButton {
-  width: 100%;
-  text-align: left;
-  background: #f3f4f6;
-  border: none;
-  padding: 12px 16px;
-  font-size: 16px;
+.paramLabel {
+  font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background 0.2s;
-}
-
-.parameterButton:hover {
-  background: #e5e7eb;
-}
-
-.arrow {
-  font-size: 12px;
-  margin-left: 8px;
-}
-
-.parameterTable {
-  width: 100%;
-  border-collapse: collapse;
-  background: #f9fafb;
-}
-
-.parameterTable td {
-  padding: 10px 16px;
-  border-top: 1px solid #e5e7eb;
-}
-
-.parameterTable td:first-child {
-  font-weight: 600;
-  width: 140px;
   color: #374151;
+  margin-bottom: 6px;
+}
+
+.paramInput {
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
+  background: #ffffff;
+  transition: border 0.2s;
+}
+
+.paramInput:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
