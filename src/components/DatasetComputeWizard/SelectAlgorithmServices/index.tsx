@@ -1,3 +1,5 @@
+'use client'
+
 import { useCallback, useEffect, useState } from 'react'
 import styles from './index.module.css'
 import MinimizeIcon from '@images/minimize.svg'
@@ -7,7 +9,6 @@ import StepTitle from '@shared/StepTitle'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { Service } from 'src/@types/ddo/Service'
 import { Asset } from 'src/@types/Asset'
-import Loader from '@shared/atoms/Loader'
 
 interface AlgorithmService {
   id: string
@@ -19,6 +20,7 @@ interface AlgorithmService {
   price: string
   symbol: string
   checked?: boolean
+  userParameters?: any
 }
 
 const extractString = (
@@ -41,7 +43,8 @@ interface Algorithm {
 
 interface FormValues {
   algorithm?: string
-  algorithmServices?: AlgorithmService[]
+  algorithms?: Algorithm
+  serviceSelected?: boolean
 }
 
 interface SelectAlgorithmServicesProps {
@@ -64,7 +67,6 @@ const SelectAlgorithmServices = ({
       algo: string
     ): {
       algorithmAsset: Asset | null
-      serviceIndexAlgo: number | null
       serviceId: string | null
     } => {
       let algorithmId: string
@@ -77,247 +79,135 @@ const SelectAlgorithmServices = ({
         algorithmId = algo
       }
 
-      let assetDdo: Asset | null = null
-      let serviceIndexAlgo: number | null = null
+      const assetDdo =
+        ddoListAlgorithms.find((ddo) => ddo.id === algorithmId) || null
 
-      ddoListAlgorithms.forEach((ddo: Asset) => {
-        if (ddo.id === algorithmId) {
-          assetDdo = ddo
-          if (serviceId && ddo.credentialSubject?.services) {
-            const index = ddo.credentialSubject.services.findIndex(
-              (svc: any) => svc.id === serviceId
-            )
-            serviceIndexAlgo = index !== -1 ? index : null
-          }
-        }
-      })
-
-      return { algorithmAsset: assetDdo, serviceIndexAlgo, serviceId }
+      return { algorithmAsset: assetDdo, serviceId }
     },
     [ddoListAlgorithms]
   )
 
   useEffect(() => {
-    if (selectedAlgorithm) return
+    if (!values.algorithm || selectedAlgorithm) return
 
-    if (selectedAlgorithmAsset) {
-      const algorithmServices: AlgorithmService[] =
-        selectedAlgorithmAsset.credentialSubject?.services?.map(
-          (service: Service, i: number) => ({
-            id: service.id,
-            name: extractString(service.name) || service.type,
-            title: extractString(service.name) || service.type,
-            serviceDescription:
-              extractString(service.description) ||
-              `Service for ${service.type}`,
-            type: service.type,
-            duration: service.timeout || 0,
-            price: service.price,
-            symbol: 'OCEAN',
-            checked: i === (selectedAlgorithmAsset.serviceIndex ?? 0)
-          })
-        ) || []
-
-      const newAlgorithm = {
-        id: selectedAlgorithmAsset.id,
-        name:
-          extractString(
-            selectedAlgorithmAsset.credentialSubject?.metadata?.name
-          ) || 'Selected Algorithm',
-        description:
-          extractString(
-            selectedAlgorithmAsset.credentialSubject?.metadata?.description
-          ) || 'Algorithm services for compute',
-        expanded: true,
-        checked: algorithmServices.some((s) => s.checked),
-        services: algorithmServices
-      }
-
-      setSelectedAlgorithm(newAlgorithm)
-      setFieldValue('algorithms', {
-        ...newAlgorithm,
-        services: algorithmServices.filter((s) => s.checked)
-      })
-      setFieldValue(
-        'serviceSelected',
-        algorithmServices.some((s) => s.checked)
-      )
-
-      return
-    }
-
-    if (values.algorithm && ddoListAlgorithms && ddoListAlgorithms.length > 0) {
+    const fetchAlgorithm = async () => {
       setIsLoading(true)
-      const fetchAlgorithmAssetExtended = async () => {
-        try {
-          const { algorithmAsset, serviceIndexAlgo, serviceId } =
-            getAlgorithmAsset(values.algorithm)
-
-          if (!algorithmAsset) {
-            setIsLoading(false)
-            return
-          }
-
-          if (
-            !algorithmAsset.credentialSubject?.services ||
-            algorithmAsset.credentialSubject.services.length === 0
-          ) {
-            console.log('🔍 Algorithm asset has no services!')
-            setIsLoading(false)
-            return
-          }
-
-          const extendedAlgoAsset: AssetExtended = {
-            ...algorithmAsset,
-            serviceIndex: serviceIndexAlgo
-          }
-
-          const algorithmServices: AlgorithmService[] =
-            extendedAlgoAsset.credentialSubject?.services?.map(
-              (service: Service) => ({
-                id: service.id,
-                name: extractString(service.name) || service.type,
-                title: extractString(service.name) || service.type,
-                serviceDescription:
-                  extractString(service.description) ||
-                  `Service for ${service.type}`,
-                type: service.type,
-                duration: service.timeout || 0,
-                price: service.price,
-                symbol: 'OCEAN',
-                checked: serviceId ? service.id === serviceId : false
-              })
-            ) || []
-
-          const newAlgorithm = {
-            id: extendedAlgoAsset.id,
-            name: extractString(
-              extendedAlgoAsset.credentialSubject?.metadata?.name
-            ),
-            description: extractString(
-              extendedAlgoAsset.credentialSubject?.metadata?.description
-            ),
-            expanded: true,
-            checked: algorithmServices.some((s) => s.checked),
-            services: algorithmServices
-          }
-
-          setSelectedAlgorithm(newAlgorithm)
-          setFieldValue('algorithms', {
-            ...newAlgorithm,
-            services: algorithmServices.filter((s) => s.checked)
-          })
-          setFieldValue(
-            'serviceSelected',
-            algorithmServices.some((s) => s.checked)
-          )
-        } catch (error) {
-          console.error('🔍 Error fetching algorithm asset:', error)
-        } finally {
+      try {
+        const { algorithmAsset, serviceId } = getAlgorithmAsset(
+          values.algorithm
+        )
+        if (!algorithmAsset || !serviceId) {
           setIsLoading(false)
+          return
         }
+
+        const service = algorithmAsset.credentialSubject?.services?.find(
+          (svc: Service) => svc.id === serviceId
+        )
+
+        if (!service) {
+          setIsLoading(false)
+          return
+        }
+
+        const algoService: AlgorithmService = {
+          id: service.id,
+          name: extractString(service.name) || service.type,
+          title: extractString(service.name) || service.type,
+          serviceDescription:
+            extractString(service.description) || `Service for ${service.type}`,
+          type: service.type,
+          duration: service.timeout || 0,
+          price: service.price,
+          symbol: 'OCEAN',
+          checked: true,
+          userParameters: service.consumerParameters
+        }
+
+        const newAlgorithm: Algorithm = {
+          id: algorithmAsset.id,
+          name:
+            extractString(algorithmAsset.credentialSubject?.metadata?.name) ||
+            'Selected Algorithm',
+          description:
+            extractString(
+              algorithmAsset.credentialSubject?.metadata?.description
+            ) || 'Algorithm service',
+          expanded: true,
+          checked: true,
+          services: [algoService] // only keep the single service
+        }
+
+        setSelectedAlgorithm(newAlgorithm)
+        setFieldValue('algorithms', newAlgorithm)
+        setFieldValue('serviceSelected', true)
+      } catch (err) {
+        console.error('Error fetching algorithm service:', err)
+      } finally {
+        setIsLoading(false)
       }
-
-      fetchAlgorithmAssetExtended()
     }
-  }, [
-    selectedAlgorithmAsset,
-    selectedAlgorithm,
-    values.algorithm,
-    ddoListAlgorithms,
-    getAlgorithmAsset,
-    setFieldValue
-  ])
 
-  const syncWithFormik = (_updated: Algorithm) => {}
+    fetchAlgorithm()
+  }, [values.algorithm, selectedAlgorithm, getAlgorithmAsset, setFieldValue])
 
   const toggleAlgorithm = () => {
-    if (selectedAlgorithm) {
-      const updatedAlgorithm = {
-        ...selectedAlgorithm,
-        expanded: !selectedAlgorithm.expanded
-      }
-      setSelectedAlgorithm(updatedAlgorithm)
-      setFieldValue('algorithms', {
-        ...updatedAlgorithm,
-        services: updatedAlgorithm.services.filter((s) => s.checked)
-      })
+    if (!selectedAlgorithm) return
+    const updated = {
+      ...selectedAlgorithm,
+      expanded: !selectedAlgorithm.expanded
     }
+    setSelectedAlgorithm(updated)
+    setFieldValue('algorithms', updated)
   }
 
   const toggleAlgorithmCheckbox = () => {
-    if (selectedAlgorithm) {
-      const newCheckedState = !selectedAlgorithm.checked
-      const updatedAlgorithm = {
-        ...selectedAlgorithm,
-        checked: newCheckedState,
-        services: selectedAlgorithm.services.map((service, i) => ({
-          ...service,
-          checked: newCheckedState && i === 0
-        }))
-      }
-      setSelectedAlgorithm(updatedAlgorithm)
-      setFieldValue('algorithms', {
-        ...updatedAlgorithm,
-        services: updatedAlgorithm.services.filter((s) => s.checked)
-      })
-      const anyServiceSelected = updatedAlgorithm.services.some(
-        (s) => s.checked
-      )
-      setFieldValue('serviceSelected', anyServiceSelected)
-      syncWithFormik(updatedAlgorithm)
-    }
-  }
-
-  const toggleService = (serviceId: string) => {
-    if (selectedAlgorithm) {
-      const updatedServices = selectedAlgorithm.services.map((service) => ({
-        ...service,
-        checked: service.id === serviceId
+    if (!selectedAlgorithm) return
+    const newChecked = !selectedAlgorithm.checked
+    const updatedAlgorithm = {
+      ...selectedAlgorithm,
+      checked: newChecked,
+      services: selectedAlgorithm.services.map((s, i) => ({
+        ...s,
+        checked: newChecked && i === 0
       }))
-
-      const updatedAlgorithm = {
-        ...selectedAlgorithm,
-        services: updatedServices,
-        checked: updatedServices.some((s) => s.checked)
-      }
-
-      setSelectedAlgorithm(updatedAlgorithm)
-      setFieldValue('algorithms', {
-        ...updatedAlgorithm,
-        services: updatedServices.filter((s) => s.checked)
-      })
-      const anyServiceSelected = updatedAlgorithm.services.some(
-        (s) => s.checked
-      )
-      setFieldValue('serviceSelected', anyServiceSelected)
-      syncWithFormik(updatedAlgorithm)
     }
-  }
-
-  if (!selectedAlgorithm) {
-    if (isLoading) {
-      return (
-        <div className={styles.container}>
-          <StepTitle title="Select Algorithm Services" />
-          <Loader message="Loading algorithm services..." />
-        </div>
-      )
-    }
-
-    return (
-      <div className={styles.container}>
-        <StepTitle title="Select Algorithm Services" />
-        <p>Please select an algorithm first</p>
-      </div>
+    setSelectedAlgorithm(updatedAlgorithm)
+    setFieldValue('algorithms', updatedAlgorithm)
+    setFieldValue(
+      'serviceSelected',
+      updatedAlgorithm.services.some((s) => s.checked)
     )
   }
 
-  if (!selectedAlgorithm.services || selectedAlgorithm.services.length === 0) {
+  const toggleService = (serviceId: string) => {
+    if (!selectedAlgorithm) return
+    const updatedServices = selectedAlgorithm.services.map((s) => ({
+      ...s,
+      checked: s.id === serviceId
+    }))
+    const updatedAlgorithm = {
+      ...selectedAlgorithm,
+      services: updatedServices,
+      checked: updatedServices.some((s) => s.checked)
+    }
+    setSelectedAlgorithm(updatedAlgorithm)
+    setFieldValue('algorithms', updatedAlgorithm)
+    setFieldValue(
+      'serviceSelected',
+      updatedServices.some((s) => s.checked)
+    )
+  }
+
+  if (!selectedAlgorithm) {
     return (
       <div className={styles.container}>
         <StepTitle title="Select Algorithm Services" />
-        <p>No services available for the selected algorithm</p>
+        {isLoading ? (
+          <p>Loading service...</p>
+        ) : (
+          <p>Please select an algorithm first</p>
+        )}
       </div>
     )
   }
@@ -325,11 +215,10 @@ const SelectAlgorithmServices = ({
   return (
     <div className={styles.container}>
       <StepTitle title="Select Algorithm Services" />
-
       <div className={styles.boxModel}>
         <div className={styles.header}>
           <div className={styles.checkboxColumn}></div>
-          <div className={styles.servicesColumn}>SERVICES</div>
+          <div className={styles.servicesColumn}>SERVICE</div>
           <div className={styles.titleColumn}>TITLE</div>
           <div className={styles.descriptionColumn}>DESCRIPTION</div>
           <div className={styles.typeColumn}>TYPE</div>

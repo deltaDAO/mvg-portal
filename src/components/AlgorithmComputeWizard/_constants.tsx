@@ -115,7 +115,7 @@ export const initialValues: FormComputeData = {
   termsAndConditions: false,
   acceptPublishingLicense: false,
   credentialsVerified: false,
-  userParametersDataset: false,
+  isUserParameters: false,
   userUpdatedParameters: null,
   serviceSelected: false,
   withoutDataset: false,

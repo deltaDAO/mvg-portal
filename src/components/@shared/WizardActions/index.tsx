@@ -100,7 +100,7 @@ export default function WizardActions({
     isSubmitting,
     setFieldValue
   }: FormikContextType<FormComputeData> = useFormikContext()
-  const hasUserParamsStep = Boolean(values?.userParametersDataset)
+  const hasUserParamsStep = Boolean(values?.isUserParameters)
   const totalSteps = hasUserParamsStep ? 7 : 6
   const currentStep = values.user.stepCurrent
   const isLastStep = currentStep === totalSteps

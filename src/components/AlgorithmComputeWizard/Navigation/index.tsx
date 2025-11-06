@@ -20,7 +20,7 @@ export default function Navigation({
   const { getSuccessClass, getLastCompletedStep } =
     useComputeStepCompletion(isAlgorithmFlow)
   const currentStep = values.user.stepCurrent
-  const hasUserParamsStep = Boolean(values?.userParametersDataset)
+  const hasUserParamsStep = Boolean(values?.isUserParameters)
   const steps = getDatasetSteps(hasUserParamsStep)
   const lastCompletedStep = getLastCompletedStep()
   const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)

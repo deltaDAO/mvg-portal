@@ -56,7 +56,7 @@ const PreviewSelectedServices = () => {
     const anyUserParameters = preview.some((d) =>
       d.services.some((s) => s.userParameters && s.userParameters.length > 0)
     )
-    setFieldValue('userParametersDataset', anyUserParameters)
+    setFieldValue('isUserParameters', anyUserParameters)
     setFieldValue('dataset', pairs)
   }, [values.datasets, setFieldValue])
 

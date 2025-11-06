@@ -18,6 +18,7 @@ import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/Credenti
 import ButtonBuy from '../Asset/AssetActions/ButtonBuy'
 import { useFormikContext } from 'formik'
 import { Signer } from 'ethers'
+import UserParametersStep from './UserParametersStep'
 
 export default function Steps({
   asset,
@@ -140,6 +141,7 @@ export default function Steps({
   }, [chain?.id, accountId, setFieldValue])
 
   const currentStep = values?.user?.stepCurrent ?? 1
+  const hasUserParamsStep = Boolean(values.isUserParameters)
 
   switch (currentStep) {
     case 1:
@@ -158,66 +160,124 @@ export default function Steps({
         />
       )
     case 4:
-      return <SelectEnvironment computeEnvs={computeEnvs} />
+      if (hasUserParamsStep) {
+        return <UserParametersStep />
+      } else {
+        return <SelectEnvironment computeEnvs={computeEnvs} />
+      }
     case 5:
-      return (
+      return hasUserParamsStep ? (
+        <SelectEnvironment computeEnvs={computeEnvs} />
+      ) : (
         <ConfigureEnvironment
           allResourceValues={allResourceValues}
           setAllResourceValues={setAllResourceValues}
         />
       )
     case 6:
-      return (
-        <CredentialDialogProvider>
-          <Review
-            asset={asset}
-            service={service}
-            signer={signer}
-            isRequestingPrice={false}
-            accessDetails={accessDetails}
-            isLoading={isLoading}
-            selectedAlgorithmAsset={selectedAlgorithmAsset}
-            setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
-            isComputeButtonDisabled={isComputeButtonDisabled}
-            hasPreviousOrder={hasPreviousOrder}
-            hasDatatoken={hasDatatoken}
-            dtBalance={dtBalance}
-            ddoListAlgorithms={ddoListAlgorithms}
-            assetTimeout={assetTimeout}
-            hasPreviousOrderSelectedComputeAsset={
-              hasPreviousOrderSelectedComputeAsset
-            }
-            hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-            isAccountIdWhitelisted={isAccountIdWhitelisted}
-            datasetSymbol={
-              accessDetails.baseToken?.symbol ||
-              (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
-            }
-            algorithmSymbol={algorithmSymbol}
-            providerFeesSymbol={providerFeesSymbol}
-            dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
-            dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
-            selectedComputeAssetType="algorithm"
-            selectedComputeAssetTimeout={selectedComputeAssetTimeout}
-            allResourceValues={allResourceValues}
-            setAllResourceValues={setAllResourceValues}
-            // lazy comment when removing pricingStepText
-            stepText={stepText}
-            isConsumable={isConsumable}
-            consumableFeedback={consumableFeedback}
-            datasetOrderPriceAndFees={datasetOrderPriceAndFees}
-            algoOrderPriceAndFees={algoOrderPriceAndFees}
-            retry={retry}
-            computeEnvs={computeEnvs}
-            datasetProviderFeeProp={datasetProviderFeeProp}
-            algorithmProviderFeeProp={algorithmProviderFeeProp}
-            isBalanceSufficient={isBalanceSufficient}
-            setIsBalanceSufficient={setIsBalanceSufficient}
-          />
-        </CredentialDialogProvider>
+      return hasUserParamsStep ? (
+        <ConfigureEnvironment
+          allResourceValues={allResourceValues}
+          setAllResourceValues={setAllResourceValues}
+        />
+      ) : (
+        <Review
+          asset={asset}
+          service={service}
+          signer={signer}
+          isRequestingPrice={false}
+          accessDetails={accessDetails}
+          isLoading={isLoading}
+          selectedAlgorithmAsset={selectedAlgorithmAsset}
+          setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+          isComputeButtonDisabled={isComputeButtonDisabled}
+          hasPreviousOrder={hasPreviousOrder}
+          hasDatatoken={hasDatatoken}
+          dtBalance={dtBalance}
+          ddoListAlgorithms={ddoListAlgorithms}
+          assetTimeout={assetTimeout}
+          hasPreviousOrderSelectedComputeAsset={
+            hasPreviousOrderSelectedComputeAsset
+          }
+          hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
+          datasetSymbol={
+            accessDetails.baseToken?.symbol ||
+            (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+          }
+          algorithmSymbol={algorithmSymbol}
+          providerFeesSymbol={providerFeesSymbol}
+          dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+          dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+          selectedComputeAssetType="algorithm"
+          selectedComputeAssetTimeout={selectedComputeAssetTimeout}
+          allResourceValues={allResourceValues}
+          setAllResourceValues={setAllResourceValues}
+          // lazy comment when removing pricingStepText
+          stepText={stepText}
+          isConsumable={isConsumable}
+          consumableFeedback={consumableFeedback}
+          datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+          algoOrderPriceAndFees={algoOrderPriceAndFees}
+          retry={retry}
+          computeEnvs={computeEnvs}
+          datasetProviderFeeProp={datasetProviderFeeProp}
+          algorithmProviderFeeProp={algorithmProviderFeeProp}
+          isBalanceSufficient={isBalanceSufficient}
+          setIsBalanceSufficient={setIsBalanceSufficient}
+        />
+      )
+    case 7:
+      return hasUserParamsStep ? (
+        <Review
+          asset={asset}
+          service={service}
+          signer={signer}
+          isRequestingPrice={false}
+          accessDetails={accessDetails}
+          isLoading={isLoading}
+          selectedAlgorithmAsset={selectedAlgorithmAsset}
+          setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+          isComputeButtonDisabled={isComputeButtonDisabled}
+          hasPreviousOrder={hasPreviousOrder}
+          hasDatatoken={hasDatatoken}
+          dtBalance={dtBalance}
+          ddoListAlgorithms={ddoListAlgorithms}
+          assetTimeout={assetTimeout}
+          hasPreviousOrderSelectedComputeAsset={
+            hasPreviousOrderSelectedComputeAsset
+          }
+          hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
+          datasetSymbol={
+            accessDetails.baseToken?.symbol ||
+            (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+          }
+          algorithmSymbol={algorithmSymbol}
+          providerFeesSymbol={providerFeesSymbol}
+          dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+          dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+          selectedComputeAssetType="algorithm"
+          selectedComputeAssetTimeout={selectedComputeAssetTimeout}
+          allResourceValues={allResourceValues}
+          setAllResourceValues={setAllResourceValues}
+          // lazy comment when removing pricingStepText
+          stepText={stepText}
+          isConsumable={isConsumable}
+          consumableFeedback={consumableFeedback}
+          datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+          algoOrderPriceAndFees={algoOrderPriceAndFees}
+          retry={retry}
+          computeEnvs={computeEnvs}
+          datasetProviderFeeProp={datasetProviderFeeProp}
+          algorithmProviderFeeProp={algorithmProviderFeeProp}
+          isBalanceSufficient={isBalanceSufficient}
+          setIsBalanceSufficient={setIsBalanceSufficient}
+        />
+      ) : (
+        <div>Invalid step</div>
       )
     default:
-      console.log('Dataset flow - no matching case for step:', currentStep)
       return <div>Invalid step: {currentStep}</div>
   }
 }

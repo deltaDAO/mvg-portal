@@ -1121,7 +1121,7 @@ export default function ComputeWizard({
     >
       {(formikContext) => {
         const { values } = formikContext
-        const hasUserParamsStep = Boolean(values.userParametersDataset)
+        const hasUserParamsStep = Boolean(values.isUserParameters)
         const computeStep = hasUserParamsStep ? 5 : 4
 
         const isContinueDisabled =
@@ -1310,9 +1310,6 @@ export default function ComputeWizard({
                 )}
               </SectionContainer>
             </Form>
-            {/* {debug && (
-              <div>Debug: {JSON.stringify(formikContext.values, null, 2)}</div>
-            )} */}
           </div>
         )
       }}

@@ -143,7 +143,7 @@ export default function Steps({
 
   const currentStep = values?.user?.stepCurrent ?? 1
 
-  const hasUserParamsStep = Boolean(values.userParametersDataset)
+  const hasUserParamsStep = Boolean(values.isUserParameters)
 
   switch (currentStep) {
     case 1:

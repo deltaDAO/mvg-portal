@@ -8,7 +8,7 @@ import { DatasetItem, UserParameter } from '../types/DatasetSelection'
 interface FormValues {
   datasets?: DatasetItem[]
   dataset?: string[]
-  userParametersDataset?: boolean
+  isUserParameters?: boolean
   userUpdatedParameters?: any[]
 }
 
@@ -36,7 +36,7 @@ const PreviewUserParameters = () => {
     const anyParams = filtered.some((d) =>
       d.services.some((s) => s.userParameters?.length > 0)
     )
-    setFieldValue('userParametersDataset', anyParams)
+    setFieldValue('isUserParameters', anyParams)
   }, [values.datasets, setFieldValue])
 
   useEffect(() => {
