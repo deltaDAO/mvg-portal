@@ -491,14 +491,6 @@ export default function Review({
     {
       name: `COMMUNITY FEE ALGORITHM (${consumeMarketFee}%)`,
       value: algorithmMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
-    },
-    {
-      name: `MARKETPLACE FEE DATASET (${0}%)`,
-      value: '0'
-    },
-    {
-      name: `MARKETPLACE FEE ALGORITHM (${0}%)`,
-      value: '0'
     }
   ]
 

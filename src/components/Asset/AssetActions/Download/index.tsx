@@ -46,7 +46,7 @@ import { AssetPrice } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
-import appConfig, { consumeMarketFixedSwapFee } from 'app.config.cjs'
+import appConfig from 'app.config.cjs'
 import styles from './index.module.css'
 
 import { getDownloadValidationSchema } from './_validation'
@@ -384,19 +384,6 @@ export default function Download({
                 type="DATASET"
               />
               <Row
-                price={new Decimal(consumeMarketFixedSwapFee)
-                  .mul(
-                    new Decimal(
-                      Number(orderPriceAndFees?.price) || price.value || 0
-                    )
-                      .toDecimalPlaces(MAX_DECIMALS)
-                      .div(100)
-                  )
-                  .toString()} // consume market fixed swap fee amount
-                symbol={price.tokenSymbol}
-                type={`CONSUME MARKET ORDER FEE (${consumeMarketFixedSwapFee}%)`}
-              />
-              <Row
                 price={orderPriceAndFees?.opcFee || '0'}
                 symbol={price.tokenSymbol}
                 type={`OPC FEE (${(
@@ -420,15 +407,6 @@ export default function Download({
                     Number(orderPriceAndFees?.price) || price.value || 0
                   ).toDecimalPlaces(MAX_DECIMALS)
                 )
-                  .add(
-                    new Decimal(consumeMarketFixedSwapFee).mul(
-                      new Decimal(
-                        Number(orderPriceAndFees?.price) || price.value || 0
-                      )
-                        .toDecimalPlaces(MAX_DECIMALS)
-                        .div(100)
-                    )
-                  )
                   .add(new Decimal(orderPriceAndFees?.opcFee || 0))
                   .add(
                     new Decimal(
