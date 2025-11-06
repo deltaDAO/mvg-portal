@@ -19,7 +19,7 @@ export default function Navigation({
   const { getSuccessClass, getLastCompletedStep } =
     useComputeStepCompletion(isAlgorithmFlow)
   const currentStep = values.user.stepCurrent
-  const lastCompletedStep = getLastCompletedStep(steps.length)
+  const lastCompletedStep = getLastCompletedStep()
   const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)
 
   const { stepRefs, stepsRowRef, progressBarWidth } = useProgressBar({
