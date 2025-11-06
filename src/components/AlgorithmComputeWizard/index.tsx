@@ -1120,11 +1120,21 @@ export default function ComputeWizard({
       }}
     >
       {(formikContext) => {
+        const { values } = formikContext
+        const hasUserParamsStep = Boolean(values.userParametersDataset)
+        const computeStep = hasUserParamsStep ? 5 : 4
+
+        const isContinueDisabled =
+          (values.user.stepCurrent === 1 &&
+            !(values.datasets?.length > 0 || values.withoutDataset)) ||
+          (values.user.stepCurrent === 2 &&
+            !(values.serviceSelected || values.withoutDataset)) ||
+          (values.user.stepCurrent === computeStep && !values.computeEnv)
         return (
           <div className={styles.containerOuter}>
             <Title asset={asset} service={service} />
             <Form className={styles.form}>
-              <Navigation steps={steps} />
+              <Navigation />
               <SectionContainer className={styles.container}>
                 {showSuccess ? (
                   <div className={styles.successContent}>
@@ -1257,20 +1267,7 @@ export default function ComputeWizard({
                         !isAccountIdWhitelisted ||
                         !isBalanceSufficient
                       }
-                      isContinueDisabled={
-                        (formikContext.values.user.stepCurrent === 1 &&
-                          !(
-                            formikContext.values.datasets?.length > 0 ||
-                            formikContext.values.withoutDataset
-                          )) ||
-                        (formikContext.values.user.stepCurrent === 2 &&
-                          !(
-                            formikContext.values.serviceSelected ||
-                            formikContext.values.withoutDataset
-                          )) ||
-                        (formikContext.values.user.stepCurrent === 4 &&
-                          !formikContext.values.computeEnv)
-                      }
+                      isContinueDisabled={isContinueDisabled}
                       hasPreviousOrder={!!validOrderTx}
                       hasDatatoken={hasDatatoken}
                       btSymbol={accessDetails.baseToken?.symbol}

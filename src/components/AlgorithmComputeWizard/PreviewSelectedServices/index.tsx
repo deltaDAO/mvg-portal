@@ -3,63 +3,60 @@
 import { useEffect, useState } from 'react'
 import { useFormikContext } from 'formik'
 import styles from './index.module.css'
-
-interface Service {
-  id: string
-  name: string
-  title: string
-  serviceDescription: string
-  type: string
-  duration: string | number
-  price: string
-  symbol: string
-  checked?: boolean
-}
-
-interface Dataset {
-  id: string
-  name: string
-  description: string
-  services: Service[]
-}
+import { DatasetItem, DatasetService } from '../types/DatasetSelection'
 
 interface FormValues {
-  datasets: any[]
-  dataset: string[]
+  datasets?: DatasetItem[]
+  dataset?: string[]
 }
 
 const PreviewSelectedServices = () => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const [selectedDatasets, setSelectedDatasets] = useState<Dataset[]>([])
+  const [selectedDatasets, setSelectedDatasets] = useState<DatasetItem[]>([])
+
   useEffect(() => {
     if (!values.datasets) return
 
-    const preview: Dataset[] = values.datasets
-      .map((d: any) => ({
-        id: d.id || d.did,
-        name: d.name,
-        description: d.description,
-        services: (d.services ?? [])
-          .filter((s: any) => s.checked)
-          .map((s: any) => ({
-            id: s.id || s.serviceId,
-            name: s.name || s.serviceName || 'Unnamed Service',
-            title: s.name || s.serviceName,
+    const preview: DatasetItem[] = values.datasets
+      .map((d: DatasetItem) => {
+        const selectedServices: DatasetService[] = (d.services ?? [])
+          .filter((s) => s.checked)
+          .map((s) => ({
+            serviceId: s.serviceId,
+            serviceName: s.serviceName || 'Unnamed Service',
             serviceDescription: s.serviceDescription || 'No description',
-            type: s.type || s.serviceType,
-            duration: s.duration ?? s.serviceDuration ?? 0,
-            price: String(s.price ?? d.datasetPrice ?? 0),
-            symbol: s.symbol || s.tokenSymbol || 'OCEAN',
-            checked: s.checked ?? false
+            serviceType: s.serviceType,
+            serviceDuration: Number(s.serviceDuration ?? 0),
+            price: Number(s.price ?? d.datasetPrice ?? 0),
+            tokenSymbol: s.tokenSymbol || 'OCEAN',
+            checked: s.checked ?? false,
+            isAccountIdWhitelisted: !!s.isAccountIdWhitelisted,
+            datetime: s.datetime || new Date().toISOString(),
+            userParameters: s.userParameters || []
           }))
-      }))
+
+        return {
+          did: d.did,
+          name: d.name,
+          symbol: d.symbol,
+          description: d.description ?? '',
+          datasetPrice: Number(d.datasetPrice ?? 0),
+          expanded: d.expanded ?? false,
+          checked: d.checked ?? false,
+          services: selectedServices
+        }
+      })
       .filter((d) => d.services.length > 0)
 
     setSelectedDatasets(preview)
 
     const pairs = preview.flatMap((d) =>
-      d.services.map((s) => `${d.id}|${s.id}`)
+      d.services.map((s) => `${d.did}|${s.serviceId}`)
     )
+    const anyUserParameters = preview.some((d) =>
+      d.services.some((s) => s.userParameters && s.userParameters.length > 0)
+    )
+    setFieldValue('userParametersDataset', anyUserParameters)
     setFieldValue('dataset', pairs)
   }, [values.datasets, setFieldValue])
 
@@ -69,21 +66,25 @@ const PreviewSelectedServices = () => {
 
       <div className={styles.previewContainer}>
         {selectedDatasets.map((dataset) => (
-          <div key={dataset.id} className={styles.datasetContainer}>
+          <div key={dataset.did} className={styles.datasetContainer}>
             <div className={styles.datasetHeader}>
               <h2 className={styles.datasetName}>{dataset.name}</h2>
-              <p className={styles.datasetAddress}>{dataset.id}</p>
+              <p className={styles.datasetAddress}>{dataset.did}</p>
               <p className={styles.datasetDescription}>
-                {dataset.description.slice(0, 40)}
-                {dataset.description.length > 40 ? '...' : ''}
+                {dataset.description?.slice(0, 40)}
+                {dataset.description && dataset.description.length > 40
+                  ? '...'
+                  : ''}
               </p>
             </div>
 
             <div className={styles.servicesList}>
               {dataset.services.map((service) => (
-                <div key={service.id} className={styles.serviceItem}>
+                <div key={service.serviceId} className={styles.serviceItem}>
                   <div className={styles.serviceHeader}>
-                    <h3 className={styles.serviceName}>{service.name}</h3>
+                    <h3 className={styles.serviceName}>
+                      {service.serviceName}
+                    </h3>
                   </div>
 
                   <p className={styles.serviceDescription}>
@@ -93,18 +94,18 @@ const PreviewSelectedServices = () => {
 
                   <div className={styles.serviceDetails}>
                     <p>
-                      <strong>Type:</strong> {service.type}
+                      <strong>Type:</strong> {service.serviceType}
                     </p>
                   </div>
 
                   <div className={styles.serviceDetails}>
                     <p>
                       <strong>Access duration:</strong>{' '}
-                      {Number(service.duration) === 0 ||
-                      isNaN(Number(service.duration))
+                      {Number(service.serviceDuration) === 0 ||
+                      isNaN(Number(service.serviceDuration))
                         ? 'Forever'
                         : `${Math.floor(
-                            Number(service.duration) / (60 * 60 * 24)
+                            Number(service.serviceDuration) / (60 * 60 * 24)
                           )} days`}
                     </p>
                   </div>

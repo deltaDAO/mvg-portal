@@ -82,6 +82,7 @@ export const initialValues: FormComputeData = {
   termsAndConditions: false,
   acceptPublishingLicense: false,
   credentialsVerified: false,
+  userParametersDataset: false,
   serviceSelected: false,
   step1Completed: false,
   step2Completed: false,

@@ -51,7 +51,7 @@ interface WizardActionsProps {
 }
 
 export default function WizardActions({
-  totalSteps,
+  // totalSteps,
   submitButtonText,
   continueButtonText = 'Continue',
   showSuccessConfetti = false,
@@ -100,6 +100,10 @@ export default function WizardActions({
     isSubmitting,
     setFieldValue
   }: FormikContextType<FormComputeData> = useFormikContext()
+  const hasUserParamsStep = Boolean(values?.userParametersDataset)
+  const totalSteps = hasUserParamsStep ? 7 : 6
+  const currentStep = values.user.stepCurrent
+  const isLastStep = currentStep === totalSteps
 
   React.useEffect(() => {
     const flow = totalSteps === 6 ? 'algorithm' : 'dataset'
@@ -173,17 +177,26 @@ export default function WizardActions({
   function handleNext(e: FormEvent) {
     e.preventDefault()
 
-    // Set step completion flags
     if (values.user.stepCurrent === 1) setFieldValue('step1Completed', true)
     if (values.user.stepCurrent === 2) setFieldValue('step2Completed', true)
     if (values.user.stepCurrent === 3) setFieldValue('step3Completed', true)
-    if (values.user.stepCurrent === 4) setFieldValue('step4Completed', true)
-    if (values.user.stepCurrent === 5) setFieldValue('step5Completed', true)
+    if (values.user.stepCurrent === 4) {
+      if (hasUserParamsStep) setFieldValue('step4Completed', true)
+      else setFieldValue('step4Completed', true)
+    }
+    if (values.user.stepCurrent === 5) {
+      if (hasUserParamsStep) setFieldValue('step5Completed', true)
+      else setFieldValue('step5Completed', true)
+    }
     if (values.user.stepCurrent === 6) {
-      setFieldValue('step6Completed', true)
-      setFieldValue('previewPageVisited', true)
+      if (hasUserParamsStep) setFieldValue('step6Completed', true)
+      else {
+        setFieldValue('step6Completed', true)
+        setFieldValue('previewPageVisited', true)
+      }
     }
     if (values.user.stepCurrent === 7) {
+      setFieldValue('step7Completed', true)
       setFieldValue('submissionPageVisited', true)
     }
 
@@ -195,8 +208,6 @@ export default function WizardActions({
     handleAction('prev')
   }
 
-  const currentStep = values.user.stepCurrent
-  const isLastStep = currentStep === totalSteps
   const isFirstStep = currentStep === 1
   const actionsClassName =
     isFirstStep && rightAlignFirstStep ? styles.actionsRight : styles.actions

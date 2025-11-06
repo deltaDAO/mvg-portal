@@ -1,0 +1,100 @@
+.container {
+  max-width: 1000px;
+  padding: 20px;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1f2937;
+}
+
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.datasetServiceCard {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.datasetServiceTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.datasetName {
+  color: #111827;
+}
+
+.serviceName {
+  color: #2563eb;
+}
+
+.separator {
+  margin: 0 8px;
+  color: #6b7280;
+}
+
+.parametersList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.parameterItem {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.parameterButton {
+  width: 100%;
+  text-align: left;
+  background: #f3f4f6;
+  border: none;
+  padding: 12px 16px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.parameterButton:hover {
+  background: #e5e7eb;
+}
+
+.arrow {
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+.parameterTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: #f9fafb;
+}
+
+.parameterTable td {
+  padding: 10px 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.parameterTable td:first-child {
+  font-weight: 600;
+  width: 140px;
+  color: #374151;
+}

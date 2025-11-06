@@ -5,21 +5,24 @@ import { useComputeStepCompletion } from '../../../@hooks/useComputeStepCompleti
 import styles from './index.module.css'
 import CheckmarkIcon from '@images/checkmark.svg'
 import { FormikContextType, useFormikContext } from 'formik'
+import { getDatasetSteps } from '../_constants'
 
 export default function Navigation({
-  steps
+  stepsa
 }: {
-  steps: StepContent[]
-  values?: FormComputeData // New prop type
+  stepsa?: StepContent[]
+  values?: FormComputeData
   setFieldValue?: (field: string, value: any) => void
 }): ReactElement {
   const { values, setFieldValue }: FormikContextType<FormComputeData> =
     useFormikContext()
-  const isAlgorithmFlow = true // wizard has 6 steps for algorithm
+  const isAlgorithmFlow = true
   const { getSuccessClass, getLastCompletedStep } =
     useComputeStepCompletion(isAlgorithmFlow)
   const currentStep = values.user.stepCurrent
-  const lastCompletedStep = getLastCompletedStep(steps.length)
+  const hasUserParamsStep = Boolean(values?.userParametersDataset)
+  const steps = getDatasetSteps(hasUserParamsStep)
+  const lastCompletedStep = getLastCompletedStep()
   const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)
 
   const { stepRefs, stepsRowRef, progressBarWidth } = useProgressBar({

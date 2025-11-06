@@ -11,6 +11,52 @@ import { getUserCustomParameterValidationSchema } from '../Asset/AssetActions/Co
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { Option } from 'src/@types/ddo/Option'
+import UserParametersStep from './UserParametersStep'
+
+export function getDatasetSteps(hasUserParamsStep: boolean): StepContent[] {
+  const steps: StepContent[] = [
+    { step: 1, title: 'Select Datasets', component: <div>Step 1</div> },
+    { step: 2, title: 'Select Services', component: <div>Step 2</div> },
+    {
+      step: 3,
+      title: 'Preview Selected Datasets & Services',
+      component: <div>Step 3</div>
+    }
+  ]
+
+  if (hasUserParamsStep) {
+    steps.push({
+      step: 4,
+      title: 'User Parameters',
+      component: <UserParametersStep />
+    })
+    steps.push({
+      step: 5,
+      title: 'Select C2D Environment',
+      component: <SelectEnvironment computeEnvs={[]} />
+    })
+    steps.push({
+      step: 6,
+      title: 'C2D Environment Configuration',
+      component: <ConfigureEnvironment />
+    })
+    steps.push({ step: 7, title: 'Review', component: <div>Review</div> })
+  } else {
+    steps.push({
+      step: 4,
+      title: 'Select C2D Environment',
+      component: <SelectEnvironment computeEnvs={[]} />
+    })
+    steps.push({
+      step: 5,
+      title: 'C2D Environment Configuration',
+      component: <ConfigureEnvironment />
+    })
+    steps.push({ step: 6, title: 'Review', component: <div>Review</div> })
+  }
+
+  return steps
+}
 
 export const datasetSteps: StepContent[] = [
   {
@@ -69,6 +115,7 @@ export const initialValues: FormComputeData = {
   termsAndConditions: false,
   acceptPublishingLicense: false,
   credentialsVerified: false,
+  userParametersDataset: false,
   serviceSelected: false,
   withoutDataset: false,
   step1Completed: false,

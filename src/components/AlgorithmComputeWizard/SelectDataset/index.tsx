@@ -9,6 +9,7 @@ import { getAlgorithmDatasetsForComputeSelection } from '@utils/aquarius'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import Loader from '@shared/atoms/Loader'
+import { DatasetItem, DatasetService } from '../types/DatasetSelection'
 import styles from './index.module.css'
 
 type FormValues = {
@@ -33,7 +34,7 @@ export default function SelectDataset({
   const { address: accountId } = useAccount()
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const newCancelToken = useCancelToken()
-  const [datasetsForCompute, setDatasetsForCompute] = useState<any[]>()
+  const [datasetsForCompute, setDatasetsForCompute] = useState<DatasetItem[]>()
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(false)
 
   const selectedDatasetIds = useMemo(() => {
@@ -43,10 +44,10 @@ export default function SelectDataset({
   }, [values.datasets])
 
   function transformDatasets(
-    datasets: AssetSelectionAsset[],
+    datasets: any[],
     selectedIds: string[] = []
-  ): any[] {
-    const grouped: Record<string, any> = {}
+  ): DatasetItem[] {
+    const grouped: Record<string, DatasetItem> = {}
 
     for (const ds of datasets) {
       if (!grouped[ds.did]) {
@@ -54,15 +55,15 @@ export default function SelectDataset({
           did: ds.did,
           name: ds.name,
           symbol: ds.symbol,
-          datasetPrice: 0,
           description: ds.description,
+          datasetPrice: 0,
           expanded: selectedIds.includes(ds.did),
           checked: selectedIds.includes(ds.did),
           services: []
         }
       }
 
-      grouped[ds.did].services.push({
+      const service: DatasetService = {
         serviceId: ds.serviceId,
         serviceName: ds.serviceName,
         serviceDescription: ds.serviceDescription,
@@ -72,9 +73,11 @@ export default function SelectDataset({
         tokenSymbol: ds.tokenSymbol,
         checked: ds.checked,
         isAccountIdWhitelisted: ds.isAccountIdWhitelisted,
-        datetime: ds.datetime
-      })
+        datetime: ds.datetime,
+        userParameters: ds.userParameters ?? []
+      }
 
+      grouped[ds.did].services.push(service)
       grouped[ds.did].datasetPrice += ds.price
     }
 
@@ -95,7 +98,7 @@ export default function SelectDataset({
           asset.credentialSubject?.chainId,
           newCancelToken()
         )
-        console.log('get datasets! ', datasets)
+        console.log('get datasets! ', JSON.stringify(datasets, null, 2))
 
         const groupedDatasets = transformDatasets(datasets)
         setDatasetsForCompute(groupedDatasets)
