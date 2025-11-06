@@ -549,6 +549,14 @@ export default function Review({
           0,
         MAX_DECIMALS
       )
+    },
+    {
+      name: `MARKETPLACE FEE DATASET`,
+      value: new Decimal(formatUnits(consumeMarketOrderFee)).toString()
+    },
+    {
+      name: `MARKETPLACE FEE ALGORITHM`,
+      value: new Decimal(formatUnits(consumeMarketOrderFee)).toString()
     }
   ]
 
@@ -721,15 +729,12 @@ export default function Review({
         : new Decimal(0)
 
     // Now use priceC2D everywhere you'd use providerFees
-    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
-    const feeC2D = new Decimal(consumeMarketOrderFee).mul(priceC2D).div(100)
-    const feeDataset = new Decimal(consumeMarketOrderFee)
-      .mul(priceDataset)
-      .div(100)
+    const feeAlgo = new Decimal(formatUnits(consumeMarketOrderFee))
+    const feeDataset = new Decimal(formatUnits(consumeMarketOrderFee))
 
     // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = priceC2D.add(priceAlgo).add(feeC2D).add(feeAlgo)
+      let sum = priceC2D.add(priceAlgo).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
@@ -748,7 +753,7 @@ export default function Review({
       }
     } else {
       if (datasetSymbol === providerFeesSymbol) {
-        const sum = priceC2D.add(priceDataset).add(feeC2D).add(feeDataset)
+        const sum = priceC2D.add(priceDataset).add(feeDataset)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: datasetSymbol
@@ -767,7 +772,7 @@ export default function Review({
           symbol: algorithmSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
       } else {
@@ -779,7 +784,7 @@ export default function Review({
           symbol: datasetSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
         totalPrices.push({
