@@ -549,14 +549,6 @@ export default function Review({
           0,
         MAX_DECIMALS
       )
-    },
-    {
-      name: `MARKETPLACE FEE DATASET (${0}%)`,
-      value: '0'
-    },
-    {
-      name: `MARKETPLACE FEE ALGORITHM (${0}%)`,
-      value: '0'
     }
   ]
 
