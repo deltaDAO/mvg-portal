@@ -105,8 +105,7 @@ export default function Review({
   isBalanceSufficient: boolean
   setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
-  console.log('Review render', isBalanceSufficient)
-  const { address: accountId, isConnected } = useAccount()
+  const { address: accountId } = useAccount()
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
@@ -492,14 +491,6 @@ export default function Review({
     {
       name: `COMMUNITY FEE ALGORITHM (${consumeMarketFee}%)`,
       value: algorithmMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
-    },
-    {
-      name: `MARKETPLACE FEE DATASET (${0}%)`,
-      value: '0'
-    },
-    {
-      name: `MARKETPLACE FEE ALGORITHM (${0}%)`,
-      value: '0'
     }
   ]
 
