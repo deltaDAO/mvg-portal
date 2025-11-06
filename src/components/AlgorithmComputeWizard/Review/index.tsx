@@ -105,8 +105,7 @@ export default function Review({
   isBalanceSufficient: boolean
   setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
-  console.log('Review render', isBalanceSufficient)
-  const { address: accountId, isConnected } = useAccount()
+  const { address: accountId } = useAccount()
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()

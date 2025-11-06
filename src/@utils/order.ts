@@ -191,7 +191,6 @@ export async function order(
           Number(providerFeeHuman)
         ) // just added more amount to test
           .toString()
-        console.log('approvedAmount', approveAmount)
         freParams.maxBaseTokenAmount = (
           Number(freParams.maxBaseTokenAmount) +
           (Number(freParams.maxBaseTokenAmount) +
@@ -271,7 +270,6 @@ export async function order(
         )
       }
       if (accessDetails.templateId === 2) {
-        console.log('providerFee', providerFees, orderPriceAndFees)
         const providerFeeWei =
           providerFees?.providerFeeAmount ||
           orderPriceAndFees.providerFee?.providerFeeAmount ||
@@ -281,7 +279,6 @@ export async function order(
           providerFeeWei,
           baseTokenDecimals
         )
-        console.log('approvedAmount', providerFeeHuman)
         const tx: any = await approve(
           signer,
           config,
