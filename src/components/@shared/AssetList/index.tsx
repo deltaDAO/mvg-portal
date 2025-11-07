@@ -7,7 +7,7 @@ import Table, { TableOceanColumn } from '../atoms/Table'
 import Price from '../Price'
 import AssetType from '../AssetType'
 import { getServiceByName } from '@utils/ddo'
-import AssetViewSelector, { AssetViewOptions } from './AssetViewSelector'
+import { AssetViewOptions } from './AssetViewSelector'
 import Time from '../atoms/Time'
 import Loader from '../atoms/Loader'
 import { AssetExtended } from 'src/@types/AssetExtended'
@@ -126,12 +126,6 @@ export default function AssetList({
     <Loader />
   ) : (
     <>
-      {/* {showAssetViewSelector && (
-        <AssetViewSelector
-          activeAssetView={activeAssetView}
-          setActiveAssetView={setActiveAssetView}
-        />
-      )} */}
       <div className={styleClasses}>
         {assets?.length > 0 && assets[0] !== undefined ? (
           <>

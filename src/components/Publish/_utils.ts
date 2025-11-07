@@ -288,17 +288,6 @@ function generateSsiPolicy(policy: PolicyType): any {
   return result
 }
 
-function safeJsonParse(value) {
-  if (typeof value === 'string') {
-    try {
-      return JSON.parse(value)
-    } catch {
-      return value // fallback to original string if invalid JSON
-    }
-  }
-  return value
-}
-
 export function parseCredentialPolicies(credentials: Credential) {
   if (!credentials) {
     return

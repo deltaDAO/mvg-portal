@@ -2,7 +2,7 @@ import { useFormikContext } from 'formik'
 import { FormComputeData } from '../components/DatasetComputeWizard/_types'
 
 export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
-  const { values, errors } = useFormikContext<FormComputeData>()
+  const { values } = useFormikContext<FormComputeData>()
 
   function getSuccessClass(step: number): boolean {
     const environmentSelected = Boolean(values.computeEnv)

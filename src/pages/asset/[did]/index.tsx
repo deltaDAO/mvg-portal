@@ -10,7 +10,7 @@ export default function PageAssetDetails(): ReactElement {
   const { did } = router.query
 
   const { address: accountId } = useAccount()
-  const [ownAccount, setOwnAccount] = useState(false)
+  const [ownAccount] = useState(false)
 
   return (
     <ProfileProvider accountId={accountId} ownAccount={ownAccount}>

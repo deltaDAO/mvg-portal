@@ -28,6 +28,7 @@ import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
 import AlgorithmDatasetsListForComputeSelection from './AlgorithmDatasetsListForComputeSelection'
 import { getAsset } from '@utils/aquarius'
+import { formatUnits } from 'ethers/lib/utils.js'
 
 export default function FormStartComputeAlgo({
   asset,
@@ -300,7 +301,7 @@ export default function FormStartComputeAlgo({
 
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
       const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
-      const fee = new Decimal(consumeMarketOrderFee).mul(price).div(100)
+      const fee = new Decimal(formatUnits(consumeMarketOrderFee))
 
       datasetPrice = datasetPrice.add(price)
       datasetFee = datasetFee.add(fee)
@@ -320,17 +321,15 @@ export default function FormStartComputeAlgo({
         ? new Decimal(0)
         : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
 
-    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
+    const feeAlgo = new Decimal(formatUnits(consumeMarketOrderFee))
 
     const priceC2D =
       c2dPrice !== undefined
         ? new Decimal(c2dPrice).toDecimalPlaces(MAX_DECIMALS)
         : new Decimal(0)
 
-    const feeC2D = new Decimal(consumeMarketOrderFee).mul(priceC2D).div(100)
-
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = priceC2D.add(priceAlgo).add(feeC2D).add(feeAlgo)
+      let sum = priceC2D.add(priceAlgo).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
@@ -350,7 +349,7 @@ export default function FormStartComputeAlgo({
       }
     } else {
       if (datasetSymbol === providerFeesSymbol) {
-        const sum = priceC2D.add(priceDataset).add(feeC2D).add(feeDataset)
+        const sum = priceC2D.add(priceDataset).add(feeDataset)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: datasetSymbol
@@ -369,7 +368,7 @@ export default function FormStartComputeAlgo({
           symbol: algorithmSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
       } else {
@@ -381,7 +380,7 @@ export default function FormStartComputeAlgo({
           symbol: datasetSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
         totalPrices.push({
@@ -573,43 +572,27 @@ export default function FormStartComputeAlgo({
               )}
 
               <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(
-                    new Decimal(
-                      selectedDatasetAsset
-                        ?.map((a) =>
-                          Number(
-                            a.accessDetails?.[a.serviceIndex || 0]?.price || 0
-                          )
-                        )
-                        .reduce((acc, val) => acc + val, 0)
-                    )
-                  )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
-                  .toString()}
+                price={new Decimal(
+                  formatUnits(consumeMarketOrderFee)
+                ).toString()}
                 symbol={datasetSymbol}
-                type={`CONSUME MARKET ORDER FEE DATASETS (${consumeMarketOrderFee}%)`}
+                type={`CONSUME MARKET ORDER FEE DATASETS`}
               />
               <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(new Decimal(algoOrderPrice || accessDetails.price || 0))
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
-                  .toString()} // consume market order fee fee amount
+                price={new Decimal(
+                  formatUnits(consumeMarketOrderFee)
+                ).toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
-                type={`CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketOrderFee}%)`}
+                type={`CONSUME MARKET ORDER FEE ALGORITHM`}
               />
 
               {computeEnvs?.length > 0 && (
                 <Row
-                  price={new Decimal(consumeMarketOrderFee)
-                    .mul(new Decimal(selectedResources?.price || 0))
-                    .toDecimalPlaces(MAX_DECIMALS)
-                    .div(100)
-                    .toString()}
+                  price={new Decimal(
+                    formatUnits(consumeMarketOrderFee)
+                  ).toString()}
                   symbol={providerFeesSymbol}
-                  type={`CONSUME MARKET ORDER FEE C2D (${consumeMarketOrderFee}%)`}
+                  type={`CONSUME MARKET ORDER FEE C2D`}
                 />
               )}
               {totalPrices.map((item) =>

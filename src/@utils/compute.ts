@@ -32,7 +32,6 @@ import {
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl } from 'app.config.cjs'
 import { ServiceComputeOptions } from '@oceanprotocol/ddo-js'
-import { useNetwork } from 'wagmi'
 // Local form shape needed by compute transform
 type ComputeFormLike = {
   allowAllPublishedAlgorithms: boolean | string
