@@ -218,6 +218,12 @@
   color: #0a4b70;
 }
 
+.acceptButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .abortButton {
   border-radius: var(--publish-border-radius);
   padding: 4px 20px;

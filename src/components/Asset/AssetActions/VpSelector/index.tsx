@@ -239,6 +239,7 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
             type="button"
             className={styles.acceptButton}
             onClick={handleAcceptSelection}
+            disabled={selections.length === 0 || !selections.some(Boolean)}
           >
             Accept
           </button>
