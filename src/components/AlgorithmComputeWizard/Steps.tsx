@@ -160,7 +160,7 @@ export default function Steps({
       return <PreviewSelectedServices />
     case 4:
       if (hasUserParamsStep) {
-        return <UserParametersStep />
+        return <UserParametersStep asset={asset} service={service} />
       } else {
         return <SelectEnvironment computeEnvs={computeEnvs} />
       }
