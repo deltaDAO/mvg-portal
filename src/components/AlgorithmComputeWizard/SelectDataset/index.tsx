@@ -36,7 +36,7 @@ export default function SelectDataset({
   const newCancelToken = useCancelToken()
   const [datasetsForCompute, setDatasetsForCompute] = useState<DatasetItem[]>()
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(false)
-
+  console.log('SelectDataset values ', values)
   const selectedDatasetIds = useMemo(() => {
     return (
       values.datasets?.map((dataset: any) => dataset.did || dataset.id) || []
@@ -98,7 +98,6 @@ export default function SelectDataset({
           asset.credentialSubject?.chainId,
           newCancelToken()
         )
-        console.log('get datasets! ', JSON.stringify(datasets, null, 2))
 
         const groupedDatasets = transformDatasets(datasets)
         setDatasetsForCompute(groupedDatasets)

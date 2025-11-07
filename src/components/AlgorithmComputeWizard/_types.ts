@@ -1,5 +1,6 @@
 import { ReactElement } from 'react'
 import { UserCustomParameters } from '@oceanprotocol/lib'
+import { UserParameter } from './types/DatasetSelection'
 
 export interface FormComputeData {
   user: {
@@ -30,8 +31,8 @@ export interface FormComputeData {
   step2Completed: boolean
   step3Completed: boolean
   step4Completed: boolean
-  dataServiceParams?: UserCustomParameters
-  algoServiceParams?: UserCustomParameters
+  dataServiceParams?: any
+  algoServiceParams?: any
   algoParams?: UserCustomParameters
   datasets?: Array<{
     id: string

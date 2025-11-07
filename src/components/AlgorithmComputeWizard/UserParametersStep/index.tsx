@@ -12,6 +12,7 @@ interface FormValues {
   dataset?: string[]
   isUserParameters?: boolean
   userUpdatedParameters?: any[]
+  algoServiceParams?: any[]
 }
 
 const PreviewUserParameters = ({
@@ -27,128 +28,99 @@ const PreviewUserParameters = ({
   )
   const [localParams, setLocalParams] = useState<any[]>([])
 
+  // 1️⃣ Filter datasets with user params
   useEffect(() => {
     if (!values.datasets) return
 
     const filtered = values.datasets
-      .map((d) => {
-        const servicesWithParams = (d.services ?? []).filter(
-          (s) => s.checked && s.userParameters && s.userParameters.length > 0
+      .map((d) => ({
+        ...d,
+        services: (d.services ?? []).filter(
+          (s) => s.checked && s.userParameters?.length > 0
         )
-        return { ...d, services: servicesWithParams }
-      })
+      }))
       .filter((d) => d.services.length > 0)
 
     setDatasetsWithParams(filtered)
 
-    const anyParams = filtered.some((d) =>
-      d.services.some((s) => s.userParameters?.length > 0)
+    const anyUserParameters = filtered.some((d) =>
+      d.services.some((s) => s.userParameters && s.userParameters.length > 0)
     )
-    const isUserParameters = service.consumerParameters?.length > 0
-    const setUserParameterTrue = isUserParameters || anyParams
-    setFieldValue('isUserParameters', setUserParameterTrue)
-  }, [values.datasets, setFieldValue])
+    const isAlgoServiceParams =
+      values.algoServiceParams && values.algoServiceParams.length > 0
+
+    setFieldValue('isUserParameters', anyUserParameters || isAlgoServiceParams)
+  }, [values.datasets, values.algoServiceParams, setFieldValue])
 
   useEffect(() => {
-    if ((!datasetsWithParams.length && !service) || localParams.length) return
+    if (!datasetsWithParams.length && !values.algoServiceParams?.length) return
 
-    let initial: any[] = []
+    const existingParams = values.userUpdatedParameters ?? []
 
-    // Dataset-level params
-    if (datasetsWithParams.length) {
-      const datasetParams = datasetsWithParams.flatMap((dataset) =>
-        dataset.services.map((srv) => ({
+    const datasetParams = datasetsWithParams.flatMap((dataset) =>
+      dataset.services.map((srv) => {
+        const existing = existingParams.find(
+          (p) => p.did === dataset.did && p.serviceId === srv.serviceId
+        )
+
+        if (existing) return existing
+
+        return {
           did: dataset.did,
           serviceId: srv.serviceId,
           userParameters: srv.userParameters.map((p) => ({
             ...p,
+            value: p.default ?? ''
+          }))
+        }
+      })
+    )
+
+    const algoParams =
+      values.algoServiceParams?.map((entry) => {
+        const existing = existingParams.find(
+          (p) => p.did === entry.did && p.serviceId === entry.serviceId
+        )
+        if (existing) return existing
+
+        return {
+          did: entry.did,
+          serviceId: entry.serviceId,
+          userParameters: entry.userParameters.map((p) => ({
+            ...p,
             value: p.value ?? p.default ?? ''
           }))
-        }))
-      )
-      initial = [...initial, ...datasetParams]
-    }
+        }
+      }) ?? []
 
-    // Algorithm-level params
-    if (asset && service?.consumerParameters?.length) {
-      const consumerParams = service.consumerParameters.map(
-        (p: any): UserParameter => ({
-          name: p.name,
-          label: p.label ?? p.name,
-          description: p.description,
-          type: p.type ?? 'text',
-          default: p.default,
-          required: p.required ?? false,
-          options: p.options ?? [],
-          value: p.default ?? ''
-        })
-      )
+    const combined = [...datasetParams, ...algoParams]
 
-      const algoParams = {
-        did: asset.id,
-        serviceId: service.id,
-        userParameters: consumerParams
-      }
+    setLocalParams(combined)
+    setFieldValue('userUpdatedParameters', combined)
+  }, [datasetsWithParams, values.algoServiceParams, setFieldValue])
 
-      initial = [...initial, algoParams]
-    }
-
-    // Only set Formik & localParams if they are empty
-    if (!values.userUpdatedParameters?.length && initial.length) {
-      setLocalParams(initial)
-      setFieldValue('userUpdatedParameters', initial)
-      setFieldValue('isUserParameters', true)
-    }
-  }, [
-    datasetsWithParams,
-    asset,
-    service,
-    setFieldValue,
-    values.userUpdatedParameters,
-    localParams.length
-  ])
-
+  // 3️⃣ Handle input change
   const handleParamChange = (
-    datasetDid: string,
+    did: string,
     serviceId: string,
-    paramIndex: number,
+    index: number,
     value: string
   ) => {
     setLocalParams((prev) => {
-      const existing = [...prev]
-      const targetIndex = existing.findIndex(
-        (item) => item.did === datasetDid && item.serviceId === serviceId
-      )
-
-      if (targetIndex !== -1) {
-        const newParams = [...existing[targetIndex].userParameters]
-        newParams[paramIndex] = { ...newParams[paramIndex], value }
-        existing[targetIndex] = {
-          ...existing[targetIndex],
-          userParameters: newParams
+      const updated = prev.map((entry) => {
+        if (entry.did === did && entry.serviceId === serviceId) {
+          const userParameters = [...entry.userParameters]
+          userParameters[index] = { ...userParameters[index], value }
+          return { ...entry, userParameters }
         }
-      } else {
-        const dataset = values.datasets?.find((d) => d.did === datasetDid)
-        const service = dataset?.services.find((s) => s.serviceId === serviceId)
-
-        if (service) {
-          const newParams = service.userParameters.map((p, i) => ({
-            ...p,
-            value: i === paramIndex ? value : p.value ?? p.default ?? ''
-          }))
-          existing.push({
-            did: datasetDid,
-            serviceId,
-            userParameters: newParams
-          })
-        }
-      }
-
-      setFieldValue('userUpdatedParameters', existing)
-      return existing
+        return entry
+      })
+      setFieldValue('userUpdatedParameters', updated)
+      return updated
     })
   }
 
+  // 4️⃣ Render input
   const renderInputField = (
     param: UserParameter,
     onChange: (v: string) => void
@@ -183,10 +155,9 @@ const PreviewUserParameters = ({
           >
             {((param.options as Record<string, string>[]) ?? []).map((opt) => {
               const key = Object.keys(opt)[0]
-              const val = opt[key]
               return (
                 <option key={key} value={key}>
-                  {val}
+                  {opt[key]}
                 </option>
               )
             })}
@@ -195,7 +166,7 @@ const PreviewUserParameters = ({
       default:
         return (
           <input
-            type={param.type || 'text'}
+            type="text"
             className={styles.paramInput}
             value={param.value ?? ''}
             onChange={(e) => onChange(e.target.value)}
@@ -208,75 +179,25 @@ const PreviewUserParameters = ({
     <div className={styles.container}>
       <h1 className={styles.title}>User Parameters</h1>
 
-      {/* Algorithm-level parameters */}
-      {asset && service && (
-        <div className={styles.card}>
-          <h2 className={styles.cardHeader}>
-            <span className={styles.datasetName}>Algorithm:</span>
-            <span className={styles.serviceName}>
-              {asset.credentialSubject?.metadata?.name ?? asset.id}
-            </span>
-          </h2>
-
-          {(
-            localParams.find(
-              (p) => p.did === asset.id && p.serviceId === service.id
-            )?.userParameters ?? []
-          ).map((param: UserParameter, index: number) => (
-            <div key={index} className={styles.paramRow}>
-              <label className={styles.paramLabel}>
-                {param.label}
-                {param.required && (
-                  <span className={styles.requiredMark}>*</span>
-                )}
-                <span
-                  className={styles.infoIcon}
-                  title={param.description ?? 'No description available'}
-                >
-                  ℹ️
-                </span>
-              </label>
-              {renderInputField(param, (v) =>
-                handleParamChange(asset.id, service.id, index, v)
-              )}
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Dataset-level parameters */}
-      {datasetsWithParams.length === 0 && (
-        <p className={styles.noParamsText}>
-          No user parameters found for selected datasets.
-        </p>
-      )}
-
-      {datasetsWithParams.map((dataset) =>
-        dataset.services.map((srv) => {
-          const matched = localParams.find(
-            (u) => u.did === dataset.did && u.serviceId === srv.serviceId
+      {values.algoServiceParams?.length > 0 &&
+        localParams
+          .filter((p) =>
+            values.algoServiceParams.some(
+              (a) => a.did === p.did && a.serviceId === p.serviceId
+            )
           )
-
-          const params =
-            matched?.userParameters ??
-            srv.userParameters.map((p) => ({
-              ...p,
-              value: p.default ?? ''
-            }))
-
-          return (
-            <div
-              key={`${dataset.did}-${srv.serviceId}`}
-              className={styles.card}
-            >
+          .map((entry) => (
+            <div key={entry.did + entry.serviceId} className={styles.card}>
               <h2 className={styles.cardHeader}>
-                <span className={styles.datasetName}>{dataset.name}</span>
-                <span className={styles.separator}> | </span>
-                <span className={styles.serviceName}>{srv.serviceName}</span>
+                <span className={styles.datasetName}>Algorithm:</span>
+                <span className={styles.serviceName}>
+                  {asset?.credentialSubject?.metadata?.name ??
+                    asset?.id ??
+                    'Algorithm'}
+                </span>
               </h2>
-
-              {params.map((param: UserParameter, index: number) => (
-                <div key={index} className={styles.paramRow}>
+              {entry.userParameters.map((param: UserParameter, i: number) => (
+                <div key={i} className={styles.paramRow}>
                   <label className={styles.paramLabel}>
                     {param.label}
                     {param.required && (
@@ -290,7 +211,55 @@ const PreviewUserParameters = ({
                     </span>
                   </label>
                   {renderInputField(param, (v) =>
-                    handleParamChange(dataset.did, srv.serviceId, index, v)
+                    handleParamChange(entry.did, entry.serviceId, i, v)
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+
+      {datasetsWithParams.length === 0 && (
+        <p className={styles.noParamsText}>
+          No user parameters found for selected datasets.
+        </p>
+      )}
+
+      {datasetsWithParams.map((dataset) =>
+        dataset.services.map((srv) => {
+          const matched = localParams.find(
+            (u) => u.did === dataset.did && u.serviceId === srv.serviceId
+          )
+          const params =
+            matched?.userParameters ??
+            srv.userParameters.map((p) => ({ ...p, value: p.default ?? '' }))
+
+          return (
+            <div
+              key={`${dataset.did}-${srv.serviceId}`}
+              className={styles.card}
+            >
+              <h2 className={styles.cardHeader}>
+                <span className={styles.datasetName}>{dataset.name}</span>
+                <span className={styles.separator}> | </span>
+                <span className={styles.serviceName}>{srv.serviceName}</span>
+              </h2>
+
+              {params.map((param: UserParameter, i: number) => (
+                <div key={i} className={styles.paramRow}>
+                  <label className={styles.paramLabel}>
+                    {param.label}
+                    {param.required && (
+                      <span className={styles.requiredMark}>*</span>
+                    )}
+                    <span
+                      className={styles.infoIcon}
+                      title={param.description ?? 'No description available'}
+                    >
+                      ℹ️
+                    </span>
+                  </label>
+                  {renderInputField(param, (v) =>
+                    handleParamChange(dataset.did, srv.serviceId, i, v)
                   )}
                 </div>
               ))}

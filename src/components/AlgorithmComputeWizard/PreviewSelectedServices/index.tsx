@@ -9,12 +9,15 @@ import { Service } from 'src/@types/ddo/Service'
 interface FormValues {
   datasets?: DatasetItem[]
   dataset?: string[]
+  isUserParameters?: boolean
+  userUpdatedParameters?: any[]
+  algoServiceParams?: any
 }
 
 const PreviewSelectedServices = ({ service }: { service: Service }) => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [selectedDatasets, setSelectedDatasets] = useState<DatasetItem[]>([])
-
+  console.log('PreviewSelectedServices values ', values)
   useEffect(() => {
     if (!values.datasets) return
 
@@ -57,9 +60,15 @@ const PreviewSelectedServices = ({ service }: { service: Service }) => {
     const anyUserParameters = preview.some((d) =>
       d.services.some((s) => s.userParameters && s.userParameters.length > 0)
     )
-    const isUserParameters = service.consumerParameters?.length > 0
-    const setUserParameterTrue = isUserParameters || anyUserParameters
-    setFieldValue('isUserParameters', setUserParameterTrue)
+    const isAlgoServiceParams = !!values.algoServiceParams
+
+    const setUserParameterTrue = isAlgoServiceParams || anyUserParameters
+
+    if (setUserParameterTrue) {
+      setFieldValue('isUserParameters', true)
+    } else {
+      setFieldValue('isUserParameters', false)
+    }
     setFieldValue('dataset', pairs)
   }, [values.datasets, setFieldValue])
 
