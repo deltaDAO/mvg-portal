@@ -1,7 +1,6 @@
 import { ReactElement, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '../_types'
-import FormHelp from '@shared/FormInput/Help'
 import Price from './Price'
 import styles from './index.module.css'
 import Alert from '../../@shared/atoms/Alert'

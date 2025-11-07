@@ -46,7 +46,7 @@ import { AssetPrice } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
-import appConfig from 'app.config.cjs'
+import appConfig, { consumeMarketOrderFee } from 'app.config.cjs'
 import styles from './index.module.css'
 
 import { getDownloadValidationSchema } from './_validation'
@@ -402,6 +402,11 @@ export default function Download({
                 type={`PROVIDER FEE`}
               />
               <Row
+                price={formatUnits(consumeMarketOrderFee) || '0'}
+                symbol={price.tokenSymbol}
+                type={`CONSUME MARKET FEE`}
+              />
+              <Row
                 price={new Decimal(
                   new Decimal(
                     Number(orderPriceAndFees?.price) || price.value || 0
@@ -415,6 +420,7 @@ export default function Download({
                       )
                     )
                   )
+                  .add(new Decimal(formatUnits(consumeMarketOrderFee)))
                   .toString()}
                 symbol={price.tokenSymbol}
               />

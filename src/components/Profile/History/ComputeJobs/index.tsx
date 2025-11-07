@@ -18,44 +18,6 @@ export function Status({ children }: { children: string }): ReactElement {
   return <div className={styles.status}>{children}</div>
 }
 
-const columns: TableOceanColumn<ComputeJobMetaData>[] = [
-  {
-    name: 'Dataset',
-    selector: (row) => (
-      <AssetListTitle
-        did={row.assets ? row.assets[0].documentId : row.jobId}
-        title={row.assetName}
-      />
-    )
-  },
-  {
-    name: 'Network',
-    selector: (row) => <NetworkName networkId={row.networkId} />
-  },
-  {
-    name: 'Provider',
-    selector: (row) => <span title={row.providerUrl}>{row.providerUrl}</span>
-  },
-  {
-    name: 'Created',
-    selector: (row) =>
-      row.dateCreated ? <Time date={row.dateCreated} isUnix relative /> : ''
-  },
-  {
-    name: 'Finished',
-    selector: (row) =>
-      row.dateFinished ? <Time date={row.dateFinished} isUnix relative /> : ''
-  },
-  {
-    name: 'Status',
-    selector: (row) => <Status>{row.statusText}</Status>
-  },
-  {
-    name: 'Actions',
-    selector: (row) => <Details job={row} />
-  }
-]
-
 export default function ComputeJobs({
   minimal,
   jobs,

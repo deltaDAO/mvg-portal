@@ -2,7 +2,6 @@ import { ReactElement, useEffect, useState } from 'react'
 import Tooltip from '@shared/atoms/Tooltip'
 import styles from './Fees.module.css'
 import Input from '@shared/FormInput'
-import { useMarketMetadata } from '@context/MarketMetadata'
 import Decimal from 'decimal.js'
 import { useNetwork } from 'wagmi'
 import useFactoryRouter from '@hooks/useRouter'
@@ -41,7 +40,6 @@ export default function Fees({
   const [oceanCommunitySwapFee, setOceanCommunitySwapFee] = useState<string>('')
   const { chain } = useNetwork()
   const { fees } = useFactoryRouter()
-  const { appConfig } = useMarketMetadata()
 
   useEffect(() => {
     setOceanCommunitySwapFee(
@@ -55,17 +53,10 @@ export default function Fees({
     <>
       <div className={styles.fees}>
         <Default
-          title="Community Swap Fee"
+          title="Community Fee"
           name="communityFee"
           tooltip={tooltips.communityFee}
           value={oceanCommunitySwapFee}
-        />
-
-        <Default
-          title="Marketplace Fee"
-          name="marketplaceFee"
-          tooltip={tooltips.marketplaceFee}
-          value={appConfig?.publisherMarketFixedSwapFee}
         />
       </div>
     </>
