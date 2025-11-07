@@ -184,7 +184,7 @@ export default function Review({
   const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
   const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
 
-  const currentMode = paidResources?.mode === 'paid' ? 'paid' : 'free'
+  const currentMode = values?.mode || 'free'
   const c2dPriceRaw =
     currentMode === 'paid' ? paidResources?.price : freeResources?.price
 
