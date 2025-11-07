@@ -437,13 +437,21 @@ export default function Review({
 
       return acc.add(fee)
     }, new Decimal(0)) || new Decimal(0)
-
-  const totalDatasetMarketFeeConsume = new Decimal(
-    formatUnits(consumeMarketOrderFee)
-  )
-    .mul(new Decimal(selectedDatasetAsset?.length || 0))
+  const totalDatasetMarketFeeConsume = selectedDatasetAsset
+    ?.filter((dataset) => {
+      const index = dataset.serviceIndex || 0
+      return !dataset.accessDetails?.[index]?.isOwned
+    })
+    .reduce(
+      (acc, dataset) =>
+        acc.add(new Decimal(formatUnits(consumeMarketOrderFee))),
+      new Decimal(0)
+    )
     .toDecimalPlaces(MAX_DECIMALS)
   // Algorithm fee
+  const algoFeeConsume = accessDetails.isOwned
+    ? new Decimal(0)
+    : new Decimal(formatUnits(consumeMarketOrderFee))
   const algorithmMarketFee = new Decimal(
     calculateAlgorithmMarketFee(
       consumeMarketFee,
@@ -505,7 +513,7 @@ export default function Review({
     },
     {
       name: `MARKETPLACE FEE ALGORITHM`,
-      value: new Decimal(formatUnits(consumeMarketOrderFee)).toString()
+      value: algoFeeConsume.toString()
     }
   ]
 
@@ -676,7 +684,9 @@ export default function Review({
 
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
       const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
-      const fee = new Decimal(formatUnits(consumeMarketOrderFee))
+      const fee = details?.isOwned
+        ? new Decimal(0)
+        : new Decimal(formatUnits(consumeMarketOrderFee))
 
       datasetPrice = datasetPrice.add(price)
       datasetFee = datasetFee.add(fee)
@@ -692,7 +702,9 @@ export default function Review({
         ? new Decimal(0)
         : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
 
-    const feeAlgo = new Decimal(formatUnits(consumeMarketOrderFee))
+    const feeAlgo = accessDetails.isOwned
+      ? new Decimal(0)
+      : new Decimal(formatUnits(consumeMarketOrderFee))
 
     const priceC2D =
       c2dPrice !== undefined

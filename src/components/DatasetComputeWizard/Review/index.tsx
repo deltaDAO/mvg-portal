@@ -552,11 +552,15 @@ export default function Review({
     },
     {
       name: `MARKETPLACE FEE DATASET`,
-      value: new Decimal(formatUnits(consumeMarketOrderFee)).toString()
+      value: accessDetails?.isOwned
+        ? '0'
+        : new Decimal(formatUnits(consumeMarketOrderFee)).toString()
     },
     {
       name: `MARKETPLACE FEE ALGORITHM`,
-      value: new Decimal(formatUnits(consumeMarketOrderFee)).toString()
+      value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
+        ? '0'
+        : new Decimal(formatUnits(consumeMarketOrderFee)).toString()
     }
   ]
 
@@ -729,8 +733,13 @@ export default function Review({
         : new Decimal(0)
 
     // Now use priceC2D everywhere you'd use providerFees
-    const feeAlgo = new Decimal(formatUnits(consumeMarketOrderFee))
-    const feeDataset = new Decimal(formatUnits(consumeMarketOrderFee))
+    const feeAlgo = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
+      ?.isOwned
+      ? new Decimal(0)
+      : new Decimal(formatUnits(consumeMarketOrderFee))
+    const feeDataset = accessDetails?.isOwned
+      ? new Decimal(0)
+      : new Decimal(formatUnits(consumeMarketOrderFee))
 
     // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
