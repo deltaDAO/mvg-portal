@@ -157,7 +157,7 @@ export default function Steps({
     case 2:
       return <SelectServices />
     case 3:
-      return <PreviewSelectedServices />
+      return <PreviewSelectedServices service={service} />
     case 4:
       if (hasUserParamsStep) {
         return <UserParametersStep asset={asset} service={service} />

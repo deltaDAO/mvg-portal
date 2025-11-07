@@ -44,14 +44,17 @@ const PreviewUserParameters = ({
     const anyParams = filtered.some((d) =>
       d.services.some((s) => s.userParameters?.length > 0)
     )
-    setFieldValue('isUserParameters', anyParams)
+    const isUserParameters = service.consumerParameters?.length > 0
+    const setUserParameterTrue = isUserParameters || anyParams
+    setFieldValue('isUserParameters', setUserParameterTrue)
   }, [values.datasets, setFieldValue])
 
   useEffect(() => {
-    if (!datasetsWithParams.length && !service) return
+    if ((!datasetsWithParams.length && !service) || localParams.length) return
 
     let initial: any[] = []
 
+    // Dataset-level params
     if (datasetsWithParams.length) {
       const datasetParams = datasetsWithParams.flatMap((dataset) =>
         dataset.services.map((srv) => ({
@@ -66,6 +69,7 @@ const PreviewUserParameters = ({
       initial = [...initial, ...datasetParams]
     }
 
+    // Algorithm-level params
     if (asset && service?.consumerParameters?.length) {
       const consumerParams = service.consumerParameters.map(
         (p: any): UserParameter => ({
@@ -89,19 +93,19 @@ const PreviewUserParameters = ({
       initial = [...initial, algoParams]
     }
 
-    if (values.userUpdatedParameters?.length) {
-      setLocalParams(values.userUpdatedParameters)
-    } else {
+    // Only set Formik & localParams if they are empty
+    if (!values.userUpdatedParameters?.length && initial.length) {
       setLocalParams(initial)
       setFieldValue('userUpdatedParameters', initial)
-      if (initial.length > 0) setFieldValue('isUserParameters', true)
+      setFieldValue('isUserParameters', true)
     }
   }, [
     datasetsWithParams,
     asset,
     service,
     setFieldValue,
-    values.userUpdatedParameters
+    values.userUpdatedParameters,
+    localParams.length
   ])
 
   const handleParamChange = (

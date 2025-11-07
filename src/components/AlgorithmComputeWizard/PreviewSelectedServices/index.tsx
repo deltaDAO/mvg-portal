@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react'
 import { useFormikContext } from 'formik'
 import styles from './index.module.css'
 import { DatasetItem, DatasetService } from '../types/DatasetSelection'
+import { Service } from 'src/@types/ddo/Service'
 
 interface FormValues {
   datasets?: DatasetItem[]
   dataset?: string[]
 }
 
-const PreviewSelectedServices = () => {
+const PreviewSelectedServices = ({ service }: { service: Service }) => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [selectedDatasets, setSelectedDatasets] = useState<DatasetItem[]>([])
 
@@ -56,7 +57,9 @@ const PreviewSelectedServices = () => {
     const anyUserParameters = preview.some((d) =>
       d.services.some((s) => s.userParameters && s.userParameters.length > 0)
     )
-    setFieldValue('isUserParameters', anyUserParameters)
+    const isUserParameters = service.consumerParameters?.length > 0
+    const setUserParameterTrue = isUserParameters || anyUserParameters
+    setFieldValue('isUserParameters', setUserParameterTrue)
     setFieldValue('dataset', pairs)
   }, [values.datasets, setFieldValue])
 
