@@ -20,8 +20,7 @@ import appConfig, {
   marketFeeAddress,
   consumeMarketOrderFee,
   consumeMarketFixedSwapFee,
-  customProviderUrl,
-  oceanTokenAddress
+  customProviderUrl
 } from '../../app.config.cjs'
 import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
@@ -164,7 +163,7 @@ export async function order(
             marketFeeAddress,
             '0'
           )
-          const buyDtTx = await freTx.wait()
+          await freTx.wait()
         }
 
         return await datatoken.startOrder(
@@ -188,13 +187,14 @@ export async function order(
         const approveAmount = (
           Number(orderPriceAndFees?.price) +
           Number(orderPriceAndFees?.opcFee) +
-          Number(providerFeeHuman)
+          Number(providerFeeHuman) +
+          Number(Number(consumeMarketOrderFee) / 1e18)
         ) // just added more amount to test
           .toString()
+        console.log('[order] TEMPLATE 2 total approve amount:', approveAmount)
         freParams.maxBaseTokenAmount = (
           Number(freParams.maxBaseTokenAmount) +
-          (Number(freParams.maxBaseTokenAmount) +
-            Number(orderPriceAndFees?.opcFee)) +
+          Number(orderPriceAndFees?.opcFee) +
           Number(providerFeeHuman)
         ).toString()
 
@@ -240,6 +240,11 @@ export async function order(
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
         }
+        console.log('buyFromFreAndOrder params:', {
+          datatokenAddress: accessDetails.datatoken.address,
+          orderParams,
+          freParams
+        })
         const buyTx = await datatoken.buyFromFreAndOrder(
           accessDetails.datatoken.address,
           orderParams,
@@ -256,7 +261,7 @@ export async function order(
     case 'free': {
       if (accessDetails.templateId === 1) {
         const dispenser = new Dispenser(config.dispenserAddress, signer)
-        const dispenserTx = await dispenser.dispense(
+        await dispenser.dispense(
           accessDetails.datatoken.address,
           '1',
           accountId
@@ -278,6 +283,9 @@ export async function order(
         const providerFeeHuman = ethers.utils.formatUnits(
           providerFeeWei,
           baseTokenDecimals
+        )
+        const { oceanTokenAddress } = getOceanConfig(
+          asset.credentialSubject?.chainId
         )
         const tx: any = await approve(
           signer,

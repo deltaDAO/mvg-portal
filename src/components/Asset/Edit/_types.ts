@@ -5,8 +5,6 @@ import {
 import { FileInfo } from '@oceanprotocol/lib'
 import { License } from '../../../@types/ddo/License'
 import { CredentialForm } from '@components/@shared/PolicyEditor/types'
-import { State } from 'src/@types/ddo/State'
-
 export interface MetadataEditForm {
   name: string
   description: string

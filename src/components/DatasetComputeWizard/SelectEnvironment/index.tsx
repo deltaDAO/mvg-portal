@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect, useCallback } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { ComputeEnvironment, ProviderInstance } from '@oceanprotocol/lib'
 import StepTitle from '@shared/StepTitle'

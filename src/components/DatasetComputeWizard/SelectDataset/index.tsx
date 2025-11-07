@@ -2,7 +2,6 @@ import { ReactElement, useState, useEffect, useMemo } from 'react'
 import { useFormikContext } from 'formik'
 import { useAccount } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
-import { useCancelToken } from '@hooks/useCancelToken'
 import DatasetSelection from '@shared/FormInput/InputElement/DatasetSelection'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { AssetExtended } from 'src/@types/AssetExtended'
@@ -25,7 +24,6 @@ export default function SelectAlgorithm({
 }): ReactElement {
   const { address: accountId } = useAccount()
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const newCancelToken = useCancelToken()
   const [datasetsForCompute, setDatasetsForCompute] = useState<any[]>([])
   const [isLoadingDatasets, setIsLoadingDatasets] = useState(false)
 

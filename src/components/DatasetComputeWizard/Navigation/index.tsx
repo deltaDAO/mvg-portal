@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react'
+import { ReactElement } from 'react'
 import { StepContent, FormComputeData } from '../_types' // Updated import to include FormComputeData
 import { useProgressBar } from '../../../@hooks/useProgressBar'
 import { useComputeStepCompletion } from '../../../@hooks/useComputeStepCompletion'

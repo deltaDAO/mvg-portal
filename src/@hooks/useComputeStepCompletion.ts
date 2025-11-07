@@ -3,7 +3,6 @@ import { FormComputeData } from '../components/DatasetComputeWizard/_types'
 
 export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
   const { values } = useFormikContext<FormComputeData>()
-
   const hasUserParamsStep = Boolean(values.isUserParameters)
   const totalSteps = hasUserParamsStep ? 7 : 6
 

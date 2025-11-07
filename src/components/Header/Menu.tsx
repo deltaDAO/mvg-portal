@@ -8,8 +8,6 @@ import styles from './Menu.module.css'
 import { useRouter } from 'next/router'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import classNames from 'classnames/bind'
-// import MenuDropdown from '@components/@shared/MenuDropdown'
-// import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
 import { SsiWallet } from '@components/Header/SsiWallet'
@@ -54,7 +52,7 @@ export function MenuLink({ name, link, className }: MenuItem) {
 }
 
 export default function Menu(): ReactElement {
-  const { appConfig, siteContent } = useMarketMetadata()
+  const { appConfig } = useMarketMetadata()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const router = useRouter()

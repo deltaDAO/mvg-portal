@@ -1,6 +1,6 @@
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
-import { ReactElement, useEffect, useState, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import IconDownload from '@images/download2.svg'
 import IconCompute from '@images/compute.svg'
 import content from '../../../../content/publish/form.json'

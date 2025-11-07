@@ -26,7 +26,6 @@ import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
-import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
@@ -198,9 +197,7 @@ export default function Review({
   if (!isBalanceSufficient) {
     errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
   }
-  // if (!isValid) {
-  //   errorMessages.push('Form is not complete!')
-  // }
+
   if (!isAssetNetwork) {
     errorMessages.push('This asset is not available on the selected network.')
   }
@@ -217,19 +214,6 @@ export default function Review({
     )
   }
 
-  // Debug: Check what's actually in allResourceValues
-  // console.log('Review Debug:', {
-  //   selectedEnvId,
-  //   allResourceValues,
-  //   freeResources,
-  //   paidResources,
-  //   currentMode,
-  //   c2dPrice
-  // })
-  const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
-  const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
-  const [activeCredentialAsset, setActiveCredentialAsset] =
-    useState<AssetExtended | null>(null)
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)
     const h = Math.floor((seconds % 86400) / 3600)
@@ -276,10 +260,6 @@ export default function Review({
 
       const details = selectedAlgorithmAsset.accessDetails?.[serviceIndex]
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
-
-      const algoNeedsSsi =
-        requiresSsi(selectedAlgorithmAsset?.credentialSubject?.credentials) ||
-        requiresSsi(algoService?.credentials)
 
       queue.push({
         id: selectedAlgorithmAsset.id,
@@ -549,6 +529,18 @@ export default function Review({
           0,
         MAX_DECIMALS
       )
+    },
+    {
+      name: `MARKETPLACE FEE DATASET`,
+      value: accessDetails?.isOwned
+        ? '0'
+        : new Decimal(formatUnits(consumeMarketOrderFee)).toString()
+    },
+    {
+      name: `MARKETPLACE FEE ALGORITHM`,
+      value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
+        ? '0'
+        : new Decimal(formatUnits(consumeMarketOrderFee)).toString()
     }
   ]
 
@@ -721,15 +713,17 @@ export default function Review({
         : new Decimal(0)
 
     // Now use priceC2D everywhere you'd use providerFees
-    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
-    const feeC2D = new Decimal(consumeMarketOrderFee).mul(priceC2D).div(100)
-    const feeDataset = new Decimal(consumeMarketOrderFee)
-      .mul(priceDataset)
-      .div(100)
+    const feeAlgo = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
+      ?.isOwned
+      ? new Decimal(0)
+      : new Decimal(formatUnits(consumeMarketOrderFee))
+    const feeDataset = accessDetails?.isOwned
+      ? new Decimal(0)
+      : new Decimal(formatUnits(consumeMarketOrderFee))
 
     // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = priceC2D.add(priceAlgo).add(feeC2D).add(feeAlgo)
+      let sum = priceC2D.add(priceAlgo).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
@@ -748,7 +742,7 @@ export default function Review({
       }
     } else {
       if (datasetSymbol === providerFeesSymbol) {
-        const sum = priceC2D.add(priceDataset).add(feeC2D).add(feeDataset)
+        const sum = priceC2D.add(priceDataset).add(feeDataset)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: datasetSymbol
@@ -767,7 +761,7 @@ export default function Review({
           symbol: algorithmSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
       } else {
@@ -779,7 +773,7 @@ export default function Review({
           symbol: datasetSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
         totalPrices.push({

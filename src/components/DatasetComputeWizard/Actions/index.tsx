@@ -30,10 +30,6 @@ export default function Actions(): ReactElement {
     }
   }
 
-  function handleSubmit() {
-    submitForm()
-  }
-
   return (
     <footer className={styles.actions}>
       {values.user.stepCurrent > 1 && (
