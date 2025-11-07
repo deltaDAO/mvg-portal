@@ -20,8 +20,7 @@ import appConfig, {
   marketFeeAddress,
   consumeMarketOrderFee,
   consumeMarketFixedSwapFee,
-  customProviderUrl,
-  oceanTokenAddress
+  customProviderUrl
 } from '../../app.config.cjs'
 import { toast } from 'react-toastify'
 import { Service } from 'src/@types/ddo/Service'
@@ -164,7 +163,7 @@ export async function order(
             marketFeeAddress,
             '0'
           )
-          const buyDtTx = await freTx.wait()
+          await freTx.wait()
         }
 
         return await datatoken.startOrder(
@@ -256,7 +255,7 @@ export async function order(
     case 'free': {
       if (accessDetails.templateId === 1) {
         const dispenser = new Dispenser(config.dispenserAddress, signer)
-        const dispenserTx = await dispenser.dispense(
+        await dispenser.dispense(
           accessDetails.datatoken.address,
           '1',
           accountId
@@ -278,6 +277,9 @@ export async function order(
         const providerFeeHuman = ethers.utils.formatUnits(
           providerFeeWei,
           baseTokenDecimals
+        )
+        const { oceanTokenAddress } = getOceanConfig(
+          asset.credentialSubject?.chainId
         )
         const tx: any = await approve(
           signer,

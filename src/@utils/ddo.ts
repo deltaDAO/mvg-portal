@@ -6,14 +6,7 @@ import {
   FormConsumerParameter,
   FormPublishData
 } from '@components/Publish/_types'
-import {
-  Arweave,
-  FileInfo,
-  Ipfs,
-  LoggerInstance,
-  UrlFile
-} from '@oceanprotocol/lib'
-import { checkJson } from './codemirror'
+import { Arweave, FileInfo, Ipfs, UrlFile } from '@oceanprotocol/lib'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { Option } from 'src/@types/ddo/Option'

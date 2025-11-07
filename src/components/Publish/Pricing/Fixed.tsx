@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-import FormHelp from '@shared/FormInput/Help'
 import Price from './Price'
 import Fees from './Fees'
 import styles from './Fixed.module.css'

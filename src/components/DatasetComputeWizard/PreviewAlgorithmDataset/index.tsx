@@ -57,23 +57,6 @@ const PreviewAlgorithmDataset = ({
     if (selectedAlgorithm) return
 
     if (selectedAlgorithmAsset) {
-      const algorithmServices: AlgorithmService[] =
-        selectedAlgorithmAsset.credentialSubject?.services?.map(
-          (service: Service) => ({
-            id: service.id,
-            name: extractString(service.name) || service.type,
-            title: extractString(service.name) || service.type,
-            serviceDescription:
-              extractString(service.description) ||
-              `Service for ${service.type}`,
-            type: service.type,
-            duration: service.timeout || 0,
-            price: '0',
-            symbol: 'OCEAN',
-            checked: true
-          })
-        ) || []
-
       setSelectedAlgorithm(values.algorithms)
       return
     }
