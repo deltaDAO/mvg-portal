@@ -388,47 +388,55 @@ export default function ComputeWizard({
           escrow.contract.target ?? escrow.contract.address
         ).toString()
 
-        // const currentAllowanceWei = await erc20.allowance(owner, escrowAddress)
-        // if (currentAllowanceWei.lt(amountWei)) {
-        console.log(`Approving ${amountHuman} OCEAN to escrow...`)
-        const approveTx = await erc20.approve(escrowAddress, amountWei)
-        await approveTx.wait()
-        console.log(`Approved ${amountHuman} OCEAN`)
-        // Wait until allowance actually reflected on-chain
-        while (true) {
-          const allowanceNow = await erc20.allowance(owner, escrowAddress)
-          if (allowanceNow.gte(amountWei)) {
-            break
-          }
-          await new Promise((resolve) => setTimeout(resolve, 1000))
-        }
-        // } else {
-        //   console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
-        // }
-
-        const funds = await escrow.getUserFunds(owner, oceanTokenAddress)
-        const depositedWei = ethers.BigNumber.from(funds[0] ?? '0')
-
-        // if (depositedWei.lt(amountWei)) {
-        console.log(`Depositing ${amountHuman} OCEAN to escrow...`, amountHuman)
-        const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
-        await depositTx.wait()
-        console.log(`Deposited ${amountHuman} OCEAN`)
         console.log(
-          'Authorizing compute job...',
-          amountHuman,
-          selectedComputeEnv.consumerAddress
+          '[escrow][dataset-wizard][decision] depositAmountWei=',
+          amountWei.toString()
         )
-        await escrow.authorize(
-          oceanTokenAddress,
-          selectedComputeEnv.consumerAddress,
-          initializedProvider.payment.amount.toString(),
-          selectedResources.jobDuration.toString(),
-          '10'
-        )
-        // } else {
-        //   console.log(`Skip deposit: escrow funds >= ${amountHuman} OCEAN`)
-        // }
+        if (amountWei.eq(0)) {
+          console.log(
+            '[escrow][dataset-wizard][skip] depositAmount==0, skipping escrow approve/deposit/authorize'
+          )
+        }
+
+        if (!amountWei.eq(0)) {
+          // const currentAllowanceWei = await erc20.allowance(owner, escrowAddress)
+          // if (currentAllowanceWei.lt(amountWei)) {
+          console.log(`Approving ${amountHuman} OCEAN to escrow...`)
+          const approveTx = await erc20.approve(escrowAddress, amountWei)
+          await approveTx.wait()
+          console.log(`Approved ${amountHuman} OCEAN`)
+          // Wait until allowance actually reflected on-chain
+          while (true) {
+            const allowanceNow = await erc20.allowance(owner, escrowAddress)
+            if (allowanceNow.gte(amountWei)) {
+              break
+            }
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+          }
+          // } else {
+          //   console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
+          // }
+
+          console.log(
+            `Depositing ${amountHuman} OCEAN to escrow...`,
+            amountHuman
+          )
+          const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
+          await depositTx.wait()
+          console.log(`Deposited ${amountHuman} OCEAN`)
+          console.log(
+            'Authorizing compute job...',
+            amountHuman,
+            selectedComputeEnv.consumerAddress
+          )
+          await escrow.authorize(
+            oceanTokenAddress,
+            selectedComputeEnv.consumerAddress,
+            initializedProvider.payment.amount.toString(),
+            selectedResources.jobDuration.toString(),
+            '10'
+          )
+        }
 
         // await escrow.verifyFundsForEscrowPayment(
         //   oceanTokenAddress,
