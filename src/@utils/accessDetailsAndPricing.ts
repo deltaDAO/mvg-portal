@@ -115,19 +115,7 @@ export async function getOrderPriceAndFees(
     orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount
     orderPriceAndFee.consumeMarketFixedSwapFee = fixed.consumeMarketFeeAmount
   }
-  const price = new Decimal(+accessDetails.price || 0)
-  const consumeMarketFeePercentage =
-    +orderPriceAndFee?.consumeMarketOrderFee || 0
-  const publisherMarketFeePercentage =
-    +orderPriceAndFee?.publisherMarketOrderFee || 0
 
-  // Calculate percentage-based fees
-  const consumeMarketFee = price.mul(consumeMarketFeePercentage).div(100)
-  const publisherMarketFee = price.mul(publisherMarketFeePercentage).div(100)
-
-  // Calculate total
-  const result = price.add(consumeMarketFee).add(publisherMarketFee).toString()
-  orderPriceAndFee.price = result
   return orderPriceAndFee
 }
 
