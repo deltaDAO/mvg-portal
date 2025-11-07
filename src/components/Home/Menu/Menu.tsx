@@ -47,7 +47,7 @@ export function MenuLink({ name, link, className }: MenuItem) {
 }
 
 export default function Menu(): ReactElement {
-  const { appConfig, siteContent } = useMarketMetadata()
+  const { appConfig } = useMarketMetadata()
 
   return (
     <nav className={styles.menu}>

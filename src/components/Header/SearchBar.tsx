@@ -12,7 +12,7 @@ import InputElement from '@shared/FormInput/InputElement'
 import styles from './SearchBar.module.css'
 import { addExistingParamsToUrl } from '../Search/utils'
 import { useRouter } from 'next/router'
-import { animated, useSpring } from 'react-spring'
+import { useSpring } from 'react-spring'
 import { useSearchBarStatus } from '@context/SearchBarStatus'
 // import SearchLogo from '@images/search.svg'
 
@@ -90,34 +90,7 @@ export default function SearchBar({
     await startSearch()
   }
 
-  const springStile = useSpring({
-    transform:
-      isSearchPage || isSearchBarVisible
-        ? 'translateY(0%)'
-        : 'translateY(-150%)',
-    config: { mass: 1, tension: 140, friction: 12 }
-  })
-
   return (
-    // <form className={styles.search} autoComplete={!value ? 'off' : 'on'}>
-    //   <animated.div style={springStile} className={styles.springContainer}>
-    //     <InputElement
-    //       ref={searchBarRef}
-    //       type="search"
-    //       name="search"
-    //       placeholder={placeholder || 'Search...'}
-    //       value={value}
-    //       onChange={handleChange}
-    //       required
-    //       size="small"
-    //       className={styles.input}
-    //       onKeyPress={handleKeyPress}
-    //     />
-    //     <button onClick={handleButtonClick} className={styles.button}>
-    //       <SearchIcon className={styles.searchIcon} />
-    //     </button>
-    //   </animated.div>
-    // </form>
     <form className={styles.searchBlock} autoComplete={!value ? 'off' : 'on'}>
       <div className={styles.searchContainer}>
         <InputElement

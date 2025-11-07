@@ -22,7 +22,6 @@ export default function SsiWalletManager() {
     ssiWalletCache,
     setCachedCredentials,
     clearVerifierSessionCache,
-    sessionToken,
     selectedWallet,
     setSelectedWallet,
     setSelectedKey,

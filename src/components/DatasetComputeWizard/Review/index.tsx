@@ -26,7 +26,6 @@ import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
-import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
@@ -198,9 +197,7 @@ export default function Review({
   if (!isBalanceSufficient) {
     errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
   }
-  // if (!isValid) {
-  //   errorMessages.push('Form is not complete!')
-  // }
+
   if (!isAssetNetwork) {
     errorMessages.push('This asset is not available on the selected network.')
   }
@@ -217,19 +214,6 @@ export default function Review({
     )
   }
 
-  // Debug: Check what's actually in allResourceValues
-  // console.log('Review Debug:', {
-  //   selectedEnvId,
-  //   allResourceValues,
-  //   freeResources,
-  //   paidResources,
-  //   currentMode,
-  //   c2dPrice
-  // })
-  const [allDatasetServices, setAllDatasetServices] = useState<Service[]>([])
-  const [datasetVerificationIndex, setDatasetVerificationIndex] = useState(0)
-  const [activeCredentialAsset, setActiveCredentialAsset] =
-    useState<AssetExtended | null>(null)
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)
     const h = Math.floor((seconds % 86400) / 3600)
@@ -276,10 +260,6 @@ export default function Review({
 
       const details = selectedAlgorithmAsset.accessDetails?.[serviceIndex]
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
-
-      const algoNeedsSsi =
-        requiresSsi(selectedAlgorithmAsset?.credentialSubject?.credentials) ||
-        requiresSsi(algoService?.credentials)
 
       queue.push({
         id: selectedAlgorithmAsset.id,

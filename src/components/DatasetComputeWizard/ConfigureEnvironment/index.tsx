@@ -540,8 +540,6 @@ export default function ConfigureEnvironment({
   const chainId = chain?.id?.toString() || '11155111'
   const fee = env.fees?.[chainId]?.[0]
   const freeAvailable = !!env.free
-  const tokenAddress = fee?.feeToken
-  const tokenSymbol = symbolMap[tokenAddress] || '...'
 
   const updateResource = (
     type: 'cpu' | 'ram' | 'disk' | 'jobDuration',
@@ -706,9 +704,6 @@ export default function ConfigureEnvironment({
             className={`${styles.input} ${styles.inputLarge}`}
             placeholder="0"
           />
-          {/* {mode === 'paid' && (
-            <span className={styles.unit}>{tokenSymbol}</span>
-          )} */}
           <div className={styles.priceInfo}>
             <span>
               Calculated based on the unit price for each resource and the Job
