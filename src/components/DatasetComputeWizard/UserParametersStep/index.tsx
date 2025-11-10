@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useFormikContext } from 'formik'
 import styles from './index.module.css'
+import Tooltip from '@shared/atoms/Tooltip'
+import { truncateDid } from '@utils/string'
 
 interface UserParameter {
   name?: string
@@ -203,7 +205,7 @@ const PreviewAlgorithmParameters = () => {
             <span className={styles.separator}> | </span>
             <span className={styles.serviceName}>
               {entry.did
-                ? entry.did
+                ? truncateDid(entry.did)
                 : values.algorithms.services?.[0].name ?? 'Algorithm'}
             </span>
           </h2>
@@ -215,12 +217,7 @@ const PreviewAlgorithmParameters = () => {
                 {param.required && (
                   <span className={styles.requiredMark}>*</span>
                 )}
-                <span
-                  className={styles.infoIcon}
-                  title={param.description ?? 'No description available'}
-                >
-                  ℹ️
-                </span>
+                {param.description && <Tooltip content={param.description} />}
               </label>
               {renderInputField(param, (v) =>
                 handleParamChange(entry.did, entry.serviceId, i, v)

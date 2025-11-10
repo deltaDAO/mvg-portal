@@ -77,6 +77,15 @@
   margin: 0 6px;
 }
 
+.paramRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
+  gap: 10px;
+  width: 100%;
+}
+
 .paramGroup {
   display: flex;
   flex-direction: column;
