@@ -186,7 +186,7 @@ export default function Steps({
       )
     case 4:
       if (hasUserParamsStep) {
-        return <UserParametersStep />
+        return <UserParametersStep asset={asset} service={service} />
       } else {
         return <SelectEnvironment computeEnvs={computeEnvs} />
       }

@@ -190,8 +190,12 @@ const PreviewUserParameters = ({
           .map((entry) => (
             <div key={entry.did + entry.serviceId} className={styles.card}>
               <h2 className={styles.cardHeader}>
+                <span className={styles.datasetName}>
+                  {asset?.credentialSubject?.metadata?.name ?? 'Algorithm'}
+                </span>
+                <span className={styles.separator}> | </span>
                 <span className={styles.serviceName}>
-                  {service?.name ?? 'Algorithm'}
+                  {service?.name ?? 'Service'}
                 </span>
               </h2>
               {entry.userParameters.map((param: UserParameter, i: number) => (
@@ -236,7 +240,9 @@ const PreviewUserParameters = ({
               <h2 className={styles.cardHeader}>
                 <span className={styles.datasetName}>{dataset.name}</span>
                 <span className={styles.separator}> | </span>
-                <span className={styles.serviceName}>{srv.serviceName}</span>
+                <span className={styles.serviceName}>
+                  {srv.serviceName ?? 'Service'}
+                </span>
               </h2>
 
               {params.map((param: UserParameter, i: number) => (

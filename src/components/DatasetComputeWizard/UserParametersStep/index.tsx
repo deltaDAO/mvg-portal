@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 import { useFormikContext } from 'formik'
 import styles from './index.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
-import { truncateDid } from '@utils/string'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from 'src/@types/ddo/Service'
 
 interface UserParameter {
   name?: string
@@ -40,18 +41,32 @@ interface FormValues {
   isUserParameters?: boolean
   userUpdatedParameters?: ServiceParams[]
   dataServiceParams?: ServiceParams[]
+  datasets?: Array<{
+    id: string
+    name: string
+    services: Array<{
+      id: string
+      name: string
+    }>
+  }>
 }
 
-const PreviewAlgorithmParameters = () => {
+const PreviewAlgorithmParameters = ({
+  asset,
+  service
+}: {
+  asset?: AssetExtended
+  service?: Service
+}) => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [localParams, setLocalParams] = useState<ServiceParams[]>([])
 
   useEffect(() => {
     if (!values.algorithms) return
 
-    const service = values.algorithms.services?.[0]
+    const algoService = values.algorithms.services?.[0]
 
-    if (!service) {
+    if (!algoService) {
       setLocalParams([])
       setFieldValue('userUpdatedParameters', [])
       setFieldValue('isUserParameters', false)
@@ -61,10 +76,10 @@ const PreviewAlgorithmParameters = () => {
     const existingParams = values.userUpdatedParameters ?? []
 
     const algoParams: ServiceParams = existingParams.find(
-      (p) => p.serviceId === service.id && !p.did
+      (p) => p.serviceId === algoService.id && !p.did
     ) || {
-      serviceId: service.id,
-      userParameters: (service.userParameters ?? []).map((p) => ({
+      serviceId: algoService.id,
+      userParameters: (algoService.userParameters ?? []).map((p) => ({
         ...p,
         value: p.value ?? p.default ?? ''
       }))
@@ -100,7 +115,7 @@ const PreviewAlgorithmParameters = () => {
 
     setFieldValue(
       'isUserParameters',
-      !!(service.userParameters?.length || datasetParams.length)
+      !!(algoService.userParameters?.length || datasetParams.length)
     )
   }, [
     values.algorithms,
@@ -196,36 +211,64 @@ const PreviewAlgorithmParameters = () => {
     <div className={styles.container}>
       <h1 className={styles.title}>Edit User Parameters</h1>
 
-      {localParams.map((entry) => (
-        <div key={entry.serviceId + (entry.did ?? '')} className={styles.card}>
-          <h2 className={styles.cardHeader}>
-            <span className={styles.datasetName}>
-              {entry.did ? 'Dataset' : 'Algorithm'}
-            </span>
-            <span className={styles.separator}> | </span>
-            <span className={styles.serviceName}>
-              {entry.did
-                ? truncateDid(entry.did)
-                : values.algorithms.services?.[0].name ?? 'Algorithm'}
-            </span>
-          </h2>
+      {localParams.map((entry) => {
+        const isMainDataset = entry.did === asset?.id
+        const dataset = entry.did
+          ? values.datasets?.find((d) => d.id === entry.did)
+          : null
 
-          {entry.userParameters.map((param, i) => (
-            <div key={i} className={styles.paramRow}>
-              <label className={styles.paramLabel}>
-                {param.label}
-                {param.required && (
-                  <span className={styles.requiredMark}>*</span>
-                )}
-                {param.description && <Tooltip content={param.description} />}
-              </label>
-              {renderInputField(param, (v) =>
-                handleParamChange(entry.did, entry.serviceId, i, v)
+        const datasetName = isMainDataset
+          ? asset?.credentialSubject?.metadata?.name
+          : dataset?.name
+
+        const serviceName = isMainDataset
+          ? service?.name
+          : dataset?.services?.find((s) => s.id === entry.serviceId)?.name
+
+        return (
+          <div
+            key={entry.serviceId + (entry.did ?? '')}
+            className={styles.card}
+          >
+            <h2 className={styles.cardHeader}>
+              {entry.did ? (
+                <>
+                  <span className={styles.datasetName}>{datasetName}</span>
+                  <span className={styles.separator}> | </span>
+                  <span className={styles.serviceName}>
+                    {serviceName ?? 'Service'}
+                  </span>
+                </>
+              ) : (
+                <>
+                  <span className={styles.datasetName}>
+                    {values.algorithms?.name || 'Algorithm'}
+                  </span>
+                  <span className={styles.separator}> | </span>
+                  <span className={styles.serviceName}>
+                    {values.algorithms?.services?.[0]?.name ?? 'Service'}
+                  </span>
+                </>
               )}
-            </div>
-          ))}
-        </div>
-      ))}
+            </h2>
+
+            {entry.userParameters.map((param, i) => (
+              <div key={i} className={styles.paramRow}>
+                <label className={styles.paramLabel}>
+                  {param.label}
+                  {param.required && (
+                    <span className={styles.requiredMark}>*</span>
+                  )}
+                  {param.description && <Tooltip content={param.description} />}
+                </label>
+                {renderInputField(param, (v) =>
+                  handleParamChange(entry.did, entry.serviceId, i, v)
+                )}
+              </div>
+            ))}
+          </div>
+        )
+      })}
     </div>
   )
 }
