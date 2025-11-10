@@ -163,7 +163,7 @@ export default function Steps({
         })
       )
 
-      setFieldValue('algoServiceParams', [
+      setFieldValue('algorithmServiceParams', [
         {
           did: asset.id,
           serviceId: service.id,

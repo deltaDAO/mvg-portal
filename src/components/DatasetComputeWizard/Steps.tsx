@@ -158,7 +158,7 @@ export default function Steps({
         })
       )
 
-      setFieldValue('dataServiceParams', [
+      setFieldValue('datasetServiceParams', [
         {
           did: asset.id,
           serviceId: service.id,

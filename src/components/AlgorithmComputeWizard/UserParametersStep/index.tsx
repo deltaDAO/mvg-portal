@@ -13,7 +13,7 @@ interface FormValues {
   dataset?: string[]
   isUserParameters?: boolean
   userUpdatedParameters?: any[]
-  algoServiceParams?: any[]
+  algorithmServiceParams?: any[]
 }
 
 const PreviewUserParameters = ({
@@ -48,13 +48,14 @@ const PreviewUserParameters = ({
       d.services.some((s) => s.userParameters && s.userParameters.length > 0)
     )
     const isAlgoServiceParams =
-      values.algoServiceParams && values.algoServiceParams.length > 0
+      values.algorithmServiceParams && values.algorithmServiceParams.length > 0
 
     setFieldValue('isUserParameters', anyUserParameters || isAlgoServiceParams)
-  }, [values.datasets, values.algoServiceParams, setFieldValue])
+  }, [values.datasets, values.algorithmServiceParams, setFieldValue])
 
   useEffect(() => {
-    if (!datasetsWithParams.length && !values.algoServiceParams?.length) return
+    if (!datasetsWithParams.length && !values.algorithmServiceParams?.length)
+      return
 
     const existingParams = values.userUpdatedParameters ?? []
 
@@ -78,7 +79,7 @@ const PreviewUserParameters = ({
     )
 
     const algoParams =
-      values.algoServiceParams?.map((entry) => {
+      values.algorithmServiceParams?.map((entry) => {
         const existing = existingParams.find(
           (p) => p.did === entry.did && p.serviceId === entry.serviceId
         )
@@ -98,7 +99,7 @@ const PreviewUserParameters = ({
 
     setLocalParams(combined)
     setFieldValue('userUpdatedParameters', combined)
-  }, [datasetsWithParams, values.algoServiceParams, setFieldValue])
+  }, [datasetsWithParams, values.algorithmServiceParams, setFieldValue])
 
   // 3️⃣ Handle input change
   const handleParamChange = (
@@ -180,10 +181,10 @@ const PreviewUserParameters = ({
     <div className={styles.container}>
       <h1 className={styles.title}>User Parameters</h1>
 
-      {values.algoServiceParams?.length > 0 &&
+      {values.algorithmServiceParams?.length > 0 &&
         localParams
           .filter((p) =>
-            values.algoServiceParams.some(
+            values.algorithmServiceParams.some(
               (a) => a.did === p.did && a.serviceId === p.serviceId
             )
           )
