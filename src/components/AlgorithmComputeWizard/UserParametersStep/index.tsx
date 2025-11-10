@@ -6,6 +6,7 @@ import styles from './index.module.css'
 import { DatasetItem, UserParameter } from '../types/DatasetSelection'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { Service } from 'src/@types/ddo/Service'
+import Tooltip from '@shared/atoms/Tooltip'
 
 interface FormValues {
   datasets?: DatasetItem[]
@@ -189,11 +190,8 @@ const PreviewUserParameters = ({
           .map((entry) => (
             <div key={entry.did + entry.serviceId} className={styles.card}>
               <h2 className={styles.cardHeader}>
-                <span className={styles.datasetName}>Algorithm:</span>
                 <span className={styles.serviceName}>
-                  {asset?.credentialSubject?.metadata?.name ??
-                    asset?.id ??
-                    'Algorithm'}
+                  {service?.name ?? 'Algorithm'}
                 </span>
               </h2>
               {entry.userParameters.map((param: UserParameter, i: number) => (
@@ -203,12 +201,9 @@ const PreviewUserParameters = ({
                     {param.required && (
                       <span className={styles.requiredMark}>*</span>
                     )}
-                    <span
-                      className={styles.infoIcon}
-                      title={param.description ?? 'No description available'}
-                    >
-                      ℹ️
-                    </span>
+                    {param.description && (
+                      <Tooltip content={param.description} />
+                    )}
                   </label>
                   {renderInputField(param, (v) =>
                     handleParamChange(entry.did, entry.serviceId, i, v)
@@ -251,12 +246,9 @@ const PreviewUserParameters = ({
                     {param.required && (
                       <span className={styles.requiredMark}>*</span>
                     )}
-                    <span
-                      className={styles.infoIcon}
-                      title={param.description ?? 'No description available'}
-                    >
-                      ℹ️
-                    </span>
+                    {param.description && (
+                      <Tooltip content={param.description} />
+                    )}
                   </label>
                   {renderInputField(param, (v) =>
                     handleParamChange(dataset.did, srv.serviceId, i, v)
