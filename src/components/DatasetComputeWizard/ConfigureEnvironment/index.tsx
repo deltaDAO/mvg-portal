@@ -187,16 +187,10 @@ export default function ConfigureEnvironment({
   const { data: signer } = useSigner()
 
   const [mode, setMode] = useState<'free' | 'paid'>(() => {
-    if (values.computeEnv && allResourceValues) {
-      const env = values.computeEnv
-      const envId = typeof env === 'string' ? env : env.id
-      const paidValues = allResourceValues[`${envId}_paid`]
-      const freeValues = allResourceValues[`${envId}_free`]
-
-      if (paidValues?.mode === 'paid') return 'paid'
-      if (freeValues?.mode === 'free') return 'free'
-    }
-    return values.mode || (values.computeEnv?.free ? 'free' : 'paid')
+    return (
+      (values.mode as 'free' | 'paid') ||
+      (values.computeEnv?.free ? 'free' : 'paid')
+    )
   })
 
   useEffect(() => {

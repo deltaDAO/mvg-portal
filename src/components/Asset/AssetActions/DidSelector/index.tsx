@@ -104,6 +104,7 @@ export function DidSelector(props: DidSelectorProps): ReactElement {
             size="small"
             className={`${styles.acceptButton}`}
             onClick={handleAcceptSelection}
+            disabled={!selectedDid}
           >
             Confirm
           </Button>
