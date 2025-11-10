@@ -1091,13 +1091,28 @@ export default function ComputeWizard({
         // Initialize derived variables
         const hasUserParamsStep = Boolean(values.isUserParameters)
         const computeStep = hasUserParamsStep ? 5 : 4
+        const hasMissingRequiredDefaults =
+          Array.isArray(values.userUpdatedParameters) &&
+          values.userUpdatedParameters.some((entry) =>
+            entry.userParameters?.some(
+              (param) =>
+                param.required &&
+                (param.default === null ||
+                  param.default === undefined ||
+                  param.default === '' ||
+                  param.value === null ||
+                  param.value === undefined ||
+                  param.value === '')
+            )
+          )
 
         const isContinueDisabled =
           (formikContext.values.user.stepCurrent === 1 &&
             !formikContext.values.algorithm) ||
           (values.user.stepCurrent === computeStep && !values.computeEnv) ||
           (formikContext.values.user.stepCurrent === 2 &&
-            !formikContext.values.serviceSelected)
+            !formikContext.values.serviceSelected) ||
+          (values.user.stepCurrent === 4 && hasMissingRequiredDefaults)
 
         return (
           <div className={styles.containerOuter}>

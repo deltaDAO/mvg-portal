@@ -17,6 +17,7 @@ import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/Credenti
 import { useFormikContext } from 'formik'
 import { Signer } from 'ethers'
 import UserParametersStep from './UserParametersStep'
+import { UserParameter } from './types/DatasetSelection'
 
 export default function Steps({
   asset,
@@ -140,6 +141,32 @@ export default function Steps({
 
   const currentStep = values?.user?.stepCurrent ?? 1
   const hasUserParamsStep = Boolean(values.isUserParameters)
+  useEffect(() => {
+    if (!asset || !service) return
+
+    if (service.consumerParameters?.length) {
+      const algoParams = service.consumerParameters.map(
+        (p: any): UserParameter => ({
+          name: p.name,
+          label: p.label ?? p.name,
+          description: p.description,
+          type: p.type ?? 'text',
+          default: p.default,
+          required: p.required ?? false,
+          options: p.options ?? [],
+          value: p.default ?? ''
+        })
+      )
+
+      setFieldValue('dataServiceParams', [
+        {
+          did: asset.id,
+          serviceId: service.id,
+          userParameters: algoParams
+        }
+      ])
+    }
+  }, [asset, service, setFieldValue])
 
   switch (currentStep) {
     case 1:

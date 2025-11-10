@@ -32,8 +32,8 @@ export interface FormComputeData {
   step4Completed: boolean
   step5Completed?: boolean
   step6Completed?: boolean
-  dataServiceParams?: UserCustomParameters
-  algoServiceParams?: UserCustomParameters
+  dataServiceParams?: any
+  algoServiceParams?: any
   algoParams?: UserCustomParameters
   datasets?: Array<{
     id: string
