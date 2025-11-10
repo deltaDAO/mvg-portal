@@ -102,7 +102,7 @@ export function PublishConsumerParameters(props: InputProps): ReactElement {
             <div className={styles.formColumn}>
               <Field
                 name={`${field.name}[${safeCurrentIndex}].name`}
-                label="Policy Name"
+                label="Parameter Name"
                 required
                 component={Input}
                 className={styles.fullWidthInput}
