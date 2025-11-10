@@ -1123,13 +1123,28 @@ export default function ComputeWizard({
         const { values } = formikContext
         const hasUserParamsStep = Boolean(values.isUserParameters)
         const computeStep = hasUserParamsStep ? 5 : 4
+        const hasMissingRequiredDefaults =
+          Array.isArray(values.userUpdatedParameters) &&
+          values.userUpdatedParameters.some((entry) =>
+            entry.userParameters?.some(
+              (param) =>
+                param.required &&
+                (param.default === null ||
+                  param.default === undefined ||
+                  param.default === '' ||
+                  param.value === null ||
+                  param.value === undefined ||
+                  param.value === '')
+            )
+          )
 
         const isContinueDisabled =
           (values.user.stepCurrent === 1 &&
             !(values.datasets?.length > 0 || values.withoutDataset)) ||
           (values.user.stepCurrent === 2 &&
             !(values.serviceSelected || values.withoutDataset)) ||
-          (values.user.stepCurrent === computeStep && !values.computeEnv)
+          (values.user.stepCurrent === computeStep && !values.computeEnv) ||
+          (values.user.stepCurrent === 4 && hasMissingRequiredDefaults)
         return (
           <div className={styles.containerOuter}>
             <Title asset={asset} service={service} />
