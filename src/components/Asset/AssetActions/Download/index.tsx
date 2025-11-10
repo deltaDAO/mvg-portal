@@ -299,12 +299,10 @@ export default function Download({
           return
         }
       }
-
       const dataServiceParams = parseConsumerParameterValues(
-        values?.dataServiceParams,
+        values?.datasetParams_0 || values.dataServiceParams,
         service.consumerParameters
       )
-
       await handleOrderOrDownload(dataServiceParams)
     } catch (error) {
       toast.error(error.message)
