@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { useFormikContext } from 'formik'
 import styles from './index.module.css'
-import Tooltip from '@shared/atoms/Tooltip'
 
 interface UserParameter {
   name?: string
@@ -12,6 +11,14 @@ interface UserParameter {
   type?: string
   default?: string
   required?: boolean
+  value?: string
+  options?: Record<string, string>[]
+}
+
+interface ServiceParams {
+  did?: string
+  serviceId: string
+  userParameters: UserParameter[]
 }
 
 interface AlgorithmService {
@@ -28,75 +35,150 @@ interface Algorithm {
 
 interface FormValues {
   algorithms?: Algorithm
-  userUpdatedParameters?: any[]
+  isUserParameters?: boolean
+  userUpdatedParameters?: ServiceParams[]
+  dataServiceParams?: ServiceParams[]
 }
-
-const PARAMETER_FIELDS = [
-  {
-    key: 'name',
-    help: 'The parameter identifier/name used internally'
-  },
-  { key: 'label', help: 'The display label shown to users' },
-  {
-    key: 'description',
-    help: 'Help text explaining what this parameter does'
-  },
-  {
-    key: 'type',
-    help: 'The data type: text, number, boolean, or select'
-  },
-  {
-    key: 'default',
-    help: 'The default value for this parameter'
-  }
-] as const
 
 const PreviewAlgorithmParameters = () => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const [localParams, setLocalParams] = useState<any[]>([])
+  const [localParams, setLocalParams] = useState<ServiceParams[]>([])
 
   useEffect(() => {
     if (!values.algorithms) return
 
     const service = values.algorithms.services?.[0]
-    if (!service) return
 
-    // Initialize local parameters
-    if (values.userUpdatedParameters?.length) {
-      setLocalParams(values.userUpdatedParameters)
-    } else {
-      const initial = [
-        {
-          algorithmId: values.algorithms.id,
-          serviceId: service.id,
-          userParameters: service.userParameters.map((p) => ({ ...p }))
-        }
-      ]
-      setLocalParams(initial)
-      setFieldValue('userUpdatedParameters', initial)
+    if (!service) {
+      setLocalParams([])
+      setFieldValue('userUpdatedParameters', [])
+      setFieldValue('isUserParameters', false)
+      return
     }
 
-    // Set flag if there are parameters
+    const existingParams = values.userUpdatedParameters ?? []
+
+    const algoParams: ServiceParams = existingParams.find(
+      (p) => p.serviceId === service.id && !p.did
+    ) || {
+      serviceId: service.id,
+      userParameters: (service.userParameters ?? []).map((p) => ({
+        ...p,
+        value: p.value ?? p.default ?? ''
+      }))
+    }
+
+    const datasetParams: ServiceParams[] =
+      values.dataServiceParams?.map((entry) => {
+        const existing = existingParams.find(
+          (p) => p.did === entry.did && p.serviceId === entry.serviceId
+        )
+        if (existing) return existing
+
+        return {
+          ...entry,
+          userParameters: entry.userParameters.map((p) => ({
+            ...p,
+            value: p.value ?? p.default ?? ''
+          }))
+        }
+      }) ?? []
+
+    const combined = [algoParams, ...datasetParams]
+
+    const isChanged =
+      JSON.stringify(existingParams) !== JSON.stringify(combined)
+
+    if (isChanged) {
+      setLocalParams(combined)
+      setFieldValue('userUpdatedParameters', combined)
+    } else {
+      setLocalParams(existingParams)
+    }
+
     setFieldValue(
       'isUserParameters',
-      !!service.userParameters && service.userParameters.length > 0
+      !!(service.userParameters?.length || datasetParams.length)
     )
-  }, [values.algorithms, setFieldValue, values.userUpdatedParameters])
+  }, [
+    values.algorithms,
+    values.dataServiceParams,
+    values.userUpdatedParameters?.length,
+    setFieldValue
+  ])
 
   const handleParamChange = (
-    paramIndex: number,
-    field: keyof UserParameter,
-    value: string | boolean
+    did: string | undefined,
+    serviceId: string,
+    index: number,
+    value: string
   ) => {
     setLocalParams((prev) => {
-      const updated = prev.map((item) => {
-        const newParams = [...item.userParameters]
-        newParams[paramIndex] = { ...newParams[paramIndex], [field]: value }
-        return { ...item, userParameters: newParams }
+      const updated = prev.map((entry) => {
+        if (entry.serviceId === serviceId && entry.did === did) {
+          const userParameters = [...entry.userParameters]
+          userParameters[index] = { ...userParameters[index], value }
+          return { ...entry, userParameters }
+        }
+        return entry
       })
       setFieldValue('userUpdatedParameters', updated)
       return updated
     })
+  }
+
+  const renderInputField = (
+    param: UserParameter,
+    onChange: (v: string) => void
+  ) => {
+    switch (param.type) {
+      case 'number':
+        return (
+          <input
+            type="number"
+            className={styles.paramInput}
+            value={param.value ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        )
+      case 'boolean':
+        return (
+          <select
+            className={styles.paramInput}
+            value={param.value ?? 'true'}
+            onChange={(e) => onChange(e.target.value)}
+          >
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+        )
+      case 'select':
+        return (
+          <select
+            className={styles.paramInput}
+            value={param.value ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+          >
+            {param.options?.map((opt) => {
+              const key = Object.keys(opt)[0]
+              return (
+                <option key={key} value={key}>
+                  {opt[key]}
+                </option>
+              )
+            })}
+          </select>
+        )
+      default:
+        return (
+          <input
+            type="text"
+            className={styles.paramInput}
+            value={param.value ?? ''}
+            onChange={(e) => onChange(e.target.value)}
+          />
+        )
+    }
   }
 
   if (!values.algorithms) {
@@ -108,64 +190,45 @@ const PreviewAlgorithmParameters = () => {
     )
   }
 
-  const service = values.algorithms.services?.[0]
-  const updatedService = localParams[0] ?? {
-    userParameters: service.userParameters
-  }
-
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>User Parameters</h1>
+      <h1 className={styles.title}>Edit User Parameters</h1>
 
-      <div className={styles.card}>
-        <h2 className={styles.cardHeader}>
-          <span className={styles.datasetName}>{values.algorithms.name}</span>
-          <span className={styles.separator}> | </span>
-          <span className={styles.serviceName}>{service.name}</span>
-        </h2>
+      {localParams.map((entry) => (
+        <div key={entry.serviceId + (entry.did ?? '')} className={styles.card}>
+          <h2 className={styles.cardHeader}>
+            <span className={styles.datasetName}>
+              {entry.did ? 'Dataset' : 'Algorithm'}
+            </span>
+            <span className={styles.separator}> | </span>
+            <span className={styles.serviceName}>
+              {entry.did
+                ? entry.did
+                : values.algorithms.services?.[0].name ?? 'Algorithm'}
+            </span>
+          </h2>
 
-        {updatedService.userParameters.map(
-          (param: UserParameter, index: number) => (
-            <div key={index} className={styles.paramGroup}>
-              <h3 className={styles.paramTitle}>Parameter {index + 1}</h3>
-              <div className={styles.paramFields}>
-                {PARAMETER_FIELDS.map(({ key, help }) => (
-                  <div key={key} className={styles.paramFieldContainer}>
-                    <label className={styles.paramLabel}>
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                      <Tooltip content={help} />
-                    </label>
-                    <input
-                      className={styles.paramInput}
-                      type="text"
-                      value={(param as any)[key] ?? ''}
-                      onChange={(e) =>
-                        handleParamChange(
-                          index,
-                          key as keyof UserParameter,
-                          e.target.value
-                        )
-                      }
-                    />
-                  </div>
-                ))}
-
-                <div className={styles.paramFieldContainer}>
-                  <label className={styles.paramLabel}>Required</label>
-                  <input
-                    type="checkbox"
-                    className={styles.paramInput}
-                    checked={param.required ?? false}
-                    onChange={(e) =>
-                      handleParamChange(index, 'required', e.target.checked)
-                    }
-                  />
-                </div>
-              </div>
+          {entry.userParameters.map((param, i) => (
+            <div key={i} className={styles.paramRow}>
+              <label className={styles.paramLabel}>
+                {param.label}
+                {param.required && (
+                  <span className={styles.requiredMark}>*</span>
+                )}
+                <span
+                  className={styles.infoIcon}
+                  title={param.description ?? 'No description available'}
+                >
+                  ℹ️
+                </span>
+              </label>
+              {renderInputField(param, (v) =>
+                handleParamChange(entry.did, entry.serviceId, i, v)
+              )}
             </div>
-          )
-        )}
-      </div>
+          ))}
+        </div>
+      ))}
     </div>
   )
 }

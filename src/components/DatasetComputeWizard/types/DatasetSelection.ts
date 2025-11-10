@@ -5,6 +5,8 @@ export interface UserParameter {
   type: string
   default?: string
   required?: boolean
+  value?: string
+  options?: string[] | Record<string, string>[]
 }
 
 export interface DatasetService {
