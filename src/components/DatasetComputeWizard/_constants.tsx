@@ -147,6 +147,7 @@ export const initialValues: FormComputeData = {
   step6Completed: false,
   // Added fields required by onSubmit
   dataServiceParams: null,
+  datasetServiceParams: null,
   algoServiceParams: null,
   algoParams: {},
   // These will be populated dynamically

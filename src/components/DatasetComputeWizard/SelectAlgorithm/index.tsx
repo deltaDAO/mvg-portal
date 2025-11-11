@@ -17,7 +17,7 @@ export default function SelectAlgorithm({
   const { address: accountId } = useAccount()
   const { values } = useFormikContext<FormComputeData>()
   console.log('values!!', JSON.stringify(values, null, 2))
-  console.log('values!!', JSON.stringify(values.dataServiceParams, null, 2))
+  console.log('values!!', JSON.stringify(values.datasetServiceParams, null, 2))
 
   return (
     <>

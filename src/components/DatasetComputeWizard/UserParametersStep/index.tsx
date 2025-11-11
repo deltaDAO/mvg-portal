@@ -40,7 +40,7 @@ interface FormValues {
   algorithms?: Algorithm
   isUserParameters?: boolean
   userUpdatedParameters?: ServiceParams[]
-  dataServiceParams?: ServiceParams[]
+  datasetServiceParams?: ServiceParams[]
   datasets?: Array<{
     id: string
     name: string
@@ -86,7 +86,7 @@ const PreviewAlgorithmParameters = ({
     }
 
     const datasetParams: ServiceParams[] =
-      values.dataServiceParams?.map((entry) => {
+      values.datasetServiceParams?.map((entry) => {
         const existing = existingParams.find(
           (p) => p.did === entry.did && p.serviceId === entry.serviceId
         )
@@ -119,7 +119,7 @@ const PreviewAlgorithmParameters = ({
     )
   }, [
     values.algorithms,
-    values.dataServiceParams,
+    values.datasetServiceParams,
     values.userUpdatedParameters?.length,
     setFieldValue
   ])

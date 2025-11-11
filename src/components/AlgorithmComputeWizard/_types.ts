@@ -33,6 +33,8 @@ export interface FormComputeData {
   step4Completed: boolean
   dataServiceParams?: any
   algoServiceParams?: any
+  algorithmServiceParams?: any
+  datasetServiceParams?: any
   algoParams?: UserCustomParameters
   datasets?: Array<{
     id: string

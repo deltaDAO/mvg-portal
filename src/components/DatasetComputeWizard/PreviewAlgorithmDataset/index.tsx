@@ -8,7 +8,7 @@ import StepTitle from '@shared/StepTitle'
 const PreviewAlgorithmDataset = ({ selectedAlgorithmAsset }: any) => {
   const { values, setFieldValue } = useFormikContext<any>()
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<any>(null)
-  console.log('values!!', JSON.stringify(values.dataServiceParams, null, 2))
+  console.log('values!!', JSON.stringify(values.datasetServiceParams, null, 2))
   console.log('algo values!!', JSON.stringify(values.algorithms, null, 2))
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const PreviewAlgorithmDataset = ({ selectedAlgorithmAsset }: any) => {
       const service = values.algorithms.services?.[0]
       if (
         (service?.userParameters && service.userParameters.length > 0) ||
-        (values.dataServiceParams && values.dataServiceParams.length > 0)
+        (values.datasetServiceParams && values.datasetServiceParams.length > 0)
       ) {
         setFieldValue('isUserParameters', true)
       } else {

@@ -11,7 +11,7 @@ interface FormValues {
   dataset?: string[]
   isUserParameters?: boolean
   userUpdatedParameters?: any[]
-  algoServiceParams?: any
+  algorithmServiceParams?: any
 }
 
 const PreviewSelectedServices = ({ service }: { service: Service }) => {
@@ -60,7 +60,7 @@ const PreviewSelectedServices = ({ service }: { service: Service }) => {
     const anyUserParameters = preview.some((d) =>
       d.services.some((s) => s.userParameters && s.userParameters.length > 0)
     )
-    const isAlgoServiceParams = !!values.algoServiceParams
+    const isAlgoServiceParams = !!values.algorithmServiceParams
 
     const setUserParameterTrue = isAlgoServiceParams || anyUserParameters
 
