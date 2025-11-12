@@ -382,15 +382,6 @@ export default function Compute({
         } else {
           console.log(`Skip deposit: escrow funds >= ${amountHuman} OCEAN`)
         }
-
-        // await escrow.verifyFundsForEscrowPayment(
-        //   oceanTokenAddress,
-        //   selectedComputeEnv.consumerAddress,
-        //   await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
-        //   initializedProvider.payment.amount.toString(),
-        //   initializedProvider.payment.minLockSeconds.toString(),
-        //   '10'
-        // )
       }
 
       setComputeStatusText(

@@ -17,7 +17,6 @@ interface FormValues {
 const PreviewSelectedServices = ({ service }: { service: Service }) => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [selectedDatasets, setSelectedDatasets] = useState<DatasetItem[]>([])
-  console.log('PreviewSelectedServices values ', values)
   useEffect(() => {
     if (!values.datasets) return
 

@@ -802,7 +802,6 @@ export default function Review({
     const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
     const c2dPrice =
       values?.mode === 'paid' ? paidResources?.price : freeResources?.price
-    console.log('🚀 ~ Review ~ values?.mode :', values?.mode)
     const c2dSymbol = providerFeesSymbol
     // Only add if price > 0 and not present in totalPrices already (optional check)
     if (

@@ -70,8 +70,6 @@ const ServiceSelector = () => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [datasets, setDatasets] = useState<DatasetItem[]>([])
 
-  console.log('selected datasets! ', JSON.stringify(values.datasets, null, 2))
-
   useEffect(() => {
     if (!values.datasets || datasets.length > 0) return
 

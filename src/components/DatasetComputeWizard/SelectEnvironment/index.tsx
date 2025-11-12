@@ -16,7 +16,6 @@ export default function SelectEnvironment({
 }: SelectEnvironmentProps): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const [selectedEnvId, setSelectedEnvId] = useState<string>()
-  console.log('values! ', values)
   // Initialize selected environment from form values
   useEffect(() => {
     if (values.computeEnv?.id) {

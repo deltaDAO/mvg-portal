@@ -341,9 +341,6 @@ export default function ComputeWizard({
         })
       }
 
-      console.log('algoParams:', JSON.stringify(algoParams, null, 2))
-      console.log('datasetParams:', JSON.stringify(datasetParams, null, 2))
-
       const initializedProvider = await initializeProviderForComputeMulti(
         datasetsForProvider,
         actualAlgorithmAsset,
@@ -414,13 +411,10 @@ export default function ComputeWizard({
         }
 
         if (!amountWei.eq(0)) {
-          // const currentAllowanceWei = await erc20.allowance(owner, escrowAddress)
-          // if (currentAllowanceWei.lt(amountWei)) {
           console.log(`Approving ${amountHuman} OCEAN to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
           console.log(`Approved ${amountHuman} OCEAN`)
-          // Wait until allowance actually reflected on-chain
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
             if (allowanceNow.gte(amountWei)) {
@@ -428,9 +422,6 @@ export default function ComputeWizard({
             }
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
-          // } else {
-          //   console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
-          // }
 
           console.log(
             `Depositing ${amountHuman} OCEAN to escrow...`,
@@ -1082,9 +1073,6 @@ export default function ComputeWizard({
           datasetParams[param.name] = param.value ?? param.default ?? ''
         })
       }
-
-      console.log('algoParams:', JSON.stringify(algoParams, null, 2))
-      console.log('datasetParams:', JSON.stringify(datasetParams, null, 2))
 
       const initializedProvider = await initializeProviderForComputeMulti(
         datasetsForProvider,
