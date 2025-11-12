@@ -324,6 +324,25 @@ export default function ComputeWizard({
         actualAlgorithmAsset.id,
         actualAlgoService.id
       )
+      const groupedParams = formikValues?.updatedGroupedUserParameters
+      const algoParams: Record<string, any> = {}
+      if (groupedParams?.algoParams?.length > 0) {
+        groupedParams.algoParams.forEach((algoEntry) => {
+          algoEntry.userParameters?.forEach((param: any) => {
+            algoParams[param.name] = param.value ?? param.default ?? ''
+          })
+        })
+      }
+      const datasetParams: Record<string, any> = {}
+      if (groupedParams?.datasetParams?.length > 0) {
+        const datasetEntry = groupedParams.datasetParams[0]
+        datasetEntry.userParameters?.forEach((param: any) => {
+          datasetParams[param.name] = param.value ?? param.default ?? ''
+        })
+      }
+
+      console.log('algoParams:', JSON.stringify(algoParams, null, 2))
+      console.log('datasetParams:', JSON.stringify(datasetParams, null, 2))
 
       const initializedProvider = await initializeProviderForComputeMulti(
         datasetsForProvider,
@@ -332,7 +351,9 @@ export default function ComputeWizard({
         signer,
         selectedComputeEnv,
         selectedResources,
-        actualSvcIndex
+        actualSvcIndex,
+        algoParams,
+        datasetParams
       )
 
       if (!initializedProvider)
@@ -626,7 +647,7 @@ export default function ComputeWizard({
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
         serviceId: actualAlgoService.id,
-        algocustomdata: userCustomParameters?.algoParams,
+        algocustomdata: userCustomParameters?.algoServiceParams,
         userdata: userCustomParameters?.algoServiceParams
       }
 
@@ -853,22 +874,42 @@ export default function ComputeWizard({
         actualSelectedDataset = [asset]
       }
 
+      // const userCustomParameters = {
+      //   dataServiceParams: parseConsumerParameterValues(
+      //     values?.dataServiceParams,
+      //     actualSelectedDataset[0]?.credentialSubject?.services?.[0]
+      //       ?.consumerParameters
+      //   ),
+      //   algoServiceParams: parseConsumerParameterValues(
+      //     values?.algoServiceParams,
+      //     actualSelectedAlgorithm?.credentialSubject?.services[svcIndex]
+      //       ?.consumerParameters
+      //   ),
+      //   algoParams: parseConsumerParameterValues(
+      //     values?.algoParams,
+      //     actualSelectedAlgorithm?.credentialSubject?.metadata?.algorithm
+      //       ?.consumerParameters
+      //   )
+      // }
+      const groupedParams = values?.updatedGroupedUserParameters
+      const algoServiceParams: Record<string, any> = {}
+      if (groupedParams?.algoParams?.length > 0) {
+        groupedParams.algoParams.forEach((algoEntry) => {
+          algoEntry.userParameters?.forEach((param: any) => {
+            algoServiceParams[param.name] = param.value ?? param.default ?? ''
+          })
+        })
+      }
+      const dataServiceParams: Record<string, any> = {}
+      if (groupedParams?.datasetParams?.length > 0) {
+        const datasetEntry = groupedParams.datasetParams[0]
+        datasetEntry.userParameters?.forEach((param: any) => {
+          dataServiceParams[param.name] = param.value ?? param.default ?? ''
+        })
+      }
       const userCustomParameters = {
-        dataServiceParams: parseConsumerParameterValues(
-          values?.dataServiceParams,
-          actualSelectedDataset[0]?.credentialSubject?.services?.[0]
-            ?.consumerParameters
-        ),
-        algoServiceParams: parseConsumerParameterValues(
-          values?.algoServiceParams,
-          actualSelectedAlgorithm?.credentialSubject?.services[svcIndex]
-            ?.consumerParameters
-        ),
-        algoParams: parseConsumerParameterValues(
-          values?.algoParams,
-          actualSelectedAlgorithm?.credentialSubject?.metadata?.algorithm
-            ?.consumerParameters
-        )
+        dataServiceParams,
+        algoServiceParams
       }
 
       const datasetServices: { asset: AssetExtended; service: Service }[] =
@@ -1025,6 +1066,26 @@ export default function ComputeWizard({
         allResourceValues?.[`${selectedComputeEnv.id}_paid`] ||
         allResourceValues?.[`${selectedComputeEnv.id}_free`]
 
+      const groupedParams = formikValues?.updatedGroupedUserParameters
+      const algoParams: Record<string, any> = {}
+      if (groupedParams?.algoParams?.length > 0) {
+        groupedParams.algoParams.forEach((algoEntry) => {
+          algoEntry.userParameters?.forEach((param: any) => {
+            algoParams[param.name] = param.value ?? param.default ?? ''
+          })
+        })
+      }
+      const datasetParams: Record<string, any> = {}
+      if (groupedParams?.datasetParams?.length > 0) {
+        const datasetEntry = groupedParams.datasetParams[0]
+        datasetEntry.userParameters?.forEach((param: any) => {
+          datasetParams[param.name] = param.value ?? param.default ?? ''
+        })
+      }
+
+      console.log('algoParams:', JSON.stringify(algoParams, null, 2))
+      console.log('datasetParams:', JSON.stringify(datasetParams, null, 2))
+
       const initializedProvider = await initializeProviderForComputeMulti(
         datasetsForProvider,
         actualAlgorithmAsset,
@@ -1032,7 +1093,9 @@ export default function ComputeWizard({
         signer,
         selectedComputeEnv,
         selectedResources,
-        algoIndex
+        algoIndex,
+        algoParams,
+        datasetParams
       )
 
       if (!initializedProvider) {

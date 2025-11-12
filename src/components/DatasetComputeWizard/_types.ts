@@ -35,6 +35,7 @@ export interface FormComputeData {
   dataServiceParams?: any
   datasetServiceParams?: any
   algoServiceParams?: any
+  updatedGroupedUserParameters?: any
   algoParams?: UserCustomParameters
   datasets?: Array<{
     id: string

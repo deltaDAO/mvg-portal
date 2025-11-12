@@ -14,6 +14,10 @@ interface FormValues {
   isUserParameters?: boolean
   userUpdatedParameters?: any[]
   algorithmServiceParams?: any[]
+  updatedGroupedUserParameters?: {
+    algoParams: any[]
+    datasetParams: any[]
+  }
 }
 
 const PreviewUserParameters = ({
@@ -99,6 +103,11 @@ const PreviewUserParameters = ({
 
     setLocalParams(combined)
     setFieldValue('userUpdatedParameters', combined)
+
+    setFieldValue('updatedGroupedUserParameters', {
+      algoParams,
+      datasetParams
+    })
   }, [datasetsWithParams, values.algorithmServiceParams, setFieldValue])
 
   // 3️⃣ Handle input change
@@ -117,12 +126,30 @@ const PreviewUserParameters = ({
         }
         return entry
       })
+
       setFieldValue('userUpdatedParameters', updated)
+
+      const algoParams = updated.filter((p) =>
+        values.algorithmServiceParams?.some(
+          (a) => a.did === p.did && a.serviceId === p.serviceId
+        )
+      )
+      const datasetParams = updated.filter(
+        (p) =>
+          !values.algorithmServiceParams?.some(
+            (a) => a.did === p.did && a.serviceId === p.serviceId
+          )
+      )
+
+      setFieldValue('updatedGroupedUserParameters', {
+        algoParams,
+        datasetParams
+      })
+
       return updated
     })
   }
 
-  // 4️⃣ Render input
   const renderInputField = (
     param: UserParameter,
     onChange: (v: string) => void

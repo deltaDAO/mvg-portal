@@ -149,6 +149,7 @@ export const initialValues: FormComputeData = {
   dataServiceParams: null,
   datasetServiceParams: null,
   algoServiceParams: null,
+  updatedGroupedUserParameters: null,
   algoParams: {},
   // These will be populated dynamically
   datasets: [],

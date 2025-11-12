@@ -49,6 +49,10 @@ interface FormValues {
       name: string
     }>
   }>
+  updatedGroupedUserParameters?: {
+    algoParams: ServiceParams[]
+    datasetParams: ServiceParams[]
+  }
 }
 
 const PreviewAlgorithmParameters = ({
@@ -70,6 +74,10 @@ const PreviewAlgorithmParameters = ({
       setLocalParams([])
       setFieldValue('userUpdatedParameters', [])
       setFieldValue('isUserParameters', false)
+      setFieldValue('updatedGroupedUserParameters', {
+        algoParams: [],
+        datasetParams: []
+      })
       return
     }
 
@@ -112,6 +120,10 @@ const PreviewAlgorithmParameters = ({
     } else {
       setLocalParams(existingParams)
     }
+    setFieldValue('updatedGroupedUserParameters', {
+      algoParams: [algoParams],
+      datasetParams
+    })
 
     setFieldValue(
       'isUserParameters',
@@ -140,6 +152,13 @@ const PreviewAlgorithmParameters = ({
         return entry
       })
       setFieldValue('userUpdatedParameters', updated)
+      const algoParams = updated.filter((p) => !p.did)
+      const datasetParams = updated.filter((p) => p.did)
+      setFieldValue('updatedGroupedUserParameters', {
+        algoParams,
+        datasetParams
+      })
+
       return updated
     })
   }

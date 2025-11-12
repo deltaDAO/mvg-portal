@@ -593,7 +593,7 @@ export default function ComputeWizard({
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
         serviceId: actualAlgoService.id,
-        algocustomdata: userCustomParameters?.algoParams,
+        algocustomdata: userCustomParameters?.algoServiceParams,
         userdata: userCustomParameters?.algoServiceParams
       }
 
@@ -859,23 +859,32 @@ export default function ComputeWizard({
       } else {
         actualSelectedDataset = [asset]
       }
+      const groupedParams = values?.updatedGroupedUserParameters
+
+      const algoServiceParams: Record<string, any> = {}
+      if (groupedParams?.algoParams?.length > 0) {
+        groupedParams.algoParams.forEach((algoEntry) => {
+          algoEntry.userParameters?.forEach((param: any) => {
+            algoServiceParams[param.name] = param.value ?? param.default ?? ''
+          })
+        })
+      }
+
+      const dataServiceParams: Record<string, any>[] = []
+      if (groupedParams?.datasetParams?.length > 0) {
+        actualSelectedDataset.forEach((ds, i) => {
+          const datasetEntry = groupedParams.datasetParams[i]
+          const datasetParamObj: Record<string, any> = {}
+          datasetEntry?.userParameters?.forEach((param: any) => {
+            datasetParamObj[param.name] = param.value ?? param.default ?? ''
+          })
+          dataServiceParams.push(datasetParamObj)
+        })
+      }
 
       const userCustomParameters = {
-        dataServiceParams: parseConsumerParameterValues(
-          values?.dataServiceParams,
-          actualSelectedDataset[0]?.credentialSubject?.services?.[0]
-            ?.consumerParameters
-        ),
-        algoServiceParams: parseConsumerParameterValues(
-          values?.algoServiceParams,
-          actualSelectedAlgorithm?.credentialSubject?.services[svcIndex]
-            ?.consumerParameters
-        ),
-        algoParams: parseConsumerParameterValues(
-          values?.algoParams,
-          actualSelectedAlgorithm?.credentialSubject?.metadata?.algorithm
-            ?.consumerParameters
-        )
+        dataServiceParams,
+        algoServiceParams
       }
 
       const datasetServices: { asset: AssetExtended; service: Service }[] =
