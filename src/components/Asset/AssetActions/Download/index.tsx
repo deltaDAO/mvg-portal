@@ -299,12 +299,10 @@ export default function Download({
           return
         }
       }
-
       const dataServiceParams = parseConsumerParameterValues(
-        values?.dataServiceParams,
+        values?.datasetParams_0 || values.dataServiceParams,
         service.consumerParameters
       )
-
       await handleOrderOrDownload(dataServiceParams)
     } catch (error) {
       toast.error(error.message)
@@ -329,7 +327,7 @@ export default function Download({
     return (
       <ButtonBuy
         action="download"
-        disabled={isDisabled || !isValid}
+        disabled={isDisabled || (isOwned ? !isValid : false)}
         hasPreviousOrder={isOwned}
         hasDatatoken={hasDatatoken}
         btSymbol={accessDetails.baseToken?.symbol}
@@ -463,6 +461,19 @@ export default function Download({
       initialValues={{
         dataServiceParams: getDefaultValues(service.consumerParameters)
       }}
+      initialTouched={{
+        dataServiceParams: Object.fromEntries(
+          (service.consumerParameters || [])
+            .filter(
+              (p) =>
+                p?.required === true &&
+                (p?.default === undefined ||
+                  p?.default === null ||
+                  (typeof p?.default === 'string' && p?.default.trim() === ''))
+            )
+            .map((p) => [p.name as string, true])
+        )
+      }}
       validateOnMount
       validationSchema={getDownloadValidationSchema(service.consumerParameters)}
       onSubmit={(values) => {
@@ -587,18 +598,22 @@ export default function Download({
                         />
                       </div>
                     )}
+                    {isOwned &&
+                      Array.isArray(service.consumerParameters) &&
+                      service.consumerParameters.length > 0 && (
+                        <div className={styles.consumerParameters}>
+                          <ConsumerParameters
+                            services={[service]}
+                            isLoading={isLoading}
+                            mode="flat"
+                            flatServiceIndex={0}
+                            nameOverride="dataServiceParams"
+                          />
+                        </div>
+                      )}
                     <AssetActionBuy />
                   </>
                 ))}
-              {Array.isArray(service.consumerParameters) &&
-                service.consumerParameters.length > 0 && (
-                  <div className={styles.consumerParameters}>
-                    <ConsumerParameters
-                      services={[service]}
-                      isLoading={isLoading}
-                    />
-                  </div>
-                )}
               {/* {justBought && (
                 <div className={styles.confettiContainer}>
                   <SuccessConfetti

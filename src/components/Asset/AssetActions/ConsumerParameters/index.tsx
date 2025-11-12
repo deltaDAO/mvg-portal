@@ -38,17 +38,26 @@ export default function ConsumerParameters({
   services,
   selectedAlgorithmAsset,
   isLoading,
-  svcIndex
+  svcIndex,
+  mode = 'tabs',
+  flatServiceIndex,
+  nameOverride
 }: {
   services: Service[]
   selectedAlgorithmAsset?: AssetExtended
   isLoading?: boolean
   svcIndex?: number
+  mode?: 'tabs' | 'flat'
+  flatServiceIndex?: number
+  nameOverride?: string
 }): ReactElement {
   const [tabs, setTabs] = useState<TabsItem[]>([])
   const [tabIndex, setTabIndex] = useState(0)
 
   const updateTabs = useCallback(() => {
+    if (mode === 'flat') {
+      return []
+    }
     const tabs: TabsItem[] = []
     function hasValidParams(params: any[]): boolean {
       return params.some(
@@ -114,11 +123,27 @@ export default function ConsumerParameters({
     }
 
     return tabs
-  }, [services, selectedAlgorithmAsset, svcIndex, isLoading])
+  }, [services, selectedAlgorithmAsset, svcIndex, isLoading, mode])
 
   useEffect(() => {
     setTabs(updateTabs())
   }, [updateTabs])
+
+  if (mode === 'flat') {
+    const index = typeof flatServiceIndex === 'number' ? flatServiceIndex : 0
+    const targetService = services?.[index]
+    const params = targetService?.consumerParameters
+    if (!Array.isArray(params) || params.length === 0) return <></>
+    return (
+      <div className={styles.container}>
+        <FormConsumerParameters
+          name={nameOverride || 'dataServiceParams'}
+          parameters={params}
+          disabled={isLoading}
+        />
+      </div>
+    )
+  }
 
   return (
     tabs.length > 0 && (
