@@ -1,5 +1,4 @@
 .container > label {
-  margin-bottom: calc(var(--spacer) / 2);
   text-align: center;
 }
 
@@ -8,6 +7,10 @@
 
   padding: calc(var(--spacer) / 3) calc(var(--spacer) / 2);
   max-height: 50vh;
+
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
 
   /* smooth overflow scrolling for pre-iOS 13 */
   overflow: auto;
@@ -28,13 +31,13 @@
   position: relative;
   margin-left: -1rem;
   margin-right: -1rem;
-  margin-bottom: calc(var(--spacer) / 2);
   padding-bottom: calc(var(--spacer) / 2);
   border-bottom: 1px solid var(--border-color);
 }
 
 .parameter:last-child {
   border: none;
+  padding-bottom: 0;
 }
 
 .parameter > div > div {
