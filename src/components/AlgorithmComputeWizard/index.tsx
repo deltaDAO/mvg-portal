@@ -647,7 +647,7 @@ export default function ComputeWizard({
       const datasetInputs = []
       const policyDatasets: PolicyServerInitiateComputeActionData[] = []
 
-      for (const ds of datasetResponses) {
+      for (const [i, ds] of datasetResponses.entries()) {
         const datasetOrderTx = await handleComputeOrder(
           signer,
           ds.actualDatasetAsset,
@@ -663,6 +663,7 @@ export default function ComputeWizard({
           ),
           selectedComputeEnv.consumerAddress
         )
+
         if (!datasetOrderTx)
           throw new Error(
             `Failed to order dataset ${ds.actualDatasetAsset.id}.`
@@ -672,7 +673,7 @@ export default function ComputeWizard({
           documentId: ds.actualDatasetAsset.id,
           serviceId: ds.actualDatasetService.id,
           transferTxId: datasetOrderTx,
-          userdata: userCustomParameters?.dataServiceParams
+          userdata: userCustomParameters?.dataServiceParams?.[i] || {}
         })
 
         policyDatasets.push({
