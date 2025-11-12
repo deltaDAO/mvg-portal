@@ -80,13 +80,27 @@ export default function Results({
       const envPrefix = (job as any).environment.split('-')[0]
       const compositeId = `${envPrefix}-${job.jobId}`
 
-      const jobResult = await providerInstance.getComputeResultUrl(
+      const jobResultUrl = await providerInstance.getComputeResultUrl(
         datasetProvider,
         signer,
         compositeId,
         resultIndex
       )
-      await downloadFileBrowser(jobResult)
+
+      const jobResultMeta = job.results?.[resultIndex]
+      const filename = jobResultMeta?.filename || `result_${resultIndex}`
+      const response = await fetch(jobResultUrl)
+      if (!response.ok) throw new Error('Failed to fetch file.')
+
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(blobUrl)
     } catch (error) {
       const message = getErrorMessage(error.message)
       LoggerInstance.error('[Provider Get c2d results url] Error:', message)
