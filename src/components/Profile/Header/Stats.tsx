@@ -34,7 +34,7 @@ export default function Stats(): ReactElement {
           <div onClick={() => setShowModal(true)} style={{ cursor: 'pointer' }}>
             <NumberUnit
               label="Escrow Available Funds 👉 Click to Withdraw 👈"
-              value={`${parseInt(escrowAvailableFunds, 10)} Ocean`}
+              value={`${Number(escrowAvailableFunds).toFixed(2)} OCEAN`}
             />
           </div>
         </>

@@ -1,5 +1,4 @@
 import { ReactElement } from 'react'
-// import type { Dataset } from './SelectServices'
 import { UserCustomParameters } from '@oceanprotocol/lib'
 
 export interface FormComputeData {
@@ -10,8 +9,7 @@ export interface FormComputeData {
   }
   algorithm?: any
   algorithms?: any
-  dataset?: any // Added for algorithm flow - array of dataset IDs
-  // datasets?: any // Added for algorithm flow - array of dataset IDs
+  dataset?: any
   computeEnv?: any
   mode?: 'free' | 'paid'
   cpu: number
@@ -25,6 +23,8 @@ export interface FormComputeData {
   termsAndConditions: boolean
   acceptPublishingLicense: boolean
   credentialsVerified: boolean
+  isUserParameters: boolean
+  userUpdatedParameters: any
   serviceSelected?: boolean
   step1Completed: boolean
   step2Completed: boolean
@@ -32,11 +32,11 @@ export interface FormComputeData {
   step4Completed: boolean
   step5Completed?: boolean
   step6Completed?: boolean
-  // Added fields required by onSubmit function
-  dataServiceParams?: UserCustomParameters // UserCustomParameters - will be properly typed later
-  algoServiceParams?: UserCustomParameters // UserCustomParameters - will be properly typed later
-  algoParams?: UserCustomParameters // UserCustomParameters - will be properly typed later
-  // New fields for multi-dataset support
+  dataServiceParams?: any
+  datasetServiceParams?: any
+  algoServiceParams?: any
+  updatedGroupedUserParameters?: any
+  algoParams?: UserCustomParameters
   datasets?: Array<{
     id: string
     name: string
@@ -67,7 +67,6 @@ export interface FormComputeData {
   totalPrice?: string
   escrowFunds: string
   jobPrice: string
-  // New field for algorithm services
   algorithmServices?: Array<{
     id: string
     name: string

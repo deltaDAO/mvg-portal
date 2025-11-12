@@ -375,13 +375,10 @@ export default function ComputeWizard({
         }
 
         if (!amountWei.eq(0)) {
-          // const currentAllowanceWei = await erc20.allowance(owner, escrowAddress)
-          // if (currentAllowanceWei.lt(amountWei)) {
           console.log(`Approving ${amountHuman} OCEAN to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
           console.log(`Approved ${amountHuman} OCEAN`)
-          // Wait until allowance actually reflected on-chain
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
             if (allowanceNow.gte(amountWei)) {
@@ -389,9 +386,6 @@ export default function ComputeWizard({
             }
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
-          // } else {
-          //   console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
-          // }
 
           console.log(
             `Depositing ${amountHuman} OCEAN to escrow...`,
@@ -593,7 +587,7 @@ export default function ComputeWizard({
       const computeAlgorithm: ComputeAlgorithm = {
         documentId: actualAlgorithmAsset?.id,
         serviceId: actualAlgoService.id,
-        algocustomdata: userCustomParameters?.algoParams,
+        algocustomdata: userCustomParameters?.algoServiceParams,
         userdata: userCustomParameters?.algoServiceParams
       }
 
@@ -647,7 +641,7 @@ export default function ComputeWizard({
       const datasetInputs = []
       const policyDatasets: PolicyServerInitiateComputeActionData[] = []
 
-      for (const ds of datasetResponses) {
+      for (const [i, ds] of datasetResponses.entries()) {
         const datasetOrderTx = await handleComputeOrder(
           signer,
           ds.actualDatasetAsset,
@@ -663,6 +657,7 @@ export default function ComputeWizard({
           ),
           selectedComputeEnv.consumerAddress
         )
+
         if (!datasetOrderTx)
           throw new Error(
             `Failed to order dataset ${ds.actualDatasetAsset.id}.`
@@ -672,7 +667,7 @@ export default function ComputeWizard({
           documentId: ds.actualDatasetAsset.id,
           serviceId: ds.actualDatasetService.id,
           transferTxId: datasetOrderTx,
-          userdata: userCustomParameters?.dataServiceParams
+          userdata: userCustomParameters?.dataServiceParams?.[i] || {}
         })
 
         policyDatasets.push({
@@ -859,23 +854,32 @@ export default function ComputeWizard({
       } else {
         actualSelectedDataset = [asset]
       }
+      const groupedParams = values?.updatedGroupedUserParameters
+
+      const algoServiceParams: Record<string, any> = {}
+      if (groupedParams?.algoParams?.length > 0) {
+        groupedParams.algoParams.forEach((algoEntry) => {
+          algoEntry.userParameters?.forEach((param: any) => {
+            algoServiceParams[param.name] = param.value ?? param.default ?? ''
+          })
+        })
+      }
+
+      const dataServiceParams: Record<string, any>[] = []
+      if (groupedParams?.datasetParams?.length > 0) {
+        actualSelectedDataset.forEach((ds, i) => {
+          const datasetEntry = groupedParams.datasetParams[i]
+          const datasetParamObj: Record<string, any> = {}
+          datasetEntry?.userParameters?.forEach((param: any) => {
+            datasetParamObj[param.name] = param.value ?? param.default ?? ''
+          })
+          dataServiceParams.push(datasetParamObj)
+        })
+      }
 
       const userCustomParameters = {
-        dataServiceParams: parseConsumerParameterValues(
-          values?.dataServiceParams,
-          actualSelectedDataset[0]?.credentialSubject?.services?.[0]
-            ?.consumerParameters
-        ),
-        algoServiceParams: parseConsumerParameterValues(
-          values?.algoServiceParams,
-          actualSelectedAlgorithm?.credentialSubject?.services[svcIndex]
-            ?.consumerParameters
-        ),
-        algoParams: parseConsumerParameterValues(
-          values?.algoParams,
-          actualSelectedAlgorithm?.credentialSubject?.metadata?.algorithm
-            ?.consumerParameters
-        )
+        dataServiceParams,
+        algoServiceParams
       }
 
       const datasetServices: { asset: AssetExtended; service: Service }[] =
@@ -1128,11 +1132,36 @@ export default function ComputeWizard({
       }}
     >
       {(formikContext) => {
+        const { values } = formikContext
+        const hasUserParamsStep = Boolean(values.isUserParameters)
+        const computeStep = hasUserParamsStep ? 5 : 4
+        const hasMissingRequiredDefaults =
+          Array.isArray(values.userUpdatedParameters) &&
+          values.userUpdatedParameters.some((entry) =>
+            entry.userParameters?.some(
+              (param) =>
+                param.required &&
+                (param.default === null ||
+                  param.default === undefined ||
+                  param.default === '' ||
+                  param.value === null ||
+                  param.value === undefined ||
+                  param.value === '')
+            )
+          )
+
+        const isContinueDisabled =
+          (values.user.stepCurrent === 1 &&
+            !(values.datasets?.length > 0 || values.withoutDataset)) ||
+          (values.user.stepCurrent === 2 &&
+            !(values.serviceSelected || values.withoutDataset)) ||
+          (values.user.stepCurrent === computeStep && !values.computeEnv) ||
+          (values.user.stepCurrent === 4 && hasMissingRequiredDefaults)
         return (
           <div className={styles.containerOuter}>
             <Title asset={asset} service={service} />
             <Form className={styles.form}>
-              <Navigation steps={steps} />
+              <Navigation />
               <SectionContainer className={styles.container}>
                 {showSuccess ? (
                   <div className={styles.successContent}>
@@ -1265,20 +1294,7 @@ export default function ComputeWizard({
                         !isAccountIdWhitelisted ||
                         !isBalanceSufficient
                       }
-                      isContinueDisabled={
-                        (formikContext.values.user.stepCurrent === 1 &&
-                          !(
-                            formikContext.values.datasets?.length > 0 ||
-                            formikContext.values.withoutDataset
-                          )) ||
-                        (formikContext.values.user.stepCurrent === 2 &&
-                          !(
-                            formikContext.values.serviceSelected ||
-                            formikContext.values.withoutDataset
-                          )) ||
-                        (formikContext.values.user.stepCurrent === 4 &&
-                          !formikContext.values.computeEnv)
-                      }
+                      isContinueDisabled={isContinueDisabled}
                       hasPreviousOrder={!!validOrderTx}
                       hasDatatoken={hasDatatoken}
                       btSymbol={accessDetails.baseToken?.symbol}
@@ -1321,9 +1337,6 @@ export default function ComputeWizard({
                 )}
               </SectionContainer>
             </Form>
-            {/* {debug && (
-              <div>Debug: {JSON.stringify(formikContext.values, null, 2)}</div>
-            )} */}
           </div>
         )
       }}

@@ -16,7 +16,6 @@ export default function SelectAlgorithm({
 }: SelectAlgorithmProps): ReactElement {
   const { address: accountId } = useAccount()
   const { values } = useFormikContext<FormComputeData>()
-
   return (
     <>
       <StepTitle title="Select Algorithm" />

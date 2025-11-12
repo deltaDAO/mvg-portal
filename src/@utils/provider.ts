@@ -40,7 +40,9 @@ export async function initializeProviderForComputeMulti(
   accountId: Signer,
   computeEnv: ComputeEnvironment,
   selectedResources: ResourceType,
-  svcIndexAlgo: number
+  svcIndexAlgo: number,
+  algoParams?: Record<string, any>,
+  datasetParams?: Record<string, any>
 ) {
   const { oceanTokenAddress } = getOceanConfig(
     algorithm.credentialSubject.chainId
@@ -48,13 +50,15 @@ export async function initializeProviderForComputeMulti(
   const computeAssets = datasets.map(({ asset, service, accessDetails }) => ({
     documentId: asset.id,
     serviceId: service.id,
-    transferTxId: accessDetails.validOrderTx
+    transferTxId: accessDetails.validOrderTx,
+    userdata: datasetParams
   }))
 
   const computeAlgo: ComputeAlgorithm = {
     documentId: algorithm.id,
     serviceId: algorithm.credentialSubject.services[svcIndexAlgo].id,
-    transferTxId: algorithm.accessDetails[svcIndexAlgo].validOrderTx
+    transferTxId: algorithm.accessDetails[svcIndexAlgo].validOrderTx,
+    userdata: algoParams
   }
 
   const policiesServer: PolicyServerInitiateComputeActionData[] = [

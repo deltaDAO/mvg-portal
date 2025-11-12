@@ -3,6 +3,8 @@ import { FormComputeData } from '../components/DatasetComputeWizard/_types'
 
 export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
   const { values } = useFormikContext<FormComputeData>()
+  const hasUserParamsStep = Boolean(values.isUserParameters)
+  const totalSteps = hasUserParamsStep ? 7 : 6
 
   function getSuccessClass(step: number): boolean {
     const environmentSelected = Boolean(values.computeEnv)
@@ -17,10 +19,11 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
     )
 
     if (isAlgorithmFlow) {
-      // 6-step algorithm flow: mark each step completed only when its dedicated flag is set
       switch (step) {
         case 1:
-          return Boolean(values.step1Completed || values.datasets.length)
+          return Boolean(
+            values.step1Completed || (values.datasets?.length ?? 0)
+          )
         case 2:
           return Boolean(values.step2Completed)
         case 3:
@@ -35,12 +38,18 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
           return Boolean(
             (values as unknown as { step6Completed?: boolean })?.step6Completed
           )
+        case 7:
+          return hasUserParamsStep
+            ? Boolean(
+                (values as unknown as { step7Completed?: boolean })
+                  ?.step7Completed
+              )
+            : false
         default:
           return false
       }
     }
 
-    // 6-step dataset flow: mark each step completed only when its dedicated flag is set
     switch (step) {
       case 1:
         return Boolean(values.step1Completed || values.algorithm)
@@ -51,27 +60,45 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
       case 3:
         return Boolean(values.step3Completed)
       case 4:
-        return Boolean(values.step4Completed || environmentSelected)
+        return hasUserParamsStep
+          ? Boolean(values.step4Completed)
+          : Boolean(values.step4Completed || environmentSelected)
       case 5:
-        return Boolean(
-          (values as unknown as { step5Completed?: boolean })?.step5Completed ||
-            configSet
-        )
+        return hasUserParamsStep
+          ? Boolean(values.step5Completed || environmentSelected)
+          : Boolean(
+              (values as unknown as { step5Completed?: boolean })
+                ?.step5Completed || configSet
+            )
       case 6:
-        return Boolean(
-          (values as unknown as { step6Completed?: boolean })?.step6Completed ||
-            (environmentSelected && configSet && agreementsChecked)
-        )
+        return hasUserParamsStep
+          ? Boolean(
+              (values as unknown as { step6Completed?: boolean })
+                ?.step6Completed || configSet
+            )
+          : Boolean(
+              (values as unknown as { step6Completed?: boolean })
+                ?.step6Completed ||
+                (environmentSelected && configSet && agreementsChecked)
+            )
+      case 7:
+        return hasUserParamsStep
+          ? Boolean(
+              (values as unknown as { step7Completed?: boolean })
+                ?.step7Completed ||
+                (environmentSelected && configSet && agreementsChecked)
+            )
+          : false
       default:
         return false
     }
   }
 
-  function getLastCompletedStep(totalSteps: number) {
+  function getLastCompletedStep() {
     let lastCompletedStep = 0
-    for (let i = 0; i < totalSteps; i++) {
-      if (getSuccessClass(i + 1)) {
-        lastCompletedStep = i + 1
+    for (let i = 1; i <= totalSteps; i++) {
+      if (getSuccessClass(i)) {
+        lastCompletedStep = i
       } else {
         break
       }
@@ -81,6 +108,7 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
 
   return {
     getSuccessClass,
-    getLastCompletedStep
+    getLastCompletedStep,
+    totalSteps
   }
 }

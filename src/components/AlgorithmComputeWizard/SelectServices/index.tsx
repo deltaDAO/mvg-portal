@@ -5,37 +5,18 @@ import { useFormikContext } from 'formik'
 import styles from './index.module.css'
 import MinimizeIcon from '@images/minimize.svg'
 import ExpandIcon from '@images/expand.svg'
-
-interface Service {
-  id: string
-  name: string
-  title: string
-  serviceDescription: string
-  type: string
-  duration: string | number
-  price: string
-  symbol: string
-  checked?: boolean
-}
-
-export interface Dataset {
-  id: string
-  name: string
-  description: string
-  services: Service[]
-  expanded?: boolean
-  checked?: boolean | undefined
-}
+import { DatasetItem, DatasetService } from '../types/DatasetSelection' // ✅ adjust path as needed
 
 type FormValues = {
-  datasets?: Dataset[]
+  datasets?: DatasetItem[]
   dataset?: string[]
+  serviceSelected?: boolean
 }
 
 const DatasetRow: FC<{
-  dataset: Dataset
-  onToggleExpand: (id: string) => void
-  onToggleDataset: (id: string) => void
+  dataset: DatasetItem
+  onToggleExpand: (did: string) => void
+  onToggleDataset: (did: string) => void
 }> = ({ dataset, onToggleExpand, onToggleDataset }) => {
   const checkboxRef = useRef<HTMLInputElement>(null)
 
@@ -53,14 +34,14 @@ const DatasetRow: FC<{
           type="checkbox"
           className={styles.checkboxInput}
           checked={dataset.checked === true}
-          onChange={() => onToggleDataset(dataset.id)}
+          onChange={() => onToggleDataset(dataset.did)}
           onClick={(e) => e.stopPropagation()}
         />
       </div>
 
       <div
         className={styles.expandCollapseIcon}
-        onClick={() => onToggleExpand(dataset.id)}
+        onClick={() => onToggleExpand(dataset.did)}
       >
         {dataset.expanded ? (
           <MinimizeIcon className={styles.expandedIcon} />
@@ -71,7 +52,7 @@ const DatasetRow: FC<{
 
       <div
         className={styles.datasetName}
-        onClick={() => onToggleExpand(dataset.id)}
+        onClick={() => onToggleExpand(dataset.did)}
       >
         {dataset.name}
       </div>
@@ -87,55 +68,59 @@ const DatasetRow: FC<{
 
 const ServiceSelector = () => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const [datasets, setDatasets] = useState<Dataset[]>([])
+  const [datasets, setDatasets] = useState<DatasetItem[]>([])
 
   useEffect(() => {
     if (!values.datasets || datasets.length > 0) return
 
-    const normalized: Dataset[] = values.datasets.map((d: any) => {
-      const services: Service[] = d.services.map((s: any) => ({
-        id: s.serviceId || s.id,
-        name: s.serviceName || s.name || 'Unnamed Service',
-        title: s.serviceName || s.name,
+    const normalized: DatasetItem[] = values.datasets.map((d: any) => {
+      const services: DatasetService[] = d.services.map((s: any) => ({
+        serviceId: s.serviceId,
+        serviceName: s.serviceName || 'Unnamed Service',
         serviceDescription: s.serviceDescription || 'No description',
-        type: s.serviceType || s.type,
-        duration: s.serviceDuration ?? s.duration ?? 0,
-        price: String(s.price ?? d.datasetPrice ?? 0),
-        symbol: s.tokenSymbol || s.symbol || 'OCEAN',
-        checked: s.checked ?? false
+        serviceType: s.serviceType,
+        serviceDuration: Number(s.serviceDuration ?? 0),
+        price: Number(s.price ?? d.datasetPrice ?? 0),
+        tokenSymbol: s.tokenSymbol || 'OCEAN',
+        checked: s.checked ?? false,
+        isAccountIdWhitelisted: !!s.isAccountIdWhitelisted,
+        datetime: s.datetime || new Date().toISOString(),
+        userParameters: s.userParameters || []
       }))
 
       const allChecked = services.every((s) => s.checked)
       const someChecked = services.some((s) => s.checked)
 
       return {
-        id: d.did || d.id,
+        did: d.did,
         name: d.name,
+        symbol: d.symbol,
         description: d.description,
+        datasetPrice: Number(d.datasetPrice ?? 0),
         expanded: d.expanded ?? false,
-        services,
-        checked: allChecked ? true : someChecked ? undefined : false
+        checked: allChecked ? true : someChecked ? undefined : false,
+        services
       }
     })
 
     setDatasets(normalized)
   }, [values.datasets, datasets.length])
 
-  const syncWithFormik = (updated: Dataset[]) => {
+  const syncWithFormik = (updated: DatasetItem[]) => {
     setFieldValue('datasets', updated)
   }
 
-  const toggleDataset = (datasetId: string) => {
+  const toggleDatasetExpand = (did: string) => {
     const updated = datasets.map((ds) =>
-      ds.id === datasetId ? { ...ds, expanded: !ds.expanded } : ds
+      ds.did === did ? { ...ds, expanded: !ds.expanded } : ds
     )
     setDatasets(updated)
     syncWithFormik(updated)
   }
 
-  const toggleDatasetCheckbox = (datasetId: string) => {
+  const toggleDatasetCheckbox = (did: string) => {
     const updated = datasets.map((ds) => {
-      if (ds.id !== datasetId) return ds
+      if (ds.did !== did) return ds
       const newChecked = !ds.checked
       return {
         ...ds,
@@ -147,12 +132,12 @@ const ServiceSelector = () => {
     syncWithFormik(updated)
   }
 
-  const toggleService = (datasetId: string, serviceId: string) => {
+  const toggleService = (did: string, serviceId: string) => {
     const updated = datasets.map((ds) => {
-      if (ds.id !== datasetId) return ds
+      if (ds.did !== did) return ds
 
       const newServices = ds.services.map((s) =>
-        s.id === serviceId ? { ...s, checked: !s.checked } : s
+        s.serviceId === serviceId ? { ...s, checked: !s.checked } : s
       )
       const all = newServices.every((s) => s.checked)
       const some = newServices.some((s) => s.checked)
@@ -166,6 +151,7 @@ const ServiceSelector = () => {
     setDatasets(updated)
     syncWithFormik(updated)
   }
+
   useEffect(() => {
     if (datasets.length === 0) return
     const anyServiceSelected = datasets.some((ds) =>
@@ -190,48 +176,56 @@ const ServiceSelector = () => {
         </div>
 
         {datasets.map((dataset) => (
-          <div key={dataset.id} className={styles.dataset}>
+          <div key={dataset.did} className={styles.dataset}>
             <DatasetRow
               dataset={dataset}
-              onToggleExpand={toggleDataset}
+              onToggleExpand={toggleDatasetExpand}
               onToggleDataset={toggleDatasetCheckbox}
             />
 
             {dataset.expanded && (
               <div className={styles.servicesContainer}>
                 {dataset.services.map((service) => (
-                  <div key={service.id} className={styles.service}>
+                  <div key={service.serviceId} className={styles.service}>
                     <div className={styles.checkboxColumn}>
                       <input
                         type="checkbox"
                         className={styles.checkboxInput}
                         checked={service.checked || false}
-                        onChange={() => toggleService(dataset.id, service.id)}
+                        onChange={() =>
+                          toggleService(dataset.did, service.serviceId)
+                        }
                         onClick={(e) => e.stopPropagation()}
                       />
                     </div>
 
                     <div className={styles.servicesColumn}>
-                      {service.name.slice(0, 15)}
-                      {service.name.length > 15 ? '...' : ''}
+                      {service.serviceName.slice(0, 15)}
+                      {service.serviceName.length > 15 ? '...' : ''}
                     </div>
-                    <div className={styles.titleColumn}>{service.title}</div>
+                    <div className={styles.titleColumn}>
+                      {service.serviceName}
+                    </div>
                     <div className={styles.descriptionColumn}>
                       {service.serviceDescription.slice(0, 15)}
                       {service.serviceDescription.length > 15 ? '...' : ''}
                     </div>
-                    <div className={styles.typeColumn}>{service.type}</div>
+                    <div className={styles.typeColumn}>
+                      {service.serviceType}
+                    </div>
                     <div className={styles.durationColumn}>
-                      {Number(service.duration) === 0 ||
-                      isNaN(Number(service.duration))
+                      {Number(service.serviceDuration) === 0 ||
+                      isNaN(Number(service.serviceDuration))
                         ? 'Forever'
                         : `${Math.floor(
-                            Number(service.duration) / (60 * 60 * 24)
+                            Number(service.serviceDuration) / (60 * 60 * 24)
                           )} days`}
                     </div>
                     <div className={styles.priceColumn}>
                       {service.price}{' '}
-                      <span className={styles.symbol}>{service.symbol}</span>
+                      <span className={styles.symbol}>
+                        {service.tokenSymbol}
+                      </span>
                     </div>
                   </div>
                 ))}

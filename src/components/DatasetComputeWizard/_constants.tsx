@@ -13,6 +13,60 @@ import { getUserCustomParameterValidationSchema } from '../Asset/AssetActions/Co
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { Option } from 'src/@types/ddo/Option'
+import UserParametersStep from './UserParametersStep'
+
+export function getDatasetSteps(hasUserParamsStep: boolean): StepContent[] {
+  const steps: StepContent[] = [
+    {
+      step: 1,
+      title: 'Select Algorithm',
+      component: <SelectAlgorithm algorithms={[]} />
+    },
+    {
+      step: 2,
+      title: 'Select Algorithm Services',
+      component: <SelectAlgorithmServices />
+    },
+    {
+      step: 3,
+      title: 'Preview Algorithm & Service',
+      component: <PreviewAlgorithmDataset />
+    }
+  ]
+
+  if (hasUserParamsStep) {
+    steps.push({
+      step: 4,
+      title: 'User Parameters',
+      component: <UserParametersStep />
+    })
+    steps.push({
+      step: 5,
+      title: 'Select C2D Environment',
+      component: <SelectEnvironment computeEnvs={[]} />
+    })
+    steps.push({
+      step: 6,
+      title: 'C2D Environment Configuration',
+      component: <ConfigureEnvironment />
+    })
+    steps.push({ step: 7, title: 'Review', component: <Review /> })
+  } else {
+    steps.push({
+      step: 4,
+      title: 'Select C2D Environment',
+      component: <SelectEnvironment computeEnvs={[]} />
+    })
+    steps.push({
+      step: 5,
+      title: 'C2D Environment Configuration',
+      component: <ConfigureEnvironment />
+    })
+    steps.push({ step: 6, title: 'Review', component: <Review /> })
+  }
+
+  return steps
+}
 
 export const datasetSteps: StepContent[] = [
   {
@@ -27,7 +81,7 @@ export const datasetSteps: StepContent[] = [
   },
   {
     step: 3,
-    title: 'Preview Algorithm & Dataset',
+    title: 'Preview Algorithm & Service',
     component: <PreviewAlgorithmDataset />
   },
   {
@@ -82,6 +136,8 @@ export const initialValues: FormComputeData = {
   termsAndConditions: false,
   acceptPublishingLicense: false,
   credentialsVerified: false,
+  isUserParameters: false,
+  userUpdatedParameters: null,
   serviceSelected: false,
   step1Completed: false,
   step2Completed: false,
@@ -90,8 +146,10 @@ export const initialValues: FormComputeData = {
   step5Completed: false,
   step6Completed: false,
   // Added fields required by onSubmit
-  dataServiceParams: {},
-  algoServiceParams: {},
+  dataServiceParams: null,
+  datasetServiceParams: null,
+  algoServiceParams: null,
+  updatedGroupedUserParameters: null,
   algoParams: {},
   // These will be populated dynamically
   datasets: [],

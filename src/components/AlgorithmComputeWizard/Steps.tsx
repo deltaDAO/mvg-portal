@@ -18,6 +18,8 @@ import { FormComputeData, StepContent } from './_types'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 import ButtonBuy from '../Asset/AssetActions/ButtonBuy'
 import { useFormikContext } from 'formik'
+import UserParametersStep from './UserParametersStep'
+import { UserParameter } from './types/DatasetSelection'
 
 export default function Steps({
   asset,
@@ -142,6 +144,35 @@ export default function Steps({
 
   const currentStep = values?.user?.stepCurrent ?? 1
 
+  const hasUserParamsStep = Boolean(values.isUserParameters)
+
+  useEffect(() => {
+    if (!asset || !service) return
+
+    if (service.consumerParameters?.length) {
+      const algoParams = service.consumerParameters.map(
+        (p: any): UserParameter => ({
+          name: p.name,
+          label: p.label ?? p.name,
+          description: p.description,
+          type: p.type ?? 'text',
+          default: p.default,
+          required: p.required ?? false,
+          options: p.options ?? [],
+          value: p.default ?? ''
+        })
+      )
+
+      setFieldValue('algorithmServiceParams', [
+        {
+          did: asset.id,
+          serviceId: service.id,
+          userParameters: algoParams
+        }
+      ])
+    }
+  }, [asset, service, setFieldValue])
+
   switch (currentStep) {
     case 1:
       return (
@@ -154,93 +185,96 @@ export default function Steps({
     case 2:
       return <SelectServices />
     case 3:
-      return <PreviewSelectedServices />
+      return <PreviewSelectedServices service={service} />
     case 4:
-      return <SelectEnvironment computeEnvs={computeEnvs} />
+      if (hasUserParamsStep) {
+        return <UserParametersStep asset={asset} service={service} />
+      } else {
+        return <SelectEnvironment computeEnvs={computeEnvs} />
+      }
     case 5:
-      return (
+      return hasUserParamsStep ? (
+        <SelectEnvironment computeEnvs={computeEnvs} />
+      ) : (
         <ConfigureEnvironment
           allResourceValues={allResourceValues}
           setAllResourceValues={setAllResourceValues}
         />
       )
     case 6:
-      return (
-        <CredentialDialogProvider>
-          <Review
-            asset={asset}
-            service={service}
-            totalPrices={[]}
-            datasetOrderPrice="0"
-            algoOrderPrice="0"
-            isRequestingPrice={false}
-            accessDetails={accessDetails}
-            datasets={datasets}
-            selectedDatasetAsset={selectedDatasetAsset}
-            setSelectedDatasetAsset={setSelectedDatasetAsset}
-            hasPreviousOrder={hasPreviousOrder}
-            hasDatatoken={hasDatatoken}
-            dtBalance={dtBalance}
-            isAccountIdWhitelisted={isAccountIdWhitelisted}
-            datasetSymbol={
-              accessDetails.baseToken?.symbol ||
-              (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
-            }
-            algorithmSymbol={algorithmSymbol}
-            providerFeesSymbol={providerFeesSymbol}
-            allResourceValues={allResourceValues}
-            setAllResourceValues={setAllResourceValues}
-            isConsumable={isConsumable}
-            algoOrderPriceAndFees={algoOrderPriceAndFees}
-            computeEnvs={computeEnvs}
-            datasetProviderFeeProp={datasetProviderFeeProp}
-            algorithmProviderFeeProp={algorithmProviderFeeProp}
-            isBalanceSufficient={isBalanceSufficient}
-            setIsBalanceSufficient={setIsBalanceSufficient}
-          />
-          {/* <ButtonBuy
-            action="compute"
-            disabled={
-              isComputeButtonDisabled ||
-              !reviewBuy.isValid ||
-              !reviewBuy.isBalanceSufficient ||
-              !reviewBuy.isAssetNetwork ||
-              !selectedDatasetAsset?.every(
-                (asset) =>
-                  asset.accessDetails?.[asset.serviceIndex || 0]?.isPurchasable
-              ) ||
-              !isAccountIdWhitelisted
-            }
-            hasPreviousOrder={hasPreviousOrder}
-            hasDatatoken={hasDatatoken}
-            btSymbol={accessDetails.baseToken?.symbol}
-            dtSymbol={accessDetails.datatoken?.symbol}
-            dtBalance={dtBalance}
-            assetTimeout={assetTimeout}
-            assetType={asset.credentialSubject?.metadata.type}
-            hasPreviousOrderSelectedComputeAsset={
-              hasPreviousOrderSelectedComputeAsset
-            }
-            hasDatatokenSelectedComputeAsset={hasDatatokenSelectedComputeAsset}
-            dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
-            dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
-            selectedComputeAssetType={selectedComputeAssetType}
-            stepText={stepText}
-            isLoading={isLoading}
-            type="submit"
-            priceType={accessDetails.type}
-            algorithmPriceType={asset?.accessDetails?.[0]?.type}
-            isBalanceSufficient={reviewBuy.isBalanceSufficient}
-            isConsumable={isConsumable}
-            consumableFeedback={consumableFeedback}
-            isAlgorithmConsumable={asset?.accessDetails?.[0]?.isPurchasable}
-            isSupportedOceanNetwork={reviewBuy.isSupportedOceanNetwork}
-            hasProviderFee={providerFeeAmount && providerFeeAmount !== '0'}
-            retry={retry}
-            isAccountConnected={reviewBuy.isConnected}
-            computeWizard={true}
-          /> */}
-        </CredentialDialogProvider>
+      return hasUserParamsStep ? (
+        <ConfigureEnvironment
+          allResourceValues={allResourceValues}
+          setAllResourceValues={setAllResourceValues}
+        />
+      ) : (
+        <Review
+          asset={asset}
+          service={service}
+          totalPrices={[]}
+          datasetOrderPrice="0"
+          algoOrderPrice="0"
+          isRequestingPrice={false}
+          accessDetails={accessDetails}
+          datasets={datasets}
+          selectedDatasetAsset={selectedDatasetAsset}
+          setSelectedDatasetAsset={setSelectedDatasetAsset}
+          hasPreviousOrder={hasPreviousOrder}
+          hasDatatoken={hasDatatoken}
+          dtBalance={dtBalance}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
+          datasetSymbol={
+            accessDetails.baseToken?.symbol ||
+            (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+          }
+          algorithmSymbol={algorithmSymbol}
+          providerFeesSymbol={providerFeesSymbol}
+          allResourceValues={allResourceValues}
+          setAllResourceValues={setAllResourceValues}
+          isConsumable={isConsumable}
+          algoOrderPriceAndFees={algoOrderPriceAndFees}
+          computeEnvs={computeEnvs}
+          datasetProviderFeeProp={datasetProviderFeeProp}
+          algorithmProviderFeeProp={algorithmProviderFeeProp}
+          isBalanceSufficient={isBalanceSufficient}
+          setIsBalanceSufficient={setIsBalanceSufficient}
+        />
+      )
+    case 7:
+      return hasUserParamsStep ? (
+        <Review
+          asset={asset}
+          service={service}
+          totalPrices={[]}
+          datasetOrderPrice="0"
+          algoOrderPrice="0"
+          isRequestingPrice={false}
+          accessDetails={accessDetails}
+          datasets={datasets}
+          selectedDatasetAsset={selectedDatasetAsset}
+          setSelectedDatasetAsset={setSelectedDatasetAsset}
+          hasPreviousOrder={hasPreviousOrder}
+          hasDatatoken={hasDatatoken}
+          dtBalance={dtBalance}
+          isAccountIdWhitelisted={isAccountIdWhitelisted}
+          datasetSymbol={
+            accessDetails.baseToken?.symbol ||
+            (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+          }
+          algorithmSymbol={algorithmSymbol}
+          providerFeesSymbol={providerFeesSymbol}
+          allResourceValues={allResourceValues}
+          setAllResourceValues={setAllResourceValues}
+          isConsumable={isConsumable}
+          algoOrderPriceAndFees={algoOrderPriceAndFees}
+          computeEnvs={computeEnvs}
+          datasetProviderFeeProp={datasetProviderFeeProp}
+          algorithmProviderFeeProp={algorithmProviderFeeProp}
+          isBalanceSufficient={isBalanceSufficient}
+          setIsBalanceSufficient={setIsBalanceSufficient}
+        />
+      ) : (
+        <div>Invalid step</div>
       )
     default:
       return <div>Invalid step: {currentStep}</div>
