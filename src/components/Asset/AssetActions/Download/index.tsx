@@ -158,7 +158,6 @@ export default function Download({
           accountId || ZERO_ADDRESS
         )
         setOrderPriceAndFees(_orderPriceAndFees)
-        console.log('order price and fees', _orderPriceAndFees)
         !orderPriceAndFees && setIsPriceLoading(false)
       } catch (error) {
         LoggerInstance.error('getOrderPriceAndFees', error)
@@ -383,8 +382,6 @@ export default function Download({
       )
       .add(new Decimal(formatUnits(consumeMarketOrderFee)))
 
-    console.log('dt balance', balance)
-    console.log('final amount', finalAmount)
     const userBalance = new Decimal(balance.approved.ocean || 0)
     const sufficient = userBalance.greaterThanOrEqualTo(finalAmount)
 
@@ -392,7 +389,7 @@ export default function Download({
       if (!orderPriceAndFees) return
       setIsBalanceSufficient(sufficient)
       console.log(
-        `🔹 Balance check: user has ${userBalance.toString()}, total needed ${finalAmount.toString()} => ${sufficient}`
+        `Balance check: user has ${userBalance.toString()}, total needed ${finalAmount.toString()} => ${sufficient}`
       )
     }, [
       dtBalance,
