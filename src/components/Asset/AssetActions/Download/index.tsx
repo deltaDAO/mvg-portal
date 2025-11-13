@@ -52,6 +52,7 @@ import styles from './index.module.css'
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
 import { formatUnits } from 'ethers/lib/utils.js'
+import useBalance from '@hooks/useBalance'
 
 export default function Download({
   accountId,
@@ -61,6 +62,7 @@ export default function Download({
   accessDetails,
   serviceIndex,
   isBalanceSufficient,
+  setIsBalanceSufficient,
   dtBalance,
   isAccountIdWhitelisted,
   consumableFeedback
@@ -73,6 +75,7 @@ export default function Download({
   serviceIndex: number
   file: FileInfo
   isBalanceSufficient: boolean
+  setIsBalanceSufficient: (val: boolean) => void
   dtBalance: string
   isAccountIdWhitelisted: boolean
   fileIsLoading?: boolean
@@ -82,6 +85,7 @@ export default function Download({
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { isInPurgatory, isAssetNetwork } = useAsset()
   const isMounted = useIsMounted()
+  const { balance } = useBalance()
 
   const [isDisabled, setIsDisabled] = useState(true)
   const [hasDatatoken, setHasDatatoken] = useState(false)
@@ -154,6 +158,7 @@ export default function Download({
           accountId || ZERO_ADDRESS
         )
         setOrderPriceAndFees(_orderPriceAndFees)
+        console.log('order price and fees', _orderPriceAndFees)
         !orderPriceAndFees && setIsPriceLoading(false)
       } catch (error) {
         LoggerInstance.error('getOrderPriceAndFees', error)
@@ -365,6 +370,41 @@ export default function Download({
   const AssetActionBuy = () => {
     const { isValid } = useFormikContext()
 
+    // Calculate final amount including all fees
+    const finalAmount = new Decimal(
+      new Decimal(
+        Number(orderPriceAndFees?.price) || price.value || 0
+      ).toDecimalPlaces(MAX_DECIMALS)
+    )
+      .add(new Decimal(orderPriceAndFees?.opcFee || 0))
+      .add(
+        new Decimal(
+          formatUnits(orderPriceAndFees?.providerFee?.providerFeeAmount || 0)
+        )
+      )
+      .add(new Decimal(formatUnits(consumeMarketOrderFee)))
+
+    console.log('dt balance', balance)
+    console.log('final amount', finalAmount)
+    const userBalance = new Decimal(balance.approved.ocean || 0)
+    const sufficient = userBalance.greaterThanOrEqualTo(finalAmount)
+
+    // ✅ useEffect is always called, but early exit if orderPriceAndFees is undefined
+    useEffect(() => {
+      if (!orderPriceAndFees) return
+      setIsBalanceSufficient(sufficient)
+      console.log(
+        `🔹 Balance check: user has ${userBalance.toString()}, total needed ${finalAmount.toString()} => ${sufficient}`
+      )
+    }, [
+      dtBalance,
+      finalAmount.toString(),
+      orderPriceAndFees,
+      setIsBalanceSufficient
+    ])
+
+    if (!orderPriceAndFees) return null
+
     return (
       <div style={{ textAlign: 'left', marginTop: '2%' }}>
         {!isPriceLoading &&
@@ -397,31 +437,14 @@ export default function Download({
                   ) || '0'
                 }
                 symbol={price.tokenSymbol}
-                type={`PROVIDER FEE`}
+                type="PROVIDER FEE"
               />
               <Row
                 price={formatUnits(consumeMarketOrderFee) || '0'}
                 symbol={price.tokenSymbol}
-                type={`CONSUME MARKET FEE`}
+                type="CONSUME MARKET FEE"
               />
-              <Row
-                price={new Decimal(
-                  new Decimal(
-                    Number(orderPriceAndFees?.price) || price.value || 0
-                  ).toDecimalPlaces(MAX_DECIMALS)
-                )
-                  .add(new Decimal(orderPriceAndFees?.opcFee || 0))
-                  .add(
-                    new Decimal(
-                      formatUnits(
-                        orderPriceAndFees?.providerFee?.providerFeeAmount || 0
-                      )
-                    )
-                  )
-                  .add(new Decimal(formatUnits(consumeMarketOrderFee)))
-                  .toString()}
-                symbol={price.tokenSymbol}
-              />
+              <Row price={finalAmount.toString()} symbol={price.tokenSymbol} />
             </div>
           )}
 
