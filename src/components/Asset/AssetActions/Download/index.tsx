@@ -336,7 +336,7 @@ export default function Download({
         hasPreviousOrder={isOwned}
         hasDatatoken={hasDatatoken}
         btSymbol={accessDetails.baseToken?.symbol}
-        dtSymbol={asset.indexedMetadata?.stats[serviceIndex]?.symbol} // TODO - check datatokens
+        dtSymbol={asset.indexedMetadata?.stats[serviceIndex]?.symbol}
         dtBalance={dtBalance}
         type="submit"
         assetTimeout={secondsToString(service.timeout)}
@@ -370,7 +370,6 @@ export default function Download({
   const AssetActionBuy = () => {
     const { isValid } = useFormikContext()
 
-    // Calculate final amount including all fees
     const finalAmount = new Decimal(
       new Decimal(
         Number(orderPriceAndFees?.price) || price.value || 0
@@ -389,7 +388,6 @@ export default function Download({
     const userBalance = new Decimal(balance.approved.ocean || 0)
     const sufficient = userBalance.greaterThanOrEqualTo(finalAmount)
 
-    // ✅ useEffect is always called, but early exit if orderPriceAndFees is undefined
     useEffect(() => {
       if (!orderPriceAndFees) return
       setIsBalanceSufficient(sufficient)
