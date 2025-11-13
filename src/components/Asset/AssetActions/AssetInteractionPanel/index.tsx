@@ -23,6 +23,7 @@ interface AssetInteractionPanelProps {
   signer: any
   dtBalance: string
   isBalanceSufficient: boolean
+  setIsBalanceSufficient?: (val: boolean) => void
   isCompute: boolean
   consumableFeedback?: string
 }
@@ -39,6 +40,7 @@ export default function AssetInteractionPanel({
   signer,
   dtBalance,
   isBalanceSufficient,
+  setIsBalanceSufficient,
   isCompute,
   consumableFeedback
 }: AssetInteractionPanelProps): ReactElement {
@@ -113,6 +115,7 @@ export default function AssetInteractionPanel({
                   serviceIndex={serviceIndex}
                   dtBalance={dtBalance}
                   isBalanceSufficient={isBalanceSufficient}
+                  setIsBalanceSufficient={setIsBalanceSufficient}
                   isAccountIdWhitelisted={isAccountIdWhitelisted}
                   file={file}
                   fileIsLoading={fileIsLoading}

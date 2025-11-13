@@ -75,7 +75,7 @@ export default function Download({
   serviceIndex: number
   file: FileInfo
   isBalanceSufficient: boolean
-  setIsBalanceSufficient: (val: boolean) => void
+  setIsBalanceSufficient?: (val: boolean) => void
   dtBalance: string
   isAccountIdWhitelisted: boolean
   fileIsLoading?: boolean
