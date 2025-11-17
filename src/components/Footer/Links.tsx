@@ -100,10 +100,20 @@ export default function Links(): ReactElement {
             href="#"
             onClick={(event) => {
               event.preventDefault()
-              router.push(privacyPolicySlug)
+              router.push(`${privacyPolicySlug}#terms-and-conditions`)
             }}
           >
-            Privacy
+            Terms & Conditions
+          </a>
+          <a
+            className={styles.link}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault()
+              router.push(`${privacyPolicySlug}#privacy-policy`)
+            }}
+          >
+            Privacy Policy
           </a>
           {appConfig.privacyPreferenceCenter === 'true' && (
             <a

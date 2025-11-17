@@ -14,9 +14,9 @@ export default function Features(): ReactElement {
         'To access a service offering, users will be required to identify themselves through a SSI verification process. Access to the service offering will only be granted if the user identity is validated and approved by the provider of the service offering.'
     },
     {
-      title: 'Data Space Interoperability',
+      title: 'Semantic Interoperability and Extensibility',
       description:
-        'The description of the service offering conforms with generally accepted industry standards for exchanging data and data services (for example Gaia-X Self-Descriptions), ensuring interoperability with other data ecosystems.'
+        'The description of the service offering conforms with generally accepted industry standards for exchanging data and data services (for example Gaia-X Self-Descriptions), allowing for semantic interoperability and extensibility.'
     },
     {
       title: 'Data Regulation Compliance',
