@@ -36,7 +36,7 @@ import {
 import { useUserPreferences } from '@context/UserPreferences'
 import { parseConsumerParameterValues } from '../Asset/AssetActions/ConsumerParameters'
 import { BigNumber, ethers, Signer } from 'ethers'
-import { useAccount } from 'wagmi'
+import { useAccount, useProvider } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
 import { useCredentialValidation } from '@hooks/useCredentialValidation'
@@ -64,6 +64,7 @@ import { FormComputeData } from './_types'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import { getOceanConfig } from '@utils/ocean'
+import { getTokenInfo } from '@utils/wallet'
 export default function ComputeWizard({
   accountId,
   signer,
@@ -153,8 +154,8 @@ export default function ComputeWizard({
     setCachedCredentials,
     clearVerifierSessionCache
   } = useSsiWallet()
+  const web3provider = useProvider()
 
-  const { validateCredentials, refreshCredentials } = useCredentialValidation()
   const [svcIndex, setSvcIndex] = useState(0)
 
   const [allResourceValues, setAllResourceValues] = useState<{
@@ -348,7 +349,11 @@ export default function ComputeWizard({
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
-        const amountWei = ethers.utils.parseUnits(amountHuman, 18)
+        const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+        const amountWei = ethers.utils.parseUnits(
+          amountHuman,
+          tokenDetails.decimals
+        )
 
         const erc20 = new ethers.Contract(
           oceanTokenAddress,

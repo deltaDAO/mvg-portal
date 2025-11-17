@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Router as FactoryRouter } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
-import { useNetwork, useSigner } from 'wagmi'
+import { useNetwork, useProvider, useSigner } from 'wagmi'
 import { ethers } from 'ethers'
 import { Fees, TokenDetails } from '../@types/factoryRouter/FactoryRouter.type'
 import { OpcFee } from '@context/MarketMetadata/_types'
+import { getTokenInfo } from '@utils/wallet'
 
 function useFactoryRouter() {
   const { chain } = useNetwork()
@@ -17,6 +18,8 @@ function useFactoryRouter() {
     consumeFee: '0',
     providerFee: '0'
   })
+
+  const web3provider = useProvider()
 
   // Helper to fetch token details
   const fetchTokenDetails = async (tokenAddress: string) => {
@@ -48,11 +51,22 @@ function useFactoryRouter() {
         router.contract.getOPCConsumeFee(),
         router.contract.getOPCProviderFee()
       ])
+      const { oceanTokenAddress } = getOceanConfig(chain?.id)
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
       return {
-        swapOceanFee: ethers.utils.formatUnits(opcFees[0], 18),
-        swapNonOceanFee: ethers.utils.formatUnits(opcFees[1], 18),
-        consumeFee: ethers.utils.formatUnits(consumeFee, 18),
-        providerFee: ethers.utils.formatUnits(providerFee, 18)
+        swapOceanFee: ethers.utils.formatUnits(
+          opcFees[0],
+          tokenDetails.decimals
+        ),
+        swapNonOceanFee: ethers.utils.formatUnits(
+          opcFees[1],
+          tokenDetails.decimals
+        ),
+        consumeFee: ethers.utils.formatUnits(consumeFee, tokenDetails.decimals),
+        providerFee: ethers.utils.formatUnits(
+          providerFee,
+          tokenDetails.decimals
+        )
       }
     } catch (error: any) {
       console.error('Error fetching fees:', error)

@@ -198,3 +198,24 @@ export function getTokenBalanceFromSymbol(
     '0'
   )
 }
+
+export async function getTokenInfo(
+  tokenAddress: string,
+  web3Provider: ethers.providers.Provider
+): Promise<TokenInfo> {
+  if (!web3Provider || !tokenAddress)
+    return { address: tokenAddress, name: '', symbol: '', decimals: undefined }
+
+  try {
+    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider)
+    const name = await tokenContract.name()
+    const symbol = await tokenContract.symbol()
+    const decimals = await tokenContract.decimals()
+    return { address: tokenAddress, name, symbol, decimals }
+  } catch (error: any) {
+    LoggerInstance.error(
+      `[getTokenInfo] Failed to fetch token info for ${tokenAddress}: ${error.message}`
+    )
+    return { address: tokenAddress, name: '', symbol: '', decimals: undefined }
+  }
+}

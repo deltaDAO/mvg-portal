@@ -11,9 +11,10 @@ import { MarketMetadataProviderValue, OpcFee } from './_types'
 import siteContent from '../../../content/site.json'
 import appConfig from '../../../app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useConnect, useNetwork } from 'wagmi'
+import { useConnect, useNetwork, useProvider } from 'wagmi'
 import useFactoryRouter from '@hooks/useRouter'
 import { getOceanConfig } from '@utils/ocean'
+import { getTokenInfo } from '@utils/wallet'
 const MarketMetadataContext = createContext({} as MarketMetadataProviderValue)
 
 function MarketMetadataProvider({
@@ -27,6 +28,7 @@ function MarketMetadataProvider({
   const [opcFees, setOpcFees] = useState<OpcFee[]>()
   const [approvedBaseTokens, setApprovedBaseTokens] = useState<TokenInfo[]>()
   const config = getOceanConfig(chain?.id)
+  const web3provider = useProvider()
 
   useEffect(() => {
     async function getData() {
@@ -55,22 +57,24 @@ function MarketMetadataProvider({
   )
 
   useEffect(() => {
-    if (isLoading) return
+    async function fetchTokenInfo() {
+      if (isLoading || !config?.oceanTokenAddress || !web3provider) return
 
-    const oceanToken: TokenInfo = {
-      address: config?.oceanTokenAddress,
-      name: 'OCEAN',
-      symbol: 'OCEAN',
-      decimals: 18
+      const tokenDetails = await getTokenInfo(
+        config.oceanTokenAddress,
+        web3provider
+      )
+
+      setApprovedBaseTokens((prevTokens = []) => {
+        const hasToken = prevTokens.some(
+          (token) => token.address === tokenDetails.address
+        )
+        return hasToken ? prevTokens : [...prevTokens, tokenDetails]
+      })
     }
 
-    setApprovedBaseTokens((prevTokens = []) => {
-      const hasOceanToken = prevTokens.some(
-        (token) => token.address === oceanToken.address
-      )
-      return hasOceanToken ? prevTokens : [...prevTokens, oceanToken]
-    })
-  }, [isLoading, approvedBaseTokens])
+    fetchTokenInfo()
+  }, [isLoading, config?.oceanTokenAddress, web3provider])
 
   return (
     <MarketMetadataContext.Provider
