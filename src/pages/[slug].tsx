@@ -21,10 +21,13 @@ export default function PageMarkdown(page: PageData): ReactElement {
       headerCenter
     >
       <Container narrow>
-        <div
-          className={styles.content}
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+        <div className={styles.section}>
+          <h3 className={styles.title}>{title}</h3>
+          <div
+            className={styles.content}
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+        </div>
       </Container>
     </Page>
   )

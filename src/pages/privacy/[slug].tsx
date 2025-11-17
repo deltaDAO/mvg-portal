@@ -22,10 +22,12 @@ export default function PageMarkdown(page: PageData): ReactElement {
     >
       <Container narrow>
         <PrivacyPolicyHeader policy={slug.replace('/privacy/', '')} />
-        <div
-          className={styles.content}
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+        <div className={styles.section}>
+          <div
+            className={styles.content}
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+        </div>
       </Container>
     </Page>
   )

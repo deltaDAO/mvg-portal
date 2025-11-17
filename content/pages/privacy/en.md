@@ -2,31 +2,73 @@
 title: Privacy Policy
 ---
 
-This privacy policy informs you about how Ocean Protocol Foundation Ltd. (in the following OPF, we, us, our) processes your personal data. Moreover, this privacy policy informs you about your rights.
+## Terms and Conditions
 
-## 1. Contact details of the controller
+Welcome to Ocean Enterprise! By accessing our website ("the Site") and using any of our services, you agree to the following terms and conditions ("Terms").
+
+### Copyright and Trademarks
+
+The content on the Site, including but not limited to text, graphics, logos, images, and software, is the property of **Ocean Enterprise Collective e.V. (in the following OEC, we, us, our)** and is protected by copyright laws. You may download and print content for non-commercial purposes only, provided that you retain all copyright and other proprietary notices. The Ocean Enterprise logo, brand, and product names are trademarks of OEC.
+
+### Disclaimer
+
+The information on the Site is provided "as is" and without warranty of any kind, either express or implied, including but not limited to warranties of merchantability or fitness for a particular purpose. OEC does not guarantee the accuracy, completeness, or timeliness of the information on the Site. OEC may make changes to the Site and the information on it at any time without notice.
+
+### Links to Third-Party Sites
+
+The Site may contain links to third-party websites or resources. These links are provided for your convenience only and do not signify OEC's endorsement of the content on those websites or resources. OEC is not responsible for the content on those websites or resources and disclaims any liability for any damages arising from your use of them.
+
+### Limitation of Liability
+
+In no event shall OEC, its affiliates, or its licensors be liable for any direct, indirect, special, or consequential damages arising out of or in connection with your use of the Site or our services. This includes, but is not limited to, lost profits, business interruption, or loss of programs or data, even if OEC has been advised of the possibility of such damages.
+
+### Applicable Law
+
+These Terms shall be governed by and construed in accordance with the laws of Germany, without giving effect to any principles of conflicts of law. Any legal action arising out of or relating to these Terms or your use of the Site shall be brought in the courts of Germany.
+
+### Compliance with Local Laws
+
+OEC operates from its headquarters in Germany and makes no representation that the Site or our services are appropriate or available for use in other locations. If you access the Site or our services from outside Germany, you are responsible for complying with the laws of your jurisdiction.
+
+### Changes to the Terms
+
+OEC reserves the right, at its sole discretion, to change, modify, add, or remove portions of these Terms at any time. It is your responsibility to check these Terms periodically for changes. Your continued use of the Site following the posting of changes will mean that you accept and agree to the changes.
+
+### Contact Us
+
+For any questions or concerns regarding these Terms, please contact us at **info@oceanenterprise.io**.
+
+---
+
+## Privacy Policy
+
+_Last updated on June 5, 2025._
+
+This privacy policy informs you about how **Ocean Enterprise Collective e.V. (in the following OEC, we, us, our)** processes your personal data. Moreover, this privacy policy informs you about your rights.
+
+### 1. Contact details of the controller
 
 The controller pursuant to the EU General Data Protection Regulation ("GDPR") for the processing of your personal data is:
 
-Ocean Protocol Foundation Ltd.  
-The Commerze @ Irving  
-1 Irving Place, #08-11  
-369546 Singapore
+**Ocean Enterprise Collective e.V.**  
+Carmerstrasse 18  
+10623 Berlin  
+Germany
 
-E-mail: gdpr@oceanprotocol.com
+E-mail: **info@oceanenterprise.io**
 
-## 2. What's personal data?
+### 2. What's personal data?
 
-Personal data is any information that can be directly or indirectly associated with you. OPF processes the following personal data.
+Personal data is any information that can be directly or indirectly associated with you. OEC processes the following personal data.
 
-- Log file data including IP addresses: Logfile data including IP addresses are processed when visiting our website.
-- E-mail: If you contact OPF via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
+- **Log file data including IP addresses:** Logfile data including IP addresses are processed when visiting our website.
+- **E-mail:** If you contact OEC via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
 
-You can find further information about the processing of your personal data in the chapter “Processing operations according to Article 13 GDPR”.
+You can find further information about the processing of your personal data in the chapter "Processing operations according to Article 13 GDPR".
 
-## 3. Processing operations according to Article 13 GDPR
+### 3. Processing operations according to Article 13 GDPR
 
-### 3.1 Providing our website and creating log files
+#### 3.1 Providing our website and creating log files
 
 We host our website with Webflow (Webflow, Inc. located at 398 11th Street, 2nd Floor, San Francisco, CA 94103, USA). When you visit our website, Webflow collects and uses your IP address and creates logfiles including your IP address.
 
@@ -38,9 +80,9 @@ We host our website with Webflow (Webflow, Inc. located at 398 11th Street, 2nd 
 
 **Retention period:** Webflow stores your personal data for 15 days.
 
-### 3.2 Contact via e-mail
+#### 3.2 Contact via e-mail
 
-If you contact us via e-mail, OPF collects, uses, and stores your e-mail address, and any other information you provide us in your message, such as your name. When you send us an e-mail, our (mail) service provider supports us in processing your personal data so we can communicate with you.
+If you contact us via e-mail, OEC collects, uses, and stores your e-mail address, and any other information you provide us in your message, such as your name. When you send us an e-mail, our (mail) service provider supports us in processing your personal data so we can communicate with you.
 
 **Purpose:** We collect, use and store this personal data to respond to your inquiries.
 
@@ -50,60 +92,60 @@ If you contact us via e-mail, OPF collects, uses, and stores your e-mail address
 
 **Retention period:** We store your personal data as long as we need it to process your inquires. We store your personal data beyond this period if we are obliged to do so due to retention obligations under tax and commercial law or in the event of legal disputes. If the latter is the case, your personal data will be erased after the retention period has expired.
 
-## 4. Cookies
+### 4. Cookies
 
-Our website uses cookies. You can find detailed information in our Cookie Policy.
+Our website uses cookies. You can manage cookies via your browser settings, including disabling or deleting cookies. If you want to change your cookie consent, use the Cookie Settings link in the footer when available.
 
-## 5. Automated decision making including profiling according to Article 13(2)(f) GDPR
+### 5. Automated decision making including profiling according to Article 13(2)(f) GDPR
 
 Automated decision making including profiling does not take place.
 
-## 6. External links
+### 6. External links
 
 Our website contains links to websites owned by third parties. These websites are beyond our control and responsibility.
 
-## 7. Your rights
+### 7. Your rights
 
-### 7.1 Right to withdraw consent (Art. 7(3) GDPR)
+#### 7.1 Right to withdraw consent (Art. 7(3) GDPR)
 
 You have the right to withdraw your consent at any time. The withdrawal of consent does not affect the lawfulness of processing based on consent before its withdrawal.
 
-### 7.2 Right of access (Art. 15 GDPR)
+#### 7.2 Right of access (Art. 15 GDPR)
 
-You have the right to obtain confirmation as to whether OPF processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information defined in Art. 15 GDPR.
+You have the right to obtain confirmation as to whether OEC processes personal data about you. If we are processing personal data about you, you have the right to access these personal data and to gain the information defined in Art. 15 GDPR.
 
-### 7.3 Right to rectification (Art. 16 GDPR)
+#### 7.3 Right to rectification (Art. 16 GDPR)
 
 You have the right to obtain without undue delay the rectification of inaccurate personal data about you. Additionally, you have the right that incomplete personal data about you are completed.
 
-### 7.4 Right to erasure (Art. 17 GDPR)
+#### 7.4 Right to erasure (Art. 17 GDPR)
 
 You have the right to obtain without undue delay the erasure of personal data about you, where the defined legal grounds in Art. 17 GDPR apply.
 
-### 7.5 Right to restriction of processing (Art. 18 GDPR)
+#### 7.5 Right to restriction of processing (Art. 18 GDPR)
 
 Moreover, you have the right to obtain the restriction of processing your personal data where the defined legal grounds in Art. 18 GDPR apply.
 
-### 7.6 Right to data portability (Art. 20 GDPR)
+#### 7.6 Right to data portability (Art. 20 GDPR)
 
 You have the right to receive your personal data in a structured, commonly used, and machine-readable format. Additionally, you have the right to transmit those data to another controller without hindrance, where the defined legal grounds in Art. 20 GDPR apply. You can make use of your right to data portability by contacting us.
 
-### 7.7 Right to object (Art. 21 GDPR)
+#### 7.7 Right to object (Art. 21 GDPR)
 
-On grounds relating to your particular situation, you have the right to object to the processing of your personal data where we based the processing on legitimate interests (Art. 6(1)(f) GDPR). If you object, OPF will no longer process your personal data unless we can demonstrate compelling legitimate grounds for the processing, overriding your rights, freedoms, and interests, or if the processing is required to establish, exercise, or defend legal claims.
+On grounds relating to your particular situation, you have the right to object to the processing of your personal data where we based the processing on legitimate interests (Art. 6(1)(f) GDPR). If you object, OEC will no longer process your personal data unless we can demonstrate compelling legitimate grounds for the processing, overriding your rights, freedoms, and interests, or if the processing is required to establish, exercise, or defend legal claims.
 
-### 7.8 Right to lodge a complaint (Art. 77 GDPR)
+#### 7.8 Right to lodge a complaint (Art. 77 GDPR)
 
-You have the right to lodge a complaint with a supervisory authority if you consider the processing of your personal data by OPF to infringe the GDPR. You can lodge a complaint in particular
+You have the right to lodge a complaint with a supervisory authority if you consider the processing of your personal data by OEC to infringe the GDPR. You can lodge a complaint in particular
 
 - in the Member State of your habitual residence,
 - in the Member State of your place of work, and
 - in the place of the alleged infringement.
 
-## 8. Questions
+### 8. Questions
 
-If you have any questions about our privacy policy, please send us an e-mail at gdpr@oceanprotocol.com.
+If you have any questions about our privacy policy, please send us an e-mail at **info@oceanenterprise.io**.
 
-## 9. Changes to the Privacy Policy
+### 9. Changes to the Privacy Policy
 
 This privacy policy will be amended from time to time. You can see the date of the last alteration at the top of the privacy policy.
