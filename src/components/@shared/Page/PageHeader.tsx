@@ -46,7 +46,7 @@ export default function PageHeader({
           </div>
           <div className={styles.logoContainer}>
             <a
-              href="https://gaia-x.eu/"
+              href="https://gaia-x.eu/community/lighthouse-projects/"
               target="_blank"
               rel="noreferrer noopener"
             >
