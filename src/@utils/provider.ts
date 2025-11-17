@@ -339,7 +339,7 @@ export async function downloadFile(
   userCustomParameters?: UserCustomParameters
 ) {
   let downloadUrl
-  let fileName = `asset_${asset.id}.dat` // fallback if name can't be resolved
+  let fileName = `asset_${asset.id}.dat`
 
   const policyServer: PolicyServerInitiateActionData = {
     sessionId: verifierSessionId,
@@ -350,7 +350,6 @@ export async function downloadFile(
   }
 
   try {
-    // ✅ Get the secure download URL
     downloadUrl = await ProviderInstance.getDownloadUrl(
       asset.id,
       service.id,
@@ -363,7 +362,6 @@ export async function downloadFile(
     )
     console.log('📦 Download URL:', downloadUrl)
 
-    // ✅ Try to get the file info from provider (includes real name)
     const fileInfo: any = await getFileDidInfo(
       asset.id,
       service.id,
@@ -371,20 +369,37 @@ export async function downloadFile(
     )
     console.log('📦 File info from provider:', fileInfo)
 
+    const mimeExtensionMap: Record<string, string> = {
+      'application/json': 'json',
+      'application/vnd.api+json': 'json',
+      'text/csv': 'csv',
+      'application/pdf': 'pdf',
+      'image/png': 'png',
+      'image/jpeg': 'jpg',
+      'text/plain': 'txt',
+      'application/octet-stream': 'bin'
+    }
+
     if (Array.isArray(fileInfo) && fileInfo.length > 0) {
       const info = fileInfo[0]
+
       if (info.name) {
         fileName = info.name
       } else if (info.url) {
         fileName = info.url.split('/').pop() || fileName
       } else if (info.contentType) {
-        // fallback by guessing extension
-        const ext = info.contentType.split('/').pop()?.split(';')[0]
-        fileName = `asset_${asset.id}.${ext || 'dat'}`
+        const cleanContentType = info.contentType.split(';')[0].trim()
+        const mappedExt = mimeExtensionMap[cleanContentType]
+
+        if (mappedExt) {
+          fileName = `asset_${asset.id}.${mappedExt}`
+        } else {
+          const guessed = cleanContentType.split('/').pop()
+          fileName = `asset_${asset.id}.${guessed || 'dat'}`
+        }
       }
     }
 
-    // ✅ Sanitize filename for Windows (remove invalid chars)
     fileName = fileName.replace(/[<>:"/\\|?*]+/g, '_')
 
     console.log('📦 Final resolved filename:', fileName)
@@ -395,7 +410,6 @@ export async function downloadFile(
     return
   }
 
-  // ✅ Perform browser-side download with correct name
   try {
     const response = await fetch(downloadUrl)
     if (!response.ok) throw new Error('Failed to fetch file.')
