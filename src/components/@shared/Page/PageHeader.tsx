@@ -1,6 +1,5 @@
 import SearchBar from '@components/Header/SearchBar'
 import BrandLogo from '@images/pontusx_logo_horizontal.svg'
-import GaiaXLogo from '@images/gaia-x-logo.svg'
 import Markdown from '@shared/Markdown'
 import classNames from 'classnames/bind'
 import { ReactElement } from 'react'
@@ -46,13 +45,16 @@ export default function PageHeader({
             </Button>
           </div>
           <div className={styles.logoContainer}>
-            <h4 className={styles.logoContainerTitle}>powered by</h4>
             <a
-              href="https://gaia-x.eu/"
+              href="https://gaia-x.eu/community/lighthouse-projects/"
               target="_blank"
               rel="noreferrer noopener"
             >
-              <GaiaXLogo />
+              <img
+                className={styles.gaiaxLighthouseLogo}
+                alt={'Gaia-X Lighthouse'}
+                src={'/images/gaia-x_lightouse.png'}
+              />
             </a>
           </div>
         </div>
