@@ -17,6 +17,13 @@
   margin-bottom: var(--spacer);
 }
 
+.title {
+  font-size: var(--font-size-h3);
+  color: var(--font-color-heading);
+  margin: 0 0 calc(var(--spacer) / 2) 0;
+  font-weight: var(--font-weight-bold);
+}
+
 .content {
   /* handling long text, like URLs */
   overflow-wrap: break-word;
@@ -121,7 +128,7 @@
 .content hr {
   display: block;
   margin: calc(var(--spacer) * 2) auto;
-  max-width: 20%;
+  max-width: 90%;
   border: 0;
   border-top: 2px solid var(--border-color);
 }

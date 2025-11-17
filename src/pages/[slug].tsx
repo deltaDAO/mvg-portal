@@ -22,7 +22,7 @@ export default function PageMarkdown(page: PageData): ReactElement {
     >
       <Container narrow>
         <div className={styles.section}>
-          <h3 className={styles.title}>{title}</h3>
+          <h2 className={styles.title}>{title}</h2>
           <div
             className={styles.content}
             dangerouslySetInnerHTML={{ __html: content }}
