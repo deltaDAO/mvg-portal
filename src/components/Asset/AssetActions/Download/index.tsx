@@ -382,7 +382,7 @@ export default function Download({
       )
       .add(new Decimal(formatUnits(consumeMarketOrderFee)))
 
-    const userBalance = new Decimal(balance.approved.ocean || 0)
+    const userBalance = new Decimal(balance?.approved?.ocean || 0)
     const sufficient = userBalance.greaterThanOrEqualTo(finalAmount)
 
     useEffect(() => {
