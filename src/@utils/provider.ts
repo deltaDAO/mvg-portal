@@ -339,6 +339,8 @@ export async function downloadFile(
   userCustomParameters?: UserCustomParameters
 ) {
   let downloadUrl
+  let fileName = `asset_${asset.id}.dat`
+
   const policyServer: PolicyServerInitiateActionData = {
     sessionId: verifierSessionId,
     successRedirectUri: ``,
@@ -346,6 +348,7 @@ export async function downloadFile(
     responseRedirectUri: ``,
     presentationDefinitionUri: ``
   }
+
   try {
     downloadUrl = await ProviderInstance.getDownloadUrl(
       asset.id,
@@ -357,12 +360,77 @@ export async function downloadFile(
       policyServer,
       userCustomParameters
     )
+    console.log('📦 Download URL:', downloadUrl)
+
+    const fileInfo: any = await getFileDidInfo(
+      asset.id,
+      service.id,
+      customProviderUrl || service.serviceEndpoint
+    )
+    console.log('📦 File info from provider:', fileInfo)
+
+    const mimeExtensionMap: Record<string, string> = {
+      'application/json': 'json',
+      'application/vnd.api+json': 'json',
+      'text/csv': 'csv',
+      'application/pdf': 'pdf',
+      'image/png': 'png',
+      'image/jpeg': 'jpg',
+      'text/plain': 'txt',
+      'application/octet-stream': 'bin'
+    }
+
+    if (Array.isArray(fileInfo) && fileInfo.length > 0) {
+      const info = fileInfo[0]
+
+      if (info.name) {
+        fileName = info.name
+      } else if (info.url) {
+        fileName = info.url.split('/').pop() || fileName
+      } else if (info.contentType) {
+        const cleanContentType = info.contentType.split(';')[0].trim()
+        const mappedExt = mimeExtensionMap[cleanContentType]
+
+        if (mappedExt) {
+          fileName = `asset_${asset.id}.${mappedExt}`
+        } else {
+          const guessed = cleanContentType.split('/').pop()
+          fileName = `asset_${asset.id}.${guessed || 'dat'}`
+        }
+      }
+    }
+
+    fileName = fileName.replace(/[<>:"/\\|?*]+/g, '_')
+
+    console.log('📦 Final resolved filename:', fileName)
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Provider Get download url] Error:', message)
     toast.error(message)
+    return
   }
-  await downloadFileBrowser(downloadUrl)
+
+  try {
+    const response = await fetch(downloadUrl)
+    if (!response.ok) throw new Error('Failed to fetch file.')
+
+    const blob = await response.blob()
+    const blobUrl = window.URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(blobUrl)
+
+    console.log(`✅ File "${fileName}" downloaded successfully.`)
+  } catch (error) {
+    const message = getErrorMessage(error.message)
+    LoggerInstance.error('[Download File Error]', message)
+    toast.error(message)
+  }
 }
 
 export async function checkValidProvider(

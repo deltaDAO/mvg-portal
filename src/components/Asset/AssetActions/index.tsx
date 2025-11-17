@@ -300,6 +300,7 @@ export default function AssetActions({
                 serviceIndex={serviceIndex}
                 dtBalance={dtBalance}
                 isBalanceSufficient={isBalanceSufficient}
+                setIsBalanceSufficient={setIsBalanceSufficient}
                 isAccountIdWhitelisted={isAccountIdWhitelisted}
                 file={fileMetadata}
                 fileIsLoading={fileIsLoading}
@@ -327,6 +328,7 @@ export default function AssetActions({
               serviceIndex={serviceIndex}
               dtBalance={dtBalance}
               isBalanceSufficient={isBalanceSufficient}
+              setIsBalanceSufficient={setIsBalanceSufficient}
               isAccountIdWhitelisted={isAccountIdWhitelisted}
               file={fileMetadata}
               fileIsLoading={fileIsLoading}
