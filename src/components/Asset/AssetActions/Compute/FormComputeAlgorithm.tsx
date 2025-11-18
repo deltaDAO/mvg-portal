@@ -10,10 +10,10 @@ import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
-import { getTokenBalanceFromSymbol } from '@utils/wallet'
+import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
@@ -29,6 +29,7 @@ import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCreden
 import AlgorithmDatasetsListForComputeSelection from './AlgorithmDatasetsListForComputeSelection'
 import { getAsset } from '@utils/aquarius'
 import { formatUnits } from 'ethers/lib/utils.js'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function FormStartComputeAlgo({
   asset,
@@ -121,6 +122,11 @@ export default function FormStartComputeAlgo({
     accessDetails.price
   )
 
+  const { chain } = useNetwork()
+  const { data: signer } = useSigner()
+
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
+
   const [datasetOrderPrice, setDatasetOrderPrice] = useState('0')
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
@@ -137,6 +143,22 @@ export default function FormStartComputeAlgo({
     const service = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
     return lookupVerifierSessionId?.(asset.id, service?.id)
   })
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!chain?.id || !signer?.provider) return
+
+      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        signer.provider
+      )
+
+      setTokenInfo(tokenDetails)
+    }
+
+    fetchTokenDetails()
+  }, [chain, signer])
 
   useEffect(() => {
     if (!asset || !service?.id || !asset.credentialSubject?.services?.length)
@@ -301,7 +323,9 @@ export default function FormStartComputeAlgo({
 
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
       const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
-      const fee = new Decimal(formatUnits(consumeMarketOrderFee))
+      const fee = new Decimal(
+        formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+      )
 
       datasetPrice = datasetPrice.add(price)
       datasetFee = datasetFee.add(fee)
@@ -321,7 +345,9 @@ export default function FormStartComputeAlgo({
         ? new Decimal(0)
         : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
 
-    const feeAlgo = new Decimal(formatUnits(consumeMarketOrderFee))
+    const feeAlgo = new Decimal(
+      formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+    )
 
     const priceC2D =
       c2dPrice !== undefined
@@ -573,14 +599,14 @@ export default function FormStartComputeAlgo({
 
               <Row
                 price={new Decimal(
-                  formatUnits(consumeMarketOrderFee)
+                  formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
                 ).toString()}
                 symbol={datasetSymbol}
                 type={`CONSUME MARKET ORDER FEE DATASETS`}
               />
               <Row
                 price={new Decimal(
-                  formatUnits(consumeMarketOrderFee)
+                  formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
                 ).toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
                 type={`CONSUME MARKET ORDER FEE ALGORITHM`}
@@ -589,7 +615,7 @@ export default function FormStartComputeAlgo({
               {computeEnvs?.length > 0 && (
                 <Row
                   price={new Decimal(
-                    formatUnits(consumeMarketOrderFee)
+                    formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
                   ).toString()}
                   symbol={providerFeesSymbol}
                   type={`CONSUME MARKET ORDER FEE C2D`}

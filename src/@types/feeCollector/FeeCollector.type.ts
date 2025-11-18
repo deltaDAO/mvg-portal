@@ -6,8 +6,9 @@ export type TokenDetails = {
 }
 
 export type Fees = {
-  swapOceanFee: string
-  swapNonOceanFee: string
-  consumeFee: string
-  providerFee: string
+  approved: boolean
+  feePercentage: string
+  maxFee: string
+  minFee: string
+  tokenAddress: string
 }

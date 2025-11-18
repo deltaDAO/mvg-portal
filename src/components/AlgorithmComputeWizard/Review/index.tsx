@@ -27,7 +27,6 @@ import { compareAsBN } from '@utils/numbers'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
-import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import { formatUnits } from 'ethers/lib/utils.js'
 interface VerificationItem {
@@ -66,7 +65,8 @@ export default function Review({
   datasetProviderFeeProp,
   algorithmProviderFeeProp,
   isBalanceSufficient,
-  setIsBalanceSufficient
+  setIsBalanceSufficient,
+  tokenInfo
 }: {
   asset: AssetExtended
   service: Service
@@ -103,6 +103,7 @@ export default function Review({
   datasetProviderFeeProp?: string
   algorithmProviderFeeProp?: string
   isBalanceSufficient: boolean
+  tokenInfo: TokenInfo
   setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId } = useAccount()
@@ -110,7 +111,7 @@ export default function Review({
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const { isAssetNetwork } = useAsset()
-  const { isSupportedOceanNetwork } = useNetworkMetadata()
+
   const {
     setFieldValue,
     values,
@@ -130,9 +131,6 @@ export default function Review({
       null
   )
 
-  const debugClick = () => {}
-
-  const [loading, setLoading] = useState(false)
   const [serviceIndex, setServiceIndex] = useState(0)
   const [datasetProviderFee, setDatasetProviderFee] = useState(
     datasetProviderFeeProp || null
@@ -189,6 +187,7 @@ export default function Review({
       'Your account is not whitelisted to purchase this asset.'
     )
   }
+
   useEffect(() => {
     const queue: VerificationItem[] = []
     if (!values.withoutDataset) {
@@ -444,14 +443,16 @@ export default function Review({
     })
     .reduce(
       (acc, dataset) =>
-        acc.add(new Decimal(formatUnits(consumeMarketOrderFee))),
+        acc.add(
+          new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo.decimals))
+        ),
       new Decimal(0)
     )
     .toDecimalPlaces(MAX_DECIMALS)
   // Algorithm fee
   const algoFeeConsume = accessDetails.isOwned
     ? new Decimal(0)
-    : new Decimal(formatUnits(consumeMarketOrderFee))
+    : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo.decimals))
   const algorithmMarketFee = new Decimal(
     calculateAlgorithmMarketFee(
       consumeMarketFee,
@@ -486,13 +487,17 @@ export default function Review({
   const datasetProviderFees = [
     {
       name: 'PROVIDER FEE DATASET',
-      value: datasetProviderFee ? formatUnits(datasetProviderFee) : '0'
+      value: datasetProviderFee
+        ? formatUnits(datasetProviderFee, tokenInfo.decimals)
+        : '0'
     }
   ]
   const algorithmProviderFees = [
     {
       name: 'PROVIDER FEE ALGORITHM',
-      value: algorithmProviderFee ? formatUnits(algorithmProviderFee) : '0'
+      value: algorithmProviderFee
+        ? formatUnits(algorithmProviderFee, tokenInfo.decimals)
+        : '0'
     }
   ]
 
@@ -686,7 +691,7 @@ export default function Review({
       const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
       const fee = details?.isOwned
         ? new Decimal(0)
-        : new Decimal(formatUnits(consumeMarketOrderFee))
+        : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo.decimals))
 
       datasetPrice = datasetPrice.add(price)
       datasetFee = datasetFee.add(fee)
@@ -704,7 +709,7 @@ export default function Review({
 
     const feeAlgo = accessDetails.isOwned
       ? new Decimal(0)
-      : new Decimal(formatUnits(consumeMarketOrderFee))
+      : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo.decimals))
 
     const priceC2D =
       c2dPrice !== undefined

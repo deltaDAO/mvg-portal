@@ -9,7 +9,6 @@ import {
   ZERO_ADDRESS
 } from '@oceanprotocol/lib'
 import { getFixedBuyPrice } from './ocean/fixedRateExchange'
-import Decimal from 'decimal.js'
 import {
   consumeMarketOrderFee,
   publisherMarketOrderFee,
@@ -17,7 +16,7 @@ import {
 } from '../../app.config.cjs'
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
-import { getDummySigner } from './wallet'
+import { getDummySigner, getTokenInfo } from './wallet'
 import { Service } from '../@types/ddo/Service'
 import { AssetExtended } from '../@types/AssetExtended'
 import { CancelToken } from 'axios'
@@ -220,7 +219,7 @@ export async function getAccessDetails(
       const fre = new FixedRateExchange(freAddress, signer, chainId)
 
       const exchange = await fre.getExchange(exchangeId)
-
+      const tokenInfo = await getTokenInfo(exchange.baseToken, signer.provider)
       return {
         ...accessDetails,
         type: 'fixed',
@@ -230,7 +229,7 @@ export async function getAccessDetails(
           address: exchange.baseToken,
           name: await datatoken.getName(exchange.baseToken), // reuse the datatoken instance since it is ERC20
           symbol: await datatoken.getSymbol(exchange.baseToken),
-          decimals: parseInt(exchange.btDecimals)
+          decimals: tokenInfo?.decimals || parseInt(exchange.btDecimals)
         }
       }
     } catch (error) {

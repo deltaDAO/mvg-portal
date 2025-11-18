@@ -1,6 +1,5 @@
 import { ReactElement } from 'react'
 import Price from './Price'
-import Fees from './Fees'
 import styles from './Fixed.module.css'
 import Alert from '@shared/atoms/Alert'
 
@@ -19,8 +18,6 @@ export default function Fixed({
         <h4 className={styles.title}>Price</h4>
         <Price approvedBaseTokens={approvedBaseTokens} />
       </div>
-
-      <Fees tooltips={content.tooltips} />
     </div>
   )
 }

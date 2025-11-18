@@ -188,7 +188,7 @@ export async function order(
           Number(orderPriceAndFees?.price) +
           Number(orderPriceAndFees?.opcFee) +
           Number(providerFeeHuman) +
-          Number(Number(consumeMarketOrderFee) / 1e18)
+          Number(Number(consumeMarketOrderFee) / 10 ** baseTokenDecimals)
         ) // just added more amount to test
           .toString()
         console.log('[order] TEMPLATE 2 total approve amount:', approveAmount)

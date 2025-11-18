@@ -72,7 +72,6 @@ export function getOceanConfig(network: string | number): any {
   if (erc20Map[networkKey]) {
     config.oceanTokenAddress = erc20Map[networkKey]
   }
-
   return config as Config
 }
 export function getDevelopmentConfig(): Config {
