@@ -21,7 +21,6 @@ export function compareAsBN(balance: string, price: string): boolean {
   const aBN = new Decimal(balance)
   const bBN = new Decimal(price)
   const compare = aBN.comparedTo(bBN)
-
   switch (compare) {
     case 1: // balance is greater than price
     case 0: // balance is equal to price

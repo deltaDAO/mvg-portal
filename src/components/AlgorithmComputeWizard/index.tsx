@@ -139,7 +139,7 @@ export default function ComputeWizard({
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
-  const [providerFeesSymbol] = useState<string>('OCEAN')
+  const [providerFeesSymbol, setProviderFeeSymbol] = useState<string>('OCEAN')
   const [datasetOrderPriceAndFees, setDatasetOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
   const [algoOrderPriceAndFees, setAlgoOrderPriceAndFees] =
@@ -161,6 +161,17 @@ export default function ComputeWizard({
   const [allResourceValues, setAllResourceValues] = useState<{
     [envId: string]: ResourceType
   }>({})
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!oceanTokenAddress || !web3provider) return
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+
+      setProviderFeeSymbol(tokenDetails.symbol)
+    }
+
+    fetchTokenDetails()
+  }, [oceanTokenAddress, web3provider])
 
   const getSelectedComputeEnvAndResources = (
     formikValues: FormComputeData | Record<string, never>
@@ -272,7 +283,6 @@ export default function ComputeWizard({
       let actualAlgoService = service
       let actualSvcIndex = svcIndex
       let actualAlgoAccessDetails = accessDetails
-
       const algoServiceId =
         selectedAlgorithmAsset?.id?.split('|')[1] ||
         selectedAlgorithmAsset?.credentialSubject?.services?.[svcIndex]?.id ||
@@ -380,10 +390,10 @@ export default function ComputeWizard({
         }
 
         if (!amountWei.eq(0)) {
-          console.log(`Approving ${amountHuman} OCEAN to escrow...`)
+          console.log(`Approving ${amountHuman} to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
-          console.log(`Approved ${amountHuman} OCEAN`)
+          console.log(`Approved ${amountHuman}`)
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
             if (allowanceNow.gte(amountWei)) {
@@ -392,13 +402,10 @@ export default function ComputeWizard({
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
 
-          console.log(
-            `Depositing ${amountHuman} OCEAN to escrow...`,
-            amountHuman
-          )
+          console.log(`Depositing ${amountHuman} to escrow...`, amountHuman)
           const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
           await depositTx.wait()
-          console.log(`Deposited ${amountHuman} OCEAN`)
+          console.log(`Deposited ${amountHuman}`)
           console.log(
             'Authorizing compute job...',
             amountHuman,
@@ -1239,10 +1246,8 @@ export default function ComputeWizard({
                             : 'OCEAN')
                         }
                         algorithmSymbol={
-                          selectedAlgorithmAsset?.accessDetails?.[svcIndex]
-                            ?.baseToken?.symbol ||
-                          (selectedAlgorithmAsset?.credentialSubject
-                            ?.chainId === 137
+                          asset?.accessDetails?.[svcIndex]?.baseToken?.symbol ||
+                          (asset?.credentialSubject?.chainId === 137
                             ? 'mOCEAN'
                             : 'OCEAN')
                         }

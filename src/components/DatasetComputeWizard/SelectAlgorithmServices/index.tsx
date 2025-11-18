@@ -9,6 +9,9 @@ import StepTitle from '@shared/StepTitle'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { Service } from 'src/@types/ddo/Service'
 import { Asset } from 'src/@types/Asset'
+import { getOceanConfig } from '@utils/ocean'
+import { getDummySigner, getTokenInfo } from '@utils/wallet'
+import { useNetwork } from 'wagmi'
 
 interface AlgorithmService {
   id: string
@@ -57,6 +60,7 @@ const SelectAlgorithmServices = ({
   ddoListAlgorithms = []
 }: SelectAlgorithmServicesProps) => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
+  const { chain } = useNetwork()
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm | null>(
     null
   )
@@ -100,16 +104,29 @@ const SelectAlgorithmServices = ({
           setIsLoading(false)
           return
         }
-
-        const service = algorithmAsset.credentialSubject?.services?.find(
+        const idx = algorithmAsset.credentialSubject?.services?.findIndex(
           (svc: Service) => svc.id === serviceId
         )
+        const service =
+          idx !== undefined && idx !== -1
+            ? algorithmAsset.credentialSubject.services[idx]
+            : undefined
+        const price =
+          idx !== undefined && idx !== -1
+            ? algorithmAsset.indexedMetadata.stats[idx].prices[0].price
+            : undefined
 
         if (!service) {
           setIsLoading(false)
           return
         }
 
+        const { oceanTokenAddress } = getOceanConfig(chain.id)
+        const signer = await getDummySigner(chain.id)
+        const tokenDetails = await getTokenInfo(
+          oceanTokenAddress,
+          signer.provider
+        )
         const algoService: AlgorithmService = {
           id: service.id,
           name: extractString(service.name) || service.type,
@@ -118,8 +135,8 @@ const SelectAlgorithmServices = ({
             extractString(service.description) || `Service for ${service.type}`,
           type: service.type,
           duration: service.timeout || 0,
-          price: service.price,
-          symbol: 'OCEAN',
+          price,
+          symbol: tokenDetails.symbol,
           checked: true,
           userParameters: service.consumerParameters
         }

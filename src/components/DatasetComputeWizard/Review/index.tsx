@@ -152,6 +152,8 @@ export default function Review({
   const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { chain } = useNetwork()
 
+  const [symbol, setSymbol] = useState('')
+
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
   const {
     isValid,
@@ -199,7 +201,7 @@ export default function Review({
   const errorMessages: string[] = []
 
   if (!isBalanceSufficient) {
-    errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
+    errorMessages.push(`You don't have enough ${symbol} to make this purchase.`)
   }
 
   if (!isAssetNetwork) {
@@ -229,6 +231,7 @@ export default function Review({
       )
 
       setTokenInfo(tokenDetails)
+      setSymbol(tokenDetails.symbol || 'OCEAN')
     }
 
     fetchTokenDetails()
@@ -522,7 +525,7 @@ export default function Review({
     {
       name: 'PROVIDER FEE DATASET',
       value: datasetProviderFee
-        ? formatUnits(datasetProviderFee, tokenInfo.decimals)
+        ? formatUnits(datasetProviderFee, tokenInfo?.decimals)
         : '0'
     }
   ]
@@ -530,7 +533,7 @@ export default function Review({
     {
       name: 'PROVIDER FEE ALGORITHM',
       value: algorithmProviderFee
-        ? formatUnits(algorithmProviderFee, tokenInfo.decimals)
+        ? formatUnits(algorithmProviderFee, tokenInfo?.decimals)
         : '0'
     }
   ]
@@ -559,7 +562,7 @@ export default function Review({
       value: accessDetails?.isOwned
         ? '0'
         : new Decimal(
-            formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+            formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
           ).toString()
     },
     {
@@ -567,7 +570,7 @@ export default function Review({
       value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
         ? '0'
         : new Decimal(
-            formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+            formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
           ).toString()
     }
   ]
@@ -744,10 +747,10 @@ export default function Review({
     const feeAlgo = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
       ?.isOwned
       ? new Decimal(0)
-      : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo.decimals))
+      : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
     const feeDataset = accessDetails?.isOwned
       ? new Decimal(0)
-      : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo.decimals))
+      : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
 
     // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
@@ -852,10 +855,13 @@ export default function Review({
     ) {
       priceChecks.push({ value: c2dPrice.toString(), symbol: c2dSymbol })
     }
-
     let sufficient = true
-    for (const price of priceChecks) {
+    const filteredPriceChecks = priceChecks.filter(
+      (price) => price.value !== '0'
+    )
+    for (const price of filteredPriceChecks) {
       const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
+
       if (
         !baseTokenBalance ||
         !compareAsBN(baseTokenBalance, totalPriceToDisplay)
@@ -1002,6 +1008,7 @@ export default function Review({
                       assetId={item.asset?.id}
                       serviceId={item.service?.id}
                       onCredentialRefresh={() => startVerification(i)}
+                      symbol={symbol}
                     />
                   )
                 })
@@ -1019,6 +1026,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   duration={item.duration}
+                  symbol={symbol}
                 />
               ))}
 
@@ -1028,6 +1036,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   valueType="escrow"
+                  symbol={symbol}
                 />
               ))}
 
@@ -1037,6 +1046,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   valueType="deposit"
+                  symbol={symbol}
                 />
               ))}
             </div>
@@ -1051,6 +1061,7 @@ export default function Review({
                   key={fee.name}
                   itemName={fee.name}
                   value={fee.value}
+                  symbol={symbol}
                 />
               ))}
 
@@ -1060,6 +1071,7 @@ export default function Review({
                       key={fee.name}
                       itemName={fee.name}
                       value={fee.value}
+                      symbol={symbol}
                     />
                   ))
                 : null}
@@ -1070,6 +1082,7 @@ export default function Review({
                       key={fee.name}
                       itemName={fee.name}
                       value={fee.value}
+                      symbol={symbol}
                     />
                   ))
                 : null}

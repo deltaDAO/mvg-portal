@@ -35,10 +35,7 @@ function useEnterpriseFeeColletor() {
         )
         return {
           approved: fees[0], // boolean
-          feePercentage: ethers.utils.formatUnits(
-            fees[1],
-            tokenDetails.decimals
-          ),
+          feePercentage: ethers.utils.formatUnits(fees[1], '18'),
           maxFee: ethers.utils.formatUnits(fees[2], tokenDetails.decimals),
           minFee: ethers.utils.formatUnits(fees[3], tokenDetails.decimals),
           tokenAddress: config.oceanTokenAddress

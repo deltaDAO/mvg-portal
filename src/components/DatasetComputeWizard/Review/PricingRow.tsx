@@ -29,6 +29,7 @@ interface PricingRowProps {
   serviceId?: string
   onCredentialRefresh?: () => void
   infoMessage?: string
+  symbol?: string
 }
 
 export default function PricingRow({
@@ -46,7 +47,8 @@ export default function PricingRow({
   serviceId,
   onCredentialRefresh,
   infoMessage,
-  valueType
+  valueType,
+  symbol
 }: PricingRowProps): ReactElement {
   const {
     credentialStatus: expirationStatus,
@@ -131,7 +133,12 @@ export default function PricingRow({
         </div>
       </div>
       <div className={styles.priceInfo}>
-        <PriceDisplay value={value} duration={duration} valueType={valueType} />
+        <PriceDisplay
+          value={value}
+          duration={duration}
+          valueType={valueType}
+          symbol={symbol}
+        />
         {infoMessage && !actionLabel && (
           <div style={{ marginTop: '4px' }}>
             <Alert state="info">{infoMessage}</Alert>

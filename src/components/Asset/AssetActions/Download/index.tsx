@@ -142,7 +142,6 @@ export default function Download({
         oceanTokenAddress,
         signer.provider
       )
-
       setTokenInfo(tokenDetails)
     }
 
@@ -629,7 +628,9 @@ export default function Download({
                                   orderPriceAndFees?.providerFee
                                     ?.providerFeeAmount || '0',
                                   tokenInfo.decimals
-                                )} OCEAN applies, as well as possible network gas fees.`
+                                )} ${
+                                  tokenInfo.symbol
+                                } applies, as well as possible network gas fees.`
                               : `This dataset is free to use. Please note that network gas fees still apply, even when using free assets.`
                           }
                         />

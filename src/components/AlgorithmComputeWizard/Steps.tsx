@@ -137,7 +137,6 @@ export default function Steps({
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
   const { values } = useFormikContext<FormComputeData>()
-
   useEffect(() => {
     if (!chain?.id || !accountId) return
     setFieldValue('user.chainId', chain?.id)
