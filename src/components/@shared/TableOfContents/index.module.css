@@ -1,0 +1,107 @@
+.container {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  height: fit-content;
+}
+
+.sticky {
+  position: relative;
+  max-height: calc(100vh - 140px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--publish-spacing-md);
+  background: var(--background-body);
+  border: var(--publish-input-border-size) solid
+    var(--publish-input-border-color);
+  border-radius: var(--publish-input-border-radius);
+  box-shadow: var(--publish-shadow-sm);
+  z-index: 10;
+}
+
+.title {
+  font-size: var(--publish-font-size-lg);
+  font-weight: var(--publish-font-weight-bold);
+  color: var(--font-color-heading);
+  margin: 0 0 var(--publish-spacing-md) 0;
+  padding-bottom: var(--publish-spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  margin: 0;
+  padding: 0;
+  line-height: var(--publish-line-height-lg);
+}
+
+.item.level2 {
+  margin-bottom: var(--publish-spacing-sm);
+}
+
+.item.level3 {
+  margin-left: var(--publish-spacing-md);
+  margin-bottom: calc(var(--publish-spacing-sm) / 2);
+  font-size: var(--publish-font-size);
+}
+
+.item.level4 {
+  margin-left: calc(var(--publish-spacing-md) * 1.5);
+  margin-bottom: calc(var(--publish-spacing-sm) / 2);
+  font-size: var(--publish-font-size);
+}
+
+.item.level5 {
+  margin-left: calc(var(--publish-spacing-md) * 2);
+  margin-bottom: calc(var(--publish-spacing-sm) / 2);
+  font-size: var(--publish-font-size);
+}
+
+.item.level6 {
+  margin-left: calc(var(--publish-spacing-md) * 2.5);
+  margin-bottom: calc(var(--publish-spacing-sm) / 2);
+  font-size: var(--publish-font-size);
+}
+
+.link {
+  color: var(--font-color-text);
+  text-decoration: none;
+  display: block;
+  padding: calc(var(--publish-spacing-xs) / 2) 0;
+  transition: color 0.2s ease;
+  border-left: 2px solid transparent;
+  padding-left: var(--publish-spacing-sm);
+  margin-left: calc(var(--publish-spacing-sm) * -1);
+}
+
+.link:hover {
+  color: var(--color-primary);
+}
+
+.item.active .link {
+  color: var(--color-primary);
+  font-weight: var(--publish-font-weight-bold);
+  border-left-color: var(--color-primary);
+}
+
+.sticky::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sticky::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sticky::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.sticky::-webkit-scrollbar-thumb:hover {
+  background: var(--font-color-text);
+}

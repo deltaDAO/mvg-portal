@@ -1,17 +1,26 @@
 import { ReactElement } from 'react'
 import { markdownToHtmlWithToc } from '@utils/markdown'
 import { getPageBySlug, getAllPages, PageData } from '@utils/markdownPages'
+import { extractHeadingsFromMarkdown, Heading } from '@utils/extractHeadings'
 import Page from '@shared/Page'
 import styles from '@shared/Page/PageMarkdown.module.css'
 import Container from '@shared/atoms/Container'
 import PrivacyPolicyHeader from '../../components/Privacy/PrivacyHeader'
+import TableOfContents from '../../components/@shared/TableOfContents'
+import StickySidebarLayout from '../../components/@shared/StickySidebarLayout'
+import HashScrollHandler from '../../components/@shared/HashScrollHandler'
 import { useRouter } from 'next/router'
 
-export default function PageMarkdown(page: PageData): ReactElement {
+interface PrivacyPageData extends PageData {
+  headings: Heading[]
+}
+
+export default function PageMarkdown(page: PrivacyPageData): ReactElement {
   const router = useRouter()
-  if (!page || page.content === '') return null
   const { title, description } = page.frontmatter
-  const { slug, content } = page
+  const { slug, content, headings } = page
+
+  if (!page || page.content === '') return null
 
   return (
     <Page
@@ -20,12 +29,28 @@ export default function PageMarkdown(page: PageData): ReactElement {
       uri={router.asPath}
       headerCenter
     >
-      <Container narrow>
+      <Container>
+        <HashScrollHandler />
         <PrivacyPolicyHeader policy={slug.replace('/privacy/', '')} />
-        <div
-          className={styles.content}
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+        {headings.length > 0 ? (
+          <StickySidebarLayout
+            sidebar={<TableOfContents headings={headings} />}
+          >
+            <div className={styles.section}>
+              <div
+                className={styles.content}
+                dangerouslySetInnerHTML={{ __html: content }}
+              />
+            </div>
+          </StickySidebarLayout>
+        ) : (
+          <div className={styles.section}>
+            <div
+              className={styles.content}
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </div>
+        )}
       </Container>
     </Page>
   )
@@ -35,12 +60,13 @@ export async function getStaticProps({
   params
 }: {
   params: { slug: string }
-}): Promise<{ props: PageData }> {
+}): Promise<{ props: PrivacyPageData }> {
   const page = getPageBySlug(params.slug, 'privacy')
   const content = markdownToHtmlWithToc(page?.content || '')
+  const headings = extractHeadingsFromMarkdown(page?.content || '')
 
   return {
-    props: { ...page, content }
+    props: { ...page, content, headings }
   }
 }
 
