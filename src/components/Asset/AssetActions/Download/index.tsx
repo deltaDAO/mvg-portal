@@ -404,9 +404,9 @@ export default function Download({
       )
       .add(new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo.decimals)))
 
-    const userBalance = new Decimal(balance?.approved?.ocean || 0)
+    const firstKey = Object.keys(balance?.approved || {})[0]
+    const userBalance = new Decimal(balance?.approved?.[firstKey] || 0)
     const sufficient = userBalance.greaterThanOrEqualTo(finalAmount)
-
     useEffect(() => {
       if (!orderPriceAndFees) return
       setIsBalanceSufficient(sufficient)
