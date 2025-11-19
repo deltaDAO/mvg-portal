@@ -398,7 +398,7 @@ export default function Download({
         new Decimal(
           formatUnits(
             orderPriceAndFees?.providerFee?.providerFeeAmount || 0,
-            tokenInfo.decimals
+            tokenInfo?.decimals
           )
         )
       )
@@ -451,7 +451,7 @@ export default function Download({
                 price={
                   formatUnits(
                     orderPriceAndFees?.providerFee?.providerFeeAmount,
-                    tokenInfo.decimals
+                    tokenInfo?.decimals
                   ) || '0'
                 }
                 symbol={price.tokenSymbol}
@@ -621,15 +621,15 @@ export default function Download({
                               formatUnits(
                                 orderPriceAndFees?.providerFee
                                   ?.providerFeeAmount || '0',
-                                tokenInfo.decimals
+                                tokenInfo?.decimals
                               )
                             ) > 0
                               ? `This dataset is free to use. Please note that a provider fee of ${formatUnits(
                                   orderPriceAndFees?.providerFee
                                     ?.providerFeeAmount || '0',
-                                  tokenInfo.decimals
+                                  tokenInfo?.decimals
                                 )} ${
-                                  tokenInfo.symbol
+                                  tokenInfo?.symbol
                                 } applies, as well as possible network gas fees.`
                               : `This dataset is free to use. Please note that network gas fees still apply, even when using free assets.`
                           }

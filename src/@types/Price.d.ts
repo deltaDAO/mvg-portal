@@ -21,6 +21,7 @@ declare global {
     consumeMarketFixedSwapFee: string
     providerFee: ProviderFees
     opcFee: string
+    baseTokenAmount?: string
   }
 
   /**
