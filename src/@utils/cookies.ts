@@ -47,9 +47,12 @@ export function setCookie(
   cookieValue: string | boolean,
   cookieOptions = DEFAULT_COOKIE_OPTIONS
 ): void {
-  const cookieSecurity = location ? location.protocol === 'https:' : true
+  const cookieSecurity =
+    typeof window !== 'undefined' && (window as any).location
+      ? (window as any).location.protocol === 'https:'
+      : true
 
-  const options = { ...cookieOptions, security: cookieSecurity }
+  const options: any = { ...cookieOptions, secure: cookieSecurity }
 
   // Fallback for older browsers where can not set SameSite=None
   // SEE: https://web.dev/samesite-cookie-recipes/#handling-incompatible-clients

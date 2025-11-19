@@ -22,7 +22,7 @@ export default function Page404(): ReactElement {
       <Page
         title={title}
         description={description}
-        uri={router.route}
+        uri={router.pathname}
         headerCenter
       >
         {actions.map((action: { title: string; url: string }) => (

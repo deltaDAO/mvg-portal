@@ -12,8 +12,9 @@ import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
 import Automation from './UserPreferences/Automation'
-import NetworkMenu from './NetworkMenu'
-const Wallet = loadable(() => import('./Wallet'))
+const NetworkMenu = loadable(() => import('./NetworkMenu'), { ssr: false })
+// Render Wallet on client only to avoid SSR hydration mismatch
+const Wallet = loadable(() => import('./Wallet'), { ssr: false })
 
 const cx = classNames.bind(styles)
 
