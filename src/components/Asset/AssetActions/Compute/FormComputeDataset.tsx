@@ -319,10 +319,10 @@ export default function FormStartCompute({
 
     // Now use priceC2D everywhere you'd use providerFees
     const feeAlgo = new Decimal(
-      formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+      formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
     )
     const feeDataset = new Decimal(
-      formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+      formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
     )
 
     // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
@@ -583,7 +583,7 @@ export default function FormStartCompute({
 
               <Row
                 price={new Decimal(
-                  formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                 ).toString()} // consume market order fee fee amount
                 symbol={datasetSymbol}
                 type={`CONSUME MARKET ORDER FEE DATASET)`}
@@ -591,7 +591,7 @@ export default function FormStartCompute({
 
               <Row
                 price={new Decimal(
-                  formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                 ).toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
                 type={`CONSUME MARKET ORDER FEE ALGORITHM`}
@@ -600,7 +600,7 @@ export default function FormStartCompute({
               {computeEnvs?.length > 0 && (
                 <Row
                   price={new Decimal(
-                    formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+                    formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                   ).toString()}
                   symbol={providerFeesSymbol}
                   type={`CONSUME MARKET ORDER FEE C2D)`}

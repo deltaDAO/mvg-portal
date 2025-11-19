@@ -75,7 +75,7 @@ export async function transformAssetToAssetSelection(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: tokenInfo.symbol || 'OCEAN',
+          tokenSymbol: tokenInfo?.symbol || 'OCEAN',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -201,7 +201,7 @@ export async function transformAssetToAssetSelectionDataset(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: tokenInfo.symbol || 'OCEAN',
+          tokenSymbol: tokenInfo?.symbol || 'OCEAN',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -276,7 +276,7 @@ export async function transformAssetToAssetSelectionEdit(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: tokenInfo.symbol || 'OCEAN',
+          tokenSymbol: tokenInfo?.symbol || 'OCEAN',
           checked: !!(isAllAlgorithmsAllowed || matches.has(key)),
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -358,7 +358,7 @@ export async function transformAssetToAssetSelectionForComputeWizard(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: tokenInfo.symbol || 'OCEAN',
+          tokenSymbol: tokenInfo?.symbol || 'OCEAN',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow

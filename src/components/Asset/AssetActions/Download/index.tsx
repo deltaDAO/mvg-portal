@@ -402,7 +402,7 @@ export default function Download({
           )
         )
       )
-      .add(new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo.decimals)))
+      .add(new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)))
 
     const firstKey = Object.keys(balance?.approved || {})[0]
     const userBalance = new Decimal(balance?.approved?.[firstKey] || 0)
@@ -459,7 +459,7 @@ export default function Download({
               />
               <Row
                 price={
-                  formatUnits(consumeMarketOrderFee, tokenInfo.decimals) || '0'
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals) || '0'
                 }
                 symbol={price.tokenSymbol}
                 type="CONSUME MARKET FEE"

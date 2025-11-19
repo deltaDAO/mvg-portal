@@ -324,7 +324,7 @@ export default function FormStartComputeAlgo({
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
       const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
       const fee = new Decimal(
-        formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+        formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
       )
 
       datasetPrice = datasetPrice.add(price)
@@ -346,7 +346,7 @@ export default function FormStartComputeAlgo({
         : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
 
     const feeAlgo = new Decimal(
-      formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+      formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
     )
 
     const priceC2D =
@@ -599,14 +599,14 @@ export default function FormStartComputeAlgo({
 
               <Row
                 price={new Decimal(
-                  formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                 ).toString()}
                 symbol={datasetSymbol}
                 type={`CONSUME MARKET ORDER FEE DATASETS`}
               />
               <Row
                 price={new Decimal(
-                  formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                 ).toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
                 type={`CONSUME MARKET ORDER FEE ALGORITHM`}
@@ -615,7 +615,7 @@ export default function FormStartComputeAlgo({
               {computeEnvs?.length > 0 && (
                 <Row
                   price={new Decimal(
-                    formatUnits(consumeMarketOrderFee, tokenInfo.decimals)
+                    formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                   ).toString()}
                   symbol={providerFeesSymbol}
                   type={`CONSUME MARKET ORDER FEE C2D`}
