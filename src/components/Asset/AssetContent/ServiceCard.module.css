@@ -8,6 +8,7 @@
   position: relative;
   min-height: 145px;
   min-width: 250px;
+  pointer-events: auto;
 }
 
 .service:hover {
@@ -49,6 +50,7 @@
   align-items: flex-start;
   gap: 6px;
   flex-direction: row;
+  position: relative;
 }
 
 .serviceDescription {
@@ -83,6 +85,13 @@
   border-radius: 10px;
   padding: 0 6px;
   white-space: nowrap;
+  background: transparent;
+  font-family: inherit;
+  line-height: inherit;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  flex-shrink: 0;
 }
 
 .toggle:hover {
@@ -91,10 +100,6 @@
 
 .serviceDescription p {
   margin-bottom: 0;
-}
-
-.toggle:hover {
-  background: rgba(0, 150, 136, 0.1);
 }
 .serviceDescriptionPlaceholder {
   font-family: var(--font-family);
@@ -126,19 +131,25 @@
     #fdd655 100%
   );
   border: none;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .selectButton:hover {
   background: #f3ce4a;
 }
+
 .selectButtonWrapper {
   position: absolute;
   bottom: 20px;
   right: 20px;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  z-index: 2;
+  pointer-events: none;
 }
 
-.service:hover .selectButtonWrapper {
+.selectButtonWrapper.visible {
   opacity: 1;
+  pointer-events: auto;
 }

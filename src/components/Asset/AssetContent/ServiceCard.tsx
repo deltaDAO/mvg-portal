@@ -12,13 +12,19 @@ export default function ServiceCard({
   onClick: () => void
 }): ReactElement {
   const [expanded, setExpanded] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
 
   if (!accessDetails) return null
 
   const description = service.description?.['@value']
 
   return (
-    <div onClick={onClick} className={styles.service}>
+    <div
+      onClick={onClick}
+      className={styles.service}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <span className={styles.serviceTitle}>{service.name || 'Unknown'} </span>
       <br />
       <div className={styles.descriptionWrapper}>
@@ -32,15 +38,20 @@ export default function ServiceCard({
               {description}
             </span>
             {description.length > 50 && (
-              <span
+              <button
+                type="button"
                 className={styles.toggle}
                 onClick={(e) => {
                   e.stopPropagation()
-                  setExpanded(!expanded)
+                  e.preventDefault()
+                  setExpanded((prev) => !prev)
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation()
                 }}
               >
                 {expanded ? 'Show less' : 'Show more'}
-              </span>
+              </button>
             )}
           </>
         ) : (
@@ -64,7 +75,11 @@ export default function ServiceCard({
         <span className={styles.free}>free</span>
       )}
       <br />
-      <div className={styles.selectButtonWrapper}>
+      <div
+        className={`${styles.selectButtonWrapper} ${
+          isHovered ? styles.visible : ''
+        }`}
+      >
         <button className={styles.selectButton}>Select</button>
       </div>
     </div>
