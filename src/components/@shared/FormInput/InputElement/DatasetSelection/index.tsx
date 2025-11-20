@@ -94,9 +94,7 @@ export default function DatasetSelection({
                         Number(dataset.datasetPrice) > 0 ? (
                           <>
                             {dataset.datasetPrice}
-                            <span className={styles.priceUnit}>
-                              {dataset.symbol}
-                            </span>
+                            <span className={styles.priceUnit}></span>
                           </>
                         ) : (
                           <span className={styles.priceUnit}> FREE</span>
