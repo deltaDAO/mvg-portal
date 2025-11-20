@@ -109,13 +109,12 @@ export async function getOrderPriceAndFees(
       asset.credentialSubject.chainId,
       signer
     )
-    console.log('fixed', fixed)
-    console.log('access', accessDetails.price)
     orderPriceAndFee.price = accessDetails.price
-    orderPriceAndFee.baseTokenAmount = fixed.baseTokenAmount
-    orderPriceAndFee.opcFee = fixed.oceanFeeAmount
-    orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount
-    orderPriceAndFee.consumeMarketFixedSwapFee = fixed.consumeMarketFeeAmount
+    orderPriceAndFee.baseTokenAmount = fixed?.baseTokenAmount || '0'
+    orderPriceAndFee.opcFee = fixed?.oceanFeeAmount || '0'
+    orderPriceAndFee.publisherMarketFixedSwapFee = fixed?.marketFeeAmount || '0'
+    orderPriceAndFee.consumeMarketFixedSwapFee =
+      fixed?.consumeMarketFeeAmount || '0'
   }
 
   return orderPriceAndFee
