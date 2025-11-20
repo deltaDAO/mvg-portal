@@ -219,7 +219,7 @@ export default function Details({
                   title="Job Cost"
                   content={
                     job?.payment?.cost
-                      ? `${job.payment.cost.toString()} OCEAN`
+                      ? `${job.payment.cost.toString()}`
                       : 'FREE'
                   }
                 />

@@ -49,6 +49,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { State } from 'src/@types/ddo/State'
 import { useSsiWallet } from '@context/SsiWallet'
+import { getTokenInfo } from '@utils/wallet'
 
 export default function AddService({
   asset
@@ -169,12 +170,17 @@ export default function AddService({
           `Creating fixed rate exchange with price ${values.price} for datatoken ${datatokenAddress}`
         )
 
+        const tokenInfo = await getTokenInfo(
+          config.oceanTokenAddress,
+          signer.provider
+        )
+
         const freParams: FreCreationParams = {
           fixedRateAddress: config.fixedRateExchangeAddress,
           baseTokenAddress: config.oceanTokenAddress,
           owner: accountId,
           marketFeeCollector: marketFeeAddress,
-          baseTokenDecimals: 18,
+          baseTokenDecimals: tokenInfo?.decimals || 18,
           datatokenDecimals: 18,
           fixedRate: ethers.utils
             .parseEther(values.price.toString())
@@ -182,7 +188,6 @@ export default function AddService({
           marketFee: publisherMarketFixedSwapFee,
           withMint: true
         }
-
         pricingTransactionReceipt = await datatoken.createFixedRate(
           datatokenAddress,
           accountId,

@@ -180,7 +180,6 @@ export default function AssetActions({
       balance,
       accessDetails.baseToken?.symbol
     )
-
     setIsBalanceSufficient(
       compareAsBN(baseTokenBalance, `${accessDetails.price}`) ||
         Number(dtBalance) >= 1

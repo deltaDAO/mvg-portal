@@ -47,11 +47,11 @@ import {
   initializeProviderForComputeMulti
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
-import { getDummySigner } from '@utils/wallet'
+import { getDummySigner, getTokenInfo } from '@utils/wallet'
 import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
 import { BigNumber, ethers, Signer } from 'ethers'
-import { useAccount } from 'wagmi'
+import { useAccount, useProvider } from 'wagmi'
 import { Service } from '../../../../@types/ddo/Service'
 import { Asset, AssetPrice } from '../../../../@types/Asset'
 import { AssetExtended } from '../../../../@types/AssetExtended'
@@ -159,7 +159,7 @@ export default function Compute({
     ? allResourceValues[selectedEnvId]
     : undefined
 
-  const price: AssetPrice = getAvailablePrice(accessDetails)
+  const web3provider = useProvider()
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
@@ -322,7 +322,11 @@ export default function Compute({
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
-        const amountWei = ethers.utils.parseUnits(amountHuman, 18)
+        const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+        const amountWei = ethers.utils.parseUnits(
+          amountHuman,
+          tokenDetails.decimals
+        )
 
         const erc20 = new ethers.Contract(
           oceanTokenAddress,

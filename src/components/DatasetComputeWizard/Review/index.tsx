@@ -13,7 +13,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
@@ -22,7 +22,7 @@ import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
 import { consumeMarketOrderFee, consumeMarketFee } from 'app.config.cjs'
-import { getTokenBalanceFromSymbol } from '@utils/wallet'
+import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { Asset } from 'src/@types/Asset'
 import { useAsset } from '@context/Asset'
@@ -31,6 +31,7 @@ import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
 import { Signer } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils.js'
+import { getOceanConfig } from '@utils/ocean'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -149,6 +150,11 @@ export default function Review({
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
+  const { chain } = useNetwork()
+
+  const [symbol, setSymbol] = useState('')
+
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
   const {
     isValid,
     setFieldValue,
@@ -195,7 +201,7 @@ export default function Review({
   const errorMessages: string[] = []
 
   if (!isBalanceSufficient) {
-    errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
+    errorMessages.push(`You don't have enough ${symbol} to make this purchase.`)
   }
 
   if (!isAssetNetwork) {
@@ -213,6 +219,23 @@ export default function Review({
       'Your account is not whitelisted to purchase this asset.'
     )
   }
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!chain?.id || !signer?.provider) return
+
+      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        signer.provider
+      )
+
+      setTokenInfo(tokenDetails)
+      setSymbol(tokenDetails.symbol || 'OCEAN')
+    }
+
+    fetchTokenDetails()
+  }, [chain, signer])
 
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)
@@ -501,13 +524,17 @@ export default function Review({
   const datasetProviderFees = [
     {
       name: 'PROVIDER FEE DATASET',
-      value: datasetProviderFee ? formatUnits(datasetProviderFee) : '0'
+      value: datasetProviderFee
+        ? formatUnits(datasetProviderFee, tokenInfo?.decimals)
+        : '0'
     }
   ]
   const algorithmProviderFees = [
     {
       name: 'PROVIDER FEE ALGORITHM',
-      value: algorithmProviderFee ? formatUnits(algorithmProviderFee) : '0'
+      value: algorithmProviderFee
+        ? formatUnits(algorithmProviderFee, tokenInfo?.decimals)
+        : '0'
     }
   ]
 
@@ -534,13 +561,17 @@ export default function Review({
       name: `MARKETPLACE FEE DATASET`,
       value: accessDetails?.isOwned
         ? '0'
-        : new Decimal(formatUnits(consumeMarketOrderFee)).toString()
+        : new Decimal(
+            formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+          ).toString()
     },
     {
       name: `MARKETPLACE FEE ALGORITHM`,
       value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
         ? '0'
-        : new Decimal(formatUnits(consumeMarketOrderFee)).toString()
+        : new Decimal(
+            formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+          ).toString()
     }
   ]
 
@@ -716,10 +747,10 @@ export default function Review({
     const feeAlgo = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
       ?.isOwned
       ? new Decimal(0)
-      : new Decimal(formatUnits(consumeMarketOrderFee))
+      : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
     const feeDataset = accessDetails?.isOwned
       ? new Decimal(0)
-      : new Decimal(formatUnits(consumeMarketOrderFee))
+      : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
 
     // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
@@ -824,10 +855,13 @@ export default function Review({
     ) {
       priceChecks.push({ value: c2dPrice.toString(), symbol: c2dSymbol })
     }
-
     let sufficient = true
-    for (const price of priceChecks) {
+    const filteredPriceChecks = priceChecks.filter(
+      (price) => price.value !== '0'
+    )
+    for (const price of filteredPriceChecks) {
       const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
+
       if (
         !baseTokenBalance ||
         !compareAsBN(baseTokenBalance, totalPriceToDisplay)
@@ -974,6 +1008,7 @@ export default function Review({
                       assetId={item.asset?.id}
                       serviceId={item.service?.id}
                       onCredentialRefresh={() => startVerification(i)}
+                      symbol={symbol}
                     />
                   )
                 })
@@ -991,6 +1026,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   duration={item.duration}
+                  symbol={symbol}
                 />
               ))}
 
@@ -1000,6 +1036,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   valueType="escrow"
+                  symbol={symbol}
                 />
               ))}
 
@@ -1009,6 +1046,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   valueType="deposit"
+                  symbol={symbol}
                 />
               ))}
             </div>
@@ -1023,6 +1061,7 @@ export default function Review({
                   key={fee.name}
                   itemName={fee.name}
                   value={fee.value}
+                  symbol={symbol}
                 />
               ))}
 
@@ -1032,6 +1071,7 @@ export default function Review({
                       key={fee.name}
                       itemName={fee.name}
                       value={fee.value}
+                      symbol={symbol}
                     />
                   ))
                 : null}
@@ -1042,6 +1082,7 @@ export default function Review({
                       key={fee.name}
                       itemName={fee.name}
                       value={fee.value}
+                      symbol={symbol}
                     />
                   ))
                 : null}

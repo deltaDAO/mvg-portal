@@ -36,7 +36,7 @@ import {
 import { useUserPreferences } from '@context/UserPreferences'
 import { parseConsumerParameterValues } from '../Asset/AssetActions/ConsumerParameters'
 import { BigNumber, ethers, Signer } from 'ethers'
-import { useAccount } from 'wagmi'
+import { useAccount, useProvider } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
 import { useCredentialValidation } from '@hooks/useCredentialValidation'
@@ -64,6 +64,7 @@ import { FormComputeData } from './_types'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import { getOceanConfig } from '@utils/ocean'
+import { getTokenInfo } from '@utils/wallet'
 export default function ComputeWizard({
   accountId,
   signer,
@@ -138,7 +139,7 @@ export default function ComputeWizard({
   const [computeEnvs, setComputeEnvs] = useState<ComputeEnvironment[]>()
   const [initializedProviderResponse, setInitializedProviderResponse] =
     useState<ProviderComputeInitializeResults>()
-  const [providerFeesSymbol] = useState<string>('OCEAN')
+  const [providerFeesSymbol, setProviderFeeSymbol] = useState<string>('OCEAN')
   const [datasetOrderPriceAndFees, setDatasetOrderPriceAndFees] =
     useState<OrderPriceAndFees>()
   const [algoOrderPriceAndFees, setAlgoOrderPriceAndFees] =
@@ -153,13 +154,24 @@ export default function ComputeWizard({
     setCachedCredentials,
     clearVerifierSessionCache
   } = useSsiWallet()
+  const web3provider = useProvider()
 
-  const { validateCredentials, refreshCredentials } = useCredentialValidation()
   const [svcIndex, setSvcIndex] = useState(0)
 
   const [allResourceValues, setAllResourceValues] = useState<{
     [envId: string]: ResourceType
   }>({})
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!oceanTokenAddress || !web3provider) return
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+
+      setProviderFeeSymbol(tokenDetails.symbol)
+    }
+
+    fetchTokenDetails()
+  }, [oceanTokenAddress, web3provider])
 
   const getSelectedComputeEnvAndResources = (
     formikValues: FormComputeData | Record<string, never>
@@ -271,7 +283,6 @@ export default function ComputeWizard({
       let actualAlgoService = service
       let actualSvcIndex = svcIndex
       let actualAlgoAccessDetails = accessDetails
-
       const algoServiceId =
         selectedAlgorithmAsset?.id?.split('|')[1] ||
         selectedAlgorithmAsset?.credentialSubject?.services?.[svcIndex]?.id ||
@@ -348,7 +359,11 @@ export default function ComputeWizard({
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
-        const amountWei = ethers.utils.parseUnits(amountHuman, 18)
+        const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+        const amountWei = ethers.utils.parseUnits(
+          amountHuman,
+          tokenDetails.decimals
+        )
 
         const erc20 = new ethers.Contract(
           oceanTokenAddress,
@@ -375,10 +390,10 @@ export default function ComputeWizard({
         }
 
         if (!amountWei.eq(0)) {
-          console.log(`Approving ${amountHuman} OCEAN to escrow...`)
+          console.log(`Approving ${amountHuman} to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
-          console.log(`Approved ${amountHuman} OCEAN`)
+          console.log(`Approved ${amountHuman}`)
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
             if (allowanceNow.gte(amountWei)) {
@@ -387,13 +402,10 @@ export default function ComputeWizard({
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
 
-          console.log(
-            `Depositing ${amountHuman} OCEAN to escrow...`,
-            amountHuman
-          )
+          console.log(`Depositing ${amountHuman} to escrow...`, amountHuman)
           const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
           await depositTx.wait()
-          console.log(`Deposited ${amountHuman} OCEAN`)
+          console.log(`Deposited ${amountHuman}`)
           console.log(
             'Authorizing compute job...',
             amountHuman,
@@ -1234,10 +1246,8 @@ export default function ComputeWizard({
                             : 'OCEAN')
                         }
                         algorithmSymbol={
-                          selectedAlgorithmAsset?.accessDetails?.[svcIndex]
-                            ?.baseToken?.symbol ||
-                          (selectedAlgorithmAsset?.credentialSubject
-                            ?.chainId === 137
+                          asset?.accessDetails?.[svcIndex]?.baseToken?.symbol ||
+                          (asset?.credentialSubject?.chainId === 137
                             ? 'mOCEAN'
                             : 'OCEAN')
                         }

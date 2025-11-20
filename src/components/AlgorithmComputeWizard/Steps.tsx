@@ -1,5 +1,5 @@
-import { ReactElement, useEffect } from 'react'
-import { useAccount, useNetwork } from 'wagmi'
+import { ReactElement, useEffect, useState } from 'react'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { datasetSteps, algorithmSteps } from './_constants' // Updated import
@@ -20,6 +20,8 @@ import ButtonBuy from '../Asset/AssetActions/ButtonBuy'
 import { useFormikContext } from 'formik'
 import UserParametersStep from './UserParametersStep'
 import { UserParameter } from './types/DatasetSelection'
+import { getOceanConfig } from '@utils/ocean'
+import { getTokenInfo } from '@utils/wallet'
 
 export default function Steps({
   asset,
@@ -135,7 +137,6 @@ export default function Steps({
   const { address: accountId } = useAccount()
   const { chain } = useNetwork()
   const { values } = useFormikContext<FormComputeData>()
-
   useEffect(() => {
     if (!chain?.id || !accountId) return
     setFieldValue('user.chainId', chain?.id)
@@ -145,6 +146,25 @@ export default function Steps({
   const currentStep = values?.user?.stepCurrent ?? 1
 
   const hasUserParamsStep = Boolean(values.isUserParameters)
+  const { data: signer } = useSigner()
+
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!chain?.id || !signer?.provider) return
+
+      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        signer.provider
+      )
+
+      setTokenInfo(tokenDetails)
+    }
+
+    fetchTokenDetails()
+  }, [chain, signer])
 
   useEffect(() => {
     if (!asset || !service) return
@@ -238,6 +258,7 @@ export default function Steps({
           algorithmProviderFeeProp={algorithmProviderFeeProp}
           isBalanceSufficient={isBalanceSufficient}
           setIsBalanceSufficient={setIsBalanceSufficient}
+          tokenInfo={tokenInfo}
         />
       )
     case 7:
@@ -272,6 +293,7 @@ export default function Steps({
           algorithmProviderFeeProp={algorithmProviderFeeProp}
           isBalanceSufficient={isBalanceSufficient}
           setIsBalanceSufficient={setIsBalanceSufficient}
+          tokenInfo={tokenInfo}
         />
       ) : (
         <div>Invalid step</div>

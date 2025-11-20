@@ -536,7 +536,6 @@ export default function ConfigureEnvironment({
   const freeAvailable = !!env.free
   const tokenAddress = fee?.feeToken
   const tokenSymbol = symbolMap[tokenAddress] || '...'
-
   const updateResource = (
     type: 'cpu' | 'ram' | 'disk' | 'jobDuration',
     value: number | string,
@@ -726,13 +725,15 @@ export default function ConfigureEnvironment({
                 <div className={styles.insufficientEscrow}>
                   <p>
                     Insufficient escrow balance. An additional{' '}
-                    <strong>{deltaAmount.toFixed(2)} Ocean</strong> will be
-                    added to your escrow account to cover this job.
+                    <strong>
+                      {deltaAmount.toFixed(2)} {tokenSymbol}
+                    </strong>{' '}
+                    will be added to your escrow account to cover this job.
                   </p>
                   <p className={styles.escrowBreakdown}>
-                    Job cost: {jobPrice.toFixed(2)} Ocean | Available escrow:{' '}
-                    {availableEscrow.toFixed(2)} Ocean | Additional needed:{' '}
-                    {deltaAmount.toFixed(2)} Ocean
+                    Job cost: {jobPrice.toFixed(2)} {tokenSymbol} | Available
+                    escrow: {availableEscrow.toFixed(2)} {tokenSymbol} |
+                    Additional needed: {deltaAmount.toFixed(2)} {tokenSymbol}
                   </p>
                 </div>
               )
@@ -741,8 +742,8 @@ export default function ConfigureEnvironment({
                 <div className={styles.sufficientEscrow}>
                   <p>Sufficient escrow balance available for this job.</p>
                   <p className={styles.escrowBreakdown}>
-                    Job cost: {jobPrice.toFixed(2)} Ocean | Available escrow:{' '}
-                    {availableEscrow.toFixed(2)} Ocean
+                    Job cost: {jobPrice.toFixed(2)} {tokenSymbol} | Available
+                    escrow: {availableEscrow.toFixed(2)} {tokenSymbol}
                   </p>
                 </div>
               )

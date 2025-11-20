@@ -66,6 +66,7 @@ import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { CancelToken } from 'axios'
 import { ComputeEditForm } from '@components/Asset/Edit/_types'
 import { getOceanConfig } from '@utils/ocean'
+import { getDummySigner, getTokenInfo } from '@utils/wallet'
 
 function cleanupVpPolicies(value: any): void {
   if (!value.vp_policies || value.vp_policies.length === 0) {
@@ -895,9 +896,12 @@ export async function createTokensAndPricing(
     case 'fixed': {
       const baseTokenAddress =
         config.oceanTokenAddress ?? values.pricing.baseToken.address
-      const baseTokenDecimals = config.oceanTokenAddress
-        ? 18
-        : values.pricing.baseToken.decimals
+      const signer = await getDummySigner(values.user.chainId)
+      const tokenInfo = await getTokenInfo(
+        config.oceanTokenAddress,
+        signer.provider
+      )
+      const baseTokenDecimals = tokenInfo?.decimals || 18
 
       const freParams: FreCreationParams = {
         fixedRateAddress: config.fixedRateExchangeAddress,

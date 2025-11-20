@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { Field, Form, Formik, useFormikContext } from 'formik'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
 import Decimal from 'decimal.js'
@@ -51,6 +51,8 @@ import styles from './index.module.css'
 
 import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
+import { getOceanConfig } from '@utils/ocean'
+import { getTokenInfo } from '@utils/wallet'
 import { formatUnits } from 'ethers/lib/utils.js'
 import useBalance from '@hooks/useBalance'
 
@@ -86,12 +88,14 @@ export default function Download({
   const { isInPurgatory, isAssetNetwork } = useAsset()
   const isMounted = useIsMounted()
   const { balance } = useBalance()
+  const { chain } = useNetwork()
 
   const [isDisabled, setIsDisabled] = useState(true)
   const [hasDatatoken, setHasDatatoken] = useState(false)
   const [statusText, setStatusText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isPriceLoading, setIsPriceLoading] = useState(false)
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
   const [isFullPriceLoading, setIsFullPriceLoading] = useState(
     accessDetails.type !== 'free'
   )
@@ -128,6 +132,21 @@ export default function Download({
     lookupVerifierSessionId,
     lookupVerifierSessionIdSkip
   ])
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!chain?.id || !signer?.provider) return
+
+      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        signer.provider
+      )
+      setTokenInfo(tokenDetails)
+    }
+
+    fetchTokenDetails()
+  }, [chain, signer])
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
@@ -377,14 +396,17 @@ export default function Download({
       .add(new Decimal(orderPriceAndFees?.opcFee || 0))
       .add(
         new Decimal(
-          formatUnits(orderPriceAndFees?.providerFee?.providerFeeAmount || 0)
+          formatUnits(
+            orderPriceAndFees?.providerFee?.providerFeeAmount || 0,
+            tokenInfo?.decimals
+          )
         )
       )
-      .add(new Decimal(formatUnits(consumeMarketOrderFee)))
+      .add(new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)))
 
-    const userBalance = new Decimal(balance?.approved?.ocean || 0)
+    const firstKey = Object.keys(balance?.approved || {})[0]
+    const userBalance = new Decimal(balance?.approved?.[firstKey] || 0)
     const sufficient = userBalance.greaterThanOrEqualTo(finalAmount)
-
     useEffect(() => {
       if (!orderPriceAndFees) return
       setIsBalanceSufficient(sufficient)
@@ -428,14 +450,17 @@ export default function Download({
               <Row
                 price={
                   formatUnits(
-                    orderPriceAndFees?.providerFee?.providerFeeAmount
+                    orderPriceAndFees?.providerFee?.providerFeeAmount,
+                    tokenInfo?.decimals
                   ) || '0'
                 }
                 symbol={price.tokenSymbol}
                 type="PROVIDER FEE"
               />
               <Row
-                price={formatUnits(consumeMarketOrderFee) || '0'}
+                price={
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals) || '0'
+                }
                 symbol={price.tokenSymbol}
                 type="CONSUME MARKET FEE"
               />
@@ -596,14 +621,16 @@ export default function Download({
                               formatUnits(
                                 orderPriceAndFees?.providerFee
                                   ?.providerFeeAmount || '0',
-                                18
+                                tokenInfo?.decimals
                               )
                             ) > 0
                               ? `This dataset is free to use. Please note that a provider fee of ${formatUnits(
                                   orderPriceAndFees?.providerFee
                                     ?.providerFeeAmount || '0',
-                                  18
-                                )} OCEAN applies, as well as possible network gas fees.`
+                                  tokenInfo?.decimals
+                                )} ${
+                                  tokenInfo?.symbol
+                                } applies, as well as possible network gas fees.`
                               : `This dataset is free to use. Please note that network gas fees still apply, even when using free assets.`
                           }
                         />

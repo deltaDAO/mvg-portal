@@ -10,10 +10,10 @@ import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
-import { getTokenBalanceFromSymbol } from '@utils/wallet'
+import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
@@ -31,6 +31,7 @@ import ComputeHistory from './History'
 import ComputeJobs from '../../../Profile/History/ComputeJobs'
 import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
 import { formatUnits } from 'ethers/lib/utils.js'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function FormStartCompute({
   asset,
@@ -135,6 +136,11 @@ export default function FormStartCompute({
     accessDetails.price
   )
 
+  const { chain } = useNetwork()
+  const { data: signer } = useSigner()
+
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
+
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
   )
@@ -174,6 +180,22 @@ export default function FormStartCompute({
 
     return { algorithmAsset: assetDdo, serviceIndexAlgo }
   }
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!chain?.id || !signer?.provider) return
+
+      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        signer.provider
+      )
+
+      setTokenInfo(tokenDetails)
+    }
+
+    fetchTokenDetails()
+  }, [chain, signer])
 
   // Pre-select computeEnv and/or algo if there is only one available option
   useEffect(() => {
@@ -296,8 +318,12 @@ export default function FormStartCompute({
         : new Decimal(0)
 
     // Now use priceC2D everywhere you'd use providerFees
-    const feeAlgo = new Decimal(formatUnits(consumeMarketOrderFee))
-    const feeDataset = new Decimal(formatUnits(consumeMarketOrderFee))
+    const feeAlgo = new Decimal(
+      formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+    )
+    const feeDataset = new Decimal(
+      formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+    )
 
     // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
@@ -557,7 +583,7 @@ export default function FormStartCompute({
 
               <Row
                 price={new Decimal(
-                  formatUnits(consumeMarketOrderFee)
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                 ).toString()} // consume market order fee fee amount
                 symbol={datasetSymbol}
                 type={`CONSUME MARKET ORDER FEE DATASET)`}
@@ -565,7 +591,7 @@ export default function FormStartCompute({
 
               <Row
                 price={new Decimal(
-                  formatUnits(consumeMarketOrderFee)
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                 ).toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
                 type={`CONSUME MARKET ORDER FEE ALGORITHM`}
@@ -574,7 +600,7 @@ export default function FormStartCompute({
               {computeEnvs?.length > 0 && (
                 <Row
                   price={new Decimal(
-                    formatUnits(consumeMarketOrderFee)
+                    formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
                   ).toString()}
                   symbol={providerFeesSymbol}
                   type={`CONSUME MARKET ORDER FEE C2D)`}

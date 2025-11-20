@@ -36,10 +36,9 @@ import {
   getComputeEnvironments
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
-import { getDummySigner } from '@utils/wallet'
-import { parseConsumerParameterValues } from '../Asset/AssetActions/ConsumerParameters'
+import { getDummySigner, getTokenInfo } from '@utils/wallet'
 import { ethers, Signer } from 'ethers'
-import { useAccount } from 'wagmi'
+import { useAccount, useProvider } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
 import { useSsiWallet } from '@context/SsiWallet'
 import { ResourceType } from 'src/@types/ResourceType'
@@ -96,6 +95,7 @@ export default function ComputeWizard({
   const { oceanTokenAddress } = config
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
+  const web3provider = useProvider()
 
   const [isLoading, setIsLoading] = useState(true)
   const isAlgorithm = asset?.credentialSubject.metadata.type === 'algorithm'
@@ -384,7 +384,12 @@ export default function ComputeWizard({
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
-        const amountWei = ethers.utils.parseUnits(amountHuman, 18)
+        const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+
+        const amountWei = ethers.utils.parseUnits(
+          amountHuman,
+          tokenDetails.decimals
+        )
 
         const erc20 = new ethers.Contract(
           oceanTokenAddress,

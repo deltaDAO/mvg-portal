@@ -19,8 +19,9 @@ import axios, { CancelToken } from 'axios'
 import { useMarketMetadata } from '../MarketMetadata'
 import { formatUnits, isAddress } from 'ethers/lib/utils'
 import { Asset } from 'src/@types/Asset'
-import { useNetwork, useSigner } from 'wagmi'
+import { useNetwork, useProvider, useSigner } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
+import { getTokenInfo } from '@utils/wallet'
 
 interface ProfileProviderValue {
   assets: Asset[]
@@ -58,6 +59,7 @@ function ProfileProvider({
   const [revenue, setRevenue] = useState(0)
   const [escrowAvailableFunds, setEscrowAvailableFunds] = useState('0')
   const [escrowLockedFunds, setEscrowLockedFunds] = useState('0')
+  const web3provider = useProvider()
 
   const [isEthAddress, setIsEthAddress] = useState<boolean>()
   //
@@ -235,10 +237,10 @@ function ProfileProvider({
       const { oceanTokenAddress, escrowAddress } = getOceanConfig(chain?.id)
       const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
       const funds = await escrow.getUserFunds(accountId, oceanTokenAddress)
-      // const availableFunds = parseInt(formatUnits(funds.available, 18), 10)
-      // const lockedFunds = parseInt(formatUnits(funds.locked, 18), 10)
-      const availableFunds = formatUnits(funds.available, 18)
-      const lockedFunds = formatUnits(funds.locked, 18)
+
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+      const availableFunds = formatUnits(funds.available, tokenDetails.decimals)
+      const lockedFunds = formatUnits(funds.locked, tokenDetails.decimals)
       setEscrowLockedFunds(lockedFunds)
       setEscrowAvailableFunds(availableFunds)
     } catch (error) {

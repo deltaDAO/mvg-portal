@@ -13,7 +13,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
-import { useAccount } from 'wagmi'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -22,14 +22,14 @@ import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
 import { consumeMarketOrderFee, consumeMarketFee } from 'app.config.cjs'
-import { getTokenBalanceFromSymbol } from '@utils/wallet'
+import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
-import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import { formatUnits } from 'ethers/lib/utils.js'
+import { getOceanConfig } from '@utils/ocean'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -66,7 +66,8 @@ export default function Review({
   datasetProviderFeeProp,
   algorithmProviderFeeProp,
   isBalanceSufficient,
-  setIsBalanceSufficient
+  setIsBalanceSufficient,
+  tokenInfo
 }: {
   asset: AssetExtended
   service: Service
@@ -103,6 +104,7 @@ export default function Review({
   datasetProviderFeeProp?: string
   algorithmProviderFeeProp?: string
   isBalanceSufficient: boolean
+  tokenInfo: TokenInfo
   setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId } = useAccount()
@@ -110,7 +112,7 @@ export default function Review({
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const { isAssetNetwork } = useAsset()
-  const { isSupportedOceanNetwork } = useNetworkMetadata()
+
   const {
     setFieldValue,
     values,
@@ -130,9 +132,6 @@ export default function Review({
       null
   )
 
-  const debugClick = () => {}
-
-  const [loading, setLoading] = useState(false)
   const [serviceIndex, setServiceIndex] = useState(0)
   const [datasetProviderFee, setDatasetProviderFee] = useState(
     datasetProviderFeeProp || null
@@ -165,11 +164,29 @@ export default function Review({
     if (s) parts.push(`${s}s`)
     return parts.join(' ') || '0s'
   }
+
+  const { data: signer } = useSigner()
   // error message
   const errorMessages: string[] = []
+  const [symbol, setSymbol] = useState('')
+  const { chain } = useNetwork()
 
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!chain?.id || !signer?.provider) return
+
+      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        signer.provider
+      )
+      setSymbol(tokenDetails.symbol || 'OCEAN')
+    }
+
+    fetchTokenDetails()
+  }, [chain, signer])
   if (!isBalanceSufficient) {
-    errorMessages.push(`You don't have enough OCEAN to make this purchase.`)
+    errorMessages.push(`You don't have enough ${symbol} to make this purchase.`)
   }
   // if (!isValid) {
   //   errorMessages.push('Form is not complete!')
@@ -189,6 +206,7 @@ export default function Review({
       'Your account is not whitelisted to purchase this asset.'
     )
   }
+
   useEffect(() => {
     const queue: VerificationItem[] = []
     if (!values.withoutDataset) {
@@ -444,14 +462,16 @@ export default function Review({
     })
     .reduce(
       (acc, dataset) =>
-        acc.add(new Decimal(formatUnits(consumeMarketOrderFee))),
+        acc.add(
+          new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
+        ),
       new Decimal(0)
     )
     .toDecimalPlaces(MAX_DECIMALS)
   // Algorithm fee
   const algoFeeConsume = accessDetails.isOwned
     ? new Decimal(0)
-    : new Decimal(formatUnits(consumeMarketOrderFee))
+    : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
   const algorithmMarketFee = new Decimal(
     calculateAlgorithmMarketFee(
       consumeMarketFee,
@@ -486,13 +506,17 @@ export default function Review({
   const datasetProviderFees = [
     {
       name: 'PROVIDER FEE DATASET',
-      value: datasetProviderFee ? formatUnits(datasetProviderFee) : '0'
+      value: datasetProviderFee
+        ? formatUnits(datasetProviderFee, tokenInfo?.decimals)
+        : '0'
     }
   ]
   const algorithmProviderFees = [
     {
       name: 'PROVIDER FEE ALGORITHM',
-      value: algorithmProviderFee ? formatUnits(algorithmProviderFee) : '0'
+      value: algorithmProviderFee
+        ? formatUnits(algorithmProviderFee, tokenInfo?.decimals)
+        : '0'
     }
   ]
 
@@ -686,7 +710,7 @@ export default function Review({
       const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
       const fee = details?.isOwned
         ? new Decimal(0)
-        : new Decimal(formatUnits(consumeMarketOrderFee))
+        : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
 
       datasetPrice = datasetPrice.add(price)
       datasetFee = datasetFee.add(fee)
@@ -704,13 +728,12 @@ export default function Review({
 
     const feeAlgo = accessDetails.isOwned
       ? new Decimal(0)
-      : new Decimal(formatUnits(consumeMarketOrderFee))
+      : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
 
     const priceC2D =
       c2dPrice !== undefined
         ? new Decimal(c2dPrice).toDecimalPlaces(MAX_DECIMALS)
         : new Decimal(0)
-
     if (algorithmSymbol === providerFeesSymbol) {
       let sum = priceC2D.add(priceAlgo).add(feeAlgo)
       totalPrices.push({
@@ -940,6 +963,7 @@ export default function Review({
                       assetId={item.asset?.id}
                       serviceId={item.service?.id}
                       onCredentialRefresh={() => startVerification(i)}
+                      symbol={symbol}
                     />
                   )
                 })
@@ -986,6 +1010,7 @@ export default function Review({
                       assetId={item.asset?.id}
                       serviceId={item.service?.id}
                       onCredentialRefresh={() => startVerification(i)}
+                      symbol={symbol}
                     />
                   )
                 })
@@ -1003,6 +1028,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   duration={item.duration}
+                  symbol={symbol}
                 />
               ))}
 
@@ -1012,6 +1038,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   valueType="escrow"
+                  symbol={symbol}
                 />
               ))}
 
@@ -1021,6 +1048,7 @@ export default function Review({
                   itemName={item.name}
                   value={item.value}
                   valueType="deposit"
+                  symbol={symbol}
                 />
               ))}
             </div>
@@ -1035,6 +1063,7 @@ export default function Review({
                   key={fee.name}
                   itemName={fee.name}
                   value={fee.value}
+                  symbol={symbol}
                 />
               ))}
 
@@ -1044,6 +1073,7 @@ export default function Review({
                     key={fee.name}
                     itemName={fee.name}
                     value={fee.value}
+                    symbol={symbol}
                   />
                 ))}
 
@@ -1053,6 +1083,7 @@ export default function Review({
                     key={fee.name}
                     itemName={fee.name}
                     value={fee.value}
+                    symbol={symbol}
                   />
                 ))}
             </div>
@@ -1079,7 +1110,7 @@ export default function Review({
             ) : (
               <>
                 <span className={styles.totalValueNumber}>0</span>
-                <span className={styles.totalValueSymbol}> OCEAN</span>
+                <span className={styles.totalValueSymbol}> {symbol}</span>
               </>
             )}
           </span>

@@ -5,6 +5,8 @@ import {
 import { getServiceByName, isAddressWhitelisted } from './ddo'
 import normalizeUrl from 'normalize-url'
 import { Asset } from 'src/@types/Asset'
+import { getDummySigner, getTokenInfo } from './wallet'
+import { getOceanConfig } from './ocean'
 
 export async function transformAssetToAssetSelection(
   datasetProviderEndpoint: string,
@@ -37,7 +39,6 @@ export async function transformAssetToAssetSelection(
       )
 
       const { services } = asset.credentialSubject
-      // only loop through services that are compute, match provider, and appear in selectedAlgorithms
       services.forEach((service, idx) => {
         // enforce compute-only
         if (service?.type !== 'compute') return
@@ -55,6 +56,7 @@ export async function transformAssetToAssetSelection(
           !matches.has(key)
         )
           return // <-- skip any service that wasn't in selectedAlgorithms
+
         const assetEntry: AssetSelectionAsset = {
           did: asset.id,
           serviceId: service.id,
@@ -62,7 +64,7 @@ export async function transformAssetToAssetSelection(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: 'OCEAN',
+          tokenSymbol: '',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -113,6 +115,7 @@ export async function transformAssetToAssetSelectionDataset(
       )
 
       const { services } = asset.credentialSubject
+
       // only loop through services that are compute, same provider, and allowed for the selected algorithm
       services.forEach((service, idx) => {
         // keep only compute services
@@ -178,7 +181,7 @@ export async function transformAssetToAssetSelectionDataset(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: 'OCEAN',
+          tokenSymbol: '',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -244,7 +247,7 @@ export async function transformAssetToAssetSelectionEdit(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: 'OCEAN',
+          tokenSymbol: '',
           checked: !!(isAllAlgorithmsAllowed || matches.has(key)),
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -265,7 +268,6 @@ export async function transformAssetToAssetSelectionEdit(
     const bTime = b.datetime ? new Date(b.datetime).getTime() : 0
     return bTime - aTime
   })
-
   return algorithmList
 }
 
@@ -300,6 +302,7 @@ export async function transformAssetToAssetSelectionForComputeWizard(
       )
 
       const { services } = asset.credentialSubject
+
       // only loop through those services that appear in selectedAlgorithms
       services.forEach((service, idx) => {
         const key = `${asset.id}|${service.id}`
@@ -317,7 +320,7 @@ export async function transformAssetToAssetSelectionForComputeWizard(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: 'OCEAN',
+          tokenSymbol: '',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow

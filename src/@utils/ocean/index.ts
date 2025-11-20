@@ -34,6 +34,16 @@ export function getOceanConfig(network: string | number): any {
     ? JSON.parse(process.env.NEXT_PUBLIC_ESCROW_ADDRESSES)
     : {}
 
+  const erc20Map: Record<string, string> = process.env
+    .NEXT_PUBLIC_ERC20_ADDRESSES
+    ? JSON.parse(process.env.NEXT_PUBLIC_ERC20_ADDRESSES)
+    : {}
+
+  const fixedRateMap: Record<string, string> = process.env
+    .NEXT_PUBLIC_MARKET_FIXED_RATE_ADDRESSES
+    ? JSON.parse(process.env.NEXT_PUBLIC_MARKET_FIXED_RATE_ADDRESSES)
+    : {}
+
   if (!network) {
     console.warn('[getOceanConfig] No network provided yet.')
     return {} as Config
@@ -62,6 +72,14 @@ export function getOceanConfig(network: string | number): any {
 
   if (escrowMap[networkKey]) {
     config.escrowAddress = escrowMap[networkKey]
+  }
+
+  if (erc20Map[networkKey]) {
+    config.oceanTokenAddress = erc20Map[networkKey]
+  }
+
+  if (fixedRateMap[networkKey]) {
+    config.fixedRateExchangeAddress = fixedRateMap[networkKey]
   }
   return config as Config
 }
