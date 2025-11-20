@@ -39,17 +39,6 @@ export async function transformAssetToAssetSelection(
       )
 
       const { services } = asset.credentialSubject
-      // only loop through services that are compute, match provider, and appear in selectedAlgorithms
-      const { oceanTokenAddress } = getOceanConfig(
-        asset?.credentialSubject.chainId
-      )
-      const dummyProvider = await getDummySigner(
-        asset?.credentialSubject.chainId
-      )
-      const tokenInfo = await getTokenInfo(
-        asset.indexedMetadata.stats[0]?.prices[0].token || oceanTokenAddress,
-        dummyProvider.provider
-      )
       services.forEach((service, idx) => {
         // enforce compute-only
         if (service?.type !== 'compute') return
@@ -75,7 +64,7 @@ export async function transformAssetToAssetSelection(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: tokenInfo?.symbol || 'OCEAN',
+          tokenSymbol: '',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -126,16 +115,7 @@ export async function transformAssetToAssetSelectionDataset(
       )
 
       const { services } = asset.credentialSubject
-      const { oceanTokenAddress } = getOceanConfig(
-        asset?.credentialSubject.chainId
-      )
-      const dummyProvider = await getDummySigner(
-        asset?.credentialSubject.chainId
-      )
-      const tokenInfo = await getTokenInfo(
-        asset.indexedMetadata.stats[0]?.prices[0].token || oceanTokenAddress,
-        dummyProvider.provider
-      )
+
       // only loop through services that are compute, same provider, and allowed for the selected algorithm
       services.forEach((service, idx) => {
         // keep only compute services
@@ -201,7 +181,7 @@ export async function transformAssetToAssetSelectionDataset(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: tokenInfo?.symbol || 'OCEAN',
+          tokenSymbol: '',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -256,16 +236,7 @@ export async function transformAssetToAssetSelectionEdit(
         normalizeUrl(datasetProviderEndpoint)
     ) {
       const { services } = asset.credentialSubject
-      const { oceanTokenAddress } = getOceanConfig(
-        asset?.credentialSubject.chainId
-      )
-      const dummyProvider = await getDummySigner(
-        asset?.credentialSubject.chainId
-      )
-      const tokenInfo = await getTokenInfo(
-        asset.indexedMetadata.stats[0]?.prices[0].token || oceanTokenAddress,
-        dummyProvider.provider
-      )
+
       services.forEach((service, idx) => {
         const key = `${asset.id}|${service.id}`
 
@@ -276,7 +247,7 @@ export async function transformAssetToAssetSelectionEdit(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: tokenInfo?.symbol || 'OCEAN',
+          tokenSymbol: '',
           checked: !!(isAllAlgorithmsAllowed || matches.has(key)),
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
@@ -331,16 +302,7 @@ export async function transformAssetToAssetSelectionForComputeWizard(
       )
 
       const { services } = asset.credentialSubject
-      const { oceanTokenAddress } = getOceanConfig(
-        asset?.credentialSubject.chainId
-      )
-      const dummyProvider = await getDummySigner(
-        asset?.credentialSubject.chainId
-      )
-      const tokenInfo = await getTokenInfo(
-        asset.indexedMetadata.stats[0]?.prices[0].token || oceanTokenAddress,
-        dummyProvider.provider
-      )
+
       // only loop through those services that appear in selectedAlgorithms
       services.forEach((service, idx) => {
         const key = `${asset.id}|${service.id}`
@@ -358,7 +320,7 @@ export async function transformAssetToAssetSelectionForComputeWizard(
           name: asset.credentialSubject.metadata.name,
           price:
             Number(asset.indexedMetadata.stats[idx]?.prices[0]?.price) ?? 0,
-          tokenSymbol: tokenInfo?.symbol || 'OCEAN',
+          tokenSymbol: '',
           checked: false,
           symbol: asset.indexedMetadata.stats[idx]?.symbol ?? '',
           isAccountIdWhitelisted: !allow
