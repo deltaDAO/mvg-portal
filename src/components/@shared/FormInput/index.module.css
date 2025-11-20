@@ -29,7 +29,7 @@
   color: var(--input-error-text-color);
   line-height: 1.2;
   position: absolute;
-  top: 99%;
+  top: 105%;
   left: 0;
   right: auto;
   z-index: 1;

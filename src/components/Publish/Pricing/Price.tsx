@@ -17,7 +17,6 @@ export default function Price({
   const [field, meta] = useField('pricing.price')
 
   const { values } = useFormikContext<FormPublishData>()
-  const { dataTokenOptions } = values.services[0]
 
   return (
     <div className={styles.price}>
@@ -40,20 +39,16 @@ export default function Price({
                 prefix={
                   approvedBaseTokens?.length > 1 ? (
                     <CoinSelect approvedBaseTokens={approvedBaseTokens} />
+                  ) : approvedBaseTokens?.length === 1 ? (
+                    approvedBaseTokens[0]?.symbol
                   ) : (
-                    values.pricing?.baseToken?.symbol
+                    values.pricing?.baseToken?.symbol || undefined
                   )
                 }
                 variant="publish"
                 {...field}
               />
               <Error meta={meta} />
-            </div>
-            <div className={styles.datatoken}>
-              <h4>
-                = <strong>{field.value || '0'}</strong>{' '}
-                {dataTokenOptions.symbol}
-              </h4>
             </div>
           </div>
         </>
