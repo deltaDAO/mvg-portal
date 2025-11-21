@@ -234,7 +234,7 @@ export default function Review({
             asset.credentialSubject.chainId,
             signer
           )
-          setDatasetOpcFees(datasetFixed?.oceanFeeAmount)
+          setDatasetOpcFees(datasetFixed?.oceanFeeAmount || '0')
         } catch (e) {
           console.error('Could not fetch dataset fixed buy price:', e)
         }
@@ -246,7 +246,7 @@ export default function Review({
             selectedAlgorithmAsset?.credentialSubject.chainId,
             signer
           )
-          setAlgoOpcFee(algoFixed?.oceanFeeAmount)
+          setAlgoOpcFee(algoFixed?.oceanFeeAmount || '0')
         } catch (e) {
           console.error('Could not fetch algo fixed buy price sum:', e)
         }

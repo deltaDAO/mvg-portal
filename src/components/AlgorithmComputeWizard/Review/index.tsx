@@ -192,7 +192,7 @@ export default function Review({
             asset.credentialSubject.chainId,
             signer
           )
-          setAlgoOpcFee(algoFixed?.oceanFeeAmount)
+          setAlgoOpcFee(algoFixed?.oceanFeeAmount || '0')
         } catch (e) {
           console.error('Could not fetch algorithm fixed buy price:', e)
         }
