@@ -572,11 +572,11 @@ export default function Review({
           ).toString()
     },
     {
-      name: `MARKETPLACE OEC FEE DATASET`,
+      name: `OEC FEE DATASET`,
       value: accessDetails?.isOwned ? '0' : datasetOecFees.toString()
     },
     {
-      name: `MARKETPLACE OEC FEE ALGORITHM`,
+      name: `OEC FEE ALGORITHM`,
       value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
         ? '0'
         : algoOecFee.toString()

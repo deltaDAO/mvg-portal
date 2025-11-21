@@ -564,11 +564,11 @@ export default function Review({
       value: algoFeeConsume.toString()
     },
     {
-      name: `MARKETPLACE OEC FEE DATASET`,
+      name: `OEC FEE DATASET`,
       value: datasetOecFees.toString()
     },
     {
-      name: `MARKETPLACE OEC FEE ALGORITHM`,
+      name: `OEC FEE ALGORITHM`,
       value: algoOecFee.toString()
     }
   ]
