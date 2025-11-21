@@ -183,16 +183,17 @@ export default function Review({
         asset &&
         asset.credentialSubject?.chainId &&
         accessDetails &&
-        signer
+        signer &&
+        !accessDetails.isOwned
       ) {
         try {
-          // For algorithm
           const algoFixed = await getFixedBuyPrice(
             accessDetails,
             asset.credentialSubject.chainId,
             signer
           )
           setAlgoOpcFee(algoFixed?.oceanFeeAmount || '0')
+          // For algorithm
         } catch (e) {
           console.error('Could not fetch algorithm fixed buy price:', e)
         }
@@ -206,12 +207,16 @@ export default function Review({
                 const details =
                   dataset.accessDetails?.[dataset.serviceIndex || 0]
                 if (details && dataset.credentialSubject?.chainId && signer) {
-                  const fixed = await getFixedBuyPrice(
-                    details,
-                    dataset.credentialSubject.chainId,
-                    signer
-                  )
-                  return Number(fixed?.oceanFeeAmount) || 0
+                  if (details.isOwned) {
+                    return 0
+                  } else {
+                    const fixed = await getFixedBuyPrice(
+                      details,
+                      dataset.credentialSubject.chainId,
+                      signer
+                    )
+                    return Number(fixed?.oceanFeeAmount) || 0
+                  }
                 }
                 return 0
               })
@@ -559,11 +564,11 @@ export default function Review({
       value: algoFeeConsume.toString()
     },
     {
-      name: `MARKETPLACE OPC DATASET`,
+      name: `MARKETPLACE OPC FEE DATASET`,
       value: datasetOpcFees.toString()
     },
     {
-      name: `MARKETPLACE OPC ALGORITHM`,
+      name: `MARKETPLACE OPC FEE ALGORITHM`,
       value: algoOpcFee.toString()
     }
   ]
