@@ -5,8 +5,6 @@ import {
 import { getServiceByName, isAddressWhitelisted } from './ddo'
 import normalizeUrl from 'normalize-url'
 import { Asset } from 'src/@types/Asset'
-import { getDummySigner, getTokenInfo } from './wallet'
-import { getOceanConfig } from './ocean'
 
 export async function transformAssetToAssetSelection(
   datasetProviderEndpoint: string,

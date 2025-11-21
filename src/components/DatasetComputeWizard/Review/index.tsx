@@ -13,15 +13,14 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useNetwork } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
-import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
-import { consumeMarketOrderFee, consumeMarketFee } from 'app.config.cjs'
+import { consumeMarketOrderFee } from 'app.config.cjs'
 import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { Asset } from 'src/@types/Asset'
@@ -32,6 +31,7 @@ import { requiresSsi } from '@utils/credentials'
 import { Signer } from 'ethers'
 import { formatUnits } from 'ethers/lib/utils.js'
 import { getOceanConfig } from '@utils/ocean'
+import { getFixedBuyPrice } from '@utils/ocean/fixedRateExchange'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -145,18 +145,18 @@ export default function Review({
   isBalanceSufficient?: boolean
   setIsBalanceSufficient?: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
-  const { address: accountId, isConnected } = useAccount()
+  const { address: accountId } = useAccount()
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
-  const { isSupportedOceanNetwork } = useNetworkMetadata()
   const { chain } = useNetwork()
 
   const [symbol, setSymbol] = useState('')
 
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
+  const [algoOecFee, setAlgoOecFee] = useState<string>('0')
+  const [datasetOecFees, setDatasetOecFees] = useState<string>('0')
   const {
-    isValid,
     setFieldValue,
     values,
     validateForm
@@ -176,7 +176,6 @@ export default function Review({
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
   )
-  const [loading, setLoading] = useState(false)
   const [serviceIndex, setServiceIndex] = useState(0)
   const [datasetProviderFee, setDatasetProviderFee] = useState(
     datasetProviderFeeProp || null
@@ -221,6 +220,48 @@ export default function Review({
   }
 
   useEffect(() => {
+    async function fetchPrices() {
+      if (
+        asset &&
+        asset.credentialSubject?.chainId &&
+        accessDetails &&
+        signer &&
+        !accessDetails.isOwned
+      ) {
+        try {
+          // For algorithm
+          const datasetFixed = await getFixedBuyPrice(
+            accessDetails,
+            asset.credentialSubject.chainId,
+            signer
+          )
+          setDatasetOecFees(datasetFixed?.oceanFeeAmount || '0')
+        } catch (e) {
+          console.error('Could not fetch dataset fixed buy price:', e)
+        }
+      }
+      if (
+        selectedAlgorithmAsset &&
+        !selectedAlgorithmAsset.accessDetails[0].isOwned
+      ) {
+        try {
+          const algoFixed = await getFixedBuyPrice(
+            selectedAlgorithmAsset?.accessDetails[0],
+            selectedAlgorithmAsset?.credentialSubject.chainId,
+            signer
+          )
+          setAlgoOecFee(algoFixed?.oceanFeeAmount || '0')
+        } catch (e) {
+          console.error('Could not fetch algo fixed buy price sum:', e)
+        }
+      }
+    }
+
+    fetchPrices()
+    // Add relevant dependencies, ensure signer and assets are set
+  }, [asset, accessDetails, signer, selectedAlgorithmAsset])
+
+  useEffect(() => {
     const fetchTokenDetails = async () => {
       if (!chain?.id || !signer?.provider) return
 
@@ -255,9 +296,6 @@ export default function Review({
 
     if (asset && service) {
       const isVerified = lookupVerifierSessionId?.(asset.id, service.id)
-      const datasetNeedsSsi =
-        requiresSsi(asset?.credentialSubject?.credentials) ||
-        requiresSsi(service?.credentials)
       const rawPrice = accessDetails?.validOrderTx ? '0' : accessDetails.price
 
       queue.push({
@@ -475,28 +513,6 @@ export default function Review({
       window.removeEventListener('credentialUpdated', handleCredentialUpdate)
     }
   }, [])
-  function calculateDatasetMarketFee(
-    consumeMarketFee: number | string,
-    datasetPrice: number | string,
-    maxDecimals: number
-  ): string {
-    return new Decimal(consumeMarketFee)
-      .mul(new Decimal(datasetPrice || 0))
-      .toDecimalPlaces(maxDecimals)
-      .div(100)
-      .toString()
-  }
-  function calculateAlgorithmMarketFee(
-    consumeMarketFee: number | string,
-    algorithmPrice: number | string,
-    maxDecimals: number
-  ): string {
-    return new Decimal(consumeMarketFee)
-      .mul(new Decimal(algorithmPrice || 0))
-      .toDecimalPlaces(maxDecimals)
-      .div(100)
-      .toString()
-  }
 
   const computeItems = [
     {
@@ -540,25 +556,7 @@ export default function Review({
 
   const marketFees = [
     {
-      name: `COMMUNITY FEE DATASET (${consumeMarketFee}%)`,
-      value: calculateDatasetMarketFee(
-        consumeMarketFee,
-        accessDetails?.validOrderTx ? '0' : accessDetails?.price,
-        MAX_DECIMALS
-      )
-    },
-    {
-      name: `COMMUNITY FEE ALGORITHM (${consumeMarketFee}%)`,
-      value: calculateAlgorithmMarketFee(
-        consumeMarketFee,
-        algoOrderPrice ||
-          selectedAlgorithmAsset?.accessDetails[serviceIndex]?.price ||
-          0,
-        MAX_DECIMALS
-      )
-    },
-    {
-      name: `MARKETPLACE FEE DATASET`,
+      name: `MARKETPLACE ORDER FEE DATASET`,
       value: accessDetails?.isOwned
         ? '0'
         : new Decimal(
@@ -566,12 +564,22 @@ export default function Review({
           ).toString()
     },
     {
-      name: `MARKETPLACE FEE ALGORITHM`,
+      name: `MARKETPLACE ORDER FEE ALGORITHM`,
       value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
         ? '0'
         : new Decimal(
             formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
           ).toString()
+    },
+    {
+      name: `OEC FEE DATASET`,
+      value: accessDetails?.isOwned ? '0' : datasetOecFees.toString()
+    },
+    {
+      name: `OEC FEE ALGORITHM`,
+      value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
+        ? '0'
+        : algoOecFee.toString()
     }
   ]
 
@@ -898,31 +906,11 @@ export default function Review({
       return
     }
 
-    const datasetFee = new Decimal(
-      calculateDatasetMarketFee(
-        consumeMarketFee,
-        accessDetails?.validOrderTx ? '0' : accessDetails?.price,
-        MAX_DECIMALS
-      )
-    )
-
-    const algorithmFee = new Decimal(
-      calculateAlgorithmMarketFee(
-        consumeMarketFee,
-        algoOrderPrice ||
-          selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.price ||
-          0,
-        MAX_DECIMALS
-      )
-    )
-
     const sumTotalPrices = totalPrices.reduce((acc, item) => {
       return acc.add(new Decimal(item.value || 0))
     }, new Decimal(0))
 
     const finalTotal = sumTotalPrices
-      .add(datasetFee)
-      .add(algorithmFee)
       .add(
         datasetProviderFees[0]?.value
           ? new Decimal(datasetProviderFees[0].value)
@@ -933,11 +921,13 @@ export default function Review({
           ? new Decimal(algorithmProviderFees[0].value)
           : new Decimal(0)
       )
+      .add(datasetOecFees)
+      .add(algoOecFee)
+      .toDecimalPlaces(MAX_DECIMALS)
 
     setTotalPriceToDisplay(finalTotal.toDecimalPlaces(MAX_DECIMALS).toString())
   }, [
     totalPrices,
-    consumeMarketFee,
     accessDetails?.price,
     algoOrderPrice,
     selectedAlgorithmAsset,

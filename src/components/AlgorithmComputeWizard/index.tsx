@@ -34,18 +34,15 @@ import {
   getComputeEnvironments
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
-import { parseConsumerParameterValues } from '../Asset/AssetActions/ConsumerParameters'
-import { BigNumber, ethers, Signer } from 'ethers'
+import { ethers, Signer } from 'ethers'
 import { useAccount, useProvider } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
-import { useCredentialValidation } from '@hooks/useCredentialValidation'
 import appConfig from 'app.config.cjs'
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
-// import FormStartComputeAlgo from './FormComputeAlgorithm'
 import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
 
 import Title from './Title'
@@ -91,7 +88,6 @@ export default function ComputeWizard({
   onClose?: () => void
   onComputeJobCreated?: () => void
 }): ReactElement {
-  const { debug } = useUserPreferences()
   const { isAssetNetwork } = useAsset()
   const { isConnected } = useAccount()
   const config = getOceanConfig(asset.credentialSubject.chainId)

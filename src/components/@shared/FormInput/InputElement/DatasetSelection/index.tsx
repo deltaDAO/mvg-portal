@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Loader from '@shared/atoms/Loader'
 import { truncateDid } from '@utils/string'
 import styles from './index.module.css'
@@ -89,17 +89,6 @@ export default function DatasetSelection({
                         networkId={asset?.credentialSubject?.chainId}
                         className={styles.network}
                       />
-                      <div className={styles.price}>
-                        {dataset?.datasetPrice &&
-                        Number(dataset.datasetPrice) > 0 ? (
-                          <>
-                            {dataset.datasetPrice}
-                            <span className={styles.priceUnit}></span>
-                          </>
-                        ) : (
-                          <span className={styles.priceUnit}> FREE</span>
-                        )}
-                      </div>
                     </div>
                   </div>
                   <div className={styles.cardContent}>

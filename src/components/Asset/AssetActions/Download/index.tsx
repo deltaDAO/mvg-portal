@@ -441,7 +441,7 @@ export default function Download({
               <Row
                 price={orderPriceAndFees?.opcFee || '0'}
                 symbol={price.tokenSymbol}
-                type={`OPC FEE (${(
+                type={`OEC FEE (${(
                   (parseFloat(orderPriceAndFees.opcFee) /
                     parseFloat(orderPriceAndFees.price)) *
                   100
