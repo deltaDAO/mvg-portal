@@ -142,8 +142,8 @@ export default function Review({
     algorithmProviderFeeProp || null
   )
 
-  const [algoOpcFee, setAlgoOpcFee] = useState<string>('0')
-  const [datasetOpcFees, setDatasetOpcFees] = useState<string>('0')
+  const [algoOecFee, setAlgoOecFee] = useState<string>('0')
+  const [datasetOecFees, setDatasetOecFees] = useState<string>('0')
 
   const [totalPrices, setTotalPrices] = useState([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
@@ -192,7 +192,7 @@ export default function Review({
             asset.credentialSubject.chainId,
             signer
           )
-          setAlgoOpcFee(algoFixed?.oceanFeeAmount || '0')
+          setAlgoOecFee(algoFixed?.oceanFeeAmount || '0')
           // For algorithm
         } catch (e) {
           console.error('Could not fetch algorithm fixed buy price:', e)
@@ -223,7 +223,7 @@ export default function Review({
             )
           ).reduce((acc, curr) => acc + curr, 0)
 
-          setDatasetOpcFees(feeSum.toString())
+          setDatasetOecFees(feeSum.toString())
         } catch (e) {
           console.error('Could not fetch dataset fixed buy price sum:', e)
         }
@@ -564,12 +564,12 @@ export default function Review({
       value: algoFeeConsume.toString()
     },
     {
-      name: `MARKETPLACE OPC FEE DATASET`,
-      value: datasetOpcFees.toString()
+      name: `MARKETPLACE OEC FEE DATASET`,
+      value: datasetOecFees.toString()
     },
     {
-      name: `MARKETPLACE OPC FEE ALGORITHM`,
-      value: algoOpcFee.toString()
+      name: `MARKETPLACE OEC FEE ALGORITHM`,
+      value: algoOecFee.toString()
     }
   ]
 
@@ -921,8 +921,8 @@ export default function Review({
             ? new Decimal(datasetProviderFees[0].value)
             : new Decimal(0)
         )
-        .add(datasetOpcFees)
-        .add(algoOpcFee)
+        .add(datasetOecFees)
+        .add(algoOecFee)
         .toDecimalPlaces(MAX_DECIMALS)
 
       setTotalPriceToDisplay(displayTotal.toString())

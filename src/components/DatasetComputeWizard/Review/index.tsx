@@ -154,8 +154,8 @@ export default function Review({
   const [symbol, setSymbol] = useState('')
 
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
-  const [algoOpcFee, setAlgoOpcFee] = useState<string>('0')
-  const [datasetOpcFees, setDatasetOpcFees] = useState<string>('0')
+  const [algoOecFee, setAlgoOecFee] = useState<string>('0')
+  const [datasetOecFees, setDatasetOecFees] = useState<string>('0')
   const {
     setFieldValue,
     values,
@@ -235,7 +235,7 @@ export default function Review({
             asset.credentialSubject.chainId,
             signer
           )
-          setDatasetOpcFees(datasetFixed?.oceanFeeAmount || '0')
+          setDatasetOecFees(datasetFixed?.oceanFeeAmount || '0')
         } catch (e) {
           console.error('Could not fetch dataset fixed buy price:', e)
         }
@@ -250,7 +250,7 @@ export default function Review({
             selectedAlgorithmAsset?.credentialSubject.chainId,
             signer
           )
-          setAlgoOpcFee(algoFixed?.oceanFeeAmount || '0')
+          setAlgoOecFee(algoFixed?.oceanFeeAmount || '0')
         } catch (e) {
           console.error('Could not fetch algo fixed buy price sum:', e)
         }
@@ -572,14 +572,14 @@ export default function Review({
           ).toString()
     },
     {
-      name: `MARKETPLACE OPC FEE DATASET`,
-      value: accessDetails?.isOwned ? '0' : datasetOpcFees.toString()
+      name: `MARKETPLACE OEC FEE DATASET`,
+      value: accessDetails?.isOwned ? '0' : datasetOecFees.toString()
     },
     {
-      name: `MARKETPLACE OPC FEE ALGORITHM`,
+      name: `MARKETPLACE OEC FEE ALGORITHM`,
       value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
         ? '0'
-        : algoOpcFee.toString()
+        : algoOecFee.toString()
     }
   ]
 
@@ -921,8 +921,8 @@ export default function Review({
           ? new Decimal(algorithmProviderFees[0].value)
           : new Decimal(0)
       )
-      .add(datasetOpcFees)
-      .add(algoOpcFee)
+      .add(datasetOecFees)
+      .add(algoOecFee)
       .toDecimalPlaces(MAX_DECIMALS)
 
     setTotalPriceToDisplay(finalTotal.toDecimalPlaces(MAX_DECIMALS).toString())
