@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { ReactElement, useEffect, useState } from 'react'
 import { useFormikContext, Field, FormikContextType } from 'formik'
 import Input from '@shared/FormInput'
@@ -21,7 +22,7 @@ import { getAsset } from '@utils/aquarius'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import Decimal from 'decimal.js'
 import { MAX_DECIMALS } from '@utils/constants'
-import { consumeMarketOrderFee, consumeMarketFee } from 'app.config.cjs'
+import { consumeMarketOrderFee } from 'app.config.cjs'
 import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { compareAsBN } from '@utils/numbers'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
@@ -30,6 +31,7 @@ import { requiresSsi } from '@utils/credentials'
 import { useAsset } from '@context/Asset'
 import { formatUnits } from 'ethers/lib/utils.js'
 import { getOceanConfig } from '@utils/ocean'
+import { getFixedBuyPrice } from '@utils/ocean/fixedRateExchange'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -139,6 +141,10 @@ export default function Review({
   const [algorithmProviderFee, setAlgorithmProviderFee] = useState(
     algorithmProviderFeeProp || null
   )
+
+  const [algoOpcFee, setAlgoOpcFee] = useState<string>('0')
+  const [datasetOpcFees, setDatasetOpcFees] = useState<string>('0')
+
   const [totalPrices, setTotalPrices] = useState([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
   const selectedEnvId = values?.computeEnv?.id
@@ -170,6 +176,58 @@ export default function Review({
   const errorMessages: string[] = []
   const [symbol, setSymbol] = useState('')
   const { chain } = useNetwork()
+
+  useEffect(() => {
+    async function fetchPrices() {
+      if (
+        asset &&
+        asset.credentialSubject?.chainId &&
+        accessDetails &&
+        signer
+      ) {
+        try {
+          // For algorithm
+          const algoFixed = await getFixedBuyPrice(
+            accessDetails,
+            asset.credentialSubject.chainId,
+            signer
+          )
+          setAlgoOpcFee(algoFixed?.oceanFeeAmount)
+        } catch (e) {
+          console.error('Could not fetch algorithm fixed buy price:', e)
+        }
+      }
+
+      if (selectedDatasetAsset?.length) {
+        try {
+          const feeSum = (
+            await Promise.all(
+              selectedDatasetAsset.map(async (dataset) => {
+                const details =
+                  dataset.accessDetails?.[dataset.serviceIndex || 0]
+                if (details && dataset.credentialSubject?.chainId && signer) {
+                  const fixed = await getFixedBuyPrice(
+                    details,
+                    dataset.credentialSubject.chainId,
+                    signer
+                  )
+                  return Number(fixed?.oceanFeeAmount) || 0
+                }
+                return 0
+              })
+            )
+          ).reduce((acc, curr) => acc + curr, 0)
+
+          setDatasetOpcFees(feeSum.toString())
+        } catch (e) {
+          console.error('Could not fetch dataset fixed buy price sum:', e)
+        }
+      }
+    }
+
+    fetchPrices()
+    // Add relevant dependencies, ensure signer and assets are set
+  }, [asset, accessDetails, signer, selectedDatasetAsset])
 
   useEffect(() => {
     const fetchTokenDetails = async () => {
@@ -430,31 +488,7 @@ export default function Review({
   }
 
   const currentVerificationItem = verificationQueue[currentVerificationIndex]
-  function calculateAlgorithmMarketFee(
-    consumeMarketFee: number | string,
-    algorithmPrice: number | string,
-    maxDecimals: number
-  ): string {
-    return new Decimal(consumeMarketFee)
-      .mul(new Decimal(algorithmPrice || 0))
-      .toDecimalPlaces(maxDecimals)
-      .div(100)
-      .toString()
-  }
   // --- Calculate market fees for multiple datasets + one algorithm ---
-  const totalDatasetMarketFee =
-    selectedDatasetAsset?.reduce((acc, dataset) => {
-      const index = dataset.serviceIndex || 0
-      const details = dataset.accessDetails?.[index]
-      const datasetPrice = details?.validOrderTx ? '0' : details?.price || '0'
-
-      const fee = new Decimal(consumeMarketFee)
-        .mul(new Decimal(datasetPrice))
-        .toDecimalPlaces(MAX_DECIMALS)
-        .div(100)
-
-      return acc.add(fee)
-    }, new Decimal(0)) || new Decimal(0)
   const totalDatasetMarketFeeConsume = selectedDatasetAsset
     ?.filter((dataset) => {
       const index = dataset.serviceIndex || 0
@@ -472,13 +506,6 @@ export default function Review({
   const algoFeeConsume = accessDetails.isOwned
     ? new Decimal(0)
     : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
-  const algorithmMarketFee = new Decimal(
-    calculateAlgorithmMarketFee(
-      consumeMarketFee,
-      accessDetails.validOrderTx ? '0' : accessDetails?.price,
-      MAX_DECIMALS
-    )
-  )
 
   const computeItems = [
     {
@@ -522,22 +549,22 @@ export default function Review({
 
   const marketFees = [
     {
-      name: `COMMUNITY FEE DATASET (${consumeMarketFee}%)`,
-      value: totalDatasetMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
-    },
-    {
-      name: `COMMUNITY FEE ALGORITHM (${consumeMarketFee}%)`,
-      value: algorithmMarketFee.toDecimalPlaces(MAX_DECIMALS).toString()
-    },
-    {
-      name: `MARKETPLACE FEE DATASET`,
+      name: `MARKETPLACE ORDER FEE DATASET`,
       value: totalDatasetMarketFeeConsume
         .toDecimalPlaces(MAX_DECIMALS)
         .toString()
     },
     {
-      name: `MARKETPLACE FEE ALGORITHM`,
+      name: `MARKETPLACE ORDER FEE ALGORITHM`,
       value: algoFeeConsume.toString()
+    },
+    {
+      name: `MARKETPLACE OPC DATASET`,
+      value: datasetOpcFees.toString()
+    },
+    {
+      name: `MARKETPLACE OPC ALGORITHM`,
+      value: algoOpcFee.toString()
     }
   ]
 
@@ -871,10 +898,6 @@ export default function Review({
 
   useEffect(() => {
     try {
-      // Parse dataset + algorithm market fees
-      const datasetMarketFeeTotal = new Decimal(marketFees[0]?.value || '0')
-      const algorithmMarketFeeTotal = new Decimal(marketFees[1]?.value || '0')
-
       // Sum all prices from totalPrices array (extract 'value')
       const totalPricesSum = totalPrices.reduce(
         (acc, val) => acc.add(new Decimal(val.value || 0)),
@@ -883,8 +906,6 @@ export default function Review({
 
       // Final combined total
       const displayTotal = totalPricesSum
-        .add(datasetMarketFeeTotal)
-        .add(algorithmMarketFeeTotal)
         .add(
           algorithmProviderFees[0].value
             ? new Decimal(algorithmProviderFees[0].value)
@@ -895,6 +916,8 @@ export default function Review({
             ? new Decimal(datasetProviderFees[0].value)
             : new Decimal(0)
         )
+        .add(datasetOpcFees)
+        .add(algoOpcFee)
         .toDecimalPlaces(MAX_DECIMALS)
 
       setTotalPriceToDisplay(displayTotal.toString())

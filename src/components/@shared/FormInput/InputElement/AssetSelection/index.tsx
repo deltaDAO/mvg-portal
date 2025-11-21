@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import cs from 'classnames'
 import slugify from 'slugify'
-import PriceUnit from '@shared/Price/PriceUnit'
 import External from '@images/external.svg'
 import Loader from '@shared/atoms/Loader'
 import Tooltip from '@components/@shared/atoms/Tooltip'
@@ -195,16 +194,6 @@ export default function AssetSelection({
                   </div>
 
                   <div className={styles.priceContainer}>
-                    <PriceUnit
-                      price={asset.price}
-                      size="small"
-                      className={cx({
-                        price: true,
-                        disabled: !asset.isAccountIdWhitelisted
-                      })}
-                      symbol={asset.tokenSymbol}
-                    />
-
                     {!asset.isAccountIdWhitelisted && (
                       <Tooltip
                         content={
