@@ -1,7 +1,7 @@
 export const feeTooltipText = {
-  marketplace: 'Marketplace operator fee for asset consumption',
-  provider: 'Ocean Node operator fee for asset consumption',
-  oec: 'Fee for Ocean Enterprise Collective e.V. to maintain and develop the code'
+  marketplace: 'For marketplace operation & maintenance',
+  provider: 'For Ocean Node operator(s)',
+  oec: 'For Ocean Enterprise Collective e.V. maintaining and developing the OE basecode'
 }
 
 export function getFeeTooltip(label?: string): string | undefined {
