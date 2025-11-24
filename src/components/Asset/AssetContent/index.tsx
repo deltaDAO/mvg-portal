@@ -15,9 +15,9 @@ import content from '../../../../content/purgatory.json'
 import RelatedAssets from '../RelatedAssets'
 import Web3Feedback from '@components/@shared/Web3Feedback'
 import { useAccount } from 'wagmi'
-import { decodePublish } from '@utils/invoice/publishInvoice'
+// import { decodePublish } from '@utils/invoice/publishInvoice'
 import ServiceCard from './ServiceCard'
-import { getPdf } from '@utils/invoice/createInvoice'
+// import { getPdf } from '@utils/invoice/createInvoice'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
 import MetaInfo from './MetaMain/MetaInfo'
@@ -36,10 +36,10 @@ export default function AssetContent({
   const [nftPublisher, setNftPublisher] = useState<string>()
   const [selectedService, setSelectedService] = useState<number | undefined>()
 
-  const [loadingInvoice, setLoadingInvoice] = useState(false)
-  const [pdfUrl, setPdfUrl] = useState(null)
-  const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
-  const [jsonInvoice, setJsonInvoice] = useState(null)
+  // const [loadingInvoice, setLoadingInvoice] = useState(false)
+  // const [pdfUrl, setPdfUrl] = useState(null)
+  // const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
+  // const [jsonInvoice, setJsonInvoice] = useState(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const [computeJobsRefetchTrigger, setComputeJobsRefetchTrigger] = useState(0)
   const [expanded, setExpanded] = useState(false)
@@ -53,50 +53,50 @@ export default function AssetContent({
     (service) => service.type === 'compute'
   )
 
-  async function handleGeneratePdf(id: string, tx: string) {
-    try {
-      setLoadingInvoice(true)
-      let pdfUrlResponse: Blob[]
-      if (!jsonInvoice) {
-        const response = await decodePublish(
-          id,
-          tx,
-          asset.credentialSubject.chainId
-        )
-        setJsonInvoice(jsonInvoice)
-        pdfUrlResponse = await getPdf([response])
-      } else {
-        pdfUrlResponse = await getPdf([jsonInvoice])
-      }
-      if (pdfUrlResponse.length > 0) {
-        setPdfUrl(pdfUrlResponse[0])
-      }
-    } catch (error) {
-      // Handle error
-      console.error('Error:', error)
-    } finally {
-      setLoadingInvoice(false)
-    }
-  }
+  // async function handleGeneratePdf(id: string, tx: string) {
+  //   try {
+  //     setLoadingInvoice(true)
+  //     let pdfUrlResponse: Blob[]
+  //     if (!jsonInvoice) {
+  //       const response = await decodePublish(
+  //         id,
+  //         tx,
+  //         asset.credentialSubject.chainId
+  //       )
+  //       setJsonInvoice(jsonInvoice)
+  //       pdfUrlResponse = await getPdf([response])
+  //     } else {
+  //       pdfUrlResponse = await getPdf([jsonInvoice])
+  //     }
+  //     if (pdfUrlResponse.length > 0) {
+  //       setPdfUrl(pdfUrlResponse[0])
+  //     }
+  //   } catch (error) {
+  //     // Handle error
+  //     console.error('Error:', error)
+  //   } finally {
+  //     setLoadingInvoice(false)
+  //   }
+  // }
 
-  async function handleGenerateJson(id: string, tx: string) {
-    try {
-      setLoadingInvoiceJson(true)
-      if (!jsonInvoice) {
-        const response = await decodePublish(
-          id,
-          tx,
-          asset.credentialSubject.chainId
-        )
-        setJsonInvoice(response)
-      }
-    } catch (error) {
-      // Handle error
-      console.error('Error:', error)
-    } finally {
-      setLoadingInvoiceJson(false)
-    }
-  }
+  // async function handleGenerateJson(id: string, tx: string) {
+  //   try {
+  //     setLoadingInvoiceJson(true)
+  //     if (!jsonInvoice) {
+  //       const response = await decodePublish(
+  //         id,
+  //         tx,
+  //         asset.credentialSubject.chainId
+  //       )
+  //       setJsonInvoice(response)
+  //     }
+  //   } catch (error) {
+  //     // Handle error
+  //     console.error('Error:', error)
+  //   } finally {
+  //     setLoadingInvoiceJson(false)
+  //   }
+  // }
 
   useEffect(() => {
     if (!receipts.length) return
@@ -300,7 +300,7 @@ export default function AssetContent({
                 Edit Asset
               </a>
 
-              <div
+              {/* <div
                 className={`${styles.invoiceDropdown} ${
                   isDropdownOpen ? styles.open : ''
                 }`}
@@ -378,7 +378,7 @@ export default function AssetContent({
                     </button>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
         </div>
