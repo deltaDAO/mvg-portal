@@ -7,6 +7,8 @@ import CircleX from '@images/circle_x.svg'
 import { useCredentialExpiration } from '@hooks/useCredentialExpiration'
 import styles from './index.module.css'
 import Alert from '@shared/atoms/Alert'
+import Tooltip from '@shared/atoms/Tooltip'
+import { getFeeTooltip } from '@utils/feeTooltips'
 
 interface PricingRowProps {
   itemName: string
@@ -30,6 +32,7 @@ interface PricingRowProps {
   onCredentialRefresh?: () => void
   infoMessage?: string
   symbol?: string
+  tooltip?: string
 }
 
 export default function PricingRow({
@@ -48,7 +51,8 @@ export default function PricingRow({
   onCredentialRefresh,
   infoMessage,
   valueType,
-  symbol
+  symbol,
+  tooltip
 }: PricingRowProps): ReactElement {
   const {
     credentialStatus: expirationStatus,
@@ -60,6 +64,7 @@ export default function PricingRow({
     onCredentialRefresh,
     credentialStatus === 'verified'
   )
+  const tooltipContent = tooltip || getFeeTooltip(itemName)
   const renderCredentialStatus = () => {
     if (!credentialStatus) return null
 
@@ -117,6 +122,9 @@ export default function PricingRow({
           <span className={isService ? styles.serviceName : styles.itemName}>
             {itemName}
           </span>
+          {tooltipContent && (
+            <Tooltip content={tooltipContent} className={styles.tooltip} />
+          )}
           {(() => {
             const shouldShowStatus =
               !!actionLabel &&
