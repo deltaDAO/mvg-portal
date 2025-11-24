@@ -41,3 +41,14 @@
   text-align: right;
   width: 100%;
 }
+
+.typeContainer {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 4);
+}
+
+.tooltip {
+  display: flex;
+  align-items: center;
+}
