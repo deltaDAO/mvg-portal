@@ -272,6 +272,11 @@
   gap: 8px;
 }
 
+.tooltip {
+  display: flex;
+  align-items: center;
+}
+
 .credentialIcon {
   display: flex;
   align-items: center;
