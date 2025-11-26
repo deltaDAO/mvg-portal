@@ -7,12 +7,14 @@ interface IpfsRemoteSourceProps {
   noDocumentLabel?: string
   remoteSource?: RemoteSource
   className?: string
+  name?: string
 }
 
 export function IpfsRemoteSource({
   noDocumentLabel,
   remoteSource,
-  className = ''
+  className = '',
+  name
 }: IpfsRemoteSourceProps): ReactElement {
   const [document, setDocument] = useState<IpfsRemoteDocument>()
 
@@ -36,16 +38,16 @@ export function IpfsRemoteSource({
   }, [remoteSource?.ipfsCid])
 
   return document ? (
-    <div className={className}>
-      <div>
-        <a href={document.content} download={document.filename}>
-          {document.filename}
-        </a>
-      </div>
-    </div>
+    <a
+      href={document.content}
+      download={document.filename}
+      className={className}
+    >
+      {name || document.filename}
+    </a>
   ) : noDocumentLabel ? (
-    <div className={className}>{noDocumentLabel}</div>
+    <span className={className}>{noDocumentLabel}</span>
   ) : (
-    <div className={className}>No document</div>
+    <span className={className}>No document</span>
   )
 }
