@@ -369,7 +369,7 @@ export default function Download({
     return (
       <ButtonBuy
         action="download"
-        disabled={isDisabled || (isOwned ? !isValid : false)}
+        disabled={!isValid || (isOwned ? !isValid : false)}
         hasPreviousOrder={isOwned}
         hasDatatoken={hasDatatoken}
         btSymbol={accessDetails.baseToken?.symbol}
