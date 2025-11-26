@@ -40,7 +40,7 @@ import { ethers } from 'ethers'
 import FormAddService from './FormAddService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useCancelToken } from '@hooks/useCancelToken'
-import { serviceValidationSchema } from './_validation'
+import { newServiceValidationSchema } from './_validation'
 import DebugEditService from './DebugEditService'
 import styles from './index.module.css'
 import { useUserPreferences } from '@context/UserPreferences'
@@ -324,7 +324,7 @@ export default function AddService({
         accountId,
         asset.credentialSubject?.services[0]
       )}
-      validationSchema={serviceValidationSchema}
+      validationSchema={newServiceValidationSchema}
       onSubmit={async (values, { resetForm }) => {
         // move user's focus to top of screen
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

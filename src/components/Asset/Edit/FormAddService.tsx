@@ -146,10 +146,10 @@ export default function FormAddService({
         )}
 
         <Field
-          {...getFieldContent('price', data)}
+          {...getFieldContent('new-price', data)}
           component={Input}
           name="price"
-          min={1}
+          min={0}
           step={0.01}
         />
 
