@@ -124,11 +124,10 @@ export default function FormStartComputeAlgo({
 
   const chainId = useChainId()
   const publicClient = usePublicClient()
-  const ethersProvider = publicClient
-    ? new JsonRpcProvider(
-        (publicClient.transport.config as { url: string }).url
-      )
-    : undefined
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
 

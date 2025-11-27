@@ -13,7 +13,6 @@ import appConfig from '../../../app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useConnect, useChainId, usePublicClient } from 'wagmi'
 import { BrowserProvider } from 'ethers'
-import { custom } from 'viem'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
 import useEnterpriseFeeColletor from '@hooks/useEnterpriseFeeCollector'
@@ -29,7 +28,12 @@ function MarketMetadataProvider({
   const chainId = useChainId()
   const viemPublicClient = usePublicClient({ chainId })
   const web3provider = viemPublicClient
-    ? new BrowserProvider(custom(viemPublicClient.transport) as any)
+    ? new BrowserProvider(
+        // viem client exposes transport with a request method compatible with EIP-1193
+        {
+          request: viemPublicClient.request.bind(viemPublicClient)
+        } as any
+      )
     : undefined
 
   const { signer, getOpcData } = useEnterpriseFeeColletor()

@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react'
 import { EnterpriseFeeCollectorContract } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 import { useChainId, useWalletClient, usePublicClient } from 'wagmi'
-import { ethers, formatUnits, BrowserProvider, BigNumberish } from 'ethers'
-import { custom } from 'viem'
+import { formatUnits, BrowserProvider, BigNumberish } from 'ethers'
 import { getTokenInfo } from '@utils/wallet'
 import { Fees } from 'src/@types/feeCollector/FeeCollector.type'
 import { OpcFee } from '@context/MarketMetadata/_types'
@@ -13,7 +12,12 @@ function useEnterpriseFeeColletor() {
   const { data: walletClient } = useWalletClient()
   const viemPublicClient = usePublicClient({ chainId })
   const web3provider = viemPublicClient
-    ? new BrowserProvider(custom(viemPublicClient.transport) as any)
+    ? new BrowserProvider(
+        // viem client exposes transport with a request method compatible with EIP-1193
+        {
+          request: viemPublicClient.request.bind(viemPublicClient)
+        } as any
+      )
     : undefined
 
   const [enterpriseFeeCollector, setEnterpriseFeeCollector] = useState<
@@ -88,20 +92,30 @@ function useEnterpriseFeeColletor() {
     const config = getOceanConfig(chainId)
     if (!config) return
 
-    try {
-      setEnterpriseFeeCollector(
-        new EnterpriseFeeCollectorContract(
-          config.EnterpriseFeeCollector,
-          walletClient as any,
-          config.chainId
+    const provider = new BrowserProvider(walletClient.transport as any)
+    // walletClient.account.address is available in wagmi v2
+    const init = async () => {
+      try {
+        const signer = await provider.getSigner(walletClient.account.address)
+
+        setEnterpriseFeeCollector(
+          new EnterpriseFeeCollectorContract(
+            config.EnterpriseFeeCollector,
+            signer as any,
+            config.chainId
+          )
         )
-      )
-    } catch (error: any) {
-      console.error('Error initializing EnterpriseFeeCollectorContract:', error)
-      if (error.code === 'NETWORK_ERROR') {
-        window.location.reload()
+      } catch (error: any) {
+        console.error(
+          'Error initializing EnterpriseFeeCollectorContract:',
+          error
+        )
+        if (error.code === 'NETWORK_ERROR') {
+          window.location.reload()
+        }
       }
     }
+    init()
   }, [walletClient, chainId])
 
   useEffect(() => {

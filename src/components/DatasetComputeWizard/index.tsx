@@ -102,15 +102,13 @@ export default function ComputeWizard({
   const config = getOceanConfig(asset.credentialSubject.chainId)
   const { oceanTokenAddress } = config
   const publicClient = usePublicClient()
-  const ethersProvider = publicClient
-    ? new JsonRpcProvider(
-        (publicClient.transport.config as { url: string }).url
-      )
-    : undefined
+  const rpcUrl = getOceanConfig(currentChainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const web3provider = publicClient // Use public client as provider
 
   const [isLoading, setIsLoading] = useState(true)
   const isAlgorithm = asset?.credentialSubject.metadata.type === 'algorithm'

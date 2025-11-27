@@ -168,11 +168,10 @@ export default function Compute({
 
   const publicClient = usePublicClient()
   const chainId = useChainId()
-  const ethersProvider = publicClient
-    ? new JsonRpcProvider(
-        (publicClient.transport.config as { url: string }).url
-      )
-    : undefined
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =

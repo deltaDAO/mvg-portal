@@ -72,11 +72,10 @@ export default function AddService({
   const config = getOceanConfig(asset?.credentialSubject?.chainId)
   const ssiWalletContext = useSsiWallet()
 
-  const ethersProvider = publicClient
-    ? new JsonRpcProvider(
-        (publicClient.transport.config as { url: string }).url
-      )
-    : undefined
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   const signer = walletClient as unknown as Signer
 

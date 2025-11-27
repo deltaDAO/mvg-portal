@@ -22,11 +22,10 @@ export default function Stats(): ReactElement {
   const chainId = useChainId()
   const [tokenSymbol, setTokenSymbol] = useState('OCEAN')
   const publicClient = usePublicClient()
-  const ethersProvider = publicClient
-    ? new JsonRpcProvider(
-        (publicClient.transport.config as { url: string }).url
-      )
-    : undefined
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   useEffect(() => {
     async function fetchSymbol() {

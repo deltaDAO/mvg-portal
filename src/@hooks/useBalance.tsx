@@ -9,7 +9,6 @@ import {
 } from 'wagmi'
 import { getTokenBalance } from '@utils/wallet'
 import { BrowserProvider } from 'ethers'
-import { custom } from 'viem'
 
 interface BalanceProviderValue {
   balance: UserBalance
@@ -23,7 +22,12 @@ function useBalance(): BalanceProviderValue {
   const chainId = useChainId()
   const viemPublicClient = usePublicClient({ chainId })
   const web3provider = viemPublicClient
-    ? new BrowserProvider(custom(viemPublicClient.transport) as any)
+    ? new BrowserProvider(
+        // viem client exposes transport with a request method compatible with EIP-1193
+        {
+          request: viemPublicClient.request.bind(viemPublicClient)
+        } as any
+      )
     : undefined
 
   const { approvedBaseTokens } = useMarketMetadata()

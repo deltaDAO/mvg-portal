@@ -140,11 +140,10 @@ export default function Steps({
   const publicClient = usePublicClient()
   const { values } = useFormikContext<FormComputeData>()
 
-  const ethersProvider = publicClient
-    ? new JsonRpcProvider(
-        (publicClient.transport.config as { url: string }).url
-      )
-    : undefined
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   useEffect(() => {
     if (!chainId || !accountId) return

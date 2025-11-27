@@ -22,7 +22,6 @@ import { Asset } from 'src/@types/Asset'
 import { useChainId, usePublicClient, useWalletClient } from 'wagmi' // FIX: Wagmi v2 hooks
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
-import { custom } from 'viem' // Viem utility for conversion
 
 // Assuming DownloadedAsset, TokenInfo, AccessDetails are globally available
 
@@ -66,7 +65,12 @@ function ProfileProvider({
 
   // FIX: Convert Viem Public Client transport to Ethers Provider
   const web3provider = viemPublicClient
-    ? new BrowserProvider(custom(viemPublicClient.transport) as any)
+    ? new BrowserProvider(
+        // viem client exposes transport with a request method compatible with EIP-1193
+        {
+          request: viemPublicClient.request.bind(viemPublicClient)
+        } as any
+      )
     : undefined
 
   const [isEthAddress, setIsEthAddress] = useState<boolean>()

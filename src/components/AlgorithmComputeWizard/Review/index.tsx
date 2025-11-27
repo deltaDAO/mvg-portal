@@ -174,15 +174,14 @@ export default function Review({
 
   const { data: walletClient } = useWalletClient()
   const publicClient = usePublicClient()
-  const ethersProvider = publicClient
-    ? new JsonRpcProvider(
-        (publicClient.transport.config as { url: string }).url
-      )
-    : undefined
+  const chainId = useChainId()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
   // error message
   const errorMessages: string[] = []
   const [symbol, setSymbol] = useState('')
-  const chainId = useChainId()
 
   useEffect(() => {
     async function fetchPrices() {

@@ -50,11 +50,10 @@ export default function AssetActions({
   const { balance } = useBalance()
   const chainId = useChainId()
   const publicClient = usePublicClient()
-  const ethersProvider = publicClient
-    ? new JsonRpcProvider(
-        (publicClient.transport.config as { url: string }).url
-      )
-    : undefined
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
   const { isAssetNetwork } = useAsset()
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()

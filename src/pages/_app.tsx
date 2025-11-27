@@ -1,6 +1,6 @@
 'use client'
 import type { AppProps } from 'next/app'
-import { ReactElement } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { UserPreferencesProvider } from '@context/UserPreferences'
 import UrqlProvider from '@context/UrqlProvider'
 import ConsentProvider from '@context/CookieConsent'
@@ -13,42 +13,49 @@ import MarketMetadataProvider from '@context/MarketMetadata'
 
 import { WagmiProvider } from 'wagmi'
 import { ConnectKitProvider } from 'connectkit'
-import { connectKitTheme, getWagmiClient } from '@utils/wallet'
+import { connectKitTheme, wagmiConfig } from '@utils/wallet'
 import { FilterProvider } from '@context/Filter'
 import { SsiWalletProvider } from '@context/SsiWallet'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+const queryClient = new QueryClient()
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   Decimal.set({ rounding: 1 })
 
-  const wagmiClient = getWagmiClient()
-
-  if (!wagmiClient) return null
-
   return (
-    <WagmiProvider config={wagmiClient}>
-      <ConnectKitProvider
-        options={{ initialChainId: 0 }}
-        customTheme={connectKitTheme}
-      >
-        <MarketMetadataProvider>
-          <UrqlProvider>
-            <UserPreferencesProvider>
-              <ConsentProvider>
-                <SearchBarStatusProvider>
-                  <FilterProvider>
-                    <SsiWalletProvider>
-                      <App>
-                        <Component {...pageProps} />
-                      </App>
-                    </SsiWalletProvider>
-                  </FilterProvider>
-                </SearchBarStatusProvider>
-              </ConsentProvider>
-            </UserPreferencesProvider>
-          </UrqlProvider>
-        </MarketMetadataProvider>
-      </ConnectKitProvider>
-    </WagmiProvider>
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={wagmiConfig}>
+        <ConnectKitProvider
+          options={{ initialChainId: 0 }}
+          customTheme={connectKitTheme}
+        >
+          <MarketMetadataProvider>
+            <UrqlProvider>
+              <UserPreferencesProvider>
+                <ConsentProvider>
+                  <SearchBarStatusProvider>
+                    <FilterProvider>
+                      <SsiWalletProvider>
+                        <App>
+                          <Component {...pageProps} />
+                        </App>
+                      </SsiWalletProvider>
+                    </FilterProvider>
+                  </SearchBarStatusProvider>
+                </ConsentProvider>
+              </UserPreferencesProvider>
+            </UrqlProvider>
+          </MarketMetadataProvider>
+        </ConnectKitProvider>
+      </WagmiProvider>
+    </QueryClientProvider>
   )
 }
 

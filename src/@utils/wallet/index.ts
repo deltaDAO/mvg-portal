@@ -1,8 +1,8 @@
 'use client'
 
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { createConfig } from 'wagmi'
-import { erc20Abi } from 'viem'
+import { cookieStorage, createConfig, createStorage, injected } from 'wagmi'
+import { erc20Abi, http } from 'viem'
 import { localhost, type Chain } from 'wagmi/chains'
 import {
   ethers,
@@ -12,11 +12,11 @@ import {
   JsonRpcProvider,
   Provider
 } from 'ethers'
-import { getDefaultConfig } from 'connectkit'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
 import { chainIdsSupported } from '../../../app.config.cjs'
+import { walletConnect } from 'wagmi/connectors'
 
 export async function getDummySigner(chainId: number): Promise<Signer> {
   if (typeof chainId !== 'number') {
@@ -67,19 +67,49 @@ function getWagmiChains(): readonly [Chain, ...Chain[]] {
 /* -----------------------------------------
    WAGMI CLIENT — SSR SAFE LAZY INITIALIZER
 ------------------------------------------ */
-let client: any = null
+const client: any = null
 
 export function getWagmiClient() {
   if (client) return client
   if (typeof window === 'undefined') return null
   const chains = getWagmiChains()
-  client = getDefaultConfig({
-    appName: 'Ocean Protocol Enterprise Market',
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
-    chains
+
+  return createConfig({
+    chains,
+    ssr: true,
+    storage: createStorage({ storage: cookieStorage }),
+    transports: chains.reduce(
+      (acc, chain) => ({
+        ...acc,
+        [chain.id]: http()
+      }),
+      {} as Record<number, ReturnType<typeof http>>
+    )
   })
-  return client
 }
+
+export const wagmiConfig = (() => {
+  const chains = getWagmiChains()
+
+  return createConfig({
+    chains,
+    ssr: true,
+    storage: createStorage({ storage: cookieStorage }),
+    connectors: [
+      injected(),
+      walletConnect({
+        projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!
+      })
+    ],
+    transports: chains.reduce(
+      (acc, chain) => ({
+        ...acc,
+        [chain.id]: http()
+      }),
+      {} as Record<number, ReturnType<typeof http>>
+    )
+  })
+})()
 
 // ConnectKit CSS overrides
 // https://docs.family.co/connectkit/theming#theme-variables
