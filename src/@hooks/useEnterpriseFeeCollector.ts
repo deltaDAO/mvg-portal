@@ -68,7 +68,7 @@ function useEnterpriseFeeColletor() {
   useEffect(() => {
     if (!signer || !chain?.id) return
     const config = getOceanConfig(chain.id)
-    if (!config) return
+    if (!config || !config.EnterpriseFeeCollector) return
 
     try {
       setEnterpriseFeeCollector(

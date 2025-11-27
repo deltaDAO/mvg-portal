@@ -30,7 +30,7 @@ export default function AssetContent({
   asset: AssetExtended
 }): ReactElement {
   const { isInPurgatory, purgatoryData, isOwner, isAssetNetwork } = useAsset()
-  const { address: accountId } = useAccount()
+  const { address: accountId, isConnected } = useAccount()
   const { allowExternalContent, debug } = useUserPreferences()
   const [receipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
@@ -248,13 +248,13 @@ export default function AssetContent({
                             <div
                               key={service.id}
                               onClick={() => {
-                                if (!isAssetNetwork) {
+                                if (!isAssetNetwork || !isConnected) {
                                   return
                                 }
                                 setSelectedService(index)
                               }}
                               className={`${
-                                isAssetNetwork
+                                isAssetNetwork && isConnected
                                   ? 'cursor-pointer hover:opacity-100'
                                   : 'opacity-50 cursor-not-allowed'
                               }`}
@@ -293,7 +293,7 @@ export default function AssetContent({
               )}
             </>
           )}
-          {isOwner && isAssetNetwork && (
+          {isOwner && isAssetNetwork && isConnected && (
             <div className={styles.ownerButtonsContainer}>
               <a href={`/asset/${asset.id}/edit`} className={styles.editButton}>
                 <EditIcon className={styles.editIcon} />

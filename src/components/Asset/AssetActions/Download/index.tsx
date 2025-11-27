@@ -46,7 +46,7 @@ import { AssetPrice } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
-import appConfig, { consumeMarketOrderFee } from 'app.config.cjs'
+import appConfig, { consumeMarketOrderFee, ipfsGateway } from 'app.config.cjs'
 import styles from './index.module.css'
 
 import { getDownloadValidationSchema } from './_validation'
@@ -89,6 +89,7 @@ export default function Download({
   const isMounted = useIsMounted()
   const { balance } = useBalance()
   const { chain } = useNetwork()
+  const [licenseLink, setLicenseLink] = useState('')
 
   const [isDisabled, setIsDisabled] = useState(true)
   const [hasDatatoken, setHasDatatoken] = useState(false)
@@ -147,6 +148,24 @@ export default function Download({
 
     fetchTokenDetails()
   }, [chain, signer])
+
+  useEffect(() => {
+    const licenseMirrors =
+      asset?.credentialSubject?.metadata?.license?.licenseDocuments[0]
+        ?.mirrors || []
+    let license = ''
+
+    if (licenseMirrors.length > 0) {
+      const firstMirror = licenseMirrors[0]
+      if (firstMirror.type === 'ipfs' && firstMirror.ipfsCid) {
+        license = `${ipfsGateway}/${firstMirror.ipfsCid}`
+      } else if (firstMirror.url) {
+        license = firstMirror.url
+      }
+      console.log('license here:', license)
+      setLicenseLink(license)
+    }
+  }, [asset])
 
   const price: AssetPrice = getAvailablePrice(accessDetails)
   const isUnsupportedPricing =
@@ -350,7 +369,7 @@ export default function Download({
     return (
       <ButtonBuy
         action="download"
-        disabled={isDisabled || (isOwned ? !isValid : false)}
+        disabled={!isValid || (isOwned ? !isValid : false)}
         hasPreviousOrder={isOwned}
         hasDatatoken={hasDatatoken}
         btSymbol={accessDetails.baseToken?.symbol}
@@ -485,8 +504,10 @@ export default function Download({
             component={Input}
             name="acceptPublishingLicense"
             type="checkbox"
-            options={['Publishing License']}
-            prefixes={['I agree the']}
+            options={['License Terms']}
+            prefixes={['I agree to the ']}
+            postfixes={[' under which this asset was made available']}
+            actions={[licenseLink]}
             disabled={isLoading}
             hideLabel={true}
           />

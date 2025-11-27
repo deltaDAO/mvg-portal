@@ -1,5 +1,6 @@
-import Button from '@components/@shared/atoms/Button'
 import styles from './Option.module.css'
+import { ipfsGateway } from 'app.config.cjs'
+import { IpfsRemoteSource } from '@components/@shared/IpfsRemoteSource'
 
 export default function Option({
   option,
@@ -12,20 +13,31 @@ export default function Option({
   postfix?: string
   action?: string
 }) {
+  let ipfsMirror = null
+  if (action && action.startsWith(ipfsGateway)) {
+    const ipfsCid = action.slice(ipfsGateway.length + 1) // +1 for the slash
+    ipfsMirror = { type: 'ipfs', ipfsCid }
+  }
+
   return (
     <>
       {prefix && `${prefix} `}
-      {action ? (
-        <Button
-          to={action.startsWith('/') && action}
-          href={!action.startsWith('/') && action}
+      {ipfsMirror ? (
+        <IpfsRemoteSource
+          noDocumentLabel="No license document available"
+          remoteSource={ipfsMirror}
+          name="License Terms"
+          className={styles.inlineAction}
+        />
+      ) : action ? (
+        <a
+          href={action}
           target="_blank"
           rel="noopener noreferrer"
-          style="text"
           className={styles.actionButton}
         >
           {option}
-        </Button>
+        </a>
       ) : (
         <>{option}</>
       )}

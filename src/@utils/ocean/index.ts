@@ -1,4 +1,8 @@
-import { ConfigHelper, Config } from '@oceanprotocol/lib'
+import {
+  ConfigHelper,
+  Config,
+  getOceanArtifactsAddressesByChainId
+} from '@oceanprotocol/lib'
 
 /**
   This function takes a Config object as an input and returns a new sanitized Config object
@@ -39,11 +43,6 @@ export function getOceanConfig(network: string | number): any {
     ? JSON.parse(process.env.NEXT_PUBLIC_ERC20_ADDRESSES)
     : {}
 
-  const fixedRateMap: Record<string, string> = process.env
-    .NEXT_PUBLIC_MARKET_FIXED_RATE_ADDRESSES
-    ? JSON.parse(process.env.NEXT_PUBLIC_MARKET_FIXED_RATE_ADDRESSES)
-    : {}
-
   if (!network) {
     console.warn('[getOceanConfig] No network provided yet.')
     return {} as Config
@@ -66,23 +65,44 @@ export function getOceanConfig(network: string | number): any {
 
   // Override nodeUri with value from RPC map if it exists
   const networkKey = network.toString()
-  if (rpcMap[networkKey]) {
-    config.nodeUri = rpcMap[networkKey]
-  }
+  if (rpcMap[networkKey]) config.nodeUri = rpcMap[networkKey]
+  if (erc20Map[networkKey]) config.oceanTokenAddress = erc20Map[networkKey]
+  if (escrowMap[networkKey]) config.escrowAddress = escrowMap[networkKey]
 
-  if (escrowMap[networkKey]) {
-    config.escrowAddress = escrowMap[networkKey]
-  }
+  // Get contracts for current network
+  const enterpriseContracts = getOceanArtifactsAddressesByChainId(
+    Number(network)
+  )
 
-  if (erc20Map[networkKey]) {
-    config.oceanTokenAddress = erc20Map[networkKey]
-  }
-
-  if (fixedRateMap[networkKey]) {
-    config.fixedRateExchangeAddress = fixedRateMap[networkKey]
+  // Override config with enterprise contracts if present
+  if (enterpriseContracts) {
+    config.fixedRateExchangeAddress =
+      enterpriseContracts.FixedPriceEnterprise ||
+      enterpriseContracts.FixedPrice ||
+      config.fixedRateExchangeAddress
+    config.routerFactoryAddress =
+      enterpriseContracts.Router || config.routerFactoryAddress
+    config.nftFactoryAddress =
+      enterpriseContracts.ERC721Factory || config.nftFactoryAddress
+    config.dispenserAddress =
+      enterpriseContracts.Dispenser || config.dispenserAddress
+    config.accessListFactory =
+      enterpriseContracts.AccessListFactory || config.accessListFactory
+    config.opfCommunityFeeCollector =
+      enterpriseContracts.OPFCommunityFeeCollector ||
+      config.opfCommunityFeeCollector
+    config.EnterpriseFeeCollector =
+      enterpriseContracts.EnterpriseFeeCollector ||
+      config.EnterpriseFeeCollector
+    config.startBlock = enterpriseContracts.startBlock || config.startBlock
+    config.ERC20Template = enterpriseContracts.ERC20Template
+    config.ERC721Template = enterpriseContracts.ERC721Template
+    config.OPFCommunityFeeCollectorCompute =
+      enterpriseContracts.OPFCommunityFeeCollectorCompute
   }
   return config as Config
 }
+
 export function getDevelopmentConfig(): Config {
   return {
     // factoryAddress: contractAddresses.development?.DTFactory,

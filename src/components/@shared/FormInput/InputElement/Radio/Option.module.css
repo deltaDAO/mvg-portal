@@ -2,3 +2,8 @@
   font-size: inherit;
   text-transform: none;
 }
+.inlineAction {
+  display: inline;
+  /* Or inline-block for padding/margin, as needed */
+  vertical-align: middle;
+}
