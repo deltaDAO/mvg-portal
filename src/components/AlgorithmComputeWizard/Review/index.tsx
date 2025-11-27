@@ -32,6 +32,7 @@ import { useAsset } from '@context/Asset'
 import { formatUnits } from 'ethers/lib/utils.js'
 import { getOceanConfig } from '@utils/ocean'
 import { getFixedBuyPrice } from '@utils/ocean/fixedRateExchange'
+import { useUserPreferences } from '@context/UserPreferences'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -114,6 +115,7 @@ export default function Review({
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const { isAssetNetwork } = useAsset()
+  const { privacyPolicySlug } = useUserPreferences()
 
   const {
     setFieldValue,
@@ -940,6 +942,36 @@ export default function Review({
       setAlgorithmProviderFee(algorithmProviderFeeProp)
   }, [algorithmProviderFeeProp])
 
+  const getLicenseUrl = (): string | undefined => {
+    // First try to get license from algorithm asset
+    if (
+      asset?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
+        ?.mirrors?.[0]
+    ) {
+      const licenseMirror =
+        asset.credentialSubject.metadata.license.licenseDocuments[0].mirrors[0]
+      if (licenseMirror.type === 'url' && licenseMirror.url) {
+        return licenseMirror.url
+      }
+    }
+
+    // Then try datasets
+    if (selectedDatasetAsset?.length) {
+      for (const dataset of selectedDatasetAsset) {
+        const licenseMirror =
+          dataset?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
+            ?.mirrors?.[0]
+        if (licenseMirror?.type === 'url' && licenseMirror.url) {
+          return licenseMirror.url
+        }
+      }
+    }
+
+    return undefined
+  }
+
+  const licenseUrl = getLicenseUrl()
+
   return (
     <div className={styles.container}>
       <div className={styles.titleContainer}>
@@ -1154,7 +1186,7 @@ export default function Review({
               type="checkbox"
               options={['Terms and Conditions']}
               prefixes={['I agree to the']}
-              actions={['/terms']}
+              actions={[`${privacyPolicySlug}#terms-and-conditions`]}
               disabled={false}
               hideLabel={true}
             />
@@ -1163,9 +1195,10 @@ export default function Review({
               component={Input}
               name="acceptPublishingLicense"
               type="checkbox"
-              options={['Publishing License']}
-              prefixes={['I agree the']}
-              actions={['/publishing-license']}
+              options={[
+                'license terms under which each of the selected assets was made available'
+              ]}
+              prefixes={['I agree to the']}
               disabled={false}
               hideLabel={true}
             />
