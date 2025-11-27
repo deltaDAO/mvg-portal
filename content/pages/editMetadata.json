@@ -95,7 +95,7 @@
       },
       {
         "name": "assetState",
-        "label": "Asset Status",
+        "label": "Asset State",
         "help": "Specifies whether the asset is consumable. An Active state indicates it can be consumed, while any other state means it cannot.",
         "type": "select",
         "options": [

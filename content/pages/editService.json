@@ -167,7 +167,7 @@
       },
       {
         "name": "state",
-        "label": "Asset Service Status",
+        "label": "Service State",
         "help": "Specifies whether the service is consumable. An Active state indicates it can be consumed, while any other state means it cannot.",
         "type": "select",
         "options": [
@@ -183,10 +183,10 @@
       },
       {
         "name": "usesConsumerParameters",
-        "label": "Algorithm custom parameters",
+        "label": "Consumer parameters",
         "help": "Algorithm custom parameters are used to define required consumer input before running the algorithm in a Compute-to-Data environment.",
         "type": "checkbox",
-        "options": ["This asset uses algorithm custom parameters"],
+        "options": ["This asset uses user defined parameters"],
         "required": false
       },
       {
