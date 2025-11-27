@@ -95,12 +95,7 @@ export const wagmiConfig = (() => {
     chains,
     ssr: true,
     storage: createStorage({ storage: cookieStorage }),
-    connectors: [
-      injected(),
-      walletConnect({
-        projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!
-      })
-    ],
+    connectors: [injected()],
     transports: chains.reduce(
       (acc, chain) => ({
         ...acc,
