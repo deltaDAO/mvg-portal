@@ -13,13 +13,13 @@ import { FormPublishData } from '@components/Publish/_types'
 import { getOceanConfig } from '@utils/ocean'
 import axios from 'axios'
 import { useCancelToken } from '@hooks/useCancelToken'
-import { useNetwork } from 'wagmi'
+import { useChainId } from 'wagmi'
 import { customProviderUrl } from 'app.config.cjs'
 import CircleErrorIcon from '@images/circle_error.svg'
 import CircleCheckIcon from '@images/circle_check.svg'
 
 export default function CustomProvider(props: InputProps): ReactElement {
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const newCancelToken = useCancelToken()
   const { initialValues, setFieldError } = useFormikContext<FormPublishData>()
   const [field, meta, helpers] = useField(props.name)
@@ -57,7 +57,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
       const providerResponse = await axios.get(field.value.url, {
         cancelToken: newCancelToken()
       })
-      const userChainId = chain?.id || 100
+      const userChainId = chainId || 100
       const providerChain =
         (providerResponse?.data?.chainId as number) ||
         providerResponse?.data?.chainIds
@@ -101,7 +101,7 @@ export default function CustomProvider(props: InputProps): ReactElement {
 
   function handleDefault(e: React.SyntheticEvent) {
     e.preventDefault()
-    const oceanConfig = getOceanConfig(chain?.id || 100)
+    const oceanConfig = getOceanConfig(chainId || 100)
     const providerUrl =
       customProviderUrl ||
       oceanConfig?.nodeUri ||

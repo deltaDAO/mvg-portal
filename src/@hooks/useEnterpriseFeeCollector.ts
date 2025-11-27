@@ -1,15 +1,21 @@
 import { useEffect, useState } from 'react'
 import { EnterpriseFeeCollectorContract } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
-import { useNetwork, useSigner } from 'wagmi'
-import { ethers } from 'ethers'
+import { useChainId, useWalletClient, usePublicClient } from 'wagmi'
+import { ethers, formatUnits, BrowserProvider, BigNumberish } from 'ethers'
+import { custom } from 'viem'
 import { getTokenInfo } from '@utils/wallet'
 import { Fees } from 'src/@types/feeCollector/FeeCollector.type'
 import { OpcFee } from '@context/MarketMetadata/_types'
 
 function useEnterpriseFeeColletor() {
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const { data: walletClient } = useWalletClient()
+  const viemPublicClient = usePublicClient({ chainId })
+  const web3provider = viemPublicClient
+    ? new BrowserProvider(custom(viemPublicClient.transport) as any)
+    : undefined
+
   const [enterpriseFeeCollector, setEnterpriseFeeCollector] = useState<
     EnterpriseFeeCollectorContract | undefined
   >(undefined)
@@ -18,8 +24,19 @@ function useEnterpriseFeeColletor() {
   const fetchFees = async (
     enterpriseFeeColletor: EnterpriseFeeCollectorContract
   ): Promise<Fees> => {
+    if (!web3provider || !chainId) {
+      console.error('Ethers Provider or Chain ID not available.')
+      return {
+        approved: false,
+        feePercentage: '0',
+        maxFee: '0',
+        minFee: '0',
+        tokenAddress: ''
+      }
+    }
+
     try {
-      const config = getOceanConfig(chain!.id)
+      const config = getOceanConfig(chainId)
       const isTokenApproved =
         await enterpriseFeeColletor.contract.isTokenAllowed(
           config.oceanTokenAddress
@@ -28,16 +45,17 @@ function useEnterpriseFeeColletor() {
         const fees = await enterpriseFeeColletor.contract.getToken(
           config.oceanTokenAddress
         )
-        const { oceanTokenAddress } = getOceanConfig(chain!.id)
+        const { oceanTokenAddress } = getOceanConfig(chainId)
         const tokenDetails = await getTokenInfo(
           oceanTokenAddress,
-          signer!.provider
+          web3provider as any
         )
+
         return {
           approved: fees[0], // boolean
-          feePercentage: ethers.utils.formatUnits(fees[1], '18'),
-          maxFee: ethers.utils.formatUnits(fees[2], tokenDetails.decimals),
-          minFee: ethers.utils.formatUnits(fees[3], tokenDetails.decimals),
+          feePercentage: formatUnits(fees[1] as BigNumberish, '18'),
+          maxFee: formatUnits(fees[2] as BigNumberish, tokenDetails.decimals),
+          minFee: formatUnits(fees[3] as BigNumberish, tokenDetails.decimals),
           tokenAddress: config.oceanTokenAddress
         }
       } else {
@@ -66,15 +84,15 @@ function useEnterpriseFeeColletor() {
   }
 
   useEffect(() => {
-    if (!signer || !chain?.id) return
-    const config = getOceanConfig(chain.id)
-    if (!config || !config.EnterpriseFeeCollector) return
+    if (!walletClient || !chainId) return
+    const config = getOceanConfig(chainId)
+    if (!config) return
 
     try {
       setEnterpriseFeeCollector(
         new EnterpriseFeeCollectorContract(
           config.EnterpriseFeeCollector,
-          signer,
+          walletClient as any,
           config.chainId
         )
       )
@@ -84,7 +102,7 @@ function useEnterpriseFeeColletor() {
         window.location.reload()
       }
     }
-  }, [signer, chain?.id])
+  }, [walletClient, chainId])
 
   useEffect(() => {
     if (!enterpriseFeeCollector) return
@@ -119,7 +137,7 @@ function useEnterpriseFeeColletor() {
     return opcData
   }
 
-  return { fees, signer, getOpcData }
+  return { fees, signer: walletClient, getOpcData }
 }
 
 export default useEnterpriseFeeColletor

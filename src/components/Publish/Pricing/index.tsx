@@ -7,11 +7,11 @@ import Free from './Free'
 import content from '../../../../content/price.json'
 import styles from './index.module.css'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import { useNetwork } from 'wagmi'
+import { useChainId } from 'wagmi'
 
 export default function PricingFields(): ReactElement {
   const { appConfig } = useMarketMetadata()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const { approvedBaseTokens } = useMarketMetadata()
 
   // Connect with main publish form
@@ -34,7 +34,7 @@ export default function PricingFields(): ReactElement {
     setFieldValue('pricing.baseToken', defaultBaseToken)
   }, [
     approvedBaseTokens,
-    chain?.id,
+    chainId,
     defaultBaseToken,
     isBaseTokenSet,
     setFieldValue,

@@ -2,12 +2,14 @@ import { useState, useEffect, useCallback } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useMarketMetadata } from '../@context/MarketMetadata'
 import {
-  useNetwork,
+  useChainId,
   useAccount,
-  useProvider,
+  usePublicClient,
   useBalance as useBalanceWagmi
 } from 'wagmi'
 import { getTokenBalance } from '@utils/wallet'
+import { BrowserProvider } from 'ethers'
+import { custom } from 'viem'
 
 interface BalanceProviderValue {
   balance: UserBalance
@@ -17,9 +19,14 @@ interface BalanceProviderValue {
 function useBalance(): BalanceProviderValue {
   const { address } = useAccount()
   const { data: balanceNativeToken } = useBalanceWagmi({ address })
-  const web3provider = useProvider()
+
+  const chainId = useChainId()
+  const viemPublicClient = usePublicClient({ chainId })
+  const web3provider = viemPublicClient
+    ? new BrowserProvider(custom(viemPublicClient.transport) as any)
+    : undefined
+
   const { approvedBaseTokens } = useMarketMetadata()
-  const { chain } = useNetwork()
 
   const [balance, setBalance] = useState<UserBalance>({
     native: {
@@ -40,7 +47,7 @@ function useBalance(): BalanceProviderValue {
               address,
               decimals,
               tokenAddress,
-              web3provider
+              web3provider as any
             )
             newBalance[symbol.toLocaleLowerCase()] = tokenBalance
           })
@@ -56,12 +63,7 @@ function useBalance(): BalanceProviderValue {
   // Helper: Get user balance
   // -----------------------------------
   const getUserBalance = useCallback(async () => {
-    if (
-      !balanceNativeToken?.formatted ||
-      !address ||
-      !chain?.id ||
-      !web3provider
-    )
+    if (!balanceNativeToken?.formatted || !address || !chainId || !web3provider)
       return
 
     try {
@@ -77,12 +79,12 @@ function useBalance(): BalanceProviderValue {
       }
       console.log('user balance', newBalance)
       setBalance(newBalance)
-    } catch (error) {
+    } catch (error: any) {
       LoggerInstance.error('[useBalance] Error: ', error.message)
     }
   }, [
     address,
-    chain?.id,
+    chainId,
     web3provider,
     balanceNativeToken,
     getApprovedTokenBalances

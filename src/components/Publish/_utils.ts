@@ -30,13 +30,12 @@ import appConfig, {
 } from '../../../app.config.cjs'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
-import { hexlify, parseEther } from 'ethers/lib/utils'
+import { hexlify, parseEther, isAddress, ethers, Signer } from 'ethers'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { Metadata } from 'src/@types/ddo/Metadata'
 import { Option } from 'src/@types/ddo/Option'
 import { createHash } from 'crypto'
-import { ethers, Signer } from 'ethers'
 import { uploadToIPFS } from '@utils/ipfs'
 import { DDOVersion } from 'src/@types/DdoVersion'
 import {
@@ -78,7 +77,7 @@ function makeDid(nftAddress: string, chainId: string): string {
   return (
     'did:ope:' +
     createHash('sha256')
-      .update(ethers.utils.getAddress(nftAddress) + chainId)
+      .update(ethers.getAddress(nftAddress) + chainId)
       .digest('hex')
   )
 }
@@ -910,7 +909,7 @@ export async function createTokensAndPricing(
         marketFeeCollector: marketFeeAddress,
         baseTokenDecimals,
         datatokenDecimals: 18,
-        fixedRate: values.pricing.price.toString(),
+        fixedRate: parseEther(values.pricing.price.toString()).toString(),
         marketFee: publisherMarketFixedSwapFee,
         withMint: true
       }
@@ -932,7 +931,7 @@ export async function createTokensAndPricing(
 
       erc721Address = nftCreatedEvent?.args?.newTokenAddress
       datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
-      txHash = trxReceipt?.transactionHash
+      txHash = trxReceipt?.hash
 
       LoggerInstance.log('[publish] createNftErcWithFixedRate tx', txHash)
 
@@ -963,7 +962,7 @@ export async function createTokensAndPricing(
 
       erc721Address = nftCreatedEvent?.args?.newTokenAddress
       datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
-      txHash = trxReceipt?.transactionHash
+      txHash = trxReceipt?.hash
       LoggerInstance.log('[publish] createNftErcWithDispenser tx', txHash)
 
       break

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useSigner } from 'wagmi'
+import { useWalletClient } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useUserPreferences } from '@context/UserPreferences'
 import {
@@ -16,7 +16,7 @@ import { SsiWalletDesc, SsiWalletSession } from 'src/@types/SsiWallet'
 
 export default function SsiWalletManager() {
   const { showSsiWalletModule, setShowSsiWalletModule } = useUserPreferences()
-  const { data: signer } = useSigner()
+  const { data: walletClient } = useWalletClient()
   const {
     setSessionToken,
     ssiWalletCache,
@@ -58,11 +58,17 @@ export default function SsiWalletManager() {
 
   async function handleSsiConnect() {
     try {
+      if (!walletClient) {
+        LoggerInstance.error('Wallet Client not available for SSI connection.')
+        return
+      }
+
       ssiWalletCache.clearCredentials()
       setCachedCredentials(undefined)
       clearVerifierSessionCache()
       setSsiWalletApiOverride(overrideApi)
-      const session = await connectToWallet(signer!)
+
+      const session = await connectToWallet(walletClient as any)
       setSessionToken(session)
       setSelectedDid(undefined)
       setSelectedKey(undefined)

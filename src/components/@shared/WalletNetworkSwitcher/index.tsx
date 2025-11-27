@@ -6,21 +6,18 @@ import useNetworkMetadata, {
   getNetworkDisplayName
 } from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
-import { useNetwork, useSwitchNetwork } from 'wagmi'
+import { useChainId, useSwitchChain } from 'wagmi'
 
 export default function WalletNetworkSwitcher(): ReactElement {
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const { asset } = useAsset()
-  const { switchNetwork } = useSwitchNetwork({
-    chainId: asset?.credentialSubject?.chainId
-  })
+  const { switchChain } = useSwitchChain()
   const { networksList } = useNetworkMetadata()
 
-  const ddoNetworkData = getNetworkDataById(
-    networksList,
-    asset.credentialSubject?.chainId
-  )
-  const walletNetworkData = getNetworkDataById(networksList, chain?.id)
+  const ddoNetworkId = asset.credentialSubject?.chainId
+
+  const ddoNetworkData = getNetworkDataById(networksList, ddoNetworkId)
+  const walletNetworkData = getNetworkDataById(networksList, chainId)
 
   const ddoNetworkName = (
     <strong>{getNetworkDisplayName(ddoNetworkData)}</strong>
@@ -28,6 +25,12 @@ export default function WalletNetworkSwitcher(): ReactElement {
   const walletNetworkName = (
     <strong>{getNetworkDisplayName(walletNetworkData)}</strong>
   )
+
+  const handleSwitchChain = () => {
+    if (ddoNetworkId) {
+      switchChain({ chainId: ddoNetworkId })
+    }
+  }
 
   return (
     <div className={styles.networkWarning}>
@@ -41,7 +44,7 @@ export default function WalletNetworkSwitcher(): ReactElement {
       </div>
 
       <div className={styles.tooltipWrapper}>
-        <button className={styles.button} onClick={() => switchNetwork()}>
+        <button className={styles.button} onClick={handleSwitchChain}>
           Switch Network
         </button>
         <div className={styles.tooltip}>

@@ -13,7 +13,7 @@ import DebugEditMetadata from './DebugEditMetadata'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import { sanitizeUrl } from '@utils/url'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import {
   transformConsumerParameters,
   generateCredentials,
@@ -25,8 +25,7 @@ import { Metadata } from 'src/@types/ddo/Metadata'
 import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
-import { ethers } from 'ethers'
-import { isAddress } from 'ethers/lib/utils.js'
+import { ethers, isAddress, hexlify, Signer } from 'ethers'
 import { convertLinks } from '@utils/links'
 import { License } from 'src/@types/ddo/License'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
@@ -41,8 +40,10 @@ export default function Edit({
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork, assetState } = useAsset()
   const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
+  const { data: walletClient } = useWalletClient()
   const ssiWalletContext = useSsiWallet()
+
+  const signer = walletClient as unknown as Signer
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -188,7 +189,7 @@ export default function Edit({
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',
-          ethers.utils.hexlify(ipfsUpload.flags),
+          hexlify(ipfsUpload.flags as any),
           ipfsUpload.metadataIPFS,
           ipfsUpload.metadataIPFSHash
         )

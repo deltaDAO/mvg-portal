@@ -3,7 +3,7 @@ import Caret from '@images/caret.svg'
 import { accountTruncate } from '@utils/wallet'
 import styles from './Account.module.css'
 import Avatar from '@shared/atoms/Avatar'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import { useModal } from 'connectkit'
 import { useSsiWallet } from '@context/SsiWallet'
 import {
@@ -17,7 +17,7 @@ import SsiApiModal from './SsiApiModal'
 
 const Account = forwardRef((props, ref: any) => {
   const { address: accountId, isConnected } = useAccount()
-  const { data: signer } = useSigner()
+  const { data: walletClient } = useWalletClient()
   const { setOpen } = useModal()
   const { sessionToken, setSessionToken } = useSsiWallet()
 
@@ -27,9 +27,9 @@ const Account = forwardRef((props, ref: any) => {
   useEffect(() => {
     const storedApi = sessionStorage.getItem(STORAGE_KEY)
 
-    if (isConnected && signer && appConfig.ssiEnabled && !sessionToken) {
+    if (isConnected && walletClient && appConfig.ssiEnabled && !sessionToken) {
       if (storedApi) {
-        connectToWallet(signer)
+        connectToWallet(walletClient as any)
           .then((session) => {
             setSessionToken(session)
           })
@@ -38,7 +38,7 @@ const Account = forwardRef((props, ref: any) => {
         setShowInput(true)
       }
     }
-  }, [isConnected, signer, sessionToken, setSessionToken])
+  }, [isConnected, walletClient, sessionToken, setSessionToken])
 
   async function handleActivation() {
     setOpen(true)
@@ -46,8 +46,13 @@ const Account = forwardRef((props, ref: any) => {
 
   async function handleSsiConnect() {
     try {
+      if (!walletClient) {
+        LoggerInstance.error('Wallet Client not available for SSI connection.')
+        return
+      }
+
       setSsiWalletApiOverride(overrideApi)
-      const session = await connectToWallet(signer!)
+      const session = await connectToWallet(walletClient as any)
       setSessionToken(session)
       setShowInput(false)
     } catch (error) {

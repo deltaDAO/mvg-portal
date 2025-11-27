@@ -1,9 +1,18 @@
+'use client'
+
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { createClient, erc20ABI } from 'wagmi'
-import { localhost } from '@wagmi/core/chains'
-import { ethers, Contract, Signer } from 'ethers'
-import { formatEther } from 'ethers/lib/utils'
-import { getDefaultClient } from 'connectkit'
+import { createConfig } from 'wagmi'
+import { erc20Abi } from 'viem'
+import { localhost, type Chain } from 'wagmi/chains'
+import {
+  ethers,
+  Contract,
+  Signer,
+  formatEther,
+  JsonRpcProvider,
+  Provider
+} from 'ethers'
+import { getDefaultConfig } from 'connectkit'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
@@ -29,7 +38,7 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
       throw new Error('Missing nodeUri in Ocean config')
     }
 
-    const provider = new ethers.providers.JsonRpcProvider(config.nodeUri)
+    const provider = new JsonRpcProvider(config.nodeUri)
     const wallet = new ethers.Wallet(privateKey, provider)
     return wallet
   } catch (error: any) {
@@ -38,19 +47,39 @@ export async function getDummySigner(chainId: number): Promise<Signer> {
   }
 }
 
-// Wagmi client
-const chains = [...getSupportedChains(chainIdsSupported)]
-if (process.env.NEXT_PUBLIC_MARKET_DEVELOPMENT === 'true') {
-  chains.push({ ...localhost, id: 11155420 })
+/* -----------------------------------------
+   WAGMI CHAINS — FIXED AS A TUPLE
+------------------------------------------ */
+function getWagmiChains(): readonly [Chain, ...Chain[]] {
+  const baseChains: Chain[] = [...getSupportedChains(chainIdsSupported)]
+
+  if (process.env.NEXT_PUBLIC_MARKET_DEVELOPMENT === 'true') {
+    baseChains.push({ ...localhost, id: 11155420 })
+  }
+
+  if (baseChains.length === 0) {
+    throw new Error('No supported chains found for Wagmi config.')
+  }
+
+  return baseChains as unknown as readonly [Chain, ...Chain[]]
 }
-export const wagmiClient = createClient(
-  getDefaultClient({
+
+/* -----------------------------------------
+   WAGMI CLIENT — SSR SAFE LAZY INITIALIZER
+------------------------------------------ */
+let client: any = null
+
+export function getWagmiClient() {
+  if (client) return client
+  if (typeof window === 'undefined') return null
+  const chains = getWagmiChains()
+  client = getDefaultConfig({
     appName: 'Ocean Protocol Enterprise Market',
-    infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
-    chains,
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!,
+    chains
   })
-)
+  return client
+}
 
 // ConnectKit CSS overrides
 // https://docs.family.co/connectkit/theming#theme-variables
@@ -136,7 +165,7 @@ export async function addCustomNetwork(
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: newNetworkData.chainId }]
     })
-  } catch (switchError) {
+  } catch (switchError: any) {
     if (switchError.code === 4902) {
       await web3Provider.request(
         {
@@ -172,16 +201,20 @@ export async function getTokenBalance(
   accountId: string,
   decimals: number,
   tokenAddress: string,
-  web3Provider: ethers.providers.Provider
+  web3Provider: Provider
 ): Promise<string> {
   if (!web3Provider || !accountId || !tokenAddress) return
 
   try {
-    const token = new Contract(tokenAddress, erc20ABI, web3Provider)
+    const token = new Contract(tokenAddress, erc20Abi, web3Provider)
     const balance = await token.balanceOf(accountId)
-    const adjustedDecimalsBalance = `${balance}${'0'.repeat(18 - decimals)}`
+    const balanceString = balance.toString()
+    const adjustedDecimalsBalance = `${balanceString}${'0'.repeat(
+      18 - decimals
+    )}`
+
     return formatEther(adjustedDecimalsBalance)
-  } catch (e) {
+  } catch (e: any) {
     LoggerInstance.error(`ERROR: Failed to get the balance: ${e.message}`)
   }
 }
@@ -201,16 +234,16 @@ export function getTokenBalanceFromSymbol(
 
 export async function getTokenInfo(
   tokenAddress: string,
-  web3Provider: ethers.providers.Provider
+  web3Provider: Provider
 ): Promise<TokenInfo> {
   if (!web3Provider || !tokenAddress)
     return { address: tokenAddress, name: '', symbol: '', decimals: undefined }
 
   try {
-    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider)
+    const tokenContract = new Contract(tokenAddress, erc20Abi, web3Provider)
     const name = await tokenContract.name()
     const symbol = await tokenContract.symbol()
-    const decimals = await tokenContract.decimals()
+    const decimals = Number(await tokenContract.decimals())
     return { address: tokenAddress, name, symbol, decimals }
   } catch (error: any) {
     LoggerInstance.error(

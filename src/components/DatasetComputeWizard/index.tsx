@@ -37,8 +37,15 @@ import {
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
 import { getDummySigner, getTokenInfo } from '@utils/wallet'
-import { ethers, Signer } from 'ethers'
-import { useAccount, useProvider } from 'wagmi'
+import {
+  ethers,
+  Signer,
+  parseUnits,
+  getAddress,
+  JsonRpcProvider,
+  formatUnits
+} from 'ethers'
+import { useAccount, usePublicClient, useChainId } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
 import { useSsiWallet } from '@context/SsiWallet'
 import { ResourceType } from 'src/@types/ResourceType'
@@ -91,11 +98,19 @@ export default function ComputeWizard({
   useUserPreferences()
   const { isAssetNetwork } = useAsset()
   const { isConnected } = useAccount()
+  const currentChainId = useChainId()
   const config = getOceanConfig(asset.credentialSubject.chainId)
   const { oceanTokenAddress } = config
+  const publicClient = usePublicClient()
+  const ethersProvider = publicClient
+    ? new JsonRpcProvider(
+        (publicClient.transport.config as { url: string }).url
+      )
+    : undefined
+
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const web3provider = useProvider()
+  const web3provider = publicClient // Use public client as provider
 
   const [isLoading, setIsLoading] = useState(true)
   const isAlgorithm = asset?.credentialSubject.metadata.type === 'algorithm'
@@ -378,18 +393,18 @@ export default function ComputeWizard({
       )
       if (selectedResources.mode === 'paid') {
         const escrow = new EscrowContract(
-          ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
+          getAddress(initializedProvider.payment.escrowAddress),
           signer,
           asset.credentialSubject.chainId
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
-        const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
-
-        const amountWei = ethers.utils.parseUnits(
-          amountHuman,
-          tokenDetails.decimals
+        const tokenDetails = await getTokenInfo(
+          oceanTokenAddress,
+          ethersProvider
         )
+
+        const amountWei = parseUnits(amountHuman, tokenDetails.decimals)
 
         const erc20 = new ethers.Contract(
           oceanTokenAddress,
@@ -409,20 +424,20 @@ export default function ComputeWizard({
           '[escrow][dataset-wizard][decision] depositAmountWei=',
           amountWei.toString()
         )
-        if (amountWei.eq(0)) {
+        if (amountWei === BigInt(0)) {
           console.log(
             '[escrow][dataset-wizard][skip] depositAmount==0, skipping escrow approve/deposit/authorize'
           )
         }
 
-        if (!amountWei.eq(0)) {
+        if (amountWei !== BigInt(0)) {
           console.log(`Approving ${amountHuman} OCEAN to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
           console.log(`Approved ${amountHuman} OCEAN`)
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
-            if (allowanceNow.gte(amountWei)) {
+            if (allowanceNow >= amountWei) {
               break
             }
             await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -782,7 +797,7 @@ export default function ComputeWizard({
           datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
           null,
           null,
-          policiesServer
+          policiesServer as any
         )
       } else {
         const algorithm: ComputeAlgorithm = {
@@ -803,7 +818,7 @@ export default function ComputeWizard({
           resourceRequests,
           null,
           null,
-          policiesServer
+          policiesServer as any
         )
       }
 
@@ -847,7 +862,7 @@ export default function ComputeWizard({
 
   const onSubmit = async (values: FormComputeData) => {
     try {
-      // SSI checks are handled explicitly in the Review step; do not re‑validate on submit.
+      // SSI checks are handled explicitly in the Review step; do not re-validate on submit.
 
       if (
         !(values.algorithm || values.dataset) ||
@@ -941,66 +956,6 @@ export default function ComputeWizard({
       LoggerInstance.error(error)
     }
   }
-
-  useEffect(() => {
-    if (!asset || !accountId) return
-
-    async function fetchData() {
-      try {
-        setIsLoading(true)
-        setError(undefined)
-
-        const computeService = asset.credentialSubject?.services?.find(
-          (service) => service.type === 'compute'
-        )
-
-        if (!computeService) {
-          setError('No compute service found for this asset')
-          setIsLoading(false)
-          return
-        }
-
-        const algorithmsAssets = await getAlgorithmsForAsset(
-          asset,
-          computeService,
-          newCancelToken()
-        )
-
-        await getAlgorithmAssetSelectionListForComputeWizard(
-          computeService,
-          algorithmsAssets,
-          accountId
-        )
-
-        const environments = await getComputeEnvironments(
-          computeService.serviceEndpoint,
-          asset.credentialSubject?.chainId
-        )
-        // const datasets = await getAlgorithmDatasetsForCompute(
-        //   asset.id,
-        //   service.id,
-        //   service.serviceEndpoint,
-        //   accountId,
-        //   asset.credentialSubject?.chainId,
-        //   newCancelToken()
-        // )
-        // console.log(
-        //   'Dataset list for algo...',
-        //   JSON.stringify(datasets, null, 2)
-        // )
-
-        // setDatasets(datasets)
-        setComputeEnvs(environments || [])
-      } catch (err) {
-        console.error('Error fetching data:', err)
-        setError('Failed to load compute data')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchData()
-  }, [asset, accountId, newCancelToken])
 
   async function initComputeProvider(
     formikValues: FormComputeData
@@ -1118,6 +1073,66 @@ export default function ComputeWizard({
     await initComputeProvider(formikValues)
     setIsOrdering(false)
   }
+
+  useEffect(() => {
+    if (!asset || !accountId) return
+
+    async function fetchData() {
+      try {
+        setIsLoading(true)
+        setError(undefined)
+
+        const computeService = asset.credentialSubject?.services?.find(
+          (service) => service.type === 'compute'
+        )
+
+        if (!computeService) {
+          setError('No compute service found for this asset')
+          setIsLoading(false)
+          return
+        }
+
+        const algorithmsAssets = await getAlgorithmsForAsset(
+          asset,
+          computeService,
+          newCancelToken()
+        )
+
+        await getAlgorithmAssetSelectionListForComputeWizard(
+          computeService,
+          algorithmsAssets,
+          accountId
+        )
+
+        const environments = await getComputeEnvironments(
+          computeService.serviceEndpoint,
+          asset.credentialSubject?.chainId
+        )
+        // const datasets = await getAlgorithmDatasetsForCompute(
+        //  asset.id,
+        //  service.id,
+        //  service.serviceEndpoint,
+        //  accountId,
+        //  asset.credentialSubject?.chainId,
+        //  newCancelToken()
+        // )
+        // console.log(
+        //  'Dataset list for algo...',
+        //  JSON.stringify(datasets, null, 2)
+        // )
+
+        // setDatasets(datasets)
+        setComputeEnvs(environments || [])
+      } catch (err) {
+        console.error('Error fetching data:', err)
+        setError('Failed to load compute data')
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [asset, accountId, newCancelToken])
 
   if (!asset) {
     return null

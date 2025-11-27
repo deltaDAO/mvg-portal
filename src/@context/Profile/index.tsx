@@ -17,11 +17,14 @@ import {
 } from '@utils/aquarius'
 import axios, { CancelToken } from 'axios'
 import { useMarketMetadata } from '../MarketMetadata'
-import { formatUnits, isAddress } from 'ethers/lib/utils'
+import { formatUnits, isAddress, BrowserProvider } from 'ethers' // FIX: Ethers v6 utils and BrowserProvider
 import { Asset } from 'src/@types/Asset'
-import { useNetwork, useProvider, useSigner } from 'wagmi'
+import { useChainId, usePublicClient, useWalletClient } from 'wagmi' // FIX: Wagmi v2 hooks
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
+import { custom } from 'viem' // Viem utility for conversion
+
+// Assuming DownloadedAsset, TokenInfo, AccessDetails are globally available
 
 interface ProfileProviderValue {
   assets: Asset[]
@@ -52,14 +55,19 @@ function ProfileProvider({
   ownAccount: boolean
   children: ReactNode
 }): ReactElement {
-  const { data: signer } = useSigner()
-  const { chain } = useNetwork()
+  const { data: walletClient } = useWalletClient() // FIX: Replaced useSigner
+  const chainId = useChainId() // FIX: Replaced useNetwork
   const { chainIds } = useUserPreferences()
   const { appConfig } = useMarketMetadata()
   const [revenue, setRevenue] = useState(0)
   const [escrowAvailableFunds, setEscrowAvailableFunds] = useState('0')
   const [escrowLockedFunds, setEscrowLockedFunds] = useState('0')
-  const web3provider = useProvider()
+  const viemPublicClient = usePublicClient({ chainId }) // Original: useProvider
+
+  // FIX: Convert Viem Public Client transport to Ethers Provider
+  const web3provider = viemPublicClient
+    ? new BrowserProvider(custom(viemPublicClient.transport) as any)
+    : undefined
 
   const [isEthAddress, setIsEthAddress] = useState<boolean>()
   //
@@ -100,7 +108,7 @@ function ProfileProvider({
         // more queries to Aquarius.
         // const assetsWithPrices = await getAssetsBestPrices(result.results)
         // setAssetsWithPrices(assetsWithPrices)
-      } catch (error) {
+      } catch (error: any) {
         LoggerInstance.error(error.message)
       }
     }
@@ -182,7 +190,7 @@ function ProfileProvider({
       try {
         setIsDownloadsLoading(true)
         await fetchDownloads(cancelTokenSource.token)
-      } catch (err) {
+      } catch (err: any) {
         LoggerInstance.log(err.message)
       } finally {
         setIsDownloadsLoading(false)
@@ -220,7 +228,7 @@ function ProfileProvider({
         )
         setRevenue(totalRevenue)
         setSales(totalOrders)
-      } catch (error) {
+      } catch (error: any) {
         LoggerInstance.error(error.message)
       }
     }
@@ -228,29 +236,41 @@ function ProfileProvider({
   }, [accountId, chainIds])
 
   async function getEscrowFunds() {
-    if (!accountId || !isEthAddress || !signer || !chain?.id) {
+    // FIX: Check against walletClient and chainId
+    if (!accountId || !isEthAddress || !walletClient || !chainId) {
       setEscrowAvailableFunds('0')
       setEscrowLockedFunds('0')
       return
     }
     try {
-      const { oceanTokenAddress, escrowAddress } = getOceanConfig(chain?.id)
-      const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
+      // FIX: Use chainId
+      const { oceanTokenAddress, escrowAddress } = getOceanConfig(chainId)
+      // FIX: Pass walletClient (Ethers v6 Signer) and cast to any for Ocean.js compatibility
+      const escrow = new EscrowContract(
+        escrowAddress,
+        walletClient as any,
+        chainId
+      )
       const funds = await escrow.getUserFunds(accountId, oceanTokenAddress)
 
-      const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+      // FIX: Pass Ethers v6 Provider (web3provider) and cast for compatibility
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        web3provider as any
+      )
       const availableFunds = formatUnits(funds.available, tokenDetails.decimals)
       const lockedFunds = formatUnits(funds.locked, tokenDetails.decimals)
       setEscrowLockedFunds(lockedFunds)
       setEscrowAvailableFunds(availableFunds)
-    } catch (error) {
+    } catch (error: any) {
       LoggerInstance.error(error.message)
     }
   }
 
   useEffect(() => {
+    // FIX: Update dependencies to use new variables
     getEscrowFunds()
-  }, [accountId, signer, isEthAddress, chain])
+  }, [accountId, walletClient, isEthAddress, chainId])
 
   return (
     <ProfileContext.Provider

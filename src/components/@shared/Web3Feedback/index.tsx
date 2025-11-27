@@ -4,7 +4,7 @@ import styles from './index.module.css'
 import WalletNetworkSwitcher from '../WalletNetworkSwitcher'
 import Warning from '@images/warning.svg'
 import { useModal } from 'connectkit'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import {
   connectToWallet,
@@ -36,7 +36,7 @@ export default function Web3Feedback({
   const [showFeedback, setShowFeedback] = useState<boolean>(false)
 
   const { address, isConnected } = useAccount()
-  const { data: signer } = useSigner()
+  const { data: walletClient } = useWalletClient()
   const { setOpen } = useModal()
   const { sessionToken, setSessionToken } = useSsiWallet()
 
@@ -46,9 +46,9 @@ export default function Web3Feedback({
   useEffect(() => {
     const storedApi = sessionStorage.getItem(STORAGE_KEY)
 
-    if (isConnected && signer && appConfig.ssiEnabled && !sessionToken) {
+    if (isConnected && walletClient && appConfig.ssiEnabled && !sessionToken) {
       if (storedApi) {
-        connectToWallet(signer)
+        connectToWallet(walletClient as any)
           .then((session) => {
             setSessionToken(session)
           })
@@ -57,7 +57,7 @@ export default function Web3Feedback({
         setShowInput(true)
       }
     }
-  }, [isConnected, signer, sessionToken, setSessionToken])
+  }, [isConnected, walletClient, sessionToken, setSessionToken])
 
   function handleConnectWallet() {
     setOpen(true)
@@ -66,7 +66,7 @@ export default function Web3Feedback({
   async function handleSsiConnect() {
     try {
       setSsiWalletApiOverride(overrideApi)
-      const session = await connectToWallet(signer!)
+      const session = await connectToWallet(walletClient as any)
       setSessionToken(session)
       setShowInput(false)
     } catch (error) {

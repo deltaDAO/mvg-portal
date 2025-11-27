@@ -50,8 +50,15 @@ import { useUserPreferences } from '@context/UserPreferences'
 import { getDummySigner, getTokenInfo } from '@utils/wallet'
 import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
-import { BigNumber, ethers, Signer } from 'ethers'
-import { useAccount, useProvider } from 'wagmi'
+import {
+  ethers,
+  Signer,
+  parseUnits,
+  getAddress,
+  JsonRpcProvider,
+  formatUnits
+} from 'ethers'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import { Service } from '../../../../@types/ddo/Service'
 import { Asset, AssetPrice } from '../../../../@types/Asset'
 import { AssetExtended } from '../../../../@types/AssetExtended'
@@ -159,7 +166,13 @@ export default function Compute({
     ? allResourceValues[selectedEnvId]
     : undefined
 
-  const web3provider = useProvider()
+  const publicClient = usePublicClient()
+  const chainId = useChainId()
+  const ethersProvider = publicClient
+    ? new JsonRpcProvider(
+        (publicClient.transport.config as { url: string }).url
+      )
+    : undefined
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
@@ -316,17 +329,17 @@ export default function Compute({
       )
       if (selectedResources.mode === 'paid') {
         const escrow = new EscrowContract(
-          ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
+          getAddress(initializedProvider.payment.escrowAddress),
           signer,
           asset.credentialSubject.chainId
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
-        const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
-        const amountWei = ethers.utils.parseUnits(
-          amountHuman,
-          tokenDetails.decimals
+        const tokenDetails = await getTokenInfo(
+          oceanTokenAddress,
+          ethersProvider
         )
+        const amountWei = parseUnits(amountHuman, tokenDetails.decimals)
 
         const erc20 = new ethers.Contract(
           oceanTokenAddress,
@@ -343,7 +356,7 @@ export default function Compute({
         ).toString()
 
         const currentAllowanceWei = await erc20.allowance(owner, escrowAddress)
-        if (currentAllowanceWei.lt(amountWei)) {
+        if (currentAllowanceWei < amountWei) {
           console.log(`Approving ${amountHuman} OCEAN to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
@@ -351,7 +364,7 @@ export default function Compute({
           // Wait until allowance actually reflected on-chain
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
-            if (allowanceNow.gte(amountWei)) {
+            if (allowanceNow >= amountWei) {
               break
             }
             await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -361,9 +374,10 @@ export default function Compute({
         }
 
         const funds = await escrow.getUserFunds(owner, oceanTokenAddress)
-        const depositedWei = ethers.BigNumber.from(funds[0] ?? '0')
+        // funds[0] is returned as string, convert to bigint
+        const depositedWei = BigInt(funds[0] ?? '0')
 
-        if (depositedWei.lt(amountWei)) {
+        if (depositedWei < amountWei) {
           console.log(
             `Depositing ${amountHuman} OCEAN to escrow...`,
             amountHuman
@@ -704,7 +718,7 @@ export default function Compute({
           datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
           null,
           null,
-          policiesServer
+          policiesServer as any
         )
       } else {
         const algorithm: ComputeAlgorithm = {
@@ -726,7 +740,7 @@ export default function Compute({
           resourceRequests,
           null,
           null,
-          policiesServer
+          policiesServer as any
         )
       }
 

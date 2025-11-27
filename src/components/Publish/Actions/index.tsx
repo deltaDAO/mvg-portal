@@ -11,7 +11,7 @@ import AvailableNetworks from '@components/Publish/AvailableNetworks'
 import Info from '@images/info.svg'
 import Loader from '@shared/atoms/Loader'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import { isAddress } from 'ethers/lib/utils.js'
+import { isAddress } from 'ethers'
 import isUrl from 'is-url-superb'
 
 function isValidUrl(url: string): boolean {

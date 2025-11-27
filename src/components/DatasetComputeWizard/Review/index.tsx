@@ -13,7 +13,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -28,8 +28,7 @@ import { useAsset } from '@context/Asset'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
 import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
-import { Signer } from 'ethers'
-import { formatUnits } from 'ethers/lib/utils.js'
+import { Signer, formatUnits } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import { getFixedBuyPrice } from '@utils/ocean/fixedRateExchange'
 interface VerificationItem {
@@ -149,7 +148,7 @@ export default function Review({
   const { balance } = useBalance()
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
 
   const [symbol, setSymbol] = useState('')
 
@@ -263,9 +262,9 @@ export default function Review({
 
   useEffect(() => {
     const fetchTokenDetails = async () => {
-      if (!chain?.id || !signer?.provider) return
+      if (!chainId || !signer?.provider) return
 
-      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      const { oceanTokenAddress } = getOceanConfig(chainId)
       const tokenDetails = await getTokenInfo(
         oceanTokenAddress,
         signer.provider
@@ -276,7 +275,7 @@ export default function Review({
     }
 
     fetchTokenDetails()
-  }, [chain, signer])
+  }, [chainId, signer])
 
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)

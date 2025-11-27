@@ -1,7 +1,7 @@
 import { ReactElement } from 'react'
 import Button from '@shared/atoms/Button'
 // import { useOrbis } from '@context/DirectMessages'
-import { useDisconnect, useAccount, useConnect } from 'wagmi'
+import { useDisconnect, useAccount, useConnect, useConnectors } from 'wagmi'
 import styles from './Details.module.css'
 import Avatar from '@components/@shared/atoms/Avatar'
 import Bookmark from '@images/bookmark.svg'
@@ -16,6 +16,7 @@ import { LoggerInstance } from '@oceanprotocol/lib'
 
 export default function Details(): ReactElement {
   const { connector: activeConnector, address: accountId } = useAccount()
+  const connectors = useConnectors()
   const { connect } = useConnect()
   const { disconnect } = useDisconnect()
 
@@ -35,6 +36,15 @@ export default function Details(): ReactElement {
       setSessionToken(undefined)
     } catch (error) {
       LoggerInstance.error(error)
+    }
+  }
+
+  const handleConnectClick = async () => {
+    const connectorToUse = activeConnector || connectors[0]
+    if (connectorToUse) {
+      connect({ connector: connectorToUse })
+    } else {
+      LoggerInstance.warn('No connector available to switch to.')
     }
   }
 
@@ -72,13 +82,7 @@ export default function Details(): ReactElement {
           <div>
             <div className={styles.walletActionRow}>
               <SwitchWallet className={styles.walletActionIcon} />
-              <Button
-                style="text"
-                size="small"
-                onClick={async () => {
-                  connect()
-                }}
-              >
+              <Button style="text" size="small" onClick={handleConnectClick}>
                 Switch Wallet
               </Button>
             </div>

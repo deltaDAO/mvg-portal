@@ -1,11 +1,10 @@
-import { Chain } from 'wagmi'
+import { Chain } from 'wagmi/chains'
 import * as wagmiChains from 'wagmi/chains'
 
 // Custom OP Sepolia chain
 export const opSepolia: Chain = {
   id: 11155420,
   name: 'OP Sepolia',
-  network: 'op-sepolia',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: { http: ['https://rpc.dev.pontus-x.eu'] },
@@ -24,7 +23,6 @@ export const opSepolia: Chain = {
 export const ethereumHoodi: Chain = {
   id: 560048,
   name: 'Ethereum Hoodi',
-  network: 'hoodi',
   nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
   rpcUrls: {
     default: { http: ['https://rpc.hoodi.ethpandaops.io'] },

@@ -1,5 +1,5 @@
 import { ReactElement, useEffect } from 'react'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import SelectAlgorithm from './SelectAlgorithm'
@@ -130,14 +130,14 @@ export default function Steps({
   setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const { values } = useFormikContext<FormComputeData>()
 
   useEffect(() => {
-    if (!chain?.id || !accountId) return
-    setFieldValue('user.chainId', chain?.id)
+    if (!chainId || !accountId) return
+    setFieldValue('user.chainId', chainId)
     setFieldValue('user.accountId', accountId)
-  }, [chain?.id, accountId, setFieldValue])
+  }, [chainId, accountId, setFieldValue])
 
   const currentStep = values?.user?.stepCurrent ?? 1
   const hasUserParamsStep = Boolean(values.isUserParameters)

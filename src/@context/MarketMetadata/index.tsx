@@ -11,7 +11,9 @@ import { MarketMetadataProviderValue, OpcFee } from './_types'
 import siteContent from '../../../content/site.json'
 import appConfig from '../../../app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useConnect, useNetwork, useProvider } from 'wagmi'
+import { useConnect, useChainId, usePublicClient } from 'wagmi'
+import { BrowserProvider } from 'ethers'
+import { custom } from 'viem'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
 import useEnterpriseFeeColletor from '@hooks/useEnterpriseFeeCollector'
@@ -22,13 +24,18 @@ function MarketMetadataProvider({
 }: {
   children: ReactNode
 }): ReactElement {
-  const { isLoading } = useConnect()
-  const { chain } = useNetwork()
+  const { status } = useConnect()
+  const isLoading = status === 'pending'
+  const chainId = useChainId()
+  const viemPublicClient = usePublicClient({ chainId })
+  const web3provider = viemPublicClient
+    ? new BrowserProvider(custom(viemPublicClient.transport) as any)
+    : undefined
+
   const { signer, getOpcData } = useEnterpriseFeeColletor()
   const [opcFees, setOpcFees] = useState<OpcFee[]>()
   const [approvedBaseTokens, setApprovedBaseTokens] = useState<TokenInfo[]>()
-  const config = getOceanConfig(chain?.id)
-  const web3provider = useProvider()
+  const config = getOceanConfig(chainId)
 
   useEffect(() => {
     async function getData() {
@@ -61,7 +68,7 @@ function MarketMetadataProvider({
 
       const tokenDetails = await getTokenInfo(
         config.oceanTokenAddress,
-        web3provider
+        web3provider as any // Casting Ethers Provider for Ocean.js compatibility
       )
 
       setApprovedBaseTokens((prevTokens = []) => {

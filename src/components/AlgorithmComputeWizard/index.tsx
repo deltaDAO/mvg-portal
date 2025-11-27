@@ -34,8 +34,8 @@ import {
   getComputeEnvironments
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
-import { ethers, Signer } from 'ethers'
-import { useAccount, useProvider } from 'wagmi'
+import { ethers, getAddress, parseUnits, Signer } from 'ethers'
+import { useAccount, usePublicClient } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
 import appConfig from 'app.config.cjs'
@@ -150,7 +150,7 @@ export default function ComputeWizard({
     setCachedCredentials,
     clearVerifierSessionCache
   } = useSsiWallet()
-  const web3provider = useProvider()
+  const web3provider = usePublicClient()
 
   const [svcIndex, setSvcIndex] = useState(0)
 
@@ -161,7 +161,10 @@ export default function ComputeWizard({
   useEffect(() => {
     const fetchTokenDetails = async () => {
       if (!oceanTokenAddress || !web3provider) return
-      const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        web3provider as any
+      )
 
       setProviderFeeSymbol(tokenDetails.symbol)
     }
@@ -349,17 +352,17 @@ export default function ComputeWizard({
       )
       if (selectedResources.mode === 'paid') {
         const escrow = new EscrowContract(
-          ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
+          getAddress(initializedProvider.payment.escrowAddress),
           signer,
           asset.credentialSubject.chainId
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
-        const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
-        const amountWei = ethers.utils.parseUnits(
-          amountHuman,
-          tokenDetails.decimals
+        const tokenDetails = await getTokenInfo(
+          oceanTokenAddress,
+          web3provider as any
         )
+        const amountWei = parseUnits(amountHuman, tokenDetails.decimals)
 
         const erc20 = new ethers.Contract(
           oceanTokenAddress,
@@ -379,20 +382,20 @@ export default function ComputeWizard({
           '[escrow][algo-wizard][decision] depositAmountWei=',
           amountWei.toString()
         )
-        if (amountWei.eq(0)) {
+        if (amountWei === BigInt(0)) {
           console.log(
             '[escrow][algo-wizard][skip] depositAmount==0, skipping escrow approve/deposit/authorize'
           )
         }
 
-        if (!amountWei.eq(0)) {
+        if (amountWei !== BigInt(0)) {
           console.log(`Approving ${amountHuman} to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
           console.log(`Approved ${amountHuman}`)
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
-            if (allowanceNow.gte(amountWei)) {
+            if (allowanceNow >= amountWei) {
               break
             }
             await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -735,7 +738,7 @@ export default function ComputeWizard({
           datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
           null,
           null,
-          policiesServer
+          policiesServer as any
         )
       } else {
         const algorithm: ComputeAlgorithm = {
@@ -757,7 +760,7 @@ export default function ComputeWizard({
           resourceRequests,
           null,
           null,
-          policiesServer
+          policiesServer as any
         )
       }
 
@@ -1278,10 +1281,10 @@ export default function ComputeWizard({
                       />
                     </CredentialDialogProvider>
                     {/* <AlgorithmDatasetsListForCompute
-                                              asset={asset}
-                                              service={service}
-                                              accessDetails={accessDetails}
-                                            /> */}
+                        asset={asset}
+                        service={service}
+                        accessDetails={accessDetails}
+                      /> */}
                   </>
                 )}
 

@@ -1,6 +1,3 @@
-import Button from '@components/@shared/atoms/Button'
-import Loader from '@components/@shared/atoms/Loader'
-import { useSsiWallet } from '@context/SsiWallet'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import styles from './index.module.css'
 import { SsiKeyDesc, SsiWalletDesc, SsiWalletDid } from 'src/@types/SsiWallet'
@@ -14,11 +11,14 @@ import {
   isSessionValid
 } from '@utils/wallet/ssiWallet'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
 import ConnectedIcon from '@images/connected.svg'
 import DisconnectedIcon from '@images/disconnected.svg'
+import Button from '@components/@shared/atoms/Button'
+import Loader from '@components/@shared/atoms/Loader'
+import { useSsiWallet } from '@context/SsiWallet'
 
 export function SsiWallet(): ReactElement {
   const {
@@ -44,7 +44,7 @@ export function SsiWallet(): ReactElement {
   const selectorDialog = useRef<HTMLDialogElement>(null)
 
   const { isConnected } = useAccount()
-  const { data: signer } = useSigner()
+  const { data: walletClient } = useWalletClient()
   const [isLoadingSsiData, setIsLoadingSsiData] = useState<boolean>(false)
 
   function getKeyLabel(key: SsiKeyDesc): string {
@@ -114,14 +114,14 @@ export function SsiWallet(): ReactElement {
   }, [selectedDid, walletDids, ssiKeys])
 
   async function handleReconnection() {
-    if (isConnected && signer) {
+    if (isConnected && walletClient) {
       let valid = false
       if (sessionToken) {
         valid = await isSessionValid(sessionToken.token)
       }
-      if ((!valid || !sessionToken) && isConnected && signer) {
+      if ((!valid || !sessionToken) && isConnected && walletClient) {
         try {
-          const session = await connectToWallet(signer)
+          const session = await connectToWallet(walletClient as any)
           setSessionToken(session)
         } catch (error) {
           setSessionToken(undefined)
@@ -306,7 +306,7 @@ export function SsiWallet(): ReactElement {
             </div>
           </dialog>
 
-          {sessionToken && isConnected && signer ? (
+          {sessionToken && isConnected && walletClient ? (
             <div
               className={`${styles.ssiPanel} ${styles.connected}`}
               onClick={handleOpenDialog}

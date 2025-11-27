@@ -2,17 +2,18 @@ import { ReactElement, useState } from 'react'
 import ReactDOM from 'react-dom'
 import styles from './EscrowWithdrawModal.module.css'
 import { EscrowContract } from '@oceanprotocol/lib'
-import { useNetwork, useSigner } from 'wagmi'
+import { useChainId, useWalletClient } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
 import { useProfile } from '@context/Profile'
+import { Signer } from 'ethers'
 
 export default function EscrowWithdrawModal({
   escrowFunds,
   onClose
 }): ReactElement {
   const { refreshEscrowFunds } = useProfile()
-  const { data: signer } = useSigner()
-  const { chain } = useNetwork()
+  const { data: walletClient } = useWalletClient()
+  const chainId = useChainId()
   const [amount, setAmount] = useState('')
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -40,16 +41,17 @@ export default function EscrowWithdrawModal({
       setError('Amount can’t be greater than your escrow funds.')
       return
     }
-    if (!signer || !chain?.id) {
+    if (!walletClient || !chainId) {
       setError('Wallet or network not detected.')
       return
     }
     setError('')
     setIsLoading(true)
+    const signer = walletClient as unknown as Signer
     try {
-      const { oceanTokenAddress, escrowAddress } = getOceanConfig(chain?.id)
-      const escrow = new EscrowContract(escrowAddress, signer, chain?.id)
-      // Convert amount to wei (18 decimals):
+      const { oceanTokenAddress, escrowAddress } = getOceanConfig(chainId)
+      const escrow = new EscrowContract(escrowAddress, signer, chainId)
+
       await escrow.withdraw([oceanTokenAddress], [amount])
       if (refreshEscrowFunds) await refreshEscrowFunds()
       onClose()

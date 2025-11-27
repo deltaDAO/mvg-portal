@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { datasetSteps, algorithmSteps } from './_constants' // Updated import
@@ -22,6 +22,7 @@ import UserParametersStep from './UserParametersStep'
 import { UserParameter } from './types/DatasetSelection'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
+import { JsonRpcProvider } from 'ethers'
 
 export default function Steps({
   asset,
@@ -135,36 +136,40 @@ export default function Steps({
   setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
+  const publicClient = usePublicClient()
   const { values } = useFormikContext<FormComputeData>()
+
+  const ethersProvider = publicClient
+    ? new JsonRpcProvider(
+        (publicClient.transport.config as { url: string }).url
+      )
+    : undefined
+
   useEffect(() => {
-    if (!chain?.id || !accountId) return
-    setFieldValue('user.chainId', chain?.id)
+    if (!chainId || !accountId) return
+    setFieldValue('user.chainId', chainId)
     setFieldValue('user.accountId', accountId)
-  }, [chain?.id, accountId, setFieldValue])
+  }, [chainId, accountId, setFieldValue])
 
   const currentStep = values?.user?.stepCurrent ?? 1
 
   const hasUserParamsStep = Boolean(values.isUserParameters)
-  const { data: signer } = useSigner()
 
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
 
   useEffect(() => {
     const fetchTokenDetails = async () => {
-      if (!chain?.id || !signer?.provider) return
+      if (!chainId || !ethersProvider) return
 
-      const { oceanTokenAddress } = getOceanConfig(chain.id)
-      const tokenDetails = await getTokenInfo(
-        oceanTokenAddress,
-        signer.provider
-      )
+      const { oceanTokenAddress } = getOceanConfig(chainId)
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
 
       setTokenInfo(tokenDetails)
     }
 
     fetchTokenDetails()
-  }, [chain, signer])
+  }, [chainId, ethersProvider])
 
   useEffect(() => {
     if (!asset || !service) return
