@@ -1199,7 +1199,6 @@ export default function Review({
                 'license terms under which each of the selected assets was made available'
               ]}
               prefixes={['I agree to the']}
-              actions={licenseUrl ? [licenseUrl] : ['/publishing-license']}
               disabled={false}
               hideLabel={true}
             />
