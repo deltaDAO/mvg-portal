@@ -21,9 +21,7 @@ export function getSsiWalletApi(): string {
   return override || ssiWalletApi
 }
 
-export async function connectToWallet(
-  owner: Signer
-): Promise<SsiWalletSession> {
+export async function connectToWallet(owner: any): Promise<SsiWalletSession> {
   const api = getSsiWalletApi()
   if (!api) {
     throw new Error('No SSI Wallet API configured')
@@ -31,18 +29,22 @@ export async function connectToWallet(
 
   try {
     let response = await axios.get(`${api}/wallet-api/auth/account/web3/nonce`)
-
     const nonce = response.data
+    const signature = await owner.signMessage({
+      account: owner.account,
+      message: nonce
+    })
     const payload = {
       challenge: nonce,
-      signed: await owner.signMessage(nonce),
-      publicKey: await owner.getAddress()
+      signed: signature,
+      publicKey: owner.account.address
     }
 
     response = await axios.post(
       `${api}/wallet-api/auth/account/web3/signed`,
       payload
     )
+    console.log('resss:', response)
     return response.data
   } catch (error) {
     throw error.response
