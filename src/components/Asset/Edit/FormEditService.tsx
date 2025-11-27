@@ -146,12 +146,20 @@ export default function FormEditService({
           />
         )}
 
-        <Field
-          {...getFieldContent('price', data)}
-          component={Input}
-          name="price"
-          disabled={accessDetails.type === 'free'}
-        />
+        {accessDetails.type === 'free' ? (
+          <Field
+            {...getFieldContent('new-price', data)}
+            component={Input}
+            name="price"
+            disabled={true}
+          />
+        ) : (
+          <Field
+            {...getFieldContent('price', data)}
+            component={Input}
+            name="price"
+          />
+        )}
 
         <Field
           {...getFieldContent('paymentCollector', data)}
