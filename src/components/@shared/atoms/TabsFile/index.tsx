@@ -12,17 +12,33 @@ import IconIpfs from '@images/ipfs.svg'
 import IconArweave from '@images/arweave.svg'
 import IconGraphql from '@images/graphql.svg'
 
+interface TabsField {
+  value: string
+  label: string
+  required?: boolean
+  help?: string
+  computeHelp?: string
+  prominentHelp?: boolean
+}
+
+interface TabsItemProps {
+  name: string
+}
+
 export interface TabsItem {
-  field: any
+  field: TabsField
   title: string
   content: ReactNode
   disabled?: boolean
-  props: any
+  props: TabsItemProps
 }
 
 export interface TabsProps {
   items: TabsItem[]
   className?: string
+  activeFileType?: string
+  existingFilePlaceholder?: string
+  showExistingFileNotice?: boolean
 }
 
 const iconMap = {
@@ -34,7 +50,10 @@ const iconMap = {
 
 export default function TabsFile({
   items,
-  className
+  className,
+  activeFileType,
+  existingFilePlaceholder,
+  showExistingFileNotice
 }: TabsProps): ReactElement {
   const { values, setFieldValue } = useFormikContext<
     FormPublishData | ServiceEditForm
@@ -51,8 +70,10 @@ export default function TabsFile({
   }
 
   const initialState = () => {
-    const currentType = getCurrentFileType()
-    const index = items.findIndex((tab: any) => {
+    const formType = getCurrentFileType()
+    const currentType =
+      formType && formType !== 'hidden' ? formType : activeFileType
+    const index = items.findIndex((tab: TabsItem) => {
       return tab.field.value === currentType
     })
 
@@ -60,12 +81,15 @@ export default function TabsFile({
   }
 
   const [tabIndex, setTabIndex] = useState(initialState)
-  console.log('🚀 ~ TabsFile ~ tabIndex:', tabIndex)
-  const currentFileType = getCurrentFileType()
+  const currentFormType = getCurrentFileType()
+  const resolvedCurrentType =
+    currentFormType && currentFormType !== 'hidden'
+      ? currentFormType
+      : activeFileType
 
   useEffect(() => {
-    const newIndex = items.findIndex((tab: any) => {
-      return tab.field.value === currentFileType
+    const newIndex = items.findIndex((tab: TabsItem) => {
+      return tab.field.value === resolvedCurrentType
     })
     if (newIndex >= 0) {
       setTabIndex((prevIndex) => {
@@ -75,13 +99,14 @@ export default function TabsFile({
         return prevIndex
       })
     }
-  }, [currentFileType, items])
+  }, [resolvedCurrentType, items])
 
   const setIndex = (tabName: string) => {
-    const index = items.findIndex((tab: any) => {
+    const index = items.findIndex((tab: TabsItem) => {
       if (tab.title !== tabName) return false
       return tab
     })
+    if (index < 0) return
     setTabIndex(index)
     setFieldValue(`${items[index].props.name}[0]`, {
       url: '',
@@ -97,6 +122,9 @@ export default function TabsFile({
   if ((values as FormPublishData)?.services) {
     textToolTip = (values as FormPublishData).services[0].access === 'compute'
   }
+
+  const activeTabName =
+    items[tabIndex]?.props?.name ?? items[0]?.props?.name ?? 'files'
 
   return (
     <ReactTabs
@@ -115,7 +143,7 @@ export default function TabsFile({
             return (
               <Tab
                 className={styles.tab}
-                key={`tab_${items[tabIndex].props.name}_${index}`}
+                key={`tab_${activeTabName}_${index}`}
                 onClick={
                   handleTabChange ? () => handleTabChange(item.title) : null
                 }
@@ -136,9 +164,17 @@ export default function TabsFile({
         {items.map((item, index) => {
           return (
             <TabPanel
-              key={`tabpanel_${items[tabIndex].props.name}_${index}`}
+              key={`tabpanel_${activeTabName}_${index}`}
               className={styles.tabPanel}
             >
+              {existingFilePlaceholder &&
+                showExistingFileNotice &&
+                item.field.value === activeFileType &&
+                index === tabIndex && (
+                  <div className={styles.existingFileNotice}>
+                    {existingFilePlaceholder}
+                  </div>
+                )}
               <label className={styles.tabLabel}>
                 {item.field.label}
                 {item.field.required && (

@@ -272,11 +272,7 @@ export default function EditService({
   return (
     <Formik
       enableReinitialize
-      initialValues={getServiceInitialValues(
-        service,
-        accessDetails,
-        detectedFileType
-      )}
+      initialValues={getServiceInitialValues(service, accessDetails)}
       validationSchema={
         accessDetails.type === 'free'
           ? newServiceValidationSchema
@@ -312,7 +308,7 @@ export default function EditService({
               service={service}
               accessDetails={accessDetails}
               assetType={asset.credentialSubject?.metadata?.type}
-              initialFileType={detectedFileType}
+              existingFileType={detectedFileType}
             />
 
             <Web3Feedback
