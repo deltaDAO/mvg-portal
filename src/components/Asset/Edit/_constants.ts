@@ -390,12 +390,31 @@ export const getNewServiceInitialValues = (
 
 export const getServiceInitialValues = (
   service: Service,
-  accessDetails: AccessDetails
+  accessDetails: AccessDetails,
+  initialFileType?: string
 ): ServiceEditForm => {
   const computeSettings = getComputeSettingsInitialValues(
     service.compute || defaultServiceComputeOptions
   )
   const credentialForm = generateCredentials(service.credentials, 'edit')
+
+  const hasEncryptedFiles = service.files && service.files.length > 0
+  const fileType = initialFileType || 'url'
+  console.log(
+    '🚀 ~ getServiceInitialValues ~ initialFileType:',
+    initialFileType
+  )
+  const initialFiles = hasEncryptedFiles
+    ? [
+        {
+          url: '[Encrypted file - URL not available for editing]',
+          type: fileType,
+          valid: true,
+          isEncrypted: true
+        }
+      ]
+    : [{ url: '', type: 'hidden' }]
+
   return {
     name: service.name,
     description: service.description?.['@value'],
@@ -411,7 +430,7 @@ export const getServiceInitialValues = (
       valid: true,
       custom: false
     },
-    files: [{ url: '', type: 'hidden' }],
+    files: initialFiles,
     state: assetStateToString(service.state),
     timeout: secondsToString(service.timeout),
     usesConsumerParameters: service.consumerParameters

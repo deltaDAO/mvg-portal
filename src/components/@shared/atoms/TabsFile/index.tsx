@@ -1,8 +1,9 @@
 import Markdown from '@shared/Markdown'
 import { useFormikContext } from 'formik'
-import { ReactElement, ReactNode, useState } from 'react'
+import { ReactElement, ReactNode, useState, useEffect } from 'react'
 import { Tab, Tabs as ReactTabs, TabList, TabPanel } from 'react-tabs'
 import { FormPublishData } from 'src/components/Publish/_types'
+import { ServiceEditForm } from 'src/components/Asset/Edit/_types'
 import Tooltip from '../Tooltip'
 import styles from './index.module.css'
 
@@ -35,20 +36,46 @@ export default function TabsFile({
   items,
   className
 }: TabsProps): ReactElement {
-  const { values, setFieldValue } = useFormikContext<FormPublishData>()
+  const { values, setFieldValue } = useFormikContext<
+    FormPublishData | ServiceEditForm
+  >()
+
+  const getCurrentFileType = () => {
+    if ((values as FormPublishData)?.services) {
+      return (values as FormPublishData).services[0]?.files?.[0]?.type
+    }
+    if ((values as ServiceEditForm)?.files) {
+      return (values as ServiceEditForm).files?.[0]?.type
+    }
+    return undefined
+  }
+
   const initialState = () => {
+    const currentType = getCurrentFileType()
     const index = items.findIndex((tab: any) => {
-      // fallback for edit mode (starts at index 0 with hidden element)
-      if (!values?.services) return 0
-      return tab.field.value === values.services[0].files[0].type
+      return tab.field.value === currentType
     })
 
     return index < 0 ? 0 : index
   }
 
   const [tabIndex, setTabIndex] = useState(initialState)
-  // hide tabs if are hidden
-  const isHidden = items[tabIndex].props.value[0].type === 'hidden'
+  console.log('🚀 ~ TabsFile ~ tabIndex:', tabIndex)
+  const currentFileType = getCurrentFileType()
+
+  useEffect(() => {
+    const newIndex = items.findIndex((tab: any) => {
+      return tab.field.value === currentFileType
+    })
+    if (newIndex >= 0) {
+      setTabIndex((prevIndex) => {
+        if (newIndex !== prevIndex) {
+          return newIndex
+        }
+        return prevIndex
+      })
+    }
+  }, [currentFileType, items])
 
   const setIndex = (tabName: string) => {
     const index = items.findIndex((tab: any) => {
@@ -67,21 +94,27 @@ export default function TabsFile({
   }
 
   let textToolTip = false
-  if (values?.services) {
-    textToolTip = values.services[0].access === 'compute'
+  if ((values as FormPublishData)?.services) {
+    textToolTip = (values as FormPublishData).services[0].access === 'compute'
   }
 
   return (
-    <ReactTabs className={`${className || ''}`} defaultIndex={tabIndex}>
+    <ReactTabs
+      className={`${className || ''}`}
+      selectedIndex={tabIndex}
+      onSelect={(index) => {
+        if (index !== undefined && index !== tabIndex) {
+          setTabIndex(index)
+        }
+      }}
+    >
       <div className={styles.tabListContainer}>
         <TabList className={styles.tabList}>
           {items.map((item, index) => {
             const IconComponent = iconMap[item.title.toUpperCase()]
             return (
               <Tab
-                className={`${styles.tab} ${
-                  isHidden ? styles.tabHidden : null
-                }`}
+                className={styles.tab}
                 key={`tab_${items[tabIndex].props.name}_${index}`}
                 onClick={
                   handleTabChange ? () => handleTabChange(item.title) : null
@@ -106,27 +139,25 @@ export default function TabsFile({
               key={`tabpanel_${items[tabIndex].props.name}_${index}`}
               className={styles.tabPanel}
             >
-              {!isHidden && (
-                <label className={styles.tabLabel}>
-                  {item.field.label}
-                  {item.field.required && (
-                    <span title="Required" className={styles.required}>
-                      *
-                    </span>
-                  )}
-                  {item.field.help && item.field.prominentHelp && (
-                    <Tooltip
-                      content={
-                        <Markdown
-                          text={`${item.field.help} ${
-                            textToolTip ? item.field.computeHelp : ''
-                          }`}
-                        />
-                      }
-                    />
-                  )}
-                </label>
-              )}
+              <label className={styles.tabLabel}>
+                {item.field.label}
+                {item.field.required && (
+                  <span title="Required" className={styles.required}>
+                    *
+                  </span>
+                )}
+                {item.field.help && item.field.prominentHelp && (
+                  <Tooltip
+                    content={
+                      <Markdown
+                        text={`${item.field.help} ${
+                          textToolTip ? item.field.computeHelp : ''
+                        }`}
+                      />
+                    }
+                  />
+                )}
+              </label>
               {item.content}
             </TabPanel>
           )

@@ -21,13 +21,15 @@ export default function FormEditService({
   chainId,
   service,
   accessDetails,
-  assetType
+  assetType,
+  initialFileType
 }: {
   data: FormFieldContent[]
   chainId: number
   service: Service
   accessDetails: AccessDetails
   assetType: string
+  initialFileType?: string
 }): ReactElement {
   const formUniqueId = service.id // because BoxSelection component is not a Formik component
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
@@ -67,19 +69,25 @@ export default function FormEditService({
   }, [setFieldValue, values.language])
 
   // Initialize files field to show encrypted file exists
+  // Only update if current value is still 'hidden' (fallback safety net)
   useEffect(() => {
-    if (service.files && service.files.length > 0) {
-      // Service files are encrypted, show placeholder
+    if (
+      service.files &&
+      service.files.length > 0 &&
+      values.files?.[0]?.type === 'hidden'
+    ) {
+      // Service files are encrypted, show placeholder with detected type
+      const fileType = initialFileType || 'url'
       setFieldValue('files', [
         {
           url: '[Encrypted file - URL not available for editing]',
-          type: 'url',
+          type: fileType,
           valid: true,
           isEncrypted: true
         }
       ])
     }
-  }, [service.files, setFieldValue])
+  }, [service.id, service.files, setFieldValue, values.files, initialFileType])
 
   const handleLanguageChange = (languageName: string) => {
     const selectedLanguage = supportedLanguages.find(
