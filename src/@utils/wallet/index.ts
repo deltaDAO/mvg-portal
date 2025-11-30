@@ -10,7 +10,8 @@ import {
   Signer,
   formatEther,
   JsonRpcProvider,
-  Provider
+  Provider,
+  Wallet
 } from 'ethers'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
@@ -18,33 +19,16 @@ import { getSupportedChains } from './chains'
 import { chainIdsSupported } from '../../../app.config.cjs'
 import { walletConnect } from 'wagmi/connectors'
 
-export async function getDummySigner(chainId: number): Promise<Signer> {
-  if (typeof chainId !== 'number') {
-    throw new Error('Chain ID must be a number')
-  }
-
+export async function getDummySigner(chainId: number): Promise<Wallet> {
   const config = getOceanConfig(chainId)
-  if (!config) {
-    console.error(`[DEBUG] No Ocean config found for chainId ${chainId}`)
-    throw new Error(`No Ocean config found for chainId ${chainId}`)
-  }
+  if (!config?.nodeUri) throw new Error('Missing nodeUri in Ocean config')
 
-  try {
-    const privateKey =
-      '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+  const privateKey =
+    '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
 
-    if (!config.nodeUri) {
-      console.error('[DEBUG] Node URI missing in config')
-      throw new Error('Missing nodeUri in Ocean config')
-    }
+  const provider = new JsonRpcProvider(config.nodeUri)
 
-    const provider = new JsonRpcProvider(config.nodeUri)
-    const wallet = new ethers.Wallet(privateKey, provider)
-    return wallet
-  } catch (error: any) {
-    console.error('[DEBUG] Failed to create dummy signer:', error)
-    throw new Error(`Failed to create dummy signer: ${error.message}`)
-  }
+  return new Wallet(privateKey, provider)
 }
 
 /* -----------------------------------------

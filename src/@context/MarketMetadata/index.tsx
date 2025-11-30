@@ -28,12 +28,9 @@ function MarketMetadataProvider({
   const chainId = useChainId()
   const viemPublicClient = usePublicClient({ chainId })
   const web3provider = viemPublicClient
-    ? new BrowserProvider(
-        // viem client exposes transport with a request method compatible with EIP-1193
-        {
-          request: viemPublicClient.request.bind(viemPublicClient)
-        } as any
-      )
+    ? new BrowserProvider({
+        request: viemPublicClient.request.bind(viemPublicClient)
+      } as any)
     : undefined
 
   const { signer, getOpcData } = useEnterpriseFeeColletor()
@@ -68,19 +65,45 @@ function MarketMetadataProvider({
 
   useEffect(() => {
     async function fetchTokenInfo() {
-      if (isLoading || !config?.oceanTokenAddress || !web3provider) return
+      try {
+        if (isLoading) return
+        if (!config?.oceanTokenAddress) {
+          console.warn('[fetchTokenInfo] No oceanTokenAddress configured.')
+          return
+        }
+        if (!web3provider) {
+          console.warn('[fetchTokenInfo] web3provider is not initialized yet.')
+          return
+        }
 
-      const tokenDetails = await getTokenInfo(
-        config.oceanTokenAddress,
-        web3provider as any // Casting Ethers Provider for Ocean.js compatibility
-      )
+        const network = await web3provider.getNetwork()
+        if (!network?.chainId) {
+          console.error(
+            '[fetchTokenInfo] Unable to determine chainId from provider.'
+          )
+          return
+        }
+        const chainId = Number(network.chainId)
+        console.log('[fetchTokenInfo] chainId:', chainId, 'network:', network)
 
-      setApprovedBaseTokens((prevTokens = []) => {
-        const hasToken = prevTokens.some(
-          (token) => token.address === tokenDetails.address
+        const tokenDetails = await getTokenInfo(
+          config.oceanTokenAddress,
+          web3provider as any
         )
-        return hasToken ? prevTokens : [...prevTokens, tokenDetails]
-      })
+        console.log('[fetchTokenInfo] tokenDetails:', tokenDetails)
+
+        setApprovedBaseTokens((prevTokens = []) => {
+          const hasToken = prevTokens.some(
+            (token) => token.address === tokenDetails.address
+          )
+          return hasToken ? prevTokens : [...prevTokens, tokenDetails]
+        })
+      } catch (error: any) {
+        console.error(
+          '[fetchTokenInfo] Error fetching token info:',
+          error.message
+        )
+      }
     }
 
     fetchTokenInfo()

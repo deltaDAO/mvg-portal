@@ -240,36 +240,41 @@ function ProfileProvider({
   }, [accountId, chainIds])
 
   async function getEscrowFunds() {
-    // FIX: Check against walletClient and chainId
-    if (!accountId || !isEthAddress || !walletClient || !chainId) {
+    if (!accountId || !isEthAddress || !web3provider || !chainId) {
       setEscrowAvailableFunds('0')
       setEscrowLockedFunds('0')
       return
     }
+
     try {
-      // FIX: Use chainId
       const { oceanTokenAddress, escrowAddress } = getOceanConfig(chainId)
-      // FIX: Pass walletClient (Ethers v6 Signer) and cast to any for Ocean.js compatibility
+
       const escrow = new EscrowContract(
         escrowAddress,
-        walletClient as any,
+        web3provider as any,
         chainId
       )
+
       const funds = await escrow.getUserFunds(accountId, oceanTokenAddress)
 
-      // FIX: Pass Ethers v6 Provider (web3provider) and cast for compatibility
       const tokenDetails = await getTokenInfo(
         oceanTokenAddress,
         web3provider as any
       )
+
       const availableFunds = formatUnits(funds.available, tokenDetails.decimals)
       const lockedFunds = formatUnits(funds.locked, tokenDetails.decimals)
+
       setEscrowLockedFunds(lockedFunds)
       setEscrowAvailableFunds(availableFunds)
     } catch (error: any) {
       LoggerInstance.error(error.message)
     }
   }
+
+  useEffect(() => {
+    getEscrowFunds()
+  }, [accountId, web3provider, isEthAddress, chainId])
 
   useEffect(() => {
     // FIX: Update dependencies to use new variables

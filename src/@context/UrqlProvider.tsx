@@ -1,3 +1,5 @@
+'use client'
+
 import {
   createClient,
   Provider,
@@ -9,15 +11,15 @@ import { refocusExchange } from '@urql/exchange-refocus'
 import { useState, useEffect, ReactNode, ReactElement } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
+import { useChainId } from 'wagmi'
 
 let urqlClient: Client
 
 function createUrqlClient(subgraphUri: string) {
-  const client = createClient({
+  return createClient({
     url: `${subgraphUri}/subgraphs/name/oceanprotocol/ocean-subgraph`,
     exchanges: [dedupExchange, refocusExchange(), fetchExchange]
   })
-  return client
 }
 
 export function getUrqlClientInstance(): Client {
@@ -29,27 +31,29 @@ export default function UrqlClientProvider({
 }: {
   children: ReactNode
 }): ReactElement {
-  //
-  // Set a default client here based on ETH Mainnet, as that's required for
-  // urql to work.
-  // Throughout code base this client is then used and altered by passing
-  // a new queryContext holding different subgraph URLs.
-  //
   const [client, setClient] = useState<Client>()
+  const chainId = useChainId() // wagmi v2 hook
 
   useEffect(() => {
-    const oceanConfig = getOceanConfig(1)
+    if (!chainId) {
+      LoggerInstance.error('No chainId found. Cannot create URQL client.')
+      return
+    }
+
+    const oceanConfig = getOceanConfig(chainId)
 
     if (!oceanConfig?.nodeUri) {
-      LoggerInstance.error('No nodeUri defined.')
+      LoggerInstance.error(`[URQL] No nodeUri defined for chain ${chainId}.`)
       return
     }
 
     const newClient = createUrqlClient(oceanConfig.nodeUri)
     urqlClient = newClient
     setClient(newClient)
-    LoggerInstance.log(`[URQL] Client connected to ${oceanConfig.nodeUri}`)
-  }, [])
+    LoggerInstance.log(
+      `[URQL] Client connected to ${oceanConfig.nodeUri} (chainId: ${chainId})`
+    )
+  }, [chainId]) // re-run when chain changes
 
   return client ? <Provider value={client}>{children}</Provider> : <></>
 }
