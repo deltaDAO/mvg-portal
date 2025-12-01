@@ -323,6 +323,7 @@ export function SsiWallet(): ReactElement {
             </div>
           ) : (
             <button
+              type="button"
               className={`${styles.ssiPanel} ${styles.disconnected}`}
               onClick={handleReconnection}
             >

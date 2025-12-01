@@ -1,14 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useMarketMetadata } from '../@context/MarketMetadata'
-import {
-  useChainId,
-  useAccount,
-  usePublicClient,
-  useBalance as useBalanceWagmi
-} from 'wagmi'
+import { useChainId, useAccount, useBalance as useBalanceWagmi } from 'wagmi'
 import { getTokenBalance } from '@utils/wallet'
-import { BrowserProvider } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 interface BalanceProviderValue {
   balance: UserBalance
@@ -20,15 +15,8 @@ function useBalance(): BalanceProviderValue {
   const { data: balanceNativeToken } = useBalanceWagmi({ address })
 
   const chainId = useChainId()
-  const viemPublicClient = usePublicClient({ chainId })
-  const web3provider = viemPublicClient
-    ? new BrowserProvider(
-        // viem client exposes transport with a request method compatible with EIP-1193
-        {
-          request: viemPublicClient.request.bind(viemPublicClient)
-        } as any
-      )
-    : undefined
+  const signer = useEthersSigner({ chainId })
+  const web3provider = signer?.provider
 
   const { approvedBaseTokens } = useMarketMetadata()
 
@@ -42,6 +30,7 @@ function useBalance(): BalanceProviderValue {
   const getApprovedTokenBalances = useCallback(
     async (address: string): Promise<TokenBalances> => {
       const newBalance: TokenBalances = {}
+      if (!web3provider) return newBalance
 
       if (approvedBaseTokens?.length > 0) {
         await Promise.allSettled(
@@ -51,9 +40,9 @@ function useBalance(): BalanceProviderValue {
               address,
               decimals,
               tokenAddress,
-              web3provider as any
+              web3provider
             )
-            newBalance[symbol.toLocaleLowerCase()] = tokenBalance
+            newBalance[symbol.toLowerCase()] = tokenBalance
           })
         )
       }
@@ -63,16 +52,13 @@ function useBalance(): BalanceProviderValue {
     [approvedBaseTokens, web3provider]
   )
 
-  // -----------------------------------
-  // Helper: Get user balance
-  // -----------------------------------
   const getUserBalance = useCallback(async () => {
     if (!balanceNativeToken?.formatted || !address || !chainId || !web3provider)
       return
 
     try {
-      const userBalance = balanceNativeToken?.formatted
-      const key = balanceNativeToken?.symbol.toLowerCase()
+      const userBalance = balanceNativeToken.formatted
+      const key = balanceNativeToken.symbol.toLowerCase()
 
       const newBalance: UserBalance = {
         native: {
@@ -81,7 +67,6 @@ function useBalance(): BalanceProviderValue {
         },
         approved: await getApprovedTokenBalances(address)
       }
-      console.log('user balance', newBalance)
       setBalance(newBalance)
     } catch (error: any) {
       LoggerInstance.error('[useBalance] Error: ', error.message)

@@ -17,14 +17,12 @@ import {
 } from '@utils/aquarius'
 import axios, { CancelToken } from 'axios'
 import { useMarketMetadata } from '../MarketMetadata'
-import { formatUnits, isAddress, BrowserProvider } from 'ethers' // FIX: Ethers v6 utils and BrowserProvider
+import { formatUnits, isAddress } from 'ethers'
 import { Asset } from 'src/@types/Asset'
-import { useChainId, usePublicClient, useWalletClient } from 'wagmi' // FIX: Wagmi v2 hooks
+import { useChainId } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
 import { useEthersSigner } from '@hooks/useEthersSigner'
-
-// Assuming DownloadedAsset, TokenInfo, AccessDetails are globally available
 
 interface ProfileProviderValue {
   assets: Asset[]
@@ -62,17 +60,6 @@ function ProfileProvider({
   const [revenue, setRevenue] = useState(0)
   const [escrowAvailableFunds, setEscrowAvailableFunds] = useState('0')
   const [escrowLockedFunds, setEscrowLockedFunds] = useState('0')
-  const viemPublicClient = usePublicClient({ chainId }) // Original: useProvider
-
-  // FIX: Convert Viem Public Client transport to Ethers Provider
-  const web3provider = viemPublicClient
-    ? new BrowserProvider(
-        // viem client exposes transport with a request method compatible with EIP-1193
-        {
-          request: viemPublicClient.request.bind(viemPublicClient)
-        } as any
-      )
-    : undefined
 
   const [isEthAddress, setIsEthAddress] = useState<boolean>()
   //
@@ -241,7 +228,7 @@ function ProfileProvider({
   }, [accountId, chainIds])
 
   async function getEscrowFunds() {
-    if (!accountId || !isEthAddress || !web3provider || !chainId) {
+    if (!accountId || !isEthAddress || !walletClient || !chainId) {
       setEscrowAvailableFunds('0')
       setEscrowLockedFunds('0')
       return
@@ -252,7 +239,7 @@ function ProfileProvider({
 
       const escrow = new EscrowContract(
         escrowAddress,
-        web3provider as any,
+        walletClient as any,
         chainId
       )
 
@@ -260,7 +247,7 @@ function ProfileProvider({
 
       const tokenDetails = await getTokenInfo(
         oceanTokenAddress,
-        web3provider as any
+        walletClient as any
       )
 
       const availableFunds = formatUnits(funds.available, tokenDetails.decimals)
@@ -275,7 +262,7 @@ function ProfileProvider({
 
   useEffect(() => {
     getEscrowFunds()
-  }, [accountId, web3provider, isEthAddress, chainId])
+  }, [accountId, walletClient, isEthAddress, chainId])
 
   useEffect(() => {
     // FIX: Update dependencies to use new variables
