@@ -31,6 +31,7 @@ import { requiresSsi } from '@utils/credentials'
 import { Signer, formatUnits } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import { getFixedBuyPrice } from '@utils/ocean/fixedRateExchange'
+import { useUserPreferences } from '@context/UserPreferences'
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -149,6 +150,7 @@ export default function Review({
   const { lookupVerifierSessionId } = useSsiWallet()
   const newCancelToken = useCancelToken()
   const chainId = useChainId()
+  const { privacyPolicySlug } = useUserPreferences()
 
   const [symbol, setSymbol] = useState('')
 
@@ -1115,7 +1117,7 @@ export default function Review({
               type="checkbox"
               options={['Terms and Conditions']}
               prefixes={['I agree to the']}
-              actions={['/terms']}
+              actions={[`${privacyPolicySlug}#terms-and-conditions`]}
               disabled={false}
               hideLabel={true}
             />
@@ -1124,9 +1126,10 @@ export default function Review({
               component={Input}
               name="acceptPublishingLicense"
               type="checkbox"
-              options={['Publishing License']}
-              prefixes={['I agree the']}
-              actions={['/publishing-license']}
+              options={[
+                'license terms under which each of the selected assets was made available'
+              ]}
+              prefixes={['I agree to the']}
               disabled={false}
               hideLabel={true}
             />

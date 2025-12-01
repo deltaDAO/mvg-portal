@@ -239,7 +239,7 @@ export const serviceValidationSchema = Yup.object().shape({
   description: Yup.string().required('Required').min(10),
   price: Yup.number()
     .required('Required')
-    .min(1, 'Price must be at least 1 OCEAN')
+    .min(1, 'Price must be at least 1')
     .max(
       1000000,
       (param: { max: number }) => `Must be less than or equal to ${param.max}`
@@ -279,4 +279,19 @@ export const serviceValidationSchema = Yup.object().shape({
   publisherTrustedAlgorithms: Yup.array().nullable(),
   publisherTrustedAlgorithmPublishers: Yup.string().nullable(),
   credentials: Yup.object().shape(validationCredentials)
+})
+
+export const newServiceValidationSchema = serviceValidationSchema.shape({
+  price: Yup.number()
+    .required('Required')
+    .min(0, 'Price must be at least 0')
+    .max(
+      1000000,
+      (param: { max: number }) => `Must be less than or equal to ${param.max}`
+    )
+    .test(
+      'maxDigitsAfterDecimal',
+      `Must have maximum ${MAX_DECIMALS} decimal digits`,
+      (param) => getMaxDecimalsValidation(MAX_DECIMALS).test(param?.toString())
+    )
 })

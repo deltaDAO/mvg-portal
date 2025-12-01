@@ -95,8 +95,8 @@
       },
       {
         "name": "assetState",
-        "label": "Asset Status",
-        "help": "This asset will no longer be visible to other users and it won't be possible to purchase it.  More info available in our [docs](https://docs.oceanprotocol.com/core-concepts/did-ddo#state).",
+        "label": "Asset State",
+        "help": "Specifies whether the asset is consumable. An Active state indicates it can be consumed, while any other state means it cannot.",
         "type": "select",
         "options": [
           "Active",

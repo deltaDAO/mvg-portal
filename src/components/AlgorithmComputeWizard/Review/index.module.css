@@ -223,8 +223,26 @@
   font-size: 14px;
   text-transform: uppercase;
   color: #303031;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 2px;
+}
+
+.assetLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  margin-left: 4px;
+}
+
+.assetLink svg {
+  margin: 0;
+  width: 16px;
+  height: 16px;
 }
 
 .progressContainer {

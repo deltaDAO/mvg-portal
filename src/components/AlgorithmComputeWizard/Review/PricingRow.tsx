@@ -4,6 +4,7 @@ import PriceDisplay from './PriceDisplay'
 import Loader from '@shared/atoms/Loader'
 import CircleCheck from '@images/circle_check.svg'
 import CircleX from '@images/circle_x.svg'
+import External from '@images/external.svg'
 import { useCredentialExpiration } from '@hooks/useCredentialExpiration'
 import styles from './index.module.css'
 import Alert from '@shared/atoms/Alert'
@@ -117,7 +118,21 @@ export default function PricingRow({
   return (
     <div className={`${styles.pricingRow} ${className || ''}`}>
       <div className={styles.itemInfo}>
-        {label && <span className={styles.datasetLabel}>{label}</span>}
+        {label && (
+          <span className={styles.datasetLabel}>
+            {label}
+            {assetId && (
+              <a
+                href={`/asset/${assetId}`}
+                target="_blank"
+                rel="noreferrer"
+                className={styles.assetLink}
+              >
+                <External />
+              </a>
+            )}
+          </span>
+        )}
         <div className={styles.itemNameContainer}>
           <span className={isService ? styles.serviceName : styles.itemName}>
             {itemName}

@@ -49,7 +49,17 @@
         "min": "1",
         "step": "0.01",
         "placeholder": "1",
-        "help": "Enter a new price (minimum 1 OCEAN, maximum 1,000,000).",
+        "help": "Enter a new price (minimum 1, maximum 1,000,000).",
+        "required": true
+      },
+      {
+        "name": "new-price",
+        "label": "Price",
+        "type": "number",
+        "min": "0",
+        "step": "0.01",
+        "placeholder": "0",
+        "help": "Enter a price (minimum 0, maximum 1,000,000).",
         "required": true
       },
       {
@@ -157,8 +167,8 @@
       },
       {
         "name": "state",
-        "label": "Asset Service Status",
-        "help": "This asset service will no longer be visible to other users and it won't be possible to purchase it.  More info available in our [docs](https://docs.oceanprotocol.com/core-concepts/did-ddo#state).",
+        "label": "Service State",
+        "help": "Specifies whether the service is consumable. An Active state indicates it can be consumed, while any other state means it cannot.",
         "type": "select",
         "options": [
           "Active",
@@ -173,10 +183,10 @@
       },
       {
         "name": "usesConsumerParameters",
-        "label": "Algorithm custom parameters",
+        "label": "Consumer parameters",
         "help": "Algorithm custom parameters are used to define required consumer input before running the algorithm in a Compute-to-Data environment.",
         "type": "checkbox",
-        "options": ["This asset uses algorithm custom parameters"],
+        "options": ["This asset uses user defined parameters"],
         "required": false
       },
       {
