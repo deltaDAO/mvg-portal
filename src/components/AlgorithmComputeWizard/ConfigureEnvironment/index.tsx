@@ -2,11 +2,12 @@ import { ReactElement, useState, useEffect, useCallback } from 'react'
 import { useFormikContext } from 'formik'
 import { Datatoken } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
-import { useChainId, useWalletClient } from 'wagmi'
+import { useChainId } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
 import { useProfile } from '@context/Profile'
 import styles from './index.module.css'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 interface ResourceValues {
   cpu: number
@@ -185,7 +186,7 @@ export default function ConfigureEnvironment({
   const chainid = useChainId()
   const chainId = chainid.toString() || '11155111'
   const { escrowAvailableFunds } = useProfile()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
 
   const [mode, setMode] = useState<'free' | 'paid'>(() => {
     return (

@@ -6,13 +6,14 @@ import { useChainId, useWalletClient } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
 import { useProfile } from '@context/Profile'
 import { Signer } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function EscrowWithdrawModal({
   escrowFunds,
   onClose
 }): ReactElement {
   const { refreshEscrowFunds } = useProfile()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const chainId = useChainId()
   const [amount, setAmount] = useState('')
   const [error, setError] = useState('')

@@ -13,10 +13,11 @@ import appConfig from 'app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import SsiApiModal from '../Wallet/SsiApiModal'
 import { SsiWalletDesc, SsiWalletSession } from 'src/@types/SsiWallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function SsiWalletManager() {
   const { showSsiWalletModule, setShowSsiWalletModule } = useUserPreferences()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const {
     setSessionToken,
     ssiWalletCache,

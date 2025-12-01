@@ -7,6 +7,7 @@ import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
 import { useProfile } from '@context/Profile'
 import styles from './index.module.css'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 interface ResourceValues {
   cpu: number
@@ -184,7 +185,7 @@ export default function ConfigureEnvironment({
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
   const chainId = useChainId()
   const { escrowAvailableFunds } = useProfile()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
 
   const [mode, setMode] = useState<'free' | 'paid'>(() => {
     return (

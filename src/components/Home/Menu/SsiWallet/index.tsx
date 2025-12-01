@@ -18,6 +18,7 @@ import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
 import ConnectedIcon from '@images/connected.svg'
 import DisconnectedIcon from '@images/disconnected.svg'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export function SsiWallet(): ReactElement {
   const {
@@ -42,7 +43,7 @@ export function SsiWallet(): ReactElement {
   const selectorDialog = useRef<HTMLDialogElement>(null)
 
   const { isConnected } = useAccount()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
 
   function getKeyLabel(key: SsiKeyDesc): string {
     const anyKey = key as unknown as { name?: string; keyId: { id: string } }

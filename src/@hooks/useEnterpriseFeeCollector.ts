@@ -1,25 +1,16 @@
 import { useEffect, useState } from 'react'
 import { EnterpriseFeeCollectorContract } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
-import { useChainId, useWalletClient, usePublicClient } from 'wagmi'
-import { formatUnits, BrowserProvider, BigNumberish } from 'ethers'
+import { useChainId } from 'wagmi'
+import { formatUnits } from 'ethers'
 import { getTokenInfo } from '@utils/wallet'
 import { Fees } from 'src/@types/feeCollector/FeeCollector.type'
 import { OpcFee } from '@context/MarketMetadata/_types'
+import { useEthersSigner } from './useEthersSigner'
 
 function useEnterpriseFeeColletor() {
   const chainId = useChainId()
-  const { data: walletClient } = useWalletClient()
-  const viemPublicClient = usePublicClient({ chainId })
-  const web3provider = viemPublicClient
-    ? new BrowserProvider(
-        // viem client exposes transport with a request method compatible with EIP-1193
-        {
-          request: viemPublicClient.request.bind(viemPublicClient)
-        } as any
-      )
-    : undefined
-
+  const signer = useEthersSigner()
   const [enterpriseFeeCollector, setEnterpriseFeeCollector] = useState<
     EnterpriseFeeCollectorContract | undefined
   >(undefined)
@@ -28,17 +19,6 @@ function useEnterpriseFeeColletor() {
   const fetchFees = async (
     enterpriseFeeColletor: EnterpriseFeeCollectorContract
   ): Promise<Fees> => {
-    if (!web3provider || !chainId) {
-      console.error('Ethers Provider or Chain ID not available.')
-      return {
-        approved: false,
-        feePercentage: '0',
-        maxFee: '0',
-        minFee: '0',
-        tokenAddress: ''
-      }
-    }
-
     try {
       const config = getOceanConfig(chainId)
       const isTokenApproved =
@@ -52,14 +32,13 @@ function useEnterpriseFeeColletor() {
         const { oceanTokenAddress } = getOceanConfig(chainId)
         const tokenDetails = await getTokenInfo(
           oceanTokenAddress,
-          web3provider as any
+          signer!.provider
         )
-
         return {
           approved: fees[0], // boolean
-          feePercentage: formatUnits(fees[1] as BigNumberish, '18'),
-          maxFee: formatUnits(fees[2] as BigNumberish, tokenDetails.decimals),
-          minFee: formatUnits(fees[3] as BigNumberish, tokenDetails.decimals),
+          feePercentage: formatUnits(fees[1], '18'),
+          maxFee: formatUnits(fees[2], tokenDetails.decimals),
+          minFee: formatUnits(fees[3], tokenDetails.decimals),
           tokenAddress: config.oceanTokenAddress
         }
       } else {
@@ -88,35 +67,25 @@ function useEnterpriseFeeColletor() {
   }
 
   useEffect(() => {
-    if (!walletClient || !chainId) return
+    if (!signer || !chainId) return
     const config = getOceanConfig(chainId)
-    if (!config) return
+    if (!config || !config.EnterpriseFeeCollector) return
 
-    const provider = new BrowserProvider(walletClient.transport as any)
-    // walletClient.account.address is available in wagmi v2
-    const init = async () => {
-      try {
-        const signer = await provider.getSigner(walletClient.account.address)
-
-        setEnterpriseFeeCollector(
-          new EnterpriseFeeCollectorContract(
-            config.EnterpriseFeeCollector,
-            signer as any,
-            config.chainId
-          )
+    try {
+      setEnterpriseFeeCollector(
+        new EnterpriseFeeCollectorContract(
+          config.EnterpriseFeeCollector,
+          signer,
+          config.chainId
         )
-      } catch (error: any) {
-        console.error(
-          'Error initializing EnterpriseFeeCollectorContract:',
-          error
-        )
-        if (error.code === 'NETWORK_ERROR') {
-          window.location.reload()
-        }
+      )
+    } catch (error: any) {
+      console.error('Error initializing EnterpriseFeeCollectorContract:', error)
+      if (error.code === 'NETWORK_ERROR') {
+        window.location.reload()
       }
     }
-    init()
-  }, [walletClient, chainId])
+  }, [signer, chainId])
 
   useEffect(() => {
     if (!enterpriseFeeCollector) return
@@ -151,7 +120,7 @@ function useEnterpriseFeeColletor() {
     return opcData
   }
 
-  return { fees, signer: walletClient, getOpcData }
+  return { fees, signer, getOpcData }
 }
 
 export default useEnterpriseFeeColletor

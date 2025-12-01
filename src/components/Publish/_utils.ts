@@ -33,7 +33,6 @@ import { getContainerChecksum } from '@utils/docker'
 import {
   hexlify,
   parseEther,
-  isAddress,
   ethers,
   Signer,
   TransactionResponse
@@ -910,7 +909,7 @@ export async function createTokensAndPricing(
         marketFeeCollector: marketFeeAddress,
         baseTokenDecimals,
         datatokenDecimals: 18,
-        fixedRate: parseEther(values.pricing.price.toString()).toString(),
+        fixedRate: values.pricing.price.toString(),
         marketFee: publisherMarketFixedSwapFee,
         withMint: true
       }

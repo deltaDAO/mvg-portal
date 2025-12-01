@@ -71,33 +71,26 @@ function MarketMetadataProvider({
           console.warn('[fetchTokenInfo] No oceanTokenAddress configured.')
           return
         }
-        if (!web3provider) {
-          console.warn('[fetchTokenInfo] web3provider is not initialized yet.')
-          return
-        }
 
-        const network = await web3provider.getNetwork()
-        if (!network?.chainId) {
+        if (!chainId) {
           console.error(
             '[fetchTokenInfo] Unable to determine chainId from provider.'
           )
           return
         }
-        const chainId = Number(network.chainId)
-        console.log('[fetchTokenInfo] chainId:', chainId, 'network:', network)
-
         const tokenDetails = await getTokenInfo(
           config.oceanTokenAddress,
           web3provider as any
         )
-        console.log('[fetchTokenInfo] tokenDetails:', tokenDetails)
 
-        setApprovedBaseTokens((prevTokens = []) => {
-          const hasToken = prevTokens.some(
-            (token) => token.address === tokenDetails.address
-          )
-          return hasToken ? prevTokens : [...prevTokens, tokenDetails]
-        })
+        // setApprovedBaseTokens((prevTokens = []) => {
+        //   console.log('prevTokens', prevTokens)
+        //   const hasToken = prevTokens.some(
+        //     (token) => token.address === tokenDetails.address
+        //   )
+        //   return hasToken ? prevTokens : [...prevTokens, tokenDetails]
+        // })
+        setApprovedBaseTokens([tokenDetails])
       } catch (error: any) {
         console.error(
           '[fetchTokenInfo] Error fetching token info:',
@@ -107,7 +100,7 @@ function MarketMetadataProvider({
     }
 
     fetchTokenInfo()
-  }, [isLoading, config?.oceanTokenAddress, web3provider])
+  }, [isLoading, config?.oceanTokenAddress])
 
   return (
     <MarketMetadataContext.Provider

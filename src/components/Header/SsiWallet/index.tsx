@@ -19,6 +19,7 @@ import DisconnectedIcon from '@images/disconnected.svg'
 import Button from '@components/@shared/atoms/Button'
 import Loader from '@components/@shared/atoms/Loader'
 import { useSsiWallet } from '@context/SsiWallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export function SsiWallet(): ReactElement {
   const {
@@ -44,7 +45,7 @@ export function SsiWallet(): ReactElement {
   const selectorDialog = useRef<HTMLDialogElement>(null)
 
   const { isConnected } = useAccount()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const [isLoadingSsiData, setIsLoadingSsiData] = useState<boolean>(false)
 
   function getKeyLabel(key: SsiKeyDesc): string {

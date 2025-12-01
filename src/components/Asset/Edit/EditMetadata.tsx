@@ -31,6 +31,7 @@ import { License } from 'src/@types/ddo/License'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import { State } from 'src/@types/ddo/State'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function Edit({
   asset
@@ -40,7 +41,7 @@ export default function Edit({
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork, assetState } = useAsset()
   const { address: accountId } = useAccount()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const ssiWalletContext = useSsiWallet()
 
   const signer = walletClient as unknown as Signer

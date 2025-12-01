@@ -1,7 +1,8 @@
+import { useEthersSigner } from '@hooks/useEthersSigner'
 import { Datatoken } from '@oceanprotocol/lib'
 import { useEffect, useState } from 'react'
 import { ResourceType } from 'src/@types/ResourceType'
-import { useChainId, useWalletClient } from 'wagmi'
+import { useChainId } from 'wagmi'
 
 export default function ComputeEnvSelection({
   computeEnvs,
@@ -14,7 +15,7 @@ export default function ComputeEnvSelection({
 }): JSX.Element {
   const [selectedEnvId, setSelectedEnvId] = useState<string>()
   const chainId = useChainId()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
 
   const [mode, setMode] = useState<'free' | 'paid'>('free')
   const [resourceValues, setResourceValues] = useState<{

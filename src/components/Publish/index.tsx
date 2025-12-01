@@ -24,9 +24,10 @@ import { validationSchema } from './_validation'
 import appConfig, { customProviderUrl } from '../../../app.config.cjs'
 import { useAccount, useChainId, useWalletClient } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
-import { ethers, Signer, hexlify } from 'ethers'
+import { ethers, Signer, hexlify, toBeHex } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
 import ContainerForm from '../@shared/atoms/ContainerForm'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function PublishPage({
   content
@@ -35,7 +36,7 @@ export default function PublishPage({
 }): ReactElement {
   const { debug } = useUserPreferences()
   const { address: accountId } = useAccount()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const chainId = useChainId()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
   const scrollToRef = useRef()
@@ -190,6 +191,7 @@ export default function PublishPage({
     ipfsUpload: IpfsUpload,
     erc721Address: string
   ): Promise<{ did: string }> {
+    console.log('Publishing to blockchain...')
     setFeedback((prevState) => ({
       ...prevState,
       '3': {
@@ -207,12 +209,14 @@ export default function PublishPage({
         throw new Error('Wallet signer is required for blockchain transaction.')
 
       const userAddress = await signer.getAddress()
+      console.log('User address:', userAddress)
       let attempts = 0
       const maxAttempts = 60
 
       while (attempts < maxAttempts) {
         try {
           const nftTemp = new Nft(signer, ddo.credentialSubject.chainId)
+          console.log('Checking NFT permissions...')
           await nftTemp.getNftPermissions(erc721Address, userAddress)
           break
         } catch (e) {
@@ -228,11 +232,11 @@ export default function PublishPage({
       const nft = new Nft(signer, ddo.credentialSubject.chainId)
       await nft.setMetadata(
         erc721Address,
-        await signer.getAddress(),
+        userAddress,
         0,
         customProviderUrl || values.services[0].providerUrl.url,
         '',
-        hexlify(BigInt(ipfsUpload.flags) as any),
+        toBeHex(ipfsUpload.flags),
         ipfsUpload.metadataIPFS,
         ipfsUpload.metadataIPFSHash
       )

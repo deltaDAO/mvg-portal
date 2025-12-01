@@ -4,7 +4,7 @@ import styles from './index.module.css'
 import WalletNetworkSwitcher from '../WalletNetworkSwitcher'
 import Warning from '@images/warning.svg'
 import { useModal } from 'connectkit'
-import { useAccount, useWalletClient } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import {
   connectToWallet,
@@ -14,6 +14,7 @@ import {
 import appConfig from 'app.config.cjs'
 import SsiApiModal from '../../Header/Wallet/SsiApiModal'
 import { LoggerInstance } from '@oceanprotocol/lib'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export declare type Web3Error = {
   status: 'error' | 'warning' | 'success'
@@ -36,7 +37,7 @@ export default function Web3Feedback({
   const [showFeedback, setShowFeedback] = useState<boolean>(false)
 
   const { address, isConnected } = useAccount()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const { setOpen } = useModal()
   const { sessionToken, setSessionToken } = useSsiWallet()
 

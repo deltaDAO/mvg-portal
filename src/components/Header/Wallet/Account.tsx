@@ -14,10 +14,11 @@ import {
 import { LoggerInstance } from '@oceanprotocol/lib'
 import appConfig from 'app.config.cjs'
 import SsiApiModal from './SsiApiModal'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 const Account = forwardRef((props, ref: any) => {
   const { address: accountId, isConnected } = useAccount()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const { setOpen } = useModal()
   const { sessionToken, setSessionToken } = useSsiWallet()
 

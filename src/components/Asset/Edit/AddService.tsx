@@ -20,14 +20,14 @@ import {
   isAddress,
   JsonRpcProvider,
   parseEther,
-  hexlify,
   ethers,
-  Signer
+  Signer,
+  toBeHex
 } from 'ethers'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import { getEncryptedFiles } from '@utils/provider'
-import { useAccount, useChainId, useWalletClient, usePublicClient } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import {
   generateCredentials,
   IpfsUpload,
@@ -56,6 +56,7 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { State } from 'src/@types/ddo/State'
 import { useSsiWallet } from '@context/SsiWallet'
 import { getTokenInfo } from '@utils/wallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function AddService({
   asset
@@ -66,7 +67,7 @@ export default function AddService({
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
   const chainId = useChainId()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const publicClient = usePublicClient()
   const newCancelToken = useCancelToken()
   const config = getOceanConfig(asset?.credentialSubject?.chainId)
@@ -201,7 +202,7 @@ export default function AddService({
           marketFeeCollector: marketFeeAddress,
           baseTokenDecimals: tokenInfo?.decimals || 18,
           datatokenDecimals: 18,
-          fixedRate: parseEther(values.price.toString()).toString(),
+          fixedRate: values.price.toString(),
           marketFee: publisherMarketFixedSwapFee,
           withMint: true
         }
@@ -313,7 +314,7 @@ export default function AddService({
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',
-          hexlify(ipfsUpload.flags as any),
+          toBeHex(ipfsUpload.flags),
           ipfsUpload.metadataIPFS,
           ipfsUpload.metadataIPFSHash
         )

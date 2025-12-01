@@ -14,7 +14,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
-import { useAccount, useChainId, useWalletClient, usePublicClient } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -32,6 +32,7 @@ import { useAsset } from '@context/Asset'
 import { formatUnits, JsonRpcProvider } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import { getFixedBuyPrice } from '@utils/ocean/fixedRateExchange'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 interface VerificationItem {
   id: string
@@ -172,7 +173,7 @@ export default function Review({
     return parts.join(' ') || '0s'
   }
 
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const publicClient = usePublicClient()
   const chainId = useChainId()
   const rpcUrl = getOceanConfig(chainId)?.nodeUri

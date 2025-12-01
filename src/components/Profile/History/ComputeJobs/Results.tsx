@@ -18,6 +18,7 @@ import { toast } from 'react-toastify'
 import { prettySize } from '@components/@shared/FormInput/InputElement/FilesInput/utils'
 import { customProviderUrl } from 'app.config.cjs'
 import { Signer } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function Results({
   job
@@ -26,7 +27,7 @@ export default function Results({
 }): ReactElement {
   const providerInstance = new Provider()
   const { address: accountId } = useAccount()
-  const { data: walletClient } = useWalletClient() // <-- Updated from useSigner()
+  const walletClient = useEthersSigner() // <-- Updated from useSigner()
 
   const [datasetProvider, setDatasetProvider] = useState<string>()
   const newCancelToken = useCancelToken()

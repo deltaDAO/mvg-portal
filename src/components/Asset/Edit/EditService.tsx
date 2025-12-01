@@ -17,7 +17,8 @@ import {
   parseEther,
   hexlify,
   Signer,
-  ethers
+  ethers,
+  toBeHex
 } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
@@ -44,6 +45,7 @@ import { customProviderUrl, encryptAsset } from 'app.config.cjs'
 import { useSsiWallet } from '@context/SsiWallet'
 import { State } from 'src/@types/ddo/State'
 import { assetStateToNumber } from '@utils/assetState'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function EditService({
   asset,
@@ -58,7 +60,7 @@ export default function EditService({
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
   const chainId = useChainId()
-  const { data: walletClient } = useWalletClient()
+  const walletClient = useEthersSigner()
   const publicClient = usePublicClient()
   const newCancelToken = useCancelToken()
   const ssiWalletContext = useSsiWallet()
@@ -226,7 +228,7 @@ export default function EditService({
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',
-          hexlify(ipfsUpload.flags as any),
+          toBeHex(ipfsUpload.flags),
           ipfsUpload.metadataIPFS,
           ipfsUpload.metadataIPFSHash
         )

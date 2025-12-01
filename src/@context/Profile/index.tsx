@@ -22,6 +22,7 @@ import { Asset } from 'src/@types/Asset'
 import { useChainId, usePublicClient, useWalletClient } from 'wagmi' // FIX: Wagmi v2 hooks
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 // Assuming DownloadedAsset, TokenInfo, AccessDetails are globally available
 
@@ -54,7 +55,7 @@ function ProfileProvider({
   ownAccount: boolean
   children: ReactNode
 }): ReactElement {
-  const { data: walletClient } = useWalletClient() // FIX: Replaced useSigner
+  const walletClient = useEthersSigner() // FIX: Replaced useSigner
   const chainId = useChainId() // FIX: Replaced useNetwork
   const { chainIds } = useUserPreferences()
   const { appConfig } = useMarketMetadata()
