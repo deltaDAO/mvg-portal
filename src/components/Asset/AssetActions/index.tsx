@@ -49,7 +49,7 @@ export default function AssetActions({
   const { balance } = useBalance()
   const { chain } = useNetwork()
   const web3Provider = useProvider()
-  const { isAssetNetwork } = useAsset()
+  const { isAssetNetwork, isOwner } = useAsset()
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
   const {
@@ -279,7 +279,11 @@ export default function AssetActions({
         </div>
 
         <div className={styles.actionButtonWrapper}>
-          {appConfig.ssiEnabled ? (
+          {!isCompute && isOwner ? (
+            <span className={styles.ownerMessage}>
+              You are the asset owner.
+            </span>
+          ) : appConfig.ssiEnabled ? (
             isCompute ? (
               <Button
                 style="primary"
