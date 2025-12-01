@@ -100,6 +100,9 @@ export interface InputProps {
   >
   priceOnRight?: boolean
   computeHelp?: string
+  activeFileType?: string
+  existingFilePlaceholder?: string
+  showExistingFileNotice?: boolean
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {
