@@ -72,7 +72,7 @@ export function getOceanConfig(network: string | number): any {
   const enterpriseContracts = getOceanArtifactsAddressesByChainId(
     Number(network)
   )
-
+  console.log('[getOceanConfig] enterpriseContracts:', enterpriseContracts)
   // Override config with enterprise contracts if present
   if (enterpriseContracts) {
     // config.fixedRateExchangeAddress =
