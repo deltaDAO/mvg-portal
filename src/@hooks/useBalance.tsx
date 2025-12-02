@@ -15,7 +15,7 @@ function useBalance(): BalanceProviderValue {
   const { data: balanceNativeToken } = useBalanceWagmi({ address })
 
   const chainId = useChainId()
-  const signer = useEthersSigner({ chainId })
+  const signer = useEthersSigner()
   const web3provider = signer?.provider
 
   const { approvedBaseTokens } = useMarketMetadata()

@@ -2,7 +2,7 @@
 import { BrowserProvider, JsonRpcSigner } from 'ethers'
 import { useMemo } from 'react'
 import type { Client, Transport, Chain, Account } from 'viem'
-import { type Config, useConnectorClient } from 'wagmi'
+import { type Config, useChainId, useConnectorClient } from 'wagmi'
 
 function clientToSigner(
   client: Client<Transport, Chain, Account>
@@ -20,7 +20,8 @@ function clientToSigner(
   return signer
 }
 
-export function useEthersSigner({ chainId }: { chainId?: number } = {}) {
+export function useEthersSigner() {
+  const chainId = useChainId()
   const { data } = useConnectorClient<Config>({ chainId })
 
   return useMemo(

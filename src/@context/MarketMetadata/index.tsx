@@ -26,7 +26,7 @@ function MarketMetadataProvider({
   const { status } = useConnect()
   const isLoading = status === 'pending'
   const chainId = useChainId()
-  const signer = useEthersSigner({ chainId })
+  const signer = useEthersSigner()
 
   const { getOpcData } = useEnterpriseFeeColletor()
   const [opcFees, setOpcFees] = useState<OpcFee[]>()
