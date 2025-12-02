@@ -33,11 +33,6 @@ export function getOceanConfig(network: string | number): any {
     ? JSON.parse(process.env.NEXT_PUBLIC_NODE_URI_MAP)
     : {}
 
-  const escrowMap: Record<string, string> = process.env
-    .NEXT_PUBLIC_ESCROW_ADDRESSES
-    ? JSON.parse(process.env.NEXT_PUBLIC_ESCROW_ADDRESSES)
-    : {}
-
   const erc20Map: Record<string, string> = process.env
     .NEXT_PUBLIC_ERC20_ADDRESSES
     ? JSON.parse(process.env.NEXT_PUBLIC_ERC20_ADDRESSES)
@@ -71,7 +66,6 @@ export function getOceanConfig(network: string | number): any {
   const networkKey = network.toString()
   if (rpcMap[networkKey]) config.nodeUri = rpcMap[networkKey]
   if (erc20Map[networkKey]) config.oceanTokenAddress = erc20Map[networkKey]
-  if (escrowMap[networkKey]) config.escrowAddress = escrowMap[networkKey]
   if (fixedRateMap[networkKey])
     config.fixedRateExchangeAddress = fixedRateMap[networkKey]
   // Get contracts for current network
@@ -81,6 +75,10 @@ export function getOceanConfig(network: string | number): any {
 
   // Override config with enterprise contracts if present
   if (enterpriseContracts) {
+    // config.fixedRateExchangeAddress =
+    //   enterpriseContracts.FixedPriceEnterprise ||
+    //   enterpriseContracts.FixedPrice ||
+    //   config.fixedRateExchangeAddress
     config.routerFactoryAddress =
       enterpriseContracts.Router || config.routerFactoryAddress
     config.nftFactoryAddress =
@@ -100,7 +98,9 @@ export function getOceanConfig(network: string | number): any {
     config.ERC721Template = enterpriseContracts.ERC721Template
     config.OPFCommunityFeeCollectorCompute =
       enterpriseContracts.OPFCommunityFeeCollectorCompute
+    config.escrowAddress = enterpriseContracts.EnterpriseEscrow
   }
+  console.log('[getOceanConfig] Using config for network:', network, config)
   return config as Config
 }
 
