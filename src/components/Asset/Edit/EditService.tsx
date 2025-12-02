@@ -11,20 +11,12 @@ import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
-import {
-  isAddress,
-  JsonRpcProvider,
-  parseEther,
-  hexlify,
-  Signer,
-  ethers,
-  toBeHex
-} from 'ethers'
+import { isAddress, Signer, toBeHex } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import { getEncryptedFiles } from '@utils/provider'
-import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import {
   generateCredentials,
   IpfsUpload,

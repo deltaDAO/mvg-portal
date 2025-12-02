@@ -13,7 +13,7 @@ import {
   isSessionValid
 } from '@utils/wallet/ssiWallet'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useAccount, useWalletClient } from 'wagmi'
+import { useAccount } from 'wagmi'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
 import ConnectedIcon from '@images/connected.svg'

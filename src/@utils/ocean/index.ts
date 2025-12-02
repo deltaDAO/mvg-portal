@@ -42,6 +42,10 @@ export function getOceanConfig(network: string | number): any {
     .NEXT_PUBLIC_ERC20_ADDRESSES
     ? JSON.parse(process.env.NEXT_PUBLIC_ERC20_ADDRESSES)
     : {}
+  const fixedRateMap: Record<string, string> = process.env
+    .NEXT_PUBLIC_MARKET_FIXED_RATE_ADDRESSES
+    ? JSON.parse(process.env.NEXT_PUBLIC_MARKET_FIXED_RATE_ADDRESSES)
+    : {}
 
   if (!network) {
     console.warn('[getOceanConfig] No network provided yet.')
@@ -68,7 +72,8 @@ export function getOceanConfig(network: string | number): any {
   if (rpcMap[networkKey]) config.nodeUri = rpcMap[networkKey]
   if (erc20Map[networkKey]) config.oceanTokenAddress = erc20Map[networkKey]
   if (escrowMap[networkKey]) config.escrowAddress = escrowMap[networkKey]
-
+  if (fixedRateMap[networkKey])
+    config.fixedRateExchangeAddress = fixedRateMap[networkKey]
   // Get contracts for current network
   const enterpriseContracts = getOceanArtifactsAddressesByChainId(
     Number(network)
@@ -76,10 +81,6 @@ export function getOceanConfig(network: string | number): any {
 
   // Override config with enterprise contracts if present
   if (enterpriseContracts) {
-    config.fixedRateExchangeAddress =
-      enterpriseContracts.FixedPriceEnterprise ||
-      enterpriseContracts.FixedPrice ||
-      config.fixedRateExchangeAddress
     config.routerFactoryAddress =
       enterpriseContracts.Router || config.routerFactoryAddress
     config.nftFactoryAddress =

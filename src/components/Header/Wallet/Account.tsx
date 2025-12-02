@@ -3,7 +3,7 @@ import Caret from '@images/caret.svg'
 import { accountTruncate } from '@utils/wallet'
 import styles from './Account.module.css'
 import Avatar from '@shared/atoms/Avatar'
-import { useAccount, useWalletClient } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { useModal } from 'connectkit'
 import { useSsiWallet } from '@context/SsiWallet'
 import {

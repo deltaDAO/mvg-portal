@@ -1,6 +1,5 @@
 import {
   ComputeResultType,
-  downloadFileBrowser,
   getErrorMessage,
   LoggerInstance,
   Provider
@@ -13,7 +12,7 @@ import FormHelp from '@shared/FormInput/Help'
 import content from '../../../../../content/pages/history.json'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { getAsset } from '@utils/aquarius'
-import { useAccount, useWalletClient } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { toast } from 'react-toastify'
 import { prettySize } from '@components/@shared/FormInput/InputElement/FilesInput/utils'
 import { customProviderUrl } from 'app.config.cjs'

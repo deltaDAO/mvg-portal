@@ -13,7 +13,7 @@ import { useFormikContext } from 'formik'
 import { FormPublishData } from '@components/Publish/_types'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { isAddressWhitelisted } from '@utils/ddo'
-import { useAccount, useChainId, usePublicClient, useWalletClient } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import Button from '@components/@shared/atoms/Button'
 import { Service } from 'src/@types/ddo/Service'
@@ -27,6 +27,7 @@ import appConfig from 'app.config.cjs'
 import ComputeWizard from '@components/DatasetComputeWizard'
 import AlgorithmComputeWizard from '@components/AlgorithmComputeWizard'
 import { JsonRpcProvider } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function AssetActions({
   asset,
@@ -46,7 +47,7 @@ export default function AssetActions({
   onComputeJobCreated?: () => void
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const { data: signer } = useWalletClient()
+  const signer = useEthersSigner()
   const { balance } = useBalance()
   const chainId = useChainId()
   const publicClient = usePublicClient()

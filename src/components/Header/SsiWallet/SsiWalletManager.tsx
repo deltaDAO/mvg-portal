@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useWalletClient } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useUserPreferences } from '@context/UserPreferences'
 import {

@@ -13,7 +13,7 @@ import DebugEditMetadata from './DebugEditMetadata'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import { sanitizeUrl } from '@utils/url'
-import { useAccount, useWalletClient } from 'wagmi'
+import { useAccount } from 'wagmi'
 import {
   transformConsumerParameters,
   generateCredentials,
@@ -25,7 +25,7 @@ import { Metadata } from 'src/@types/ddo/Metadata'
 import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
-import { ethers, isAddress, hexlify, Signer } from 'ethers'
+import { isAddress, hexlify, Signer } from 'ethers'
 import { convertLinks } from '@utils/links'
 import { License } from 'src/@types/ddo/License'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
