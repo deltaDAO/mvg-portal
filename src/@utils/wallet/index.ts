@@ -245,19 +245,57 @@ export async function getTokenInfo(
   tokenAddress: string,
   web3Provider: Provider
 ): Promise<TokenInfo> {
-  if (!web3Provider || !tokenAddress)
-    return { address: tokenAddress, name: '', symbol: '', decimals: undefined }
+  if (!web3Provider || !tokenAddress || tokenAddress === ethers.ZeroAddress) {
+    return {
+      address: tokenAddress,
+      name: 'Unknown',
+      symbol: '???',
+      decimals: 18
+    }
+  }
+  const contract = new Contract(tokenAddress, erc20Abi, web3Provider)
 
   try {
-    const tokenContract = new Contract(tokenAddress, erc20Abi, web3Provider)
-    const name = await tokenContract.name()
-    const symbol = await tokenContract.symbol()
-    const decimals = Number(await tokenContract.decimals())
-    return { address: tokenAddress, name, symbol, decimals }
-  } catch (error: any) {
-    LoggerInstance.error(
-      `[getTokenInfo] Failed to fetch token info for ${tokenAddress}: ${error.message}`
-    )
-    return { address: tokenAddress, name: '', symbol: '', decimals: undefined }
+    const nameFn = contract.getFunction('name')
+    const symbolFn = contract.getFunction('symbol')
+    const decimalsFn = contract.getFunction('decimals')
+
+    const [nameRaw, symbolRaw, decimalsRaw] = await Promise.allSettled([
+      nameFn.staticCall(),
+      symbolFn.staticCall(),
+      decimalsFn.staticCall()
+    ])
+
+    const safeString = (result: any): string => {
+      if (!result) return 'Unknown'
+      try {
+        if (typeof result === 'string') {
+          if (!result.startsWith('0x')) return result.trim() || 'Unknown'
+          const bytes = ethers.hexlify(ethers.getBytes(result))
+          return ethers.decodeBytes32String(bytes) || 'Unknown'
+        }
+        return 'Unknown'
+      } catch {
+        return 'Unknown'
+      }
+    }
+
+    return {
+      address: tokenAddress,
+      name:
+        nameRaw.status === 'fulfilled' ? safeString(nameRaw.value) : 'Unknown',
+      symbol:
+        symbolRaw.status === 'fulfilled' ? safeString(symbolRaw.value) : '???',
+      decimals:
+        decimalsRaw.status === 'fulfilled' ? Number(decimalsRaw.value) : 18
+    }
+  } catch (error) {
+    LoggerInstance.error(`[getTokenInfo] Failed for ${tokenAddress}`, error)
+    return {
+      address: tokenAddress,
+      name: 'Unknown Token',
+      symbol: '???',
+      decimals: 18
+    }
   }
 }

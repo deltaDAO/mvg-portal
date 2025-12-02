@@ -1,4 +1,4 @@
-import { useState, ReactElement, useEffect, useCallback } from 'react'
+import { useState, ReactElement, useEffect, useCallback, useMemo } from 'react'
 import {
   FileInfo,
   ProviderInstance,
@@ -62,6 +62,7 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 export default function ComputeWizard({
   accountId,
   signer,
@@ -150,8 +151,10 @@ export default function ComputeWizard({
     setCachedCredentials,
     clearVerifierSessionCache
   } = useSsiWallet()
-  const web3provider = usePublicClient()
-
+  // const web3provider = usePublicClient()
+  // const stableProvider = useMemo(() => web3provider, [web3provider?.chain?.id])
+  const walletClient = useEthersSigner() // FIX: Replaced useSigner
+  const web3provider = walletClient?.provider
   const [svcIndex, setSvcIndex] = useState(0)
 
   const [allResourceValues, setAllResourceValues] = useState<{
@@ -159,17 +162,21 @@ export default function ComputeWizard({
   }>({})
 
   useEffect(() => {
-    const fetchTokenDetails = async () => {
-      if (!oceanTokenAddress || !web3provider) return
-      const tokenDetails = await getTokenInfo(
-        oceanTokenAddress,
-        web3provider as any
-      )
-
-      setProviderFeeSymbol(tokenDetails.symbol)
+    if (!oceanTokenAddress || !web3provider) {
+      setProviderFeeSymbol('OCEAN')
+      return
     }
+    console.log(
+      '[compute-wizard] fetching OCEAN token info for provider fee symbol'
+    )
 
-    fetchTokenDetails()
+    getTokenInfo(oceanTokenAddress, web3provider)
+      .then((info) => {
+        setProviderFeeSymbol(info.symbol || 'OCEAN')
+      })
+      .catch(() => {
+        setProviderFeeSymbol('OCEAN')
+      })
   }, [oceanTokenAddress, web3provider])
 
   const getSelectedComputeEnvAndResources = (
@@ -358,10 +365,7 @@ export default function ComputeWizard({
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
-        const tokenDetails = await getTokenInfo(
-          oceanTokenAddress,
-          web3provider as any
-        )
+        const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
         const amountWei = parseUnits(amountHuman, tokenDetails.decimals)
 
         const erc20 = new ethers.Contract(

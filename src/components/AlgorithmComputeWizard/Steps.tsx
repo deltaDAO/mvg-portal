@@ -19,6 +19,7 @@ import { UserParameter } from './types/DatasetSelection'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
 import { JsonRpcProvider } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function Steps({
   asset,
@@ -135,11 +136,11 @@ export default function Steps({
   const chainId = useChainId()
   const publicClient = usePublicClient()
   const { values } = useFormikContext<FormComputeData>()
+  const walletClient = useEthersSigner() // FIX: Replaced useSigner
+  // const rpcUrl = getOceanConfig(chainId)?.nodeUri
 
-  const rpcUrl = getOceanConfig(chainId)?.nodeUri
-
-  const ethersProvider =
-    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+  // const ethersProvider =
+  //   publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   useEffect(() => {
     if (!chainId || !accountId) return
@@ -155,16 +156,19 @@ export default function Steps({
 
   useEffect(() => {
     const fetchTokenDetails = async () => {
-      if (!chainId || !ethersProvider) return
+      if (!chainId || !walletClient.provider) return
 
       const { oceanTokenAddress } = getOceanConfig(chainId)
-      const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        walletClient.provider
+      )
 
       setTokenInfo(tokenDetails)
     }
 
     fetchTokenDetails()
-  }, [chainId, ethersProvider])
+  }, [chainId, walletClient.provider])
 
   useEffect(() => {
     if (!asset || !service) return
