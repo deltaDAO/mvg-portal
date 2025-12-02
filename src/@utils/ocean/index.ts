@@ -37,10 +37,6 @@ export function getOceanConfig(network: string | number): any {
     .NEXT_PUBLIC_ERC20_ADDRESSES
     ? JSON.parse(process.env.NEXT_PUBLIC_ERC20_ADDRESSES)
     : {}
-  const fixedRateMap: Record<string, string> = process.env
-    .NEXT_PUBLIC_MARKET_FIXED_RATE_ADDRESSES
-    ? JSON.parse(process.env.NEXT_PUBLIC_MARKET_FIXED_RATE_ADDRESSES)
-    : {}
 
   if (!network) {
     console.warn('[getOceanConfig] No network provided yet.')
@@ -61,31 +57,25 @@ export function getOceanConfig(network: string | number): any {
   if (network === 8996) {
     config = { ...config, ...sanitizeDevelopmentConfig(config) }
   }
-
-  console.log('[getOceanConfig] Initial config for network:', network, config)
+  console.log('Initial config:', config)
 
   // Override nodeUri with value from RPC map if it exists
   const networkKey = network.toString()
   if (rpcMap[networkKey]) config.nodeUri = rpcMap[networkKey]
   if (erc20Map[networkKey]) config.oceanTokenAddress = erc20Map[networkKey]
-  if (fixedRateMap[networkKey])
-    config.fixedRateExchangeAddress = fixedRateMap[networkKey]
   // Get contracts for current network
   const enterpriseContracts = getOceanArtifactsAddressesByChainId(
     Number(network)
   )
-  console.log('[getOceanConfig] enterpriseContracts:', enterpriseContracts)
+  console.log('Enterprise contracts:', enterpriseContracts)
   // Override config with enterprise contracts if present
   if (enterpriseContracts) {
-    config.escrowAddress = enterpriseContracts.Escrow
-    // config.fixedRateExchangeAddress =
-    //   enterpriseContracts.FixedPriceEnterprise ||
-    //   enterpriseContracts.FixedPrice ||
-    //   config.fixedRateExchangeAddress
-    // config.opfCommunityFeeCollector =
-    //   enterpriseContracts.OPFCommunityFeeCollector ||
-    //   config.opfCommunityFeeCollector
-    // config.escrowAddress = enterpriseContracts.EnterpriseEscrow
+    config.escrowAddress =
+      enterpriseContracts.EnterpriseEscrow || config.escrowAddress
+    config.fixedRateExchangeAddress =
+      enterpriseContracts.FixedPriceEnterprise ||
+      enterpriseContracts.FixedPrice ||
+      config.fixedRateExchangeAddress
     config.routerFactoryAddress =
       enterpriseContracts.Router || config.routerFactoryAddress
     config.nftFactoryAddress =
@@ -94,7 +84,9 @@ export function getOceanConfig(network: string | number): any {
       enterpriseContracts.Dispenser || config.dispenserAddress
     config.accessListFactory =
       enterpriseContracts.AccessListFactory || config.accessListFactory
-
+    config.opfCommunityFeeCollector =
+      enterpriseContracts.OPFCommunityFeeCollector ||
+      config.opfCommunityFeeCollector
     config.EnterpriseFeeCollector =
       enterpriseContracts.EnterpriseFeeCollector ||
       config.EnterpriseFeeCollector
@@ -104,7 +96,7 @@ export function getOceanConfig(network: string | number): any {
     config.OPFCommunityFeeCollectorCompute =
       enterpriseContracts.OPFCommunityFeeCollectorCompute
   }
-  console.log('[getOceanConfig] Using config for network:', network, config)
+  console.log('Final config:', config)
   return config as Config
 }
 
