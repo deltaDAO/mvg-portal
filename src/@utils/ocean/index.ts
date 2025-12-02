@@ -62,6 +62,8 @@ export function getOceanConfig(network: string | number): any {
     config = { ...config, ...sanitizeDevelopmentConfig(config) }
   }
 
+  console.log('[getOceanConfig] Initial config for network:', network, config)
+
   // Override nodeUri with value from RPC map if it exists
   const networkKey = network.toString()
   if (rpcMap[networkKey]) config.nodeUri = rpcMap[networkKey]
@@ -75,10 +77,15 @@ export function getOceanConfig(network: string | number): any {
   console.log('[getOceanConfig] enterpriseContracts:', enterpriseContracts)
   // Override config with enterprise contracts if present
   if (enterpriseContracts) {
+    config.escrowAddress = enterpriseContracts.Escrow
     // config.fixedRateExchangeAddress =
     //   enterpriseContracts.FixedPriceEnterprise ||
     //   enterpriseContracts.FixedPrice ||
     //   config.fixedRateExchangeAddress
+    // config.opfCommunityFeeCollector =
+    //   enterpriseContracts.OPFCommunityFeeCollector ||
+    //   config.opfCommunityFeeCollector
+    // config.escrowAddress = enterpriseContracts.EnterpriseEscrow
     config.routerFactoryAddress =
       enterpriseContracts.Router || config.routerFactoryAddress
     config.nftFactoryAddress =
@@ -87,9 +94,7 @@ export function getOceanConfig(network: string | number): any {
       enterpriseContracts.Dispenser || config.dispenserAddress
     config.accessListFactory =
       enterpriseContracts.AccessListFactory || config.accessListFactory
-    config.opfCommunityFeeCollector =
-      enterpriseContracts.OPFCommunityFeeCollector ||
-      config.opfCommunityFeeCollector
+
     config.EnterpriseFeeCollector =
       enterpriseContracts.EnterpriseFeeCollector ||
       config.EnterpriseFeeCollector
@@ -98,7 +103,6 @@ export function getOceanConfig(network: string | number): any {
     config.ERC721Template = enterpriseContracts.ERC721Template
     config.OPFCommunityFeeCollectorCompute =
       enterpriseContracts.OPFCommunityFeeCollectorCompute
-    config.escrowAddress = enterpriseContracts.EnterpriseEscrow
   }
   console.log('[getOceanConfig] Using config for network:', network, config)
   return config as Config
