@@ -160,7 +160,6 @@ export default function Download({
       } else if (firstMirror.url) {
         license = firstMirror.url
       }
-      console.log('license here:', license)
       setLicenseLink(license)
     }
   }, [asset])

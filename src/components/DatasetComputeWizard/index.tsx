@@ -418,10 +418,6 @@ export default function ComputeWizard({
           escrow.contract.target ?? escrow.contract.address
         ).toString()
 
-        console.log(
-          '[escrow][dataset-wizard][decision] depositAmountWei=',
-          amountWei.toString()
-        )
         if (amountWei === BigInt(0)) {
           console.log(
             '[escrow][dataset-wizard][skip] depositAmount==0, skipping escrow approve/deposit/authorize'
@@ -429,10 +425,8 @@ export default function ComputeWizard({
         }
 
         if (amountWei !== BigInt(0)) {
-          console.log(`Approving ${amountHuman} OCEAN to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
-          console.log(`Approved ${amountHuman} OCEAN`)
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
             if (allowanceNow >= amountWei) {
@@ -441,18 +435,9 @@ export default function ComputeWizard({
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
 
-          console.log(
-            `Depositing ${amountHuman} OCEAN to escrow...`,
-            amountHuman
-          )
           const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
           await depositTx.wait()
-          console.log(`Deposited ${amountHuman} OCEAN`)
-          console.log(
-            'Authorizing compute job...',
-            amountHuman,
-            selectedComputeEnv.consumerAddress
-          )
+
           await escrow.authorize(
             oceanTokenAddress,
             selectedComputeEnv.consumerAddress,
@@ -1108,20 +1093,6 @@ export default function ComputeWizard({
           computeService.serviceEndpoint,
           asset.credentialSubject?.chainId
         )
-        // const datasets = await getAlgorithmDatasetsForCompute(
-        //  asset.id,
-        //  service.id,
-        //  service.serviceEndpoint,
-        //  accountId,
-        //  asset.credentialSubject?.chainId,
-        //  newCancelToken()
-        // )
-        // console.log(
-        //  'Dataset list for algo...',
-        //  JSON.stringify(datasets, null, 2)
-        // )
-
-        // setDatasets(datasets)
         setComputeEnvs(environments || [])
       } catch (err) {
         console.error('Error fetching data:', err)

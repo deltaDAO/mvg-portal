@@ -166,9 +166,6 @@ export default function ComputeWizard({
       setProviderFeeSymbol('OCEAN')
       return
     }
-    console.log(
-      '[compute-wizard] fetching OCEAN token info for provider fee symbol'
-    )
 
     getTokenInfo(oceanTokenAddress, web3provider)
       .then((info) => {
@@ -393,10 +390,8 @@ export default function ComputeWizard({
         }
 
         if (amountWei !== BigInt(0)) {
-          console.log(`Approving ${amountHuman} to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
-          console.log(`Approved ${amountHuman}`)
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
             if (allowanceNow >= amountWei) {
@@ -405,15 +400,8 @@ export default function ComputeWizard({
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
 
-          console.log(`Depositing ${amountHuman} to escrow...`, amountHuman)
           const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
           await depositTx.wait()
-          console.log(`Deposited ${amountHuman}`)
-          console.log(
-            'Authorizing compute job...',
-            amountHuman,
-            selectedComputeEnv.consumerAddress
-          )
           await escrow.authorize(
             oceanTokenAddress,
             selectedComputeEnv.consumerAddress,

@@ -191,7 +191,6 @@ export default function PublishPage({
     ipfsUpload: IpfsUpload,
     erc721Address: string
   ): Promise<{ did: string }> {
-    console.log('Publishing to blockchain...')
     setFeedback((prevState) => ({
       ...prevState,
       '3': {
@@ -209,14 +208,12 @@ export default function PublishPage({
         throw new Error('Wallet signer is required for blockchain transaction.')
 
       const userAddress = await signer.getAddress()
-      console.log('User address:', userAddress)
       let attempts = 0
       const maxAttempts = 60
 
       while (attempts < maxAttempts) {
         try {
           const nftTemp = new Nft(signer, ddo.credentialSubject.chainId)
-          console.log('Checking NFT permissions...')
           await nftTemp.getNftPermissions(erc721Address, userAddress)
           break
         } catch (e) {

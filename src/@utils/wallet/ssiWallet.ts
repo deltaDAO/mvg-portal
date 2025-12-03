@@ -51,7 +51,6 @@ export async function connectToWallet(
       payload
     )
 
-    console.log('SSI Wallet connected:', authResponse.data)
     return authResponse.data as SsiWalletSession
   } catch (error: any) {
     LoggerInstance.error('SSI connectToWallet failed:', error)

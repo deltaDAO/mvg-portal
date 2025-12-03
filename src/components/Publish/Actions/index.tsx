@@ -100,7 +100,7 @@ export default function Actions({
             }
           }
         } catch (error) {
-          console.log(
+          console.error(
             `${fieldName} address validation error during auto-commit:`,
             error
           )
@@ -134,7 +134,7 @@ export default function Actions({
       try {
         return isAddress(typedValue)
       } catch (error) {
-        console.log('Allow address validation error:', error)
+        console.error('Allow address validation error:', error)
       }
     }
 

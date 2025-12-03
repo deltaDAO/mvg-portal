@@ -91,7 +91,6 @@ function useEnterpriseFeeColletor() {
     if (!enterpriseFeeCollector) return
     const fetchData = async () => {
       const result = await fetchFees(enterpriseFeeCollector)
-      console.log('Fetched Enterprise Fee Collector fees:', result)
       setFees(result)
     }
     fetchData()
@@ -108,7 +107,6 @@ function useEnterpriseFeeColletor() {
     const opcData: OpcFee[] = await Promise.all(
       validChainIds.map(async (chainId) => {
         const currentFees = await fetchFees(enterpriseFeeCollector)
-        console.log('current fee', currentFees)
         return {
           chainId,
           approvedTokens: [currentFees.tokenAddress],

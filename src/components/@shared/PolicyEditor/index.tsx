@@ -110,8 +110,7 @@ export function PolicyEditor(props): ReactElement {
       !vpRequiredCredentialsEnabled &&
       credentials.vpRequiredCredentials?.required?.length
     )
-      console.log('Clearing vpRequiredCredentials')
-    setCredentials({ ...credentials, vpRequiredCredentials: [] })
+      setCredentials({ ...credentials, vpRequiredCredentials: [] })
   }, [vpRequiredCredentialsEnabled])
   const [enabled, setEnabled] = useState(credentials.enabled || enabledView)
   const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(

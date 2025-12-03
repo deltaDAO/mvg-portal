@@ -325,7 +325,6 @@ export default function AddService({
       // Edit succeeded
       setSuccess(content.form.success)
       resetForm()
-      console.log('[AddService] Success! Form reset.')
     } catch (error) {
       LoggerInstance.error(error.message)
       setError(error.message)

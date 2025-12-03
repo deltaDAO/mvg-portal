@@ -356,10 +356,8 @@ export default function Compute({
 
         const currentAllowanceWei = await erc20.allowance(owner, escrowAddress)
         if (currentAllowanceWei < amountWei) {
-          console.log(`Approving ${amountHuman} OCEAN to escrow...`)
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
-          console.log(`Approved ${amountHuman} OCEAN`)
           // Wait until allowance actually reflected on-chain
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
@@ -377,18 +375,8 @@ export default function Compute({
         const depositedWei = BigInt(funds[0] ?? '0')
 
         if (depositedWei < amountWei) {
-          console.log(
-            `Depositing ${amountHuman} OCEAN to escrow...`,
-            amountHuman
-          )
           const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
           await depositTx.wait()
-          console.log(`Deposited ${amountHuman} OCEAN`)
-          console.log(
-            'Authorizing compute job...',
-            amountHuman,
-            selectedComputeEnv.consumerAddress
-          )
           await escrow.authorize(
             oceanTokenAddress,
             selectedComputeEnv.consumerAddress,
