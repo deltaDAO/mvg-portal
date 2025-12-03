@@ -795,6 +795,7 @@ export default function ComputeWizard({
           datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
           null,
           null,
+          null,
           policiesServer as any
         )
       } else {
@@ -814,6 +815,7 @@ export default function ComputeWizard({
           })),
           algorithm,
           resourceRequests,
+          null,
           null,
           null,
           policiesServer as any

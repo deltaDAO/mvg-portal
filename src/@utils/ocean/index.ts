@@ -57,8 +57,6 @@ export function getOceanConfig(network: string | number): any {
   if (network === 8996) {
     config = { ...config, ...sanitizeDevelopmentConfig(config) }
   }
-  console.log('Initial config:', config)
-
   // Override nodeUri with value from RPC map if it exists
   const networkKey = network.toString()
   if (rpcMap[networkKey]) config.nodeUri = rpcMap[networkKey]
@@ -67,7 +65,6 @@ export function getOceanConfig(network: string | number): any {
   const enterpriseContracts = getOceanArtifactsAddressesByChainId(
     Number(network)
   )
-  console.log('Enterprise contracts:', enterpriseContracts)
   // Override config with enterprise contracts if present
   if (enterpriseContracts) {
     config.escrowAddress =
@@ -96,7 +93,6 @@ export function getOceanConfig(network: string | number): any {
     config.OPFCommunityFeeCollectorCompute =
       enterpriseContracts.OPFCommunityFeeCollectorCompute
   }
-  console.log('Final config:', config)
   return config as Config
 }
 

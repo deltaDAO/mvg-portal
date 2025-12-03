@@ -13,7 +13,6 @@ export default function PricingFields(): ReactElement {
   const { appConfig } = useMarketMetadata()
   const chainId = useChainId()
   const { approvedBaseTokens } = useMarketMetadata()
-  console.log('approvedBaseTokens', approvedBaseTokens)
   // Connect with main publish form
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
   const { pricing } = values
@@ -23,7 +22,6 @@ export default function PricingFields(): ReactElement {
     approvedBaseTokens?.find((token) =>
       token.name.toLowerCase().includes('ocean')
     ) || approvedBaseTokens?.[0]
-  console.log('defaultBaseToken', defaultBaseToken)
   const isBaseTokenSet = !!approvedBaseTokens?.find(
     (token) => token?.address === values?.pricing?.baseToken?.address
   )
