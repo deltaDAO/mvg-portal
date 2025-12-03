@@ -150,3 +150,12 @@ body .backButton {
 .closeButton:focus {
   opacity: 0.7;
 }
+
+body .ownerMessage {
+  width: 100%;
+  text-align: left;
+  color: var(--color-secondary);
+  font-size: var(--font-size-small);
+  font-style: italic;
+  margin-bottom: 0;
+}

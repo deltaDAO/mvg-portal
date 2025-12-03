@@ -396,6 +396,7 @@ export const getServiceInitialValues = (
     service.compute || defaultServiceComputeOptions
   )
   const credentialForm = generateCredentials(service.credentials, 'edit')
+
   return {
     name: service.name,
     description: service.description?.['@value'],

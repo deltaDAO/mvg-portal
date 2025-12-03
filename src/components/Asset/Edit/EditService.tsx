@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { Formik } from 'formik'
 import {
   LoggerInstance,
@@ -15,7 +15,7 @@ import { isAddress, Signer, toBeHex } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
-import { getEncryptedFiles } from '@utils/provider'
+import { getEncryptedFiles, getFileDidInfo } from '@utils/provider'
 import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import {
   generateCredentials,
@@ -64,7 +64,38 @@ export default function EditService({
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
+  const [detectedFileType, setDetectedFileType] = useState<string | undefined>()
   const hasFeedback = error || success
+
+  useEffect(() => {
+    async function fetchFileType() {
+      if (!service.files || service.files.length === 0) {
+        setDetectedFileType(undefined)
+        return
+      }
+
+      try {
+        const fileInfo = await getFileDidInfo(
+          asset.id,
+          service.id,
+          customProviderUrl || service.serviceEndpoint
+        )
+        if (fileInfo && fileInfo.length > 0 && fileInfo[0]?.type) {
+          setDetectedFileType(fileInfo[0].type)
+        } else {
+          setDetectedFileType('url')
+        }
+      } catch (error) {
+        LoggerInstance.log(
+          '[EditService] Could not fetch file info, defaulting to url:',
+          error.message
+        )
+        setDetectedFileType('url')
+      }
+    }
+
+    fetchFileType()
+  }, [asset.id, service.id, service.serviceEndpoint, service.files])
 
   async function updateFixedPrice(newPrice: number) {
     const config = getOceanConfig(asset.credentialSubject?.chainId)
@@ -281,6 +312,7 @@ export default function EditService({
               service={service}
               accessDetails={accessDetails}
               assetType={asset.credentialSubject?.metadata?.type}
+              existingFileType={detectedFileType}
             />
 
             <Web3Feedback

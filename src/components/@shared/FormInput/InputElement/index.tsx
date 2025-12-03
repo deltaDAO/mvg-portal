@@ -162,6 +162,9 @@ const InputElement = forwardRef(
             items={tabs}
             key={`tabFile_${props.name}`}
             className={styles.pricing}
+            activeFileType={props.activeFileType}
+            existingFilePlaceholder={props.existingFilePlaceholder}
+            showExistingFileNotice={props.showExistingFileNotice}
           />
         )
       }
