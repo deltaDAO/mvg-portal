@@ -36,7 +36,7 @@ function useEnterpriseFeeColletor() {
         )
         return {
           approved: fees[0], // boolean
-          feePercentage: formatUnits(fees[1], '18'),
+          feePercentage: formatUnits(fees[1], 18),
           maxFee: formatUnits(fees[2], tokenDetails.decimals),
           minFee: formatUnits(fees[3], tokenDetails.decimals),
           tokenAddress: config.oceanTokenAddress
@@ -91,6 +91,7 @@ function useEnterpriseFeeColletor() {
     if (!enterpriseFeeCollector) return
     const fetchData = async () => {
       const result = await fetchFees(enterpriseFeeCollector)
+      console.log('Fetched Enterprise Fee Collector fees:', result)
       setFees(result)
     }
     fetchData()
