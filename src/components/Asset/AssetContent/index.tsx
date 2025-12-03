@@ -239,33 +239,41 @@ export default function AssetContent({
               {asset?.indexedMetadata?.nft?.state === 0 ? (
                 selectedService === undefined ? (
                   <>
-                    {/* <h3> Available Assets:</h3> */}
                     {availableServices.length > 0 ? (
                       <div className={styles.serviceDisplay}>
                         <h4>Choose service to see Price:</h4>
                         <div className={styles.servicesGrid}>
-                          {availableServices.map((service, index) => (
-                            <div
-                              key={service.id}
-                              onClick={() => {
-                                if (!isAssetNetwork || !isConnected) {
-                                  return
-                                }
-                                setSelectedService(index)
-                              }}
-                              className={`${
-                                isAssetNetwork && isConnected
-                                  ? 'cursor-pointer hover:opacity-100'
-                                  : 'opacity-50 cursor-not-allowed'
-                              }`}
-                            >
-                              <ServiceCard
-                                service={service}
-                                accessDetails={asset.accessDetails[index]}
-                                onClick={() => {}}
-                              />
-                            </div>
-                          ))}
+                          {availableServices.map((service, index) => {
+                            const isPublished = Boolean(
+                              asset?.indexedMetadata?.nft?.created
+                            )
+                            const isClickable =
+                              isAssetNetwork && isConnected && isPublished
+
+                            return (
+                              <div
+                                key={service.id}
+                                onClick={() => {
+                                  if (!isClickable) return
+                                  setSelectedService(index)
+                                }}
+                                className={`
+                ${
+                  isClickable
+                    ? 'cursor-pointer hover:opacity-100'
+                    : 'opacity-50 cursor-not-allowed'
+                }
+              `}
+                              >
+                                <ServiceCard
+                                  service={service}
+                                  accessDetails={asset.accessDetails[index]}
+                                  onClick={() => {}}
+                                  isClickable={isPublished}
+                                />
+                              </div>
+                            )
+                          })}
                         </div>
                       </div>
                     ) : (
