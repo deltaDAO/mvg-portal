@@ -25,7 +25,7 @@ import { Metadata } from 'src/@types/ddo/Metadata'
 import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
-import { isAddress, hexlify, Signer } from 'ethers'
+import { isAddress, Signer, toBeHex } from 'ethers'
 import { convertLinks } from '@utils/links'
 import { License } from 'src/@types/ddo/License'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
@@ -138,7 +138,6 @@ export default function Edit({
         ...asset.indexedMetadata.nft,
         state: State[values.assetState as unknown as keyof typeof State]
       }
-
       const updatedAsset: Asset = {
         ...(asset as Asset),
         credentialSubject: {
@@ -170,7 +169,6 @@ export default function Edit({
       delete (updatedAsset as AssetExtended).views
       delete (updatedAsset as AssetExtended).offchain
       delete (updatedAsset as any).credentialSubject.stats
-
       const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,
         signer,
@@ -182,7 +180,6 @@ export default function Edit({
 
       if (ipfsUpload /* && values.assetState !== assetState */) {
         const nft = new Nft(signer, updatedAsset.credentialSubject.chainId)
-
         await nft.setMetadata(
           updatedAsset.credentialSubject.nftAddress,
           await signer.getAddress(),
@@ -190,7 +187,7 @@ export default function Edit({
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',
-          hexlify(ipfsUpload.flags as any),
+          toBeHex(ipfsUpload.flags as any),
           ipfsUpload.metadataIPFS,
           ipfsUpload.metadataIPFSHash
         )
