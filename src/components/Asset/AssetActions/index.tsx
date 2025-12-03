@@ -24,8 +24,7 @@ import FileSVG from '@images/file.svg'
 import { AssetActionCheckCredentials } from './CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import appConfig from 'app.config.cjs'
-import ComputeWizard from '@components/DatasetComputeWizard'
-import AlgorithmComputeWizard from '@components/AlgorithmComputeWizard'
+import ComputeWizard from '@components/ComputeWizard'
 
 export default function AssetActions({
   asset,
@@ -347,37 +346,19 @@ export default function AssetActions({
             >
               &times;
             </button>
-            {asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
-              <AlgorithmComputeWizard
-                accountId={accountId}
-                signer={signer}
-                asset={asset}
-                service={service}
-                accessDetails={accessDetails}
-                dtBalance={dtBalance}
-                isAccountIdWhitelisted={isAccountIdWhitelisted}
-                file={fileMetadata}
-                // fileIsLoading={fileIsLoading}
-                consumableFeedback={consumableFeedback}
-                onClose={closeComputePopup}
-                onComputeJobCreated={onComputeJobCreated}
-              />
-            ) : (
-              <ComputeWizard
-                accountId={accountId}
-                signer={signer}
-                asset={asset}
-                service={service}
-                accessDetails={accessDetails}
-                dtBalance={dtBalance}
-                isAccountIdWhitelisted={isAccountIdWhitelisted}
-                file={fileMetadata}
-                // fileIsLoading={fileIsLoading}
-                consumableFeedback={consumableFeedback}
-                onClose={closeComputePopup}
-                onComputeJobCreated={onComputeJobCreated}
-              />
-            )}
+            <ComputeWizard
+              accountId={accountId}
+              signer={signer}
+              asset={asset}
+              service={service}
+              accessDetails={accessDetails}
+              dtBalance={dtBalance}
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              file={fileMetadata}
+              consumableFeedback={consumableFeedback}
+              onClose={closeComputePopup}
+              onComputeJobCreated={onComputeJobCreated}
+            />
           </div>
         </div>
       )}
