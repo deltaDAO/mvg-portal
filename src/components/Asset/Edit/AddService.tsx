@@ -202,7 +202,7 @@ export default function AddService({
           marketFeeCollector: marketFeeAddress,
           baseTokenDecimals: tokenInfo?.decimals || 18,
           datatokenDecimals: 18,
-          fixedRate: values.price.toString(),
+          fixedRate: parseEther(values.price.toString()).toString(),
           marketFee: publisherMarketFixedSwapFee,
           withMint: true
         }
