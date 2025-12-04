@@ -1,8 +1,8 @@
 import { usePontusXRegistry } from '@deltadao/pontusx-registry-hooks'
 import { useAddressConfig } from '@hooks/useAddressConfig'
 import { accountTruncate } from '@utils/wallet'
-import { cachingMicroserviceUrl } from 'app.config'
 import { ReactElement } from 'react'
+import { useMarketMetadata } from '@context/MarketMetadata'
 
 export default function AddressName({
   address
@@ -10,6 +10,9 @@ export default function AddressName({
   address: string
 }): ReactElement {
   const { verifiedAddresses: oldVerifiedAddresses } = useAddressConfig()
+  const {
+    appConfig: { cachingMicroserviceUrl }
+  } = useMarketMetadata()
   const { data } = usePontusXRegistry(
     cachingMicroserviceUrl
       ? {

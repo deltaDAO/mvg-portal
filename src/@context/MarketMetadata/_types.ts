@@ -60,6 +60,7 @@ export interface AppConfig {
   }
   showOnboardingModuleByDefault: boolean
   defaultTokenSymbol: string
+  cachingMicroserviceUrl: string
 }
 export interface SiteContent {
   siteTitle: string
