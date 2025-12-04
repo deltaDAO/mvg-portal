@@ -26,7 +26,7 @@ export default function Results({
 }): ReactElement {
   const providerInstance = new Provider()
   const { address: accountId } = useAccount()
-  const walletClient = useEthersSigner() // <-- Updated from useSigner()
+  const walletClient = useEthersSigner()
 
   const [datasetProvider, setDatasetProvider] = useState<string>()
   const newCancelToken = useCancelToken()
@@ -35,7 +35,7 @@ export default function Results({
 
   useEffect(() => {
     async function getAssetMetadata() {
-      if (job.assets) {
+      if (job.assets && job.assets.length > 0) {
         const ddo = await getAsset(job.assets[0].documentId, newCancelToken())
         if (ddo?.credentialSubject?.services?.[0]?.serviceEndpoint) {
           setDatasetProvider(ddo.credentialSubject.services[0].serviceEndpoint)
@@ -75,9 +75,8 @@ export default function Results({
   }
 
   async function downloadResults(resultIndex: number) {
-    if (!accountId || !job || !walletClient) return
     const signer = walletClient as unknown as Signer
-
+    if (!accountId || !job || !datasetProvider || !walletClient) return
     try {
       const envPrefix = (job as any).environment.split('-')[0]
       const compositeId = `${envPrefix}-${job.jobId}`
@@ -103,7 +102,7 @@ export default function Results({
       link.click()
       document.body.removeChild(link)
       window.URL.revokeObjectURL(blobUrl)
-    } catch (error) {
+    } catch (error: any) {
       const message = getErrorMessage(error.message)
       LoggerInstance.error('[Provider Get c2d results url] Error:', message)
       toast.error(message)

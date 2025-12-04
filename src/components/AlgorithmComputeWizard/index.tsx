@@ -217,7 +217,10 @@ export default function ComputeWizard({
   const isComputeButtonDisabled =
     isOrdering === true ||
     file === null ||
-    (!validOrderTx && !hasDatatoken && !isConsumablePrice) ||
+    (selectedDatasetAsset.length > 0 &&
+      !validOrderTx &&
+      !hasDatatoken &&
+      !isConsumablePrice) ||
     (!validAlgorithmOrderTx &&
       !hasAlgoAssetDatatoken &&
       !isConsumableaAlgorithmPrice)
@@ -322,7 +325,7 @@ export default function ComputeWizard({
       )
 
       const initializedProvider = await initializeProviderForComputeMulti(
-        datasetsForProvider,
+        datasetsForProvider.length > 0 ? datasetsForProvider : [],
         actualAlgorithmAsset,
         algoSessionId,
         signer,
@@ -334,26 +337,29 @@ export default function ComputeWizard({
       if (!initializedProvider)
         throw new Error('Error initializing provider for compute job')
 
-      const datasetResponses = await Promise.all(
-        datasetsForProvider.map(
-          async ({ asset, service, accessDetails }, i) => {
-            const datasetOrderPriceResponse = await setDatasetPrice(
-              asset,
-              service,
-              accessDetails,
-              initializedProvider.datasets?.[i]?.providerFee
-            )
+      let datasetResponses: any[] = []
+      if (datasetsForProvider.length > 0) {
+        datasetResponses = await Promise.all(
+          datasetsForProvider.map(
+            async ({ asset, service, accessDetails }, i) => {
+              const datasetOrderPriceResponse = await setDatasetPrice(
+                asset,
+                service,
+                accessDetails,
+                initializedProvider.datasets?.[i]?.providerFee
+              )
 
-            return {
-              actualDatasetAsset: asset,
-              actualDatasetService: service,
-              actualDatasetAccessDetails: accessDetails,
-              datasetOrderPriceResponse,
-              initializedProvider
+              return {
+                actualDatasetAsset: asset,
+                actualDatasetService: service,
+                actualDatasetAccessDetails: accessDetails,
+                datasetOrderPriceResponse,
+                initializedProvider
+              }
             }
-          }
+          )
         )
-      )
+      }
       if (selectedResources.mode === 'paid') {
         const escrow = new EscrowContract(
           getAddress(initializedProvider.payment.escrowAddress),
@@ -410,15 +416,6 @@ export default function ComputeWizard({
             '10'
           )
         }
-
-        // await escrow.verifyFundsForEscrowPayment(
-        //   oceanTokenAddress,
-        //   selectedComputeEnv.consumerAddress,
-        //   await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
-        //   initializedProvider.payment.amount.toString(),
-        //   initializedProvider.payment.minLockSeconds.toString(),
-        //   '10'
-        // )
       }
 
       setComputeStatusText(
@@ -438,7 +435,7 @@ export default function ComputeWizard({
         actualAlgoAccessDetails,
         initializedProvider
       }
-    } catch (error) {
+    } catch (error: any) {
       setError(error.message)
       LoggerInstance.error(`[compute] ${error.message} `)
       throw error
@@ -446,11 +443,27 @@ export default function ComputeWizard({
   }
 
   useEffect(() => {
-    if (!accessDetails || !accountId || isUnsupportedPricing) return
+    const shouldSetDatasetState =
+      asset.credentialSubject?.metadata.type !== 'algorithm' ||
+      selectedDatasetAsset.length > 0
+
+    if (
+      !accessDetails ||
+      !accountId ||
+      isUnsupportedPricing ||
+      !shouldSetDatasetState
+    )
+      return
 
     setIsConsumablePrice(accessDetails.isPurchasable)
     setValidOrderTx(accessDetails.validOrderTx)
-  }, [accessDetails, accountId, isUnsupportedPricing])
+  }, [
+    accessDetails,
+    accountId,
+    isUnsupportedPricing,
+    selectedDatasetAsset,
+    asset
+  ])
 
   useEffect(() => {
     if (isUnsupportedPricing) return
@@ -464,9 +477,6 @@ export default function ComputeWizard({
         newCancelToken()
       ).then((datasetLists) => {
         setDatasetList(datasetLists)
-        if (datasetLists && datasetLists.length > 0) {
-          setDatasetList(datasetLists)
-        }
       })
     } else {
       getAlgorithmsForAsset(asset, service, newCancelToken()).then(
@@ -510,7 +520,7 @@ export default function ComputeWizard({
         service,
         newCancelToken()
       )
-    } catch (error) {
+    } catch (error: any) {
       LoggerInstance.error(error.message)
     }
   }, [address, accountId, asset, service, chainIds, newCancelToken])
@@ -539,7 +549,7 @@ export default function ComputeWizard({
   async function setAlgoPrice(
     algo: AssetExtended,
     algoService: Service,
-    algoAccessDetails,
+    algoAccessDetails: AccessDetails,
     algoProviderFees: ProviderFees
   ) {
     if (
@@ -565,7 +575,7 @@ export default function ComputeWizard({
 
   async function startJob(
     userCustomParameters: {
-      dataServiceParams?: UserCustomParameters
+      dataServiceParams?: UserCustomParameters[]
       algoServiceParams?: UserCustomParameters
       algoParams?: UserCustomParameters
     },
@@ -594,18 +604,19 @@ export default function ComputeWizard({
         userdata: userCustomParameters?.algoServiceParams
       }
 
-      // Check isOrderable for all datasets
-      for (const ds of datasetResponses) {
-        const allowed = await isOrderable(
-          ds.actualDatasetAsset,
-          ds.actualDatasetService.id,
-          computeAlgorithm,
-          actualAlgorithmAsset
-        )
-        if (!allowed)
-          throw new Error(
-            `Dataset ${ds.actualDatasetAsset.id} is not orderable.`
+      if (datasetResponses.length > 0) {
+        for (const ds of datasetResponses) {
+          const allowed = await isOrderable(
+            ds.actualDatasetAsset,
+            ds.actualDatasetService.id,
+            computeAlgorithm,
+            actualAlgorithmAsset
           )
+          if (!allowed)
+            throw new Error(
+              `Dataset ${ds.actualDatasetAsset.id} is not orderable.`
+            )
+        }
       }
 
       setComputeStatusText(
@@ -633,10 +644,12 @@ export default function ComputeWizard({
         initializedProvider?.algorithm ||
           initializedProviderResponse?.algorithm,
         hasAlgoAssetDatatoken,
-        lookupVerifierSessionId(
-          datasetResponses[0].actualDatasetAsset.id,
-          datasetResponses[0].actualDatasetService.id
-        ),
+        datasetResponses.length > 0
+          ? lookupVerifierSessionId(
+              datasetResponses[0].actualDatasetAsset.id,
+              datasetResponses[0].actualDatasetService.id
+            )
+          : null,
         selectedComputeEnv.consumerAddress
       )
       if (!algorithmOrderTx) throw new Error('Failed to order algorithm.')
@@ -644,47 +657,49 @@ export default function ComputeWizard({
       const datasetInputs = []
       const policyDatasets: PolicyServerInitiateComputeActionData[] = []
 
-      for (const [i, ds] of datasetResponses.entries()) {
-        const datasetOrderTx = await handleComputeOrder(
-          signer,
-          ds.actualDatasetAsset,
-          ds.actualDatasetService,
-          ds.actualDatasetAccessDetails,
-          datasetOrderPriceAndFees || ds.datasetOrderPriceResponse,
-          accountId,
-          ds.initializedProvider.datasets[0],
-          hasDatatoken,
-          lookupVerifierSessionId(
-            ds.actualDatasetAsset.id,
-            ds.actualDatasetService.id
-          ),
-          selectedComputeEnv.consumerAddress
-        )
-
-        if (!datasetOrderTx)
-          throw new Error(
-            `Failed to order dataset ${ds.actualDatasetAsset.id}.`
+      if (datasetResponses.length > 0) {
+        for (const [i, ds] of datasetResponses.entries()) {
+          const datasetOrderTx = await handleComputeOrder(
+            signer,
+            ds.actualDatasetAsset,
+            ds.actualDatasetService,
+            ds.actualDatasetAccessDetails,
+            datasetOrderPriceAndFees || ds.datasetOrderPriceResponse,
+            accountId,
+            ds.initializedProvider.datasets[0],
+            hasDatatoken,
+            lookupVerifierSessionId(
+              ds.actualDatasetAsset.id,
+              ds.actualDatasetService.id
+            ),
+            selectedComputeEnv.consumerAddress
           )
 
-        datasetInputs.push({
-          documentId: ds.actualDatasetAsset.id,
-          serviceId: ds.actualDatasetService.id,
-          transferTxId: datasetOrderTx,
-          userdata: userCustomParameters?.dataServiceParams?.[i] || {}
-        })
+          if (!datasetOrderTx)
+            throw new Error(
+              `Failed to order dataset ${ds.actualDatasetAsset.id}.`
+            )
 
-        policyDatasets.push({
-          sessionId: lookupVerifierSessionId(
-            ds.actualDatasetAsset.id,
-            ds.actualDatasetService.id
-          ),
-          serviceId: ds.actualDatasetService.id,
-          documentId: ds.actualDatasetAsset.id,
-          successRedirectUri: '',
-          errorRedirectUri: '',
-          responseRedirectUri: '',
-          presentationDefinitionUri: ''
-        })
+          datasetInputs.push({
+            documentId: ds.actualDatasetAsset.id,
+            serviceId: ds.actualDatasetService.id,
+            transferTxId: datasetOrderTx,
+            userdata: userCustomParameters?.dataServiceParams?.[i] || {}
+          })
+
+          policyDatasets.push({
+            sessionId: lookupVerifierSessionId(
+              ds.actualDatasetAsset.id,
+              ds.actualDatasetService.id
+            ),
+            serviceId: ds.actualDatasetService.id,
+            documentId: ds.actualDatasetAsset.id,
+            successRedirectUri: '',
+            errorRedirectUri: '',
+            responseRedirectUri: '',
+            presentationDefinitionUri: ''
+          })
+        }
       }
 
       setComputeStatusText(getComputeFeedback()[4])
@@ -727,7 +742,9 @@ export default function ComputeWizard({
           selectedResources.jobDuration,
           oceanTokenAddress,
           resourceRequests,
-          datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
+          datasetResponses.length > 0
+            ? datasetResponses[0].actualDatasetAsset.credentialSubject.chainId
+            : actualAlgorithmAsset.credentialSubject.chainId, // Fallback chainId
           null,
           null,
           null,
@@ -769,7 +786,7 @@ export default function ComputeWizard({
       resetCacheWallet()
       // Trigger refetch of compute jobs on the asset page
       onComputeJobCreated?.()
-    } catch (error) {
+    } catch (error: any) {
       if (
         error?.message?.includes('user rejected transaction') ||
         error?.message?.includes('User denied') ||
@@ -817,12 +834,21 @@ export default function ComputeWizard({
       }
 
       if (
-        !(values.algorithm || values.dataset) ||
+        (asset.credentialSubject.metadata.type === 'algorithm' &&
+          !values.dataset &&
+          !values.withoutDataset) ||
         !values.computeEnv ||
         !values.termsAndConditions ||
         !values.acceptPublishingLicense
       ) {
         toast.error('Please complete all required fields.')
+        return
+      }
+      if (
+        asset.credentialSubject.metadata.type !== 'algorithm' &&
+        !values.algorithm
+      ) {
+        toast.error('Please select an algorithm.')
         return
       }
 
@@ -836,24 +862,16 @@ export default function ComputeWizard({
         return
       }
 
-      // For AlgorithmComputeWizard, we need at least one dataset selected
-      if (
-        asset.credentialSubject.metadata.type === 'algorithm' &&
-        (!values.dataset || values.dataset.length === 0)
-      ) {
-        toast.error(
-          'Please select at least one dataset to run against the algorithm.'
-        )
-        return
-      }
-
       let actualSelectedDataset: AssetExtended[] = []
       let actualSelectedAlgorithm: AssetExtended = selectedAlgorithmAsset
 
-      // Case: dataset selected, algorithm undefined (algo is main asset)
       if (asset.credentialSubject.metadata.type === 'algorithm') {
         actualSelectedAlgorithm = asset
-        if (selectedDatasetAsset && Array.isArray(selectedDatasetAsset)) {
+        if (
+          selectedDatasetAsset &&
+          Array.isArray(selectedDatasetAsset) &&
+          selectedDatasetAsset.length > 0
+        ) {
           actualSelectedDataset = selectedDatasetAsset
         }
       } else {
@@ -883,30 +901,33 @@ export default function ComputeWizard({
       }
 
       const userCustomParameters = {
-        dataServiceParams,
+        dataServiceParams:
+          dataServiceParams.length > 0 ? dataServiceParams : undefined,
         algoServiceParams
       }
 
       const datasetServices: { asset: AssetExtended; service: Service }[] =
-        actualSelectedDataset.map((ds, i) => {
-          const datasetEntry = values.dataset?.[i]
-          const selectedServiceId = datasetEntry?.includes('|')
-            ? datasetEntry.split('|')[1]
-            : ds.credentialSubject.services?.[0]?.id
+        actualSelectedDataset.length > 0
+          ? actualSelectedDataset.map((ds, i) => {
+              const datasetEntry = values.dataset?.[i]
+              const selectedServiceId = datasetEntry?.includes('|')
+                ? datasetEntry.split('|')[1]
+                : ds.credentialSubject.services?.[0]?.id
 
-          const selectedService =
-            ds.credentialSubject.services.find(
-              (s) => s.id === selectedServiceId
-            ) || ds.credentialSubject.services?.[0]
+              const selectedService =
+                ds.credentialSubject.services.find(
+                  (s) => s.id === selectedServiceId
+                ) || ds.credentialSubject.services?.[0]
 
-          return {
-            asset: ds,
-            service: selectedService
-          }
-        })
+              return {
+                asset: ds,
+                service: selectedService as Service
+              }
+            })
+          : []
 
       await startJob(userCustomParameters, datasetServices, values)
-    } catch (error) {
+    } catch (error: any) {
       if (
         error?.message?.includes('user rejected transaction') ||
         error?.message?.includes('User denied') ||
@@ -957,19 +978,6 @@ export default function ComputeWizard({
           computeService.serviceEndpoint,
           asset.credentialSubject?.chainId
         )
-        // const datasets = await getAlgorithmDatasetsForCompute(
-        //   asset.id,
-        //   service.id,
-        //   service.serviceEndpoint,
-        //   accountId,
-        //   asset.credentialSubject?.chainId,
-        //   newCancelToken()
-        // )
-        //   'Dataset list for algo...',
-        //   JSON.stringify(datasets, null, 2)
-        // )
-
-        // setDatasets(datasets)
         setComputeEnvs(environments)
       } catch (err) {
         console.error('Error fetching data:', err)
@@ -986,37 +994,51 @@ export default function ComputeWizard({
     formikValues: FormComputeData
   ): Promise<any> {
     try {
+      // NOTE: selectedDatasetAsset is checked for algorithm assets only.
+      // If asset is a dataset, it is implicitly selected.
       if (
         !asset ||
         !accountId ||
         !signer ||
         !formikValues?.computeEnv ||
-        !selectedDatasetAsset ||
-        selectedDatasetAsset.length === 0
+        (isAlgorithm &&
+          !formikValues.withoutDataset &&
+          selectedDatasetAsset.length === 0)
       ) {
         setIsInitLoading(false)
+        if (
+          isAlgorithm &&
+          !formikValues.withoutDataset &&
+          selectedDatasetAsset.length === 0
+        ) {
+          throw new Error(
+            'Please select at least one dataset or select "Run without dataset".'
+          )
+        }
         throw new Error(
           'Missing required parameters for provider initialization.'
         )
       }
 
       const datasetServices: { asset: AssetExtended; service: Service }[] =
-        selectedDatasetAsset.map((ds, i) => {
-          const datasetEntry = formikValues.dataset?.[i]
-          const selectedServiceId = datasetEntry?.includes('|')
-            ? datasetEntry.split('|')[1]
-            : ds.credentialSubject.services?.[0]?.id
+        selectedDatasetAsset.length > 0
+          ? selectedDatasetAsset.map((ds, i) => {
+              const datasetEntry = formikValues.dataset?.[i]
+              const selectedServiceId = datasetEntry?.includes('|')
+                ? datasetEntry.split('|')[1]
+                : ds.credentialSubject.services?.[0]?.id
 
-          const selectedService =
-            ds.credentialSubject.services.find(
-              (s) => s.id === selectedServiceId
-            ) || ds.credentialSubject.services?.[0]
+              const selectedService =
+                ds.credentialSubject.services.find(
+                  (s) => s.id === selectedServiceId
+                ) || ds.credentialSubject.services?.[0]
 
-          return {
-            asset: ds,
-            service: selectedService
-          }
-        })
+              return {
+                asset: ds,
+                service: selectedService as Service
+              }
+            })
+          : []
 
       const datasetsForProvider = datasetServices.map(({ asset, service }) => {
         const datasetIndex = asset.credentialSubject.services.findIndex(
@@ -1057,7 +1079,7 @@ export default function ComputeWizard({
         allResourceValues?.[`${selectedComputeEnv.id}_free`]
 
       const initializedProvider = await initializeProviderForComputeMulti(
-        datasetsForProvider,
+        datasetsForProvider.length > 0 ? datasetsForProvider : [],
         algorithmAsset,
         algoSessionId,
         signer,
@@ -1071,21 +1093,25 @@ export default function ComputeWizard({
         throw new Error('Provider initialization failed.')
       }
 
-      const datasetFees =
-        initializedProvider?.datasets?.map(
-          (ds) => ds?.providerFee?.providerFeeAmount || null
-        ) || []
+      let totalDatasetFee = '0'
+      if (datasetsForProvider.length > 0) {
+        const datasetFees =
+          initializedProvider?.datasets?.map(
+            (ds) => ds?.providerFee?.providerFeeAmount || null
+          ) || []
 
-      const totalDatasetFee =
-        datasetFees.length > 0 && datasetFees.some((f) => f !== null)
-          ? datasetFees.reduce((acc, fee) => acc + Number(fee || 0), 0)
-          : null
+        const rawTotalDatasetFee =
+          datasetFees.length > 0 && datasetFees.some((f) => f !== null)
+            ? datasetFees.reduce((acc, fee) => acc + Number(fee || 0), 0)
+            : 0
+
+        totalDatasetFee = rawTotalDatasetFee.toString()
+      }
+
       const algorithmFee =
         initializedProvider?.algorithm?.providerFee?.providerFeeAmount || '0'
 
-      setDatasetProviderFee(
-        totalDatasetFee !== null ? totalDatasetFee.toString() : '0'
-      )
+      setDatasetProviderFee(totalDatasetFee)
       setAlgorithmProviderFee(algorithmFee)
       setInitializedProviderResponse(initializedProvider)
       setExtraFeesLoaded(true)
@@ -1204,14 +1230,6 @@ export default function ComputeWizard({
                   </div>
                 ) : (
                   <>
-                    {/* {service.type === 'compute' && (
-                      <Alert
-                        text={
-                          "This algorithm has been set to private by the publisher and can't be downloaded. You can run it against any allowed datasets though!"
-                        }
-                        state="info"
-                      />
-                    )} */}
                     <CredentialDialogProvider>
                       <Steps
                         asset={asset}
@@ -1274,11 +1292,6 @@ export default function ComputeWizard({
                         setIsBalanceSufficient={setIsBalanceSufficient}
                       />
                     </CredentialDialogProvider>
-                    {/* <AlgorithmDatasetsListForCompute
-                        asset={asset}
-                        service={service}
-                        accessDetails={accessDetails}
-                      /> */}
                   </>
                 )}
 
