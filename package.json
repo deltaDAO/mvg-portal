@@ -28,6 +28,7 @@
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/language": "^6.3.1",
     "@coingecko/cryptoformat": "^0.5.4",
+    "@deltadao/pontusx-registry-hooks": "^0.1.0",
     "@loadable/component": "^5.15.3",
     "@oceanprotocol/art": "^3.2.0",
     "@oceanprotocol/lib": "^3.1.3",
