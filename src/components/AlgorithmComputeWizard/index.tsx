@@ -1,4 +1,4 @@
-import { useState, ReactElement, useEffect, useCallback } from 'react'
+import { useState, ReactElement, useEffect, useCallback, useMemo } from 'react'
 import {
   FileInfo,
   ProviderInstance,
@@ -34,8 +34,8 @@ import {
   getComputeEnvironments
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
-import { ethers, Signer } from 'ethers'
-import { useAccount, useProvider } from 'wagmi'
+import { ethers, getAddress, parseUnits, Signer } from 'ethers'
+import { useAccount, usePublicClient } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
 import appConfig from 'app.config.cjs'
@@ -62,6 +62,7 @@ import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import { useAsset } from '@context/Asset'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 export default function ComputeWizard({
   accountId,
   signer,
@@ -150,8 +151,10 @@ export default function ComputeWizard({
     setCachedCredentials,
     clearVerifierSessionCache
   } = useSsiWallet()
-  const web3provider = useProvider()
-
+  // const web3provider = usePublicClient()
+  // const stableProvider = useMemo(() => web3provider, [web3provider?.chain?.id])
+  const walletClient = useEthersSigner() // FIX: Replaced useSigner
+  const web3provider = walletClient?.provider
   const [svcIndex, setSvcIndex] = useState(0)
 
   const [allResourceValues, setAllResourceValues] = useState<{
@@ -159,14 +162,18 @@ export default function ComputeWizard({
   }>({})
 
   useEffect(() => {
-    const fetchTokenDetails = async () => {
-      if (!oceanTokenAddress || !web3provider) return
-      const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
-
-      setProviderFeeSymbol(tokenDetails.symbol)
+    if (!oceanTokenAddress || !web3provider) {
+      setProviderFeeSymbol('OCEAN')
+      return
     }
 
-    fetchTokenDetails()
+    getTokenInfo(oceanTokenAddress, web3provider)
+      .then((info) => {
+        setProviderFeeSymbol(info.symbol || 'OCEAN')
+      })
+      .catch(() => {
+        setProviderFeeSymbol('OCEAN')
+      })
   }, [oceanTokenAddress, web3provider])
 
   const getSelectedComputeEnvAndResources = (
@@ -349,17 +356,14 @@ export default function ComputeWizard({
       )
       if (selectedResources.mode === 'paid') {
         const escrow = new EscrowContract(
-          ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
+          getAddress(initializedProvider.payment.escrowAddress),
           signer,
           asset.credentialSubject.chainId
         )
 
         const amountHuman = String(selectedResources.price) // ex. "4"
         const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
-        const amountWei = ethers.utils.parseUnits(
-          amountHuman,
-          tokenDetails.decimals
-        )
+        const amountWei = parseUnits(amountHuman, tokenDetails.decimals)
 
         const erc20 = new ethers.Contract(
           oceanTokenAddress,
@@ -379,34 +383,25 @@ export default function ComputeWizard({
           '[escrow][algo-wizard][decision] depositAmountWei=',
           amountWei.toString()
         )
-        if (amountWei.eq(0)) {
+        if (amountWei === BigInt(0)) {
           console.log(
             '[escrow][algo-wizard][skip] depositAmount==0, skipping escrow approve/deposit/authorize'
           )
         }
 
-        if (!amountWei.eq(0)) {
-          console.log(`Approving ${amountHuman} to escrow...`)
+        if (amountWei !== BigInt(0)) {
           const approveTx = await erc20.approve(escrowAddress, amountWei)
           await approveTx.wait()
-          console.log(`Approved ${amountHuman}`)
           while (true) {
             const allowanceNow = await erc20.allowance(owner, escrowAddress)
-            if (allowanceNow.gte(amountWei)) {
+            if (allowanceNow >= amountWei) {
               break
             }
             await new Promise((resolve) => setTimeout(resolve, 1000))
           }
 
-          console.log(`Depositing ${amountHuman} to escrow...`, amountHuman)
           const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
           await depositTx.wait()
-          console.log(`Deposited ${amountHuman}`)
-          console.log(
-            'Authorizing compute job...',
-            amountHuman,
-            selectedComputeEnv.consumerAddress
-          )
           await escrow.authorize(
             oceanTokenAddress,
             selectedComputeEnv.consumerAddress,
@@ -735,7 +730,8 @@ export default function ComputeWizard({
           datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
           null,
           null,
-          policiesServer
+          null,
+          policiesServer as any
         )
       } else {
         const algorithm: ComputeAlgorithm = {
@@ -757,7 +753,8 @@ export default function ComputeWizard({
           resourceRequests,
           null,
           null,
-          policiesServer
+          null,
+          policiesServer as any
         )
       }
 
@@ -1278,10 +1275,10 @@ export default function ComputeWizard({
                       />
                     </CredentialDialogProvider>
                     {/* <AlgorithmDatasetsListForCompute
-                                              asset={asset}
-                                              service={service}
-                                              accessDetails={accessDetails}
-                                            /> */}
+                        asset={asset}
+                        service={service}
+                        accessDetails={accessDetails}
+                      /> */}
                   </>
                 )}
 

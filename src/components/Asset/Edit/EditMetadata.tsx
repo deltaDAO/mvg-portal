@@ -13,7 +13,7 @@ import DebugEditMetadata from './DebugEditMetadata'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import { sanitizeUrl } from '@utils/url'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import {
   transformConsumerParameters,
   generateCredentials,
@@ -25,13 +25,13 @@ import { Metadata } from 'src/@types/ddo/Metadata'
 import { Asset, AssetNft } from 'src/@types/Asset'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl, encryptAsset } from '../../../../app.config.cjs'
-import { ethers } from 'ethers'
-import { isAddress } from 'ethers/lib/utils.js'
+import { isAddress, Signer, toBeHex } from 'ethers'
 import { convertLinks } from '@utils/links'
 import { License } from 'src/@types/ddo/License'
 import { AdditionalVerifiableCredentials } from 'src/@types/ddo/AdditionalVerifiableCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import { State } from 'src/@types/ddo/State'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function Edit({
   asset
@@ -41,8 +41,10 @@ export default function Edit({
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork, assetState } = useAsset()
   const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner()
   const ssiWalletContext = useSsiWallet()
+
+  const signer = walletClient as unknown as Signer
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -136,7 +138,6 @@ export default function Edit({
         ...asset.indexedMetadata.nft,
         state: State[values.assetState as unknown as keyof typeof State]
       }
-
       const updatedAsset: Asset = {
         ...(asset as Asset),
         credentialSubject: {
@@ -168,7 +169,6 @@ export default function Edit({
       delete (updatedAsset as AssetExtended).views
       delete (updatedAsset as AssetExtended).offchain
       delete (updatedAsset as any).credentialSubject.stats
-
       const ipfsUpload: IpfsUpload = await signAssetAndUploadToIpfs(
         updatedAsset,
         signer,
@@ -180,7 +180,6 @@ export default function Edit({
 
       if (ipfsUpload /* && values.assetState !== assetState */) {
         const nft = new Nft(signer, updatedAsset.credentialSubject.chainId)
-
         await nft.setMetadata(
           updatedAsset.credentialSubject.nftAddress,
           await signer.getAddress(),
@@ -188,7 +187,7 @@ export default function Edit({
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',
-          ethers.utils.hexlify(ipfsUpload.flags),
+          toBeHex(ipfsUpload.flags as any),
           ipfsUpload.metadataIPFS,
           ipfsUpload.metadataIPFSHash
         )

@@ -360,15 +360,11 @@ export async function downloadFile(
       policyServer,
       userCustomParameters
     )
-    console.log('📦 Download URL:', downloadUrl)
-
     const fileInfo: any = await getFileDidInfo(
       asset.id,
       service.id,
       customProviderUrl || service.serviceEndpoint
     )
-    console.log('📦 File info from provider:', fileInfo)
-
     const mimeExtensionMap: Record<string, string> = {
       'application/json': 'json',
       'application/vnd.api+json': 'json',
@@ -401,8 +397,6 @@ export async function downloadFile(
     }
 
     fileName = fileName.replace(/[<>:"/\\|?*]+/g, '_')
-
-    console.log('📦 Final resolved filename:', fileName)
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Provider Get download url] Error:', message)
@@ -424,8 +418,6 @@ export async function downloadFile(
     link.click()
     document.body.removeChild(link)
     window.URL.revokeObjectURL(blobUrl)
-
-    console.log(`✅ File "${fileName}" downloaded successfully.`)
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Download File Error]', message)

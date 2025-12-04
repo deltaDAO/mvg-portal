@@ -7,8 +7,9 @@ import {
   SsiWalletSession,
   SsiWalletDid
 } from 'src/@types/SsiWallet'
-import { Signer } from 'ethers'
+import { Signer, JsonRpcSigner } from 'ethers'
 import { ssiWalletApi } from 'app.config.cjs'
+import { LoggerInstance } from '@oceanprotocol/lib'
 
 export const STORAGE_KEY = 'ssiWalletApiOverride'
 
@@ -22,7 +23,7 @@ export function getSsiWalletApi(): string {
 }
 
 export async function connectToWallet(
-  owner: Signer
+  owner: JsonRpcSigner
 ): Promise<SsiWalletSession> {
   const api = getSsiWalletApi()
   if (!api) {
@@ -30,22 +31,34 @@ export async function connectToWallet(
   }
 
   try {
-    let response = await axios.get(`${api}/wallet-api/auth/account/web3/nonce`)
+    // 1. Get nonce
+    const response = await axios.get(
+      `${api}/wallet-api/auth/account/web3/nonce`
+    )
+    const nonce: string = response.data
 
-    const nonce = response.data
+    const address = await owner.getAddress()
+    const signature = await owner.signMessage(nonce)
+
     const payload = {
       challenge: nonce,
-      signed: await owner.signMessage(nonce),
-      publicKey: await owner.getAddress()
+      signed: signature,
+      publicKey: address
     }
 
-    response = await axios.post(
+    const authResponse = await axios.post(
       `${api}/wallet-api/auth/account/web3/signed`,
       payload
     )
-    return response.data
-  } catch (error) {
-    throw error.response
+
+    return authResponse.data as SsiWalletSession
+  } catch (error: any) {
+    LoggerInstance.error('SSI connectToWallet failed:', error)
+    throw new Error(
+      error?.response?.data?.message ||
+        error?.message ||
+        'Failed to connect to SSI wallet'
+    )
   }
 }
 

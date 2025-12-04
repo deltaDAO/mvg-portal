@@ -1,6 +1,5 @@
 import {
   ComputeResultType,
-  downloadFileBrowser,
   getErrorMessage,
   LoggerInstance,
   Provider
@@ -13,10 +12,12 @@ import FormHelp from '@shared/FormInput/Help'
 import content from '../../../../../content/pages/history.json'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { getAsset } from '@utils/aquarius'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { toast } from 'react-toastify'
 import { prettySize } from '@components/@shared/FormInput/InputElement/FilesInput/utils'
 import { customProviderUrl } from 'app.config.cjs'
+import { Signer } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function Results({
   job
@@ -25,7 +26,7 @@ export default function Results({
 }): ReactElement {
   const providerInstance = new Provider()
   const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner() // <-- Updated from useSigner()
 
   const [datasetProvider, setDatasetProvider] = useState<string>()
   const newCancelToken = useCancelToken()
@@ -74,7 +75,8 @@ export default function Results({
   }
 
   async function downloadResults(resultIndex: number) {
-    if (!accountId || !job) return
+    if (!accountId || !job || !walletClient) return
+    const signer = walletClient as unknown as Signer
 
     try {
       const envPrefix = (job as any).environment.split('-')[0]

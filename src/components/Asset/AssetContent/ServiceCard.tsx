@@ -5,25 +5,38 @@ import { Service } from 'src/@types/ddo/Service'
 export default function ServiceCard({
   service,
   accessDetails,
-  onClick
+  onClick,
+  isClickable
 }: {
   service: Service
   accessDetails: AccessDetails
   onClick: () => void
+  isClickable?: boolean
 }): ReactElement {
   const [expanded, setExpanded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
   if (!accessDetails) return null
-
+  const clickable = isClickable === undefined ? true : isClickable
   const description = service.description?.['@value']
 
   return (
     <div
-      onClick={onClick}
-      className={styles.service}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onClick={(e) => {
+        if (!clickable) {
+          e.preventDefault()
+          e.stopPropagation()
+          return
+        }
+        onClick()
+      }}
+      className={`${styles.service} ${!clickable ? styles.disabled : ''}`}
+      onMouseEnter={() => clickable && setIsHovered(true)}
+      onMouseLeave={() => clickable && setIsHovered(false)}
+      style={{
+        cursor: clickable ? 'pointer' : 'not-allowed',
+        opacity: clickable ? 1 : 0.5
+      }}
     >
       <span className={styles.serviceTitle}>{service.name || 'Unknown'} </span>
       <br />
@@ -41,14 +54,14 @@ export default function ServiceCard({
               <button
                 type="button"
                 className={styles.toggle}
+                disabled={!clickable}
                 onClick={(e) => {
                   e.stopPropagation()
                   e.preventDefault()
+                  if (!clickable) return
                   setExpanded((prev) => !prev)
                 }}
-                onMouseDown={(e) => {
-                  e.stopPropagation()
-                }}
+                onMouseDown={(e) => e.stopPropagation()}
               >
                 {expanded ? 'Show less' : 'Show more'}
               </button>
@@ -80,7 +93,15 @@ export default function ServiceCard({
           isHovered ? styles.visible : ''
         }`}
       >
-        <button className={styles.selectButton}>Select</button>
+        <button
+          className={styles.selectButton}
+          disabled={!clickable}
+          style={{
+            cursor: clickable ? 'pointer' : 'not-allowed'
+          }}
+        >
+          Select
+        </button>
       </div>
     </div>
   )

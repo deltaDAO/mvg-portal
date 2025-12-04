@@ -1,17 +1,20 @@
 import { ReactElement } from 'react'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount, useChains, useConnections } from 'wagmi'
 import styles from './Details.module.css'
 import AddTokenList from './AddTokenList'
 import AddNetwork from '@components/@shared/AddNetwork'
 import { getCustomChainIds } from 'chains.config.cjs'
 
 export default function Details(): ReactElement {
-  const { connector: activeConnector } = useAccount()
+  const connections = useConnections()
+  const activeConnection = connections.find((c) => c.connector)
+  const activeConnector = activeConnection?.connector
 
-  const { chains, chain: activeChain } = useNetwork()
+  const chains = useChains()
+  const { chainId: activeChainId } = useAccount()
 
   const networksListToDisplay = chains.filter(
-    (chain) => chain.id !== activeChain?.id
+    (chain) => chain.id !== activeChainId
   )
 
   return (

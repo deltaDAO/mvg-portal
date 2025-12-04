@@ -11,7 +11,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { Asset } from 'src/@types/Asset'
 import { getOceanConfig } from '@utils/ocean'
 import { getDummySigner, getTokenInfo } from '@utils/wallet'
-import { useNetwork } from 'wagmi'
+import { useChainId } from 'wagmi'
 
 interface AlgorithmService {
   id: string
@@ -60,7 +60,7 @@ const SelectAlgorithmServices = ({
   ddoListAlgorithms = []
 }: SelectAlgorithmServicesProps) => {
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const [selectedAlgorithm, setSelectedAlgorithm] = useState<Algorithm | null>(
     null
   )
@@ -121,8 +121,8 @@ const SelectAlgorithmServices = ({
           return
         }
 
-        const { oceanTokenAddress } = getOceanConfig(chain.id)
-        const signer = await getDummySigner(chain.id)
+        const { oceanTokenAddress } = getOceanConfig(chainId)
+        const signer = await getDummySigner(chainId)
         const tokenDetails = await getTokenInfo(
           oceanTokenAddress,
           signer.provider

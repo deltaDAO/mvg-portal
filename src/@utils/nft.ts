@@ -9,7 +9,7 @@ import {
 } from '@oceanprotocol/lib'
 import { SvgWaves } from './SvgWaves'
 import { customProviderUrl } from '../../app.config.cjs'
-import { Signer, ethers } from 'ethers'
+import { Signer, ethers, TransactionResponse, hexlify } from 'ethers'
 import { toast } from 'react-toastify'
 import { Asset } from 'src/@types/Asset'
 
@@ -96,7 +96,7 @@ export function decodeTokenURI(tokenURI: string): NftMetadata {
       : ({ image: tokenURI } as NftMetadata)
 
     return nftMeta
-  } catch (error) {
+  } catch (error: any) {
     LoggerInstance.error(`[NFT] ${error.message}`)
   }
 }
@@ -106,7 +106,7 @@ export async function setNftMetadata(
   accountId: string,
   signer: Signer,
   signal: AbortSignal
-): Promise<ethers.providers.TransactionResponse> {
+): Promise<TransactionResponse> {
   let encryptedDdo
   try {
     encryptedDdo = await ProviderInstance.encrypt(
@@ -115,7 +115,7 @@ export async function setNftMetadata(
       customProviderUrl || asset.credentialSubject?.services[0].serviceEndpoint,
       signal
     )
-  } catch (err) {
+  } catch (err: any) {
     const message = getErrorMessage(err.message)
     LoggerInstance.error('[Encrypt Data] Error:', message)
     toast.error(message)
@@ -123,10 +123,8 @@ export async function setNftMetadata(
   LoggerInstance.log('[setNftMetadata] Got encrypted DDO', encryptedDdo)
 
   const metadataHash = getHash(JSON.stringify(asset))
-  const nft = new Nft(signer)
-
-  // theoretically used by aquarius or provider, not implemented yet, will remain hardcoded
-  const flags = ethers.utils.hexlify(2)
+  const nft = new Nft(signer as any)
+  const flags = '0x02'
 
   const setMetadataTx = await nft.setMetadata(
     asset.credentialSubject.nftAddress,
@@ -139,7 +137,7 @@ export async function setNftMetadata(
     '0x' + metadataHash
   )
 
-  return setMetadataTx
+  return setMetadataTx as unknown as TransactionResponse
 }
 
 export async function setNFTMetadataAndTokenURI(
@@ -148,7 +146,7 @@ export async function setNFTMetadataAndTokenURI(
   signer: Signer,
   nftMetadata: NftMetadata | undefined,
   signal: AbortSignal
-): Promise<ethers.providers.TransactionResponse> {
+): Promise<TransactionResponse> {
   let encryptedDdo
   try {
     encryptedDdo = await ProviderInstance.encrypt(
@@ -157,7 +155,7 @@ export async function setNFTMetadataAndTokenURI(
       customProviderUrl || asset.credentialSubject?.services[0].serviceEndpoint,
       signal
     )
-  } catch (err) {
+  } catch (err: any) {
     const message = getErrorMessage(err.message)
     LoggerInstance.error('[Encrypt Data] Error:', message)
     toast.error(message)
@@ -190,7 +188,7 @@ export async function setNFTMetadataAndTokenURI(
           }
     )
   ).toString('base64')
-  const nft = new Nft(signer, asset.credentialSubject.chainId)
+  const nft = new Nft(signer as any, asset.credentialSubject.chainId)
 
   // theoretically used by aquarius or provider, not implemented yet, will remain hardcoded
   const flags = '0x02'
@@ -213,5 +211,5 @@ export async function setNFTMetadataAndTokenURI(
     metadataAndTokenURI
   )
 
-  return setMetadataAndTokenURITx
+  return setMetadataAndTokenURITx as unknown as TransactionResponse
 }

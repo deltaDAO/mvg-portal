@@ -57,7 +57,6 @@ export function getOceanConfig(network: string | number): any {
   if (network === 8996) {
     config = { ...config, ...sanitizeDevelopmentConfig(config) }
   }
-
   // Override nodeUri with value from RPC map if it exists
   const networkKey = network.toString()
   if (rpcMap[networkKey]) config.nodeUri = rpcMap[networkKey]

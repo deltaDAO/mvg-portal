@@ -14,7 +14,7 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import styles from './index.module.css'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -29,10 +29,12 @@ import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute
 import Loader from '@components/@shared/atoms/Loader'
 import { requiresSsi } from '@utils/credentials'
 import { useAsset } from '@context/Asset'
-import { formatUnits } from 'ethers/lib/utils.js'
+import { formatUnits, JsonRpcProvider } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import { getFixedBuyPrice } from '@utils/ocean/fixedRateExchange'
 import { useUserPreferences } from '@context/UserPreferences'
+import { useEthersSigner } from '@hooks/useEthersSigner'
+
 interface VerificationItem {
   id: string
   type: 'dataset' | 'algorithm'
@@ -173,11 +175,16 @@ export default function Review({
     return parts.join(' ') || '0s'
   }
 
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner()
+  const publicClient = usePublicClient()
+  const chainId = useChainId()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
   // error message
   const errorMessages: string[] = []
   const [symbol, setSymbol] = useState('')
-  const { chain } = useNetwork()
 
   useEffect(() => {
     async function fetchPrices() {
@@ -185,14 +192,14 @@ export default function Review({
         asset &&
         asset.credentialSubject?.chainId &&
         accessDetails &&
-        signer &&
+        walletClient &&
         !accessDetails.isOwned
       ) {
         try {
           const algoFixed = await getFixedBuyPrice(
             accessDetails,
             asset.credentialSubject.chainId,
-            signer
+            ethersProvider as any
           )
           setAlgoOecFee(algoFixed?.oceanFeeAmount || '0')
           // For algorithm
@@ -208,14 +215,18 @@ export default function Review({
               selectedDatasetAsset.map(async (dataset) => {
                 const details =
                   dataset.accessDetails?.[dataset.serviceIndex || 0]
-                if (details && dataset.credentialSubject?.chainId && signer) {
+                if (
+                  details &&
+                  dataset.credentialSubject?.chainId &&
+                  walletClient
+                ) {
                   if (details.isOwned) {
                     return 0
                   } else {
                     const fixed = await getFixedBuyPrice(
                       details,
                       dataset.credentialSubject.chainId,
-                      signer
+                      ethersProvider as any
                     )
                     return Number(fixed?.oceanFeeAmount) || 0
                   }
@@ -233,23 +244,20 @@ export default function Review({
     }
 
     fetchPrices()
-    // Add relevant dependencies, ensure signer and assets are set
-  }, [asset, accessDetails, signer, selectedDatasetAsset])
+    // Update dependencies: signer -> walletClient, add ethersProvider
+  }, [asset, accessDetails, walletClient, selectedDatasetAsset, ethersProvider])
 
   useEffect(() => {
-    const fetchTokenDetails = async () => {
-      if (!chain?.id || !signer?.provider) return
+    async function fetchTokenDetails() {
+      if (!chainId || !ethersProvider) return
 
-      const { oceanTokenAddress } = getOceanConfig(chain.id)
-      const tokenDetails = await getTokenInfo(
-        oceanTokenAddress,
-        signer.provider
-      )
+      const { oceanTokenAddress } = getOceanConfig(chainId)
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
       setSymbol(tokenDetails.symbol || 'OCEAN')
     }
 
     fetchTokenDetails()
-  }, [chain, signer])
+  }, [chainId, ethersProvider])
   if (!isBalanceSufficient) {
     errorMessages.push(`You don't have enough ${symbol} to make this purchase.`)
   }

@@ -7,7 +7,7 @@ import { getFileInfo, checkValidProvider } from '@utils/provider'
 import { LoggerInstance, FileInfo } from '@oceanprotocol/lib'
 import { useAsset } from '@context/Asset'
 import styles from './index.module.css'
-import { useNetwork } from 'wagmi'
+import { useChainId } from 'wagmi'
 import InputKeyValue from '../KeyValueInput'
 import Button from '@shared/atoms/Button'
 import PublishButton from '@shared/PublishButton'
@@ -24,8 +24,7 @@ export default function FilesInput(props: InputProps): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
   const [disabledButton, setDisabledButton] = useState(true)
   const { asset } = useAsset()
-  const { chain } = useNetwork()
-  const chainId = chain?.id
+  const chainId = useChainId()
 
   const providerUrl =
     customProviderUrl ||
@@ -67,7 +66,7 @@ export default function FilesInput(props: InputProps): ReactElement {
         query,
         headers,
         abi,
-        chain?.id,
+        chainId,
         method
       )
 

@@ -7,13 +7,12 @@ import Free from './Free'
 import content from '../../../../content/price.json'
 import styles from './index.module.css'
 import { useMarketMetadata } from '@context/MarketMetadata'
-import { useNetwork } from 'wagmi'
+import { useChainId } from 'wagmi'
 
 export default function PricingFields(): ReactElement {
   const { appConfig } = useMarketMetadata()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const { approvedBaseTokens } = useMarketMetadata()
-
   // Connect with main publish form
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
   const { pricing } = values
@@ -23,7 +22,6 @@ export default function PricingFields(): ReactElement {
     approvedBaseTokens?.find((token) =>
       token.name.toLowerCase().includes('ocean')
     ) || approvedBaseTokens?.[0]
-
   const isBaseTokenSet = !!approvedBaseTokens?.find(
     (token) => token?.address === values?.pricing?.baseToken?.address
   )
@@ -34,7 +32,7 @@ export default function PricingFields(): ReactElement {
     setFieldValue('pricing.baseToken', defaultBaseToken)
   }, [
     approvedBaseTokens,
-    chain?.id,
+    chainId,
     defaultBaseToken,
     isBaseTokenSet,
     setFieldValue,

@@ -1,5 +1,6 @@
-import { ReactElement } from 'react'
+'use client'
 import type { AppProps } from 'next/app'
+import { ReactElement, useEffect, useState } from 'react'
 import { UserPreferencesProvider } from '@context/UserPreferences'
 import UrqlProvider from '@context/UrqlProvider'
 import ConsentProvider from '@context/CookieConsent'
@@ -9,18 +10,28 @@ import '@oceanprotocol/typographies/css/ocean-typo.css'
 import '../stylesGlobal/styles.css'
 import Decimal from 'decimal.js'
 import MarketMetadataProvider from '@context/MarketMetadata'
-import { WagmiConfig } from 'wagmi'
+
+import { WagmiProvider } from 'wagmi'
 import { ConnectKitProvider } from 'connectkit'
-import { connectKitTheme, wagmiClient } from '@utils/wallet'
+import { connectKitTheme, wagmiConfig } from '@utils/wallet'
 import { FilterProvider } from '@context/Filter'
 import { SsiWalletProvider } from '@context/SsiWallet'
-
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+const queryClient = new QueryClient()
 function MyApp({ Component, pageProps }: AppProps): ReactElement {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
   Decimal.set({ rounding: 1 })
 
   return (
-    <>
-      <WagmiConfig client={wagmiClient}>
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={wagmiConfig}>
         <ConnectKitProvider
           options={{ initialChainId: 0 }}
           customTheme={connectKitTheme}
@@ -43,8 +54,8 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
             </UrqlProvider>
           </MarketMetadataProvider>
         </ConnectKitProvider>
-      </WagmiConfig>
-    </>
+      </WagmiProvider>
+    </QueryClientProvider>
   )
 }
 

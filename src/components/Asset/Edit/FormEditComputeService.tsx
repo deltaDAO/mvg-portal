@@ -25,7 +25,7 @@ import SectionContainer from '@shared/SectionContainer/SectionContainer'
 import DeleteButton from '@shared/DeleteButton/DeleteButton'
 import Button from '@shared/atoms/Button'
 import AddAddress from '@images/add_param.svg'
-import { isAddress } from 'ethers/lib/utils'
+import { isAddress } from 'ethers'
 import styles from './index.module.css'
 
 const ALLOW_ANY_PUBLISHED_ALGORITHMS = 'Allow any published algorithms'

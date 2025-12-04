@@ -2,11 +2,12 @@ import { ReactElement, useState, useEffect, useCallback } from 'react'
 import { useFormikContext } from 'formik'
 import { Datatoken } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
-import { useNetwork, useSigner } from 'wagmi'
+import { useChainId } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
 import { FormComputeData } from '../_types'
 import { useProfile } from '@context/Profile'
 import styles from './index.module.css'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 interface ResourceValues {
   cpu: number
@@ -182,9 +183,10 @@ export default function ConfigureEnvironment({
   setAllResourceValues?: (values: Record<string, any>) => void
 }): ReactElement {
   const { values, setFieldValue } = useFormikContext<FormComputeData>()
-  const { chain } = useNetwork()
+  const chainid = useChainId()
+  const chainId = chainid.toString() || '11155111'
   const { escrowAvailableFunds } = useProfile()
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner()
 
   const [mode, setMode] = useState<'free' | 'paid'>(() => {
     return (
@@ -272,7 +274,6 @@ export default function ConfigureEnvironment({
     if (!values.computeEnv) return 0
 
     const env = values.computeEnv
-    const chainId = chain?.id?.toString() || '11155111'
     const fee = env.fees?.[chainId]?.[0]
 
     if (!fee?.prices) return 0
@@ -291,7 +292,7 @@ export default function ConfigureEnvironment({
     }
     const rawPrice = totalPrice * paidValues.jobDuration
     return Math.round(rawPrice * 100) / 100
-  }, [mode, values.computeEnv, chain?.id, paidValues])
+  }, [mode, values.computeEnv, chainId, paidValues])
 
   const clamp = (val: number, min: number, max: number) =>
     Math.max(min, Math.min(max, val))
@@ -392,8 +393,8 @@ export default function ConfigureEnvironment({
 
   const fetchSymbol = async (address: string) => {
     if (symbolMap[address]) return symbolMap[address]
-    if (!signer || !chain?.id) return '...'
-    const datatoken = new Datatoken(signer, chain.id)
+    if (!walletClient || !chainId) return '...'
+    const datatoken = new Datatoken(walletClient as any, chainId)
     const sym = await datatoken.getSymbol(address)
     setSymbolMap((prev) => ({ ...prev, [address]: sym }))
     return sym
@@ -402,14 +403,13 @@ export default function ConfigureEnvironment({
   useEffect(() => {
     const env = values.computeEnv
     if (env) {
-      const chainId = chain?.id?.toString() || '11155111'
       const fee = env.fees?.[chainId]?.[0]
       const tokenAddress = fee?.feeToken
       if (tokenAddress) {
         fetchSymbol(tokenAddress)
       }
     }
-  }, [values.computeEnv, chain?.id])
+  }, [values.computeEnv, chainId])
 
   useEffect(() => {
     const currentValues = mode === 'free' ? freeValues : paidValues
@@ -464,7 +464,6 @@ export default function ConfigureEnvironment({
     let escrowCoveredAmount = 0
 
     if (mode === 'paid') {
-      const chainId = chain?.id?.toString() || '11155111'
       const fee = env.fees?.[chainId]?.[0]
 
       if (fee?.prices) {
@@ -508,7 +507,7 @@ export default function ConfigureEnvironment({
   }, [
     mode,
     values.computeEnv,
-    chain?.id,
+    chainId,
     freeValues.cpu,
     freeValues.ram,
     freeValues.disk,
@@ -531,7 +530,6 @@ export default function ConfigureEnvironment({
   }
 
   const env = values.computeEnv
-  const chainId = chain?.id?.toString() || '11155111'
   const fee = env.fees?.[chainId]?.[0]
   const freeAvailable = !!env.free
   const tokenAddress = fee?.feeToken

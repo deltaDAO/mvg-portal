@@ -13,7 +13,7 @@ import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
@@ -28,7 +28,7 @@ import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
 import AlgorithmDatasetsListForComputeSelection from './AlgorithmDatasetsListForComputeSelection'
 import { getAsset } from '@utils/aquarius'
-import { formatUnits } from 'ethers/lib/utils.js'
+import { formatUnits, JsonRpcProvider } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 
 export default function FormStartComputeAlgo({
@@ -122,8 +122,12 @@ export default function FormStartComputeAlgo({
     accessDetails.price
   )
 
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const publicClient = usePublicClient()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
 
@@ -146,19 +150,16 @@ export default function FormStartComputeAlgo({
 
   useEffect(() => {
     const fetchTokenDetails = async () => {
-      if (!chain?.id || !signer?.provider) return
+      if (!chainId || !ethersProvider) return
 
-      const { oceanTokenAddress } = getOceanConfig(chain.id)
-      const tokenDetails = await getTokenInfo(
-        oceanTokenAddress,
-        signer.provider
-      )
+      const { oceanTokenAddress } = getOceanConfig(chainId)
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
 
       setTokenInfo(tokenDetails)
     }
 
     fetchTokenDetails()
-  }, [chain, signer])
+  }, [chainId, ethersProvider])
 
   useEffect(() => {
     if (!asset || !service?.id || !asset.credentialSubject?.services?.length)

@@ -9,7 +9,7 @@ import DownloadMetamask from './Steps/DownloadMetamask'
 import ConnectAccount from './Steps/ConnectAccount'
 import ImportCustomTokens from './Steps/ImportCustomTokens'
 import Ready from './Steps/Ready'
-import { useAccount, useNetwork, useProvider } from 'wagmi'
+import { useAccount, usePublicClient, useChainId } from 'wagmi'
 import { useUserPreferences } from '@context/UserPreferences'
 import useBalance from '@hooks/useBalance'
 import Faucet from './Steps/Faucet'
@@ -40,8 +40,8 @@ export enum NavigationDirections {
 export default function OnboardingSection(): ReactElement {
   const { address: accountId } = useAccount()
   const { balance } = useBalance()
-  const web3Provider = useProvider()
-  const { chain } = useNetwork()
+  const web3Provider = usePublicClient()
+  const chainId = useChainId()
   const { onboardingStep, setOnboardingStep } = useUserPreferences()
   const [onboardingCompleted, setOnboardingCompleted] = useState(false)
   const [navigationDirection, setNavigationDirection] =
@@ -53,14 +53,10 @@ export default function OnboardingSection(): ReactElement {
   }, [onboardingStep, setOnboardingStep])
 
   useEffect(() => {
-    if (
-      accountId &&
-      web3Provider &&
-      getSupportedChainIds().includes(chain?.id)
-    ) {
+    if (accountId && web3Provider && getSupportedChainIds().includes(chainId)) {
       setOnboardingCompleted(true)
     }
-  }, [accountId, balance, chain?.id, web3Provider])
+  }, [accountId, balance, chainId, web3Provider])
 
   return (
     <div className={styles.wrapper}>

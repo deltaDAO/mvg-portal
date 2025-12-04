@@ -13,7 +13,7 @@ import { getAccessDetails } from '@utils/accessDetailsAndPricing'
 import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
@@ -30,7 +30,7 @@ import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCreden
 import ComputeHistory from './History'
 import ComputeJobs from '../../../Profile/History/ComputeJobs'
 import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
-import { formatUnits } from 'ethers/lib/utils.js'
+import { formatUnits, JsonRpcProvider } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 
 export default function FormStartCompute({
@@ -136,8 +136,12 @@ export default function FormStartCompute({
     accessDetails.price
   )
 
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const publicClient = usePublicClient()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
 
@@ -183,19 +187,16 @@ export default function FormStartCompute({
 
   useEffect(() => {
     const fetchTokenDetails = async () => {
-      if (!chain?.id || !signer?.provider) return
+      if (!chainId || !ethersProvider) return
 
-      const { oceanTokenAddress } = getOceanConfig(chain.id)
-      const tokenDetails = await getTokenInfo(
-        oceanTokenAddress,
-        signer.provider
-      )
+      const { oceanTokenAddress } = getOceanConfig(chainId)
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
 
       setTokenInfo(tokenDetails)
     }
 
     fetchTokenDetails()
-  }, [chain, signer])
+  }, [chainId, ethersProvider])
 
   // Pre-select computeEnv and/or algo if there is only one available option
   useEffect(() => {

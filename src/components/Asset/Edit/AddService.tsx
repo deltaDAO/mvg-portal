@@ -16,11 +16,18 @@ import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
-import { isAddress } from 'ethers/lib/utils.js'
+import {
+  isAddress,
+  JsonRpcProvider,
+  parseEther,
+  ethers,
+  Signer,
+  toBeHex
+} from 'ethers'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import { getEncryptedFiles } from '@utils/provider'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import {
   generateCredentials,
   IpfsUpload,
@@ -36,7 +43,6 @@ import {
   marketFeeAddress,
   publisherMarketFixedSwapFee
 } from 'app.config.cjs'
-import { ethers } from 'ethers'
 import FormAddService from './FormAddService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -50,6 +56,7 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { State } from 'src/@types/ddo/State'
 import { useSsiWallet } from '@context/SsiWallet'
 import { getTokenInfo } from '@utils/wallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function AddService({
   asset
@@ -59,11 +66,19 @@ export default function AddService({
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const walletClient = useEthersSigner()
+  const publicClient = usePublicClient()
   const newCancelToken = useCancelToken()
   const config = getOceanConfig(asset?.credentialSubject?.chainId)
   const ssiWalletContext = useSsiWallet()
+
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+
+  const signer = walletClient as unknown as Signer
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -107,6 +122,11 @@ export default function AddService({
 
       if (!isAssetNetwork) {
         setError('Please switch to the correct network.')
+        return
+      }
+
+      if (!signer) {
+        setError('Wallet not connected or signer unavailable.')
         return
       }
 
@@ -172,7 +192,7 @@ export default function AddService({
 
         const tokenInfo = await getTokenInfo(
           config.oceanTokenAddress,
-          signer.provider
+          ethersProvider
         )
 
         const freParams: FreCreationParams = {
@@ -182,9 +202,7 @@ export default function AddService({
           marketFeeCollector: marketFeeAddress,
           baseTokenDecimals: tokenInfo?.decimals || 18,
           datatokenDecimals: 18,
-          fixedRate: ethers.utils
-            .parseEther(values.price.toString())
-            .toString(),
+          fixedRate: parseEther(values.price.toString()).toString(),
           marketFee: publisherMarketFixedSwapFee,
           withMint: true
         }
@@ -199,8 +217,8 @@ export default function AddService({
         )
 
         const dispenserParams: DispenserParams = {
-          maxTokens: ethers.utils.parseEther('1').toString(),
-          maxBalance: ethers.utils.parseEther('1').toString(),
+          maxTokens: parseEther('1').toString(),
+          maxBalance: parseEther('1').toString(),
           withMint: true
         }
 
@@ -222,9 +240,7 @@ export default function AddService({
         const file = {
           nftAddress: asset.credentialSubject.nftAddress,
           datatokenAddress,
-          files: [
-            normalizeFile(values.files[0].type, values.files[0], chain?.id)
-          ]
+          files: [normalizeFile(values.files[0].type, values.files[0], chainId)]
         }
 
         const filesEncrypted = await getEncryptedFiles(
@@ -298,7 +314,7 @@ export default function AddService({
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',
-          ethers.utils.hexlify(ipfsUpload.flags),
+          toBeHex(ipfsUpload.flags),
           ipfsUpload.metadataIPFS,
           ipfsUpload.metadataIPFSHash
         )
@@ -309,7 +325,6 @@ export default function AddService({
       // Edit succeeded
       setSuccess(content.form.success)
       resetForm()
-      console.log('[AddService] Success! Form reset.')
     } catch (error) {
       LoggerInstance.error(error.message)
       setError(error.message)
