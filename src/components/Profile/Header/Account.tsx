@@ -6,10 +6,9 @@ import Jellyfish from '@oceanprotocol/art/creatures/jellyfish/jellyfish-grid.svg
 import Copy from '@shared/atoms/Copy'
 import Avatar from '@shared/atoms/Avatar'
 import styles from './Account.module.css'
-import { accountTruncate } from '@utils/wallet'
 import { useAutomation } from '../../../@context/Automation/AutomationProvider'
 import Transaction from '../../../@images/transaction.svg'
-import { useAddressConfig } from '@hooks/useAddressConfig'
+import AddressName from '@components/@shared/AddressName'
 
 export default function Account({
   accountId
@@ -18,14 +17,6 @@ export default function Account({
 }): ReactElement {
   const { chainIds } = useUserPreferences()
   const { autoWalletAddress } = useAutomation()
-  const { verifiedAddresses } = useAddressConfig()
-
-  function getAddressKey(): string {
-    const addressKey = Object.keys(verifiedAddresses).find(
-      (key) => key.toLowerCase() === accountId?.toLowerCase()
-    )
-    return addressKey || ''
-  }
 
   return (
     <div className={styles.account}>
@@ -38,7 +29,7 @@ export default function Account({
       </figure>
       <div>
         <h3 className={styles.name}>
-          {verifiedAddresses?.[getAddressKey()] || accountTruncate(accountId)}{' '}
+          <AddressName address={accountId} />
           {autoWalletAddress === accountId && (
             <span className={styles.automation} title="Automation">
               <Transaction />
