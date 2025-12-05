@@ -1,33 +1,27 @@
-import { usePontusXRegistry } from '@deltadao/pontusx-registry-hooks'
-import { useAddressConfig } from '@hooks/useAddressConfig'
+import { usePontusXIdentity } from '@deltadao/pontusx-registry-hooks'
 import { accountTruncate } from '@utils/wallet'
 import { ReactElement } from 'react'
 import { useMarketMetadata } from '@context/MarketMetadata'
 
 export default function AddressName({
-  address
+  address,
+  verifiedServiceProviderName
 }: {
   address: string
+  verifiedServiceProviderName?: string
 }): ReactElement {
-  const { verifiedAddresses: oldVerifiedAddresses } = useAddressConfig()
   const {
     appConfig: { cachingMicroserviceUrl }
   } = useMarketMetadata()
-  const { data } = usePontusXRegistry(
-    cachingMicroserviceUrl
-      ? {
-          apiBaseUrl: cachingMicroserviceUrl
-        }
-      : undefined
+  const identity = usePontusXIdentity(address, {
+    includeDeprecated: true,
+    apiBaseUrl: cachingMicroserviceUrl
+  })
+  return (
+    <>
+      {verifiedServiceProviderName ||
+        identity?.legalName ||
+        accountTruncate(address)}
+    </>
   )
-
-  const verifiedAddresses = {
-    ...oldVerifiedAddresses
-  }
-
-  for (const item of data || []) {
-    verifiedAddresses[`${item.walletAddress}`] = item.legalName
-  }
-
-  return <>{verifiedAddresses?.[address] || accountTruncate(address)}</>
 }
