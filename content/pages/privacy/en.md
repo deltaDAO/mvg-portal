@@ -100,9 +100,10 @@ When using our portal demonstrator functionalities (viewing, publishing, editing
 Collecting and using your IP address is necessary for providing our portal demonstrator functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator backend.
 
 **Legal basis:**
+The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR.
 
-- **Processing of IP addresses when viewing services:** The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR. Our **Legitimate interest** is to display services on the portal demonstrator to you.
-- **Processing of IP addresses when publishing, editing and consuming services, and requesting tokens:** The legal basis for this processing is the performance of a contract, pursuant to Art. 6(1)(b) GDPR.
+**Legitimate interest:**
+Our legitimate interest is to provide our portal demonstrator functionalities to you.
 
 **Retention period:**  
 IP addresses received by the backend components are only retained for the minimum time necessary to process the transaction. They are erased automatically, usually within a few minutes.
