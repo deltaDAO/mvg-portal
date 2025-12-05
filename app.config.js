@@ -131,5 +131,9 @@ module.exports = {
   plausibleDataDomain: 'portal.pontus-x.eu',
 
   // token symbol used as fallback value in various components
-  defaultTokenSymbol: 'EURAU'
+  defaultTokenSymbol: 'EURAU',
+
+  cachingMicroserviceUrl:
+    process.env.NEXT_PUBLIC_CACHING_MICROSERVICE_URL ||
+    'https://cache.registry.staging.pontus-x.eu'
 }
