@@ -1,0 +1,29 @@
+.titleContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.titleText {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 24px;
+  color: #303031;
+  line-height: 28px;
+  padding-left: 0.5rem;
+}
+
+.assetInfo {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 111%;
+  color: rgba(48, 48, 49, 0.7);
+  padding-right: 0.5rem;
+}
+
+.right {
+  margin-left: auto;
+}

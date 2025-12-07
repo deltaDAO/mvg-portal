@@ -1,19 +1,31 @@
 import { ReactElement } from 'react'
-import DatasetTitle from '@components/DatasetComputeWizard/Title'
-import AlgorithmTitle from '@components/AlgorithmComputeWizard/Title'
-
-type Flow = 'dataset' | 'algorithm'
+import styles from './index.module.css'
+import { ComputeFlow } from '../_types'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from 'src/@types/ddo/Service'
 
 interface TitleProps {
-  flow: Flow
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any
+  flow: ComputeFlow
+  asset: AssetExtended
+  service: Service
 }
 
-export default function Title({ flow, ...rest }: TitleProps): ReactElement {
-  if (flow === 'algorithm') {
-    return <AlgorithmTitle {...(rest as any)} />
-  }
+const titleCopy: Record<ComputeFlow, string> = {
+  dataset: 'Buy Dataset',
+  algorithm: 'Buy Compute Job'
+}
 
-  return <DatasetTitle {...(rest as any)} />
+export default function Title({
+  flow,
+  asset,
+  service
+}: TitleProps): ReactElement {
+  return (
+    <div className={styles.titleContainer}>
+      <span className={styles.titleText}>{titleCopy[flow]}</span>
+      <span className={`${styles.assetInfo} ${styles.right}`}>
+        {asset.credentialSubject.metadata.name} - {service.name}
+      </span>
+    </div>
+  )
 }

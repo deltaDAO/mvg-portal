@@ -49,3 +49,11 @@
   cursor: help;
   pointer-events: all;
 }
+
+.successConfettiWrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--sp-2);
+}

@@ -1,13 +1,5 @@
 import { ReactElement } from 'react'
-import DatasetComputeWizard from '@components/DatasetComputeWizard'
-import AlgorithmComputeWizard from '@components/AlgorithmComputeWizard'
-import Steps from './Steps'
-import Navigation from './Navigation'
-import SelectEnvironment from './SelectEnvironment'
-import ConfigureEnvironment from './ConfigureEnvironment'
-import Review from './Review'
-import Title from './Title'
-import WizardActions from './WizardActions'
+import ComputeWizardController from './ComputeWizardController'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { Service } from 'src/@types/ddo/Service'
 import { FileInfo } from '@oceanprotocol/lib'
@@ -36,9 +28,5 @@ export default function ComputeWizard(props: ComputeWizardProps): ReactElement {
   const mode: ComputeMode =
     explicitMode || (assetType === 'algorithm' ? 'algorithm' : 'dataset')
 
-  if (mode === 'algorithm') {
-    return <AlgorithmComputeWizard {...props} />
-  }
-
-  return <DatasetComputeWizard {...props} />
+  return <ComputeWizardController {...props} mode={mode} />
 }

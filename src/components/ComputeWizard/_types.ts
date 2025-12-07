@@ -14,7 +14,8 @@ export interface FormComputeData {
   algorithms?: any
   dataset?: any
   datasets?: Array<{
-    id: string
+    did?: string
+    id?: string
     name: string
     services: Array<{
       id: string
@@ -22,7 +23,7 @@ export interface FormComputeData {
       price: string
       duration: string
     }>
-    credentialsStatus: 'pending' | 'valid' | 'invalid'
+    credentialsStatus?: 'pending' | 'valid' | 'invalid'
     credentialsValidUntil?: Date
   }>
   computeEnv?: any

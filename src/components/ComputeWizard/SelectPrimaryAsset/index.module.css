@@ -1,0 +1,52 @@
+.algorithmSelection {
+  margin-top: 1rem;
+}
+
+.environmentSelection {
+  margin-top: 1rem;
+}
+
+.noDatasetOption {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 0.75rem;
+  background-color: #f9f9f9;
+  transition: all 0.25s ease-in-out;
+  cursor: pointer;
+}
+
+.noDatasetOptionActive {
+  background-color: #fff3b0;
+  border-color: #e5b000;
+}
+
+.noDatasetLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.noDatasetCheckbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.datasetSelectionWrapper {
+  transition: opacity 0.25s ease-in-out;
+  position: relative;
+  min-height: 260px;
+}
+
+.datasetSelectionDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+  user-select: none;
+}

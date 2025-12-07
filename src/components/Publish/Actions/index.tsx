@@ -249,6 +249,7 @@ export default function Actions({
     <footer className={actionsClassName}>
       {did ? (
         <SuccessConfetti
+          className={styles.successConfettiWrapper}
           success="Successfully published!"
           action={
             <Button style="publish" to={`/asset/${did}`}>

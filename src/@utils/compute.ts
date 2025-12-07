@@ -300,9 +300,9 @@ async function getJobs(
       }
       providersComputeJobsExtended.forEach(async (job: ComputeJobExtended) => {
         const jobWithAssets = job as LocalComputeJob
-        const did = jobWithAssets.assets
-          ? jobWithAssets.assets[0].documentId
-          : null
+        const did = jobWithAssets.assets?.[0]?.documentId
+        if (!did) return
+
         if (assets) {
           const assetFiltered = assets.filter((x) => x.id === did)
           const asset = assetFiltered.length > 0 ? assetFiltered[0] : null

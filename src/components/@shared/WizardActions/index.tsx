@@ -3,7 +3,11 @@ import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
 import Loader from '@shared/atoms/Loader'
-import { FormComputeData } from '@components/DatasetComputeWizard/_types'
+import { ComputeFlow, FormComputeData } from '@components/ComputeWizard/_types'
+import {
+  getWizardTotalSteps,
+  inferComputeFlow
+} from '@components/ComputeWizard/utils/steps'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
 
 interface WizardActionsProps {
@@ -51,7 +55,7 @@ interface WizardActionsProps {
 }
 
 export default function WizardActions({
-  // totalSteps,
+  totalSteps: totalStepsProp,
   submitButtonText,
   continueButtonText = 'Continue',
   showSuccessConfetti = false,
@@ -99,14 +103,15 @@ export default function WizardActions({
     errors,
     isSubmitting,
     setFieldValue
-  }: FormikContextType<FormComputeData> = useFormikContext()
+  }: FormikContextType<Partial<FormComputeData>> = useFormikContext()
   const hasUserParamsStep = Boolean(values?.isUserParameters)
-  const totalSteps = hasUserParamsStep ? 7 : 6
-  const currentStep = values.user.stepCurrent
+  const flow: ComputeFlow = inferComputeFlow(values, undefined, assetType)
+  const totalSteps =
+    totalStepsProp ?? getWizardTotalSteps(flow, hasUserParamsStep)
+  const currentStep = values.user?.stepCurrent ?? 1
   const isLastStep = currentStep === totalSteps
 
   React.useEffect(() => {
-    const flow = totalSteps === 6 ? 'algorithm' : 'dataset'
     const datasetCount = Array.isArray(values?.dataset)
       ? values.dataset.length
       : 0
@@ -128,7 +133,7 @@ export default function WizardActions({
 
     const state = {
       flow,
-      currentStep: values?.user?.stepCurrent,
+      currentStep,
       completedFlags: {
         step1Completed: values?.step1Completed,
         step2Completed: values?.step2Completed,
@@ -157,12 +162,12 @@ export default function WizardActions({
       },
       validationErrors: errors,
       wizardComplete,
-      nextButtonDisabled: isContinueDisabled
+      nextButtonDisabled: isContinueDisabled,
+      totalSteps
     }
-  }, [values, errors, isContinueDisabled, totalSteps])
+  }, [values, errors, isContinueDisabled, totalSteps, flow])
 
   function handleAction(action: string) {
-    const currentStep: number = values.user.stepCurrent
     const newStep = action === 'next' ? currentStep + 1 : currentStep - 1
 
     if (newStep >= 1 && newStep <= totalSteps) {
@@ -177,25 +182,25 @@ export default function WizardActions({
   function handleNext(e: FormEvent) {
     e.preventDefault()
 
-    if (values.user.stepCurrent === 1) setFieldValue('step1Completed', true)
-    if (values.user.stepCurrent === 2) setFieldValue('step2Completed', true)
-    if (values.user.stepCurrent === 3) setFieldValue('step3Completed', true)
-    if (values.user.stepCurrent === 4) {
+    if (currentStep === 1) setFieldValue('step1Completed', true)
+    if (currentStep === 2) setFieldValue('step2Completed', true)
+    if (currentStep === 3) setFieldValue('step3Completed', true)
+    if (currentStep === 4) {
       if (hasUserParamsStep) setFieldValue('step4Completed', true)
       else setFieldValue('step4Completed', true)
     }
-    if (values.user.stepCurrent === 5) {
+    if (currentStep === 5) {
       if (hasUserParamsStep) setFieldValue('step5Completed', true)
       else setFieldValue('step5Completed', true)
     }
-    if (values.user.stepCurrent === 6) {
+    if (currentStep === 6) {
       if (hasUserParamsStep) setFieldValue('step6Completed', true)
       else {
         setFieldValue('step6Completed', true)
         setFieldValue('previewPageVisited', true)
       }
     }
-    if (values.user.stepCurrent === 7) {
+    if (currentStep === 7) {
       setFieldValue('step7Completed', true)
       setFieldValue('submissionPageVisited', true)
     }

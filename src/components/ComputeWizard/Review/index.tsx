@@ -1,19 +1,1469 @@
-import { ReactElement } from 'react'
-import DatasetReview from '@components/DatasetComputeWizard/Review'
-import AlgorithmReview from '@components/AlgorithmComputeWizard/Review'
+'use client'
 
-type Flow = 'dataset' | 'algorithm'
+import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { Field, useFormikContext } from 'formik'
+import StepTitle from '@shared/StepTitle'
+import Input from '@shared/FormInput'
+import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
+import Loader from '@components/@shared/atoms/Loader'
+import { AssetActionCheckCredentials } from '@components/Asset/AssetActions/CheckCredentials'
+import { AssetActionCheckCredentialsAlgo } from '@components/Asset/AssetActions/CheckCredentials/checkCredentialsAlgo'
+import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
+import { useAccount, useNetwork, useSigner } from 'wagmi'
+import useBalance from '@hooks/useBalance'
+import { useSsiWallet } from '@context/SsiWallet'
+import { useCancelToken } from '@hooks/useCancelToken'
+import { useAsset } from '@context/Asset'
+import { useUserPreferences } from '@context/UserPreferences'
+import { getAccessDetails } from '@utils/accessDetailsAndPricing'
+import { getFixedBuyPrice } from '@utils/ocean/fixedRateExchange'
+import { getOceanConfig } from '@utils/ocean'
+import { getTokenInfo, getTokenBalanceFromSymbol } from '@utils/wallet'
+import { compareAsBN } from '@utils/numbers'
+import { requiresSsi } from '@utils/credentials'
+import { getFeeTooltip } from '@utils/feeTooltips'
+import { getAsset } from '@utils/aquarius'
+import { AssetExtended } from 'src/@types/AssetExtended'
+import { Service } from 'src/@types/ddo/Service'
+import { ComputeEnvironment } from '@oceanprotocol/lib'
+import { ResourceType } from 'src/@types/ResourceType'
+import { Asset } from 'src/@types/Asset'
+import { Signer } from 'ethers'
+import Decimal from 'decimal.js'
+import { formatUnits } from 'ethers/lib/utils.js'
+import { consumeMarketOrderFee } from 'app.config.cjs'
+import { MAX_DECIMALS } from '@utils/constants'
+import PricingRow from './PricingRow'
+import styles from './index.module.css'
+import { ComputeFlow, FormComputeData } from '../_types'
+import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 
-interface ReviewProps {
-  flow: Flow
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any
+type VerificationStatus =
+  | 'verified'
+  | 'checking'
+  | 'failed'
+  | 'expired'
+  | 'unverified'
+
+interface VerificationItem {
+  id: string
+  type: 'dataset' | 'algorithm'
+  asset: AssetExtended
+  service: Service
+  status: VerificationStatus
+  index: number
+  price: string
+  duration: string
+  name: string
 }
 
-export default function Review({ flow, ...rest }: ReviewProps): ReactElement {
-  if (flow === 'algorithm') {
-    return <AlgorithmReview {...(rest as any)} />
+type TotalPriceEntry = { value: string; symbol: string }
+
+type ReviewProps = {
+  flow: ComputeFlow
+  asset: AssetExtended
+  service: Service
+  accessDetails: AccessDetails
+  computeEnvs: ComputeEnvironment[]
+  isConsumable: boolean
+  hasPreviousOrder: boolean
+  hasDatatoken: boolean
+  dtBalance: string
+  isAccountIdWhitelisted: boolean
+  datasetSymbol?: string
+  algorithmSymbol?: string
+  providerFeesSymbol?: string
+  assetTimeout?: string
+  totalPrices?: TotalPriceEntry[]
+  datasetOrderPrice?: string
+  algoOrderPrice?: string
+  datasetOrderPriceAndFees?: OrderPriceAndFees
+  algoOrderPriceAndFees?: OrderPriceAndFees
+  datasetProviderFeeProp?: string
+  algorithmProviderFeeProp?: string
+  isBalanceSufficient: boolean
+  setIsBalanceSufficient: React.Dispatch<React.SetStateAction<boolean>>
+  allResourceValues: {
+    [envId: string]: ResourceType
+  }
+  setAllResourceValues: React.Dispatch<
+    React.SetStateAction<{
+      [envId: string]: ResourceType
+    }>
+  >
+  isRequestingPrice?: boolean
+  signer?: Signer
+  algorithms?: AssetSelectionAsset[]
+  ddoListAlgorithms?: Asset[]
+  selectedAlgorithmAsset?: AssetExtended
+  setSelectedAlgorithmAsset?: React.Dispatch<
+    React.SetStateAction<AssetExtended>
+  >
+  isLoading?: boolean
+  isComputeButtonDisabled?: boolean
+  hasPreviousOrderSelectedComputeAsset?: boolean
+  hasDatatokenSelectedComputeAsset?: boolean
+  dtSymbolSelectedComputeAsset?: string
+  dtBalanceSelectedComputeAsset?: string
+  selectedComputeAssetType?: string
+  selectedComputeAssetTimeout?: string
+  stepText?: string
+  consumableFeedback?: string
+  retry?: boolean
+  datasets?: AssetSelectionAsset[]
+  selectedDatasetAsset?: AssetExtended[]
+  setSelectedDatasetAsset?: React.Dispatch<
+    React.SetStateAction<AssetExtended[]>
+  >
+  tokenInfo?: TokenInfo
+}
+
+export default function Review({
+  flow,
+  asset,
+  service,
+  accessDetails,
+  computeEnvs,
+  isConsumable,
+  hasPreviousOrder,
+  hasDatatoken,
+  dtBalance,
+  isAccountIdWhitelisted,
+  datasetSymbol,
+  algorithmSymbol,
+  providerFeesSymbol,
+  algoOrderPriceAndFees,
+  datasetProviderFeeProp,
+  algorithmProviderFeeProp,
+  isBalanceSufficient,
+  setIsBalanceSufficient,
+  allResourceValues,
+  setAllResourceValues,
+  isRequestingPrice = false,
+  signer,
+  algorithms,
+  selectedAlgorithmAsset,
+  setSelectedAlgorithmAsset,
+  datasets,
+  selectedDatasetAsset,
+  setSelectedDatasetAsset,
+  tokenInfo
+}: ReviewProps): ReactElement {
+  const isDatasetFlow = flow === 'dataset'
+  const { address: accountId } = useAccount()
+  const { balance } = useBalance()
+  const { lookupVerifierSessionId } = useSsiWallet()
+  const newCancelToken = useCancelToken()
+  const { isAssetNetwork } = useAsset()
+  const { privacyPolicySlug } = useUserPreferences()
+  const { chain } = useNetwork()
+  const { data: signerData } = useSigner()
+
+  const [symbol, setSymbol] = useState('')
+  const [tokenInfoState, setTokenInfoState] = useState<TokenInfo | undefined>(
+    tokenInfo
+  )
+  const [algoOecFee, setAlgoOecFee] = useState<string>('0')
+  const [datasetOecFees, setDatasetOecFees] = useState<string>('0')
+  const { setFieldValue, values, validateForm } =
+    useFormikContext<FormComputeData>()
+
+  const [verificationQueue, setVerificationQueue] = useState<
+    VerificationItem[]
+  >([])
+  const [currentVerificationIndex, setCurrentVerificationIndex] =
+    useState<number>(-1)
+  const [showCredentialsCheck, setShowCredentialsCheck] =
+    useState<boolean>(false)
+  const [serviceIndex] = useState(0)
+  const [datasetProviderFee, setDatasetProviderFee] = useState(
+    datasetProviderFeeProp || null
+  )
+  const [algorithmProviderFee, setAlgorithmProviderFee] = useState(
+    algorithmProviderFeeProp || null
+  )
+  const [totalPrices, setTotalPrices] = useState<TotalPriceEntry[]>([])
+  const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
+
+  const selectedEnvId =
+    typeof values?.computeEnv === 'string'
+      ? values?.computeEnv
+      : values?.computeEnv?.id
+  const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
+  const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
+  const currentMode = values?.mode || 'free'
+  const c2dPriceRaw =
+    currentMode === 'paid' ? paidResources?.price : freeResources?.price
+  const c2dPrice =
+    c2dPriceRaw != null ? Math.round(Number(c2dPriceRaw) * 100) / 100 : 0
+
+  const errorMessages: string[] = []
+  if (!isBalanceSufficient) {
+    errorMessages.push(`You don't have enough ${symbol} to make this purchase.`)
+  }
+  if (!isAssetNetwork) {
+    errorMessages.push('This asset is not available on the selected network.')
+  }
+  if (
+    !isDatasetFlow &&
+    selectedDatasetAsset?.length &&
+    selectedDatasetAsset.some(
+      (d) =>
+        d.accessDetails &&
+        d.accessDetails[d.serviceIndex || 0] &&
+        !d.accessDetails[d.serviceIndex || 0].isPurchasable
+    )
+  ) {
+    errorMessages.push('One or more selected datasets are not purchasable.')
+  }
+  if (
+    selectedAlgorithmAsset?.accessDetails &&
+    selectedAlgorithmAsset.accessDetails[0] &&
+    !selectedAlgorithmAsset.accessDetails[0].isPurchasable
+  ) {
+    errorMessages.push('The selected algorithm asset is not purchasable.')
+  }
+  if (!isAccountIdWhitelisted) {
+    errorMessages.push(
+      'Your account is not whitelisted to purchase this asset.'
+    )
   }
 
-  return <DatasetReview {...(rest as any)} />
+  const formatDuration = (seconds: number): string => {
+    const d = Math.floor(seconds / 86400)
+    const h = Math.floor((seconds % 86400) / 3600)
+    const m = Math.floor((seconds % 3600) / 60)
+    const s = seconds % 60
+    const parts: string[] = []
+    if (d) parts.push(`${d}d`)
+    if (h) parts.push(`${h}h`)
+    if (m) parts.push(`${m}m`)
+    if (s) parts.push(`${s}s`)
+    return parts.join(' ') || '0s'
+  }
+
+  // token info for symbol display (dataset flow uses signer prop, algorithm flow uses hook)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const effectiveProvider = isDatasetFlow
+      ? signer?.provider
+      : signerData?.provider
+    const effectiveChainId = chain?.id || asset?.credentialSubject?.chainId
+    if (!effectiveProvider || !effectiveChainId) return
+
+    const fetchTokenDetails = async () => {
+      const { oceanTokenAddress } = getOceanConfig(effectiveChainId)
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        effectiveProvider
+      )
+      setTokenInfoState(tokenDetails)
+      setSymbol(tokenDetails.symbol || 'OCEAN')
+    }
+    fetchTokenDetails()
+  }, [
+    chain?.id,
+    signer,
+    signerData,
+    isDatasetFlow,
+    asset?.credentialSubject?.chainId
+  ])
+
+  // Fetch OEC fees (dataset flow: dataset + algorithm; algorithm flow: algorithm + datasets)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    async function fetchPricesDatasetFlow() {
+      if (
+        isDatasetFlow &&
+        asset &&
+        asset.credentialSubject?.chainId &&
+        accessDetails &&
+        signer &&
+        !accessDetails.isOwned
+      ) {
+        try {
+          const datasetFixed = await getFixedBuyPrice(
+            accessDetails,
+            asset.credentialSubject.chainId,
+            signer
+          )
+          setDatasetOecFees(datasetFixed?.oceanFeeAmount || '0')
+        } catch (e) {
+          console.error('Could not fetch dataset fixed buy price:', e)
+        }
+      }
+      if (
+        isDatasetFlow &&
+        selectedAlgorithmAsset &&
+        !selectedAlgorithmAsset.accessDetails?.[0]?.isOwned &&
+        signer
+      ) {
+        try {
+          const algoFixed = await getFixedBuyPrice(
+            selectedAlgorithmAsset.accessDetails?.[0],
+            selectedAlgorithmAsset.credentialSubject?.chainId,
+            signer
+          )
+          setAlgoOecFee(algoFixed?.oceanFeeAmount || '0')
+        } catch (e) {
+          console.error('Could not fetch algo fixed buy price:', e)
+        }
+      }
+    }
+
+    async function fetchPricesAlgorithmFlow() {
+      if (!isDatasetFlow && selectedDatasetAsset?.length) {
+        try {
+          const feeSum = (
+            await Promise.all(
+              selectedDatasetAsset.map(async (dataset) => {
+                const details =
+                  dataset.accessDetails?.[dataset.serviceIndex || 0]
+                if (
+                  details &&
+                  dataset.credentialSubject?.chainId &&
+                  signerData
+                ) {
+                  if (details.isOwned) return 0
+                  const fixed = await getFixedBuyPrice(
+                    details,
+                    dataset.credentialSubject.chainId,
+                    signerData
+                  )
+                  return Number(fixed?.oceanFeeAmount) || 0
+                }
+                return 0
+              })
+            )
+          ).reduce((acc, curr) => acc + curr, 0)
+          setDatasetOecFees(feeSum.toString())
+        } catch (e) {
+          console.error('Could not fetch dataset fixed buy price sum:', e)
+        }
+      }
+
+      if (
+        !isDatasetFlow &&
+        asset &&
+        accessDetails &&
+        signerData &&
+        !accessDetails.isOwned
+      ) {
+        try {
+          const algoFixed = await getFixedBuyPrice(
+            accessDetails,
+            asset.credentialSubject?.chainId,
+            signerData
+          )
+          setAlgoOecFee(algoFixed?.oceanFeeAmount || '0')
+        } catch (e) {
+          console.error('Could not fetch algorithm fixed buy price:', e)
+        }
+      }
+    }
+
+    fetchPricesDatasetFlow()
+    fetchPricesAlgorithmFlow()
+  }, [
+    isDatasetFlow,
+    asset,
+    accessDetails,
+    signer,
+    signerData,
+    selectedAlgorithmAsset,
+    selectedDatasetAsset
+  ])
+
+  // Select compute env defaults
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (computeEnvs?.length === 1 && !values.computeEnv) {
+      setFieldValue('computeEnv', computeEnvs[0], true)
+    }
+    if (
+      isDatasetFlow &&
+      algorithms?.length === 1 &&
+      !values.algorithm &&
+      algorithms?.[0]?.isAccountIdWhitelisted
+    ) {
+      const { did } = algorithms[0]
+      setFieldValue('algorithm', did, true)
+    }
+    if (
+      !isDatasetFlow &&
+      datasets?.length === 1 &&
+      !values.dataset &&
+      datasets?.[0]?.isAccountIdWhitelisted
+    ) {
+      const { did } = datasets[0]
+      setFieldValue('dataset', did, true)
+    }
+  }, [
+    computeEnvs,
+    values.computeEnv,
+    values.algorithm,
+    values.dataset,
+    algorithms,
+    datasets,
+    isDatasetFlow,
+    setFieldValue
+  ])
+
+  // Initialize resource defaults per env
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!values.computeEnv || !computeEnvs) return
+    const envId =
+      typeof values.computeEnv === 'string'
+        ? (values.computeEnv as unknown as string)
+        : values.computeEnv?.id
+    const selectedEnv = computeEnvs.find((env) => env.id === envId)
+    if (!selectedEnv) return
+    if (
+      !allResourceValues[`${selectedEnv.id}_free`] &&
+      !allResourceValues[`${selectedEnv.id}_paid`]
+    ) {
+      const cpu = selectedEnv.resources.find((r) => r.id === 'cpu')?.min || 1
+      const ram =
+        selectedEnv.resources.find((r) => r.id === ('ram' as string))?.min ||
+        1_000_000_000
+      const disk =
+        selectedEnv.resources.find((r) => r.id === ('disk' as string))?.min ||
+        1_000_000_000
+      const jobDuration = selectedEnv.maxJobDuration || 3600
+      const freeRes = {
+        cpu: 0,
+        ram: 0,
+        disk: 0,
+        jobDuration: 0,
+        price: 0,
+        mode: 'free'
+      }
+      const paidRes = {
+        cpu,
+        ram,
+        disk,
+        jobDuration,
+        price: 0,
+        mode: 'paid'
+      }
+      setAllResourceValues((prev) => ({
+        ...prev,
+        [`${selectedEnv.id}_free`]: freeRes,
+        [`${selectedEnv.id}_paid`]: paidRes
+      }))
+    }
+  }, [values.computeEnv, computeEnvs])
+
+  // Helpers to fetch assets (algorithm flow multi datasets)
+  async function getDatasetAssets(datasetsIds: string[]): Promise<{
+    assets: AssetExtended[]
+    services: Service[]
+  }> {
+    if (!Array.isArray(datasetsIds) || datasetsIds.length === 0) {
+      return { assets: [], services: [] }
+    }
+    const newCancelTokenInstance = newCancelToken()
+    const servicesCollected: Service[] = []
+    const assets = await Promise.all(
+      datasetsIds.map(async (item) => {
+        const [datasetId, serviceId] = item.split('|')
+        try {
+          const fetched = await getAsset(datasetId, newCancelTokenInstance)
+          if (!fetched || !fetched.credentialSubject?.services?.length)
+            return null
+          const serviceIndex = fetched.credentialSubject.services.findIndex(
+            (svc) => svc.id === serviceId
+          )
+          const accessDetailsList = await Promise.all(
+            fetched.credentialSubject.services.map((svc) =>
+              getAccessDetails(
+                fetched.credentialSubject.chainId,
+                svc,
+                accountId,
+                newCancelTokenInstance
+              )
+            )
+          )
+          const extended: AssetExtended = {
+            ...fetched,
+            accessDetails: accessDetailsList,
+            serviceIndex: serviceIndex !== -1 ? serviceIndex : null
+          }
+          if (serviceIndex !== -1) {
+            servicesCollected.push(
+              fetched.credentialSubject.services[serviceIndex]
+            )
+          }
+          return extended
+        } catch (error) {
+          console.error(`Error processing dataset ${datasetId}:`, error)
+          return null
+        }
+      })
+    )
+    return {
+      assets: assets.filter(Boolean) as AssetExtended[],
+      services: servicesCollected
+    }
+  }
+
+  // Fetch selected assets for algorithm flow
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (isDatasetFlow) return
+    if (values.withoutDataset || !values.dataset) return
+    async function fetchDatasetAssetsExtended() {
+      const { assets } = await getDatasetAssets(values.dataset as string[])
+      setSelectedDatasetAsset && setSelectedDatasetAsset(assets)
+    }
+    fetchDatasetAssetsExtended()
+  }, [values.dataset, values.withoutDataset, isDatasetFlow])
+
+  // Build verification queue
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const queue: VerificationItem[] = []
+    if (isDatasetFlow) {
+      if (asset && service) {
+        const isVerified = lookupVerifierSessionId?.(asset.id, service.id)
+        const rawPrice =
+          accessDetails?.validOrderTx && accessDetails.validOrderTx !== ''
+            ? '0'
+            : accessDetails.price
+        queue.push({
+          id: asset.id,
+          type: 'dataset',
+          asset,
+          service,
+          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          index: 0,
+          price: rawPrice,
+          duration: formatDuration(service.timeout || 0),
+          name: service.name
+        })
+      }
+
+      const algoCandidate =
+        selectedAlgorithmAsset || (values.algorithms as AssetExtended | any)
+      const algoService =
+        algoCandidate?.credentialSubject?.services?.[serviceIndex] ||
+        algoCandidate?.services?.[serviceIndex] ||
+        algoCandidate?.services?.[0]
+      if (algoCandidate && algoService) {
+        const isVerified = lookupVerifierSessionId?.(
+          algoCandidate.id,
+          algoService?.id
+        )
+        const details = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
+        const rawPrice =
+          details?.validOrderTx || details?.price
+            ? details?.validOrderTx
+              ? '0'
+              : details?.price || '0'
+            : algoService?.price || '0'
+        queue.push({
+          id: algoCandidate.id,
+          type: 'algorithm',
+          asset: algoCandidate,
+          service: algoService,
+          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          index: queue.length,
+          price: rawPrice,
+          duration: '1 day',
+          name: algoService?.name || 'Algorithm'
+        })
+      }
+    } else {
+      if (!values.withoutDataset) {
+        selectedDatasetAsset?.forEach((ds, index) => {
+          const dsService =
+            ds.credentialSubject?.services?.[ds.serviceIndex || 0]
+          const isVerified = lookupVerifierSessionId?.(ds.id, dsService?.id)
+          const details = ds.accessDetails?.[ds.serviceIndex || 0]
+          const rawPrice =
+            details?.validOrderTx && details.validOrderTx !== ''
+              ? '0'
+              : details?.price || '0'
+          queue.push({
+            id: ds.id,
+            type: 'dataset',
+            asset: ds,
+            service: dsService,
+            status: isVerified
+              ? ('verified' as const)
+              : ('unverified' as const),
+            index,
+            price: rawPrice,
+            duration: '1 day',
+            name:
+              ds.credentialSubject?.services?.[ds.serviceIndex || 0]?.name ||
+              `Dataset ${queue.length + 1}`
+          })
+        })
+      }
+      if (service && asset) {
+        const isVerified = lookupVerifierSessionId?.(asset.id, service.id)
+        const rawPrice = accessDetails?.validOrderTx ? '0' : accessDetails.price
+        queue.push({
+          id: asset.id,
+          type: 'algorithm',
+          asset,
+          service,
+          status: isVerified ? ('verified' as const) : ('unverified' as const),
+          index: queue.length,
+          price: rawPrice,
+          duration: formatDuration(service.timeout || 0),
+          name: service.name
+        })
+      }
+    }
+    setVerificationQueue(queue)
+  }, [
+    isDatasetFlow,
+    asset,
+    service,
+    accessDetails,
+    selectedAlgorithmAsset,
+    selectedDatasetAsset,
+    values.withoutDataset,
+    serviceIndex
+  ])
+
+  const startVerification = (index: number) => {
+    const hasExpiredCredentials = verificationQueue.some(
+      (item) => item.status === 'failed' || item.status === 'expired'
+    )
+    if (hasExpiredCredentials) {
+      const expiredIndices = verificationQueue
+        .map((item, i) => ({ item, index: i }))
+        .filter(
+          ({ item }) => item.status === 'failed' || item.status === 'expired'
+        )
+        .map(({ index }) => index)
+      const firstExpiredIndex = expiredIndices[0]
+      if (firstExpiredIndex !== undefined) {
+        setVerificationQueue((prev) =>
+          prev.map((item, i) =>
+            i === firstExpiredIndex
+              ? { ...item, status: 'checking' as const }
+              : item
+          )
+        )
+        setCurrentVerificationIndex(firstExpiredIndex)
+        setShowCredentialsCheck(true)
+      }
+    } else {
+      setVerificationQueue((prev) =>
+        prev.map((item, i) =>
+          i === index ? { ...item, status: 'checking' as const } : item
+        )
+      )
+      setCurrentVerificationIndex(index)
+      setShowCredentialsCheck(true)
+    }
+  }
+
+  const handleVerificationComplete = () => {
+    const currentItem = verificationQueue[currentVerificationIndex]
+    if (currentItem) {
+      const credentialKey = `credential_${currentItem.asset.id}_${currentItem.service.id}`
+      const timestamp = Date.now().toString()
+      if (typeof window !== 'undefined' && window.localStorage) {
+        window.localStorage.setItem(credentialKey, timestamp)
+        window.dispatchEvent(
+          new CustomEvent('credentialUpdated', {
+            detail: { credentialKey }
+          })
+        )
+      }
+    }
+    setVerificationQueue((prev) => {
+      const updatedQueue = prev.map((item, i) =>
+        i === currentVerificationIndex
+          ? { ...item, status: 'verified' as const }
+          : item
+      )
+      const hasExpiredCredentials = updatedQueue.some(
+        (item) =>
+          item.status === 'failed' ||
+          (item.status === 'expired' &&
+            item.asset?.id &&
+            item.service?.id &&
+            typeof window !== 'undefined' &&
+            window.localStorage &&
+            window.localStorage.getItem(
+              `credential_${item.asset.id}_${item.service.id}`
+            ) !== null)
+      )
+      let nextIndex = -1
+      if (hasExpiredCredentials) {
+        nextIndex = updatedQueue.findIndex(
+          (item, index) =>
+            (index > currentVerificationIndex && item.status === 'failed') ||
+            (item.status === 'expired' &&
+              item.asset?.id &&
+              item.service?.id &&
+              typeof window !== 'undefined' &&
+              window.localStorage &&
+              window.localStorage.getItem(
+                `credential_${item.asset.id}_${item.service.id}`
+              ) !== null)
+        )
+      } else {
+        nextIndex = updatedQueue.findIndex(
+          (item, index) =>
+            index > currentVerificationIndex && item.status !== 'verified'
+        )
+      }
+      if (nextIndex !== -1) {
+        setTimeout(() => startVerification(nextIndex), 300)
+      }
+      return updatedQueue
+    })
+    setShowCredentialsCheck(false)
+    setCurrentVerificationIndex(-1)
+  }
+
+  const handleVerificationError = () => {
+    setVerificationQueue((prev) =>
+      prev.map((item, i) =>
+        i === currentVerificationIndex
+          ? { ...item, status: 'failed' as const }
+          : item
+      )
+    )
+    setShowCredentialsCheck(false)
+    setCurrentVerificationIndex(-1)
+  }
+
+  // Pricing and totals
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    // dataset flow: dataset + algorithm
+    if (isDatasetFlow) {
+      if (
+        !asset?.accessDetails ||
+        !selectedAlgorithmAsset?.accessDetails?.length
+      )
+        return
+      const details = selectedAlgorithmAsset.accessDetails[serviceIndex]
+      const datasetPrice = accessDetails?.price || '0'
+      setDatasetProviderFee(datasetProviderFeeProp || datasetProviderFee)
+      const algoPrice =
+        details?.validOrderTx || hasPreviousOrder || hasDatatoken
+          ? '0'
+          : details?.price || '0'
+      const priceDatasetDecimal = new Decimal(
+        datasetPrice || 0
+      ).toDecimalPlaces(MAX_DECIMALS)
+      const priceAlgoDecimal = new Decimal(algoPrice || 0).toDecimalPlaces(
+        MAX_DECIMALS
+      )
+      const priceC2D = new Decimal(c2dPrice || 0).toDecimalPlaces(MAX_DECIMALS)
+      const feeAlgo = details?.isOwned
+        ? new Decimal(0)
+        : new Decimal(
+            formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+          )
+      const feeDataset = accessDetails?.isOwned
+        ? new Decimal(0)
+        : new Decimal(
+            formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+          )
+
+      const totalPricesLocal: TotalPriceEntry[] = []
+      if (algorithmSymbol === providerFeesSymbol) {
+        let sum = priceC2D.add(priceAlgoDecimal).add(feeAlgo)
+        totalPricesLocal.push({
+          value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
+          symbol: algorithmSymbol
+        })
+        if (algorithmSymbol === datasetSymbol) {
+          sum = sum.add(priceDatasetDecimal).add(feeDataset)
+          totalPricesLocal[0].value = sum
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString()
+        } else {
+          totalPricesLocal.push({
+            value: priceDatasetDecimal
+              .add(feeDataset)
+              .toDecimalPlaces(MAX_DECIMALS)
+              .toString(),
+            symbol: datasetSymbol
+          })
+        }
+      } else {
+        if (datasetSymbol === providerFeesSymbol) {
+          const sum = priceC2D.add(priceDatasetDecimal).add(feeDataset)
+          totalPricesLocal.push({
+            value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
+            symbol: datasetSymbol
+          })
+          totalPricesLocal.push({
+            value: priceAlgoDecimal
+              .add(feeAlgo)
+              .toDecimalPlaces(MAX_DECIMALS)
+              .toString(),
+            symbol: algorithmSymbol
+          })
+        } else if (datasetSymbol === algorithmSymbol) {
+          const sum = priceAlgoDecimal
+            .add(priceDatasetDecimal)
+            .add(feeAlgo)
+            .add(feeDataset)
+          totalPricesLocal.push({
+            value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
+            symbol: algorithmSymbol
+          })
+          totalPricesLocal.push({
+            value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
+            symbol: providerFeesSymbol
+          })
+        } else {
+          totalPricesLocal.push({
+            value: priceDatasetDecimal
+              .add(feeDataset)
+              .toDecimalPlaces(MAX_DECIMALS)
+              .toString(),
+            symbol: datasetSymbol
+          })
+          totalPricesLocal.push({
+            value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
+            symbol: providerFeesSymbol
+          })
+          totalPricesLocal.push({
+            value: priceAlgoDecimal
+              .add(feeAlgo)
+              .toDecimalPlaces(MAX_DECIMALS)
+              .toString(),
+            symbol: algorithmSymbol
+          })
+        }
+      }
+      setTotalPrices(totalPricesLocal)
+      return
+    }
+
+    // algorithm flow: algorithm + multiple datasets
+    if (!asset?.accessDetails || !selectedDatasetAsset?.length) return
+    const priceAlgo =
+      !algoOrderPriceAndFees?.price || hasPreviousOrder || hasDatatoken
+        ? new Decimal(0)
+        : new Decimal(algoOrderPriceAndFees.price).toDecimalPlaces(MAX_DECIMALS)
+    const feeAlgo = accessDetails.isOwned
+      ? new Decimal(0)
+      : new Decimal(
+          formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+        )
+    let priceDataset = new Decimal(0)
+    let feeDataset = new Decimal(0)
+    selectedDatasetAsset.forEach((dataset) => {
+      const index = dataset.serviceIndex || 0
+      const details = dataset.accessDetails?.[index]
+      const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
+      const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
+      const fee = details?.isOwned
+        ? new Decimal(0)
+        : new Decimal(
+            formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+          )
+      priceDataset = priceDataset.add(price)
+      feeDataset = feeDataset.add(fee)
+    })
+    const priceC2D = new Decimal(c2dPrice || 0).toDecimalPlaces(MAX_DECIMALS)
+    const totalPricesLocal: TotalPriceEntry[] = []
+    if (algorithmSymbol === providerFeesSymbol) {
+      let sum = priceC2D.add(priceAlgo).add(feeAlgo)
+      totalPricesLocal.push({
+        value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
+        symbol: algorithmSymbol
+      })
+      if (algorithmSymbol === datasetSymbol) {
+        sum = sum.add(priceDataset).add(feeDataset)
+        totalPricesLocal[0].value = sum.toDecimalPlaces(MAX_DECIMALS).toString()
+      } else {
+        totalPricesLocal.push({
+          value: priceDataset
+            .add(feeDataset)
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString(),
+          symbol: datasetSymbol
+        })
+      }
+    } else {
+      if (datasetSymbol === providerFeesSymbol) {
+        const sum = priceC2D.add(priceDataset).add(feeDataset)
+        totalPricesLocal.push({
+          value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
+          symbol: datasetSymbol
+        })
+        totalPricesLocal.push({
+          value: priceAlgo
+            .add(feeAlgo)
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString(),
+          symbol: algorithmSymbol
+        })
+      } else if (datasetSymbol === algorithmSymbol) {
+        const sum = priceAlgo.add(priceDataset).add(feeAlgo).add(feeDataset)
+        totalPricesLocal.push({
+          value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
+          symbol: algorithmSymbol
+        })
+        totalPricesLocal.push({
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
+          symbol: providerFeesSymbol
+        })
+      } else {
+        totalPricesLocal.push({
+          value: priceDataset
+            .add(feeDataset)
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString(),
+          symbol: datasetSymbol
+        })
+        totalPricesLocal.push({
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
+          symbol: providerFeesSymbol
+        })
+        totalPricesLocal.push({
+          value: priceAlgo
+            .add(feeAlgo)
+            .toDecimalPlaces(MAX_DECIMALS)
+            .toString(),
+          symbol: algorithmSymbol
+        })
+      }
+    }
+    setTotalPrices(totalPricesLocal)
+  }, [
+    isDatasetFlow,
+    asset,
+    accessDetails,
+    selectedAlgorithmAsset,
+    selectedDatasetAsset,
+    serviceIndex,
+    hasPreviousOrder,
+    hasDatatoken,
+    algoOrderPriceAndFees?.price,
+    algorithmSymbol,
+    datasetSymbol,
+    providerFeesSymbol,
+    c2dPrice,
+    tokenInfoState?.decimals
+  ])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (datasetProviderFeeProp) setDatasetProviderFee(datasetProviderFeeProp)
+  }, [datasetProviderFeeProp])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (algorithmProviderFeeProp)
+      setAlgorithmProviderFee(algorithmProviderFeeProp)
+  }, [algorithmProviderFeeProp])
+
+  // Balance sufficiency check
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const priceChecks = [...totalPrices]
+    if (
+      c2dPrice &&
+      !totalPrices.some(
+        (p) =>
+          p.symbol === providerFeesSymbol && p.value === c2dPrice.toString()
+      )
+    ) {
+      priceChecks.push({
+        value: c2dPrice.toString(),
+        symbol: providerFeesSymbol
+      })
+    }
+    const filtered = priceChecks.filter((p) => p.value !== '0')
+    let sufficient = true
+    for (const price of filtered) {
+      const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
+      if (!baseTokenBalance || !compareAsBN(baseTokenBalance, price.value)) {
+        sufficient = false
+        break
+      }
+    }
+    setIsBalanceSufficient(sufficient)
+  }, [
+    balance,
+    totalPrices,
+    providerFeesSymbol,
+    c2dPrice,
+    dtBalance,
+    isDatasetFlow
+  ])
+
+  // Aggregate total display
+  useEffect(() => {
+    const datasetProviderFeeDecimal = datasetProviderFee
+      ? new Decimal(formatUnits(datasetProviderFee, tokenInfoState?.decimals))
+      : new Decimal(0)
+    const algorithmProviderFeeDecimal = algorithmProviderFee
+      ? new Decimal(formatUnits(algorithmProviderFee, tokenInfoState?.decimals))
+      : new Decimal(0)
+    const totalPricesSum = totalPrices.reduce(
+      (acc, item) => acc.add(new Decimal(item.value || 0)),
+      new Decimal(0)
+    )
+    const finalTotal = totalPricesSum
+      .add(datasetProviderFeeDecimal)
+      .add(algorithmProviderFeeDecimal)
+      .add(datasetOecFees)
+      .add(algoOecFee)
+      .toDecimalPlaces(MAX_DECIMALS)
+    setTotalPriceToDisplay(finalTotal.toString())
+  }, [
+    totalPrices,
+    datasetProviderFee,
+    algorithmProviderFee,
+    datasetOecFees,
+    algoOecFee,
+    tokenInfoState?.decimals
+  ])
+
+  // credentials verified flag
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const allVerified =
+      verificationQueue.length > 0 &&
+      verificationQueue.every((item) => item.status === 'verified')
+    setFieldValue('credentialsVerified', allVerified, false)
+    validateForm()
+  }, [verificationQueue])
+
+  // license URL unified
+  const licenseUrl = useMemo(() => {
+    if (
+      asset?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
+        ?.mirrors?.[0]?.url
+    ) {
+      return asset.credentialSubject.metadata.license.licenseDocuments[0]
+        .mirrors?.[0]?.url
+    }
+    if (selectedDatasetAsset?.length) {
+      for (const ds of selectedDatasetAsset) {
+        const url =
+          ds?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
+            ?.mirrors?.[0]?.url
+        if (url) return url
+      }
+    }
+    return undefined
+  }, [asset, selectedDatasetAsset])
+
+  const computeItems = [
+    {
+      name: 'C2D RESOURCES',
+      value: values.jobPrice || '0',
+      duration: formatDuration(
+        currentMode === 'paid'
+          ? (paidResources?.jobDuration || 0) * 60
+          : (freeResources?.jobDuration || 0) * 60
+      )
+    }
+  ]
+  const escrowFunds = [
+    {
+      name: 'AMOUNT AVAILABLE IN THE ESCROW ACCOUNT',
+      value: Number(values.escrowFunds).toFixed(3) || '0'
+    }
+  ]
+  const amountDeposit = [
+    {
+      name: 'AMOUNT TO DEPOSIT IN THE ESCROW ACCOUNT',
+      value: c2dPrice ? c2dPrice.toString() : '0'
+    }
+  ]
+  const datasetProviderFeesList = [
+    {
+      name: 'PROVIDER FEE DATASET',
+      value: datasetProviderFee
+        ? formatUnits(datasetProviderFee, tokenInfoState?.decimals)
+        : '0'
+    }
+  ]
+  const algorithmProviderFeesList = [
+    {
+      name: 'PROVIDER FEE ALGORITHM',
+      value: algorithmProviderFee
+        ? formatUnits(algorithmProviderFee, tokenInfoState?.decimals)
+        : '0'
+    }
+  ]
+
+  const datasetMarketFeeValue = (() => {
+    const feePerDataset = new Decimal(
+      formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+    )
+    const chargeableDatasets =
+      selectedDatasetAsset?.filter((ds) => {
+        const idx = ds.serviceIndex || 0
+        return !ds.accessDetails?.[idx]?.isOwned
+      }).length || 0
+    return feePerDataset
+      .mul(chargeableDatasets)
+      .toDecimalPlaces(MAX_DECIMALS)
+      .toString()
+  })()
+
+  const marketFees = isDatasetFlow
+    ? [
+        {
+          name: `MARKETPLACE ORDER FEE DATASET`,
+          value: accessDetails?.isOwned
+            ? '0'
+            : new Decimal(
+                formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+              ).toString()
+        },
+        {
+          name: `MARKETPLACE ORDER FEE ALGORITHM`,
+          value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
+            ? '0'
+            : new Decimal(
+                formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+              ).toString()
+        },
+        {
+          name: `OEC FEE DATASET`,
+          value: accessDetails?.isOwned ? '0' : datasetOecFees.toString()
+        },
+        {
+          name: `OEC FEE ALGORITHM`,
+          value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
+            ? '0'
+            : algoOecFee.toString()
+        }
+      ]
+    : [
+        {
+          name: `MARKETPLACE ORDER FEE DATASET`,
+          value: datasetMarketFeeValue
+        },
+        {
+          name: `MARKETPLACE ORDER FEE ALGORITHM`,
+          value: accessDetails?.isOwned
+            ? '0'
+            : new Decimal(
+                formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+              ).toString()
+        },
+        {
+          name: `OEC FEE DATASET`,
+          value: datasetOecFees.toString()
+        },
+        {
+          name: `OEC FEE ALGORITHM`,
+          value: algoOecFee.toString()
+        }
+      ]
+
+  const currentVerificationItem = verificationQueue[currentVerificationIndex]
+
+  const assetRows = verificationQueue
+
+  const algoFromForm = values.algorithms as AssetExtended | undefined
+  const isLoadingAssets = isDatasetFlow
+    ? !(selectedAlgorithmAsset || algoFromForm)
+    : !values.withoutDataset &&
+      (!selectedDatasetAsset || selectedDatasetAsset.length === 0)
+
+  // Fetch algorithm asset for dataset flow (legacy behavior) if not provided
+  useEffect(() => {
+    if (!isDatasetFlow) return
+    if (selectedAlgorithmAsset) return
+    const algo = values.algorithms as AssetExtended | undefined
+    if (!algo || !algo.credentialSubject?.services) return
+
+    async function fetchAlgorithmAssetExtended() {
+      try {
+        const algoAccessDetails = await Promise.all(
+          algo.credentialSubject.services.map((svc: Service) =>
+            getAccessDetails(
+              algo.credentialSubject?.chainId,
+              svc,
+              accountId,
+              newCancelToken()
+            )
+          )
+        )
+        const extendedAlgo: AssetExtended = {
+          ...algo,
+          accessDetails: algoAccessDetails,
+          serviceIndex
+        }
+        setSelectedAlgorithmAsset && setSelectedAlgorithmAsset(extendedAlgo)
+      } catch (e) {
+        console.error('Could not fetch algorithm asset in review:', e)
+      }
+    }
+    fetchAlgorithmAssetExtended()
+  }, [
+    isDatasetFlow,
+    selectedAlgorithmAsset,
+    values.algorithms,
+    accountId,
+    newCancelToken,
+    setSelectedAlgorithmAsset,
+    serviceIndex
+  ])
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.titleContainer}>
+        <StepTitle title="Review and Purchase" />
+      </div>
+
+      <div className={styles.contentContainer}>
+        <div className={styles.pricingBreakdown}>
+          <div className={styles.assetSection}>
+            <h3 className={styles.assetHeading}>Assets</h3>
+            <div className={styles.assetListBox}>
+              {isLoadingAssets ? (
+                <div className={styles.loaderWrap}>
+                  <Loader message="Loading assets..." noMargin />
+                </div>
+              ) : (
+                assetRows.map((item, i) => {
+                  const hasSsiPolicy =
+                    requiresSsi(item.asset?.credentialSubject?.credentials) ||
+                    requiresSsi(item.service?.credentials)
+                  return (
+                    <PricingRow
+                      key={`${item.type}-${item.id}-${i}`}
+                      label={item.asset?.credentialSubject?.metadata?.name}
+                      itemName={item.name}
+                      value={item.price}
+                      duration={item.duration}
+                      actionLabel={
+                        item.status === 'unverified'
+                          ? 'Check Credentials'
+                          : item.status === 'checking'
+                          ? 'Verifying...'
+                          : item.status === 'failed'
+                          ? 'Retry'
+                          : item.status === 'expired'
+                          ? 'Check Credentials'
+                          : 'Verified'
+                      }
+                      onAction={() => startVerification(i)}
+                      actionDisabled={
+                        item.status === 'checking' || item.status === 'verified'
+                      }
+                      isService={item.type === 'algorithm'}
+                      infoMessage={
+                        !hasSsiPolicy
+                          ? 'No credentials required (never expires)'
+                          : undefined
+                      }
+                      credentialStatus={item.status}
+                      assetId={item.asset?.id}
+                      serviceId={item.service?.id}
+                      onCredentialRefresh={() => startVerification(i)}
+                      symbol={symbol}
+                      tooltip={getFeeTooltip(item.name)}
+                      showStatusWithoutAction
+                    />
+                  )
+                })
+              )}
+            </div>
+          </div>
+
+          <div className={styles.c2dSection}>
+            <h3 className={styles.c2dHeading}>C2D Resources</h3>
+            <div className={styles.c2dBox}>
+              {computeItems.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  duration={item.duration}
+                  symbol={symbol}
+                />
+              ))}
+              {escrowFunds.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  valueType="escrow"
+                  symbol={symbol}
+                />
+              ))}
+              {amountDeposit.map((item) => (
+                <PricingRow
+                  key={item.name}
+                  itemName={item.name}
+                  value={item.value}
+                  valueType="deposit"
+                  symbol={symbol}
+                />
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.marketFeesSection}>
+            <h3 className={styles.marketFeesHeading}>Fees</h3>
+            <div className={styles.marketFeesBox}>
+              {marketFees.map((fee) => (
+                <PricingRow
+                  key={fee.name}
+                  itemName={fee.name}
+                  value={fee.value}
+                  symbol={symbol}
+                />
+              ))}
+              {datasetProviderFee &&
+                datasetProviderFeesList.map((fee) => (
+                  <PricingRow
+                    key={fee.name}
+                    itemName={fee.name}
+                    value={fee.value}
+                    symbol={symbol}
+                  />
+                ))}
+              {algorithmProviderFee &&
+                algorithmProviderFeesList.map((fee) => (
+                  <PricingRow
+                    key={fee.name}
+                    itemName={fee.name}
+                    value={fee.value}
+                    symbol={symbol}
+                  />
+                ))}
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.totalSection}>
+          <span className={styles.totalLabel}>YOU WILL PAY</span>
+          <span className={styles.totalValue}>
+            {isRequestingPrice ? (
+              <span className={styles.totalValueNumber}>Calculating...</span>
+            ) : totalPrices.length > 0 ? (
+              <>
+                <span className={styles.totalValueNumber}>
+                  {totalPriceToDisplay}
+                </span>
+                <span className={styles.totalValueSymbol}>
+                  {' '}
+                  {totalPrices[0].symbol}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className={styles.totalValueNumber}>0</span>
+                <span className={styles.totalValueSymbol}> {symbol}</span>
+              </>
+            )}
+          </span>
+        </div>
+
+        <div className={styles.termsSection}>
+          <FormErrorGroup
+            errorFields={['termsAndConditions', 'acceptPublishingLicense']}
+          >
+            <Field
+              component={Input}
+              name="termsAndConditions"
+              type="checkbox"
+              options={['Terms and Conditions']}
+              prefixes={['I agree to the']}
+              actions={[`${privacyPolicySlug}#terms-and-conditions`]}
+              disabled={false}
+              hideLabel={true}
+            />
+            <Field
+              component={Input}
+              name="acceptPublishingLicense"
+              type="checkbox"
+              options={[
+                'license terms under which each of the selected assets was made available'
+              ]}
+              prefixes={['I agree to the']}
+              disabled={false}
+              hideLabel={true}
+            />
+          </FormErrorGroup>
+        </div>
+        {licenseUrl && (
+          <div className={styles.termsSection}>
+            <a href={licenseUrl} target="_blank" rel="noreferrer">
+              View license
+            </a>
+          </div>
+        )}
+        {errorMessages.length > 0 && (
+          <div className={styles.errorMessage}>
+            <ul>
+              {errorMessages.map((msg, idx) => (
+                <li key={idx}>{msg}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {showCredentialsCheck && currentVerificationItem && (
+        <div className={styles.credentialsOverlay}>
+          <div className={styles.credentialsContainer}>
+            <div className={styles.credentialsHeader}>
+              <h3>
+                Verify{' '}
+                {currentVerificationItem.type === 'dataset'
+                  ? 'Dataset'
+                  : 'Algorithm'}{' '}
+                Credentials
+              </h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => {
+                  setShowCredentialsCheck(false)
+                  setCurrentVerificationIndex(-1)
+                  setVerificationQueue((prev) =>
+                    prev.map((item, i) =>
+                      i === currentVerificationIndex
+                        ? { ...item, status: 'failed' as const }
+                        : item
+                    )
+                  )
+                }}
+              >
+                ✕ Close
+              </button>
+            </div>
+            <CredentialDialogProvider autoStart={true}>
+              {currentVerificationItem.type === 'dataset' ? (
+                <AssetActionCheckCredentials
+                  asset={currentVerificationItem.asset}
+                  service={currentVerificationItem.service}
+                  onVerified={handleVerificationComplete}
+                  onError={handleVerificationError}
+                />
+              ) : (
+                <AssetActionCheckCredentialsAlgo
+                  asset={currentVerificationItem.asset}
+                  service={currentVerificationItem.service}
+                  onVerified={handleVerificationComplete}
+                  onError={handleVerificationError}
+                />
+              )}
+            </CredentialDialogProvider>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
