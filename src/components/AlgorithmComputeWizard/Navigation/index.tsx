@@ -21,7 +21,8 @@ export default function Navigation({
     useComputeStepCompletion(isAlgorithmFlow)
   const currentStep = values.user.stepCurrent
   const hasUserParamsStep = Boolean(values?.isUserParameters)
-  const steps = getDatasetSteps(hasUserParamsStep)
+  const withoutDataset = Boolean(values?.withoutDataset)
+  const steps = getDatasetSteps(hasUserParamsStep, withoutDataset)
   const lastCompletedStep = getLastCompletedStep()
   const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)
 

@@ -134,13 +134,8 @@ export default function Steps({
 }): ReactElement {
   const { address: accountId } = useAccount()
   const chainId = useChainId()
-  const publicClient = usePublicClient()
   const { values } = useFormikContext<FormComputeData>()
-  const walletClient = useEthersSigner() // FIX: Replaced useSigner
-  // const rpcUrl = getOceanConfig(chainId)?.nodeUri
-
-  // const ethersProvider =
-  //   publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+  const walletClient = useEthersSigner()
 
   useEffect(() => {
     if (!chainId || !accountId) return
@@ -149,31 +144,22 @@ export default function Steps({
   }, [chainId, accountId, setFieldValue])
 
   const currentStep = values?.user?.stepCurrent ?? 1
-
   const hasUserParamsStep = Boolean(values.isUserParameters)
-
+  const withoutDataset = Boolean(values.withoutDataset)
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
 
   useEffect(() => {
-    const fetchTokenDetails = async () => {
-      if (!chainId || !walletClient.provider) return
-
-      const { oceanTokenAddress } = getOceanConfig(chainId)
-      const tokenDetails = await getTokenInfo(
-        oceanTokenAddress,
-        walletClient.provider
-      )
-
-      setTokenInfo(tokenDetails)
-    }
-
-    fetchTokenDetails()
+    if (!chainId || !walletClient.provider) return
+    const { oceanTokenAddress } = getOceanConfig(chainId)
+    getTokenInfo(oceanTokenAddress, walletClient.provider).then(setTokenInfo)
   }, [chainId, walletClient.provider])
 
   useEffect(() => {
     if (!asset || !service) return
 
-    if (service.consumerParameters?.length) {
+    const hasParams = Boolean(service.consumerParameters?.length)
+    setFieldValue('isUserParameters', hasParams)
+    if (hasParams) {
       const algoParams = service.consumerParameters.map(
         (p: any): UserParameter => ({
           name: p.name,
@@ -188,15 +174,118 @@ export default function Steps({
       )
 
       setFieldValue('algorithmServiceParams', [
-        {
-          did: asset.id,
-          serviceId: service.id,
-          userParameters: algoParams
-        }
+        { did: asset.id, serviceId: service.id, userParameters: algoParams }
       ])
+    } else {
+      setFieldValue('algorithmServiceParams', [])
     }
   }, [asset, service, setFieldValue])
 
+  if (withoutDataset) {
+    switch (currentStep) {
+      case 1:
+        return (
+          <SelectDataset
+            asset={asset}
+            service={service}
+            accessDetails={accessDetails}
+          />
+        )
+
+      case 2:
+        return hasUserParamsStep ? (
+          <UserParametersStep asset={asset} service={service} />
+        ) : (
+          <SelectEnvironment computeEnvs={computeEnvs} />
+        )
+
+      case 3:
+        return hasUserParamsStep ? (
+          <SelectEnvironment computeEnvs={computeEnvs} />
+        ) : (
+          <ConfigureEnvironment
+            allResourceValues={allResourceValues}
+            setAllResourceValues={setAllResourceValues}
+          />
+        )
+
+      case 4:
+        return hasUserParamsStep ? (
+          <ConfigureEnvironment
+            allResourceValues={allResourceValues}
+            setAllResourceValues={setAllResourceValues}
+          />
+        ) : (
+          <Review
+            asset={asset}
+            service={service}
+            totalPrices={[]}
+            datasetOrderPrice="0"
+            algoOrderPrice="0"
+            isRequestingPrice={false}
+            accessDetails={accessDetails}
+            datasets={datasets}
+            selectedDatasetAsset={selectedDatasetAsset}
+            setSelectedDatasetAsset={setSelectedDatasetAsset}
+            hasPreviousOrder={hasPreviousOrder}
+            hasDatatoken={hasDatatoken}
+            dtBalance={dtBalance}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
+            datasetSymbol={datasetSymbol}
+            algorithmSymbol={algorithmSymbol}
+            providerFeesSymbol={providerFeesSymbol}
+            allResourceValues={allResourceValues}
+            setAllResourceValues={setAllResourceValues}
+            isConsumable={isConsumable}
+            algoOrderPriceAndFees={algoOrderPriceAndFees}
+            computeEnvs={computeEnvs}
+            datasetProviderFeeProp={datasetProviderFeeProp}
+            algorithmProviderFeeProp={algorithmProviderFeeProp}
+            isBalanceSufficient={isBalanceSufficient}
+            setIsBalanceSufficient={setIsBalanceSufficient}
+            tokenInfo={tokenInfo}
+          />
+        )
+
+      case 5:
+        return hasUserParamsStep ? (
+          <Review
+            asset={asset}
+            service={service}
+            totalPrices={[]}
+            datasetOrderPrice="0"
+            algoOrderPrice="0"
+            isRequestingPrice={false}
+            accessDetails={accessDetails}
+            datasets={datasets}
+            selectedDatasetAsset={selectedDatasetAsset}
+            setSelectedDatasetAsset={setSelectedDatasetAsset}
+            hasPreviousOrder={hasPreviousOrder}
+            hasDatatoken={hasDatatoken}
+            dtBalance={dtBalance}
+            isAccountIdWhitelisted={isAccountIdWhitelisted}
+            datasetSymbol={datasetSymbol}
+            algorithmSymbol={algorithmSymbol}
+            providerFeesSymbol={providerFeesSymbol}
+            allResourceValues={allResourceValues}
+            setAllResourceValues={setAllResourceValues}
+            isConsumable={isConsumable}
+            algoOrderPriceAndFees={algoOrderPriceAndFees}
+            computeEnvs={computeEnvs}
+            datasetProviderFeeProp={datasetProviderFeeProp}
+            algorithmProviderFeeProp={algorithmProviderFeeProp}
+            isBalanceSufficient={isBalanceSufficient}
+            setIsBalanceSufficient={setIsBalanceSufficient}
+            tokenInfo={tokenInfo}
+          />
+        ) : (
+          <div>Invalid step</div>
+        )
+
+      default:
+        return <div>Invalid step: {currentStep}</div>
+    }
+  }
   switch (currentStep) {
     case 1:
       return (
@@ -211,11 +300,11 @@ export default function Steps({
     case 3:
       return <PreviewSelectedServices service={service} />
     case 4:
-      if (hasUserParamsStep) {
-        return <UserParametersStep asset={asset} service={service} />
-      } else {
-        return <SelectEnvironment computeEnvs={computeEnvs} />
-      }
+      return hasUserParamsStep ? (
+        <UserParametersStep asset={asset} service={service} />
+      ) : (
+        <SelectEnvironment computeEnvs={computeEnvs} />
+      )
     case 5:
       return hasUserParamsStep ? (
         <SelectEnvironment computeEnvs={computeEnvs} />

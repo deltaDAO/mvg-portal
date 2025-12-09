@@ -556,7 +556,12 @@ export default function Review({
       name: `OEC FEE ALGORITHM`,
       value: algoOecFee.toString()
     }
-  ]
+  ].filter((fee) => {
+    if (values.withoutDataset) {
+      return !fee.name.includes('DATASET')
+    }
+    return true
+  })
 
   useEffect(() => {
     if (!asset || !service?.id || !asset.credentialSubject?.services?.length)
@@ -1074,8 +1079,9 @@ export default function Review({
                 />
               ))}
 
-              {datasetProviderFee &&
-                datasetProviderFees.map((fee) => (
+              {!values.withoutDataset &&
+                datasetProviderFee &&
+                datasetProviderFees?.map((fee) => (
                   <PricingRow
                     key={fee.name}
                     itemName={fee.name}
