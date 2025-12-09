@@ -150,7 +150,7 @@ export default function SelectDataset({
             <span>Proceed without Dataset Selection</span>
             <input
               type="checkbox"
-              disabled={true}
+              disabled={false}
               className={styles.noDatasetCheckbox}
               checked={values.withoutDataset || false}
               onChange={(e) => {

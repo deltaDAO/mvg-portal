@@ -118,13 +118,11 @@ export default function Review({
   const newCancelToken = useCancelToken()
   const { isAssetNetwork } = useAsset()
   const { privacyPolicySlug } = useUserPreferences()
-
   const {
     setFieldValue,
     values,
     validateForm
   }: FormikContextType<FormComputeData> = useFormikContext()
-
   const [verificationQueue, setVerificationQueue] = useState<
     VerificationItem[]
   >([])
@@ -137,7 +135,6 @@ export default function Review({
       accessDetails.price ??
       null
   )
-
   const [serviceIndex, setServiceIndex] = useState(0)
   const [datasetProviderFee, setDatasetProviderFee] = useState(
     datasetProviderFeeProp || null
@@ -145,20 +142,18 @@ export default function Review({
   const [algorithmProviderFee, setAlgorithmProviderFee] = useState(
     algorithmProviderFeeProp || null
   )
-
   const [algoOecFee, setAlgoOecFee] = useState<string>('0')
   const [datasetOecFees, setDatasetOecFees] = useState<string>('0')
-
-  const [totalPrices, setTotalPrices] = useState([])
+  const [totalPrices, setTotalPrices] = useState<
+    { value: string; symbol: string }[]
+  >([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
   const selectedEnvId = values?.computeEnv?.id
   const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
   const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
-
   const currentMode = values?.mode || 'free'
   const c2dPriceRaw =
     currentMode === 'paid' ? paidResources?.price : freeResources?.price
-
   const c2dPrice =
     c2dPriceRaw != null ? Math.round(Number(c2dPriceRaw) * 100) / 100 : 0
 
@@ -179,9 +174,9 @@ export default function Review({
   const publicClient = usePublicClient()
   const chainId = useChainId()
   const rpcUrl = getOceanConfig(chainId)?.nodeUri
-
   const ethersProvider =
     publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+
   // error message
   const errorMessages: string[] = []
   const [symbol, setSymbol] = useState('')
@@ -202,12 +197,10 @@ export default function Review({
             ethersProvider as any
           )
           setAlgoOecFee(algoFixed?.oceanFeeAmount || '0')
-          // For algorithm
         } catch (e) {
           console.error('Could not fetch algorithm fixed buy price:', e)
         }
       }
-
       if (selectedDatasetAsset?.length) {
         try {
           const feeSum = (
@@ -235,35 +228,29 @@ export default function Review({
               })
             )
           ).reduce((acc, curr) => acc + curr, 0)
-
           setDatasetOecFees(feeSum.toString())
         } catch (e) {
           console.error('Could not fetch dataset fixed buy price sum:', e)
         }
       }
     }
-
     fetchPrices()
-    // Update dependencies: signer -> walletClient, add ethersProvider
   }, [asset, accessDetails, walletClient, selectedDatasetAsset, ethersProvider])
 
   useEffect(() => {
     async function fetchTokenDetails() {
       if (!chainId || !ethersProvider) return
-
       const { oceanTokenAddress } = getOceanConfig(chainId)
       const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
       setSymbol(tokenDetails.symbol || 'OCEAN')
     }
-
     fetchTokenDetails()
   }, [chainId, ethersProvider])
+
   if (!isBalanceSufficient) {
     errorMessages.push(`You don't have enough ${symbol} to make this purchase.`)
   }
-  // if (!isValid) {
-  //   errorMessages.push('Form is not complete!')
-  // }
+
   if (!isAssetNetwork) {
     errorMessages.push('This asset is not available on the selected network.')
   }
@@ -292,11 +279,9 @@ export default function Review({
           details?.validOrderTx && details.validOrderTx !== ''
             ? '0'
             : details?.price || '0'
-
         const datasetNeedsSsi =
           requiresSsi(asset?.credentialSubject?.credentials) ||
           requiresSsi(service?.credentials)
-
         queue.push({
           id: asset.id,
           type: 'dataset',
@@ -305,7 +290,7 @@ export default function Review({
           status: isVerified ? ('verified' as const) : ('unverified' as const),
           index,
           price: rawPrice,
-          duration: '1 day', // Default duration for datasets
+          duration: '1 day',
           name:
             asset.credentialSubject?.services?.[asset.serviceIndex || 0]
               ?.name || `Dataset ${queue.length + 1}`
@@ -322,11 +307,9 @@ export default function Review({
           ? '0'
           : asset.accessDetails?.[0].price
       }
-
       const algoNeedsSsi =
         requiresSsi(asset?.credentialSubject?.credentials) ||
         requiresSsi(service?.credentials)
-
       queue.push({
         id: asset.id,
         type: 'algorithm',
@@ -339,7 +322,6 @@ export default function Review({
         name: service.name
       })
     }
-
     setVerificationQueue(queue)
   }, [selectedDatasetAsset, asset, service])
 
@@ -347,11 +329,9 @@ export default function Review({
     const checkExpiration = () => {
       setVerificationQueue((prev) =>
         prev.map((item) => {
-          // Only apply expiration checks for items that actually require SSI
           const needsSsi =
             requiresSsi(item.asset?.credentialSubject?.credentials) ||
             requiresSsi(item.service?.credentials)
-
           if (
             needsSsi &&
             item.status === 'verified' &&
@@ -363,12 +343,10 @@ export default function Review({
               typeof window !== 'undefined' && window.localStorage
                 ? window.localStorage.getItem(credentialKey)
                 : null
-
             if (storedTimestamp) {
               const timestamp = parseInt(storedTimestamp, 10)
               const now = Date.now()
               const isExpired = now - timestamp > 5 * 60 * 1000 // 5 minutes
-
               if (isExpired) {
                 return { ...item, status: 'expired' as const }
               }
@@ -380,10 +358,8 @@ export default function Review({
         })
       )
     }
-
     checkExpiration()
     const interval = setInterval(checkExpiration, 10000)
-
     return () => clearInterval(interval)
   }, [])
 
@@ -391,7 +367,6 @@ export default function Review({
     const hasExpiredCredentials = verificationQueue.some(
       (item) => item.status === 'failed' || item.status === 'expired'
     )
-
     if (hasExpiredCredentials) {
       const expiredIndices = verificationQueue
         .map((item, i) => ({ item, index: i }))
@@ -399,7 +374,6 @@ export default function Review({
           ({ item }) => item.status === 'failed' || item.status === 'expired'
         )
         .map(({ index }) => index)
-
       const firstExpiredIndex = expiredIndices[0]
       if (firstExpiredIndex !== undefined) {
         setVerificationQueue((prev) =>
@@ -437,14 +411,12 @@ export default function Review({
         )
       }
     }
-
     setVerificationQueue((prev) => {
       const updatedQueue = prev.map((item, i) =>
         i === currentVerificationIndex
           ? { ...item, status: 'verified' as const }
           : item
       )
-
       const hasExpiredCredentials = updatedQueue.some(
         (item) =>
           item.status === 'failed' ||
@@ -457,9 +429,7 @@ export default function Review({
               `credential_${item.asset.id}_${item.service.id}`
             ) !== null)
       )
-
       let nextIndex = -1
-
       if (hasExpiredCredentials) {
         nextIndex = updatedQueue.findIndex(
           (item, index) =>
@@ -479,11 +449,9 @@ export default function Review({
             index > currentVerificationIndex && item.status !== 'verified'
         )
       }
-
       if (nextIndex !== -1) {
         setTimeout(() => startVerification(nextIndex), 300)
       }
-
       return updatedQueue
     })
     setShowCredentialsCheck(false)
@@ -503,6 +471,7 @@ export default function Review({
   }
 
   const currentVerificationItem = verificationQueue[currentVerificationIndex]
+
   // --- Calculate market fees for multiple datasets + one algorithm ---
   const totalDatasetMarketFeeConsume = selectedDatasetAsset
     ?.filter((dataset) => {
@@ -517,6 +486,7 @@ export default function Review({
       new Decimal(0)
     )
     .toDecimalPlaces(MAX_DECIMALS)
+
   // Algorithm fee
   const algoFeeConsume = accessDetails.isOwned
     ? new Decimal(0)
@@ -533,18 +503,21 @@ export default function Review({
       )
     }
   ]
+
   const escrowFunds = [
     {
       name: 'AMOUNT AVAILABLE IN THE ESCROW ACCOUNT',
       value: Number(values.escrowFunds).toFixed(3) || '0'
     }
   ]
+
   const amountDeposit = [
     {
       name: 'AMOUNT TO DEPOSIT IN THE ESCROW ACCOUNT',
       value: c2dPrice || '0'
     }
   ]
+
   const datasetProviderFees = [
     {
       name: 'PROVIDER FEE DATASET',
@@ -553,6 +526,7 @@ export default function Review({
         : '0'
     }
   ]
+
   const algorithmProviderFees = [
     {
       name: 'PROVIDER FEE ALGORITHM',
@@ -565,9 +539,10 @@ export default function Review({
   const marketFees = [
     {
       name: `MARKETPLACE ORDER FEE DATASET`,
-      value: totalDatasetMarketFeeConsume
-        .toDecimalPlaces(MAX_DECIMALS)
-        .toString()
+      value:
+        totalDatasetMarketFeeConsume
+          ?.toDecimalPlaces(MAX_DECIMALS)
+          .toString() || '0'
     },
     {
       name: `MARKETPLACE ORDER FEE ALGORITHM`,
@@ -586,11 +561,9 @@ export default function Review({
   useEffect(() => {
     if (!asset || !service?.id || !asset.credentialSubject?.services?.length)
       return
-
     const index = asset.credentialSubject.services.findIndex(
       (svc) => svc.id === service.id
     )
-
     if (index !== -1) setServiceIndex(index)
   }, [asset, service])
 
@@ -598,7 +571,6 @@ export default function Review({
     assets: AssetExtended[]
     services: Service[]
   }> {
-    // Defensive check — ensure datasets is an array before mapping
     if (!Array.isArray(datasets) || datasets.length === 0) {
       console.warn(
         '[getDatasetAssets] datasets is not an array or is empty:',
@@ -608,19 +580,15 @@ export default function Review({
     }
     const newCancelTokenInstance = newCancelToken()
     const servicesCollected: Service[] = []
-
     const assets = await Promise.all(
       datasets.map(async (item) => {
         const [datasetId, serviceId] = item.split('|')
-
         try {
           const asset = await getAsset(datasetId, newCancelTokenInstance)
           if (!asset || !asset.credentialSubject?.services?.length) return null
-
           const serviceIndex = asset.credentialSubject.services.findIndex(
             (svc: any) => svc.id === serviceId
           )
-
           const accessDetailsList = await Promise.all(
             asset.credentialSubject.services.map((service) =>
               getAccessDetails(
@@ -631,19 +599,16 @@ export default function Review({
               )
             )
           )
-
           const extendedAsset: AssetExtended = {
             ...asset,
             accessDetails: accessDetailsList,
             serviceIndex: serviceIndex !== -1 ? serviceIndex : null
           }
-
           if (serviceIndex !== -1) {
             servicesCollected.push(
               asset.credentialSubject.services[serviceIndex]
             )
           }
-
           return extendedAsset
         } catch (error) {
           console.error(`Error processing dataset ${datasetId}:`, error)
@@ -651,14 +616,12 @@ export default function Review({
         }
       })
     )
-
     return {
       assets: assets.filter(Boolean) as AssetExtended[],
       services: servicesCollected
     }
   }
 
-  // Pre-select computeEnv and/or dataset if there is only one available option
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
       setFieldValue('computeEnv', computeEnvs[0], true)
@@ -675,22 +638,17 @@ export default function Review({
 
   useEffect(() => {
     if (values.withoutDataset || !values.dataset || !isConsumable) return
-
     async function fetchDatasetAssetsExtended() {
       const { assets, services } = await getDatasetAssets(values.dataset)
       setSelectedDatasetAsset(assets)
     }
-
     fetchDatasetAssetsExtended()
   }, [values.dataset, accountId, isConsumable])
 
   useEffect(() => {
     if (!values.computeEnv) return
-
     const selectedEnv = values.computeEnv
     if (!selectedEnv?.id) return
-
-    // if not already initialized, set default resource values for both free and paid modes
     if (
       !allResourceValues[`${selectedEnv.id}_free`] &&
       !allResourceValues[`${selectedEnv.id}_paid`]
@@ -703,7 +661,6 @@ export default function Review({
         selectedEnv.resources.find((r) => r.id === ('disk' as any))?.min ||
         1_000_000_000
       const jobDuration = selectedEnv.maxJobDuration || 3600
-
       const freeRes = {
         cpu: 0,
         ram: 0,
@@ -712,7 +669,6 @@ export default function Review({
         price: 0,
         mode: 'free'
       }
-
       const paidRes = {
         cpu,
         ram,
@@ -721,7 +677,6 @@ export default function Review({
         price: 0,
         mode: 'paid'
       }
-
       setAllResourceValues((prev) => ({
         ...prev,
         [`${selectedEnv.id}_free`]: freeRes,
@@ -730,43 +685,33 @@ export default function Review({
     }
   }, [values.computeEnv])
 
-  //
-  // Set price for calculation output
-  //
+  // FIXED: Price calculation — now works with or without dataset
   useEffect(() => {
-    if (!asset?.accessDetails || !selectedDatasetAsset?.length) return
-
     setAlgoOrderPrice(algoOrderPriceAndFees?.price || accessDetails.price)
 
-    const totalPrices: totalPriceMap[] = []
-
+    const totalPrices: { value: string; symbol: string }[] = []
     let datasetPrice = new Decimal(0)
     let datasetFee = new Decimal(0)
-    let datasetOrderPriceSum = new Decimal(0) // nou
 
-    selectedDatasetAsset.forEach((dataset) => {
-      const index = dataset.serviceIndex || 0
-      const details = dataset.accessDetails?.[index]
-
-      const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
-      const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
-      const fee = details?.isOwned
-        ? new Decimal(0)
-        : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
-
-      datasetPrice = datasetPrice.add(price)
-      datasetFee = datasetFee.add(fee)
-
-      datasetOrderPriceSum = datasetOrderPriceSum.add(price)
-    })
-
-    const priceDataset = datasetPrice
-    const feeDataset = datasetFee
+    // Include datasets only if not in "withoutDataset" mode
+    if (selectedDatasetAsset?.length && !values.withoutDataset) {
+      selectedDatasetAsset.forEach((dataset) => {
+        const index = dataset.serviceIndex || 0
+        const details = dataset.accessDetails?.[index]
+        const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
+        const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
+        const fee = details?.isOwned
+          ? new Decimal(0)
+          : new Decimal(formatUnits(consumeMarketOrderFee, tokenInfo?.decimals))
+        datasetPrice = datasetPrice.add(price)
+        datasetFee = datasetFee.add(fee)
+      })
+    }
 
     const priceAlgo =
       !algoOrderPrice || hasPreviousOrder || hasDatatoken
         ? new Decimal(0)
-        : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
+        : new Decimal(algoOrderPrice || '0').toDecimalPlaces(MAX_DECIMALS)
 
     const feeAlgo = accessDetails.isOwned
       ? new Decimal(0)
@@ -776,28 +721,29 @@ export default function Review({
       c2dPrice !== undefined
         ? new Decimal(c2dPrice).toDecimalPlaces(MAX_DECIMALS)
         : new Decimal(0)
+
+    // Build totalPrices exactly like before
     if (algorithmSymbol === providerFeesSymbol) {
       let sum = priceC2D.add(priceAlgo).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
       })
-
-      if (algorithmSymbol === datasetSymbol) {
-        sum = sum.add(priceDataset).add(feeDataset)
+      if (algorithmSymbol === datasetSymbol && datasetPrice.gt(0)) {
+        sum = sum.add(datasetPrice).add(datasetFee)
         totalPrices[0].value = sum.toDecimalPlaces(MAX_DECIMALS).toString()
-      } else {
+      } else if (datasetPrice.gt(0)) {
         totalPrices.push({
-          value: priceDataset
-            .add(feeDataset)
+          value: datasetPrice
+            .add(datasetFee)
             .toDecimalPlaces(MAX_DECIMALS)
             .toString(),
           symbol: datasetSymbol
         })
       }
     } else {
-      if (datasetSymbol === providerFeesSymbol) {
-        const sum = priceC2D.add(priceDataset).add(feeDataset)
+      if (datasetSymbol === providerFeesSymbol && datasetPrice.gt(0)) {
+        const sum = priceC2D.add(datasetPrice).add(datasetFee)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: datasetSymbol
@@ -809,8 +755,8 @@ export default function Review({
             .toString(),
           symbol: algorithmSymbol
         })
-      } else if (datasetSymbol === algorithmSymbol) {
-        const sum = priceAlgo.add(priceDataset).add(feeAlgo).add(feeDataset)
+      } else if (datasetSymbol === algorithmSymbol && datasetPrice.gt(0)) {
+        const sum = priceAlgo.add(datasetPrice).add(feeAlgo).add(datasetFee)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: algorithmSymbol
@@ -820,13 +766,15 @@ export default function Review({
           symbol: providerFeesSymbol
         })
       } else {
-        totalPrices.push({
-          value: priceDataset
-            .add(feeDataset)
-            .toDecimalPlaces(MAX_DECIMALS)
-            .toString(),
-          symbol: datasetSymbol
-        })
+        if (datasetPrice.gt(0)) {
+          totalPrices.push({
+            value: datasetPrice
+              .add(datasetFee)
+              .toDecimalPlaces(MAX_DECIMALS)
+              .toString(),
+            symbol: datasetSymbol
+          })
+        }
         totalPrices.push({
           value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
@@ -845,6 +793,7 @@ export default function Review({
   }, [
     serviceIndex,
     selectedDatasetAsset,
+    values.withoutDataset,
     accessDetails.price,
     algoOrderPrice,
     algoOrderPriceAndFees?.price,
@@ -854,21 +803,19 @@ export default function Review({
     datasetSymbol,
     hasDatatoken,
     hasPreviousOrder,
-    providerFeesSymbol
+    providerFeesSymbol,
+    tokenInfo?.decimals
   ])
 
   useEffect(() => {
-    // Copy totalPrices so you don't mutate the original array
     const priceChecks = [...totalPrices]
-
-    // Add C2D price if not already included in totalPrices
     const selectedEnvId = values?.computeEnv?.id
     const freeResources = allResourceValues?.[`${selectedEnvId}_free`]
     const paidResources = allResourceValues?.[`${selectedEnvId}_paid`]
     const c2dPrice =
       values?.mode === 'paid' ? paidResources?.price : freeResources?.price
     const c2dSymbol = providerFeesSymbol
-    // Only add if price > 0 and not present in totalPrices already (optional check)
+
     if (
       c2dPrice &&
       !totalPrices.some(
@@ -902,24 +849,21 @@ export default function Review({
     values?.mode,
     totalPriceToDisplay
   ])
+
   useEffect(() => {
     const allVerified =
       verificationQueue.length > 0 &&
       verificationQueue.every((item) => item.status === 'verified')
-
     setFieldValue('credentialsVerified', allVerified, false)
     validateForm()
   }, [verificationQueue, setFieldValue, validateForm])
 
   useEffect(() => {
     try {
-      // Sum all prices from totalPrices array (extract 'value')
       const totalPricesSum = totalPrices.reduce(
         (acc, val) => acc.add(new Decimal(val.value || 0)),
         new Decimal(0)
       )
-
-      // Final combined total
       const displayTotal = totalPricesSum
         .add(
           algorithmProviderFees[0].value
@@ -934,7 +878,6 @@ export default function Review({
         .add(datasetOecFees)
         .add(algoOecFee)
         .toDecimalPlaces(MAX_DECIMALS)
-
       setTotalPriceToDisplay(displayTotal.toString())
     } catch (error) {
       console.error('Error calculating totalPriceToDisplay:', error)
@@ -951,7 +894,6 @@ export default function Review({
   }, [algorithmProviderFeeProp])
 
   const getLicenseUrl = (): string | undefined => {
-    // First try to get license from algorithm asset
     if (
       asset?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
         ?.mirrors?.[0]
@@ -962,8 +904,6 @@ export default function Review({
         return licenseMirror.url
       }
     }
-
-    // Then try datasets
     if (selectedDatasetAsset?.length) {
       for (const dataset of selectedDatasetAsset) {
         const licenseMirror =
@@ -974,7 +914,6 @@ export default function Review({
         }
       }
     }
-
     return undefined
   }
 
@@ -1164,15 +1103,14 @@ export default function Review({
           <span className={styles.totalValue}>
             {isRequestingPrice ? (
               <span className={styles.totalValueNumber}>Calculating...</span>
-            ) : totalPrices.length > 0 ? (
+            ) : totalPriceToDisplay !== '0' ? (
               <>
                 <span className={styles.totalValueNumber}>
-                  {/* {totalPrices[0].value} */}
                   {totalPriceToDisplay}
                 </span>
                 <span className={styles.totalValueSymbol}>
                   {' '}
-                  {totalPrices[0].symbol}
+                  {totalPrices[0]?.symbol || symbol}
                 </span>
               </>
             ) : (
