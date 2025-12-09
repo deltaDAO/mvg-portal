@@ -1298,9 +1298,7 @@ export default function ComputeWizard({
                 {!showSuccess && (
                   <>
                     <WizardActions
-                      totalSteps={totalSteps}
                       submitButtonText="Buy Compute Job"
-                      showSuccessConfetti={false}
                       rightAlignFirstStep={false}
                       isSubmitDisabled={isComputeButtonDisabled}
                       action="compute"

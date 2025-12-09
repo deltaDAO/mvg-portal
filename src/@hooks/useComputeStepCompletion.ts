@@ -1,11 +1,14 @@
 import { useFormikContext } from 'formik'
 import { FormComputeData } from '../components/DatasetComputeWizard/_types'
+import { getDatasetSteps } from '@components/AlgorithmComputeWizard/_constants'
 
 export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
   const { values } = useFormikContext<FormComputeData>()
   const hasUserParamsStep = Boolean(values.isUserParameters)
-  const totalSteps = hasUserParamsStep ? 7 : 6
-
+  const withoutDataset = Boolean(values.withoutDataset)
+  const steps = getDatasetSteps(hasUserParamsStep, withoutDataset)
+  const totalSteps = steps.length
+  console.log('Total Steps:', totalSteps)
   function getSuccessClass(step: number): boolean {
     const environmentSelected = Boolean(values.computeEnv)
     const configSet =

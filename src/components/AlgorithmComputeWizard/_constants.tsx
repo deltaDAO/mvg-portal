@@ -13,46 +13,82 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { Option } from 'src/@types/ddo/Option'
 import UserParametersStep from './UserParametersStep'
 
-export function getDatasetSteps(hasUserParamsStep: boolean): StepContent[] {
+export function getDatasetSteps(
+  hasUserParamsStep: boolean,
+  withoutDataset: boolean
+): StepContent[] {
   const steps: StepContent[] = [
-    { step: 1, title: 'Select Datasets', component: <div>Step 1</div> },
+    { step: 1, title: 'Select Datasets', component: <div>Step 1</div> }
+  ]
+  if (withoutDataset) {
+    let stepCounter = 2
+
+    if (hasUserParamsStep) {
+      steps.push({
+        step: stepCounter++,
+        title: 'User Parameters',
+        component: <UserParametersStep />
+      })
+    }
+
+    steps.push(
+      {
+        step: stepCounter++,
+        title: 'Select C2D Environment',
+        component: <SelectEnvironment computeEnvs={[]} />
+      },
+      {
+        step: stepCounter++,
+        title: 'C2D Environment Configuration',
+        component: <ConfigureEnvironment />
+      },
+      {
+        step: stepCounter,
+        title: 'Review',
+        component: <div>Review</div>
+      }
+    )
+
+    return steps
+  }
+  steps.push(
     { step: 2, title: 'Select Services', component: <div>Step 2</div> },
     {
       step: 3,
       title: 'Preview Selected Datasets & Services',
       component: <div>Step 3</div>
     }
-  ]
+  )
 
   if (hasUserParamsStep) {
-    steps.push({
-      step: 4,
-      title: 'User Parameters',
-      component: <UserParametersStep />
-    })
-    steps.push({
-      step: 5,
-      title: 'Select C2D Environment',
-      component: <SelectEnvironment computeEnvs={[]} />
-    })
-    steps.push({
-      step: 6,
-      title: 'C2D Environment Configuration',
-      component: <ConfigureEnvironment />
-    })
-    steps.push({ step: 7, title: 'Review', component: <div>Review</div> })
+    steps.push(
+      { step: 4, title: 'User Parameters', component: <UserParametersStep /> },
+      {
+        step: 5,
+        title: 'Select C2D Environment',
+        component: <SelectEnvironment computeEnvs={[]} />
+      },
+      {
+        step: 6,
+        title: 'C2D Environment Configuration',
+        component: <ConfigureEnvironment />
+      },
+      { step: 7, title: 'Review', component: <div>Review</div> }
+    )
   } else {
-    steps.push({
-      step: 4,
-      title: 'Select C2D Environment',
-      component: <SelectEnvironment computeEnvs={[]} />
-    })
-    steps.push({
-      step: 5,
-      title: 'C2D Environment Configuration',
-      component: <ConfigureEnvironment />
-    })
-    steps.push({ step: 6, title: 'Review', component: <div>Review</div> })
+    steps.push(
+      {
+        step: 4,
+        title: 'Select C2D Environment',
+        component: <SelectEnvironment computeEnvs={[]} />
+      },
+      {
+        step: 5,
+        title: 'C2D Environment Configuration',
+        component: <ConfigureEnvironment />
+      },
+      { step: 6, title: 'Review', component: <div>Review</div> }
+    )
   }
 
   return steps
