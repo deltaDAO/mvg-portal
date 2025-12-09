@@ -8,8 +8,6 @@ import styles from './Menu.module.css'
 import { useRouter } from 'next/router'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import classNames from 'classnames/bind'
-// import MenuDropdown from '@components/@shared/MenuDropdown'
-// import SearchButton from './SearchButton'
 import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
 import { SsiWallet } from '@components/Header/SsiWallet'
@@ -54,7 +52,7 @@ export function MenuLink({ name, link, className }: MenuItem) {
 }
 
 export default function Menu(): ReactElement {
-  const { appConfig, siteContent } = useMarketMetadata()
+  const { appConfig } = useMarketMetadata()
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const router = useRouter()
@@ -68,14 +66,17 @@ export default function Menu(): ReactElement {
   const showPublishButton = !isPublishRoute
   const showCatalogButton = !isCatalogRoute
 
+  const publishLink = '/publish/1'
+  const catalogLink = '/search?sort=indexedMetadata.event.block&sortOrder=desc'
+
   const handlePublishClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    router.push('/publish/1')
+    router.push(publishLink)
     setIsMobileMenuOpen(false)
   }
   const handleCatalogClick = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    router.push('/search?sort=indexedMetadata.event.block&sortOrder=desc')
+    router.push(catalogLink)
     setIsMobileMenuOpen(false)
   }
   const toggleMobileMenu = () => {
@@ -115,25 +116,19 @@ export default function Menu(): ReactElement {
             <SsiWallet />
             <div className={styles.ctaContent}>
               {showPublishButton && (
-                <button
-                  className={styles.ctaButton}
-                  onClick={handlePublishClick}
-                >
+                <Link className={styles.ctaButton} href={publishLink}>
                   <div className={styles.buttonContent}>
                     <Upload className={styles.uploadIcon} />
                     <span className={styles.buttonText}>Publish</span>
                   </div>
-                </button>
+                </Link>
               )}
               {showCatalogButton && (
-                <button
-                  className={styles.ctaButton}
-                  onClick={handleCatalogClick}
-                >
+                <Link className={styles.ctaButton} href={catalogLink}>
                   <div className={styles.buttonContent}>
                     <span className={styles.buttonText}>Catalogue</span>
                   </div>
-                </button>
+                </Link>
               )}
             </div>
           </div>

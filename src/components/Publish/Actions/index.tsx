@@ -11,7 +11,7 @@ import AvailableNetworks from '@components/Publish/AvailableNetworks'
 import Info from '@images/info.svg'
 import Loader from '@shared/atoms/Loader'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import { isAddress } from 'ethers/lib/utils.js'
+import { isAddress } from 'ethers'
 import isUrl from 'is-url-superb'
 
 function isValidUrl(url: string): boolean {
@@ -94,17 +94,13 @@ export default function Actions({
             const currentList = values.credentials[fieldName] || []
 
             if (!currentList.includes(lowerCaseAddress)) {
-              console.log(
-                `Auto-committing typed ${fieldName} address before navigation:`,
-                lowerCaseAddress
-              )
               const newList = [...currentList, lowerCaseAddress]
               setFieldValue(`credentials.${fieldName}`, newList)
               setFieldValue(`credentials.${fieldName}InputValue`, '')
             }
           }
         } catch (error) {
-          console.log(
+          console.error(
             `${fieldName} address validation error during auto-commit:`,
             error
           )
@@ -138,7 +134,7 @@ export default function Actions({
       try {
         return isAddress(typedValue)
       } catch (error) {
-        console.log('Allow address validation error:', error)
+        console.error('Allow address validation error:', error)
       }
     }
 
@@ -299,7 +295,7 @@ export default function Actions({
               disabled={isSubmitting || !isValid}
             >
               {isSubmitting ? (
-                <Loader primary />
+                <Loader variant="primary" />
               ) : hasSubmitError ? (
                 'Retry'
               ) : (

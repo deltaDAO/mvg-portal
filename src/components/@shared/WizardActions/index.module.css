@@ -1,0 +1,46 @@
+.actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* padding-top: var(--spacer); */
+}
+
+.actionsRight {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.actionsMultiple {
+  justify-content: center;
+}
+
+.actions button,
+.actionsRight button {
+  margin: 0 calc(var(--spacer) / 2);
+  min-height: 40px;
+  font-family: var(--publish-font-family);
+  font-weight: var(--publish-font-weight-bold);
+  border-radius: var(--publish-input-border-radius);
+}
+
+.actions button [class*='loaderWrap'],
+.actionsRight button [class*='loaderWrap'] {
+  margin-top: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+.infoIcon {
+  width: 0.85em;
+  height: 0.85em;
+  display: inline-block;
+  margin-bottom: -0.1em;
+  margin-left: calc(var(--spacer) / 6);
+  fill: currentColor;
+}
+
+.infoButton {
+  cursor: help;
+  pointer-events: all;
+}

@@ -6,6 +6,12 @@ import { parseConsumerParameterValues } from '.'
 export function getUserCustomParameterValidationSchema(
   consumerParameters: Record<string, string | number | boolean | Option[]>[]
 ): SchemaLike {
+  if (!consumerParameters || consumerParameters.length === 0) {
+    return Yup.object()
+      .nullable()
+      .transform(() => ({}))
+  }
+
   const shape = {}
 
   consumerParameters?.forEach((parameter) => {

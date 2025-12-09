@@ -14,7 +14,7 @@ import {
   getErrorMessage
 } from '@oceanprotocol/lib'
 // if customProviderUrl is set, we need to call provider using this custom endpoint
-import { customProviderUrl, oceanTokenAddress } from '../../app.config.cjs'
+import { customProviderUrl } from '../../app.config.cjs'
 import { KeyValuePair } from '@shared/FormInput/InputElement/KeyValueInput'
 import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
@@ -26,35 +26,48 @@ import {
   PolicyServerInitiateActionData,
   PolicyServerInitiateComputeActionData
 } from 'src/@types/PolicyServer'
+import { getOceanConfig } from '@utils/ocean'
 
 export async function initializeProviderForComputeMulti(
-  datasets: {
-    asset: AssetExtended
-    service: Service
-    accessDetails: AccessDetails
-    sessionId: string
-  }[],
+  datasets:
+    | {
+        asset: AssetExtended
+        service: Service
+        accessDetails: AccessDetails
+        sessionId: string
+      }[]
+    | undefined,
   algorithm: AssetExtended,
   algoSessionId: string,
   accountId: Signer,
   computeEnv: ComputeEnvironment,
   selectedResources: ResourceType,
-  svcIndexAlgo: number
+  svcIndexAlgo: number,
+  algoParams?: Record<string, any>,
+  datasetParams?: Record<string, any>
 ) {
-  const computeAssets = datasets.map(({ asset, service, accessDetails }) => ({
-    documentId: asset.id,
-    serviceId: service.id,
-    transferTxId: accessDetails.validOrderTx
-  }))
+  const safeDatasets = datasets ?? []
+  const { oceanTokenAddress } = getOceanConfig(
+    algorithm.credentialSubject.chainId
+  )
+  const computeAssets = safeDatasets.map(
+    ({ asset, service, accessDetails }) => ({
+      documentId: asset.id,
+      serviceId: service.id,
+      transferTxId: accessDetails.validOrderTx,
+      userdata: datasetParams
+    })
+  )
 
   const computeAlgo: ComputeAlgorithm = {
     documentId: algorithm.id,
     serviceId: algorithm.credentialSubject.services[svcIndexAlgo].id,
-    transferTxId: algorithm.accessDetails[svcIndexAlgo].validOrderTx
+    transferTxId: algorithm.accessDetails[svcIndexAlgo].validOrderTx,
+    userdata: algoParams
   }
 
   const policiesServer: PolicyServerInitiateComputeActionData[] = [
-    ...datasets.map(({ asset, service, sessionId }) => ({
+    ...safeDatasets.map(({ asset, service, sessionId }) => ({
       documentId: asset.id,
       serviceId: service.id,
       sessionId,
@@ -76,23 +89,39 @@ export async function initializeProviderForComputeMulti(
 
   const validUntil = getValidUntilTime(
     selectedResources.jobDuration,
-    datasets[0].service.timeout,
+    safeDatasets[0]?.service.timeout ?? 0,
     algorithm.credentialSubject.services[svcIndexAlgo].timeout
   )
 
+  const providerUrl =
+    customProviderUrl ||
+    safeDatasets[0]?.service.serviceEndpoint ||
+    algorithm.credentialSubject.services[svcIndexAlgo].serviceEndpoint
+
+  const chainId =
+    safeDatasets[0]?.asset.credentialSubject.chainId ??
+    algorithm.credentialSubject.chainId
+
+  const resources =
+    selectedResources.mode === 'free'
+      ? computeEnv.free.resources.map((res) => ({
+          id: res.id,
+          amount: selectedResources?.[res.id] || res.max
+        }))
+      : computeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: selectedResources?.[res.id] || res.min
+        }))
   return await ProviderInstance.initializeCompute(
     computeAssets,
     computeAlgo,
     computeEnv.id,
     oceanTokenAddress,
     validUntil,
-    customProviderUrl || datasets[0].service.serviceEndpoint,
+    providerUrl,
     accountId,
-    computeEnv.resources.map((res) => ({
-      id: res.id,
-      amount: selectedResources?.[res.id] || res.min
-    })),
-    datasets[0].asset.credentialSubject.chainId,
+    resources,
+    chainId,
     policiesServer
   )
 }
@@ -109,6 +138,9 @@ export async function initializeProviderForCompute(
   datasetSessionId: string,
   algoSessionId: string
 ): Promise<ProviderComputeInitializeResults> {
+  const { oceanTokenAddress } = getOceanConfig(
+    algorithm.credentialSubject.chainId
+  )
   const computeAsset: ComputeAsset = {
     documentId: dataset.id,
     serviceId: datasetService.id,
@@ -210,9 +242,9 @@ export async function getFileDidInfo(
     )
     return response
   } catch (error) {
-    const message = getErrorMessage(error.message)
+    console.log('Error check did files', error)
+    const message = 'Failed to fetch file info from provider'
     LoggerInstance.error('[Initialize check file did] Error:', message)
-    toast.error(`[Initialize check file did] Error: ${message}`)
     throw new Error(`[Initialize check file did] Error: ${message}`)
   }
 }
@@ -310,6 +342,8 @@ export async function downloadFile(
   userCustomParameters?: UserCustomParameters
 ) {
   let downloadUrl
+  let fileName = `asset_${asset.id}.dat`
+
   const policyServer: PolicyServerInitiateActionData = {
     sessionId: verifierSessionId,
     successRedirectUri: ``,
@@ -317,6 +351,7 @@ export async function downloadFile(
     responseRedirectUri: ``,
     presentationDefinitionUri: ``
   }
+
   try {
     downloadUrl = await ProviderInstance.getDownloadUrl(
       asset.id,
@@ -328,12 +363,69 @@ export async function downloadFile(
       policyServer,
       userCustomParameters
     )
+    const fileInfo: any = await getFileDidInfo(
+      asset.id,
+      service.id,
+      customProviderUrl || service.serviceEndpoint
+    )
+    const mimeExtensionMap: Record<string, string> = {
+      'application/json': 'json',
+      'application/vnd.api+json': 'json',
+      'text/csv': 'csv',
+      'application/pdf': 'pdf',
+      'image/png': 'png',
+      'image/jpeg': 'jpg',
+      'text/plain': 'txt',
+      'application/octet-stream': 'bin'
+    }
+
+    if (Array.isArray(fileInfo) && fileInfo.length > 0) {
+      const info = fileInfo[0]
+
+      if (info.name) {
+        fileName = info.name
+      } else if (info.url) {
+        fileName = info.url.split('/').pop() || fileName
+      } else if (info.contentType) {
+        const cleanContentType = info.contentType.split(';')[0].trim()
+        const mappedExt = mimeExtensionMap[cleanContentType]
+
+        if (mappedExt) {
+          fileName = `asset_${asset.id}.${mappedExt}`
+        } else {
+          const guessed = cleanContentType.split('/').pop()
+          fileName = `asset_${asset.id}.${guessed || 'dat'}`
+        }
+      }
+    }
+
+    fileName = fileName.replace(/[<>:"/\\|?*]+/g, '_')
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Provider Get download url] Error:', message)
     toast.error(message)
+    return
   }
-  await downloadFileBrowser(downloadUrl)
+
+  try {
+    const response = await fetch(downloadUrl)
+    if (!response.ok) throw new Error('Failed to fetch file.')
+
+    const blob = await response.blob()
+    const blobUrl = window.URL.createObjectURL(blob)
+
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(blobUrl)
+  } catch (error) {
+    const message = getErrorMessage(error.message)
+    LoggerInstance.error('[Download File Error]', message)
+    toast.error(message)
+  }
 }
 
 export async function checkValidProvider(

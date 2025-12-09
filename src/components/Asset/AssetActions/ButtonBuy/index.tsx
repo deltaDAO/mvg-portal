@@ -2,6 +2,7 @@ import { FormEvent, ReactElement } from 'react'
 import Button from '../../../@shared/atoms/Button'
 import styles from './index.module.css'
 import Loader from '../../../@shared/atoms/Loader'
+import Download2SVG from '@images/download2.svg'
 
 export interface ButtonBuyProps {
   action: 'download' | 'compute'
@@ -24,7 +25,7 @@ export interface ButtonBuyProps {
   isLoading?: boolean
   onClick?: (e: FormEvent<HTMLButtonElement>) => void
   stepText?: string
-  type?: 'submit'
+  type?: 'submit' | 'button'
   priceType?: string
   algorithmPriceType?: string
   isAlgorithmConsumable?: boolean
@@ -32,6 +33,7 @@ export interface ButtonBuyProps {
   isAccountConnected?: boolean
   hasProviderFee?: boolean
   retry?: boolean
+  computeWizard?: boolean
 }
 
 function getConsumeHelpText(
@@ -52,13 +54,13 @@ function getConsumeHelpText(
     isConsumable === false
       ? consumableFeedback
       : hasPreviousOrder && isAccountConnected && isSupportedOceanNetwork
-      ? `You bought this ${assetType} already allowing you to use it without paying again.`
+      ? ''
       : hasDatatoken
       ? `You own ${dtBalance} ${dtSymbol} allowing you to use this dataset by spending 1 ${dtSymbol}, but without paying ${btSymbol} again.`
       : isBalanceSufficient === false
       ? `You do not have enough ${btSymbol} in your wallet to purchase this asset.`
       : priceType === 'free'
-      ? `This ${assetType} is free to use.`
+      ? ''
       : `To use this ${assetType}, you will buy 1 ${dtSymbol} and immediately send it back to the publisher.`
   return text
 }
@@ -185,7 +187,8 @@ export default function ButtonBuy({
   hasProviderFee,
   retry,
   isSupportedOceanNetwork,
-  isAccountConnected
+  isAccountConnected,
+  computeWizard
 }: ButtonBuyProps): ReactElement {
   const buttonText = retry
     ? 'Retry'
@@ -244,28 +247,48 @@ export default function ButtonBuy({
         hasProviderFee
       )
     }
-    if (priceType === 'free' || algorithmPriceType === 'free') {
-      message +=
-        ' Please note that network gas fees still apply, even when using free assets.'
-    }
+
     return message
   }
   return (
-    <div className={styles.actions}>
+    <div
+      className={`${styles.actions} ${
+        action === 'download' && priceType === 'free' ? styles.noMargin : ''
+      }`}
+    >
       {isLoading ? (
-        <Loader message={stepText} />
+        <div className={styles.loaderWrap}>
+          <Loader
+            message={stepText}
+            noMargin={true}
+            className={
+              action === 'download' &&
+              priceType === 'free' &&
+              stepText === 'Ordering asset'
+                ? styles.orderingAsset
+                : ''
+            }
+          />
+        </div>
       ) : (
         <>
           <Button
-            style="primary"
+            style="publish"
             type={type}
             onClick={onClick}
             disabled={disabled}
-            className={action === 'compute' ? styles.actionsCenter : ''}
+            className={`${action === 'compute' ? styles.actionsCenter : ''} ${
+              action === 'download' && priceType === 'free'
+                ? styles.freeAssetButton
+                : ''
+            }`}
           >
+            {action === 'download' && priceType === 'free' && <Download2SVG />}
             {buttonText}
           </Button>
-          <div className={styles.help}>{message()}</div>
+          {!computeWizard && message() && (
+            <div className={styles.help}>{message()}</div>
+          )}
         </>
       )}
     </div>

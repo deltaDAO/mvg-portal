@@ -103,9 +103,7 @@ export default function SSIPoliciesSection({
 
     setFieldValue(`${credentialsPath}.enabled`, newEnabled)
 
-    if (newEnabled) {
-      setFieldValue(`${credentialsPath}.vcPolicies`, defaultPolicies)
-    } else {
+    if (!newEnabled) {
       setFieldValue(`${credentialsPath}.requestCredentials`, [])
       setFieldValue(`${credentialsPath}.vcPolicies`, [])
       setFieldValue(`${credentialsPath}.vpPolicies`, [])

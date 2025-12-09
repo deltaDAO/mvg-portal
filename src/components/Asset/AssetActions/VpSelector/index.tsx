@@ -1,4 +1,3 @@
-import Button from '@components/@shared/atoms/Button'
 import React, { ReactElement, useEffect, useRef, useState } from 'react'
 import styles from './index.module.css'
 import { SsiVerifiableCredential } from 'src/@types/SsiWallet'
@@ -7,6 +6,8 @@ import {
   CredentialAddressBased,
   CredentialPolicyBased
 } from 'src/@types/ddo/Credentials'
+import { Asset } from 'src/@types/Asset'
+import { Service } from 'src/@types/ddo/Service'
 
 export interface VpSelectorProps {
   showDialog: boolean
@@ -15,6 +16,8 @@ export interface VpSelectorProps {
   abortSelection: () => void
   ssiVerifiableCredentials: SsiVerifiableCredential[]
   assetAllowCredentials: (CredentialAddressBased | CredentialPolicyBased)[]
+  asset: Asset
+  service: Service
 }
 
 interface VpFieldProps {
@@ -52,48 +55,47 @@ function VpField(props: VpFieldProps): ReactElement {
   }
 
   return (
-    <>
-      <label
-        className={`${styles.panelRow} ${styles.justifyContentFlexEnd} ${styles.marginRight2} ${styles.flexWrap}`}
-      >
-        {getSsiVerifiableCredentialType(credential)}
-        <input
-          value={'false'}
-          type="checkbox"
-          className={styles.inputField}
-          onChange={() => onChange(index, !checked)}
-          checked={checked}
-        />
-      </label>
-      <div
-        className={`${styles.panelGrid} ${styles.panelTemplateData} ${styles.marginBottom3}`}
-      >
-        <React.Fragment key={'ID'}>
-          <div>Id</div>
-          <div>
-            <DataView
-              data={credential?.parsedDocument?.id}
-              maxLength={maxLength}
-            />
+    <div className={styles.credentialRow}>
+      <input
+        type="checkbox"
+        className={styles.inputField}
+        onChange={() => onChange(index, !checked)}
+        checked={checked}
+      />
+      <div className={styles.credentialContent}>
+        <div className={styles.credentialName}>
+          {getSsiVerifiableCredentialType(credential)}
+        </div>
+        <div className={styles.fieldData}>
+          <div className={styles.fieldNames}>
+            <div>Id</div>
+            {Object.keys(credential?.parsedDocument?.credentialSubject || {})
+              .sort((key1, key2) => key1.localeCompare(key2))
+              .map((key) => (
+                <div key={key}>{key}</div>
+              ))}
           </div>
-        </React.Fragment>
-        {Object.keys(credential?.parsedDocument?.credentialSubject || {})
-          .sort((key1, key2) => key1.localeCompare(key2))
-          .map((key) => {
-            return (
-              <React.Fragment key={key}>
-                <div>CredentialSubject.{key}</div>
-                <div>
+          <div className={styles.fieldValues}>
+            <div>
+              <DataView
+                data={credential?.parsedDocument?.id}
+                maxLength={maxLength}
+              />
+            </div>
+            {Object.keys(credential?.parsedDocument?.credentialSubject || {})
+              .sort((key1, key2) => key1.localeCompare(key2))
+              .map((key) => (
+                <div key={key}>
                   <DataView
                     data={credential?.parsedDocument?.credentialSubject?.[key]}
                     maxLength={maxLength}
                   />
                 </div>
-              </React.Fragment>
-            )
-          })}
+              ))}
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -104,17 +106,30 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
     acceptSelection,
     abortSelection,
     ssiVerifiableCredentials,
-    assetAllowCredentials
+    assetAllowCredentials,
+    asset,
+    service
   } = props
-
   const selectorDialog = useRef<HTMLDialogElement>(null)
   const [selections, setSelections] = useState<boolean[]>([])
-
+  useEffect(() => {
+    if (showDialog) {
+      const dialog = selectorDialog.current
+      if (dialog && !dialog.open) {
+        dialog.show()
+      }
+    } else {
+      try {
+        selectorDialog.current.close()
+      } catch (e) {
+        console.error('[VpSelector] close error', e)
+      }
+    }
+  }, [showDialog])
   function handleAcceptSelection() {
     const selectedCredentials = ssiVerifiableCredentials
       .filter((credential, index) => selections[index])
       .map((credential) => credential.id)
-
     setShowDialog(false)
     acceptSelection(selectedCredentials)
   }
@@ -129,9 +144,17 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
       const array = new Array(ssiVerifiableCredentials?.length || 0).fill(false)
       setSelections(array)
 
-      selectorDialog.current.showModal()
+      try {
+        // Use non-modal dialog to avoid nested modal conflicts inside wizard overlays
+      } catch (e) {
+        console.error('[VpSelector] show error', e)
+      }
     } else {
-      selectorDialog.current.close()
+      try {
+        selectorDialog.current.close()
+      } catch (e) {
+        console.error('[VpSelector] close error', e)
+      }
     }
   }, [showDialog])
 
@@ -157,11 +180,12 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
       className={`${styles.dialogBorder} ${styles.dialogWidth}`}
     >
       <div className={`${styles.panelColumn} ${styles.width100p}`}>
-        <h3>Verifiable Credentials to present</h3>
-
-        <label htmlFor="verifiableCredentials" className={styles.marginBottom2}>
-          Choose the VCs to present. You can select multiple entries:
-        </label>
+        <div className={styles.vptitle}>Verifiable Credentials to present</div>
+        {/* dynamic datat has to fetch here */}
+        <div className={styles.dataInfo}>
+          Asset: {asset.credentialSubject.metadata.name}, Service:{' '}
+          {service.name}
+        </div>
 
         {(() => {
           const minCreds = (assetAllowCredentials as any)
@@ -179,48 +203,45 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
               : null
 
           return minCount ? (
-            <span className={styles.marginBottom2}>
+            <span>
               <strong>Minimum credentials required:</strong> {minCount}
             </span>
           ) : null
         })()}
 
         <div
-          className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStrech} ${styles.marginBottom2}`}
+          className={`${styles.panelGrid} ${styles.panelTemplateList} ${styles.alignItemsCenter} ${styles.justifyItemsStretch} ${styles.scrollableList}`}
         >
           {ssiVerifiableCredentials
             ?.sort(sortCredentials)
-            .map((credential, index) => {
-              return (
-                <React.Fragment key={credential.id}>
-                  <VpField
-                    credential={credential}
-                    onChange={handleOnChange}
-                    index={index}
-                    checked={selections[index] || false}
-                  />
-                </React.Fragment>
-              )
-            })}
+            .map((credential, index) => (
+              <React.Fragment key={credential.id}>
+                <VpField
+                  credential={credential}
+                  onChange={handleOnChange}
+                  index={index}
+                  checked={selections[index] || false}
+                />
+              </React.Fragment>
+            ))}
         </div>
 
         <div className={styles.panelRow}>
-          <Button
-            style="primary"
-            size="small"
-            className={`${styles.width100p} ${styles.acceptButton} ${styles.marginRight2}`}
-            onClick={handleAcceptSelection}
-          >
-            Accept
-          </Button>
-          <Button
-            style="primary"
-            size="small"
-            className={`${styles.width100p} ${styles.abortButton}`}
+          <button
+            type="button"
+            className={styles.abortButton}
             onClick={handleAbortSelection}
           >
-            Cancel
-          </Button>
+            Close
+          </button>
+          <button
+            type="button"
+            className={styles.acceptButton}
+            onClick={handleAcceptSelection}
+            disabled={selections.length === 0 || !selections.some(Boolean)}
+          >
+            Accept
+          </button>
         </div>
       </div>
     </dialog>

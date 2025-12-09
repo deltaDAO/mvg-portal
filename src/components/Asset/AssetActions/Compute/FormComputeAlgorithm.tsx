@@ -10,10 +10,10 @@ import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
-import { getTokenBalanceFromSymbol } from '@utils/wallet'
+import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
-import { useAccount } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
@@ -28,6 +28,8 @@ import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
 import AlgorithmDatasetsListForComputeSelection from './AlgorithmDatasetsListForComputeSelection'
 import { getAsset } from '@utils/aquarius'
+import { formatUnits, JsonRpcProvider } from 'ethers'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function FormStartComputeAlgo({
   asset,
@@ -120,6 +122,15 @@ export default function FormStartComputeAlgo({
     accessDetails.price
   )
 
+  const chainId = useChainId()
+  const publicClient = usePublicClient()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
+
   const [datasetOrderPrice, setDatasetOrderPrice] = useState('0')
   const [serviceIndex, setServiceIndex] = useState(0)
   const [totalPrices, setTotalPrices] = useState([])
@@ -132,11 +143,23 @@ export default function FormStartComputeAlgo({
     const svc = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
     return lookupVerifierSessionId?.(asset.id, svc?.id)
   }).length
-
   const allVerified = selectedDatasetAsset.every((asset) => {
     const service = asset.credentialSubject?.services?.[asset.serviceIndex || 0]
     return lookupVerifierSessionId?.(asset.id, service?.id)
   })
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!chainId || !ethersProvider) return
+
+      const { oceanTokenAddress } = getOceanConfig(chainId)
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
+
+      setTokenInfo(tokenDetails)
+    }
+
+    fetchTokenDetails()
+  }, [chainId, ethersProvider])
 
   useEffect(() => {
     if (!asset || !service?.id || !asset.credentialSubject?.services?.length)
@@ -153,6 +176,15 @@ export default function FormStartComputeAlgo({
     assets: AssetExtended[]
     services: Service[]
   }> {
+    // Defensive check — ensure datasets is an array before mapping
+    if (!Array.isArray(datasets) || datasets.length === 0) {
+      console.warn(
+        '[getDatasetAssets] datasets is not an array or is empty:',
+        datasets
+      )
+      return { assets: [], services: [] }
+    }
+
     const newCancelTokenInstance = newCancelToken()
     const servicesCollected: Service[] = []
 
@@ -262,7 +294,7 @@ export default function FormStartComputeAlgo({
         disk,
         jobDuration,
         price: 0,
-        mode: allResourceValues[selectedEnv.id]?.mode
+        mode: values.mode
       }
 
       setAllResourceValues((prev) => ({
@@ -292,7 +324,9 @@ export default function FormStartComputeAlgo({
 
       const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
       const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
-      const fee = new Decimal(consumeMarketOrderFee).mul(price).div(100)
+      const fee = new Decimal(
+        formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+      )
 
       datasetPrice = datasetPrice.add(price)
       datasetFee = datasetFee.add(fee)
@@ -312,17 +346,17 @@ export default function FormStartComputeAlgo({
         ? new Decimal(0)
         : new Decimal(algoOrderPrice).toDecimalPlaces(MAX_DECIMALS)
 
-    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
+    const feeAlgo = new Decimal(
+      formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+    )
 
     const priceC2D =
       c2dPrice !== undefined
         ? new Decimal(c2dPrice).toDecimalPlaces(MAX_DECIMALS)
         : new Decimal(0)
 
-    const feeC2D = new Decimal(consumeMarketOrderFee).mul(priceC2D).div(100)
-
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = priceC2D.add(priceAlgo).add(feeC2D).add(feeAlgo)
+      let sum = priceC2D.add(priceAlgo).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
@@ -342,7 +376,7 @@ export default function FormStartComputeAlgo({
       }
     } else {
       if (datasetSymbol === providerFeesSymbol) {
-        const sum = priceC2D.add(priceDataset).add(feeC2D).add(feeDataset)
+        const sum = priceC2D.add(priceDataset).add(feeDataset)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: datasetSymbol
@@ -361,7 +395,7 @@ export default function FormStartComputeAlgo({
           symbol: algorithmSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
       } else {
@@ -373,7 +407,7 @@ export default function FormStartComputeAlgo({
           symbol: datasetSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
         totalPrices.push({
@@ -565,43 +599,27 @@ export default function FormStartComputeAlgo({
               )}
 
               <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(
-                    new Decimal(
-                      selectedDatasetAsset
-                        ?.map((a) =>
-                          Number(
-                            a.accessDetails?.[a.serviceIndex || 0]?.price || 0
-                          )
-                        )
-                        .reduce((acc, val) => acc + val, 0)
-                    )
-                  )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
-                  .toString()}
+                price={new Decimal(
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+                ).toString()}
                 symbol={datasetSymbol}
-                type={`CONSUME MARKET ORDER FEE DATASETS (${consumeMarketOrderFee}%)`}
+                type={`CONSUME MARKET ORDER FEE DATASETS`}
               />
               <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(new Decimal(algoOrderPrice || accessDetails.price || 0))
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
-                  .toString()} // consume market order fee fee amount
+                price={new Decimal(
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+                ).toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
-                type={`CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketOrderFee}%)`}
+                type={`CONSUME MARKET ORDER FEE ALGORITHM`}
               />
 
               {computeEnvs?.length > 0 && (
                 <Row
-                  price={new Decimal(consumeMarketOrderFee)
-                    .mul(new Decimal(selectedResources?.price || 0))
-                    .toDecimalPlaces(MAX_DECIMALS)
-                    .div(100)
-                    .toString()}
+                  price={new Decimal(
+                    formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+                  ).toString()}
                   symbol={providerFeesSymbol}
-                  type={`CONSUME MARKET ORDER FEE C2D (${consumeMarketOrderFee}%)`}
+                  type={`CONSUME MARKET ORDER FEE C2D`}
                 />
               )}
               {totalPrices.map((item) =>
@@ -676,7 +694,7 @@ export default function FormStartComputeAlgo({
             disabled={isLoading || isComputeButtonDisabled}
             options={computeEnvs}
             accountId={accountId}
-            selected={values.computeEnv}
+            selected={values.computeEnv || []}
             setAllResourceValues={setAllResourceValues}
           />
         ) : null

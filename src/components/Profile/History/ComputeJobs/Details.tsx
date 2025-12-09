@@ -1,15 +1,16 @@
 import { ReactElement, useEffect, useState } from 'react'
 import Time from '@shared/atoms/Time'
 import Button from '@shared/atoms/Button'
-import Modal from '@shared/atoms/Modal'
-import External from '@images/external.svg'
-import { getAsset } from '@utils/aquarius'
-import Results from './Results'
 import styles from './Details.module.css'
-import { useCancelToken } from '@hooks/useCancelToken'
+import Results from './Results'
 import MetaItem from '../../../Asset/AssetContent/MetaItem'
+import { useCancelToken } from '@hooks/useCancelToken'
 import { useMarketMetadata } from '@context/MarketMetadata'
+import { getAsset } from '@utils/aquarius'
 import { Asset as AssetType } from 'src/@types/Asset'
+import External from '@images/external.svg'
+import CloseIcon from '@images/closeIcon.svg'
+import useIsMobile from '@hooks/useIsMobile'
 
 function Asset({
   title,
@@ -37,20 +38,13 @@ function Asset({
           </a>
         </h3>
       </div>
-      <div className={styles.assetMetaBlock}>
-        <span className={styles.assetLabel}>Symbol:</span>
-        <code className={styles.assetCode}>{symbol}</code>
+      <div className={styles.assetDetails}>
+        <span className={styles.symbol}>{symbol}</span>
+        <span className={styles.divider}></span>
+        <span className={styles.did} title={did}>
+          {did.slice(0, 50)}...
+        </span>
       </div>
-      <div className={styles.assetMetaBlock}>
-        <span className={styles.assetLabel}>DID:</span>
-        <code className={styles.assetCode}>{did}</code>
-      </div>
-      {serviceId && (
-        <div className={styles.assetMetaBlock}>
-          <span className={styles.assetLabel}>Service ID:</span>
-          <code className={styles.assetCode}>{serviceId}</code>
-        </div>
-      )}
     </div>
   )
 }
@@ -73,7 +67,7 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
           newCancelToken()
         )) as AssetType
         setAlgoDtSymbol(ddo.indexedMetadata.stats[0].symbol)
-        setAlgoName(ddo?.credentialSubject.metadata.name)
+        setAlgoName(ddo.credentialSubject.metadata.name)
       }
     }
 
@@ -98,7 +92,6 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
 
   return (
     <>
-      <h3 className={styles.sectionLabel}>Input Datasets</h3>
       <div className={styles.assetListBox}>
         {datasetAssets.map(({ ddo, serviceId }) => (
           <Asset
@@ -109,9 +102,8 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
             serviceId={serviceId}
           />
         ))}
-      </div>
-      <h3 className={styles.sectionLabel}>Algorithm</h3>
-      <div className={styles.assetListBox}>
+        <hr className={styles.assetDivider} />
+
         <Asset
           title={algoName}
           symbol={algoDtSymbol}
@@ -128,51 +120,151 @@ export default function Details({
   job: ComputeJobMetaData
 }): ReactElement {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const isMobile = useIsMobile()
+  function formatDuration(seconds: number): string {
+    if (isNaN(seconds) || seconds < 0) return '—'
+
+    const units = [
+      { label: 'year', secs: 365 * 24 * 3600 },
+      { label: 'month', secs: 30 * 24 * 3600 },
+      { label: 'day', secs: 24 * 3600 },
+      { label: 'hour', secs: 3600 },
+      { label: 'minute', secs: 60 },
+      { label: 'second', secs: 1 }
+    ]
+
+    let remaining = seconds
+    const parts: string[] = []
+
+    for (const { label, secs } of units) {
+      const value = Math.floor(remaining / secs)
+      if (value > 0) {
+        parts.push(`${value} ${label}${value > 1 ? 's' : ''}`)
+        remaining -= value * secs
+      }
+    }
+    if (parts.length === 0 && remaining > 0) {
+      parts.push(`${remaining.toFixed(3)} seconds`)
+    }
+    return parts.slice(0, 3).join(' ')
+  }
+
   return (
     <>
       <Button style="text" size="small" onClick={() => setIsDialogOpen(true)}>
         Show Details
       </Button>
-      <Modal
-        title={job.statusText}
-        isOpen={isDialogOpen}
-        onToggleModal={() => setIsDialogOpen(false)}
-      >
-        <DetailsAssets job={job} />
-        <Results job={job} />
 
-        <div className={styles.meta}>
-          <MetaItem
-            title="Created"
-            content={
-              <Time
-                date={
-                  Number((job as any).algoStartTimestamp) > 0
-                    ? (
-                        Number((job as any).algoStartTimestamp) * 1000
-                      ).toString()
-                    : (Number(job.dateCreated) * 1000).toString()
-                }
-                isUnix
-                relative
+      {isDialogOpen && (
+        <dialog open className={styles.dialog}>
+          <div className={styles.dialogContent}>
+            <div className={styles.dialogHeader}>
+              <h2>{job.statusText}</h2>
+              <CloseIcon
+                className={styles.closeIconAbsolute}
+                onClick={() => setIsDialogOpen(false)}
+                aria-label="Close"
               />
-            }
-          />
-          {job.dateFinished && (
-            <MetaItem
-              title="Finished"
-              content={
-                <Time
-                  date={((job as any).algoStopTimestamp * 1000).toString()}
-                  isUnix
-                  relative
+            </div>
+
+            <DetailsAssets job={job} />
+            <Results job={job} />
+
+            <div className={styles.meta}>
+              <MetaItem
+                title="Created"
+                content={
+                  <Time
+                    date={
+                      Number((job as any).algoStartTimestamp) > 0
+                        ? (
+                            Number((job as any).algoStartTimestamp) * 1000
+                          ).toString()
+                        : (Number(job.dateCreated) * 1000).toString()
+                    }
+                    isUnix
+                    relative
+                  />
+                }
+              />
+
+              {job.dateFinished && (
+                <MetaItem
+                  title="Finished"
+                  content={
+                    <Time
+                      date={
+                        Number((job as any).algoStopTimestamp) > 0
+                          ? (
+                              Number((job as any).algoStopTimestamp) * 1000
+                            ).toString()
+                          : (Number(job.dateFinished) * 1000).toString()
+                      }
+                      isUnix
+                      relative
+                    />
+                  }
                 />
-              }
-            />
-          )}
-          <MetaItem title="Job ID" content={<code>{job.jobId}</code>} />
-        </div>
-      </Modal>
+              )}
+              {job.dateFinished && job.dateCreated && (
+                <MetaItem
+                  title="Duration"
+                  content={formatDuration(
+                    Number(job.dateFinished) - Number(job.dateCreated)
+                  )}
+                />
+              )}
+              {job.dateFinished && (
+                <MetaItem
+                  title="Job Cost"
+                  content={
+                    job?.payment?.cost
+                      ? `${job.payment.cost.toString()}`
+                      : 'FREE'
+                  }
+                />
+              )}
+
+              {job.dateFinished ? (
+                // When finished date exists, show JobDID on new line
+                <div style={{ flexBasis: '100%' }}>
+                  <span className={styles.jobDID}>
+                    <MetaItem
+                      title="Job ID"
+                      content={
+                        <code>
+                          {isMobile
+                            ? `${job.jobId.slice(0, 20)}...`
+                            : job.jobId}
+                        </code>
+                      }
+                    />
+                  </span>
+                </div>
+              ) : (
+                // Else show it in same row
+                <span className={styles.jobDID}>
+                  <MetaItem
+                    title="Job ID"
+                    content={
+                      <code>
+                        {isMobile ? `${job.jobId.slice(0, 20)}...` : job.jobId}
+                      </code>
+                    }
+                  />
+                </span>
+              )}
+            </div>
+            <button
+              className={styles.mobileCloseButton}
+              onClick={() => setIsDialogOpen(false)}
+              aria-label="Close Dialog"
+            >
+              Close
+            </button>
+          </div>
+        </dialog>
+      )}
     </>
   )
 }

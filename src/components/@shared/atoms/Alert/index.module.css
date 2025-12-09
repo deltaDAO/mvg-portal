@@ -87,3 +87,7 @@ button.action {
     margin-bottom: var(--publish-spacing-md);
   }
 }
+
+.infoBox p {
+  margin: 0;
+}

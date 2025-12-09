@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useSigner } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useUserPreferences } from '@context/UserPreferences'
 import {
@@ -13,19 +12,20 @@ import appConfig from 'app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import SsiApiModal from '../Wallet/SsiApiModal'
 import { SsiWalletDesc, SsiWalletSession } from 'src/@types/SsiWallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function SsiWalletManager() {
   const { showSsiWalletModule, setShowSsiWalletModule } = useUserPreferences()
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner()
   const {
     setSessionToken,
     ssiWalletCache,
     setCachedCredentials,
     clearVerifierSessionCache,
-    sessionToken,
     selectedWallet,
     setSelectedWallet,
-    setSelectedKey
+    setSelectedKey,
+    setSelectedDid
   } = useSsiWallet()
 
   const [overrideApi, setOverrideApi] = useState(() => {
@@ -34,11 +34,10 @@ export default function SsiWalletManager() {
 
   const fetchWallets = async (session: SsiWalletSession) => {
     try {
-      if (sessionToken) {
-        const wallets = await getWallets(session.token)
-        setSelectedWallet(wallets[0])
-        return wallets[0]
-      }
+      if (!session) return selectedWallet
+      const wallets = await getWallets(session.token)
+      setSelectedWallet(wallets[0])
+      return wallets[0]
     } catch (error) {
       return selectedWallet
     }
@@ -48,9 +47,7 @@ export default function SsiWalletManager() {
     wallet: SsiWalletDesc,
     session: SsiWalletSession
   ) => {
-    if (!selectedWallet || !sessionToken) {
-      return
-    }
+    if (!wallet || !session) return
     try {
       const keys = await getWalletKeys(wallet, session.token)
       setSelectedKey(keys[0])
@@ -61,12 +58,20 @@ export default function SsiWalletManager() {
 
   async function handleSsiConnect() {
     try {
+      if (!walletClient) {
+        LoggerInstance.error('Wallet Client not available for SSI connection.')
+        return
+      }
+
       ssiWalletCache.clearCredentials()
       setCachedCredentials(undefined)
       clearVerifierSessionCache()
       setSsiWalletApiOverride(overrideApi)
-      const session = await connectToWallet(signer!)
+
+      const session = await connectToWallet(walletClient as any)
       setSessionToken(session)
+      setSelectedDid(undefined)
+      setSelectedKey(undefined)
       const wallet = await fetchWallets(session)
       await fetchKeys(wallet, session)
       setShowSsiWalletModule(false)

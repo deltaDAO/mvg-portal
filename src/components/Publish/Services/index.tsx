@@ -1,14 +1,11 @@
 import Input from '@shared/FormInput'
 import { Field, useFormikContext } from 'formik'
-import { ReactElement, useEffect, useState, useMemo } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import IconDownload from '@images/download2.svg'
 import IconCompute from '@images/compute.svg'
 import content from '../../../../content/publish/form.json'
 import { getFieldContent } from '@utils/form'
 import { FormPublishData } from '../_types'
-import { useMarketMetadata } from '@context/MarketMetadata'
-import { getDefaultPolicies } from '../_utils'
-import { LoggerInstance } from '@oceanprotocol/lib'
 import { supportedLanguages } from '@components/Asset/languageType'
 import FormEditComputeService from '@components/Asset/Edit/FormEditComputeService'
 import AccessRulesSection from '../AccessPolicies/AccessRulesSection'
@@ -23,9 +20,6 @@ const accessTypeOptionsTitles = getFieldContent(
 ).options
 
 export default function ServicesFields(): ReactElement {
-  const { appConfig } = useMarketMetadata()
-  const [defaultPolicies, setDefaultPolicies] = useState<string[]>([])
-
   // connect with Form state, use for conditional field rendering
   const { values, setFieldValue } = useFormikContext<FormPublishData>()
 
@@ -106,18 +100,7 @@ export default function ServicesFields(): ReactElement {
     )
   }, [values.services[0].algorithmPrivacy, values.metadata.type, setFieldValue])
 
-  useEffect(() => {
-    if (appConfig.ssiEnabled) {
-      getDefaultPolicies()
-        .then((policies) => {
-          setDefaultPolicies(policies)
-        })
-        .catch((error) => {
-          LoggerInstance.error(error)
-          setDefaultPolicies([])
-        })
-    }
-  }, [])
+  // Removed default policy loading - users must manually select policies
 
   return (
     <>
@@ -219,7 +202,7 @@ export default function ServicesFields(): ReactElement {
       <AccessRulesSection fieldPrefix="services[0].credentials" />
 
       <SSIPoliciesSection
-        defaultPolicies={defaultPolicies}
+        defaultPolicies={[]}
         fieldNamePrefix="services[0]"
         showEnableCheckbox={true}
         hideDefaultPolicies={true}

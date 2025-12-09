@@ -53,6 +53,7 @@ body .header div {
   min-width: 180px;
   flex: 1;
   align-self: stretch;
+  justify-content: space-between;
 }
 
 .fieldContainer label {
@@ -63,8 +64,8 @@ body .header div {
 }
 
 .fieldContainer select {
-  height: 100%;
-  min-height: 40px;
+  height: 40px;
+  max-height: 40px;
 }
 
 .required {

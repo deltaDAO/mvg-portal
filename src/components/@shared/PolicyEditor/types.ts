@@ -62,7 +62,16 @@ export interface ArgumentVpPolicy {
   args: string
 }
 
-export type VpPolicyType = StaticVpPolicy | ArgumentVpPolicy
+export interface ExternalEvpForwardVpPolicy {
+  type: 'externalEvpForwardVpPolicy'
+  url: string
+}
+
+export type VpPolicyType =
+  | StaticVpPolicy
+  | ArgumentVpPolicy
+  | ExternalEvpForwardVpPolicy
+  | any
 
 export interface CredentialForm {
   allow?: string[]
@@ -74,6 +83,11 @@ export interface CredentialForm {
   vcPolicies?: string[]
   enabled?: boolean
   advancedFeaturesEnabled?: boolean
+  externalEvpForwardUrl?: string
+  vpRequiredCredentials?: {
+    required: ({ credential_type: string } | { any_of: string[] })[]
+    anyOfEnabled: boolean
+  }
 }
 
 export interface PolicyEditorProps {

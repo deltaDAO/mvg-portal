@@ -10,6 +10,7 @@ export interface ComputeDatasetForm {
   algorithm: string
   dataset?: string[]
   computeEnv: string
+  mode: 'free' | 'paid'
   dataServiceParams: UserCustomParameters
   algoServiceParams: UserCustomParameters
   algoParams: UserCustomParameters
@@ -49,6 +50,7 @@ export function getInitialValues(
   return {
     algorithm: selectedAlgorithmAsset?.id,
     computeEnv: selectedComputeEnv?.id,
+    mode: 'free',
     dataServiceParams: getDefaultValues(service.consumerParameters),
     algoServiceParams: getDefaultValues(
       selectedAlgorithmAsset?.credentialSubject?.services[0].consumerParameters

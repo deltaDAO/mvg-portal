@@ -15,14 +15,12 @@ module.exports = {
 
   // List of chainIds which metadata cache queries will return by default.
   // This preselects the Chains user preferences.
-  chainIds: [11155111, 8996],
+  chainIds: [1, 10, 11155111, 11155420],
 
   // List of all supported chainIds. Used to populate the Chains user preferences list.
-  chainIdsSupported: [11155111, 8996],
+  chainIdsSupported: [1, 10, 11155111, 11155420],
 
   customProviderUrl: process.env.NEXT_PUBLIC_PROVIDER_URL,
-
-  infuraProjectId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID || 'xxx',
 
   defaultDatatokenCap:
     '115792089237316195423570985008687907853269984665640564039457',
@@ -38,9 +36,10 @@ module.exports = {
   publisherMarketFixedSwapFee:
     process.env.NEXT_PUBLIC_PUBLISHER_MARKET_FIXED_SWAP_FEE || '0',
 
-  // consume market fee that is taken upon ordering an asset, it is an absolute value, it is specified on order
+  // consume market fee that is taken upon ordering an asset, it is an absolute value with 18 decimals, it is specified on order
   consumeMarketOrderFee:
     process.env.NEXT_PUBLIC_CONSUME_MARKET_ORDER_FEE || '0',
+  consumeMarketFee: process.env.NEXT_PUBLIC_CONSUME_MARKET_FEE || '0',
   // fee recieved by the consume market when a dt is bought from a fixed rate exchange, percent
   consumeMarketFixedSwapFee:
     process.env.NEXT_PUBLIC_CONSUME_MARKET_FIXED_SWAP_FEE || '0',
@@ -101,14 +100,11 @@ module.exports = {
     process.env.NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL ||
     'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
 
-  ipfsApiKey: process.env.NEXT_PUBLIC_IPFS_API_KEY,
-  ipfsSecretApiKey: process.env.NEXT_PUBLIC_IPFS_SECRET_API_KEY,
+  ipfsJWT: process.env.NEXT_PUBLIC_IPFS_JWT,
   ipfsGateway: process.env.NEXT_PUBLIC_IPFS_GATEWAY,
   ipfsUnpinFiles: process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES
     ? process.env.NEXT_PUBLIC_IPFS_UNPIN_FILES === 'true'
     : false,
-
-  oceanTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS,
 
   opaServer: process.env.NEXT_PUBLIC_OPA_SERVER_URL,
   showOnboardingModuleByDefault:

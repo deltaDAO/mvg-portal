@@ -1,7 +1,8 @@
 export interface OpcFee {
   chainId: number
-  swapNotApprovedFee: string
-  swapApprovedFee: string
+  feePercentage: string
+  maxFee: string
+  minFee: string
   approvedTokens: string[]
 }
 

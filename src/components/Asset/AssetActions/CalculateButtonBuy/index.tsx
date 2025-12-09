@@ -21,7 +21,7 @@ export default function CalculateButtonBuy({
       {isLoading ? (
         <Loader message={stepText} />
       ) : (
-        <Button style="primary" type={type} onClick={onClick}>
+        <Button style="publish" type={type} onClick={onClick}>
           Calculate Total Price
         </Button>
       )}

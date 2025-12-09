@@ -1,9 +1,14 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement } from 'react'
+import { Field } from 'formik'
 import Input from '../../FormInput'
 import styles from './Advanced.module.css'
 import Tooltip from '@shared/atoms/Tooltip'
 import Markdown from '@shared/Markdown'
 import cs from 'classnames'
+import VpRequiredCredentialsSection, {
+  VpCredentialEntry
+} from './VpRequiredCredentialsSection'
+import fields from '../editor.json'
 
 interface AdvancedOptionsProps {
   name: string
@@ -19,6 +24,14 @@ interface AdvancedOptionsProps {
   onMinCredentialsCountChange: (value: string) => void
   onLimitMaxCredentialsChange: () => void
   onMaxCredentialsCountChange: (value: string) => void
+  externalEvpForward: boolean
+  onExternalEvpForwardChange: () => void
+  onExternalEvpForwardUrlChange: (value: string) => void
+
+  vpRequiredCredentialsEnabled: boolean
+  onVpRequiredCredentialsEnabledChange: (v: boolean) => void
+  vpRequiredCredentials: VpCredentialEntry[]
+  onVpRequiredCredentialsChange: (value: VpCredentialEntry[]) => void
 }
 
 export default function AdvancedOptions({
@@ -34,8 +47,24 @@ export default function AdvancedOptions({
   onLimitMinCredentialsChange,
   onMinCredentialsCountChange,
   onLimitMaxCredentialsChange,
-  onMaxCredentialsCountChange
+  onMaxCredentialsCountChange,
+  externalEvpForward,
+  onExternalEvpForwardChange,
+  onExternalEvpForwardUrlChange,
+  vpRequiredCredentialsEnabled,
+  onVpRequiredCredentialsEnabledChange,
+  vpRequiredCredentials,
+  onVpRequiredCredentialsChange
 }: AdvancedOptionsProps): ReactElement {
+  const typeField = fields.find((f) => f.name === 'type')
+  const credentialTypeOptions =
+    typeField && Array.isArray(typeField.options)
+      ? typeField.options.map((opt) => ({
+          label: opt,
+          value: opt
+        }))
+      : []
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -155,6 +184,74 @@ export default function AdvancedOptions({
               disabled={!limitMaxCredentials}
             />
           )}
+        </div>
+
+        <div className={styles.inputRow}>
+          <div className={styles.checkboxWithTooltip}>
+            <Input
+              name={`${name}.externalEvpForward`}
+              type="checkbox"
+              options={['External EVP forward']}
+              checked={externalEvpForward}
+              onChange={onExternalEvpForwardChange}
+              hideLabel={true}
+            />
+            <Tooltip
+              content={
+                <Markdown text="Submits the Enveloped Verifiable Presentation to an external service for verification. Provide the service URL when enabled." />
+              }
+            />
+          </div>
+          {externalEvpForward && (
+            <div className={styles.fullWidth}>
+              <Field name={`${name}.externalEvpForwardUrl`}>
+                {({ field, form }) => (
+                  <Input
+                    field={field}
+                    form={form}
+                    type="text"
+                    placeholder="https://service.example.com/evp"
+                    value={field.value || ''}
+                    onChange={(e) => {
+                      const val = (e.target as HTMLInputElement).value
+                      onExternalEvpForwardUrlChange(val)
+                      form.setFieldValue(field.name, val)
+                    }}
+                    hideLabel={true}
+                  />
+                )}
+              </Field>
+            </div>
+          )}
+
+          <div className={styles.inputRow}>
+            <div className={styles.checkboxWithTooltip}>
+              <Input
+                name={`${name}.vpRequiredCredentialsEnabled`}
+                type="checkbox"
+                options={['VP required credentials']}
+                checked={vpRequiredCredentialsEnabled}
+                onChange={() =>
+                  onVpRequiredCredentialsEnabledChange(
+                    !vpRequiredCredentialsEnabled
+                  )
+                }
+                hideLabel={true}
+              />
+              <Tooltip
+                content={
+                  <Markdown text="Specify which verifiable credentials are mandatory and which are optional" />
+                }
+              />
+            </div>
+            {vpRequiredCredentialsEnabled && (
+              <VpRequiredCredentialsSection
+                required={vpRequiredCredentials}
+                onChange={onVpRequiredCredentialsChange}
+                credentialOptions={credentialTypeOptions}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

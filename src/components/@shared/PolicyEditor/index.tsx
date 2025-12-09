@@ -1,5 +1,4 @@
 import { getFieldContent } from '@utils/form'
-import { Field } from 'formik'
 import cs from 'classnames'
 import { ReactElement, useEffect, useState } from 'react'
 import styles from './index.module.css'
@@ -13,8 +12,7 @@ import {
   PolicyEditorProps,
   PolicyType,
   RequestCredentialForm,
-  StaticPolicy,
-  VpPolicyType
+  StaticPolicy
 } from './types'
 import fields from './editor.json'
 import Tooltip from '@shared/atoms/Tooltip'
@@ -23,14 +21,11 @@ import CredentialCard from './CredentialCard/Card'
 import StaticPolicyBlock from './PolicyBlocks/Static'
 import AllowedIssuerPolicyBlock from './PolicyBlocks/AllowedIssuer'
 import CustomUrlPolicyBlock from './PolicyBlocks/CustomUrl'
-import CustomFieldPolicyBlock from './PolicyBlocks/CustomField'
 import AdvancedOptions from './AdvancedOptions/Advanced'
-import FieldRow from './FieldRow/Row'
-import fieldRowStyles from './FieldRow/Row.module.css'
-import DeleteButton from '../DeleteButton/DeleteButton'
 import CustomPolicyBlock from './PolicyBlocks/Custom'
 
 import AddIcon from '@images/add_param.svg'
+import { VpCredentialEntry } from './AdvancedOptions/VpRequiredCredentialsSection'
 
 interface PolicyViewProps {
   policy: PolicyType
@@ -40,13 +35,6 @@ interface PolicyViewProps {
   onDeletePolicy: () => void
   onValueChange: () => void
   credentialType?: string
-}
-
-interface VpPolicyViewProps {
-  policy: VpPolicyType
-  name: string
-  index: number
-  onDeletePolicy: () => void
 }
 
 function PolicyView(props: PolicyViewProps): ReactElement {
@@ -92,89 +80,6 @@ function PolicyView(props: PolicyViewProps): ReactElement {
   }
 }
 
-function StaticVpPolicyView(props: VpPolicyViewProps): ReactElement {
-  const { index, onDeletePolicy, name }: VpPolicyViewProps = props
-  return (
-    <>
-      <label>{{ ...getFieldContent('staticVpPolicy', fields) }.label}</label>
-      <div className={`${styles.editorPanel} ${styles.marginBottom1em}`}>
-        <div
-          className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-        >
-          <div className={`${styles.flexGrow}`}>
-            <Field
-              {...getFieldContent('name', fields)}
-              component={Input}
-              name={`${name}.vpPolicies[${index}].name`}
-            />
-          </div>
-          <Button
-            type="button"
-            style="ghost"
-            onClick={onDeletePolicy}
-            className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-          >
-            Delete
-          </Button>
-        </div>
-      </div>
-    </>
-  )
-}
-
-function ArgumentVpPolicyView(props: VpPolicyViewProps): ReactElement {
-  const { index, onDeletePolicy, name }: VpPolicyViewProps = props
-  return (
-    <>
-      <label>{{ ...getFieldContent('argumentVpPolicy', fields) }.label}</label>
-      <div className={`${styles.editorPanel} ${styles.marginBottom1em}`}>
-        <div
-          className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100}`}
-        >
-          <div
-            className={`${styles.panelRow} ${styles.alignItemsEnd} ${styles.width100} ${styles.flexGrow}`}
-          >
-            <div className={styles.flexGrow}>
-              <Field
-                {...getFieldContent('policy', fields)}
-                component={Input}
-                name={`${name}.vpPolicies[${index}].policy`}
-              />
-            </div>
-            <div className={styles.flexGrow}>
-              <Field
-                {...getFieldContent('args', fields)}
-                component={Input}
-                name={`${name}.vpPolicies[${index}].args`}
-              />
-            </div>
-            <Button
-              type="button"
-              style="ghost"
-              onClick={onDeletePolicy}
-              className={`${styles.deleteButton} ${styles.marginBottomButton}`}
-            >
-              Delete
-            </Button>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
-
-function VpPolicyView(props: VpPolicyViewProps): ReactElement {
-  const { policy }: VpPolicyViewProps = props
-  switch (policy?.type) {
-    case 'staticVpPolicy':
-      return StaticVpPolicyView(props)
-    case 'argumentVpPolicy':
-      return ArgumentVpPolicyView(props)
-    default:
-      return <></>
-  }
-}
-
 export function PolicyEditor(props): ReactElement {
   const {
     credentials,
@@ -188,10 +93,29 @@ export function PolicyEditor(props): ReactElement {
     buttonStyle = 'primary',
     hideDefaultPolicies = false
   }: PolicyEditorProps = props
-
+  const [vpRequiredCredentials, setVpRequiredCredentials] = useState<
+    VpCredentialEntry[]
+  >(
+    Array.isArray(credentials.vpRequiredCredentials)
+      ? credentials.vpRequiredCredentials
+      : []
+  )
+  const [vpRequiredCredentialsEnabled, setVpRequiredCredentialsEnabled] =
+    useState<boolean>(
+      Array.isArray(credentials.vpRequiredCredentials) &&
+        credentials.vpRequiredCredentials.length > 0
+    )
+  useEffect(() => {
+    if (
+      !vpRequiredCredentialsEnabled &&
+      credentials.vpRequiredCredentials?.required?.length
+    )
+      setCredentials({ ...credentials, vpRequiredCredentials: [] })
+  }, [vpRequiredCredentialsEnabled])
   const [enabled, setEnabled] = useState(credentials.enabled || enabledView)
   const [editAdvancedFeatures, setEditAdvancedFeatures] = useState(
-    credentials.advancedFeaturesEnabled || false
+    credentials.advancedFeaturesEnabled ||
+      (credentials.vpPolicies?.length ?? 0) > 0
   )
   const [holderBinding, setHolderBinding] = useState(() => {
     const hasHolderBinding = credentials.vpPolicies?.some(
@@ -213,6 +137,19 @@ export function PolicyEditor(props): ReactElement {
     ) as ArgumentVpPolicy | undefined
     return maxCredsPolicy?.args || '1'
   })
+  const [externalEvpForward, setExternalEvpForward] = useState(() => {
+    return (
+      credentials.vpPolicies?.some(
+        (p) => p?.type === 'externalEvpForwardVpPolicy'
+      ) ?? false
+    )
+  })
+  const [externalEvpForwardUrl, setExternalEvpForwardUrl] = useState(() => {
+    const p = credentials.vpPolicies?.find(
+      (p) => p?.type === 'externalEvpForwardVpPolicy'
+    ) as any
+    return p?.url || credentials.externalEvpForwardUrl || ''
+  })
   const [limitMaxCredentials, setLimitMaxCredentials] = useState(() => {
     const maxCredsPolicy = credentials.vpPolicies?.find(
       (p) =>
@@ -220,6 +157,13 @@ export function PolicyEditor(props): ReactElement {
     ) as ArgumentVpPolicy | undefined
     return !!maxCredsPolicy
   })
+  useEffect(() => {
+    const p = credentials.vpPolicies?.find(
+      (p) => p?.type === 'externalEvpForwardVpPolicy'
+    ) as any
+    setExternalEvpForward(!!p)
+    setExternalEvpForwardUrl(p?.url || credentials.externalEvpForwardUrl || '')
+  }, [credentials.vpPolicies, credentials.externalEvpForwardUrl])
   const [minimumCredentials, setMinimumCredentials] = useState(() => {
     const minCredsPolicy = credentials.vpPolicies?.find(
       (p) =>
@@ -238,21 +182,16 @@ export function PolicyEditor(props): ReactElement {
 
   const [defaultPolicyStates, setDefaultPolicyStates] = useState(() => {
     const currentVcPolicies = credentials.vcPolicies || []
-    const hasExistingPolicies = currentVcPolicies.length > 0
-
-    return {
-      'not-before':
-        currentVcPolicies.includes('not-before') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
+    // Initialize all policies as unchecked
+    const initialState = {
+      'not-before': currentVcPolicies.includes('not-before'),
       expired: currentVcPolicies.includes('expired'),
-      'revoked-status-list':
-        currentVcPolicies.includes('revoked-status-list') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
-      signature:
-        currentVcPolicies.includes('signature') ||
-        (!hasExistingPolicies && !hideDefaultPolicies),
+      'revoked-status-list': currentVcPolicies.includes('revoked-status-list'),
+      signature: currentVcPolicies.includes('signature'),
       'signature_sd-jwt-vc': currentVcPolicies.includes('signature_sd-jwt-vc')
     }
+
+    return initialState
   })
 
   // Update checkbox states when credentials change (e.g., when navigating between steps)
@@ -315,20 +254,12 @@ export function PolicyEditor(props): ReactElement {
       return
     }
 
-    const { vpPolicies } = credentials
-
-    if (!hasUserSetEnabled || editAdvancedFeatures) {
+    if (!hasUserSetEnabled && !editAdvancedFeatures) {
       setEditAdvancedFeatures(true)
     }
-  }, [credentials, hasUserSetEnabled, editAdvancedFeatures])
+  }, [credentials?.vpPolicies?.length, hasUserSetEnabled, editAdvancedFeatures])
 
-  const allPolicies = [
-    'signature',
-    'not-before',
-    'revoked-status-list',
-    'expired',
-    'signature_sd-jwt-vc'
-  ]
+  const allPolicies = hideDefaultPolicies ? [] : defaultPolicies
 
   function getPolicyDescription(policy: string): string {
     const descriptions = {
@@ -345,10 +276,6 @@ export function PolicyEditor(props): ReactElement {
     }
     return descriptions[policy] || 'Policy verification rule.'
   }
-
-  const filteredDefaultPolicies = defaultPolicies.filter(
-    (policy) => policy.length > 0
-  )
 
   useEffect(() => {
     const hasExistingCredentials =
@@ -389,32 +316,6 @@ export function PolicyEditor(props): ReactElement {
     }
   }, [credentials.enabled, hasUserSetEnabled, editAdvancedFeatures])
 
-  function handlePolicyEditorToggle(value: boolean) {
-    setHasUserSetEnabled(true)
-    if (!value) {
-      const updatedCredentials = {
-        ...credentials,
-        enabled: false,
-        requestCredentials: [],
-        vcPolicies: [],
-        vpPolicies: []
-      }
-      setCredentials(updatedCredentials)
-      setEditAdvancedFeatures(false)
-    } else {
-      const updatedCredentials = {
-        ...credentials,
-        enabled: true,
-        vcPolicies: defaultPolicies || []
-      }
-      if (credentials.vpPolicies?.length) {
-        updatedCredentials.vpPolicies = credentials.vpPolicies
-      }
-      setCredentials(updatedCredentials)
-    }
-    setEnabled(value)
-  }
-
   function handleNewRequestCredential() {
     const newRequestCredential: RequestCredentialForm = {
       format: '',
@@ -422,6 +323,7 @@ export function PolicyEditor(props): ReactElement {
       policies: [],
       newPolicyType: 'staticPolicy'
     }
+
     credentials?.requestCredentials?.push(newRequestCredential)
     setCredentials(credentials)
   }
@@ -558,7 +460,10 @@ export function PolicyEditor(props): ReactElement {
     if (!enabled) return
 
     if (!editAdvancedFeatures) {
-      if (credentials.vpPolicies !== undefined) {
+      if (
+        Array.isArray(credentials.vpPolicies) &&
+        credentials.vpPolicies.length === 0
+      ) {
         const { vpPolicies, ...credentialsWithoutVpPolicies } = credentials
         setCredentials(credentialsWithoutVpPolicies)
       }
@@ -671,47 +576,27 @@ export function PolicyEditor(props): ReactElement {
       }
     }
 
-    if (holderBinding) {
-      const exists = updatedVpPolicies.some(
-        (p) => p?.type === 'staticVpPolicy' && p?.name === 'holder-binding'
+    if (externalEvpForward) {
+      const index = updatedVpPolicies.findIndex(
+        (p) => p && (p as any).type === 'externalEvpForwardVpPolicy'
       )
-      if (!exists) {
-        updatedVpPolicies.push({
-          type: 'staticVpPolicy',
-          name: 'holder-binding'
-        })
+      const newVal = {
+        type: 'externalEvpForwardVpPolicy',
+        url: externalEvpForwardUrl
+      } as any
+      if (index === -1) {
+        updatedVpPolicies.push(newVal)
         changed = true
+      } else {
+        const curr = updatedVpPolicies[index] as any
+        if (curr.url !== externalEvpForwardUrl) {
+          updatedVpPolicies[index] = newVal
+          changed = true
+        }
       }
     } else {
       const filtered = updatedVpPolicies.filter(
-        (p) => !(p?.type === 'staticVpPolicy' && p?.name === 'holder-binding')
-      )
-      if (filtered.length !== updatedVpPolicies.length) {
-        updatedVpPolicies.length = 0
-        updatedVpPolicies.push(...filtered)
-        changed = true
-      }
-    }
-
-    if (requireAllTypes) {
-      const exists = updatedVpPolicies.some(
-        (p) =>
-          p?.type === 'staticVpPolicy' && p?.name === 'presentation-definition'
-      )
-      if (!exists) {
-        updatedVpPolicies.push({
-          type: 'staticVpPolicy',
-          name: 'presentation-definition'
-        })
-        changed = true
-      }
-    } else {
-      const filtered = updatedVpPolicies.filter(
-        (p) =>
-          !(
-            p?.type === 'staticVpPolicy' &&
-            p?.name === 'presentation-definition'
-          )
+        (p) => (p as any)?.type !== 'externalEvpForwardVpPolicy'
       )
       if (filtered.length !== updatedVpPolicies.length) {
         updatedVpPolicies.length = 0
@@ -731,11 +616,21 @@ export function PolicyEditor(props): ReactElement {
     holderBinding,
     requireAllTypes,
     minimumCredentials,
-    maximumCredentials
+    maximumCredentials,
+    externalEvpForward,
+    externalEvpForwardUrl
   ])
 
   useEffect(() => {
+    setCredentials({ ...credentials, vpRequiredCredentials })
+  }, [vpRequiredCredentials])
+
+  useEffect(() => {
     if (!enabled) return
+
+    const hasCompletedCredentials = credentials.requestCredentials?.some(
+      (cred) => cred.type?.trim() && cred.format?.trim()
+    )
 
     const selectedPolicies = Object.entries(defaultPolicyStates)
       .filter(([_, isSelected]) => isSelected)
@@ -743,13 +638,26 @@ export function PolicyEditor(props): ReactElement {
 
     const currentVcPolicies = credentials.vcPolicies || []
 
+    if (!hasCompletedCredentials) {
+      if (currentVcPolicies.length > 0) {
+        setCredentials({ ...credentials, vcPolicies: [] })
+      }
+      return
+    }
+
     if (
       JSON.stringify(selectedPolicies.sort()) !==
       JSON.stringify(currentVcPolicies.sort())
     ) {
       setCredentials({ ...credentials, vcPolicies: selectedPolicies })
     }
-  }, [defaultPolicyStates, enabled])
+  }, [
+    defaultPolicyStates,
+    enabled,
+    credentials.requestCredentials,
+    credentials.vcPolicies,
+    setCredentials
+  ])
 
   const ssiContent = enabled && (
     <>
@@ -931,6 +839,20 @@ export function PolicyEditor(props): ReactElement {
             setLimitMaxCredentials(!limitMaxCredentials)
           }
           onMaxCredentialsCountChange={(value) => setMaximumCredentials(value)}
+          externalEvpForward={externalEvpForward}
+          onExternalEvpForwardChange={() =>
+            setExternalEvpForward(!externalEvpForward)
+          }
+          onExternalEvpForwardUrlChange={(value) =>
+            setExternalEvpForwardUrl(value)
+          }
+          vpRequiredCredentialsEnabled={vpRequiredCredentialsEnabled}
+          onVpRequiredCredentialsEnabledChange={(enabled) => {
+            setVpRequiredCredentialsEnabled(enabled)
+            if (!enabled) setVpRequiredCredentials([])
+          }}
+          vpRequiredCredentials={vpRequiredCredentials}
+          onVpRequiredCredentialsChange={setVpRequiredCredentials}
         />
       )}
     </>

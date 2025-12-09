@@ -1,5 +1,3 @@
-import Button from '@components/@shared/atoms/Button'
-import { useSsiWallet } from '@context/SsiWallet'
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import styles from './index.module.css'
 import { SsiKeyDesc, SsiWalletDesc, SsiWalletDid } from 'src/@types/SsiWallet'
@@ -13,11 +11,15 @@ import {
   isSessionValid
 } from '@utils/wallet/ssiWallet'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
 import ConnectedIcon from '@images/connected.svg'
 import DisconnectedIcon from '@images/disconnected.svg'
+import Button from '@components/@shared/atoms/Button'
+import Loader from '@components/@shared/atoms/Loader'
+import { useSsiWallet } from '@context/SsiWallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export function SsiWallet(): ReactElement {
   const {
@@ -43,7 +45,13 @@ export function SsiWallet(): ReactElement {
   const selectorDialog = useRef<HTMLDialogElement>(null)
 
   const { isConnected } = useAccount()
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner()
+  const [isLoadingSsiData, setIsLoadingSsiData] = useState<boolean>(false)
+
+  function getKeyLabel(key: SsiKeyDesc): string {
+    const anyKey = key as unknown as { name?: string; keyId: { id: string } }
+    return anyKey?.name || key.keyId.id
+  }
 
   const fetchWallets = useCallback(async () => {
     try {
@@ -64,7 +72,8 @@ export function SsiWallet(): ReactElement {
     try {
       const dids = await getWalletDids(selectedWallet.id, sessionToken.token)
       setWalletDids(dids)
-      if (!selectedDid) setSelectedDid(dids[0]?.did) // pre-select the first DID if exists
+      // Always set selected DID to the first from current wallet to avoid stale selection after API change
+      setSelectedDid(dids[0]?.did)
     } catch (error) {
       LoggerInstance.error(error)
     }
@@ -106,45 +115,54 @@ export function SsiWallet(): ReactElement {
   }, [selectedDid, walletDids, ssiKeys])
 
   async function handleReconnection() {
-    if (isConnected && signer) {
-      let valid = false
-      if (sessionToken) {
-        valid = await isSessionValid(sessionToken.token)
+    if (!isConnected) {
+      toast.error('You need to connect your EVM wallet first')
+      return false
+    }
+    if (!walletClient) {
+      toast.error('Wallet signer not available')
+      return false
+    }
+    if (sessionToken?.token) {
+      try {
+        const valid = await isSessionValid(sessionToken.token)
+        if (valid) return true
+      } catch (err) {
+        LoggerInstance.error('Session check failed', err)
       }
-      if ((!valid || !sessionToken) && isConnected && signer) {
-        try {
-          const session = await connectToWallet(signer)
-          setSessionToken(session)
-        } catch (error) {
-          setSessionToken(undefined)
-          LoggerInstance.error(error)
-          return false
-        }
-      }
+    }
+    try {
+      const session = await connectToWallet(walletClient)
+      setSessionToken(session)
+      toast.success('SSI Wallet Connected')
       return true
-    } else {
-      toast.error('You need to connect to your wallet first')
+    } catch (error) {
+      LoggerInstance.error('SSI connect error:', error)
+      toast.error('SSI connection failed')
+      setSessionToken(undefined)
       return false
     }
   }
 
   async function handleOpenDialog() {
-    const valid = await isSessionValid(sessionToken.token)
-    if (!valid) {
-      toast.error('SSI wallet session token is invalid or expired')
-      setSessionToken(undefined)
+    setIsLoadingSsiData(true)
+    const success = await handleReconnection()
+    if (!success) {
+      setIsLoadingSsiData(false)
       return
     }
 
-    const succeed = await handleReconnection()
-    if (!succeed) {
-      return
+    try {
+      await fetchWallets()
+      await fetchDids()
+      await fetchKeys()
+      selectorDialog.current?.showModal()
+    } catch (error) {
+      LoggerInstance.error(error)
+      toast.error('Failed to load SSI data')
+    } finally {
+      setIsLoadingSsiData(false)
     }
-
-    selectorDialog.current.showModal()
-
-    fetchWallets()
-    fetchKeys()
   }
 
   function handleWalletSelection(event: any) {
@@ -152,6 +170,22 @@ export function SsiWallet(): ReactElement {
       (wallet) => wallet.id === (event.target.value as string)
     )
     setSelectedWallet(result)
+    if (result && sessionToken) {
+      setSelectedKey(undefined as any)
+      setSelectedDid(undefined as any)
+      getWalletDids(result.id, sessionToken.token)
+        .then((dids) => {
+          setWalletDids(dids)
+          setSelectedDid(dids?.[0]?.did)
+        })
+        .catch((error) => LoggerInstance.error(error))
+      getWalletKeys(result, sessionToken.token)
+        .then((keys) => {
+          setSsiKey(keys)
+          setSelectedKey(keys?.[0])
+        })
+        .catch((error) => LoggerInstance.error(error))
+    }
   }
 
   function handleKeySelection(event: any) {
@@ -236,7 +270,7 @@ export function SsiWallet(): ReactElement {
                       value={`${keys.keyId.id}`}
                       className={styles.panelRow}
                     >
-                      {keys.keyId.id} ({keys.algorithm})
+                      {getKeyLabel(keys)}
                     </option>
                   )
                 })}
@@ -277,28 +311,37 @@ export function SsiWallet(): ReactElement {
             </div>
           </dialog>
 
-          {sessionToken && isConnected && signer ? (
-            <div
-              className={`${styles.ssiPanel} ${styles.connected}`}
-              onClick={handleOpenDialog}
-            >
-              <span className={styles.text}>SSI</span>
+          <button
+            type="button"
+            className={`${styles.ssiPanel} ${
+              sessionToken && isConnected && walletClient
+                ? styles.connected
+                : styles.disconnected
+            }`}
+            onClick={
+              sessionToken && isConnected && walletClient
+                ? handleOpenDialog
+                : handleReconnection
+            }
+            disabled={isLoadingSsiData}
+            aria-label={
+              sessionToken && isConnected && walletClient
+                ? 'Open SSI wallet selector'
+                : 'Connect to SSI wallet'
+            }
+          >
+            <span className={styles.text}>SSI</span>
 
-              <span className={styles.iconWrapper}>
-                <ConnectedIcon className={styles.icon} />
-              </span>
-            </div>
-          ) : (
-            <button
-              className={`${styles.ssiPanel} ${styles.disconnected}`}
-              onClick={handleReconnection}
-            >
-              <span className={styles.text}>SSI</span>
-              <span className={styles.iconWrapper}>
-                <DisconnectedIcon className={styles.icon} />
-              </span>
-            </button>
-          )}
+            <span className={styles.iconWrapper}>
+              {isLoadingSsiData ? (
+                <Loader variant="white" noMargin />
+              ) : sessionToken && isConnected && walletClient ? (
+                <ConnectedIcon className={styles.icon} aria-hidden="true" />
+              ) : (
+                <DisconnectedIcon className={styles.icon} aria-hidden="true" />
+              )}
+            </span>
+          </button>
         </>
       ) : (
         <></>

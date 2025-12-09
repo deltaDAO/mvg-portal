@@ -23,6 +23,7 @@ export interface ButtonProps {
     | 'gradient'
     | 'delete'
     | 'outlined'
+    | 'slim'
   type?: 'submit' | 'button'
   download?: boolean
   target?: string
@@ -51,6 +52,7 @@ export default function Button({
     gradient: style === 'gradient',
     delete: style === 'delete',
     outlined: style === 'outlined',
+    slim: style === 'slim',
     small: size === 'small',
     default: size === 'default',
     [className]: className

@@ -92,6 +92,15 @@
   margin-bottom: calc(var(--spacer) / 4);
 }
 
+.existingFileNotice {
+  background: var(--background-highlight, rgba(0, 0, 0, 0.05));
+  border-radius: 6px;
+  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+  margin-bottom: calc(var(--spacer) / 4);
+  font-size: var(--font-size-small);
+  color: var(--color-secondary);
+}
+
 @media (min-width: 60rem) {
   .tab {
     padding: calc(var(--spacer) / 8) var(--spacer);
@@ -100,9 +109,4 @@
 
 .radio {
   composes: radio from '../../FormInput/InputElement/Radio/index.module.css';
-}
-
-/* URL tab content width constraint */
-.tabPanel:first-child {
-  max-width: 50%;
 }

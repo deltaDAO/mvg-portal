@@ -16,10 +16,18 @@ import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
+import {
+  isAddress,
+  JsonRpcProvider,
+  parseEther,
+  ethers,
+  Signer,
+  toBeHex
+} from 'ethers'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
 import { getEncryptedFiles } from '@utils/provider'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import {
   generateCredentials,
   IpfsUpload,
@@ -35,11 +43,10 @@ import {
   marketFeeAddress,
   publisherMarketFixedSwapFee
 } from 'app.config.cjs'
-import { ethers } from 'ethers'
 import FormAddService from './FormAddService'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { useCancelToken } from '@hooks/useCancelToken'
-import { serviceValidationSchema } from './_validation'
+import { newServiceValidationSchema } from './_validation'
 import DebugEditService from './DebugEditService'
 import styles from './index.module.css'
 import { useUserPreferences } from '@context/UserPreferences'
@@ -48,6 +55,8 @@ import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { State } from 'src/@types/ddo/State'
 import { useSsiWallet } from '@context/SsiWallet'
+import { getTokenInfo } from '@utils/wallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function AddService({
   asset
@@ -57,11 +66,19 @@ export default function AddService({
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const walletClient = useEthersSigner()
+  const publicClient = usePublicClient()
   const newCancelToken = useCancelToken()
   const config = getOceanConfig(asset?.credentialSubject?.chainId)
   const ssiWalletContext = useSsiWallet()
+
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+
+  const signer = walletClient as unknown as Signer
 
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
@@ -70,8 +87,46 @@ export default function AddService({
   // add new service
   async function handleSubmit(values: ServiceEditForm, resetForm: () => void) {
     try {
+      const processAddress = (
+        inputValue: string,
+        fieldName: 'allow' | 'deny'
+      ) => {
+        const trimmedValue = inputValue?.trim()
+        if (
+          !trimmedValue ||
+          trimmedValue.length < 40 ||
+          !trimmedValue.startsWith('0x')
+        ) {
+          return
+        }
+
+        try {
+          if (isAddress(trimmedValue)) {
+            const lowerCaseAddress = trimmedValue.toLowerCase()
+            const currentList = values.credentials[fieldName] || []
+
+            if (!currentList.includes(lowerCaseAddress)) {
+              const newList = [...currentList, lowerCaseAddress]
+              values.credentials[fieldName] = newList
+            }
+          }
+        } catch (error) {}
+      }
+
+      if (values.credentials.allowInputValue) {
+        processAddress(values.credentials.allowInputValue, 'allow')
+      }
+      if (values.credentials.denyInputValue) {
+        processAddress(values.credentials.denyInputValue, 'deny')
+      }
+
       if (!isAssetNetwork) {
         setError('Please switch to the correct network.')
+        return
+      }
+
+      if (!signer) {
+        setError('Wallet not connected or signer unavailable.')
         return
       }
 
@@ -96,6 +151,34 @@ export default function AddService({
 
       LoggerInstance.log('Datatoken created.', datatokenAddress)
 
+      // Wait until the datatoken contract is live and callable
+      const dtContract = new ethers.Contract(
+        datatokenAddress,
+        ['function isERC20Deployer(address user) view returns (bool)'],
+        signer
+      )
+
+      let deployerReady = false
+      for (let retries = 0; retries < 20; retries++) {
+        try {
+          const ok = await dtContract.isERC20Deployer(accountId)
+          if (ok) {
+            deployerReady = true
+            break
+          }
+        } catch (err) {
+          console.log(
+            `[AddService] isERC20Deployer call reverted (retry ${retries})...`
+          )
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1500)) // wait 1.5s
+      }
+
+      if (!deployerReady) {
+        console.error('[AddService] Deployer not ready after waiting.')
+        throw new Error('Deployer permission not confirmed on chain.')
+      }
+
       // --------------------------------------------------
       // 2. Create Pricing
       // --------------------------------------------------
@@ -107,20 +190,22 @@ export default function AddService({
           `Creating fixed rate exchange with price ${values.price} for datatoken ${datatokenAddress}`
         )
 
+        const tokenInfo = await getTokenInfo(
+          config.oceanTokenAddress,
+          ethersProvider
+        )
+
         const freParams: FreCreationParams = {
           fixedRateAddress: config.fixedRateExchangeAddress,
           baseTokenAddress: config.oceanTokenAddress,
           owner: accountId,
           marketFeeCollector: marketFeeAddress,
-          baseTokenDecimals: 18,
+          baseTokenDecimals: tokenInfo?.decimals || 18,
           datatokenDecimals: 18,
-          fixedRate: ethers.utils
-            .parseEther(values.price.toString())
-            .toString(),
+          fixedRate: parseEther(values.price.toString()).toString(),
           marketFee: publisherMarketFixedSwapFee,
           withMint: true
         }
-
         pricingTransactionReceipt = await datatoken.createFixedRate(
           datatokenAddress,
           accountId,
@@ -132,8 +217,8 @@ export default function AddService({
         )
 
         const dispenserParams: DispenserParams = {
-          maxTokens: ethers.utils.parseEther('1').toString(),
-          maxBalance: ethers.utils.parseEther('1').toString(),
+          maxTokens: parseEther('1').toString(),
+          maxBalance: parseEther('1').toString(),
           withMint: true
         }
 
@@ -147,18 +232,15 @@ export default function AddService({
 
       await pricingTransactionReceipt.wait()
       LoggerInstance.log('Pricing scheme created.')
-
       // --------------------------------------------------
-      // 2. Update DDO
+      // 3. Update DDO
       // --------------------------------------------------
-      let newFiles = asset.credentialSubject?.services[0].files // by default it could be the same file as in other services
+      let newFiles = asset.credentialSubject?.services[0].files
       if (values.files[0]?.url) {
         const file = {
           nftAddress: asset.credentialSubject.nftAddress,
           datatokenAddress,
-          files: [
-            normalizeFile(values.files[0].type, values.files[0], chain?.id)
-          ]
+          files: [normalizeFile(values.files[0].type, values.files[0], chainId)]
         }
 
         const filesEncrypted = await getEncryptedFiles(
@@ -200,7 +282,6 @@ export default function AddService({
         state: State.Active
       }
 
-      // update asset with new service
       const updatedAsset = { ...asset }
       updatedAsset.credentialSubject.services.push(newService)
 
@@ -209,7 +290,6 @@ export default function AddService({
         stringifyCredentialPolicies(service.credentials)
       })
 
-      // delete custom helper properties injected in the market so we don't write them on chain
       delete (updatedAsset as AssetExtended).accessDetails
       delete (updatedAsset as AssetExtended).views
       delete (updatedAsset as AssetExtended).offchain
@@ -224,7 +304,7 @@ export default function AddService({
         ssiWalletContext
       )
 
-      if (ipfsUpload /* && values.assetState !== assetState */) {
+      if (ipfsUpload) {
         const nft = new Nft(signer, updatedAsset.credentialSubject.chainId)
 
         await nft.setMetadata(
@@ -234,7 +314,7 @@ export default function AddService({
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',
-          ethers.utils.hexlify(ipfsUpload.flags),
+          toBeHex(ipfsUpload.flags),
           ipfsUpload.metadataIPFS,
           ipfsUpload.metadataIPFSHash
         )
@@ -248,6 +328,7 @@ export default function AddService({
     } catch (error) {
       LoggerInstance.error(error.message)
       setError(error.message)
+      console.error('[AddService] Error caught:', error)
     }
   }
 
@@ -258,7 +339,7 @@ export default function AddService({
         accountId,
         asset.credentialSubject?.services[0]
       )}
-      validationSchema={serviceValidationSchema}
+      validationSchema={newServiceValidationSchema}
       onSubmit={async (values, { resetForm }) => {
         // move user's focus to top of screen
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })

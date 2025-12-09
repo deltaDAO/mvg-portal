@@ -30,8 +30,7 @@ export default function SectionContainer({
     styles.container,
     variant && styles[variant],
     border && styles.border,
-    title && styles.borderNavy,
-    className
+    title && styles.borderNavy
   ]
     .filter(Boolean)
     .join(' ')
@@ -46,7 +45,7 @@ export default function SectionContainer({
         </div>
       )}
       <div
-        className={styles.content}
+        className={`${styles.content} ${className}`}
         style={{
           gap: gap || undefined,
           padding: padding || undefined

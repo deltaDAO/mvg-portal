@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Compute from './Compute'
 import Download from './Download'
 import { FileInfo, LoggerInstance, Datatoken } from '@oceanprotocol/lib'
@@ -12,35 +12,61 @@ import styles from './index.module.css'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '@components/Publish/_types'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
-import AssetStats from './AssetStats'
 import { isAddressWhitelisted } from '@utils/ddo'
-import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import Button from '@components/@shared/atoms/Button'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
+import BackSVG from '@images/back.svg'
+import WhitelistIndicator from './Compute/WhitelistIndicator'
+import FileSVG from '@images/file.svg'
+import { AssetActionCheckCredentials } from './CheckCredentials'
+import { useSsiWallet } from '@context/SsiWallet'
+import appConfig from 'app.config.cjs'
+import ComputeWizard from '@components/DatasetComputeWizard'
+import AlgorithmComputeWizard from '@components/AlgorithmComputeWizard'
+import { JsonRpcProvider } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function AssetActions({
   asset,
   service,
   accessDetails,
   serviceIndex,
-  handleBack
+  handleBack,
+  consumableFeedback,
+  onComputeJobCreated
 }: {
   asset: AssetExtended
   service: Service
   accessDetails: AccessDetails
   serviceIndex: number
   handleBack: () => void
+  consumableFeedback?: string
+  onComputeJobCreated?: () => void
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
+  const signer = useEthersSigner()
   const { balance } = useBalance()
-  const { chain } = useNetwork()
-  const web3Provider = useProvider()
-  const { isAssetNetwork } = useAsset()
+  const chainId = useChainId()
+  const publicClient = usePublicClient()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+  const { isAssetNetwork, isOwner } = useAsset()
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
+  const {
+    verifierSessionCache,
+    lookupVerifierSessionId,
+    lookupVerifierSessionIdSkip,
+    ssiWalletCache,
+    setCachedCredentials,
+    clearVerifierSessionCache
+  } = useSsiWallet()
+  const [isComputePopupOpen, setIsComputePopupOpen] = useState<boolean>(false)
 
   // TODO: using this for the publish preview works fine, but produces a console warning
   // on asset details page as there is no formik context there:
@@ -89,7 +115,7 @@ export default function AssetActions({
               query,
               headers,
               abi,
-              chain?.id,
+              chainId,
               method
             )
           : await getFileDidInfo(asset.id, service.id, providerUrl)
@@ -120,18 +146,18 @@ export default function AssetActions({
     newCancelToken,
     formikState?.values?.services,
     serviceIndex,
-    chain?.id,
+    chainId,
     service.serviceEndpoint,
     service.id
   ])
 
   // Get and set user DT balance
   useEffect(() => {
-    if (!web3Provider || !accountId || !isAssetNetwork) return
+    if (!ethersProvider || !accountId || !isAssetNetwork) return
 
     async function init() {
       try {
-        const datatokenInstance = new Datatoken(web3Provider as any, chain.id)
+        const datatokenInstance = new Datatoken(ethersProvider as any, chainId)
         const dtBalance = await datatokenInstance.balance(
           service.datatokenAddress,
           accountId
@@ -142,7 +168,13 @@ export default function AssetActions({
       }
     }
     init()
-  }, [web3Provider, accountId, isAssetNetwork, service.datatokenAddress])
+  }, [
+    ethersProvider,
+    accountId,
+    isAssetNetwork,
+    service.datatokenAddress,
+    chainId
+  ])
 
   // Check user balance against price
   useEffect(() => {
@@ -160,7 +192,6 @@ export default function AssetActions({
       balance,
       accessDetails.baseToken?.symbol
     )
-
     setIsBalanceSufficient(
       compareAsBN(baseTokenBalance, `${accessDetails.price}`) ||
         Number(dtBalance) >= 1
@@ -178,49 +209,194 @@ export default function AssetActions({
     setIsAccountIdWhitelisted(isAddressWhitelisted(asset, accountId, service))
   }, [accountId, asset])
 
+  const hasVerifiedCredentials =
+    verifierSessionCache &&
+    (lookupVerifierSessionId(asset.id, service.id) ||
+      lookupVerifierSessionIdSkip(asset.id, service.id))
+
+  const priceDisplay =
+    accessDetails.type === 'free'
+      ? 'Free'
+      : `${accessDetails.price || 0} ${accessDetails.baseToken?.symbol || ''}`
+  const salesCount = asset.indexedMetadata?.stats?.[0]?.orders || 0
+
+  const handleComputeClick = () => {
+    setIsComputePopupOpen(true)
+  }
+
+  function resetCacheWallet() {
+    ssiWalletCache.clearCredentials()
+    setCachedCredentials(undefined as any)
+    clearVerifierSessionCache()
+    try {
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const key = localStorage.key(i)
+        if (key && key.startsWith('credential_')) {
+          localStorage.removeItem(key)
+        }
+      }
+    } catch {}
+  }
+
+  const closeComputePopup = () => {
+    resetCacheWallet()
+    setIsComputePopupOpen(false)
+  }
   return (
     <>
-      <div
-        style={{
-          marginTop: '10px',
-          marginLeft: '10px'
-        }}
-      >
-        <Button style="text" size="small" onClick={handleBack}>
-          Back
+      <div className={styles.headerRow}>
+        <Button
+          style="outlined"
+          size="small"
+          onClick={handleBack}
+          className={styles.backButton}
+        >
+          <BackSVG /> Back
         </Button>
-      </div>
-
-      <div className={styles.actions}>
-        {isCompute ? (
-          <Compute
+        {accountId && (
+          <WhitelistIndicator
             accountId={accountId}
-            signer={signer}
-            asset={asset}
-            service={service}
-            accessDetails={accessDetails}
-            dtBalance={dtBalance}
             isAccountIdWhitelisted={isAccountIdWhitelisted}
-            file={fileMetadata}
-            fileIsLoading={fileIsLoading}
-          />
-        ) : (
-          <Download
-            accountId={accountId}
-            signer={signer}
-            asset={asset}
-            service={service}
-            accessDetails={accessDetails}
-            serviceIndex={serviceIndex}
-            dtBalance={dtBalance}
-            isBalanceSufficient={isBalanceSufficient}
-            isAccountIdWhitelisted={isAccountIdWhitelisted}
-            file={fileMetadata}
-            fileIsLoading={fileIsLoading}
+            minimal
           />
         )}
-        <AssetStats />
       </div>
+
+      <div className={styles.assetInteractionCard}>
+        <div className={styles.cardTopRow}>
+          <div className={styles.fileInfoSection}>
+            <FileSVG width={48} height={60} />
+            <div className={styles.fileDetails}>
+              <div className={styles.fileDetailItem}>
+                <span className={styles.fileDetailLabel}>Type:</span>{' '}
+                {fileMetadata?.type || 'Plain Text'}
+              </div>
+              <div className={styles.fileDetailItem}>
+                <span className={styles.fileDetailLabel}>Size:</span>{' '}
+                {fileMetadata?.contentLength || '5.31 kB'}
+              </div>
+              <div className={styles.fileDetailItem}>
+                <span className={styles.fileDetailLabel}>Access via:</span>{' '}
+                {accessDetails.type === 'free' ? 'URL' : accessDetails.type}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.priceSection}>
+            <div className={styles.priceValue}>{priceDisplay}</div>
+            <div className={styles.salesCount}>
+              {salesCount} sale{salesCount !== 1 ? 's' : ''}
+            </div>
+          </div>
+        </div>
+
+        <div className={styles.actionButtonWrapper}>
+          {!isCompute && isOwner ? (
+            <span className={styles.ownerMessage}>
+              You are the asset owner.
+            </span>
+          ) : appConfig.ssiEnabled ? (
+            isCompute ? (
+              <Button
+                style="primary"
+                onClick={handleComputeClick}
+                className={styles.computeButton}
+                disabled={!isAccountIdWhitelisted}
+              >
+                Start Compute
+              </Button>
+            ) : hasVerifiedCredentials ? (
+              <Download
+                accountId={accountId}
+                signer={signer as any}
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                serviceIndex={serviceIndex}
+                dtBalance={dtBalance}
+                isBalanceSufficient={isBalanceSufficient}
+                setIsBalanceSufficient={setIsBalanceSufficient}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                file={fileMetadata}
+                fileIsLoading={fileIsLoading}
+                consumableFeedback={consumableFeedback}
+              />
+            ) : (
+              <AssetActionCheckCredentials asset={asset} service={service} />
+            )
+          ) : isCompute ? (
+            <Button
+              style="primary"
+              onClick={handleComputeClick}
+              className={styles.computeButton}
+              disabled={!isAccountIdWhitelisted}
+            >
+              Start Compute
+            </Button>
+          ) : (
+            <Download
+              accountId={accountId}
+              signer={signer as any}
+              asset={asset}
+              service={service}
+              accessDetails={accessDetails}
+              serviceIndex={serviceIndex}
+              dtBalance={dtBalance}
+              isBalanceSufficient={isBalanceSufficient}
+              setIsBalanceSufficient={setIsBalanceSufficient}
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              file={fileMetadata}
+              fileIsLoading={fileIsLoading}
+              consumableFeedback={consumableFeedback}
+            />
+          )}
+        </div>
+      </div>
+
+      {isCompute && isComputePopupOpen && (
+        <div className={styles.computePopup}>
+          <div className={styles.computePopupContent}>
+            <button
+              className={styles.closeButton}
+              onClick={closeComputePopup}
+              aria-label="Close wizard"
+            >
+              &times;
+            </button>
+            {asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
+              <AlgorithmComputeWizard
+                accountId={accountId}
+                signer={signer as any}
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                dtBalance={dtBalance}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                file={fileMetadata}
+                // fileIsLoading={fileIsLoading}
+                consumableFeedback={consumableFeedback}
+                onClose={closeComputePopup}
+                onComputeJobCreated={onComputeJobCreated}
+              />
+            ) : (
+              <ComputeWizard
+                accountId={accountId}
+                signer={signer as any}
+                asset={asset}
+                service={service}
+                accessDetails={accessDetails}
+                dtBalance={dtBalance}
+                isAccountIdWhitelisted={isAccountIdWhitelisted}
+                file={fileMetadata}
+                // fileIsLoading={fileIsLoading}
+                consumableFeedback={consumableFeedback}
+                onClose={closeComputePopup}
+                onComputeJobCreated={onComputeJobCreated}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </>
   )
 }

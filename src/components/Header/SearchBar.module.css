@@ -94,7 +94,7 @@
   color: rgba(30, 30, 30, 0.8);
   padding: 0 20px;
   background: transparent;
-  border-radius: 20px;
+  border-radius: 20px 0 0 20px;
   width: 565px;
   height: 50px;
 }

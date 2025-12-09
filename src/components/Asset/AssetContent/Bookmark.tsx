@@ -15,7 +15,11 @@ export default function Bookmark({ did }: { did: string }): ReactElement {
     <button
       onClick={handleBookmark}
       className={`${styles.bookmark} ${isBookmarked ? styles.active : ''} `}
-      title={isBookmarked ? 'Remove Bookmark' : 'Add Bookmark'}
+      data-tooltip={
+        isBookmarked
+          ? 'Asset is Bookmarked, Click to Remove'
+          : 'Click to Add in Bookmarks'
+      }
     >
       <BookmarkIcon />
     </button>

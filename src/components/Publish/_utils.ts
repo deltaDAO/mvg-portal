@@ -26,18 +26,22 @@ import appConfig, {
   publisherMarketOrderFee,
   publisherMarketFixedSwapFee,
   defaultDatatokenTemplateIndex,
-  defaultDatatokenCap,
-  oceanTokenAddress
+  defaultDatatokenCap
 } from '../../../app.config.cjs'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
-import { hexlify, parseEther } from 'ethers/lib/utils'
+import {
+  hexlify,
+  parseEther,
+  ethers,
+  Signer,
+  TransactionResponse
+} from 'ethers'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { Metadata } from 'src/@types/ddo/Metadata'
 import { Option } from 'src/@types/ddo/Option'
 import { createHash } from 'crypto'
-import { ethers, Signer } from 'ethers'
 import { uploadToIPFS } from '@utils/ipfs'
 import { DDOVersion } from 'src/@types/DdoVersion'
 import {
@@ -60,16 +64,14 @@ import {
   VpPolicyType
 } from '@components/@shared/PolicyEditor/types'
 import { SsiWalletContext } from '@context/SsiWallet'
-import {
-  getWalletKey,
-  isSessionValid,
-  signMessage
-} from '@utils/wallet/ssiWallet'
+import { isSessionValid, signMessage } from '@utils/wallet/ssiWallet'
 import { isCredentialPolicyBased } from '@utils/credentials'
 import { State } from 'src/@types/ddo/State'
 import { transformComputeFormToServiceComputeOptions } from '@utils/compute'
 import { CancelToken } from 'axios'
 import { ComputeEditForm } from '@components/Asset/Edit/_types'
+import { getOceanConfig } from '@utils/ocean'
+import { getDummySigner, getTokenInfo } from '@utils/wallet'
 
 function cleanupVpPolicies(value: any): void {
   if (!value.vp_policies || value.vp_policies.length === 0) {
@@ -81,7 +83,7 @@ function makeDid(nftAddress: string, chainId: string): string {
   return (
     'did:ope:' +
     createHash('sha256')
-      .update(ethers.utils.getAddress(nftAddress) + chainId)
+      .update(ethers.getAddress(nftAddress) + chainId)
       .digest('hex')
   )
 }
@@ -318,12 +320,10 @@ export function parseCredentialPolicies(credentials: Credential) {
             return requestCredentials
           }
         )
-
         cleanupVpPolicies(value)
         return value
       })
     }
-
     return credential
   })
 }
@@ -361,9 +361,7 @@ export function stringifyCredentialPolicies(credentials: Credential) {
 }
 
 export function generateCredentials(
-  updatedCredentials: CredentialForm,
-  isServiceCredentials: boolean = false,
-  mainCredentials?: CredentialForm
+  updatedCredentials: CredentialForm
 ): Credential {
   const newCredentials: Credential = {
     allow: [],
@@ -399,20 +397,39 @@ export function generateCredentials(
           }
         }
 
+        if (credential.type === 'externalEvpForwardVpPolicy') {
+          return {
+            policy: 'external-evp-forward',
+            args: credential.url
+          }
+        }
+
         return null
       }
     )
+    const requiredVpPolicies: any[] = []
 
-    const shouldCreateSsiPolicy =
-      updatedCredentials?.vpPolicies?.length > 0 ||
-      updatedCredentials?.requestCredentials?.length > 0 ||
-      updatedCredentials?.vcPolicies?.length > 0
+    if ((updatedCredentials?.vpRequiredCredentials as any)?.length > 0) {
+      for (const entry of updatedCredentials.vpRequiredCredentials as any) {
+        if ('credential_type' in entry) {
+          requiredVpPolicies.push({ credential_type: entry.credential_type })
+        } else if ('any_of' in entry) {
+          requiredVpPolicies.push({ any_of: entry.any_of })
+        }
+      }
+
+      vpPolicies.push({
+        policy: 'vp_required_credentials',
+        args: JSON.stringify({ required: requiredVpPolicies })
+      })
+    }
+
     const hasAny =
       (requestCredentials?.length ?? 0) > 0 ||
       (updatedCredentials?.vcPolicies?.length ?? 0) > 0 ||
       (vpPolicies?.length ?? 0) > 0
 
-    if (hasAny && shouldCreateSsiPolicy) {
+    if (hasAny) {
       const newAllowList: CredentialPolicyBased = {
         type: 'SSIpolicy',
         values: []
@@ -512,9 +529,9 @@ export async function transformPublishFormToDdo(
     dockerImageCustom,
     dockerImageCustomTag,
     dockerImageCustomEntrypoint,
-    dockerImageCustomChecksum,
-    usesConsumerParameters,
-    consumerParameters
+    dockerImageCustomChecksum
+    // usesConsumerParameters,
+    // consumerParameters
   } = metadata
   const { access, files, links, providerUrl, timeout, credentials } =
     services[0]
@@ -533,9 +550,9 @@ export async function transformPublishFormToDdo(
   const linksTransformed = links?.length &&
     links[0].valid && [sanitizeUrl(links[0].url)]
 
-  const consumerParametersTransformed = usesConsumerParameters
-    ? transformConsumerParameters(consumerParameters)
-    : undefined
+  // const consumerParametersTransformed = usesConsumerParameters
+  //   ? transformConsumerParameters(consumerParameters)
+  //   : undefined
 
   let license: License
   if (
@@ -605,8 +622,8 @@ export async function transformPublishFormToDdo(
               dockerImage === 'custom'
                 ? dockerImageCustomChecksum
                 : algorithmContainerPresets.checksum
-          },
-          consumerParameters: consumerParametersTransformed
+          }
+          // consumerParameters: consumerParametersTransformed
         }
       }),
     copyrightHolder: '',
@@ -625,11 +642,7 @@ export async function transformPublishFormToDdo(
     files[0].valid &&
     (await getEncryptedFiles(file, chainId, providerUrl.url))
 
-  const newServiceCredentials = generateCredentials(
-    credentials,
-    true,
-    values.credentials
-  )
+  const newServiceCredentials = generateCredentials(credentials)
   const valuesCompute: ComputeEditForm = {
     allowAllPublishedAlgorithms:
       values.allowAllPublishedAlgorithms === 'Allow any published algorithms',
@@ -703,7 +716,9 @@ export async function transformPublishFormToDdo(
         price: {
           value: values?.pricing.type === 'free' ? 0 : values.pricing.price,
           tokenSymbol: values.pricing?.baseToken?.symbol || 'OCEAN',
-          tokenAddress: values.pricing?.baseToken?.address || oceanTokenAddress
+          tokenAddress:
+            values.pricing?.baseToken?.address ||
+            getOceanConfig(chainId).oceanTokenAddress
         }
       }
     },
@@ -863,8 +878,7 @@ export async function createTokensAndPricing(
     accountId,
     values.metadata.transferable
   )
-  LoggerInstance.log('[publish] Creating NFT with metadata', nftCreateData)
-  // TODO: cap is hardcoded for now to 1000, this needs to be discussed at some point
+
   const ercParams: DatatokenCreateParams = {
     templateIndex: defaultDatatokenTemplateIndex,
     minter: accountId,
@@ -872,28 +886,28 @@ export async function createTokensAndPricing(
     mpFeeAddress: marketFeeAddress,
     feeToken: config.oceanTokenAddress,
     feeAmount: publisherMarketOrderFee,
-    // max number
     cap: defaultDatatokenCap,
     name: values.services[0].dataTokenOptions.name,
     symbol: values.services[0].dataTokenOptions.symbol
   }
 
-  LoggerInstance.log('[publish] Creating datatoken with ercParams', ercParams)
-
   let erc721Address, datatokenAddress, txHash
 
   switch (values.pricing.type) {
     case 'fixed': {
+      const baseTokenAddress =
+        config.oceanTokenAddress ?? values.pricing.baseToken.address
+      const signer = await getDummySigner(values.user.chainId)
+      const { provider } = signer
+      const tokenInfo = await getTokenInfo(config.oceanTokenAddress, provider)
+      const baseTokenDecimals = tokenInfo?.decimals || 18
+
       const freParams: FreCreationParams = {
         fixedRateAddress: config.fixedRateExchangeAddress,
-        baseTokenAddress: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
-          ? process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
-          : values.pricing.baseToken.address,
+        baseTokenAddress,
         owner: accountId,
         marketFeeCollector: marketFeeAddress,
-        baseTokenDecimals: process.env.NEXT_PUBLIC_OCEAN_TOKEN_ADDRESS
-          ? 18
-          : values.pricing.baseToken.decimals,
+        baseTokenDecimals,
         datatokenDecimals: 18,
         fixedRate: values.pricing.price.toString(),
         marketFee: publisherMarketFixedSwapFee,
@@ -911,22 +925,17 @@ export async function createTokensAndPricing(
         freParams
       )
 
-      const trxReceipt = await result.wait()
-      const nftCreatedEvent = getEventFromTx(trxReceipt, 'NFTCreated')
-      const tokenCreatedEvent = getEventFromTx(trxReceipt, 'TokenCreated')
+      const receipt = await (result as TransactionResponse).wait()
+      const nftCreatedEvent = getEventFromTx(receipt, 'NFTCreated')
+      const tokenCreatedEvent = getEventFromTx(receipt, 'TokenCreated')
 
-      erc721Address = nftCreatedEvent.args.newTokenAddress
-      datatokenAddress = tokenCreatedEvent.args.newTokenAddress
-      txHash = trxReceipt.transactionHash
-
-      LoggerInstance.log('[publish] createNftErcWithFixedRate tx', txHash)
+      erc721Address = nftCreatedEvent?.args?.newTokenAddress
+      datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
+      txHash = receipt.hash
 
       break
     }
     case 'free': {
-      // maxTokens -  how many tokens cand be dispensed when someone requests . If maxTokens=2 then someone can't request 3 in one tx
-      // maxBalance - how many dt the user has in it's wallet before the dispenser will not dispense dt
-      // both will be just 1 for the market
       const dispenserParams: DispenserCreationParams = {
         dispenserAddress: config.dispenserAddress,
         maxTokens: parseEther('1').toString(),
@@ -935,28 +944,23 @@ export async function createTokensAndPricing(
         allowedSwapper: ZERO_ADDRESS
       }
 
-      LoggerInstance.log(
-        '[publish] Creating free pricing with dispenserParams',
-        dispenserParams
-      )
-
       const result = await nftFactory.createNftWithDatatokenWithDispenser(
         nftCreateData,
         ercParams,
         dispenserParams
       )
-      const trxReceipt = await result.wait()
-      const nftCreatedEvent = getEventFromTx(trxReceipt, 'NFTCreated')
-      const tokenCreatedEvent = getEventFromTx(trxReceipt, 'TokenCreated')
+      const receipt = await (result as TransactionResponse).wait()
+      const nftCreatedEvent = getEventFromTx(receipt, 'NFTCreated')
+      const tokenCreatedEvent = getEventFromTx(receipt, 'TokenCreated')
 
-      erc721Address = nftCreatedEvent.args.newTokenAddress
-      datatokenAddress = tokenCreatedEvent.args.newTokenAddress
-      txHash = trxReceipt.transactionHash
-
-      LoggerInstance.log('[publish] createNftErcWithDispenser tx', txHash)
+      erc721Address = nftCreatedEvent?.args?.newTokenAddress
+      datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
+      txHash = receipt.hash
 
       break
     }
+    default:
+      console.warn('Unknown pricing type:', values.pricing.type)
   }
 
   return { erc721Address, datatokenAddress, txHash }

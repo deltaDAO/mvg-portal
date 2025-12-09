@@ -10,7 +10,10 @@ import {
   SortDirectionOptions,
   SortTermOptions
 } from '../../@types/aquarius/SearchQuery'
-import { transformAssetToAssetSelection } from '../assetConverter'
+import {
+  transformAssetToAssetSelection,
+  transformAssetToAssetSelectionDataset
+} from '../assetConverter'
 import addressConfig from '../../../address.config.cjs'
 import { isValidDid } from '@utils/ddo'
 import { Filters } from '@context/Filter'
@@ -399,6 +402,188 @@ export async function getAlgorithmDatasetsForCompute(
     uniqueAssets,
     accountId,
     []
+  )
+  return datasets
+}
+
+function isAccountAllowed(ddo: any, accountId: string): boolean {
+  const checkAllowList = (allowList: any[]): boolean => {
+    // If not present or is empty, treat as unrestricted
+    if (!allowList || allowList.length === 0) return true
+    return allowList.some((allowEntry) => {
+      if (allowEntry.type !== 'address' || !allowEntry.values) return false
+      return allowEntry.values.some(
+        (val) =>
+          val.address === '*' ||
+          val.address.toLowerCase() === accountId.toLowerCase()
+      )
+    })
+  }
+
+  const checkDenyList = (denyList: any[]): boolean => {
+    if (!denyList || denyList.length === 0) return false
+    return denyList.some((denyEntry) => {
+      if (denyEntry.type !== 'address' || !denyEntry.values) return false
+      return denyEntry.values.some(
+        (val) =>
+          val.address === '*' ||
+          val.address.toLowerCase() === accountId.toLowerCase()
+      )
+    })
+  }
+
+  // Root credentials allow/deny
+  if (ddo.credentials?.allow && !checkAllowList(ddo.credentials.allow)) {
+    return false
+  }
+  if (ddo.credentials?.deny && checkDenyList(ddo.credentials.deny)) {
+    return false
+  }
+
+  // Service level allow/deny: pass if undefined or empty
+  const services = ddo.credentialSubject?.services || []
+  const rootAllowsAllAddresses =
+    Array.isArray(ddo.credentials?.allow) &&
+    ddo.credentials.allow.some(
+      (entry: any) =>
+        entry.type === 'address' &&
+        entry.values?.some((v: any) => v.address === '*')
+    )
+  for (const service of services) {
+    const serviceAllow = service.credentials?.allow
+
+    const hasAddressAllow =
+      Array.isArray(serviceAllow) &&
+      serviceAllow.some((entry: any) => entry.type === 'address')
+
+    if (!hasAddressAllow && rootAllowsAllAddresses) {
+      if (
+        service.credentials?.deny &&
+        checkDenyList(service.credentials.deny)
+      ) {
+        console.log('Denied by service deny list')
+        return false
+      }
+      continue
+    }
+    if (hasAddressAllow && !checkAllowList(serviceAllow)) {
+      console.log('Denied by service allow list')
+      return false
+    }
+
+    if (service.credentials?.deny && checkDenyList(service.credentials.deny)) {
+      console.log('Denied by service deny list')
+      return false
+    }
+  }
+
+  return true
+}
+
+export async function getAlgorithmDatasetsForComputeSelection(
+  algorithmId: string,
+  serviceId: string,
+  datasetProviderUri: string,
+  accountId: string,
+  datasetChainId?: number,
+  cancelToken?: CancelToken
+): Promise<AssetSelectionAsset[]> {
+  const baseQueryParams = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            algorithmId
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            serviceId
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const baseQueryParams2 = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.did.keyword':
+            '*'
+        }
+      },
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithms.serviceId.keyword':
+            '*'
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const baseQueryParams3 = {
+    chainIds: [datasetChainId],
+    filters: [
+      {
+        term: {
+          'credentialSubject.services.compute.publisherTrustedAlgorithmPublishers.keyword':
+            '*'
+        }
+      }
+    ],
+    sortOptions: {
+      sortBy: SortTermOptions.Created,
+      sortDirection: SortDirectionOptions.Descending
+    }
+  } as BaseQueryParams
+
+  const query = generateBaseQuery(baseQueryParams)
+  const query2 = generateBaseQuery(baseQueryParams2)
+  const query3 = generateBaseQuery(baseQueryParams3)
+  const [res1, res2, res3] = await Promise.all([
+    queryMetadata(query, cancelToken),
+    queryMetadata(query2, cancelToken),
+    queryMetadata(query3, cancelToken)
+  ])
+
+  // Combine results and deduplicate by ID
+  const combined = [
+    ...(res1?.results || []),
+    ...(res2?.results || []),
+    ...(res3?.results || [])
+  ]
+  const datasetsOnly = combined.filter(
+    (asset) => asset?.credentialSubject?.metadata?.type === 'dataset'
+  )
+  const allowedDatasets = datasetsOnly.filter((asset) =>
+    isAccountAllowed(asset, accountId)
+  )
+  const uniqueAssetsMap = new Map<string, any>()
+  allowedDatasets.forEach((asset) => {
+    if (!uniqueAssetsMap.has(asset.id)) {
+      uniqueAssetsMap.set(asset.id, asset)
+    }
+  })
+
+  const uniqueAssets = Array.from(uniqueAssetsMap.values())
+  const datasets = await transformAssetToAssetSelectionDataset(
+    datasetProviderUri,
+    uniqueAssets,
+    accountId,
+    [],
+    false,
+    { algorithmDid: algorithmId, algorithmServiceId: serviceId }
   )
   return datasets
 }

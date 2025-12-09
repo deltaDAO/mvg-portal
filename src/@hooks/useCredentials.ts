@@ -32,7 +32,7 @@ export function newExchangeStateData(): ExchangeStateData {
   }
 }
 
-export function useCredentialDialogState() {
+export function useCredentialDialogState(autoStart = false) {
   const [checkCredentialState, setCheckCredentialState] =
     useState<CheckCredentialState>(CheckCredentialState.Stop)
   const [requiredCredentials, setRequiredCredentials] = useState<string[]>([])
@@ -41,6 +41,9 @@ export function useCredentialDialogState() {
   )
   const [showVpDialog, setShowVpDialog] = useState<boolean>(false)
   const [showDidDialog, setShowDidDialog] = useState<boolean>(false)
+  const [credentialError, setCredentialError] = useState<string | null>(null)
+  const [isCheckingCredentials, setIsCheckingCredentials] =
+    useState<boolean>(false)
 
   return {
     checkCredentialState,
@@ -52,6 +55,11 @@ export function useCredentialDialogState() {
     showVpDialog,
     setShowVpDialog,
     showDidDialog,
-    setShowDidDialog
+    setShowDidDialog,
+    credentialError,
+    setCredentialError,
+    isCheckingCredentials,
+    setIsCheckingCredentials,
+    autoStart
   }
 }

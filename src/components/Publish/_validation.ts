@@ -114,7 +114,10 @@ const validationRequestCredentials = {
         })
         .when('type', {
           is: 'customPolicy',
-          then: (shema) => shema.required('Required')
+          then: (shema) =>
+            shema
+              .required('Required')
+              .matches(/^[A-Za-z]+$/, 'Only letters A–Z are allowed')
         }),
       args: Yup.array().when('type', {
         is: 'parameterizedPolicy',
@@ -184,9 +187,20 @@ const validationRequestCredentials = {
 
 const validationVpPolicy = {
   type: Yup.string().required('Required'),
-  name: Yup.string().when('type', {
+  name: Yup.mixed().when('type', {
     is: 'staticVpPolicy',
-    then: (shema) => shema.required('Required')
+    then: (shema) =>
+      shema.test('static-name', 'Required', (value) => {
+        if (typeof value === 'string') return value.trim().length > 0
+        if (
+          value &&
+          typeof value === 'object' &&
+          typeof (value as any).policy === 'string'
+        ) {
+          return (value as any).policy.trim().length > 0
+        }
+        return false
+      })
   }),
   policy: Yup.string().when('type', {
     is: 'argumentVpPolicy',
@@ -195,6 +209,16 @@ const validationVpPolicy = {
   args: Yup.number().when('type', {
     is: 'argumentVpPolicy',
     then: (shema) => shema.required('Required')
+  }),
+  url: Yup.string().when('type', {
+    is: 'externalEvpForwardVpPolicy',
+    then: (shema) =>
+      shema.test('isValidUrlOpt', 'Invalid URL format', (value) => {
+        if (!value) return true
+        const trimmedValue = value.trim()
+        const pattern = /^https?:\/\/\S+$/i
+        return pattern.test(trimmedValue)
+      })
   })
 }
 
@@ -205,7 +229,23 @@ const validationCredentials = {
   vcPolicies: Yup.array().of(Yup.string().required('Required')),
   vpPolicies: Yup.array().of(Yup.object().shape(validationVpPolicy)),
   allow: Yup.array().of(Yup.string()).nullable(),
-  deny: Yup.array().of(Yup.string()).nullable()
+  deny: Yup.array().of(Yup.string()).nullable(),
+  externalEvpForwardUrl: Yup.string().test(
+    'external-evp-url',
+    'Invalid URL format',
+    function (value) {
+      const vpPolicies = (this.parent as any)?.vpPolicies || []
+      const hasExternal = vpPolicies.some(
+        (p: any) => p?.type === 'externalEvpForwardVpPolicy'
+      )
+      if (!hasExternal) return true
+
+      if (!value) return false
+      const trimmedValue = value.trim()
+      const pattern = /^https?:\/\/\S+$/i
+      return pattern.test(trimmedValue)
+    }
+  )
 }
 
 const validationService = {

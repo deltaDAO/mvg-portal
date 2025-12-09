@@ -10,10 +10,10 @@ import { useAsset } from '@context/Asset'
 import content from '../../../../../content/pages/startComputeDataset.json'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { getAccessDetails } from '@utils/accessDetailsAndPricing'
-import { getTokenBalanceFromSymbol } from '@utils/wallet'
+import { getTokenBalanceFromSymbol, getTokenInfo } from '@utils/wallet'
 import { MAX_DECIMALS } from '@utils/constants'
 import Decimal from 'decimal.js'
-import { useAccount } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
 import ConsumerParameters from '../ConsumerParameters'
@@ -27,6 +27,11 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { ResourceType } from 'src/@types/ResourceType'
 import { useSsiWallet } from '@context/SsiWallet'
 import { AssetActionCheckCredentialsAlgo } from '../CheckCredentials/checkCredentialsAlgo'
+import ComputeHistory from './History'
+import ComputeJobs from '../../../Profile/History/ComputeJobs'
+import FormErrorGroup from '@shared/FormInput/CheckboxGroupWithErrors'
+import { formatUnits, JsonRpcProvider } from 'ethers'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function FormStartCompute({
   asset,
@@ -64,7 +69,10 @@ export default function FormStartCompute({
   onRunInitPriceAndFees,
   onCheckAlgoDTBalance,
   allResourceValues,
-  setAllResourceValues
+  setAllResourceValues,
+  jobs,
+  isLoadingJobs,
+  refetchJobs
 }: {
   asset: AssetExtended
   service: Service
@@ -108,6 +116,9 @@ export default function FormStartCompute({
       [envId: string]: ResourceType
     }>
   >
+  jobs?: any[]
+  isLoadingJobs?: boolean
+  refetchJobs?: () => void
 }): ReactElement {
   const { address: accountId, isConnected } = useAccount()
   const { balance } = useBalance()
@@ -124,6 +135,15 @@ export default function FormStartCompute({
   const [datasetOrderPrice, setDatasetOrderPrice] = useState<string | null>(
     accessDetails.price
   )
+
+  const chainId = useChainId()
+  const publicClient = usePublicClient()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
 
   const [algoOrderPrice, setAlgoOrderPrice] = useState(
     selectedAlgorithmAsset?.accessDetails?.[0]?.price
@@ -164,6 +184,19 @@ export default function FormStartCompute({
 
     return { algorithmAsset: assetDdo, serviceIndexAlgo }
   }
+
+  useEffect(() => {
+    const fetchTokenDetails = async () => {
+      if (!chainId || !ethersProvider) return
+
+      const { oceanTokenAddress } = getOceanConfig(chainId)
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
+
+      setTokenInfo(tokenDetails)
+    }
+
+    fetchTokenDetails()
+  }, [chainId, ethersProvider])
 
   // Pre-select computeEnv and/or algo if there is only one available option
   useEffect(() => {
@@ -243,7 +276,7 @@ export default function FormStartCompute({
         disk,
         jobDuration,
         price: 0,
-        mode: allResourceValues[selectedEnv.id].mode
+        mode: values.mode
       }
 
       setAllResourceValues((prev) => ({
@@ -286,15 +319,16 @@ export default function FormStartCompute({
         : new Decimal(0)
 
     // Now use priceC2D everywhere you'd use providerFees
-    const feeAlgo = new Decimal(consumeMarketOrderFee).mul(priceAlgo).div(100)
-    const feeC2D = new Decimal(consumeMarketOrderFee).mul(priceC2D).div(100)
-    const feeDataset = new Decimal(consumeMarketOrderFee)
-      .mul(priceDataset)
-      .div(100)
+    const feeAlgo = new Decimal(
+      formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+    )
+    const feeDataset = new Decimal(
+      formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+    )
 
     // This part determines how you aggregate, but **always use priceC2D instead of providerFeeAmount/providerFees**
     if (algorithmSymbol === providerFeesSymbol) {
-      let sum = priceC2D.add(priceAlgo).add(feeC2D).add(feeAlgo)
+      let sum = priceC2D.add(priceAlgo).add(feeAlgo)
       totalPrices.push({
         value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
         symbol: algorithmSymbol
@@ -313,7 +347,7 @@ export default function FormStartCompute({
       }
     } else {
       if (datasetSymbol === providerFeesSymbol) {
-        const sum = priceC2D.add(priceDataset).add(feeC2D).add(feeDataset)
+        const sum = priceC2D.add(priceDataset).add(feeDataset)
         totalPrices.push({
           value: sum.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: datasetSymbol
@@ -332,7 +366,7 @@ export default function FormStartCompute({
           symbol: algorithmSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
       } else {
@@ -344,7 +378,7 @@ export default function FormStartCompute({
           symbol: datasetSymbol
         })
         totalPrices.push({
-          value: priceC2D.add(feeC2D).toDecimalPlaces(MAX_DECIMALS).toString(),
+          value: priceC2D.toDecimalPlaces(MAX_DECIMALS).toString(),
           symbol: providerFeesSymbol
         })
         totalPrices.push({
@@ -549,43 +583,28 @@ export default function FormStartCompute({
               )}
 
               <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(
-                    new Decimal(datasetOrderPrice || accessDetails.price || 0)
-                  )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
-                  .toString()} // consume market order fee fee amount
+                price={new Decimal(
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+                ).toString()} // consume market order fee fee amount
                 symbol={datasetSymbol}
-                type={`CONSUME MARKET ORDER FEE DATASET (${consumeMarketOrderFee}%)`}
+                type={`CONSUME MARKET ORDER FEE DATASET)`}
               />
 
               <Row
-                price={new Decimal(consumeMarketOrderFee)
-                  .mul(
-                    new Decimal(
-                      algoOrderPrice ||
-                        selectedAlgorithmAsset?.accessDetails[serviceIndex]
-                          ?.price ||
-                        0
-                    )
-                  )
-                  .toDecimalPlaces(MAX_DECIMALS)
-                  .div(100)
-                  .toString()} // consume market order fee fee amount
+                price={new Decimal(
+                  formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+                ).toString()} // consume market order fee fee amount
                 symbol={algorithmSymbol}
-                type={`CONSUME MARKET ORDER FEE ALGORITHM (${consumeMarketOrderFee}%)`}
+                type={`CONSUME MARKET ORDER FEE ALGORITHM`}
               />
 
               {computeEnvs?.length > 0 && (
                 <Row
-                  price={new Decimal(consumeMarketOrderFee)
-                    .mul(new Decimal(selectedResources?.price || 0))
-                    .toDecimalPlaces(MAX_DECIMALS)
-                    .div(100)
-                    .toString()}
+                  price={new Decimal(
+                    formatUnits(consumeMarketOrderFee, tokenInfo?.decimals)
+                  ).toString()}
                   symbol={providerFeesSymbol}
-                  type={`CONSUME MARKET ORDER FEE C2D (${consumeMarketOrderFee}%)`}
+                  type={`CONSUME MARKET ORDER FEE C2D)`}
                 />
               )}
               {totalPrices.map((item) =>
@@ -601,28 +620,89 @@ export default function FormStartCompute({
           )}
           <div style={{ textAlign: 'center' }}>
             {appConfig.ssiEnabled && selectedAlgorithmAsset ? (
-              verifierSessionCache &&
-              lookupVerifierSessionId(
-                `${selectedAlgorithmAsset?.id}`,
-                selectedAlgorithmAsset?.credentialSubject?.services?.[
-                  serviceIndex
-                ]?.id
-              ) ? (
-                <PurchaseButton />
-              ) : (
-                <div style={{ marginTop: '60px', marginLeft: '10px' }}>
-                  <AssetActionCheckCredentialsAlgo
-                    asset={selectedAlgorithmAsset}
-                    service={
-                      selectedAlgorithmAsset?.credentialSubject?.services?.[
-                        serviceIndex
-                      ]
-                    }
-                  />
-                </div>
-              )
+              (() => {
+                const hasAlgorithmSession =
+                  verifierSessionCache &&
+                  lookupVerifierSessionId(
+                    `${selectedAlgorithmAsset?.id}`,
+                    selectedAlgorithmAsset?.credentialSubject?.services?.[
+                      serviceIndex
+                    ]?.id
+                  )
+
+                return hasAlgorithmSession ? (
+                  <>
+                    <FormErrorGroup
+                      errorFields={[
+                        'termsAndConditions',
+                        'acceptPublishingLicense'
+                      ]}
+                    >
+                      <Field
+                        component={Input}
+                        name="termsAndConditions"
+                        type="checkbox"
+                        options={['Terms and Conditions']}
+                        prefixes={['I agree to the']}
+                        actions={['/terms']}
+                        disabled={isLoading}
+                        hideLabel={true}
+                      />
+                      <Field
+                        component={Input}
+                        name="acceptPublishingLicense"
+                        type="checkbox"
+                        options={['Publishing License']}
+                        prefixes={['I agree the']}
+                        disabled={isLoading}
+                        hideLabel={true}
+                      />
+                    </FormErrorGroup>
+                    <PurchaseButton />
+                  </>
+                ) : (
+                  <div style={{ marginTop: '60px', marginLeft: '10px' }}>
+                    <AssetActionCheckCredentialsAlgo
+                      asset={selectedAlgorithmAsset}
+                      service={
+                        selectedAlgorithmAsset?.credentialSubject?.services?.[
+                          serviceIndex
+                        ]
+                      }
+                    />
+                  </div>
+                )
+              })()
             ) : (
-              <PurchaseButton />
+              <>
+                <FormErrorGroup
+                  errorFields={[
+                    'termsAndConditions',
+                    'acceptPublishingLicense'
+                  ]}
+                >
+                  <Field
+                    component={Input}
+                    name="termsAndConditions"
+                    type="checkbox"
+                    options={['Terms and Conditions']}
+                    prefixes={['I agree to the']}
+                    actions={['/terms']}
+                    disabled={isLoading}
+                    hideLabel={true}
+                  />
+                  <Field
+                    component={Input}
+                    name="acceptPublishingLicense"
+                    type="checkbox"
+                    options={['Publishing License']}
+                    prefixes={['I agree the']}
+                    disabled={isLoading}
+                    hideLabel={true}
+                  />
+                </FormErrorGroup>
+                <PurchaseButton />
+              </>
             )}
           </div>
         </>
@@ -667,28 +747,25 @@ export default function FormStartCompute({
         />
       )}
 
+      {/* Compute Jobs Section */}
+      {accountId &&
+        accessDetails.datatoken &&
+        asset.credentialSubject.metadata.type !== 'algorithm' && (
+          <ComputeHistory title="Your Compute Jobs" refetchJobs={refetchJobs}>
+            <ComputeJobs
+              minimal
+              jobs={jobs || []}
+              isLoading={isLoadingJobs || false}
+              refetchJobs={refetchJobs}
+            />
+          </ComputeHistory>
+        )}
+
       {/* {isFullPriceLoading ? (
         <CalculateButton />
       ) : ( */}
       <>
         <AssetActionBuy asset={asset} />
-        <Field
-          component={Input}
-          name="termsAndConditions"
-          type="checkbox"
-          options={['Terms and Conditions']}
-          prefixes={['I agree to the']}
-          actions={['/terms']}
-          disabled={isLoading}
-        />
-        <Field
-          component={Input}
-          name="acceptPublishingLicense"
-          type="checkbox"
-          options={['Publishing License']}
-          prefixes={['I agree the']}
-          disabled={isLoading}
-        />
       </>
     </Form>
   )

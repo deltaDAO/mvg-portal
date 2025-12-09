@@ -4,7 +4,7 @@ import classNames from 'classnames/bind'
 import Button from '../atoms/Button'
 import { NavigationDirections } from '.'
 import { toast } from 'react-toastify'
-import { useAccount, useNetwork, useProvider } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import { getErrorMessage } from '@utils/onboarding'
 
 const cx = classNames.bind(styles)
@@ -23,8 +23,8 @@ export default function Stepper({
   setNavigationDirection: (direction: NavigationDirections) => void
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const web3Provider = useProvider()
-  const { chain } = useNetwork()
+  const web3Provider = usePublicClient()
+  const chainId = useChainId()
 
   const getNavigationDirection = (
     currentStep: number,
@@ -41,7 +41,7 @@ export default function Stepper({
         getErrorMessage({
           accountId,
           web3Provider: !!web3Provider,
-          networkId: chain?.id
+          networkId: chainId
         })
       )
       return

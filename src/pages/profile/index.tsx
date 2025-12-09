@@ -5,7 +5,7 @@ import { accountTruncate } from '@utils/wallet'
 import ProfileProvider from '@context/Profile'
 import { useRouter } from 'next/router'
 import { useAccount } from 'wagmi'
-import { isAddress } from 'ethers/lib/utils'
+import { isAddress } from 'ethers'
 
 export default function PageProfile(): ReactElement {
   const router = useRouter()

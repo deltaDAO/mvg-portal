@@ -12,17 +12,17 @@ import MetaMain from './MetaMain'
 import styles from './index.module.css'
 import NetworkName from '@shared/NetworkName'
 import content from '../../../../content/purgatory.json'
-import Button from '@shared/atoms/Button'
 import RelatedAssets from '../RelatedAssets'
 import Web3Feedback from '@components/@shared/Web3Feedback'
 import { useAccount } from 'wagmi'
-import { decodePublish } from '@utils/invoice/publishInvoice'
+// import { decodePublish } from '@utils/invoice/publishInvoice'
 import ServiceCard from './ServiceCard'
-import { getPdf } from '@utils/invoice/createInvoice'
+// import { getPdf } from '@utils/invoice/createInvoice'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { LanguageValueObject } from 'src/@types/ddo/LanguageValueObject'
 import MetaInfo from './MetaMain/MetaInfo'
 import EditIcon from '@images/edit.svg'
+import ComputeJobs from '@components/@shared/ComputeJobs'
 
 export default function AssetContent({
   asset
@@ -30,67 +30,73 @@ export default function AssetContent({
   asset: AssetExtended
 }): ReactElement {
   const { isInPurgatory, purgatoryData, isOwner, isAssetNetwork } = useAsset()
-  const { address: accountId } = useAccount()
+  const { address: accountId, isConnected } = useAccount()
   const { allowExternalContent, debug } = useUserPreferences()
-  const [receipts, setReceipts] = useState([])
+  const [receipts] = useState([])
   const [nftPublisher, setNftPublisher] = useState<string>()
   const [selectedService, setSelectedService] = useState<number | undefined>()
 
-  const [loadingInvoice, setLoadingInvoice] = useState(false)
-  const [pdfUrl, setPdfUrl] = useState(null)
-  const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
-  const [jsonInvoice, setJsonInvoice] = useState(null)
+  // const [loadingInvoice, setLoadingInvoice] = useState(false)
+  // const [pdfUrl, setPdfUrl] = useState(null)
+  // const [loadingInvoiceJson, setLoadingInvoiceJson] = useState(false)
+  // const [jsonInvoice, setJsonInvoice] = useState(null)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-
+  const [computeJobsRefetchTrigger, setComputeJobsRefetchTrigger] = useState(0)
+  const [expanded, setExpanded] = useState(false)
   const availableServices =
     asset.credentialSubject?.services?.filter(
       (service) => service.state === 0
     ) || []
 
-  async function handleGeneratePdf(id: string, tx: string) {
-    try {
-      setLoadingInvoice(true)
-      let pdfUrlResponse: Blob[]
-      if (!jsonInvoice) {
-        const response = await decodePublish(
-          id,
-          tx,
-          asset.credentialSubject.chainId
-        )
-        setJsonInvoice(jsonInvoice)
-        pdfUrlResponse = await getPdf([response])
-      } else {
-        pdfUrlResponse = await getPdf([jsonInvoice])
-      }
-      if (pdfUrlResponse.length > 0) {
-        setPdfUrl(pdfUrlResponse[0])
-      }
-    } catch (error) {
-      // Handle error
-      console.error('Error:', error)
-    } finally {
-      setLoadingInvoice(false)
-    }
-  }
+  // Find compute service
+  const computeServiceIndex = asset.credentialSubject?.services?.findIndex(
+    (service) => service.type === 'compute'
+  )
 
-  async function handleGenerateJson(id: string, tx: string) {
-    try {
-      setLoadingInvoiceJson(true)
-      if (!jsonInvoice) {
-        const response = await decodePublish(
-          id,
-          tx,
-          asset.credentialSubject.chainId
-        )
-        setJsonInvoice(response)
-      }
-    } catch (error) {
-      // Handle error
-      console.error('Error:', error)
-    } finally {
-      setLoadingInvoiceJson(false)
-    }
-  }
+  // async function handleGeneratePdf(id: string, tx: string) {
+  //   try {
+  //     setLoadingInvoice(true)
+  //     let pdfUrlResponse: Blob[]
+  //     if (!jsonInvoice) {
+  //       const response = await decodePublish(
+  //         id,
+  //         tx,
+  //         asset.credentialSubject.chainId
+  //       )
+  //       setJsonInvoice(jsonInvoice)
+  //       pdfUrlResponse = await getPdf([response])
+  //     } else {
+  //       pdfUrlResponse = await getPdf([jsonInvoice])
+  //     }
+  //     if (pdfUrlResponse.length > 0) {
+  //       setPdfUrl(pdfUrlResponse[0])
+  //     }
+  //   } catch (error) {
+  //     // Handle error
+  //     console.error('Error:', error)
+  //   } finally {
+  //     setLoadingInvoice(false)
+  //   }
+  // }
+
+  // async function handleGenerateJson(id: string, tx: string) {
+  //   try {
+  //     setLoadingInvoiceJson(true)
+  //     if (!jsonInvoice) {
+  //       const response = await decodePublish(
+  //         id,
+  //         tx,
+  //         asset.credentialSubject.chainId
+  //       )
+  //       setJsonInvoice(response)
+  //     }
+  //   } catch (error) {
+  //     // Handle error
+  //     console.error('Error:', error)
+  //   } finally {
+  //     setLoadingInvoiceJson(false)
+  //   }
+  // }
 
   useEffect(() => {
     if (!receipts.length) return
@@ -143,33 +149,77 @@ export default function AssetContent({
               />
             ) : isDescriptionIsString ? (
               <>
-                <Markdown
-                  className={styles.description}
-                  text={
-                    asset.credentialSubject?.metadata?.description['@value']
-                  }
-                  blockImages={!allowExternalContent}
-                />
+                <div className={styles.descriptionWrapper}>
+                  <div
+                    className={`${styles.description} ${
+                      expanded ? styles.expanded : styles.collapsed
+                    }`}
+                  >
+                    <Markdown
+                      text={
+                        asset.credentialSubject?.metadata?.description[
+                          '@value'
+                        ] || ''
+                      }
+                      blockImages={!allowExternalContent}
+                    />
+                  </div>
+
+                  {asset.credentialSubject?.metadata?.description['@value']
+                    ?.length > 80 && (
+                    <span
+                      className={styles.toggle}
+                      onClick={() => setExpanded(!expanded)}
+                    >
+                      {expanded ? 'Show less' : 'Show more'}
+                    </span>
+                  )}
+                </div>
                 <MetaSecondary ddo={asset} />
               </>
             ) : (
               <>
-                <Markdown
-                  className={styles.description}
-                  text={
-                    (
-                      asset.credentialSubject?.metadata
-                        ?.description as LanguageValueObject
-                    )['@value'] || ''
-                  }
-                  blockImages={!allowExternalContent}
-                />
+                <div className={styles.descriptionWrapper}>
+                  <div
+                    className={`${styles.description} ${
+                      expanded ? styles.expanded : styles.collapsed
+                    }`}
+                  >
+                    <Markdown
+                      text={
+                        (
+                          asset.credentialSubject?.metadata
+                            ?.description as LanguageValueObject
+                        )['@value'] || ''
+                      }
+                      blockImages={!allowExternalContent}
+                    />
+                  </div>
+
+                  {(
+                    asset.credentialSubject?.metadata
+                      ?.description as LanguageValueObject
+                  )['@value']?.length > 80 && (
+                    <span
+                      className={styles.toggle}
+                      onClick={() => setExpanded(!expanded)}
+                    >
+                      {expanded ? 'Show less' : 'Show more'}
+                    </span>
+                  )}
+                </div>
                 <MetaSecondary ddo={asset} />
               </>
             )}
             <MetaFull ddo={asset} />
             {debug === true && <DebugOutput title="DDO" output={asset} />}
           </div>
+          {computeServiceIndex !== undefined && computeServiceIndex >= 0 && (
+            <ComputeJobs
+              asset={asset}
+              refetchTrigger={computeJobsRefetchTrigger}
+            />
+          )}
         </div>
 
         <div className={styles.actions}>
@@ -189,19 +239,41 @@ export default function AssetContent({
               {asset?.indexedMetadata?.nft?.state === 0 ? (
                 selectedService === undefined ? (
                   <>
-                    {/* <h3> Available Assets:</h3> */}
                     {availableServices.length > 0 ? (
                       <div className={styles.serviceDisplay}>
                         <h4>Choose service to see Price:</h4>
                         <div className={styles.servicesGrid}>
-                          {availableServices.map((service, index) => (
-                            <ServiceCard
-                              key={service.id}
-                              service={service}
-                              accessDetails={asset.accessDetails[index]}
-                              onClick={() => setSelectedService(index)}
-                            />
-                          ))}
+                          {availableServices.map((service, index) => {
+                            const isPublished = Boolean(
+                              asset?.indexedMetadata?.nft?.created
+                            )
+                            const isClickable =
+                              isAssetNetwork && isConnected && isPublished
+
+                            return (
+                              <div
+                                key={service.id}
+                                onClick={() => {
+                                  if (!isClickable) return
+                                  setSelectedService(index)
+                                }}
+                                className={`
+                ${
+                  isClickable
+                    ? 'cursor-pointer hover:opacity-100'
+                    : 'opacity-50 cursor-not-allowed'
+                }
+              `}
+                              >
+                                <ServiceCard
+                                  service={service}
+                                  accessDetails={asset.accessDetails[index]}
+                                  onClick={() => {}}
+                                  isClickable={isPublished}
+                                />
+                              </div>
+                            )
+                          })}
                         </div>
                       </div>
                     ) : (
@@ -215,6 +287,9 @@ export default function AssetContent({
                     accessDetails={asset.accessDetails[selectedService]}
                     serviceIndex={selectedService}
                     handleBack={() => setSelectedService(undefined)}
+                    onComputeJobCreated={() =>
+                      setComputeJobsRefetchTrigger((prev) => prev + 1)
+                    }
                   />
                 )
               ) : (
@@ -226,14 +301,14 @@ export default function AssetContent({
               )}
             </>
           )}
-          {isOwner && isAssetNetwork && (
+          {isOwner && isAssetNetwork && isConnected && (
             <div className={styles.ownerButtonsContainer}>
               <a href={`/asset/${asset.id}/edit`} className={styles.editButton}>
                 <EditIcon className={styles.editIcon} />
                 Edit Asset
               </a>
 
-              <div
+              {/* <div
                 className={`${styles.invoiceDropdown} ${
                   isDropdownOpen ? styles.open : ''
                 }`}
@@ -311,12 +386,41 @@ export default function AssetContent({
                     </button>
                   )}
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
         </div>
       </article>
       <RelatedAssets />
+
+      {/* ComputeWizard Full-Page Overlay */}
+      {/* {showComputeWizard && selectedService !== undefined && (
+        <div className={styles.computeWizardOverlay}>
+          <div className={styles.computeWizardContainer}>
+            <div className={styles.computeWizardHeader}>
+              <button
+                className={styles.closeButton}
+                onClick={() => {
+                  setShowComputeWizard(false)
+                  setSelectedService(undefined)
+                }}
+              >
+                ✕ Close
+              </button>
+            </div>
+            <ComputeWizard
+              asset={asset}
+              service={asset.credentialSubject?.services[selectedService]}
+              accessDetails={asset.accessDetails[selectedService]}
+              accountId={accountId}
+              signer={signer}
+              dtBalance={dtBalance || '0'}
+              file={fileMetadata}
+              isAccountIdWhitelisted={isAccountIdWhitelisted || false}
+            />
+          </div>
+        </div>
+      )} */}
     </>
   )
 }

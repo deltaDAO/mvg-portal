@@ -1,6 +1,5 @@
 import {
   ComputeResultType,
-  downloadFileBrowser,
   getErrorMessage,
   LoggerInstance,
   Provider
@@ -13,10 +12,12 @@ import FormHelp from '@shared/FormInput/Help'
 import content from '../../../../../content/pages/history.json'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { getAsset } from '@utils/aquarius'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { toast } from 'react-toastify'
 import { prettySize } from '@components/@shared/FormInput/InputElement/FilesInput/utils'
 import { customProviderUrl } from 'app.config.cjs'
+import { Signer } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function Results({
   job
@@ -25,7 +26,7 @@ export default function Results({
 }): ReactElement {
   const providerInstance = new Provider()
   const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner()
 
   const [datasetProvider, setDatasetProvider] = useState<string>()
   const newCancelToken = useCancelToken()
@@ -34,9 +35,13 @@ export default function Results({
 
   useEffect(() => {
     async function getAssetMetadata() {
-      if (job.assets) {
+      if (job.assets && job.assets.length > 0) {
         const ddo = await getAsset(job.assets[0].documentId, newCancelToken())
-        setDatasetProvider(ddo.credentialSubject.services[0].serviceEndpoint)
+        if (ddo?.credentialSubject?.services?.[0]?.serviceEndpoint) {
+          setDatasetProvider(ddo.credentialSubject.services[0].serviceEndpoint)
+        } else {
+          setDatasetProvider(customProviderUrl)
+        }
       } else {
         setDatasetProvider(customProviderUrl)
       }
@@ -70,20 +75,34 @@ export default function Results({
   }
 
   async function downloadResults(resultIndex: number) {
-    if (!accountId || !job) return
-
+    const signer = walletClient as unknown as Signer
+    if (!accountId || !job || !datasetProvider || !walletClient) return
     try {
       const envPrefix = (job as any).environment.split('-')[0]
       const compositeId = `${envPrefix}-${job.jobId}`
 
-      const jobResult = await providerInstance.getComputeResultUrl(
+      const jobResultUrl = await providerInstance.getComputeResultUrl(
         datasetProvider,
         signer,
         compositeId,
         resultIndex
       )
-      await downloadFileBrowser(jobResult)
-    } catch (error) {
+
+      const jobResultMeta = job.results?.[resultIndex]
+      const filename = jobResultMeta?.filename || `result_${resultIndex}`
+      const response = await fetch(jobResultUrl)
+      if (!response.ok) throw new Error('Failed to fetch file.')
+
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = blobUrl
+      link.download = filename
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(blobUrl)
+    } catch (error: any) {
       const message = getErrorMessage(error.message)
       LoggerInstance.error('[Provider Get c2d results url] Error:', message)
       toast.error(message)
@@ -92,7 +111,7 @@ export default function Results({
 
   return (
     <div className={styles.results}>
-      <h4 className={styles.title}>Results</h4>
+      <div className={styles.title}>Results</div>
       {isFinished ? (
         <ul>
           {job.results &&
@@ -121,7 +140,12 @@ export default function Results({
       ) : (
         <p> Waiting for results...</p>
       )}
-      <FormHelp className={styles.help}>{content.compute.storage}</FormHelp>
+      <div className={styles.alert}>
+        <div className={styles.rightAlert}></div>
+        <div>
+          <FormHelp className={styles.help}>{content.compute.storage}</FormHelp>
+        </div>
+      </div>
     </div>
   )
 }

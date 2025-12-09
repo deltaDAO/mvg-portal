@@ -1,6 +1,7 @@
-.selection {
-  padding: 0;
-  font-size: var(--font-size-small);
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
   min-height: 200px;
 }
 
@@ -13,6 +14,10 @@
 }
 
 .scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
   margin-top: calc(var(--spacer) / 4);
   min-height: fit-content;
   max-height: 50vh;
@@ -27,12 +32,13 @@
   align-items: center;
   padding: 0px;
   gap: 16px;
-  border-bottom: 1px solid var(--border-color);
   padding: var(--sp-4);
 }
 
-.scroll > .row:last-of-type {
-  border-bottom: none;
+.row:hover {
+  background: var(--publish-background-hover);
+  border-radius: var(--publish-border-radius);
+  cursor: pointer;
 }
 
 .content {
@@ -51,6 +57,24 @@
   width: 100%;
 }
 
+.label.priceOnRight {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.label.priceOnRight .labelContent {
+  flex: 1;
+}
+
+.priceContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
 .labelContent {
   display: flex;
   flex-direction: column;
@@ -58,6 +82,14 @@
   padding: 0px;
   gap: 4px;
   width: 100%;
+}
+
+.didContainer {
+  font-family: var(--publish-font-family);
+  font-style: normal;
+  font-weight: var(--publish-font-weight-normal);
+  font-size: var(--publish-font-size);
+  color: var(--clr-did-text);
 }
 
 .titleRow {
@@ -74,7 +106,7 @@
   height: 16px;
   margin: 0;
   margin-right: 0;
-  border: 1px solid var(--publish-input-border-color);
+  border: 1px solid var(--publish-accent);
   border-radius: var(--publish-border-radius-sm);
   background: var(--publish-white);
   cursor: pointer;
@@ -172,95 +204,6 @@
 
 .price [class*='symbol'] {
   font-size: var(--publish-font-size);
-}
-
-/* Search container with proper layout */
-.searchContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.search {
-  flex: 1;
-  height: 40px;
-  border: 1px solid rgba(10, 75, 112, 0.5);
-  border-radius: 20px;
-  font-family: 'Helvetica';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 16px;
-  color: rgba(48, 48, 49, 0.7);
-  padding: 0 20px;
-  background: transparent;
-  outline: none;
-  box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.search:focus {
-  border-color: var(--publish-primary);
-  outline: none;
-}
-
-.search::placeholder {
-  color: rgba(48, 48, 49, 0.7);
-  font-family: 'Helvetica';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 16px;
-}
-
-/* Search button container */
-.searchButtonContainer {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-
-/* Search button styling */
-.searchButton {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 9px 14px;
-  gap: 4px;
-  background: #fdd655;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.searchButton:hover {
-  background: #f3ce4a;
-  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.15);
-}
-
-.searchButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.searchIcon {
-  width: 16px;
-  height: 16px;
-  fill: #0a4b70;
-}
-
-.searchButtonText {
-  font-family: 'Helvetica';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 22px;
-  text-align: center;
-  color: #0a4b70;
 }
 
 .did {

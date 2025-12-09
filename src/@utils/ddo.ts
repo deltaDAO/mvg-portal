@@ -6,14 +6,7 @@ import {
   FormConsumerParameter,
   FormPublishData
 } from '@components/Publish/_types'
-import {
-  Arweave,
-  FileInfo,
-  Ipfs,
-  LoggerInstance,
-  UrlFile
-} from '@oceanprotocol/lib'
-import { checkJson } from './codemirror'
+import { Arweave, FileInfo, Ipfs, UrlFile } from '@oceanprotocol/lib'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { Option } from 'src/@types/ddo/Option'
@@ -272,14 +265,13 @@ export function isAddressWhitelisted(
 ): boolean {
   if (!ddo || !accountId) return false
 
-  if (!ddo.credentialSubject.credentials) {
-    LoggerInstance.error('The asset has no credentials property')
-    return false
+  // If SSI is not configured at asset or service level, allow access (no credential check required)
+  if (!ddo.credentialSubject?.credentials) {
+    return true
   }
 
-  if (!service || (service && !service.credentials)) {
-    LoggerInstance.error('The selected service has no credentials property')
-    return false
+  if (!service || !service.credentials) {
+    return true
   }
 
   const assetAccessGranted = checkCredentials(

@@ -9,7 +9,6 @@ import {
   ZERO_ADDRESS
 } from '@oceanprotocol/lib'
 import { getFixedBuyPrice } from './ocean/fixedRateExchange'
-import Decimal from 'decimal.js'
 import {
   consumeMarketOrderFee,
   publisherMarketOrderFee,
@@ -17,7 +16,7 @@ import {
 } from '../../app.config.cjs'
 import { Signer } from 'ethers'
 import { toast } from 'react-toastify'
-import { getDummySigner } from './wallet'
+import { getDummySigner, getTokenInfo } from './wallet'
 import { Service } from '../@types/ddo/Service'
 import { AssetExtended } from '../@types/AssetExtended'
 import { CancelToken } from 'axios'
@@ -111,23 +110,13 @@ export async function getOrderPriceAndFees(
       signer
     )
     orderPriceAndFee.price = accessDetails.price
-    orderPriceAndFee.opcFee = fixed.oceanFeeAmount
-    orderPriceAndFee.publisherMarketFixedSwapFee = fixed.marketFeeAmount
-    orderPriceAndFee.consumeMarketFixedSwapFee = fixed.consumeMarketFeeAmount
+    orderPriceAndFee.baseTokenAmount = fixed?.baseTokenAmount || '0'
+    orderPriceAndFee.opcFee = fixed?.oceanFeeAmount || '0'
+    orderPriceAndFee.publisherMarketFixedSwapFee = fixed?.marketFeeAmount || '0'
+    orderPriceAndFee.consumeMarketFixedSwapFee =
+      fixed?.consumeMarketFeeAmount || '0'
   }
-  const price = new Decimal(+accessDetails.price || 0)
-  const consumeMarketFeePercentage =
-    +orderPriceAndFee?.consumeMarketOrderFee || 0
-  const publisherMarketFeePercentage =
-    +orderPriceAndFee?.publisherMarketOrderFee || 0
 
-  // Calculate percentage-based fees
-  const consumeMarketFee = price.mul(consumeMarketFeePercentage).div(100)
-  const publisherMarketFee = price.mul(publisherMarketFeePercentage).div(100)
-
-  // Calculate total
-  const result = price.add(consumeMarketFee).add(publisherMarketFee).toString()
-  orderPriceAndFee.price = result
   return orderPriceAndFee
 }
 
@@ -226,22 +215,28 @@ export async function getAccessDetails(
   // if there is 0 dispensers and at least 1 fixed rate => use first fixed rate to get the price details
   const fixedRates = await datatoken.getFixedRates(datatokenAddress)
   if (fixedRates.length > 0) {
-    const freAddress = fixedRates[0].contractAddress
-    const exchangeId = fixedRates[0].id
-    const fre = new FixedRateExchange(freAddress, signer, chainId)
-    const exchange = await fre.getExchange(exchangeId)
+    try {
+      const freAddress = fixedRates[0].contractAddress
+      const exchangeId = fixedRates[0].id
+      const fre = new FixedRateExchange(freAddress, signer, chainId)
 
-    return {
-      ...accessDetails,
-      type: 'fixed',
-      addressOrId: exchangeId,
-      price: exchange.fixedRate,
-      baseToken: {
-        address: exchange.baseToken,
-        name: await datatoken.getName(exchange.baseToken), // reuse the datatoken instance since it is ERC20
-        symbol: await datatoken.getSymbol(exchange.baseToken),
-        decimals: parseInt(exchange.btDecimals)
+      const exchange = await fre.getExchange(exchangeId)
+      const tokenInfo = await getTokenInfo(exchange.baseToken, signer.provider)
+      return {
+        ...accessDetails,
+        type: 'fixed',
+        addressOrId: exchangeId,
+        price: exchange.fixedRate,
+        baseToken: {
+          address: exchange.baseToken,
+          name: await datatoken.getName(exchange.baseToken), // reuse the datatoken instance since it is ERC20
+          symbol: await datatoken.getSymbol(exchange.baseToken),
+          decimals: tokenInfo?.decimals || parseInt(exchange.btDecimals)
+        }
       }
+    } catch (error) {
+      console.log('Error fetching fixed rate exchange', error)
+      return accessDetails
     }
   }
 
@@ -251,9 +246,9 @@ export async function getAccessDetails(
 
 export function getAvailablePrice(accessDetails: AccessDetails): AssetPrice {
   const price: AssetPrice = {
-    value: Number(accessDetails.price),
-    tokenSymbol: accessDetails.baseToken?.symbol,
-    tokenAddress: accessDetails.baseToken?.address
+    value: Number(accessDetails?.price || 0),
+    tokenSymbol: accessDetails?.baseToken?.symbol,
+    tokenAddress: accessDetails?.baseToken?.address
   }
 
   return price

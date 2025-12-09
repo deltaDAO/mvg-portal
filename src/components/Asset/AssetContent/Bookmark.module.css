@@ -26,3 +26,44 @@
 .bookmark.active svg {
   fill: var(--bookmark-icon-selected-fill-color);
 }
+
+.bookmark::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--tooltip-bg-color, #333);
+  color: var(--tooltip-text-color, #fff);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.bookmark::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 4px;
+  border-style: solid;
+  border-color: transparent transparent var(--tooltip-bg-color, #333)
+    transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  z-index: 1001;
+}
+
+.bookmark:hover::after,
+.bookmark:hover::before {
+  opacity: 1;
+  visibility: visible;
+}

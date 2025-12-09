@@ -27,14 +27,6 @@ export interface PolicyServerInitiateComputeActionData
   serviceId: string
 }
 
-export interface PolicyServerInitiateAction {
-  action: PolicyServerActions.INITIATE
-  ddo: any
-  policyServer: PolicyServerInitiateActionData
-  serviceId: string
-  consumerAddress: string
-}
-
 export interface PolicyServerGetPdAction {
   action: PolicyServerActions.GET_PD
   sessionId: string

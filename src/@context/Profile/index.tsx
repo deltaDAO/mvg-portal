@@ -8,7 +8,7 @@ import {
   ReactNode
 } from 'react'
 import { useUserPreferences } from '../UserPreferences'
-import { LoggerInstance } from '@oceanprotocol/lib'
+import { EscrowContract, LoggerInstance } from '@oceanprotocol/lib'
 import {
   getDownloadAssets,
   getPublishedAssets,
@@ -17,8 +17,12 @@ import {
 } from '@utils/aquarius'
 import axios, { CancelToken } from 'axios'
 import { useMarketMetadata } from '../MarketMetadata'
-import { isAddress } from 'ethers/lib/utils'
+import { formatUnits, isAddress } from 'ethers'
 import { Asset } from 'src/@types/Asset'
+import { useChainId } from 'wagmi'
+import { getOceanConfig } from '@utils/ocean'
+import { getTokenInfo } from '@utils/wallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 interface ProfileProviderValue {
   assets: Asset[]
@@ -30,7 +34,10 @@ interface ProfileProviderValue {
   sales: number
   ownAccount: boolean
   revenue: number
+  escrowAvailableFunds: string
+  escrowLockedFunds: string
   handlePageChange: (pageNumber: number) => void
+  refreshEscrowFunds?: () => void
 }
 
 const ProfileContext = createContext({} as ProfileProviderValue)
@@ -46,9 +53,13 @@ function ProfileProvider({
   ownAccount: boolean
   children: ReactNode
 }): ReactElement {
+  const walletClient = useEthersSigner() // FIX: Replaced useSigner
+  const chainId = useChainId() // FIX: Replaced useNetwork
   const { chainIds } = useUserPreferences()
   const { appConfig } = useMarketMetadata()
   const [revenue, setRevenue] = useState(0)
+  const [escrowAvailableFunds, setEscrowAvailableFunds] = useState('0')
+  const [escrowLockedFunds, setEscrowLockedFunds] = useState('0')
 
   const [isEthAddress, setIsEthAddress] = useState<boolean>()
   //
@@ -83,17 +94,13 @@ function ProfileProvider({
         )
         setAssets(result.results)
         setAssetsTotal(result.totalResults)
-        LoggerInstance.log(
-          `[profile] Fetched ${result.totalResults} assets.`,
-          result.results
-        )
 
         // Hint: this would only make sense if we "search" in all subcomponents
         // against this provider's state, meaning filtering via js rather then sending
         // more queries to Aquarius.
         // const assetsWithPrices = await getAssetsBestPrices(result.results)
         // setAssetsWithPrices(assetsWithPrices)
-      } catch (error) {
+      } catch (error: any) {
         LoggerInstance.error(error.message)
       }
     }
@@ -151,11 +158,6 @@ function ProfileProvider({
 
       setDownloads(downloadedAssets)
       setDownloadsTotal(totalResults)
-
-      LoggerInstance.log(
-        `[profile] Fetched ${downloadedAssets.length} download orders.`,
-        downloadedAssets
-      )
     },
     [accountId, chainIds, ownAccount]
   )
@@ -180,7 +182,7 @@ function ProfileProvider({
       try {
         setIsDownloadsLoading(true)
         await fetchDownloads(cancelTokenSource.token)
-      } catch (err) {
+      } catch (err: any) {
         LoggerInstance.log(err.message)
       } finally {
         setIsDownloadsLoading(false)
@@ -218,16 +220,54 @@ function ProfileProvider({
         )
         setRevenue(totalRevenue)
         setSales(totalOrders)
-        LoggerInstance.log(
-          `[profile] Fetched sales number: ${totalOrders}.`,
-          totalOrders
-        )
-      } catch (error) {
+      } catch (error: any) {
         LoggerInstance.error(error.message)
       }
     }
     getUserSalesNumber()
   }, [accountId, chainIds])
+
+  async function getEscrowFunds() {
+    if (!accountId || !isEthAddress || !walletClient || !chainId) {
+      setEscrowAvailableFunds('0')
+      setEscrowLockedFunds('0')
+      return
+    }
+
+    try {
+      const { oceanTokenAddress, escrowAddress } = getOceanConfig(chainId)
+
+      const escrow = new EscrowContract(
+        escrowAddress,
+        walletClient as any,
+        chainId
+      )
+
+      const funds = await escrow.getUserFunds(accountId, oceanTokenAddress)
+
+      const tokenDetails = await getTokenInfo(
+        oceanTokenAddress,
+        walletClient as any
+      )
+
+      const availableFunds = formatUnits(funds.available, tokenDetails.decimals)
+      const lockedFunds = formatUnits(funds.locked, tokenDetails.decimals)
+
+      setEscrowLockedFunds(lockedFunds)
+      setEscrowAvailableFunds(availableFunds)
+    } catch (error: any) {
+      LoggerInstance.error(error.message)
+    }
+  }
+
+  useEffect(() => {
+    getEscrowFunds()
+  }, [accountId, walletClient, isEthAddress, chainId])
+
+  useEffect(() => {
+    // FIX: Update dependencies to use new variables
+    getEscrowFunds()
+  }, [accountId, walletClient, isEthAddress, chainId])
 
   return (
     <ProfileContext.Provider
@@ -241,7 +281,10 @@ function ProfileProvider({
         handlePageChange,
         ownAccount,
         sales,
-        revenue
+        revenue,
+        escrowAvailableFunds,
+        escrowLockedFunds,
+        refreshEscrowFunds: getEscrowFunds
       }}
     >
       {children}

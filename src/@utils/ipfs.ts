@@ -1,5 +1,4 @@
 import * as isIPFS from 'is-ipfs'
-import pinataSDK from '@pinata/sdk'
 import { FileItem } from '@utils/fileItem'
 import { RemoteSource } from '../@types/ddo/RemoteSource'
 import axios from 'axios'
@@ -15,8 +14,7 @@ export function isCID(value: string) {
 
 export async function serverSideUploadToIpfs(
   data: any,
-  ipfsApiKey: string,
-  ipfsSecretApiKey: string
+  ipfsJWT: string
 ): Promise<string> {
   if (typeof window !== 'undefined') {
     throw new Error(
@@ -24,17 +22,28 @@ export async function serverSideUploadToIpfs(
     )
   }
 
-  if (!(ipfsApiKey && ipfsSecretApiKey)) {
-    throw new Error(
-      '[serverSideUploadToIpfs] Set NEXT_PUBLIC_IPFS_API_KEY and NEXT_PUBLIC_IPFS_SECRET_API_KEY'
-    )
+  if (!ipfsJWT) {
+    throw new Error('[serverSideUploadToIpfs] Set NEXT_PUBLIC_IPFS_JWT')
   }
 
   try {
-    // eslint-disable-next-line new-cap
-    const pinata = new pinataSDK(ipfsApiKey, ipfsSecretApiKey)
-    const result = await pinata.pinJSONToIPFS(data)
-    return result.IpfsHash
+    const pinataContent = {
+      pinataContent: data
+    }
+    const response = await axios.post(
+      'https://api.pinata.cloud/pinning/pinJSONToIPFS',
+      pinataContent,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          // 🔑 Use the API Key and Secret Key in the headers for authentication
+          Authorization: `Bearer ${ipfsJWT}`
+        }
+      }
+    )
+
+    // Pinata API response structure is { IpfsHash, PinSize, ... }
+    return response.data.IpfsHash
   } catch (error) {
     throw new Error(`[serverSideUploadToIpfs] ${error.message}`)
   }
@@ -59,8 +68,7 @@ export async function uploadToIPFS(data: any): Promise<string> {
 
 export async function serverSideDeleteIpfsFile(
   ipfsHash: string,
-  ipfsApiKey: string,
-  ipfsSecretApiKey: string
+  ipfsJWT: string
 ) {
   if (typeof window !== 'undefined') {
     throw new Error(
@@ -68,16 +76,17 @@ export async function serverSideDeleteIpfsFile(
     )
   }
 
-  if (!(ipfsApiKey && ipfsSecretApiKey)) {
-    throw new Error(
-      '[serverSideDeleteIpfsFile] Set NEXT_PUBLIC_IPFS_API_KEY and NEXT_PUBLIC_IPFS_SECRET_API_KEY'
-    )
+  if (!ipfsJWT) {
+    throw new Error('[serverSideDeleteIpfsFile] Set NEXT_PUBLIC_IPFS_JWT')
   }
 
   try {
-    // eslint-disable-next-line new-cap
-    const pinata = new pinataSDK(ipfsApiKey, ipfsSecretApiKey)
-    await pinata.unpin(ipfsHash)
+    await axios.delete(`https://api.pinata.cloud/pinning/unpin/${ipfsHash}`, {
+      headers: {
+        // 🔑 Use the JWT as the Bearer Token for authorization
+        Authorization: `Bearer ${ipfsJWT}`
+      }
+    })
   } catch (error) {
     throw new Error(`[serverSideDeleteIpfsFile] ${error.message}`)
   }

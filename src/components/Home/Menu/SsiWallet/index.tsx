@@ -13,11 +13,12 @@ import {
   isSessionValid
 } from '@utils/wallet/ssiWallet'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useAccount, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import appConfig from 'app.config.cjs'
 import { toast } from 'react-toastify'
 import ConnectedIcon from '@images/connected.svg'
 import DisconnectedIcon from '@images/disconnected.svg'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export function SsiWallet(): ReactElement {
   const {
@@ -42,7 +43,12 @@ export function SsiWallet(): ReactElement {
   const selectorDialog = useRef<HTMLDialogElement>(null)
 
   const { isConnected } = useAccount()
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner()
+
+  function getKeyLabel(key: SsiKeyDesc): string {
+    const anyKey = key as unknown as { name?: string; keyId: { id: string } }
+    return anyKey?.name || key.keyId.id
+  }
 
   const fetchWallets = useCallback(async () => {
     try {
@@ -63,7 +69,13 @@ export function SsiWallet(): ReactElement {
     try {
       const dids = await getWalletDids(selectedWallet.id, sessionToken.token)
       setWalletDids(dids)
-      if (!selectedDid) setSelectedDid(dids[0]?.did) // pre-select the first DID if exists
+      // Always set selected DID to the first from current wallet to avoid stale selection after API change
+      setSelectedDid(dids[0]?.did)
+      LoggerInstance.log(
+        '[SSI] fetched DIDs for wallet',
+        selectedWallet?.id,
+        dids
+      )
     } catch (error) {
       LoggerInstance.error(error)
     }
@@ -77,11 +89,24 @@ export function SsiWallet(): ReactElement {
       const keys = await getWalletKeys(selectedWallet, sessionToken.token)
       setSsiKey(keys)
       setSelectedKey(selectedKey || keys[0])
+      LoggerInstance.log(
+        '[SSI] fetched keys for wallet',
+        selectedWallet?.id,
+        keys
+      )
     } catch (error) {
       setSessionToken(undefined)
       LoggerInstance.error(error)
     }
   }, [selectedWallet, selectedKey])
+
+  useEffect(() => {
+    if (!sessionToken) return
+
+    if (!selectedWallet) fetchWallets()
+    if (!selectedDid) fetchDids()
+    if (!selectedKey) fetchKeys()
+  }, [sessionToken, selectedWallet, selectedKey])
 
   useEffect(() => {
     if (!selectedDid || !walletDids.length || !ssiKeys.length) return
@@ -96,23 +121,15 @@ export function SsiWallet(): ReactElement {
     }
   }, [selectedDid, walletDids, ssiKeys])
 
-  useEffect(() => {
-    if (!sessionToken) return
-
-    if (!selectedWallet) fetchWallets()
-    if (!selectedDid) fetchDids()
-    if (!selectedKey) fetchKeys()
-  }, [sessionToken, selectedWallet, selectedKey])
-
   async function handleReconnection() {
-    if (isConnected && signer) {
+    if (isConnected && walletClient) {
       let valid = false
       if (sessionToken) {
         valid = await isSessionValid(sessionToken.token)
       }
-      if ((!valid || !sessionToken) && isConnected && signer) {
+      if ((!valid || !sessionToken) && isConnected && walletClient) {
         try {
-          const session = await connectToWallet(signer)
+          const session = await connectToWallet(walletClient as any)
           setSessionToken(session)
         } catch (error) {
           setSessionToken(undefined)
@@ -151,6 +168,23 @@ export function SsiWallet(): ReactElement {
       (wallet) => wallet.id === (event.target.value as string)
     )
     setSelectedWallet(result)
+    // Sync keys & DIDs to the newly selected wallet
+    if (result && sessionToken) {
+      setSelectedKey(undefined as any)
+      setSelectedDid(undefined as any)
+      getWalletDids(result.id, sessionToken.token)
+        .then((dids) => {
+          setWalletDids(dids)
+          setSelectedDid(dids?.[0]?.did)
+        })
+        .catch((error) => LoggerInstance.error(error))
+      getWalletKeys(result, sessionToken.token)
+        .then((keys) => {
+          setSsiKey(keys)
+          setSelectedKey(keys?.[0])
+        })
+        .catch((error) => LoggerInstance.error(error))
+    }
   }
 
   function handleKeySelection(event: any) {
@@ -235,7 +269,7 @@ export function SsiWallet(): ReactElement {
                       value={`${keys.keyId.id}`}
                       className={styles.panelRow}
                     >
-                      {keys.keyId.id} ({keys.algorithm})
+                      {getKeyLabel(keys)}
                     </option>
                   )
                 })}
@@ -277,19 +311,19 @@ export function SsiWallet(): ReactElement {
             </div>
           </dialog>
 
-          {sessionToken && isConnected && signer ? (
+          {sessionToken && isConnected && walletClient ? (
             <div
               className={`${styles.ssiPanel} ${styles.connected}`}
               onClick={handleOpenDialog}
             >
               <span className={styles.text}>SSI</span>
-
               <span className={styles.iconWrapper}>
                 <ConnectedIcon className={styles.icon} />
               </span>
             </div>
           ) : (
             <button
+              type="button"
               className={`${styles.ssiPanel} ${styles.disconnected}`}
               onClick={handleReconnection}
             >

@@ -1,9 +1,7 @@
 import { ReactElement, useEffect } from 'react'
 import { useFormikContext } from 'formik'
 import { FormPublishData } from '../_types'
-import FormHelp from '@shared/FormInput/Help'
 import Price from './Price'
-import styles from './index.module.css'
 import Alert from '../../@shared/atoms/Alert'
 
 export default function Free({ content }: { content: any }): ReactElement {
@@ -25,7 +23,6 @@ export default function Free({ content }: { content: any }): ReactElement {
   return (
     <>
       <Alert>{content.info}</Alert>
-      <h4 className={styles.title}>Price</h4>
       <Price content={content} />
     </>
   )

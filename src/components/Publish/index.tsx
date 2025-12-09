@@ -22,11 +22,12 @@ import { LoggerInstance, Nft } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
 import { validationSchema } from './_validation'
 import appConfig, { customProviderUrl } from '../../../app.config.cjs'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
-import { ethers } from 'ethers'
+import { Signer, toBeHex } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
 import ContainerForm from '../@shared/atoms/ContainerForm'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function PublishPage({
   content
@@ -35,11 +36,13 @@ export default function PublishPage({
 }): ReactElement {
   const { debug } = useUserPreferences()
   const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
-  const { chain } = useNetwork()
+  const walletClient = useEthersSigner()
+  const chainId = useChainId()
   const { isInPurgatory, purgatoryData } = useAccountPurgatory(accountId)
   const scrollToRef = useRef()
   const nftFactory = useNftFactory()
+
+  const signer = walletClient as unknown as Signer
 
   // This `feedback` state is auto-synced into Formik context under `values.feedback`
   // for use in other components. Syncing defined in ./Steps.tsx child component.
@@ -70,7 +73,8 @@ export default function PublishPage({
     }))
 
     try {
-      const config = getOceanConfig(chain?.id)
+      if (!chainId) throw new Error('No chain ID detected.')
+      const config = getOceanConfig(chainId)
       LoggerInstance.log('[publish] using config: ', config)
 
       const { erc721Address, datatokenAddress, txHash } =
@@ -200,15 +204,36 @@ export default function PublishPage({
       if (!ddo || !ipfsUpload)
         throw new Error('No DDO received. Please try again.')
 
+      if (!signer)
+        throw new Error('Wallet signer is required for blockchain transaction.')
+
+      const userAddress = await signer.getAddress()
+      let attempts = 0
+      const maxAttempts = 60
+
+      while (attempts < maxAttempts) {
+        try {
+          const nftTemp = new Nft(signer, ddo.credentialSubject.chainId)
+          await nftTemp.getNftPermissions(erc721Address, userAddress)
+          break
+        } catch (e) {
+          attempts++
+          if (attempts >= maxAttempts) {
+            throw new Error('Timeout waiting for permissions to be set')
+          }
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+        }
+      }
+
       // Set metadata for the NFT
       const nft = new Nft(signer, ddo.credentialSubject.chainId)
       await nft.setMetadata(
         erc721Address,
-        await signer.getAddress(),
+        userAddress,
         0,
         customProviderUrl || values.services[0].providerUrl.url,
         '',
-        ethers.utils.hexlify(ipfsUpload.flags),
+        toBeHex(ipfsUpload.flags),
         ipfsUpload.metadataIPFS,
         ipfsUpload.metadataIPFSHash
       )
@@ -249,30 +274,37 @@ export default function PublishPage({
     let _did = did
 
     if (!_erc721Address || !_datatokenAddress) {
-      const { erc721Address, datatokenAddress } = await create(values)
-
-      _erc721Address = erc721Address
-      _datatokenAddress = datatokenAddress
-      setErc721Address(erc721Address)
-      setDatatokenAddress(datatokenAddress)
+      const result = await create(values)
+      if (result) {
+        _erc721Address = result.erc721Address
+        _datatokenAddress = result.datatokenAddress
+        setErc721Address(result.erc721Address)
+        setDatatokenAddress(result.datatokenAddress)
+      } else {
+        return
+      }
     }
 
     if (!_ddo || !_ipfsUpload) {
-      const { ddo, ipfsUpload } = await encrypt(
-        values,
-        _erc721Address,
-        _datatokenAddress
-      )
-      _ddo = ddo
-      _ipfsUpload = ipfsUpload
-      setDdo(ddo)
-      setIpdsUpload(ipfsUpload)
+      const result = await encrypt(values, _erc721Address, _datatokenAddress)
+      if (result) {
+        _ddo = result.ddo
+        _ipfsUpload = result.ipfsUpload
+        setDdo(result.ddo)
+        setIpdsUpload(result.ipfsUpload)
+      } else {
+        return
+      }
     }
 
     if (!_did) {
-      const { did } = await publish(values, _ddo, _ipfsUpload, _erc721Address)
-      _did = did
-      setDid(did)
+      const result = await publish(values, _ddo, _ipfsUpload, _erc721Address)
+      if (result) {
+        _did = result.did
+        setDid(result.did)
+      } else {
+        // Stop if publishing failed
+      }
     }
   }
 
@@ -286,10 +318,10 @@ export default function PublishPage({
         await handleSubmit(values)
       }}
     >
-      {({ values }) => (
+      {(formikContext) => (
         <>
           <PageHeader
-            title={<Title networkId={values.user.chainId} />}
+            title={<Title networkId={formikContext.values.user.chainId} />}
             description={content.description}
             isExtended
           />

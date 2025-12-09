@@ -35,8 +35,6 @@ import {
 } from '@utils/compute'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import AlgorithmDatasetsListForCompute from './AlgorithmDatasetsListForCompute'
-import ComputeHistory from './History'
-import ComputeJobs from '../../../Profile/History/ComputeJobs'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { Decimal } from 'decimal.js'
 import {
@@ -49,24 +47,32 @@ import {
   initializeProviderForComputeMulti
 } from '@utils/provider'
 import { useUserPreferences } from '@context/UserPreferences'
-import { getDummySigner } from '@utils/wallet'
+import { getDummySigner, getTokenInfo } from '@utils/wallet'
 import WhitelistIndicator from './WhitelistIndicator'
 import { parseConsumerParameterValues } from '../ConsumerParameters'
-import { BigNumber, ethers, Signer } from 'ethers'
-import { useAccount } from 'wagmi'
+import {
+  ethers,
+  Signer,
+  parseUnits,
+  getAddress,
+  JsonRpcProvider,
+  formatUnits
+} from 'ethers'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import { Service } from '../../../../@types/ddo/Service'
 import { Asset, AssetPrice } from '../../../../@types/Asset'
 import { AssetExtended } from '../../../../@types/AssetExtended'
 import { AssetActionCheckCredentials } from '../CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import { checkVerifierSessionId } from '@utils/wallet/policyServer'
-import appConfig, { oceanTokenAddress } from 'app.config.cjs'
+import appConfig from 'app.config.cjs' // here we need to work
 import { ResourceType } from 'src/@types/ResourceType'
 import { handleComputeOrder } from '@utils/order'
 import { CredentialDialogProvider } from './CredentialDialogProvider'
 import { PolicyServerInitiateComputeActionData } from 'src/@types/PolicyServer'
 import FormStartComputeAlgo from './FormComputeAlgorithm'
 import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
+import { getOceanConfig } from '@utils/ocean'
 
 export default function Compute({
   accountId,
@@ -93,6 +99,8 @@ export default function Compute({
 }): ReactElement {
   const { address } = useAccount()
   const { chainIds } = useUserPreferences()
+  const config = getOceanConfig(asset.credentialSubject.chainId)
+  const { oceanTokenAddress } = config
 
   const newCancelToken = useCancelToken()
 
@@ -158,7 +166,12 @@ export default function Compute({
     ? allResourceValues[selectedEnvId]
     : undefined
 
-  const price: AssetPrice = getAvailablePrice(accessDetails)
+  const publicClient = usePublicClient()
+  const chainId = useChainId()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   const hasDatatoken = Number(dtBalance) >= 1
   const isComputeButtonDisabled =
@@ -303,91 +316,6 @@ export default function Compute({
               accessDetails,
               initializedProvider.datasets?.[i]?.providerFee
             )
-            if (selectedResources.mode === 'paid') {
-              console.log(
-                'Escorw address',
-                initializedProvider.payment.escrowAddress
-              )
-              const escrow = new EscrowContract(
-                ethers.utils.getAddress(
-                  initializedProvider.payment.escrowAddress
-                ),
-                signer,
-                asset.credentialSubject.chainId
-              )
-
-              const amountHuman = String(selectedResources.price) // ex. "4"
-              const amountWei = ethers.utils.parseUnits(amountHuman, 18)
-
-              const erc20 = new ethers.Contract(
-                oceanTokenAddress,
-                [
-                  'function approve(address spender, uint256 amount) returns (bool)',
-                  'function allowance(address owner, address spender) view returns (uint256)'
-                ],
-                signer
-              )
-
-              const owner = await signer.getAddress()
-              const escrowAddress = (
-                escrow.contract.target ?? escrow.contract.address
-              ).toString()
-
-              const currentAllowanceWei = await erc20.allowance(
-                owner,
-                escrowAddress
-              )
-              if (currentAllowanceWei.lt(amountWei)) {
-                console.log(`Approving ${amountHuman} OCEAN to escrow...`)
-                const approveTx = await erc20.approve(escrowAddress, amountWei)
-                await approveTx.wait()
-                console.log(`Approved ${amountHuman} OCEAN`)
-              } else {
-                console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
-              }
-
-              const funds = await escrow.getUserFunds(owner, oceanTokenAddress)
-              const depositedWei = ethers.BigNumber.from(funds[0] ?? '0')
-
-              if (depositedWei.lt(amountWei)) {
-                console.log(
-                  `Depositing ${amountHuman} OCEAN to escrow...`,
-                  amountHuman
-                )
-                const depositTx = await escrow.deposit(
-                  oceanTokenAddress,
-                  amountHuman
-                )
-                await depositTx.wait()
-                console.log(`Deposited ${amountHuman} OCEAN`)
-                console.log(
-                  'Authorizing compute job...',
-                  amountHuman,
-                  selectedComputeEnv.consumerAddress
-                )
-                await escrow.authorize(
-                  oceanTokenAddress,
-                  selectedComputeEnv.consumerAddress,
-                  initializedProvider.payment.amount.toString(),
-                  selectedResources.jobDuration.toString(),
-                  '10'
-                )
-              } else {
-                console.log(
-                  `Skip deposit: escrow funds >= ${amountHuman} OCEAN`
-                )
-              }
-
-              // await escrow.verifyFundsForEscrowPayment(
-              //   oceanTokenAddress,
-              //   selectedComputeEnv.consumerAddress,
-              //   await unitsToAmount(signer, oceanTokenAddress, amountToDeposit),
-              //   initializedProvider.payment.amount.toString(),
-              //   initializedProvider.payment.minLockSeconds.toString(),
-              //   '10'
-              // )
-            }
-
             return {
               actualDatasetAsset: asset,
               actualDatasetService: service,
@@ -398,6 +326,68 @@ export default function Compute({
           }
         )
       )
+      if (selectedResources.mode === 'paid') {
+        const escrow = new EscrowContract(
+          getAddress(initializedProvider.payment.escrowAddress),
+          signer,
+          asset.credentialSubject.chainId
+        )
+
+        const amountHuman = String(selectedResources.price) // ex. "4"
+        const tokenDetails = await getTokenInfo(
+          oceanTokenAddress,
+          ethersProvider
+        )
+        const amountWei = parseUnits(amountHuman, tokenDetails.decimals)
+
+        const erc20 = new ethers.Contract(
+          oceanTokenAddress,
+          [
+            'function approve(address spender, uint256 amount) returns (bool)',
+            'function allowance(address owner, address spender) view returns (uint256)'
+          ],
+          signer
+        )
+
+        const owner = await signer.getAddress()
+        const escrowAddress = (
+          escrow.contract.target ?? escrow.contract.address
+        ).toString()
+
+        const currentAllowanceWei = await erc20.allowance(owner, escrowAddress)
+        if (currentAllowanceWei < amountWei) {
+          const approveTx = await erc20.approve(escrowAddress, amountWei)
+          await approveTx.wait()
+          // Wait until allowance actually reflected on-chain
+          while (true) {
+            const allowanceNow = await erc20.allowance(owner, escrowAddress)
+            if (allowanceNow >= amountWei) {
+              break
+            }
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+          }
+        } else {
+          console.log(`Skip approve: allowance >= ${amountHuman} OCEAN`)
+        }
+
+        const funds = await escrow.getUserFunds(owner, oceanTokenAddress)
+        // funds[0] is returned as string, convert to bigint
+        const depositedWei = BigInt(funds[0] ?? '0')
+
+        if (depositedWei < amountWei) {
+          const depositTx = await escrow.deposit(oceanTokenAddress, amountHuman)
+          await depositTx.wait()
+          await escrow.authorize(
+            oceanTokenAddress,
+            selectedComputeEnv.consumerAddress,
+            initializedProvider.payment.amount.toString(),
+            selectedResources.jobDuration.toString(),
+            '10'
+          )
+        } else {
+          console.log(`Skip deposit: escrow funds >= ${amountHuman} OCEAN`)
+        }
+      }
 
       setComputeStatusText(
         getComputeFeedback(
@@ -480,7 +470,9 @@ export default function Compute({
       }
 
       try {
-        type === 'init' && setIsLoadingJobs(true)
+        if (type === 'init') {
+          setIsLoadingJobs(true)
+        }
         const computeJobs = await getComputeJobs(
           asset.credentialSubject?.chainId !== undefined
             ? [asset.credentialSubject.chainId]
@@ -494,7 +486,9 @@ export default function Compute({
         setIsLoadingJobs(!computeJobs.isLoaded)
       } catch (error) {
         LoggerInstance.error(error.message)
-        setIsLoadingJobs(false)
+        if (type === 'init') {
+          setIsLoadingJobs(false)
+        }
       }
     },
     [address, accountId, asset, service, chainIds, newCancelToken]
@@ -502,6 +496,15 @@ export default function Compute({
 
   useEffect(() => {
     fetchJobs('init')
+
+    const refreshInterval = 10000
+    const interval = setInterval(() => {
+      fetchJobs('poll')
+    }, refreshInterval)
+
+    return () => {
+      clearInterval(interval)
+    }
   }, [refetchJobs])
 
   // Output errors in toast UI
@@ -660,11 +663,18 @@ export default function Compute({
       }
 
       setComputeStatusText(getComputeFeedback()[4])
-
-      const resourceRequests = selectedComputeEnv.resources.map((res) => ({
-        id: res.id,
-        amount: selectedResources[res.id] || res.min
-      }))
+      let resourceRequests
+      if (selectedResources.mode === 'free') {
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: res.inUse
+        }))
+      } else {
+        resourceRequests = selectedComputeEnv.resources.map((res) => ({
+          id: res.id,
+          amount: selectedResources[res.id] || res.min
+        }))
+      }
 
       const policyServerAlgo: PolicyServerInitiateComputeActionData = {
         sessionId: lookupVerifierSessionId(
@@ -695,7 +705,8 @@ export default function Compute({
           datasetResponses[0].actualDatasetAsset.credentialSubject.chainId,
           null,
           null,
-          policiesServer
+          null,
+          policiesServer as any
         )
       } else {
         const algorithm: ComputeAlgorithm = {
@@ -717,7 +728,8 @@ export default function Compute({
           resourceRequests,
           null,
           null,
-          policiesServer
+          null,
+          policiesServer as any
         )
       }
 
@@ -729,6 +741,16 @@ export default function Compute({
       setIsOrdered(true)
       setRefetchJobs(!refetchJobs)
     } catch (error) {
+      if (
+        error?.message?.includes('user rejected transaction') ||
+        error?.message?.includes('User denied') ||
+        error?.message?.includes('MetaMask Tx Signature: User denied')
+      ) {
+        toast.info('Transaction was cancelled by user')
+        setRetry(true)
+        return
+      }
+
       let message: string
       try {
         message =
@@ -825,6 +847,15 @@ export default function Compute({
 
       await startJob(userCustomParameters, datasetServices)
     } catch (error) {
+      if (
+        error?.message?.includes('user rejected transaction') ||
+        error?.message?.includes('User denied') ||
+        error?.message?.includes('MetaMask Tx Signature: User denied')
+      ) {
+        toast.info('Transaction was cancelled by user')
+        return
+      }
+
       toast.error(error.message)
       LoggerInstance.error(error)
     }
@@ -832,33 +863,6 @@ export default function Compute({
 
   return (
     <>
-      <div
-        className={`${styles.info} ${
-          isUnsupportedPricing ? styles.warning : null
-        }`}
-      >
-        <FileIcon
-          file={file}
-          isAccountWhitelisted={isAccountIdWhitelisted}
-          isLoading={fileIsLoading}
-          small
-        />
-        {isUnsupportedPricing ? (
-          <Alert
-            text={`No pricing schema available for this asset.`}
-            state="info"
-          />
-        ) : (
-          <div className={styles.priceClass}>
-            <Price
-              price={price}
-              orderPriceAndFees={datasetOrderPriceAndFees}
-              size="large"
-            />
-          </div>
-        )}
-      </div>
-
       {isUnsupportedPricing ? null : asset.credentialSubject?.metadata.type ===
         'algorithm' ? (
         <Formik
@@ -1078,16 +1082,13 @@ export default function Compute({
                       checkAssetDTBalance(selectedAlgorithmAsset)
                     }
                     computeEnvs={computeEnvs}
+                    jobs={jobs}
+                    isLoadingJobs={isLoadingJobs}
+                    refetchJobs={() => setRefetchJobs(!refetchJobs)}
                   />
                 </CredentialDialogProvider>
               ) : (
-                <div className={styles.actionButton}>
-                  {' '}
-                  <AssetActionCheckCredentials
-                    asset={asset}
-                    service={service}
-                  />
-                </div>
+                <AssetActionCheckCredentials asset={asset} service={service} />
               )}
             </>
           ) : (
@@ -1149,38 +1150,19 @@ export default function Compute({
                   checkAssetDTBalance(selectedAlgorithmAsset)
                 }
                 computeEnvs={computeEnvs}
+                jobs={jobs}
+                isLoadingJobs={isLoadingJobs}
+                refetchJobs={() => setRefetchJobs(!refetchJobs)}
               />
             </CredentialDialogProvider>
           )}
         </Formik>
       )}
-
       <footer className={styles.feedback}>
         {isOrdered && (
           <SuccessConfetti success="Your job started successfully! Watch the progress below or on your profile." />
         )}
       </footer>
-      {accountId && (
-        <WhitelistIndicator
-          accountId={accountId}
-          isAccountIdWhitelisted={isAccountIdWhitelisted}
-        />
-      )}
-      {accountId &&
-        accessDetails.datatoken &&
-        asset.credentialSubject.metadata.type !== 'algorithm' && (
-          <ComputeHistory
-            title="Your Compute Jobs"
-            refetchJobs={() => setRefetchJobs(!refetchJobs)}
-          >
-            <ComputeJobs
-              minimal
-              jobs={jobs}
-              isLoading={isLoadingJobs}
-              refetchJobs={() => setRefetchJobs(!refetchJobs)}
-            />
-          </ComputeHistory>
-        )}
     </>
   )
 }

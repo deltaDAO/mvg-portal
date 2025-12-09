@@ -98,6 +98,11 @@ export interface InputProps {
       [envId: string]: ResourceType
     }>
   >
+  priceOnRight?: boolean
+  computeHelp?: string
+  activeFileType?: string
+  existingFilePlaceholder?: string
+  showExistingFileNotice?: boolean
 }
 
 function checkError(form: any, field: FieldInputProps<any>) {
@@ -180,10 +185,10 @@ export default function Input(props: Partial<InputProps>): ReactElement {
             {(msg) => {
               if (typeof msg === 'string') {
                 return msg
-              } else if (Array.isArray(msg) && msg[0]?.url) {
-                return msg[0].url
-              } else if (msg && typeof msg === 'object' && msg.url) {
-                return msg.url
+              } else if (Array.isArray(msg) && msg[0] && (msg[0] as any).url) {
+                return (msg[0] as any).url
+              } else if (msg && typeof msg === 'object' && (msg as any).url) {
+                return (msg as any).url
               }
               return String(msg)
             }}

@@ -27,7 +27,7 @@ export interface PolicyValue {
 
 export interface VPValue {
   policy: string
-  args?: number | string
+  args?: number | string | Record<string, any>
 }
 
 export type VC = string
@@ -43,8 +43,7 @@ export function isVpValue(data: any): data is VPValue {
     data &&
     typeof data === 'object' &&
     'policy' in data &&
-    typeof data.policy === 'string' &&
-    'args' in data &&
-    typeof data.args === 'number'
+    typeof (data as any).policy === 'string' &&
+    'args' in (data as any)
   )
 }
