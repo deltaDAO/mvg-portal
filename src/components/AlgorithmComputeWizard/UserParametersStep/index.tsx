@@ -33,7 +33,9 @@ const PreviewUserParameters = ({
   )
   const [localParams, setLocalParams] = useState<any[]>([])
 
-  // 1️⃣ Filter datasets with user params
+  const truncate = (str: string, len = 20) =>
+    str && str.length > len ? str.substring(0, len) + '...' : str
+
   useEffect(() => {
     if (!values.datasets) return
 
@@ -219,11 +221,13 @@ const PreviewUserParameters = ({
             <div key={entry.did + entry.serviceId} className={styles.card}>
               <h2 className={styles.cardHeader}>
                 <span className={styles.datasetName}>
-                  {asset?.credentialSubject?.metadata?.name ?? 'Algorithm'}
+                  {truncate(
+                    asset?.credentialSubject?.metadata?.name ?? 'Algorithm'
+                  )}
                 </span>
                 <span className={styles.separator}> | </span>
                 <span className={styles.serviceName}>
-                  {service?.name ?? 'Service'}
+                  {truncate(service?.name ?? 'Service')}
                 </span>
               </h2>
               {entry.userParameters.map((param: UserParameter, i: number) => (
@@ -266,10 +270,12 @@ const PreviewUserParameters = ({
               className={styles.card}
             >
               <h2 className={styles.cardHeader}>
-                <span className={styles.datasetName}>{dataset.name}</span>
+                <span className={styles.datasetName}>
+                  {truncate(dataset.name)}
+                </span>
                 <span className={styles.separator}> | </span>
                 <span className={styles.serviceName}>
-                  {srv.serviceName ?? 'Service'}
+                  {truncate(srv.serviceName ?? 'Service')}
                 </span>
               </h2>
 
