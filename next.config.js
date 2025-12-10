@@ -7,6 +7,7 @@ const nextConfig = () => {
    * @type {import('next').NextConfig}
    */
   const config = {
+    output: 'standalone',
     experimental: {
       esmExternals: 'loose',
       serverComponentsExternalPackages: ['wagmi', 'viem', 'connectkit']
