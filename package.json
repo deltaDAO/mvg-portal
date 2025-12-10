@@ -9,7 +9,6 @@
     "start": "npm run pregenerate && next dev -p 8008",
     "start-docker": "next start -p 8008",
     "build": "npm run pregenerate && next build",
-    "build-docker": "next build",
     "build:static": "npm run build && next export",
     "serve": "serve -s public/",
     "pregenerate": "bash scripts/pregenerate.sh",
