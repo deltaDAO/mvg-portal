@@ -142,6 +142,7 @@ export default function Review({
   isRequestingPrice = false,
   signer,
   algorithms,
+  ddoListAlgorithms = [],
   selectedAlgorithmAsset,
   setSelectedAlgorithmAsset,
   datasets,
@@ -175,7 +176,7 @@ export default function Review({
     useState<number>(-1)
   const [showCredentialsCheck, setShowCredentialsCheck] =
     useState<boolean>(false)
-  const [serviceIndex] = useState(0)
+  const [serviceIndex, setServiceIndex] = useState(0)
   const [datasetProviderFee, setDatasetProviderFee] = useState(
     datasetProviderFeeProp || null
   )
@@ -184,6 +185,7 @@ export default function Review({
   )
   const [totalPrices, setTotalPrices] = useState<TotalPriceEntry[]>([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
+  const [algoLoadError, setAlgoLoadError] = useState<string>()
 
   const selectedEnvId =
     typeof values?.computeEnv === 'string'
@@ -547,12 +549,13 @@ export default function Review({
         })
       }
 
-      const algoCandidate =
-        selectedAlgorithmAsset || (values.algorithms as AssetExtended | any)
-      const algoService =
-        algoCandidate?.credentialSubject?.services?.[serviceIndex] ||
-        algoCandidate?.services?.[serviceIndex] ||
-        algoCandidate?.services?.[0]
+      const algoCandidate = selectedAlgorithmAsset
+      const algoServices: Service[] | undefined =
+        (algoCandidate as AssetExtended | undefined)?.credentialSubject
+          ?.services ||
+        ((algoCandidate as unknown as { services?: Service[] })?.services ??
+          undefined)
+      const algoService = algoServices?.[serviceIndex] || algoServices?.[0]
       if (algoCandidate && algoService) {
         const isVerified = lookupVerifierSessionId?.(
           algoCandidate.id,
@@ -1173,37 +1176,96 @@ export default function Review({
 
   const assetRows = verificationQueue
 
-  const algoFromForm = values.algorithms as AssetExtended | undefined
   const isLoadingAssets = isDatasetFlow
-    ? !(selectedAlgorithmAsset || algoFromForm)
+    ? !selectedAlgorithmAsset
     : !values.withoutDataset &&
       (!selectedDatasetAsset || selectedDatasetAsset.length === 0)
+
+  function getAlgorithmAsset(algo: string): {
+    algorithmAsset: AssetExtended | null
+    serviceIndexAlgo: number | null
+  } {
+    let algorithmId = algo
+    let serviceId = ''
+    try {
+      const parsed = JSON.parse(algo)
+      algorithmId = parsed?.algoDid || algo
+      serviceId = parsed?.serviceId || ''
+    } catch {
+      algorithmId = algo
+    }
+
+    let algorithmAsset: AssetExtended | null = null
+    let serviceIndexAlgo: number | null = null
+
+    ddoListAlgorithms?.forEach((ddo: Asset) => {
+      if (ddo.id === algorithmId) {
+        algorithmAsset = ddo as AssetExtended
+        if (serviceId && ddo.credentialSubject?.services) {
+          const idx = ddo.credentialSubject.services.findIndex(
+            (svc: Service) => svc.id === serviceId
+          )
+          serviceIndexAlgo = idx !== -1 ? idx : null
+        }
+      }
+    })
+
+    return { algorithmAsset, serviceIndexAlgo }
+  }
 
   // Fetch algorithm asset for dataset flow (legacy behavior) if not provided
   useEffect(() => {
     if (!isDatasetFlow) return
     if (selectedAlgorithmAsset) return
-    const algo = values.algorithms as AssetExtended | undefined
-    if (!algo || !algo.credentialSubject?.services) return
+
+    const algoId = values.algorithm as string | undefined
+    const fallbackAlgo = values.algorithms as AssetExtended | undefined
+
+    // Fallback to already-selected algorithm object if ID is missing
+    if (!algoId && fallbackAlgo) {
+      if (fallbackAlgo.serviceIndex !== undefined) {
+        setServiceIndex(fallbackAlgo.serviceIndex)
+      }
+      setSelectedAlgorithmAsset?.(fallbackAlgo)
+      setAlgoLoadError(undefined)
+      return
+    }
+
+    if (!algoId) {
+      setAlgoLoadError('Algorithm selection missing for review.')
+      return
+    }
+
+    const { algorithmAsset, serviceIndexAlgo } = getAlgorithmAsset(algoId)
+    if (!algorithmAsset) {
+      setAlgoLoadError('Algorithm asset not found for review.')
+      return
+    }
 
     async function fetchAlgorithmAssetExtended() {
       try {
         const algoAccessDetails = await Promise.all(
-          algo.credentialSubject.services.map((svc: Service) =>
+          algorithmAsset.credentialSubject?.services?.map((svc: Service) =>
             getAccessDetails(
-              algo.credentialSubject?.chainId,
+              algorithmAsset.credentialSubject?.chainId,
               svc,
               accountId,
               newCancelToken()
             )
-          )
+          ) || []
         )
-        const extendedAlgo: AssetExtended = {
-          ...algo,
-          accessDetails: algoAccessDetails,
-          serviceIndex
+
+        if (serviceIndexAlgo !== null) {
+          setServiceIndex(serviceIndexAlgo)
         }
-        setSelectedAlgorithmAsset && setSelectedAlgorithmAsset(extendedAlgo)
+
+        const extendedAlgo: AssetExtended = {
+          ...algorithmAsset,
+          accessDetails: algoAccessDetails,
+          serviceIndex: serviceIndexAlgo ?? undefined
+        }
+        setSelectedAlgorithmAsset?.(extendedAlgo)
+        setAlgoLoadError(undefined)
       } catch (e) {
         console.error('Could not fetch algorithm asset in review:', e)
       }
@@ -1212,11 +1274,12 @@ export default function Review({
   }, [
     isDatasetFlow,
     selectedAlgorithmAsset,
+    values.algorithm,
     values.algorithms,
+    ddoListAlgorithms,
     accountId,
     newCancelToken,
-    setSelectedAlgorithmAsset,
-    serviceIndex
+    setSelectedAlgorithmAsset
   ])
 
   return (
@@ -1230,7 +1293,11 @@ export default function Review({
           <div className={styles.assetSection}>
             <h3 className={styles.assetHeading}>Assets</h3>
             <div className={styles.assetListBox}>
-              {isLoadingAssets ? (
+              {algoLoadError ? (
+                <div className={styles.loaderWrap}>
+                  <div className={styles.errorMessage}>{algoLoadError}</div>
+                </div>
+              ) : isLoadingAssets ? (
                 <div className={styles.loaderWrap}>
                   <Loader message="Loading assets..." noMargin />
                 </div>
