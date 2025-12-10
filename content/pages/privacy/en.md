@@ -1,6 +1,6 @@
 ---
 title: Privacy Policy
-description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO) processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
+description: This privacy policy informs you about how deltaDAO AG (in the following deltaDAO, we, us, our) processes your personal data when you visit our portal demonstrator, when you use one of our portal demonstrator functionalities and when you contact us. Moreover, this privacy policy informs you about your rights.
 ---
 
 ### Table of contents
@@ -26,9 +26,9 @@ E-mail: <privacy@delta-dao.com>
 
 ## 2. What's personal data?
 
-Personal data is any information that can be (directly or indirectly) related to you. deltaDAO processes a minimal amount of personal data, as we believe your personal data belongs to you. We process the following personal data.
+Personal data is any information that can be (directly or indirectly) associated with you. We process the following personal data.
 
-- **IP address:** Your IP address is processed when visiting and using our portal demonstrator.
+- **Usage Data (including IP addresses):** Usage Data including your IP address and the address of the content accessed (URL) are processed when visiting and using our portal demonstrator. In addition, depending on the configuration, your browser transmits further data (browser type, browser version, operating system used, referrer URL).
 - **E-mail:** If you contact deltaDAO via e-mail, we process your e-mail address and any personal data you decide to provide in your message (such as your name).
 
 For detailed information about the processing operations, lawfulness, purposes, and how your personal data serves to reach these purposes, please take a look at the chapter "Processing operations according to Article 13 GDPR".
@@ -36,17 +36,19 @@ For detailed information about the processing operations, lawfulness, purposes, 
 ## 3. Recipients and cross-border data transfer
 
 **Vercel**  
-When visiting and using our portal demonstrator, your IP address is processed by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, **USA**. Vercel is a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Vercel using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your IP address will most likely (but not guaranteed) be processed on a Vercel server within the EEA. Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
+When visiting and using our portal demonstrator, your Usage Data is processed by Vercel Inc., 340 S Lemon Ave #4133, Walnut, CA 91789, **USA**. Vercel is a service provider that hosts our portal demonstrator. Our portal demonstrator is served by Vercel using a Content Delivery Network, a geographically distributed network, with servers within and outside of the European Economic Area (EEA). This means, if you are located within the EEA, your Usage Data will most likely (but not guaranteed) be processed on a Vercel server within the EEA.
 
 There is no adequacy decision for the USA from the European Commission. Our cooperation with Vercel is based on a Data Processing Agreement (DPA) including Standard Contractual Clauses (SCC). You have the right to receive a copy of these SCC. To exercise your right, please contact us at <privacy@delta-dao.com>.
 
 - Here you can find Vercel&#39;s current [**DPA including SCC** &#8599;](https://vercel.com/legal/dpa).
 - Here you can find Vercel&#39;s [**privacy policy** &#8599;](https://vercel.com/legal/privacy-policy).
 
-**Exoscale and OVH Cloud**  
-When using our portal demonstrator functionalities, your IP address is processed by our portal demonstrator backend. Portal demonstrator backend components are managed by deltaDAO and hosted hosted on
+Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
 
-- **Exoscale** servers located in Frankfurt, **Germany**. Akenes SAE (hereafter Exoscale) is headquartered in Boulevard de Grancy 19A, 1006 – Lausanne, Switzerland.
+**Exoscale and OVH Cloud**  
+When using our portal demonstrator functionalities, your Usage Data is processed by our portal demonstrator backend. Portal demonstrator backend components are managed by deltaDAO and hosted hosted on
+
+- **Exoscale** servers located in Frankfurt, **Germany** by our hosting provider Akenes SAE. Akenes SAE is headquartered in Boulevard de Grancy 19A, 1006 – Lausanne, Switzerland. There is an adequacy decision for Switzerland from the European Commission.
 - **OVH Cloud** servers located in **Germany, France and Poland**. OVH GmbH is headquartered in Oskar-Jäger-Str. 173/K6, 50825 Cologne, **Germany**.
 
 Our cooperation with Exoscale and OVH GmbH is based on a Data Processing Agreement (DPA).
@@ -65,21 +67,23 @@ When you contact us via e-mail, our (mail) service provider Microsoft Corporatio
 Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
 
 **Plausible**  
-deltaDAO uses [**Plausible Analytics**](https://plausible.io/) (by Plausible Insights OÜ, Västriku tn 2, 50403, Tartu, **Estonia**, Registration number 14709274), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. deltaDAO signed a DPA with Plausible Analytics. Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
+deltaDAO uses [**Plausible Analytics**](https://plausible.io/) (by Plausible Insights OÜ, Västriku tn 2, 50403, Tartu, **Estonia**, Registration number 14709274), a privacy-friendly web analytics tool for tracking overall trends in our website traffic. deltaDAO signed a DPA with Plausible Analytics.
 
 - Here you can find Plausible Analytic&#39;s current [**DPA** &#8599;](https://plausible.io/dpa).
 - Here you can find Plausible Analytic&#39;s [**privacy policy** &#8599;](https://plausible.io/privacy).
 - Here you can find more information about Plausible Analytic&#39;s [**privacy practices** &#8599;](https://plausible.io/data-policy), [**security practices** &#8599;](https://plausible.io/security) and a [**legal assessment on GDPR compliance** &#8599;](https://plausible.io/blog/legal-assessment-gdpr-eprivacy).
+
+Further information about the **purpose, legal basis, and retention period** can be found in chapter 4.
 
 ## 4. Processing operations according to Article 13 GDPR
 
 We process your personal data for the following purposes.
 
 **4.1 Providing our portal demonstrator and ensuring its security**  
-Your IP address is collected, used, and stored when visiting our portal demonstrator. Our portal demonstrator (frontend) is hosted externally by our service provider Vercel (see also chapter 3).
+Your Usage Data (including IP addresses) is collected, used, and stored when visiting our portal demonstrator. Our portal demonstrator (frontend) is hosted externally by our service provider Vercel (see also chapter 3).
 
 **Purpose:**  
-Collecting and using your IP address is necessary for providing our portal demonstrator because it is a technical requirement for ensuring communication between your device and our portal demonstrator. Your IP address and other log file data are also processed for security, fraud-prevention, abuse-prevention, and troubleshooting purposes.
+Collecting and using your Usage Data is necessary for providing our portal demonstrator because it is a technical requirement for ensuring communication between your device and our portal demonstrator. Your IP address and other log file data are also processed for security, fraud-prevention, abuse-prevention, and troubleshooting purposes.
 
 **Legal basis:**  
 The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR.
@@ -94,18 +98,26 @@ Vercel retains your personal data for as long as needed to provide their service
 You have the right to object to the processing of your personal data (see also chapter 8.6).
 
 **4.2 Providing portal demonstrator functionalities**  
-When using our portal demonstrator functionalities (viewing, publishing, editing and consuming services, and requesting tokens), your IP address is collected, used, and stord by our portal demonstrator backend. Backend components are managed by deltaDAO and hosted on Exoscale and OVH Cloud (see also chapter 3).
+When using our portal demonstrator functionalities, your Usage Data (including IP addresses) is collected, used, and stord by our portal demonstrator backend. Backend components are managed by deltaDAO and hosted on Exoscale and OVH Cloud (see also chapter 3).
+
+Portal demonstrator functionalities consist of:
+
+- Viewing, publishing, editing and consuming services
+- Displaying registered Pontus-X participants
+- Visualization and verification of Gaia-X Credentials using deltaDAO's GXDCH (Gaia-X Digital Clearing House) services
+- Requesting tokens using the Pontus-X Faucet
 
 **Purpose:**  
-Collecting and using your IP address is necessary for providing our portal demonstrator functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator backend.
+Collecting and using your Usage Data is necessary for providing our portal demonstrator functionalities because it is a technical requirement for ensuring communication between your device and our portal demonstrator backend.
 
 **Legal basis:**
+The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR.
 
-- **Processing of IP addresses when viewing services:** The legal basis for this processing is our legitimate interest, according to Art. 6(1)(f) GDPR. Our **Legitimate interest** is to display services on the portal demonstrator to you.
-- **Processing of IP addresses when publishing, editing and consuming services, and requesting tokens:** The legal basis for this processing is the performance of a contract, pursuant to Art. 6(1)(b) GDPR.
+**Legitimate interest:**
+Our legitimate interest is to provide our portal demonstrator functionalities to you.
 
 **Retention period:**  
-IP addresses received by the backend components are only retained for the minimum time necessary to process the transaction. They are erased automatically, usually within a few minutes.
+Usage Data received by the backend components are only retained for the minimum time necessary to process the transaction. They are erased automatically, usually within a few minutes.
 
 **Right to object:**  
 You have the right to object to the processing of your personal data where we based the processing on legitimate interests (see also chapter 8.6).
