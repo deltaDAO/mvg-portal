@@ -14,10 +14,31 @@ import { AssetExtended } from 'src/@types/AssetExtended'
 import { ComputeFlow, FormComputeData } from '../_types'
 import styles from './index.module.css'
 import LoaderOverlay from '../LoaderOverlay'
-import {
-  DatasetItem,
-  DatasetService
-} from '@components/AlgorithmComputeWizard/types/DatasetSelection'
+
+type DatasetService = {
+  serviceId: string
+  serviceName?: string
+  serviceDescription?: string
+  serviceDuration?: string | number
+  serviceType?: string
+  price?: number
+  tokenSymbol?: string
+  checked?: boolean
+  isAccountIdWhitelisted?: boolean
+  datetime?: string
+  userParameters?: any[]
+}
+
+type DatasetItem = {
+  did: string
+  name: string
+  symbol?: string
+  description?: string
+  datasetPrice: number
+  expanded?: boolean
+  checked?: boolean
+  services: DatasetService[]
+}
 
 interface SelectPrimaryAssetProps {
   flow: ComputeFlow

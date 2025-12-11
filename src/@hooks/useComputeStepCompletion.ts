@@ -1,6 +1,6 @@
 import { useFormikContext } from 'formik'
 import { FormComputeData } from '@components/ComputeWizard/_types'
-import { getDatasetSteps } from '@components/AlgorithmComputeWizard/_constants'
+import { getDatasetSteps } from '@components/ComputeWizard/_steps'
 
 export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
   const { values } = useFormikContext<FormComputeData>()
@@ -92,9 +92,5 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
     return lastCompletedStep
   }
 
-  return {
-    getSuccessClass,
-    getLastCompletedStep,
-    totalSteps
-  }
+  return { getSuccessClass, getLastCompletedStep, totalSteps }
 }

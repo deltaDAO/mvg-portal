@@ -3,6 +3,35 @@ import { UserCustomParameters } from '@oceanprotocol/lib'
 
 export type ComputeFlow = 'dataset' | 'algorithm'
 
+export type UserParameterOption = Record<string, string>
+
+export type UserParameter = {
+  name?: string
+  label?: string
+  description?: string
+  type?: string
+  required?: boolean
+  default?: string | number | boolean | null
+  value?: string | number | boolean | null
+  options?: UserParameterOption[]
+}
+
+export type DatasetServiceUserParams = {
+  serviceId?: string
+  serviceName?: string
+  serviceDescription?: string
+  serviceDuration?: string | number
+  serviceType?: string
+  userParameters?: UserParameter[]
+}
+
+export type DatasetItemUserParams = {
+  did?: string
+  id?: string
+  name?: string
+  services?: DatasetServiceUserParams[]
+}
+
 export interface FormComputeData {
   flow?: ComputeFlow
   user: {
@@ -40,7 +69,6 @@ export interface FormComputeData {
   acceptPublishingLicense: boolean
   credentialsVerified: boolean
   isUserParameters: boolean
-  withoutDataset: boolean
   userUpdatedParameters: any
   updatedGroupedUserParameters?: any
   serviceSelected: boolean

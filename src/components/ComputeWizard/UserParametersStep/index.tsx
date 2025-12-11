@@ -5,12 +5,8 @@ import { useFormikContext } from 'formik'
 import Tooltip from '@shared/atoms/Tooltip'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { Service } from 'src/@types/ddo/Service'
-import {
-  DatasetItem,
-  UserParameter
-} from '@components/AlgorithmComputeWizard/types/DatasetSelection'
 import styles from './index.module.css'
-import { ComputeFlow } from '../_types'
+import { ComputeFlow, UserParameter, DatasetItemUserParams } from '../_types'
 
 interface UserParametersStepProps {
   flow: ComputeFlow
@@ -41,14 +37,7 @@ type DatasetFlowFormValues = {
   isUserParameters?: boolean
   userUpdatedParameters?: DatasetServiceParams[]
   datasetServiceParams?: DatasetServiceParams[]
-  datasets?: Array<{
-    id: string
-    name: string
-    services: Array<{
-      id: string
-      name: string
-    }>
-  }>
+  datasets?: DatasetItemUserParams[]
   updatedGroupedUserParameters?: {
     algoParams: DatasetServiceParams[]
     datasetParams: DatasetServiceParams[]
@@ -56,7 +45,7 @@ type DatasetFlowFormValues = {
 }
 
 type AlgorithmFlowFormValues = {
-  datasets?: DatasetItem[]
+  datasets?: DatasetItemUserParams[]
   dataset?: string[]
   isUserParameters?: boolean
   userUpdatedParameters?: DatasetServiceParams[]
@@ -312,7 +301,11 @@ export default function UserParametersStep({
           <input
             type="number"
             className={styles.paramInput}
-            value={param.value ?? ''}
+            value={
+              param.value === undefined || param.value === null
+                ? ''
+                : String(param.value)
+            }
             onChange={(e) => onChange(e.target.value)}
           />
         )
@@ -320,7 +313,7 @@ export default function UserParametersStep({
         return (
           <select
             className={styles.paramInput}
-            value={param.value ?? 'true'}
+            value={param.value === true ? 'true' : 'false'}
             onChange={(e) => onChange(e.target.value)}
           >
             <option value="true">true</option>
@@ -331,7 +324,11 @@ export default function UserParametersStep({
         return (
           <select
             className={styles.paramInput}
-            value={param.value ?? ''}
+            value={
+              param.value === undefined || param.value === null
+                ? ''
+                : String(param.value)
+            }
             onChange={(e) => onChange(e.target.value)}
           >
             {param.options?.map((opt) => {
@@ -349,7 +346,11 @@ export default function UserParametersStep({
           <input
             type="text"
             className={styles.paramInput}
-            value={param.value ?? ''}
+            value={
+              param.value === undefined || param.value === null
+                ? ''
+                : String(param.value)
+            }
             onChange={(e) => onChange(e.target.value)}
           />
         )

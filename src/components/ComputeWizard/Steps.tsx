@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useState } from 'react'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { useFormikContext } from 'formik'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
@@ -141,16 +141,15 @@ export default function Steps({
   setIsBalanceSufficient
 }: StepsProps): ReactElement {
   const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
   const { values } = useFormikContext<FormComputeData>()
-  const { data: signerData } = useSigner()
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | undefined>(undefined)
 
   useEffect(() => {
-    if (!chain?.id || !accountId) return
-    setFieldValue('user.chainId', chain.id)
+    const chainId = asset?.credentialSubject?.chainId
+    if (!chainId || !accountId) return
+    setFieldValue('user.chainId', chainId)
     setFieldValue('user.accountId', accountId)
-  }, [chain?.id, accountId, setFieldValue])
+  }, [asset?.credentialSubject?.chainId, accountId, setFieldValue])
 
   useEffect(() => {
     if (!asset || !service) return
@@ -190,16 +189,18 @@ export default function Steps({
 
   useEffect(() => {
     if (flow !== 'algorithm') return
-    if (!chain?.id || !signerData?.provider) return
+    const chainId = asset?.credentialSubject?.chainId
+    const provider = signer?.provider
+    if (!chainId || !provider) return
 
     const fetchTokenDetails = async () => {
-      const { oceanTokenAddress } = getOceanConfig(chain.id)
-      const info = await getTokenInfo(oceanTokenAddress, signerData.provider)
+      const { oceanTokenAddress } = getOceanConfig(chainId)
+      const info = await getTokenInfo(oceanTokenAddress, provider)
       setTokenInfo(info)
     }
 
     fetchTokenDetails()
-  }, [chain?.id, signerData, flow])
+  }, [flow, asset?.credentialSubject?.chainId, signer])
 
   const currentStep = values?.user?.stepCurrent ?? 1
   const hasUserParamsStep = Boolean(values.isUserParameters)

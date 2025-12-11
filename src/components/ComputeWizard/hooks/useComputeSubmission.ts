@@ -278,7 +278,8 @@ export function useComputeSubmission() {
               algorithmAsset.credentialSubject.chainId,
             null,
             null,
-            policiesServer
+            null,
+            policiesServer as any
           )
         } else {
           const algorithm: ComputeAlgorithm = {
@@ -298,7 +299,8 @@ export function useComputeSubmission() {
             resourceRequests,
             null,
             null,
-            policiesServer
+            null,
+            policiesServer as any
           )
         }
 

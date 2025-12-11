@@ -15,8 +15,7 @@ import SuccessConfetti from '@shared/SuccessConfetti'
 import { secondsToString } from '@utils/ddo'
 import {
   getAlgorithmAssetSelectionList,
-  getAlgorithmsForAsset,
-  getAlgorithmAssetSelectionListForComputeWizard
+  getAlgorithmsForAsset
 } from '@utils/compute'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -24,7 +23,7 @@ import { Decimal } from 'decimal.js'
 import { getDummySigner, getTokenInfo } from '@utils/wallet'
 import { useUserPreferences } from '@context/UserPreferences'
 import { Signer } from 'ethers'
-import { useAccount, useProvider } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { Asset } from 'src/@types/Asset'
 import { useSsiWallet } from '@context/SsiWallet'
 import { ResourceType } from 'src/@types/ResourceType'
@@ -33,7 +32,7 @@ import Title from './Title'
 import WizardActions from '@shared/WizardActions'
 import Navigation from './Navigation'
 import Steps from './Steps'
-import { createInitialValues } from './_constants'
+import { createInitialValues } from './_steps'
 import { validationSchema } from './_validation'
 import SectionContainer from '../@shared/SectionContainer/SectionContainer'
 import { AssetExtended } from 'src/@types/AssetExtended'
@@ -97,7 +96,7 @@ export default function ComputeWizardController({
   const { oceanTokenAddress } = config
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const web3Provider = useProvider()
+  const web3Provider = signer?.provider
 
   const [isLoading, setIsLoading] = useState(true)
   const flow: ComputeFlow =
@@ -137,14 +136,12 @@ export default function ComputeWizardController({
 
   const [isConsumablePrice, setIsConsumablePrice] = useState(true)
   const [providerFeesSymbol, setProviderFeesSymbol] = useState('OCEAN')
-  const { computeEnvs, computeEnvsError, isLoadingComputeEnvs } =
-    useComputeEnvironments({
-      serviceEndpoint: service?.serviceEndpoint,
-      chainId: asset.credentialSubject?.chainId
-    })
+  const { computeEnvs, computeEnvsError } = useComputeEnvironments({
+    serviceEndpoint: service?.serviceEndpoint,
+    chainId: asset.credentialSubject?.chainId
+  })
   const {
     initializePricingAndProvider,
-    initializedProviderResponse,
     datasetProviderFee,
     algorithmProviderFee,
     extraFeesLoaded,
@@ -650,7 +647,7 @@ export default function ComputeWizardController({
       }
 
       let actualSelectedDataset: AssetExtended[] = []
-      let actualSelectedAlgorithm: AssetExtended | undefined = isAlgorithmFlow
+      const actualSelectedAlgorithm: AssetExtended | undefined = isAlgorithmFlow
         ? asset
         : selectedAlgorithmAsset
 
@@ -798,7 +795,6 @@ export default function ComputeWizardController({
 
         const hasUserParamsStep = Boolean(values.isUserParameters)
         const computeStep = hasUserParamsStep ? 5 : 4
-        const totalSteps = hasUserParamsStep ? 7 : 6
         const hasMissingRequiredDefaults =
           Array.isArray(values.userUpdatedParameters) &&
           values.userUpdatedParameters.some((entry) =>
@@ -831,9 +827,6 @@ export default function ComputeWizardController({
           : selectedAlgorithmAsset
         const algorithmAssetChainId =
           selectedAlgoAssetForDisplay?.credentialSubject?.chainId
-        const datasetSymbol =
-          accessDetails.baseToken?.symbol ||
-          (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
         const algorithmSymbol =
           selectedAlgoAssetForDisplay?.accessDetails?.[svcIndex]?.baseToken
             ?.symbol || (algorithmAssetChainId === 137 ? 'mOCEAN' : 'OCEAN')
@@ -917,7 +910,6 @@ export default function ComputeWizardController({
                       }
                       hasDatatokenSelectedComputeAsset={hasAlgoAssetDatatoken}
                       isAccountIdWhitelisted={isAccountIdWhitelisted}
-                      datasetSymbol={datasetSymbol}
                       algorithmSymbol={algorithmSymbol}
                       providerFeesSymbol={providerSymbolForDisplay}
                       dtSymbolSelectedComputeAsset={
@@ -958,9 +950,7 @@ export default function ComputeWizardController({
 
                 {!showSuccess && (
                   <WizardActions
-                    totalSteps={totalSteps}
                     submitButtonText="Buy Compute Job"
-                    showSuccessConfetti={false}
                     rightAlignFirstStep={false}
                     isContinueDisabled={isContinueDisabled}
                     isSubmitDisabled={isComputeButtonDisabled}

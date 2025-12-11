@@ -5,59 +5,10 @@ import { useProgressBar } from '@hooks/useProgressBar'
 import { useComputeStepCompletion } from '@hooks/useComputeStepCompletion'
 import styles from './index.module.css'
 import CheckmarkIcon from '@images/checkmark.svg'
-import { getDatasetSteps } from '@components/AlgorithmComputeWizard/_constants'
-
-type StepDefinition = {
-  step: number
-  title: string
-}
+import { getDatasetSteps } from '@components/ComputeWizard/_steps'
 
 interface NavigationProps {
   flow: ComputeFlow
-}
-
-const datasetStepTitles = [
-  'Select Algorithm',
-  'Select Algorithm Services',
-  'Preview Algorithm & Service',
-  'Select C2D Environment',
-  'C2D Environment Configuration',
-  'Review'
-]
-
-const algorithmStepTitles = [
-  'Select Datasets',
-  'Select Services',
-  'Preview Selected Datasets & Services',
-  'Select C2D Environment',
-  'C2D Environment Configuration',
-  'Review'
-]
-
-function buildSteps(
-  flow: ComputeFlow,
-  hasUserParams: boolean
-): StepDefinition[] {
-  const baseTitles =
-    flow === 'dataset' ? datasetStepTitles : algorithmStepTitles
-
-  if (!hasUserParams) {
-    return baseTitles.map((title, index) => ({
-      step: index + 1,
-      title
-    }))
-  }
-
-  const titlesWithUser = [
-    ...baseTitles.slice(0, 3),
-    'User Parameters',
-    ...baseTitles.slice(3)
-  ]
-
-  return titlesWithUser.map((title, index) => ({
-    step: index + 1,
-    title
-  }))
 }
 
 export default function Navigation({ flow }: NavigationProps): ReactElement {

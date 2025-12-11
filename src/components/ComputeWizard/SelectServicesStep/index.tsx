@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, ReactElement } from 'react'
 import { useFormikContext } from 'formik'
-import { useNetwork } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
 import MinimizeIcon from '@images/minimize.svg'
 import ExpandIcon from '@images/expand.svg'
@@ -10,8 +9,28 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeFlow } from '../_types'
 import { getOceanConfig } from '@utils/ocean'
 import { getDummySigner, getTokenInfo } from '@utils/wallet'
-import { DatasetItem } from '@components/AlgorithmComputeWizard/types/DatasetSelection'
 import LoaderOverlay from '../LoaderOverlay'
+
+type DatasetService = {
+  serviceId?: string
+  serviceName?: string
+  serviceDescription?: string
+  serviceDuration?: string | number
+  serviceType?: string
+  price?: number | string
+  tokenSymbol?: string
+  checked?: boolean
+  userParameters?: any[]
+}
+
+type DatasetItem = {
+  did: string
+  name: string
+  expanded?: boolean
+  checked?: boolean
+  services?: DatasetService[]
+  datasetPrice?: number
+}
 
 type NormalizedService = {
   id: string
@@ -284,7 +303,6 @@ export default function SelectServicesStep({
   const isDatasetFlow = flow === 'dataset'
   const singleSelection = isDatasetFlow
   const { values, setFieldValue } = useFormikContext<FormValues>()
-  const { chain } = useNetwork()
   const [assets, setAssets] = useState<NormalizedAsset[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
@@ -322,8 +340,11 @@ export default function SelectServicesStep({
             : undefined
         if (!svc) return
 
-        const { oceanTokenAddress } = getOceanConfig(chain.id)
-        const signer = await getDummySigner(chain.id)
+        const chainId = assetDdo.credentialSubject?.chainId
+        if (!chainId) return
+
+        const { oceanTokenAddress } = getOceanConfig(chainId)
+        const signer = await getDummySigner(chainId)
         const tokenDetails = await getTokenInfo(
           oceanTokenAddress,
           signer.provider
@@ -388,8 +409,7 @@ export default function SelectServicesStep({
     values.algorithm,
     assets.length,
     ddoListAlgorithms,
-    setFieldValue,
-    chain.id
+    setFieldValue
   ])
 
   // algorithm flow: normalize datasets

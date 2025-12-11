@@ -1,6 +1,6 @@
 'use client'
 
-import { ReactElement, useEffect, useMemo, useState } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import { Field, useFormikContext } from 'formik'
 import StepTitle from '@shared/StepTitle'
 import Input from '@shared/FormInput'
@@ -9,7 +9,7 @@ import Loader from '@components/@shared/atoms/Loader'
 import { AssetActionCheckCredentials } from '@components/Asset/AssetActions/CheckCredentials'
 import { AssetActionCheckCredentialsAlgo } from '@components/Asset/AssetActions/CheckCredentials/checkCredentialsAlgo'
 import { CredentialDialogProvider } from '@components/Asset/AssetActions/Compute/CredentialDialogProvider'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { useAccount } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -28,9 +28,8 @@ import { Service } from 'src/@types/ddo/Service'
 import { ComputeEnvironment } from '@oceanprotocol/lib'
 import { ResourceType } from 'src/@types/ResourceType'
 import { Asset } from 'src/@types/Asset'
-import { Signer } from 'ethers'
+import { Signer, formatUnits } from 'ethers'
 import Decimal from 'decimal.js'
-import { formatUnits } from 'ethers/lib/utils.js'
 import { consumeMarketOrderFee } from 'app.config.cjs'
 import { MAX_DECIMALS } from '@utils/constants'
 import PricingRow from './PricingRow'
@@ -156,8 +155,6 @@ export default function Review({
   const newCancelToken = useCancelToken()
   const { isAssetNetwork } = useAsset()
   const { privacyPolicySlug } = useUserPreferences()
-  const { chain } = useNetwork()
-  const { data: signerData } = useSigner()
 
   const [symbol, setSymbol] = useState('')
   const [tokenInfoState, setTokenInfoState] = useState<TokenInfo | undefined>(
@@ -213,10 +210,8 @@ export default function Review({
   }
 
   useEffect(() => {
-    const effectiveProvider = isDatasetFlow
-      ? signer?.provider
-      : signerData?.provider
-    const effectiveChainId = chain?.id || asset?.credentialSubject?.chainId
+    const effectiveProvider = signer?.provider
+    const effectiveChainId = asset?.credentialSubject?.chainId
     if (!effectiveProvider || !effectiveChainId) return
     const fetchTokenDetails = async () => {
       const { oceanTokenAddress } = getOceanConfig(effectiveChainId)
@@ -228,13 +223,7 @@ export default function Review({
       setSymbol(tokenDetails.symbol || 'OCEAN')
     }
     fetchTokenDetails()
-  }, [
-    chain?.id,
-    signer,
-    signerData,
-    isDatasetFlow,
-    asset?.credentialSubject?.chainId
-  ])
+  }, [signer, isDatasetFlow, asset?.credentialSubject?.chainId])
 
   useEffect(() => {
     async function fetchPricesDatasetFlow() {
@@ -284,16 +273,12 @@ export default function Review({
               selectedDatasetAsset.map(async (dataset) => {
                 const details =
                   dataset.accessDetails?.[dataset.serviceIndex || 0]
-                if (
-                  details &&
-                  dataset.credentialSubject?.chainId &&
-                  signerData
-                ) {
+                if (details && dataset.credentialSubject?.chainId && signer) {
                   if (details.isOwned) return 0
                   const fixed = await getFixedBuyPrice(
                     details,
                     dataset.credentialSubject.chainId,
-                    signerData
+                    signer
                   )
                   return Number(fixed?.oceanFeeAmount) || 0
                 }
@@ -311,14 +296,14 @@ export default function Review({
         !isDatasetFlow &&
         asset &&
         accessDetails &&
-        signerData &&
+        signer &&
         !accessDetails.isOwned
       ) {
         try {
           const algoFixed = await getFixedBuyPrice(
             accessDetails,
             asset.credentialSubject?.chainId,
-            signerData
+            signer
           )
           setAlgoOecFee(algoFixed?.oceanFeeAmount || '0')
         } catch (e) {
@@ -334,7 +319,6 @@ export default function Review({
     asset,
     accessDetails,
     signer,
-    signerData,
     selectedAlgorithmAsset,
     selectedDatasetAsset
   ])
@@ -483,7 +467,8 @@ export default function Review({
     const queue: VerificationItem[] = []
     if (isDatasetFlow) {
       if (asset && service) {
-        const isVerified = lookupVerifierSessionId?.(asset.id, service.id)
+        const sessionId = lookupVerifierSessionId?.(asset.id, service.id)
+        const isVerified = Boolean(sessionId)
         const rawPrice =
           accessDetails?.validOrderTx && accessDetails.validOrderTx !== ''
             ? '0'
@@ -509,10 +494,11 @@ export default function Review({
           undefined)
       const algoService = algoServices?.[serviceIndex] || algoServices?.[0]
       if (selectedAlgorithmAsset && algoService) {
-        const isVerified = lookupVerifierSessionId?.(
+        const sessionId = lookupVerifierSessionId?.(
           selectedAlgorithmAsset.id,
           algoService?.id
         )
+        const isVerified = Boolean(sessionId)
         const details = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
         const rawPrice =
           details?.validOrderTx || details?.price
@@ -537,7 +523,8 @@ export default function Review({
         selectedDatasetAsset?.forEach((ds, index) => {
           const dsService =
             ds.credentialSubject?.services?.[ds.serviceIndex || 0]
-          const isVerified = lookupVerifierSessionId?.(ds.id, dsService?.id)
+          const sessionId = lookupVerifierSessionId?.(ds.id, dsService?.id)
+          const isVerified = Boolean(sessionId)
           const details = ds.accessDetails?.[ds.serviceIndex || 0]
           const rawPrice =
             details?.validOrderTx && details.validOrderTx !== ''
@@ -561,7 +548,8 @@ export default function Review({
         })
       }
       if (service && asset) {
-        const isVerified = lookupVerifierSessionId?.(asset?.id, service.id)
+        const sessionId = lookupVerifierSessionId?.(asset?.id, service.id)
+        const isVerified = Boolean(sessionId)
         const rawPrice = asset.credentialSubject.metadata.algorithm
           ? accessDetails?.validOrderTx
             ? '0'
@@ -583,6 +571,7 @@ export default function Review({
       }
     }
     setVerificationQueue(queue)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isDatasetFlow,
     asset,
@@ -591,8 +580,7 @@ export default function Review({
     selectedAlgorithmAsset,
     selectedDatasetAsset,
     values.withoutDataset,
-    serviceIndex,
-    lookupVerifierSessionId
+    serviceIndex
   ])
 
   useEffect(() => {
@@ -748,7 +736,10 @@ export default function Review({
       )
         return
       const details = selectedAlgorithmAsset.accessDetails[serviceIndex]
-      const datasetPrice = accessDetails?.price || '0'
+      const datasetPrice =
+        accessDetails?.validOrderTx && accessDetails.validOrderTx !== ''
+          ? '0'
+          : accessDetails?.price || '0'
       setDatasetProviderFee(datasetProviderFeeProp || datasetProviderFee)
       const algoPrice =
         details?.validOrderTx || hasPreviousOrder || hasDatatoken
@@ -1052,25 +1043,6 @@ export default function Review({
     algoOecFee,
     tokenInfoState?.decimals
   ])
-
-  const licenseUrl = useMemo(() => {
-    if (
-      asset?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
-        ?.mirrors?.[0]?.url
-    ) {
-      return asset.credentialSubject.metadata.license.licenseDocuments[0]
-        .mirrors?.[0]?.url
-    }
-    if (selectedDatasetAsset?.length) {
-      for (const ds of selectedDatasetAsset) {
-        const url =
-          ds?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
-            ?.mirrors?.[0]?.url
-        if (url) return url
-      }
-    }
-    return undefined
-  }, [asset, selectedDatasetAsset])
 
   const computeItems = [
     {
@@ -1510,13 +1482,6 @@ export default function Review({
             />
           </FormErrorGroup>
         </div>
-        {licenseUrl && (
-          <div className={styles.termsSection}>
-            <a href={licenseUrl} target="_blank" rel="noreferrer">
-              View license
-            </a>
-          </div>
-        )}
         {errorMessages.length > 0 && (
           <div className={styles.errorMessage}>
             <ul>

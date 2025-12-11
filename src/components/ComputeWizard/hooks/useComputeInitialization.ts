@@ -180,8 +180,11 @@ export function useComputeInitialization({
         )
 
         if (selectedResources.mode === 'paid') {
+          const escrowAddress = ethers.getAddress(
+            initializedProvider.payment.escrowAddress
+          )
           const escrow = new EscrowContract(
-            ethers.utils.getAddress(initializedProvider.payment.escrowAddress),
+            escrowAddress,
             signer,
             algorithmAsset.credentialSubject.chainId
           )
@@ -194,7 +197,7 @@ export function useComputeInitialization({
             oceanTokenAddress,
             web3Provider
           )
-          const amountWei = ethers.utils.parseUnits(
+          const amountWei = ethers.parseUnits(
             amountHuman,
             tokenDetails.decimals
           )
@@ -209,16 +212,22 @@ export function useComputeInitialization({
           )
 
           const owner = await signer.getAddress()
-          const escrowAddress = (
+          const escrowAddressString = (
             escrow.contract.target ?? escrow.contract.address
           ).toString()
 
-          if (!amountWei.eq(0)) {
-            const approveTx = await erc20.approve(escrowAddress, amountWei)
+          if (amountWei !== BigInt(0)) {
+            const approveTx = await erc20.approve(
+              escrowAddressString,
+              amountWei
+            )
             await approveTx.wait()
             while (true) {
-              const allowanceNow = await erc20.allowance(owner, escrowAddress)
-              if (allowanceNow.gte(amountWei)) {
+              const allowanceNow = await erc20.allowance(
+                owner,
+                escrowAddressString
+              )
+              if (allowanceNow >= amountWei) {
                 break
               }
               await new Promise((resolve) => setTimeout(resolve, 1000))

@@ -3,7 +3,7 @@ import { Form, Formik } from 'formik'
 import { toast } from 'react-toastify'
 import { Decimal } from 'decimal.js'
 import { Signer } from 'ethers'
-import { useAccount, useProvider } from 'wagmi'
+import { useAccount } from 'wagmi'
 import {
   Datatoken,
   FileInfo,
@@ -25,7 +25,7 @@ import SuccessState from './SuccessState'
 import SectionContainer from '../@shared/SectionContainer/SectionContainer'
 import WizardActions from '@shared/WizardActions'
 import { LoadingState, ErrorState } from './WizardState'
-import { createInitialValues } from './_constants'
+import { createInitialValues } from './_steps'
 import { validationSchema } from './_validation'
 import { CredentialDialogProvider } from '../Asset/AssetActions/Compute/CredentialDialogProvider'
 import { useAsset } from '@context/Asset'
@@ -94,7 +94,7 @@ export default function ComputeWizardController({
   const { oceanTokenAddress } = config
   const newCancelToken = useCancelToken()
   const { isSupportedOceanNetwork } = useNetworkMetadata()
-  const web3Provider = useProvider()
+  const web3Provider = signer?.provider
 
   const [isLoading, setIsLoading] = useState(true)
   const flow: ComputeFlow =
@@ -794,7 +794,6 @@ export default function ComputeWizardController({
 
         const hasUserParamsStep = Boolean(values.isUserParameters)
         const computeStep = hasUserParamsStep ? 5 : 4
-        const totalSteps = hasUserParamsStep ? 7 : 6
         const hasMissingRequiredDefaults =
           Array.isArray(values.userUpdatedParameters) &&
           values.userUpdatedParameters.some((entry) =>
@@ -929,9 +928,7 @@ export default function ComputeWizardController({
 
                 {!showSuccess && (
                   <WizardActions
-                    totalSteps={totalSteps}
                     submitButtonText="Buy Compute Job"
-                    showSuccessConfetti={false}
                     rightAlignFirstStep={false}
                     isContinueDisabled={isContinueDisabled}
                     isSubmitDisabled={isComputeButtonDisabled}

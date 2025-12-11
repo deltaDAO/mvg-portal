@@ -67,10 +67,20 @@
 
 .datasetName {
   color: var(--publish-text);
+  display: inline-block;
+  max-width: 60%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .serviceName {
   color: var(--publish-text);
+  display: inline-block;
+  max-width: 35%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .separator {

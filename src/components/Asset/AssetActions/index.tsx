@@ -1,5 +1,4 @@
 import { ReactElement, useEffect, useState } from 'react'
-import Compute from './Compute'
 import Download from './Download'
 import { FileInfo, LoggerInstance, Datatoken } from '@oceanprotocol/lib'
 import { compareAsBN } from '@utils/numbers'
