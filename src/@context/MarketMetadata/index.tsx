@@ -11,10 +11,11 @@ import { MarketMetadataProviderValue, OpcFee } from './_types'
 import siteContent from '../../../content/site.json'
 import appConfig from '../../../app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { useConnect, useNetwork, useProvider } from 'wagmi'
+import { useConnect, useChainId } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
 import useEnterpriseFeeColletor from '@hooks/useEnterpriseFeeCollector'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 const MarketMetadataContext = createContext({} as MarketMetadataProviderValue)
 
 function MarketMetadataProvider({
@@ -22,16 +23,21 @@ function MarketMetadataProvider({
 }: {
   children: ReactNode
 }): ReactElement {
-  const { isLoading } = useConnect()
-  const { chain } = useNetwork()
-  const { signer, getOpcData } = useEnterpriseFeeColletor()
+  const { status } = useConnect()
+  const isLoading = status === 'pending'
+  const chainId = useChainId()
+  const signer = useEthersSigner()
+
+  const { getOpcData } = useEnterpriseFeeColletor()
   const [opcFees, setOpcFees] = useState<OpcFee[]>()
   const [approvedBaseTokens, setApprovedBaseTokens] = useState<TokenInfo[]>()
-  const config = getOceanConfig(chain?.id)
-  const web3provider = useProvider()
+  const config = getOceanConfig(chainId)
 
+  // ---------------------------
+  // Load OPC Fee Data
+  // ---------------------------
   useEffect(() => {
-    async function getData() {
+    async function fetchData() {
       const opcData = await getOpcData(appConfig.chainIdsSupported)
       LoggerInstance.log('[MarketMetadata] Got new data.', {
         opcFees: opcData,
@@ -40,40 +46,59 @@ function MarketMetadataProvider({
       })
       setOpcFees(opcData)
     }
-    if (signer) {
-      getData()
-    }
+
+    if (signer) fetchData()
   }, [signer])
 
+  // ---------------------------
+  // Get OPC fee for given token
+  // ---------------------------
   const getOpcFeeForToken = useCallback(
     (tokenAddress: string, chainId: number): string => {
       if (!opcFees) return '0'
-
-      const opc = opcFees.filter((x) => x.chainId === chainId)[0]
-      return opc.feePercentage
+      const opc = opcFees.find((x) => x.chainId === chainId)
+      return opc?.feePercentage || '0'
     },
     [opcFees]
   )
 
+  // ---------------------------
+  // Load OCEAN token metadata
+  // ---------------------------
   useEffect(() => {
-    async function fetchTokenInfo() {
-      if (isLoading || !config?.oceanTokenAddress || !web3provider) return
+    async function fetchTokenInfoSafe() {
+      try {
+        if (isLoading) return
+        if (!config?.oceanTokenAddress) {
+          console.warn('[fetchTokenInfo] No oceanTokenAddress configured.')
+          return
+        }
 
-      const tokenDetails = await getTokenInfo(
-        config.oceanTokenAddress,
-        web3provider
-      )
+        if (!chainId) {
+          console.error('[fetchTokenInfo] chainId missing.')
+          return
+        }
 
-      setApprovedBaseTokens((prevTokens = []) => {
-        const hasToken = prevTokens.some(
-          (token) => token.address === tokenDetails.address
+        if (!signer) {
+          console.warn('[fetchTokenInfo] Waiting for signer...')
+          return
+        }
+        const tokenDetails = await getTokenInfo(
+          config.oceanTokenAddress,
+          signer.provider
         )
-        return hasToken ? prevTokens : [...prevTokens, tokenDetails]
-      })
+
+        setApprovedBaseTokens([tokenDetails])
+      } catch (error: any) {
+        console.error(
+          '[fetchTokenInfo] Error fetching token info:',
+          error.message
+        )
+      }
     }
 
-    fetchTokenInfo()
-  }, [isLoading, config?.oceanTokenAddress, web3provider])
+    fetchTokenInfoSafe()
+  }, [isLoading, chainId, signer, config?.oceanTokenAddress])
 
   return (
     <MarketMetadataContext.Provider
@@ -92,7 +117,6 @@ function MarketMetadataProvider({
   )
 }
 
-// Helper hook to access the provider values
 const useMarketMetadata = (): MarketMetadataProviderValue =>
   useContext(MarketMetadataContext)
 

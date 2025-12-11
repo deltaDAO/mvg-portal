@@ -18,7 +18,7 @@ import { useMarketMetadata } from './MarketMetadata'
 import { assetStateToString } from '@utils/assetState'
 import { isValidDid } from '@utils/ddo'
 import { useAddressConfig } from '@hooks/useAddressConfig'
-import { useAccount, useNetwork } from 'wagmi'
+import { useAccount, useChainId } from 'wagmi'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
@@ -51,7 +51,7 @@ function AssetProvider({
 }): ReactElement {
   const { appConfig } = useMarketMetadata()
   const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
 
   const { isDDOWhitelisted } = useAddressConfig()
   const [isInPurgatory, setIsInPurgatory] = useState(false)
@@ -215,10 +215,10 @@ function AssetProvider({
   // Check user network against asset network
   // -----------------------------------
   useEffect(() => {
-    if (!chain?.id || !asset?.credentialSubject.chainId) return
-    const isAssetNetwork = chain?.id === asset?.credentialSubject.chainId
+    if (!chainId || !asset?.credentialSubject.chainId) return
+    const isAssetNetwork = chainId === asset?.credentialSubject.chainId
     setIsAssetNetwork(isAssetNetwork)
-  }, [chain?.id, asset?.credentialSubject.chainId])
+  }, [chainId, asset?.credentialSubject.chainId])
 
   // -----------------------------------
   // Asset owner check against wallet user

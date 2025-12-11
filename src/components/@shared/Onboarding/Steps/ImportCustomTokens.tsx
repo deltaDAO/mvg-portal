@@ -4,7 +4,7 @@ import { OnboardingStep } from '..'
 import StepBody from '../StepBody'
 import StepHeader from '../StepHeader'
 import content from '../../../../../content/onboarding/steps/importCustomTokens.json'
-import { useAccount, useNetwork, useProvider } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import { addTokenToWallet } from '@utils/wallet'
 import { tokenLogos } from '@components/Header/NetworkMenu/AddTokenList'
 import { useMarketMetadata } from '@context/MarketMetadata'
@@ -15,8 +15,8 @@ export default function ImportCustomTokens(): ReactElement {
   const { title, subtitle, body, image }: OnboardingStep = content
 
   const { address: accountId } = useAccount()
-  const web3Provider = useProvider()
-  const { chain } = useNetwork()
+  const web3Provider = usePublicClient()
+  const chainId = useChainId()
   const { approvedBaseTokens } = useMarketMetadata()
 
   const [loading, setLoading] = useState(false)
@@ -31,7 +31,7 @@ export default function ImportCustomTokens(): ReactElement {
   ) => {
     setLoading(true)
     try {
-      if (!getSupportedChainIds().includes(chain?.id))
+      if (!getSupportedChainIds().includes(chainId))
         throw new Error(
           'The chain you are connected to with your wallet is not supported'
         )
@@ -47,7 +47,7 @@ export default function ImportCustomTokens(): ReactElement {
         getErrorMessage({
           accountId,
           web3Provider: !!web3Provider,
-          networkId: chain?.id
+          networkId: chainId
         })
       )
       if (error.message) console.error(error.message)

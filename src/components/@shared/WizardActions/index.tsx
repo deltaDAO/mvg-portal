@@ -3,22 +3,16 @@ import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
 import Loader from '@shared/atoms/Loader'
-import { ComputeFlow, FormComputeData } from '@components/ComputeWizard/_types'
-import {
-  getWizardTotalSteps,
-  inferComputeFlow
-} from '@components/ComputeWizard/utils/steps'
+import { FormComputeData } from '@components/ComputeWizard/_types'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
+import { getDatasetSteps } from '@components/AlgorithmComputeWizard/_constants'
 
 interface WizardActionsProps {
-  totalSteps?: number
   disabled?: boolean
   action?: 'compute'
   submitButtonText?: string
   continueButtonText?: string
-  showSuccessConfetti?: boolean
   scrollToRef?: RefObject<any>
-  formikContext?: FormikContextType<any>
   isContinueDisabled?: boolean
   rightAlignFirstStep?: boolean
   isSubmitDisabled?: boolean
@@ -55,12 +49,9 @@ interface WizardActionsProps {
 }
 
 export default function WizardActions({
-  totalSteps: totalStepsProp,
   submitButtonText,
   continueButtonText = 'Continue',
-  showSuccessConfetti = false,
   scrollToRef,
-  formikContext,
   isContinueDisabled,
   rightAlignFirstStep = true,
   isSubmitDisabled = false,
@@ -81,7 +72,6 @@ export default function WizardActions({
   dtSymbolSelectedComputeAsset,
   dtBalanceSelectedComputeAsset,
   selectedComputeAssetType,
-  onClick,
   stepText,
   isLoading,
   type,
@@ -100,115 +90,32 @@ export default function WizardActions({
   const {
     isValid,
     values,
-    errors,
     isSubmitting,
     setFieldValue
-  }: FormikContextType<Partial<FormComputeData>> = useFormikContext()
+  }: FormikContextType<FormComputeData> = useFormikContext()
+
   const hasUserParamsStep = Boolean(values?.isUserParameters)
-  const flow: ComputeFlow = inferComputeFlow(values, undefined, assetType)
-  const totalSteps =
-    totalStepsProp ?? getWizardTotalSteps(flow, hasUserParamsStep)
-  const currentStep = values.user?.stepCurrent ?? 1
+  const withoutDataset = Boolean(values?.withoutDataset)
+  const steps = getDatasetSteps(hasUserParamsStep, withoutDataset)
+  const totalSteps = steps.length
+  const currentStep = values.user.stepCurrent
   const isLastStep = currentStep === totalSteps
 
-  React.useEffect(() => {
-    const datasetCount = Array.isArray(values?.dataset)
-      ? values.dataset.length
-      : 0
-    const environmentSelected = Boolean(values?.computeEnv)
-    const configSet =
-      Number(values?.cpu) > 0 &&
-      Number(values?.ram) > 0 &&
-      Number(values?.disk) > 0 &&
-      Number(values?.jobDuration) > 0
-    const agreementsChecked = Boolean(
-      values?.termsAndConditions && values?.acceptPublishingLicense
-    )
-    const wizardComplete = Boolean(
-      (flow === 'algorithm' ? datasetCount > 0 : Boolean(values?.algorithm)) &&
-        environmentSelected &&
-        configSet &&
-        agreementsChecked
-    )
-
-    const state = {
-      flow,
-      currentStep,
-      completedFlags: {
-        step1Completed: values?.step1Completed,
-        step2Completed: values?.step2Completed,
-        step3Completed: values?.step3Completed,
-        step4Completed: values?.step4Completed,
-        step5Completed: (values as unknown as { step5Completed?: boolean })
-          ?.step5Completed,
-        step6Completed: (values as unknown as { step6Completed?: boolean })
-          ?.step6Completed
-      },
-      selections: {
-        algorithm: values?.algorithm,
-        dataset: values?.dataset,
-        datasetCount
-      },
-      environment: values?.computeEnv,
-      resources: {
-        cpu: values?.cpu,
-        ram: values?.ram,
-        disk: values?.disk,
-        jobDuration: values?.jobDuration
-      },
-      agreements: {
-        termsAndConditions: values?.termsAndConditions,
-        acceptPublishingLicense: values?.acceptPublishingLicense
-      },
-      validationErrors: errors,
-      wizardComplete,
-      nextButtonDisabled: isContinueDisabled,
-      totalSteps
-    }
-  }, [values, errors, isContinueDisabled, totalSteps, flow])
-
-  function handleAction(action: string) {
+  const handleAction = (action: 'next' | 'prev') => {
     const newStep = action === 'next' ? currentStep + 1 : currentStep - 1
-
     if (newStep >= 1 && newStep <= totalSteps) {
       setFieldValue('user.stepCurrent', newStep)
     }
-
-    if (scrollToRef?.current) {
-      scrollToRef.current.scrollIntoView()
-    }
+    if (scrollToRef?.current) scrollToRef.current.scrollIntoView()
   }
 
-  function handleNext(e: FormEvent) {
+  const handleNext = (e: FormEvent) => {
     e.preventDefault()
-
-    if (currentStep === 1) setFieldValue('step1Completed', true)
-    if (currentStep === 2) setFieldValue('step2Completed', true)
-    if (currentStep === 3) setFieldValue('step3Completed', true)
-    if (currentStep === 4) {
-      if (hasUserParamsStep) setFieldValue('step4Completed', true)
-      else setFieldValue('step4Completed', true)
-    }
-    if (currentStep === 5) {
-      if (hasUserParamsStep) setFieldValue('step5Completed', true)
-      else setFieldValue('step5Completed', true)
-    }
-    if (currentStep === 6) {
-      if (hasUserParamsStep) setFieldValue('step6Completed', true)
-      else {
-        setFieldValue('step6Completed', true)
-        setFieldValue('previewPageVisited', true)
-      }
-    }
-    if (currentStep === 7) {
-      setFieldValue('step7Completed', true)
-      setFieldValue('submissionPageVisited', true)
-    }
-
+    setFieldValue(`step${currentStep}Completed`, true)
     handleAction('next')
   }
 
-  function handlePrevious(e: FormEvent) {
+  const handlePrevious = (e: FormEvent) => {
     e.preventDefault()
     handleAction('prev')
   }
@@ -251,6 +158,7 @@ export default function WizardActions({
       computeWizard={computeWizard}
     />
   )
+
   const ComputeButton = () => {
     if (!extraFeesLoaded) {
       return (
@@ -265,7 +173,6 @@ export default function WizardActions({
         </Button>
       )
     }
-
     return <PurchaseButton />
   }
 
@@ -276,23 +183,17 @@ export default function WizardActions({
           Back
         </Button>
       )}
-      {
-        !isLastStep ? (
-          <Button
-            style="publish"
-            onClick={handleNext}
-            disabled={isContinueDisabled}
-          >
-            {continueButtonText}
-          </Button>
-        ) : (
-          // <Button type="submit" style="publish" disabled={isSubmitDisabled}>
-          //   {isSubmitting ? <Loader variant="primary" /> : 'find'}
-          // </Button>
-          <ComputeButton />
-        )
-        // null
-      }
+      {!isLastStep ? (
+        <Button
+          style="publish"
+          onClick={handleNext}
+          disabled={isContinueDisabled}
+        >
+          {continueButtonText}
+        </Button>
+      ) : (
+        <ComputeButton />
+      )}
     </footer>
   )
 }

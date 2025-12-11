@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react'
+import { ReactElement, useEffect, useState } from 'react'
 import Compute from './Compute'
 import Download from './Download'
 import { FileInfo, LoggerInstance, Datatoken } from '@oceanprotocol/lib'
@@ -13,7 +13,7 @@ import { useFormikContext } from 'formik'
 import { FormPublishData } from '@components/Publish/_types'
 import { getTokenBalanceFromSymbol } from '@utils/wallet'
 import { isAddressWhitelisted } from '@utils/ddo'
-import { useAccount, useProvider, useNetwork, useSigner } from 'wagmi'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import useBalance from '@hooks/useBalance'
 import Button from '@components/@shared/atoms/Button'
 import { Service } from 'src/@types/ddo/Service'
@@ -25,6 +25,8 @@ import { AssetActionCheckCredentials } from './CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import appConfig from 'app.config.cjs'
 import ComputeWizard from '@components/ComputeWizard'
+import { JsonRpcProvider } from 'ethers'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function AssetActions({
   asset,
@@ -44,11 +46,15 @@ export default function AssetActions({
   onComputeJobCreated?: () => void
 }): ReactElement {
   const { address: accountId } = useAccount()
-  const { data: signer } = useSigner()
+  const signer = useEthersSigner()
   const { balance } = useBalance()
-  const { chain } = useNetwork()
-  const web3Provider = useProvider()
-  const { isAssetNetwork } = useAsset()
+  const chainId = useChainId()
+  const publicClient = usePublicClient()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
+  const { isAssetNetwork, isOwner } = useAsset()
   const newCancelToken = useCancelToken()
   const isMounted = useIsMounted()
   const {
@@ -108,7 +114,7 @@ export default function AssetActions({
               query,
               headers,
               abi,
-              chain?.id,
+              chainId,
               method
             )
           : await getFileDidInfo(asset.id, service.id, providerUrl)
@@ -139,18 +145,18 @@ export default function AssetActions({
     newCancelToken,
     formikState?.values?.services,
     serviceIndex,
-    chain?.id,
+    chainId,
     service.serviceEndpoint,
     service.id
   ])
 
   // Get and set user DT balance
   useEffect(() => {
-    if (!web3Provider || !accountId || !isAssetNetwork) return
+    if (!ethersProvider || !accountId || !isAssetNetwork) return
 
     async function init() {
       try {
-        const datatokenInstance = new Datatoken(web3Provider as any, chain.id)
+        const datatokenInstance = new Datatoken(ethersProvider as any, chainId)
         const dtBalance = await datatokenInstance.balance(
           service.datatokenAddress,
           accountId
@@ -161,7 +167,13 @@ export default function AssetActions({
       }
     }
     init()
-  }, [web3Provider, accountId, isAssetNetwork, service.datatokenAddress])
+  }, [
+    ethersProvider,
+    accountId,
+    isAssetNetwork,
+    service.datatokenAddress,
+    chainId
+  ])
 
   // Check user balance against price
   useEffect(() => {
@@ -278,7 +290,11 @@ export default function AssetActions({
         </div>
 
         <div className={styles.actionButtonWrapper}>
-          {appConfig.ssiEnabled ? (
+          {!isCompute && isOwner ? (
+            <span className={styles.ownerMessage}>
+              You are the asset owner.
+            </span>
+          ) : appConfig.ssiEnabled ? (
             isCompute ? (
               <Button
                 style="primary"
@@ -291,7 +307,7 @@ export default function AssetActions({
             ) : hasVerifiedCredentials ? (
               <Download
                 accountId={accountId}
-                signer={signer}
+                signer={signer as any}
                 asset={asset}
                 service={service}
                 accessDetails={accessDetails}
@@ -319,7 +335,7 @@ export default function AssetActions({
           ) : (
             <Download
               accountId={accountId}
-              signer={signer}
+              signer={signer as any}
               asset={asset}
               service={service}
               accessDetails={accessDetails}

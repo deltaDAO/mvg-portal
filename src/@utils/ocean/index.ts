@@ -33,11 +33,6 @@ export function getOceanConfig(network: string | number): any {
     ? JSON.parse(process.env.NEXT_PUBLIC_NODE_URI_MAP)
     : {}
 
-  const escrowMap: Record<string, string> = process.env
-    .NEXT_PUBLIC_ESCROW_ADDRESSES
-    ? JSON.parse(process.env.NEXT_PUBLIC_ESCROW_ADDRESSES)
-    : {}
-
   const erc20Map: Record<string, string> = process.env
     .NEXT_PUBLIC_ERC20_ADDRESSES
     ? JSON.parse(process.env.NEXT_PUBLIC_ERC20_ADDRESSES)
@@ -62,20 +57,18 @@ export function getOceanConfig(network: string | number): any {
   if (network === 8996) {
     config = { ...config, ...sanitizeDevelopmentConfig(config) }
   }
-
   // Override nodeUri with value from RPC map if it exists
   const networkKey = network.toString()
   if (rpcMap[networkKey]) config.nodeUri = rpcMap[networkKey]
   if (erc20Map[networkKey]) config.oceanTokenAddress = erc20Map[networkKey]
-  if (escrowMap[networkKey]) config.escrowAddress = escrowMap[networkKey]
-
   // Get contracts for current network
   const enterpriseContracts = getOceanArtifactsAddressesByChainId(
     Number(network)
   )
-
   // Override config with enterprise contracts if present
   if (enterpriseContracts) {
+    config.escrowAddress =
+      enterpriseContracts.EnterpriseEscrow || config.escrowAddress
     config.fixedRateExchangeAddress =
       enterpriseContracts.FixedPriceEnterprise ||
       enterpriseContracts.FixedPrice ||

@@ -1,56 +1,94 @@
+'use client'
+
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { createClient, erc20ABI } from 'wagmi'
-import { localhost } from '@wagmi/core/chains'
-import { ethers, Contract, Signer } from 'ethers'
-import { formatEther } from 'ethers/lib/utils'
-import { getDefaultClient } from 'connectkit'
+import { cookieStorage, createConfig, createStorage, injected } from 'wagmi'
+import { erc20Abi, http } from 'viem'
+import { localhost, type Chain } from 'wagmi/chains'
+import {
+  ethers,
+  Contract,
+  Signer,
+  formatEther,
+  JsonRpcProvider,
+  Provider,
+  Wallet
+} from 'ethers'
 import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
 import { chainIdsSupported } from '../../../app.config.cjs'
+import { walletConnect } from 'wagmi/connectors'
 
-export async function getDummySigner(chainId: number): Promise<Signer> {
-  if (typeof chainId !== 'number') {
-    throw new Error('Chain ID must be a number')
-  }
-
+export async function getDummySigner(chainId: number): Promise<Wallet> {
   const config = getOceanConfig(chainId)
-  if (!config) {
-    console.error(`[DEBUG] No Ocean config found for chainId ${chainId}`)
-    throw new Error(`No Ocean config found for chainId ${chainId}`)
-  }
+  if (!config?.nodeUri) throw new Error('Missing nodeUri in Ocean config')
 
-  try {
-    const privateKey =
-      '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+  const privateKey =
+    '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
 
-    if (!config.nodeUri) {
-      console.error('[DEBUG] Node URI missing in config')
-      throw new Error('Missing nodeUri in Ocean config')
-    }
+  const provider = new JsonRpcProvider(config.nodeUri)
 
-    const provider = new ethers.providers.JsonRpcProvider(config.nodeUri)
-    const wallet = new ethers.Wallet(privateKey, provider)
-    return wallet
-  } catch (error: any) {
-    console.error('[DEBUG] Failed to create dummy signer:', error)
-    throw new Error(`Failed to create dummy signer: ${error.message}`)
-  }
+  return new Wallet(privateKey, provider)
 }
 
-// Wagmi client
-const chains = [...getSupportedChains(chainIdsSupported)]
-if (process.env.NEXT_PUBLIC_MARKET_DEVELOPMENT === 'true') {
-  chains.push({ ...localhost, id: 11155420 })
+/* -----------------------------------------
+   WAGMI CHAINS — FIXED AS A TUPLE
+------------------------------------------ */
+function getWagmiChains(): readonly [Chain, ...Chain[]] {
+  const baseChains: Chain[] = [...getSupportedChains(chainIdsSupported)]
+
+  if (process.env.NEXT_PUBLIC_MARKET_DEVELOPMENT === 'true') {
+    baseChains.push({ ...localhost, id: 11155420 })
+  }
+
+  if (baseChains.length === 0) {
+    throw new Error('No supported chains found for Wagmi config.')
+  }
+
+  return baseChains as unknown as readonly [Chain, ...Chain[]]
 }
-export const wagmiClient = createClient(
-  getDefaultClient({
-    appName: 'Ocean Protocol Enterprise Market',
-    infuraId: process.env.NEXT_PUBLIC_INFURA_PROJECT_ID,
+
+/* -----------------------------------------
+   WAGMI CLIENT — SSR SAFE LAZY INITIALIZER
+------------------------------------------ */
+const client: any = null
+
+export function getWagmiClient() {
+  if (client) return client
+  if (typeof window === 'undefined') return null
+  const chains = getWagmiChains()
+
+  return createConfig({
     chains,
-    walletConnectProjectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID
+    ssr: true,
+    storage: createStorage({ storage: cookieStorage }),
+    transports: chains.reduce(
+      (acc, chain) => ({
+        ...acc,
+        [chain.id]: http()
+      }),
+      {} as Record<number, ReturnType<typeof http>>
+    )
   })
-)
+}
+
+export const wagmiConfig = (() => {
+  const chains = getWagmiChains()
+
+  return createConfig({
+    chains,
+    ssr: true,
+    storage: createStorage({ storage: cookieStorage }),
+    connectors: [injected()],
+    transports: chains.reduce(
+      (acc, chain) => ({
+        ...acc,
+        [chain.id]: http()
+      }),
+      {} as Record<number, ReturnType<typeof http>>
+    )
+  })
+})()
 
 // ConnectKit CSS overrides
 // https://docs.family.co/connectkit/theming#theme-variables
@@ -136,7 +174,7 @@ export async function addCustomNetwork(
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: newNetworkData.chainId }]
     })
-  } catch (switchError) {
+  } catch (switchError: any) {
     if (switchError.code === 4902) {
       await web3Provider.request(
         {
@@ -172,16 +210,20 @@ export async function getTokenBalance(
   accountId: string,
   decimals: number,
   tokenAddress: string,
-  web3Provider: ethers.providers.Provider
+  web3Provider: Provider
 ): Promise<string> {
   if (!web3Provider || !accountId || !tokenAddress) return
 
   try {
-    const token = new Contract(tokenAddress, erc20ABI, web3Provider)
+    const token = new Contract(tokenAddress, erc20Abi, web3Provider)
     const balance = await token.balanceOf(accountId)
-    const adjustedDecimalsBalance = `${balance}${'0'.repeat(18 - decimals)}`
+    const balanceString = balance.toString()
+    const adjustedDecimalsBalance = `${balanceString}${'0'.repeat(
+      18 - decimals
+    )}`
+
     return formatEther(adjustedDecimalsBalance)
-  } catch (e) {
+  } catch (e: any) {
     LoggerInstance.error(`ERROR: Failed to get the balance: ${e.message}`)
   }
 }
@@ -201,21 +243,59 @@ export function getTokenBalanceFromSymbol(
 
 export async function getTokenInfo(
   tokenAddress: string,
-  web3Provider: ethers.providers.Provider
+  web3Provider: Provider
 ): Promise<TokenInfo> {
-  if (!web3Provider || !tokenAddress)
-    return { address: tokenAddress, name: '', symbol: '', decimals: undefined }
+  if (!web3Provider || !tokenAddress || tokenAddress === ethers.ZeroAddress) {
+    return {
+      address: tokenAddress,
+      name: 'Unknown',
+      symbol: '???',
+      decimals: 18
+    }
+  }
+  const contract = new Contract(tokenAddress, erc20Abi, web3Provider)
 
   try {
-    const tokenContract = new Contract(tokenAddress, erc20ABI, web3Provider)
-    const name = await tokenContract.name()
-    const symbol = await tokenContract.symbol()
-    const decimals = await tokenContract.decimals()
-    return { address: tokenAddress, name, symbol, decimals }
-  } catch (error: any) {
-    LoggerInstance.error(
-      `[getTokenInfo] Failed to fetch token info for ${tokenAddress}: ${error.message}`
-    )
-    return { address: tokenAddress, name: '', symbol: '', decimals: undefined }
+    const nameFn = contract.getFunction('name')
+    const symbolFn = contract.getFunction('symbol')
+    const decimalsFn = contract.getFunction('decimals')
+
+    const [nameRaw, symbolRaw, decimalsRaw] = await Promise.allSettled([
+      nameFn.staticCall(),
+      symbolFn.staticCall(),
+      decimalsFn.staticCall()
+    ])
+
+    const safeString = (result: any): string => {
+      if (!result) return 'Unknown'
+      try {
+        if (typeof result === 'string') {
+          if (!result.startsWith('0x')) return result.trim() || 'Unknown'
+          const bytes = ethers.hexlify(ethers.getBytes(result))
+          return ethers.decodeBytes32String(bytes) || 'Unknown'
+        }
+        return 'Unknown'
+      } catch {
+        return 'Unknown'
+      }
+    }
+
+    return {
+      address: tokenAddress,
+      name:
+        nameRaw.status === 'fulfilled' ? safeString(nameRaw.value) : 'Unknown',
+      symbol:
+        symbolRaw.status === 'fulfilled' ? safeString(symbolRaw.value) : '???',
+      decimals:
+        decimalsRaw.status === 'fulfilled' ? Number(decimalsRaw.value) : 18
+    }
+  } catch (error) {
+    LoggerInstance.error(`[getTokenInfo] Failed for ${tokenAddress}`, error)
+    return {
+      address: tokenAddress,
+      name: 'Unknown Token',
+      symbol: '???',
+      decimals: 18
+    }
   }
 }

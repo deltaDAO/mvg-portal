@@ -1,16 +1,14 @@
 import { useFormikContext } from 'formik'
 import { FormComputeData } from '@components/ComputeWizard/_types'
-import {
-  inferComputeFlow,
-  getWizardTotalSteps
-} from '@components/ComputeWizard/utils/steps'
+import { getDatasetSteps } from '@components/AlgorithmComputeWizard/_constants'
 
 export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
   const { values } = useFormikContext<FormComputeData>()
-  const flow = inferComputeFlow(values, isAlgorithmFlow)
   const hasUserParamsStep = Boolean(values.isUserParameters)
-  const totalSteps = getWizardTotalSteps(flow, hasUserParamsStep)
-
+  const withoutDataset = Boolean(values.withoutDataset)
+  const steps = getDatasetSteps(hasUserParamsStep, withoutDataset)
+  const totalSteps = steps.length
+  console.log('Total Steps:', totalSteps)
   function getSuccessClass(step: number): boolean {
     const environmentSelected = Boolean(values.computeEnv)
     const configSet =
@@ -23,11 +21,11 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
       values.termsAndConditions && values.acceptPublishingLicense
     )
 
-    if (flow === 'algorithm') {
+    if (isAlgorithmFlow) {
       switch (step) {
         case 1:
           return Boolean(
-            values.step1Completed || (values.datasets?.length ?? 0) > 0
+            values.step1Completed || (values.datasets?.length ?? 0)
           )
         case 2:
           return Boolean(values.step2Completed)

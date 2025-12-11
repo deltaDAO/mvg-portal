@@ -442,14 +442,37 @@ function isAccountAllowed(ddo: any, accountId: string): boolean {
 
   // Service level allow/deny: pass if undefined or empty
   const services = ddo.credentialSubject?.services || []
+  const rootAllowsAllAddresses =
+    Array.isArray(ddo.credentials?.allow) &&
+    ddo.credentials.allow.some(
+      (entry: any) =>
+        entry.type === 'address' &&
+        entry.values?.some((v: any) => v.address === '*')
+    )
   for (const service of services) {
-    if (
-      typeof service.credentials?.allow !== 'undefined' && // Only check if allow exists
-      !checkAllowList(service.credentials.allow)
-    ) {
+    const serviceAllow = service.credentials?.allow
+
+    const hasAddressAllow =
+      Array.isArray(serviceAllow) &&
+      serviceAllow.some((entry: any) => entry.type === 'address')
+
+    if (!hasAddressAllow && rootAllowsAllAddresses) {
+      if (
+        service.credentials?.deny &&
+        checkDenyList(service.credentials.deny)
+      ) {
+        console.log('Denied by service deny list')
+        return false
+      }
+      continue
+    }
+    if (hasAddressAllow && !checkAllowList(serviceAllow)) {
+      console.log('Denied by service allow list')
       return false
     }
+
     if (service.credentials?.deny && checkDenyList(service.credentials.deny)) {
+      console.log('Denied by service deny list')
       return false
     }
   }

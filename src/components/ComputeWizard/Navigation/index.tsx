@@ -1,10 +1,11 @@
-import { ReactElement, useMemo } from 'react'
+import { ReactElement } from 'react'
 import { FormikContextType, useFormikContext } from 'formik'
 import { ComputeFlow, FormComputeData } from '../_types'
 import { useProgressBar } from '@hooks/useProgressBar'
 import { useComputeStepCompletion } from '@hooks/useComputeStepCompletion'
 import styles from './index.module.css'
 import CheckmarkIcon from '@images/checkmark.svg'
+import { getDatasetSteps } from '@components/AlgorithmComputeWizard/_constants'
 
 type StepDefinition = {
   step: number
@@ -67,10 +68,8 @@ export default function Navigation({ flow }: NavigationProps): ReactElement {
     useComputeStepCompletion(isAlgorithmFlow)
   const currentStep = values.user.stepCurrent
   const hasUserParamsStep = Boolean(values?.isUserParameters)
-  const steps = useMemo(
-    () => buildSteps(flow, hasUserParamsStep),
-    [flow, hasUserParamsStep]
-  )
+  const withoutDataset = Boolean(values?.withoutDataset)
+  const steps = getDatasetSteps(hasUserParamsStep, withoutDataset)
   const lastCompletedStep = getLastCompletedStep()
   const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)
   const { stepRefs, stepsRowRef, progressBarWidth } = useProgressBar({
@@ -111,7 +110,9 @@ export default function Navigation({ flow }: NavigationProps): ReactElement {
               aria-label={`Step ${step.step}: ${step.title}${
                 isCompleted ? ' (completed)' : ''
               }`}
-              ref={(el) => (stepRefs.current[step.step - 1] = el)}
+              ref={(el) => {
+                stepRefs.current[step.step - 1] = el
+              }}
             >
               <div
                 className={`${

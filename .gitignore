@@ -19,3 +19,4 @@ tsconfig.tsbuildinfo
 __snapshots__
 storybook-static
 .qodo
+next-env.d.ts

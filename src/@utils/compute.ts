@@ -128,7 +128,7 @@ export async function getComputeEnvironment(
 
     if (!computeEnv) return null
     return computeEnv
-  } catch (e) {
+  } catch (e: any) {
     const message = getErrorMessage(e.message)
     LoggerInstance.error(
       '[Compute to Data] Fetch compute environment:',
@@ -300,8 +300,10 @@ async function getJobs(
       }
       providersComputeJobsExtended.forEach(async (job: ComputeJobExtended) => {
         const jobWithAssets = job as LocalComputeJob
-        const did = jobWithAssets.assets?.[0]?.documentId
-        if (!did) return
+        const did =
+          jobWithAssets.assets && jobWithAssets.assets.length > 0
+            ? jobWithAssets.assets[0].documentId
+            : null
 
         if (assets) {
           const assetFiltered = assets.filter((x) => x.id === did)
@@ -318,7 +320,7 @@ async function getJobs(
         } else {
           const compJob: ComputeJobMetaData = {
             ...job,
-            assetName: 'name',
+            assetName: did ? 'name' : 'Algorithm Only Job',
             assetDtSymbol: 'symbol',
             networkId: 11155111
           }
@@ -326,7 +328,7 @@ async function getJobs(
         }
       })
     }
-  } catch (err) {
+  } catch (err: any) {
     const message = getErrorMessage(err.message)
     LoggerInstance.error('[Compute to Data] Error:', message)
     toast.error(message)

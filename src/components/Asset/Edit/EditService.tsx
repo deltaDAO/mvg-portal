@@ -1,4 +1,4 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import { Formik } from 'formik'
 import {
   LoggerInstance,
@@ -11,12 +11,12 @@ import { ServiceEditForm } from './_types'
 import Web3Feedback from '@shared/Web3Feedback'
 import { mapTimeoutStringToSeconds, normalizeFile } from '@utils/ddo'
 import content from '../../../../content/pages/editService.json'
-import { isAddress } from 'ethers/lib/utils.js'
+import { isAddress, Signer, toBeHex } from 'ethers'
 import { getOceanConfig } from '@utils/ocean'
 import EditFeedback from './EditFeedback'
 import { useAsset } from '@context/Asset'
-import { getEncryptedFiles } from '@utils/provider'
-import { useAccount, useNetwork, useSigner } from 'wagmi'
+import { getEncryptedFiles, getFileDidInfo } from '@utils/provider'
+import { useAccount, useChainId, usePublicClient } from 'wagmi'
 import {
   generateCredentials,
   IpfsUpload,
@@ -37,10 +37,10 @@ import styles from './index.module.css'
 import { Service } from 'src/@types/ddo/Service'
 import { AssetExtended } from 'src/@types/AssetExtended'
 import { customProviderUrl, encryptAsset } from 'app.config.cjs'
-import { ethers } from 'ethers'
 import { useSsiWallet } from '@context/SsiWallet'
 import { State } from 'src/@types/ddo/State'
 import { assetStateToNumber } from '@utils/assetState'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function EditService({
   asset,
@@ -54,14 +54,48 @@ export default function EditService({
   const { debug } = useUserPreferences()
   const { fetchAsset, isAssetNetwork } = useAsset()
   const { address: accountId } = useAccount()
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const walletClient = useEthersSigner()
+  const publicClient = usePublicClient()
   const newCancelToken = useCancelToken()
   const ssiWalletContext = useSsiWallet()
 
+  const signer = walletClient as unknown as Signer
+
   const [success, setSuccess] = useState<string>()
   const [error, setError] = useState<string>()
+  const [detectedFileType, setDetectedFileType] = useState<string | undefined>()
   const hasFeedback = error || success
+
+  useEffect(() => {
+    async function fetchFileType() {
+      if (!service.files || service.files.length === 0) {
+        setDetectedFileType(undefined)
+        return
+      }
+
+      try {
+        const fileInfo = await getFileDidInfo(
+          asset.id,
+          service.id,
+          customProviderUrl || service.serviceEndpoint
+        )
+        if (fileInfo && fileInfo.length > 0 && fileInfo[0]?.type) {
+          setDetectedFileType(fileInfo[0].type)
+        } else {
+          setDetectedFileType('url')
+        }
+      } catch (error) {
+        LoggerInstance.log(
+          '[EditService] Could not fetch file info, defaulting to url:',
+          error.message
+        )
+        setDetectedFileType('url')
+      }
+    }
+
+    fetchFileType()
+  }, [asset.id, service.id, service.serviceEndpoint, service.files])
 
   async function updateFixedPrice(newPrice: number) {
     const config = getOceanConfig(asset.credentialSubject?.chainId)
@@ -118,9 +152,12 @@ export default function EditService({
         processAddress(values.credentials.denyInputValue, 'deny')
       }
 
-      accessDetails.type === 'fixed' &&
-        values.price !== parseFloat(accessDetails.price) &&
-        (await updateFixedPrice(values.price))
+      if (
+        accessDetails.type === 'fixed' &&
+        values.price !== parseFloat(accessDetails.price)
+      ) {
+        await updateFixedPrice(values.price)
+      }
 
       if (values.paymentCollector !== accessDetails.paymentCollector) {
         const datatoken = new Datatoken(signer)
@@ -136,9 +173,7 @@ export default function EditService({
         const file = {
           nftAddress: asset.credentialSubject.nftAddress,
           datatokenAddress: service.datatokenAddress,
-          files: [
-            normalizeFile(values.files[0].type, values.files[0], chain?.id)
-          ]
+          files: [normalizeFile(values.files[0].type, values.files[0], chainId)]
         }
 
         const filesEncrypted = await getEncryptedFiles(
@@ -219,7 +254,7 @@ export default function EditService({
           customProviderUrl ||
             updatedAsset.credentialSubject.services[0]?.serviceEndpoint,
           '',
-          ethers.utils.hexlify(ipfsUpload.flags),
+          toBeHex(ipfsUpload.flags),
           ipfsUpload.metadataIPFS,
           ipfsUpload.metadataIPFSHash
         )
@@ -277,6 +312,7 @@ export default function EditService({
               service={service}
               accessDetails={accessDetails}
               assetType={asset.credentialSubject?.metadata?.type}
+              existingFileType={detectedFileType}
             />
 
             <Web3Feedback

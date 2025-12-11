@@ -5,7 +5,7 @@ import SectionContainer from '../../../@shared/SectionContainer/SectionContainer
 import Button from '@components/@shared/atoms/Button'
 import InputGroup from '@components/@shared/FormInput/InputGroup'
 import InputElement from '@components/@shared/FormInput/InputElement'
-import { isAddress } from 'ethers/lib/utils.js'
+import { isAddress } from 'ethers'
 import { toast } from 'react-toastify'
 import styles from './index.module.css'
 import DeleteButton from '@components/@shared/DeleteButton/DeleteButton'

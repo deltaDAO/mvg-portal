@@ -1,7 +1,8 @@
+import { useEthersSigner } from '@hooks/useEthersSigner'
 import { Datatoken } from '@oceanprotocol/lib'
 import { useEffect, useState } from 'react'
 import { ResourceType } from 'src/@types/ResourceType'
-import { useNetwork, useSigner } from 'wagmi'
+import { useChainId } from 'wagmi'
 
 export default function ComputeEnvSelection({
   computeEnvs,
@@ -13,8 +14,8 @@ export default function ComputeEnvSelection({
   >
 }): JSX.Element {
   const [selectedEnvId, setSelectedEnvId] = useState<string>()
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const walletClient = useEthersSigner()
 
   const [mode, setMode] = useState<'free' | 'paid'>('free')
   const [resourceValues, setResourceValues] = useState<{
@@ -26,8 +27,8 @@ export default function ComputeEnvSelection({
 
   const fetchSymbol = async (address: string) => {
     if (symbolMap[address]) return symbolMap[address]
-    if (!signer || !chain?.id) return '...'
-    const datatoken = new Datatoken(signer, chain.id)
+    if (!walletClient || !chainId) return '...'
+    const datatoken = new Datatoken(walletClient as any, chainId)
     const sym = await datatoken.getSymbol(address)
     setSymbolMap((prev) => ({ ...prev, [address]: sym }))
     return sym
@@ -63,8 +64,8 @@ export default function ComputeEnvSelection({
   return (
     <div>
       {computeEnvs?.map((env) => {
-        const chainId = chain?.id.toString() || '11155111'
-        const fee = env.fees?.[chainId]?.[0]
+        const chainIdString = chainId?.toString() || '11155111'
+        const fee = env.fees?.[chainIdString]?.[0]
         const freeAvailable = !!env.free
         const isSelected = selectedEnvId === env.id
         const tokenAddress = fee?.feeToken

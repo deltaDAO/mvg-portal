@@ -142,10 +142,10 @@ export default function URLInput({
             {(msg) => {
               if (typeof msg === 'string') {
                 return msg
-              } else if (Array.isArray(msg) && msg[0]?.url) {
-                return msg[0].url
-              } else if (msg && typeof msg === 'object' && msg.url) {
-                return msg.url
+              } else if (Array.isArray(msg) && (msg as any)[0]?.url) {
+                return (msg as any)[0].url
+              } else if (msg && typeof msg === 'object' && (msg as any).url) {
+                return (msg as any).url
               }
               return String(msg)
             }}

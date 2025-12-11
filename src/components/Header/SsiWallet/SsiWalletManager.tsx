@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useSigner } from 'wagmi'
 import { useSsiWallet } from '@context/SsiWallet'
 import { useUserPreferences } from '@context/UserPreferences'
 import {
@@ -13,10 +12,11 @@ import appConfig from 'app.config.cjs'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import SsiApiModal from '../Wallet/SsiApiModal'
 import { SsiWalletDesc, SsiWalletSession } from 'src/@types/SsiWallet'
+import { useEthersSigner } from '@hooks/useEthersSigner'
 
 export default function SsiWalletManager() {
   const { showSsiWalletModule, setShowSsiWalletModule } = useUserPreferences()
-  const { data: signer } = useSigner()
+  const walletClient = useEthersSigner()
   const {
     setSessionToken,
     ssiWalletCache,
@@ -58,11 +58,17 @@ export default function SsiWalletManager() {
 
   async function handleSsiConnect() {
     try {
+      if (!walletClient) {
+        LoggerInstance.error('Wallet Client not available for SSI connection.')
+        return
+      }
+
       ssiWalletCache.clearCredentials()
       setCachedCredentials(undefined)
       clearVerifierSessionCache()
       setSsiWalletApiOverride(overrideApi)
-      const session = await connectToWallet(signer!)
+
+      const session = await connectToWallet(walletClient as any)
       setSessionToken(session)
       setSelectedDid(undefined)
       setSelectedKey(undefined)

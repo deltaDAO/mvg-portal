@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
 import { EnterpriseFeeCollectorContract } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
-import { useNetwork, useSigner } from 'wagmi'
-import { ethers } from 'ethers'
+import { useChainId } from 'wagmi'
+import { formatUnits } from 'ethers'
 import { getTokenInfo } from '@utils/wallet'
 import { Fees } from 'src/@types/feeCollector/FeeCollector.type'
 import { OpcFee } from '@context/MarketMetadata/_types'
+import { useEthersSigner } from './useEthersSigner'
 
 function useEnterpriseFeeColletor() {
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const signer = useEthersSigner()
   const [enterpriseFeeCollector, setEnterpriseFeeCollector] = useState<
     EnterpriseFeeCollectorContract | undefined
   >(undefined)
@@ -19,7 +20,7 @@ function useEnterpriseFeeColletor() {
     enterpriseFeeColletor: EnterpriseFeeCollectorContract
   ): Promise<Fees> => {
     try {
-      const config = getOceanConfig(chain!.id)
+      const config = getOceanConfig(chainId)
       const isTokenApproved =
         await enterpriseFeeColletor.contract.isTokenAllowed(
           config.oceanTokenAddress
@@ -28,16 +29,16 @@ function useEnterpriseFeeColletor() {
         const fees = await enterpriseFeeColletor.contract.getToken(
           config.oceanTokenAddress
         )
-        const { oceanTokenAddress } = getOceanConfig(chain!.id)
+        const { oceanTokenAddress } = getOceanConfig(chainId)
         const tokenDetails = await getTokenInfo(
           oceanTokenAddress,
           signer!.provider
         )
         return {
           approved: fees[0], // boolean
-          feePercentage: ethers.utils.formatUnits(fees[1], '18'),
-          maxFee: ethers.utils.formatUnits(fees[2], tokenDetails.decimals),
-          minFee: ethers.utils.formatUnits(fees[3], tokenDetails.decimals),
+          feePercentage: formatUnits(fees[1], 18),
+          maxFee: formatUnits(fees[2], tokenDetails.decimals),
+          minFee: formatUnits(fees[3], tokenDetails.decimals),
           tokenAddress: config.oceanTokenAddress
         }
       } else {
@@ -66,8 +67,8 @@ function useEnterpriseFeeColletor() {
   }
 
   useEffect(() => {
-    if (!signer || !chain?.id) return
-    const config = getOceanConfig(chain.id)
+    if (!signer || !chainId) return
+    const config = getOceanConfig(chainId)
     if (!config || !config.EnterpriseFeeCollector) return
 
     try {
@@ -84,7 +85,7 @@ function useEnterpriseFeeColletor() {
         window.location.reload()
       }
     }
-  }, [signer, chain?.id])
+  }, [signer, chainId])
 
   useEffect(() => {
     if (!enterpriseFeeCollector) return
@@ -106,7 +107,6 @@ function useEnterpriseFeeColletor() {
     const opcData: OpcFee[] = await Promise.all(
       validChainIds.map(async (chainId) => {
         const currentFees = await fetchFees(enterpriseFeeCollector)
-        console.log('current fee', currentFees)
         return {
           chainId,
           approvedTokens: [currentFees.tokenAddress],

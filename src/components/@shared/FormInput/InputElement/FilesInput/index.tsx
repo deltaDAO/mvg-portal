@@ -7,7 +7,7 @@ import { getFileInfo, checkValidProvider } from '@utils/provider'
 import { LoggerInstance, FileInfo } from '@oceanprotocol/lib'
 import { useAsset } from '@context/Asset'
 import styles from './index.module.css'
-import { useNetwork } from 'wagmi'
+import { useChainId } from 'wagmi'
 import InputKeyValue from '../KeyValueInput'
 import Button from '@shared/atoms/Button'
 import PublishButton from '@shared/PublishButton'
@@ -24,8 +24,7 @@ export default function FilesInput(props: InputProps): ReactElement {
   const [isLoading, setIsLoading] = useState(false)
   const [disabledButton, setDisabledButton] = useState(true)
   const { asset } = useAsset()
-  const { chain } = useNetwork()
-  const chainId = chain?.id
+  const chainId = useChainId()
 
   const providerUrl =
     customProviderUrl ||
@@ -33,6 +32,7 @@ export default function FilesInput(props: InputProps): ReactElement {
     asset.credentialSubject?.services?.[0]?.serviceEndpoint
 
   const storageType = field.value?.[0]?.type
+  const urlValue = field.value?.[0]?.url?.toString().trim() || ''
   const query = field.value?.[0]?.query || undefined
   const abi = field.value?.[0]?.abi || undefined
   const headers = field.value?.[0]?.headers || undefined
@@ -66,7 +66,7 @@ export default function FilesInput(props: InputProps): ReactElement {
         query,
         headers,
         abi,
-        chain?.id,
+        chainId,
         method
       )
 
@@ -115,18 +115,23 @@ export default function FilesInput(props: InputProps): ReactElement {
   useEffect(() => {
     if (!storageType) return
 
-    storageType === 'graphql' && setDisabledButton(!providerUrl || !query)
+    if (storageType === 'graphql') {
+      setDisabledButton(!providerUrl || !query || !urlValue)
+      return
+    }
 
-    storageType === 'smartcontract' &&
-      setDisabledButton(!providerUrl || !abi || !checkJson(abi))
+    if (storageType === 'smartcontract') {
+      setDisabledButton(!providerUrl || !abi || !checkJson(abi) || !urlValue)
+      return
+    }
 
-    storageType === 'url' && setDisabledButton(!providerUrl)
+    setDisabledButton(!providerUrl || !urlValue)
 
     if (meta.error?.length > 0) {
       const { url } = meta.error[0] as unknown as FileInfo
       url && setDisabledButton(true)
     }
-  }, [storageType, providerUrl, headers, query, abi, meta])
+  }, [storageType, providerUrl, headers, query, abi, meta, urlValue])
 
   return (
     <div className={styles.filesContainer}>

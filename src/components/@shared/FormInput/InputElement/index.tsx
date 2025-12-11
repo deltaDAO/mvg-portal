@@ -111,17 +111,17 @@ const InputElement = forwardRef(
             : (options as string[]).sort((a: string, b: string) =>
                 a.localeCompare(b)
               )
-        const { ...selectProps } = props
+        const { type, ...rest } = props
         return (
           <select
-            id={selectProps.name}
+            {...rest}
+            id={rest.name}
             className={styleClasses}
-            {...selectProps}
             multiple={multiple}
           >
             {field !== undefined && field.value === '' && (
               <option value="" disabled hidden>
-                {selectProps.placeholder}
+                {rest.placeholder}
               </option>
             )}
             {sortedOptions &&
@@ -162,6 +162,9 @@ const InputElement = forwardRef(
             items={tabs}
             key={`tabFile_${props.name}`}
             className={styles.pricing}
+            activeFileType={props.activeFileType}
+            existingFilePlaceholder={props.existingFilePlaceholder}
+            showExistingFileNotice={props.showExistingFileNotice}
           />
         )
       }
@@ -188,8 +191,9 @@ const InputElement = forwardRef(
         return <PublishConsumerParameters {...field} form={form} {...props} />
 
       case 'textarea': {
+        const { type, ...rest } = props
         return (
-          <textarea id={props.name} className={styles.textarea} {...props} />
+          <textarea {...rest} id={props.name} className={styles.textarea} />
         )
       }
 

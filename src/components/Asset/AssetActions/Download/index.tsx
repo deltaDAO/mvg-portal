@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useState } from 'react'
 import { Field, Form, Formik, useFormikContext } from 'formik'
-import { useAccount, useNetwork } from 'wagmi'
-import { Signer } from 'ethers'
+import { useAccount, useChainId } from 'wagmi'
+import { Signer, formatUnits } from 'ethers'
 import { toast } from 'react-toastify'
 import Decimal from 'decimal.js'
 
@@ -53,7 +53,6 @@ import { getDownloadValidationSchema } from './_validation'
 import { getDefaultValues } from '../ConsumerParameters/FormConsumerParameters'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
-import { formatUnits } from 'ethers/lib/utils.js'
 import useBalance from '@hooks/useBalance'
 
 export default function Download({
@@ -88,9 +87,8 @@ export default function Download({
   const { isInPurgatory, isAssetNetwork } = useAsset()
   const isMounted = useIsMounted()
   const { balance } = useBalance()
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const [licenseLink, setLicenseLink] = useState('')
-
   const [isDisabled, setIsDisabled] = useState(true)
   const [hasDatatoken, setHasDatatoken] = useState(false)
   const [statusText, setStatusText] = useState('')
@@ -136,9 +134,9 @@ export default function Download({
 
   useEffect(() => {
     const fetchTokenDetails = async () => {
-      if (!chain?.id || !signer?.provider) return
+      if (!chainId || !signer?.provider) return
 
-      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      const { oceanTokenAddress } = getOceanConfig(chainId)
       const tokenDetails = await getTokenInfo(
         oceanTokenAddress,
         signer.provider
@@ -147,7 +145,7 @@ export default function Download({
     }
 
     fetchTokenDetails()
-  }, [chain, signer])
+  }, [chainId, signer])
 
   useEffect(() => {
     const licenseMirrors =
@@ -162,7 +160,6 @@ export default function Download({
       } else if (firstMirror.url) {
         license = firstMirror.url
       }
-      console.log('license here:', license)
       setLicenseLink(license)
     }
   }, [asset])
@@ -306,7 +303,7 @@ export default function Download({
           throw new Error()
         }
         setIsOwned(true)
-        setValidOrderTx(tx.transactionHash)
+        setValidOrderTx(tx.hash)
         setJustBought(true)
       }
     } catch (error) {

@@ -11,7 +11,7 @@ import AvailableNetworks from '@components/Publish/AvailableNetworks'
 import Info from '@images/info.svg'
 import Loader from '@shared/atoms/Loader'
 import useNetworkMetadata from '@hooks/useNetworkMetadata'
-import { isAddress } from 'ethers/lib/utils.js'
+import { isAddress } from 'ethers'
 import isUrl from 'is-url-superb'
 
 function isValidUrl(url: string): boolean {
@@ -100,7 +100,7 @@ export default function Actions({
             }
           }
         } catch (error) {
-          console.log(
+          console.error(
             `${fieldName} address validation error during auto-commit:`,
             error
           )
@@ -134,7 +134,7 @@ export default function Actions({
       try {
         return isAddress(typedValue)
       } catch (error) {
-        console.log('Allow address validation error:', error)
+        console.error('Allow address validation error:', error)
       }
     }
 

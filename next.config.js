@@ -7,8 +7,10 @@ const nextConfig = () => {
    * @type {import('next').NextConfig}
    */
   const config = {
+    output: 'standalone',
     experimental: {
-      esmExternals: 'loose'
+      esmExternals: 'loose',
+      serverComponentsExternalPackages: ['wagmi', 'viem', 'connectkit']
     },
     webpack: (config, options) => {
       const { isServer } = options
@@ -39,6 +41,8 @@ const nextConfig = () => {
       Object.assign(fallback, {
         http: require.resolve('stream-http'),
         https: require.resolve('https-browserify'),
+        'react-native-async-storage': false,
+        '@react-native-async-storage/async-storage': false,
         fs: false,
         crypto: false,
         os: false,

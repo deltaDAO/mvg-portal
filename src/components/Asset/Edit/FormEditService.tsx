@@ -11,6 +11,7 @@ import IconCompute from '@images/compute.svg'
 import FormEditComputeService from './FormEditComputeService'
 import { defaultServiceComputeOptions } from './_constants'
 import { Service } from 'src/@types/ddo/Service'
+import { FileInfo } from '@oceanprotocol/lib'
 import { supportedLanguages } from '../languageType'
 import ContainerForm from '@components/@shared/atoms/ContainerForm'
 import SSIPoliciesSection from './SSIPoliciesSection'
@@ -21,16 +22,30 @@ export default function FormEditService({
   chainId,
   service,
   accessDetails,
-  assetType
+  assetType,
+  existingFileType
 }: {
   data: FormFieldContent[]
   chainId: number
   service: Service
   accessDetails: AccessDetails
   assetType: string
+  existingFileType?: string
 }): ReactElement {
-  const formUniqueId = service.id // because BoxSelection component is not a Formik component
+  const formUniqueId = service.id
   const { values, setFieldValue } = useFormikContext<ServiceEditForm>()
+
+  type EditableFileInfo = FileInfo & { isEncrypted?: boolean }
+
+  const computeExistingFileNotice = (file?: EditableFileInfo) => {
+    if (!file) return true
+    if (!file.url) return true
+    return Boolean(file.isEncrypted)
+  }
+
+  const showExistingFileNotice = Boolean(
+    existingFileType && computeExistingFileNotice(values.files?.[0])
+  )
 
   const accessTypeOptionsTitles = getFieldContent('access', data).options
 
@@ -65,21 +80,6 @@ export default function FormEditService({
       setFieldValue('direction', 'ltr')
     }
   }, [setFieldValue, values.language])
-
-  // Initialize files field to show encrypted file exists
-  useEffect(() => {
-    if (service.files && service.files.length > 0) {
-      // Service files are encrypted, show placeholder
-      setFieldValue('files', [
-        {
-          url: '[Encrypted file - URL not available for editing]',
-          type: 'url',
-          valid: true,
-          isEncrypted: true
-        }
-      ])
-    }
-  }, [service.files, setFieldValue])
 
   const handleLanguageChange = (languageName: string) => {
     const selectedLanguage = supportedLanguages.find(
@@ -178,6 +178,13 @@ export default function FormEditService({
           {...getFieldContent('files', content.services.fields)}
           component={Input}
           name="files"
+          activeFileType={existingFileType}
+          existingFilePlaceholder={
+            existingFileType
+              ? '[Encrypted file - URL not available for editing]'
+              : undefined
+          }
+          showExistingFileNotice={showExistingFileNotice}
         />
 
         <Field

@@ -35,8 +35,8 @@ import { consumeMarketOrderFee } from 'app.config.cjs'
 import { MAX_DECIMALS } from '@utils/constants'
 import PricingRow from './PricingRow'
 import styles from './index.module.css'
-import { ComputeFlow, FormComputeData } from '../_types'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
+import { ComputeFlow, FormComputeData } from '../_types'
 
 type VerificationStatus =
   | 'verified'
@@ -124,7 +124,6 @@ export default function Review({
   service,
   accessDetails,
   computeEnvs,
-  isConsumable,
   hasPreviousOrder,
   hasDatatoken,
   dtBalance,
@@ -168,7 +167,6 @@ export default function Review({
   const [datasetOecFees, setDatasetOecFees] = useState<string>('0')
   const { setFieldValue, values, validateForm } =
     useFormikContext<FormComputeData>()
-
   const [verificationQueue, setVerificationQueue] = useState<
     VerificationItem[]
   >([])
@@ -200,36 +198,6 @@ export default function Review({
     c2dPriceRaw != null ? Math.round(Number(c2dPriceRaw) * 100) / 100 : 0
 
   const errorMessages: string[] = []
-  if (!isBalanceSufficient) {
-    errorMessages.push(`You don't have enough ${symbol} to make this purchase.`)
-  }
-  if (!isAssetNetwork) {
-    errorMessages.push('This asset is not available on the selected network.')
-  }
-  if (
-    !isDatasetFlow &&
-    selectedDatasetAsset?.length &&
-    selectedDatasetAsset.some(
-      (d) =>
-        d.accessDetails &&
-        d.accessDetails[d.serviceIndex || 0] &&
-        !d.accessDetails[d.serviceIndex || 0].isPurchasable
-    )
-  ) {
-    errorMessages.push('One or more selected datasets are not purchasable.')
-  }
-  if (
-    selectedAlgorithmAsset?.accessDetails &&
-    selectedAlgorithmAsset.accessDetails[0] &&
-    !selectedAlgorithmAsset.accessDetails[0].isPurchasable
-  ) {
-    errorMessages.push('The selected algorithm asset is not purchasable.')
-  }
-  if (!isAccountIdWhitelisted) {
-    errorMessages.push(
-      'Your account is not whitelisted to purchase this asset.'
-    )
-  }
 
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)
@@ -244,15 +212,12 @@ export default function Review({
     return parts.join(' ') || '0s'
   }
 
-  // token info for symbol display (dataset flow uses signer prop, algorithm flow uses hook)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const effectiveProvider = isDatasetFlow
       ? signer?.provider
       : signerData?.provider
     const effectiveChainId = chain?.id || asset?.credentialSubject?.chainId
     if (!effectiveProvider || !effectiveChainId) return
-
     const fetchTokenDetails = async () => {
       const { oceanTokenAddress } = getOceanConfig(effectiveChainId)
       const tokenDetails = await getTokenInfo(
@@ -271,8 +236,6 @@ export default function Review({
     asset?.credentialSubject?.chainId
   ])
 
-  // Fetch OEC fees (dataset flow: dataset + algorithm; algorithm flow: algorithm + datasets)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     async function fetchPricesDatasetFlow() {
       if (
@@ -376,8 +339,6 @@ export default function Review({
     selectedDatasetAsset
   ])
 
-  // Select compute env defaults
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
       setFieldValue('computeEnv', computeEnvs[0], true)
@@ -411,9 +372,6 @@ export default function Review({
     setFieldValue
   ])
 
-  // Initialize resource defaults per env
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!values.computeEnv || !computeEnvs) return
     const envId =
@@ -456,9 +414,8 @@ export default function Review({
         [`${selectedEnv.id}_paid`]: paidRes
       }))
     }
-  }, [values.computeEnv, computeEnvs])
+  }, [values.computeEnv, computeEnvs, allResourceValues, setAllResourceValues])
 
-  // Helpers to fetch assets (algorithm flow multi datasets)
   async function getDatasetAssets(datasetsIds: string[]): Promise<{
     assets: AssetExtended[]
     services: Service[]
@@ -511,9 +468,6 @@ export default function Review({
     }
   }
 
-  // Fetch selected assets for algorithm flow
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isDatasetFlow) return
     if (values.withoutDataset || !values.dataset) return
@@ -522,11 +476,9 @@ export default function Review({
       setSelectedDatasetAsset && setSelectedDatasetAsset(assets)
     }
     fetchDatasetAssetsExtended()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.dataset, values.withoutDataset, isDatasetFlow])
 
-  // Build verification queue
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const queue: VerificationItem[] = []
     if (isDatasetFlow) {
@@ -549,16 +501,16 @@ export default function Review({
         })
       }
 
-      const algoCandidate = selectedAlgorithmAsset
       const algoServices: Service[] | undefined =
-        (algoCandidate as AssetExtended | undefined)?.credentialSubject
+        (selectedAlgorithmAsset as AssetExtended | undefined)?.credentialSubject
           ?.services ||
-        ((algoCandidate as unknown as { services?: Service[] })?.services ??
+        ((selectedAlgorithmAsset as unknown as { services?: Service[] })
+          ?.services ??
           undefined)
       const algoService = algoServices?.[serviceIndex] || algoServices?.[0]
-      if (algoCandidate && algoService) {
+      if (selectedAlgorithmAsset && algoService) {
         const isVerified = lookupVerifierSessionId?.(
-          algoCandidate.id,
+          selectedAlgorithmAsset.id,
           algoService?.id
         )
         const details = selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
@@ -569,9 +521,9 @@ export default function Review({
               : details?.price || '0'
             : algoService?.price || '0'
         queue.push({
-          id: algoCandidate.id,
+          id: selectedAlgorithmAsset.id,
           type: 'algorithm',
-          asset: algoCandidate,
+          asset: selectedAlgorithmAsset,
           service: algoService,
           status: isVerified ? ('verified' as const) : ('unverified' as const),
           index: queue.length,
@@ -609,8 +561,14 @@ export default function Review({
         })
       }
       if (service && asset) {
-        const isVerified = lookupVerifierSessionId?.(asset.id, service.id)
-        const rawPrice = accessDetails?.validOrderTx ? '0' : accessDetails.price
+        const isVerified = lookupVerifierSessionId?.(asset?.id, service.id)
+        const rawPrice = asset.credentialSubject.metadata.algorithm
+          ? accessDetails?.validOrderTx
+            ? '0'
+            : accessDetails.price
+          : asset.accessDetails?.[0].validOrderTx
+          ? '0'
+          : asset.accessDetails?.[0].price
         queue.push({
           id: asset.id,
           type: 'algorithm',
@@ -633,8 +591,47 @@ export default function Review({
     selectedAlgorithmAsset,
     selectedDatasetAsset,
     values.withoutDataset,
-    serviceIndex
+    serviceIndex,
+    lookupVerifierSessionId
   ])
+
+  useEffect(() => {
+    const checkExpiration = () => {
+      setVerificationQueue((prev) =>
+        prev.map((item) => {
+          const needsSsi =
+            requiresSsi(item.asset?.credentialSubject?.credentials) ||
+            requiresSsi(item.service?.credentials)
+          if (
+            needsSsi &&
+            item.status === 'verified' &&
+            item.asset?.id &&
+            item.service?.id
+          ) {
+            const credentialKey = `credential_${item.asset.id}_${item.service.id}`
+            const storedTimestamp =
+              typeof window !== 'undefined' && window.localStorage
+                ? window.localStorage.getItem(credentialKey)
+                : null
+            if (storedTimestamp) {
+              const timestamp = parseInt(storedTimestamp, 10)
+              const now = Date.now()
+              const isExpired = now - timestamp > 5 * 60 * 1000
+              if (isExpired) {
+                return { ...item, status: 'expired' as const }
+              }
+            } else {
+              return { ...item, status: 'failed' as const }
+            }
+          }
+          return item
+        })
+      )
+    }
+    checkExpiration()
+    const interval = setInterval(checkExpiration, 10000)
+    return () => clearInterval(interval)
+  }, [])
 
   const startVerification = (index: number) => {
     const hasExpiredCredentials = verificationQueue.some(
@@ -743,10 +740,7 @@ export default function Review({
     setCurrentVerificationIndex(-1)
   }
 
-  // Pricing and totals
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    // dataset flow: dataset + algorithm
     if (isDatasetFlow) {
       if (
         !asset?.accessDetails ||
@@ -851,7 +845,6 @@ export default function Review({
       return
     }
 
-    // algorithm flow: algorithm + multiple datasets
     if (!asset?.accessDetails || !selectedDatasetAsset?.length) return
     const priceAlgo =
       !algoOrderPriceAndFees?.price || hasPreviousOrder || hasDatatoken
@@ -953,6 +946,8 @@ export default function Review({
     hasPreviousOrder,
     hasDatatoken,
     algoOrderPriceAndFees?.price,
+    datasetProviderFeeProp,
+    datasetProviderFee,
     algorithmSymbol,
     datasetSymbol,
     providerFeesSymbol,
@@ -961,19 +956,15 @@ export default function Review({
   ])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (datasetProviderFeeProp) setDatasetProviderFee(datasetProviderFeeProp)
   }, [datasetProviderFeeProp])
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (algorithmProviderFeeProp)
       setAlgorithmProviderFee(algorithmProviderFeeProp)
   }, [algorithmProviderFeeProp])
 
-  // Balance sufficiency check
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     const priceChecks = [...totalPrices]
     if (
@@ -988,11 +979,16 @@ export default function Review({
         symbol: providerFeesSymbol
       })
     }
-    const filtered = priceChecks.filter((p) => p.value !== '0')
+    const filteredPriceChecks = priceChecks.filter(
+      (price) => price.value !== '0'
+    )
     let sufficient = true
-    for (const price of filtered) {
+    for (const price of filteredPriceChecks) {
       const baseTokenBalance = getTokenBalanceFromSymbol(balance, price.symbol)
-      if (!baseTokenBalance || !compareAsBN(baseTokenBalance, price.value)) {
+      if (
+        !baseTokenBalance ||
+        !compareAsBN(baseTokenBalance, totalPriceToDisplay)
+      ) {
         sufficient = false
         break
       }
@@ -1000,34 +996,56 @@ export default function Review({
     setIsBalanceSufficient(sufficient)
   }, [
     balance,
-    totalPrices,
-    providerFeesSymbol,
-    c2dPrice,
     dtBalance,
-    isDatasetFlow
+    datasetSymbol,
+    algorithmSymbol,
+    providerFeesSymbol,
+    totalPrices,
+    allResourceValues,
+    values.computeEnv,
+    c2dPrice,
+    totalPriceToDisplay,
+    setIsBalanceSufficient
   ])
 
-  // Aggregate total display
   useEffect(() => {
-    const datasetProviderFeeDecimal = datasetProviderFee
-      ? new Decimal(formatUnits(datasetProviderFee, tokenInfoState?.decimals))
-      : new Decimal(0)
-    const algorithmProviderFeeDecimal = algorithmProviderFee
-      ? new Decimal(formatUnits(algorithmProviderFee, tokenInfoState?.decimals))
-      : new Decimal(0)
-    const totalPricesSum = totalPrices.reduce(
-      (acc, item) => acc.add(new Decimal(item.value || 0)),
-      new Decimal(0)
-    )
-    const finalTotal = totalPricesSum
-      .add(datasetProviderFeeDecimal)
-      .add(algorithmProviderFeeDecimal)
-      .add(datasetOecFees)
-      .add(algoOecFee)
+    const allVerified =
+      verificationQueue.length > 0 &&
+      verificationQueue.every((item) => item.status === 'verified')
+    setFieldValue('credentialsVerified', allVerified, false)
+    validateForm()
+  }, [verificationQueue, setFieldValue, validateForm])
+
+  useEffect(() => {
+    const sumTotalPrices = totalPrices.reduce((acc, item) => {
+      return acc.add(new Decimal(item.value || 0))
+    }, new Decimal(0))
+
+    const finalTotal = sumTotalPrices
+      .add(
+        datasetProviderFee
+          ? new Decimal(
+              formatUnits(datasetProviderFee, tokenInfoState?.decimals)
+            )
+          : new Decimal(0)
+      )
+      .add(
+        algorithmProviderFee
+          ? new Decimal(
+              formatUnits(algorithmProviderFee, tokenInfoState?.decimals)
+            )
+          : new Decimal(0)
+      )
+      .add(new Decimal(datasetOecFees || 0))
+      .add(new Decimal(algoOecFee || 0))
       .toDecimalPlaces(MAX_DECIMALS)
-    setTotalPriceToDisplay(finalTotal.toString())
+
+    setTotalPriceToDisplay(finalTotal.toDecimalPlaces(MAX_DECIMALS).toString())
   }, [
     totalPrices,
+    accessDetails?.price,
+    selectedAlgorithmAsset,
+    serviceIndex,
     datasetProviderFee,
     algorithmProviderFee,
     datasetOecFees,
@@ -1035,17 +1053,6 @@ export default function Review({
     tokenInfoState?.decimals
   ])
 
-  // credentials verified flag
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => {
-    const allVerified =
-      verificationQueue.length > 0 &&
-      verificationQueue.every((item) => item.status === 'verified')
-    setFieldValue('credentialsVerified', allVerified, false)
-    validateForm()
-  }, [verificationQueue])
-
-  // license URL unified
   const licenseUrl = useMemo(() => {
     if (
       asset?.credentialSubject?.metadata?.license?.licenseDocuments?.[0]
@@ -1076,18 +1083,21 @@ export default function Review({
       )
     }
   ]
+
   const escrowFunds = [
     {
       name: 'AMOUNT AVAILABLE IN THE ESCROW ACCOUNT',
       value: Number(values.escrowFunds).toFixed(3) || '0'
     }
   ]
+
   const amountDeposit = [
     {
       name: 'AMOUNT TO DEPOSIT IN THE ESCROW ACCOUNT',
       value: c2dPrice ? c2dPrice.toString() : '0'
     }
   ]
+
   const datasetProviderFeesList = [
     {
       name: 'PROVIDER FEE DATASET',
@@ -1120,7 +1130,7 @@ export default function Review({
       .toString()
   })()
 
-  const marketFees = isDatasetFlow
+  const marketFeesBase = isDatasetFlow
     ? [
         {
           name: `MARKETPLACE ORDER FEE DATASET`,
@@ -1172,10 +1182,44 @@ export default function Review({
         }
       ]
 
+  const marketFees =
+    !isDatasetFlow && values.withoutDataset
+      ? marketFeesBase.filter((fee) => !fee.name.includes('DATASET'))
+      : marketFeesBase
+
+  if (!isBalanceSufficient) {
+    errorMessages.push(`You don't have enough ${symbol} to make this purchase.`)
+  }
+  if (!isAssetNetwork) {
+    errorMessages.push('This asset is not available on the selected network.')
+  }
+  if (
+    !isDatasetFlow &&
+    selectedDatasetAsset?.length &&
+    selectedDatasetAsset.some(
+      (d) =>
+        d.accessDetails &&
+        d.accessDetails[d.serviceIndex || 0] &&
+        !d.accessDetails[d.serviceIndex || 0].isPurchasable
+    )
+  ) {
+    errorMessages.push('One or more selected datasets are not purchasable.')
+  }
+  if (
+    selectedAlgorithmAsset?.accessDetails &&
+    selectedAlgorithmAsset.accessDetails[0] &&
+    !selectedAlgorithmAsset.accessDetails[0].isPurchasable
+  ) {
+    errorMessages.push('The selected algorithm asset is not purchasable.')
+  }
+  if (!isAccountIdWhitelisted) {
+    errorMessages.push(
+      'Your account is not whitelisted to purchase this asset.'
+    )
+  }
+
   const currentVerificationItem = verificationQueue[currentVerificationIndex]
-
   const assetRows = verificationQueue
-
   const isLoadingAssets = isDatasetFlow
     ? !selectedAlgorithmAsset
     : !values.withoutDataset &&
@@ -1213,7 +1257,7 @@ export default function Review({
     return { algorithmAsset, serviceIndexAlgo }
   }
 
-  // Fetch algorithm asset for dataset flow (legacy behavior) if not provided
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!isDatasetFlow) return
     if (selectedAlgorithmAsset) return
@@ -1221,7 +1265,6 @@ export default function Review({
     const algoId = values.algorithm as string | undefined
     const fallbackAlgo = values.algorithms as AssetExtended | undefined
 
-    // Fallback to already-selected algorithm object if ID is missing
     if (!algoId && fallbackAlgo) {
       if (fallbackAlgo.serviceIndex !== undefined) {
         setServiceIndex(fallbackAlgo.serviceIndex)
@@ -1271,6 +1314,7 @@ export default function Review({
       }
     }
     fetchAlgorithmAssetExtended()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isDatasetFlow,
     selectedAlgorithmAsset,
@@ -1392,7 +1436,8 @@ export default function Review({
                   symbol={symbol}
                 />
               ))}
-              {datasetProviderFee &&
+              {!values.withoutDataset &&
+                datasetProviderFee &&
                 datasetProviderFeesList.map((fee) => (
                   <PricingRow
                     key={fee.name}
@@ -1419,14 +1464,14 @@ export default function Review({
           <span className={styles.totalValue}>
             {isRequestingPrice ? (
               <span className={styles.totalValueNumber}>Calculating...</span>
-            ) : totalPrices.length > 0 ? (
+            ) : totalPriceToDisplay !== '0' ? (
               <>
                 <span className={styles.totalValueNumber}>
                   {totalPriceToDisplay}
                 </span>
                 <span className={styles.totalValueSymbol}>
                   {' '}
-                  {totalPrices[0].symbol}
+                  {totalPrices[0]?.symbol || symbol}
                 </span>
               </>
             ) : (

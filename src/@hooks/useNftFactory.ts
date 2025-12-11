@@ -1,25 +1,26 @@
 import { useEffect, useState } from 'react'
 import { NftFactory } from '@oceanprotocol/lib'
 import { getOceanConfig } from '@utils/ocean'
-import { useNetwork, useSigner } from 'wagmi'
+import { useChainId } from 'wagmi'
+import { useEthersSigner } from './useEthersSigner'
 
 function useNftFactory(): NftFactory {
-  const { chain } = useNetwork()
-  const { data: signer } = useSigner()
+  const chainId = useChainId()
+  const signer = useEthersSigner()
   const [nftFactory, setNftFactory] = useState<NftFactory>()
 
   useEffect(() => {
-    if (!signer || !chain?.id) return
+    if (!signer || !chainId) return
 
-    const config = getOceanConfig(chain.id)
+    const config = getOceanConfig(chainId)
     const factory = new NftFactory(
       config?.nftFactoryAddress,
-      signer,
+      signer as any,
       config.chainId,
       config
     )
     setNftFactory(factory)
-  }, [signer, chain?.id])
+  }, [signer, chainId])
 
   return nftFactory
 }

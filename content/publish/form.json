@@ -25,6 +25,7 @@
       {
         "name": "description",
         "label": "Description",
+        "placeholder": "e.g. Enter Description here...",
         "help": "Add a thorough description with as much detail as possible. You can use [Markdown](https://daringfireball.net/projects/markdown/basics). You can change the description at any time. If you provide personal data, please note that it will remain in the transaction history.",
         "type": "textarea",
         "required": true

@@ -69,7 +69,9 @@ export default function Navigation(): ReactElement {
               aria-label={`Step ${step.step}: ${step.title}${
                 isCompleted ? ' (completed)' : ''
               }`}
-              ref={(el) => (stepRefs.current[step.step - 1] = el)}
+              ref={(el) => {
+                stepRefs.current[step.step - 1] = el
+              }}
             >
               <div
                 className={`${

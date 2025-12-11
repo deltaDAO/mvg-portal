@@ -150,7 +150,6 @@ export function VpSelector(props: VpSelectorProps): ReactElement {
         console.error('[VpSelector] show error', e)
       }
     } else {
-      console.log('[VpSelector] closing dialog')
       try {
         selectorDialog.current.close()
       } catch (e) {

@@ -3,9 +3,10 @@ import NumberUnit from './NumberUnit'
 import styles from './Stats.module.css'
 import { useProfile } from '@context/Profile'
 import EscrowWithdrawModal from './EscrowWithdrawModal' // Import the modal
-import { useNetwork, useProvider } from 'wagmi'
+import { useChainId, usePublicClient } from 'wagmi'
 import { getOceanConfig } from '@utils/ocean'
 import { getTokenInfo } from '@utils/wallet'
+import { JsonRpcProvider } from 'ethers'
 
 export default function Stats(): ReactElement {
   const {
@@ -18,20 +19,25 @@ export default function Stats(): ReactElement {
     ownAccount
   } = useProfile()
   const [showModal, setShowModal] = useState(false)
-  const { chain } = useNetwork()
+  const chainId = useChainId()
   const [tokenSymbol, setTokenSymbol] = useState('OCEAN')
-  const web3provider = useProvider()
+  const publicClient = usePublicClient()
+  const rpcUrl = getOceanConfig(chainId)?.nodeUri
+
+  const ethersProvider =
+    publicClient && rpcUrl ? new JsonRpcProvider(rpcUrl) : undefined
 
   useEffect(() => {
     async function fetchSymbol() {
-      if (!chain?.id || !web3provider) return
-      const { oceanTokenAddress } = getOceanConfig(chain.id)
+      if (!chainId || !ethersProvider) return
+      const { oceanTokenAddress } = getOceanConfig(chainId)
       if (!oceanTokenAddress) return
-      const tokenDetails = await getTokenInfo(oceanTokenAddress, web3provider)
+      // Pass Ethers v6 Provider to getTokenInfo
+      const tokenDetails = await getTokenInfo(oceanTokenAddress, ethersProvider)
       setTokenSymbol(tokenDetails.symbol || 'OCEAN')
     }
     fetchSymbol()
-  }, [chain?.id, web3provider])
+  }, [chainId, ethersProvider])
 
   return (
     <div className={styles.stats}>

@@ -30,13 +30,18 @@ import appConfig, {
 } from '../../../app.config.cjs'
 import { sanitizeUrl } from '@utils/url'
 import { getContainerChecksum } from '@utils/docker'
-import { hexlify, parseEther } from 'ethers/lib/utils'
+import {
+  hexlify,
+  parseEther,
+  ethers,
+  Signer,
+  TransactionResponse
+} from 'ethers'
 import { Asset } from 'src/@types/Asset'
 import { Service } from 'src/@types/ddo/Service'
 import { Metadata } from 'src/@types/ddo/Metadata'
 import { Option } from 'src/@types/ddo/Option'
 import { createHash } from 'crypto'
-import { ethers, Signer } from 'ethers'
 import { uploadToIPFS } from '@utils/ipfs'
 import { DDOVersion } from 'src/@types/DdoVersion'
 import {
@@ -78,7 +83,7 @@ function makeDid(nftAddress: string, chainId: string): string {
   return (
     'did:ope:' +
     createHash('sha256')
-      .update(ethers.utils.getAddress(nftAddress) + chainId)
+      .update(ethers.getAddress(nftAddress) + chainId)
       .digest('hex')
   )
 }
@@ -873,8 +878,7 @@ export async function createTokensAndPricing(
     accountId,
     values.metadata.transferable
   )
-  LoggerInstance.log('[publish] Creating NFT with metadata', nftCreateData)
-  // TODO: cap is hardcoded for now to 1000, this needs to be discussed at some point
+
   const ercParams: DatatokenCreateParams = {
     templateIndex: defaultDatatokenTemplateIndex,
     minter: accountId,
@@ -882,13 +886,10 @@ export async function createTokensAndPricing(
     mpFeeAddress: marketFeeAddress,
     feeToken: config.oceanTokenAddress,
     feeAmount: publisherMarketOrderFee,
-    // max number
     cap: defaultDatatokenCap,
     name: values.services[0].dataTokenOptions.name,
     symbol: values.services[0].dataTokenOptions.symbol
   }
-
-  LoggerInstance.log('[publish] Creating datatoken with ercParams', ercParams)
 
   let erc721Address, datatokenAddress, txHash
 
@@ -897,10 +898,8 @@ export async function createTokensAndPricing(
       const baseTokenAddress =
         config.oceanTokenAddress ?? values.pricing.baseToken.address
       const signer = await getDummySigner(values.user.chainId)
-      const tokenInfo = await getTokenInfo(
-        config.oceanTokenAddress,
-        signer.provider
-      )
+      const { provider } = signer
+      const tokenInfo = await getTokenInfo(config.oceanTokenAddress, provider)
       const baseTokenDecimals = tokenInfo?.decimals || 18
 
       const freParams: FreCreationParams = {
@@ -926,15 +925,13 @@ export async function createTokensAndPricing(
         freParams
       )
 
-      const trxReceipt = await result.wait()
-      const nftCreatedEvent = getEventFromTx(trxReceipt, 'NFTCreated')
-      const tokenCreatedEvent = getEventFromTx(trxReceipt, 'TokenCreated')
+      const receipt = await (result as TransactionResponse).wait()
+      const nftCreatedEvent = getEventFromTx(receipt, 'NFTCreated')
+      const tokenCreatedEvent = getEventFromTx(receipt, 'TokenCreated')
 
       erc721Address = nftCreatedEvent?.args?.newTokenAddress
       datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
-      txHash = trxReceipt?.transactionHash
-
-      LoggerInstance.log('[publish] createNftErcWithFixedRate tx', txHash)
+      txHash = receipt.hash
 
       break
     }
@@ -947,31 +944,24 @@ export async function createTokensAndPricing(
         allowedSwapper: ZERO_ADDRESS
       }
 
-      LoggerInstance.log(
-        '[publish] Creating free pricing with dispenserParams',
-        dispenserParams
-      )
-
       const result = await nftFactory.createNftWithDatatokenWithDispenser(
         nftCreateData,
         ercParams,
         dispenserParams
       )
-      const trxReceipt = await result.wait()
-      const nftCreatedEvent = getEventFromTx(trxReceipt, 'NFTCreated')
-      const tokenCreatedEvent = getEventFromTx(trxReceipt, 'TokenCreated')
+      const receipt = await (result as TransactionResponse).wait()
+      const nftCreatedEvent = getEventFromTx(receipt, 'NFTCreated')
+      const tokenCreatedEvent = getEventFromTx(receipt, 'TokenCreated')
 
       erc721Address = nftCreatedEvent?.args?.newTokenAddress
       datatokenAddress = tokenCreatedEvent?.args?.newTokenAddress
-      txHash = trxReceipt?.transactionHash
-      LoggerInstance.log('[publish] createNftErcWithDispenser tx', txHash)
+      txHash = receipt.hash
 
       break
     }
     default:
-      console.warn('⚠️ Unknown pricing type:', values.pricing.type)
+      console.warn('Unknown pricing type:', values.pricing.type)
   }
-  console.groupEnd()
 
   return { erc721Address, datatokenAddress, txHash }
 }

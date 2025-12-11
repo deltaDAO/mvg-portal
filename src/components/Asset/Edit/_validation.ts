@@ -1,6 +1,6 @@
 import { FileInfo } from '@oceanprotocol/lib'
 import * as Yup from 'yup'
-import { isAddress } from 'ethers/lib/utils'
+import { isAddress } from 'ethers'
 import { MAX_DECIMALS } from '@utils/constants'
 import { getMaxDecimalsValidation } from '@utils/numbers'
 import { testLinks } from '@utils/yup'
