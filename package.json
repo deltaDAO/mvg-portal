@@ -1,7 +1,7 @@
 {
   "name": "@deltaDAO/mvg-portal",
   "description": "Pontus-X - Gaia-X Web3 Ecosystem",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "Apache-2.0",
   "homepage": "https://pontus-x.eu",
   "scripts": {
