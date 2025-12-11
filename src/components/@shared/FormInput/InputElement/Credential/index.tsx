@@ -1,19 +1,19 @@
-import { useField } from 'formik'
-import { useState, ChangeEvent, FormEvent, useEffect } from 'react'
-import Button from '../../../atoms/Button'
-import styles from './index.module.css'
+import { usePontusXRegistry } from '@deltadao/pontusx-registry-hooks'
 import { isAddress } from 'ethers/lib/utils.js'
+import { useField } from 'formik'
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
-import InputGroup from '../../InputGroup'
 import InputElement from '..'
 import { InputProps } from '../..'
-import { useAddressConfig } from '@hooks/useAddressConfig'
+import Button from '../../../atoms/Button'
+import InputGroup from '../../InputGroup'
+import styles from './index.module.css'
 
 export default function Credentials(props: InputProps) {
   const [field, meta, helpers] = useField(props.name)
   const [addressList, setAddressList] = useState<string[]>(field.value || [])
   const [value, setValue] = useState('')
-  const { getVerifiedAddressName } = useAddressConfig()
+  const { data: registryData } = usePontusXRegistry({ includeDeprecated: true })
 
   useEffect(() => {
     helpers.setValue(addressList)
@@ -39,10 +39,16 @@ export default function Credentials(props: InputProps) {
     setValue('')
   }
 
-  const showAddressName = (address: string) => {
-    const addressName = getVerifiedAddressName(address)
-    return addressName ? `${address} (${addressName})` : address
-  }
+  const showAddressName = useCallback(
+    (address: string) => {
+      const addressName = registryData.find(
+        (participant) =>
+          participant.walletAddress.toLowerCase() === address.toLowerCase()
+      )?.legalName
+      return addressName ? `${address} (${addressName})` : address
+    },
+    [registryData]
+  )
 
   return (
     <div>
