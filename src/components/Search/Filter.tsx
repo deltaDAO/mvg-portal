@@ -20,32 +20,15 @@ interface FilterStructure {
   id: string
   label: string
   type: string
+  queryPath?: string
   options: {
     label: string
     value: string
+    queryPath?: string
   }[]
 }
 
 const filterList: FilterStructure[] = [
-  {
-    id: 'serviceType',
-    label: 'Service Type',
-    type: 'filterList',
-    options: [
-      { label: 'datasets', value: FilterByTypeOptions.Data },
-      { label: 'algorithms', value: FilterByTypeOptions.Algorithm },
-      { label: 'saas', value: FilterByTypeOptions.Saas }
-    ]
-  },
-  {
-    id: 'accessType',
-    label: 'Access Type',
-    type: 'filterList',
-    options: [
-      { label: 'download', value: FilterByAccessOptions.Download },
-      { label: 'compute', value: FilterByAccessOptions.Compute }
-    ]
-  },
   ...(Array.isArray(customFilters?.filters) &&
   customFilters?.filters?.length > 0 &&
   customFilters?.filters.some((filter) => filter !== undefined)
@@ -114,10 +97,25 @@ export default function Filter({
     router.push(urlLocation)
   }
 
-  async function handleSelectedFilter(value: string, filterId: string) {
-    const updatedFilters = filters[filterId].includes(value)
-      ? { ...filters, [filterId]: filters[filterId].filter((e) => e !== value) }
-      : { ...filters, [filterId]: [...filters[filterId], value] }
+  async function handleSelectedFilter(
+    option: { label: string; value: string; queryPath?: string },
+    filterId: string,
+    queryPath?: string
+  ) {
+    const getFilterQueryString = `${option.queryPath || queryPath}=${
+      option.value
+    }`
+    const updatedFilters = filters[filterId].includes(getFilterQueryString)
+      ? {
+          ...filters,
+          [filterId]: filters[filterId].filter(
+            (filter) => filter !== getFilterQueryString
+          )
+        }
+      : {
+          ...filters,
+          [filterId]: [...filters[filterId], getFilterQueryString]
+        }
     setFilters(updatedFilters)
 
     await applyFilter(updatedFilters[filterId], filterId)
@@ -172,20 +170,26 @@ export default function Filter({
           }
         >
           <div className={styleClasses}>
-            {filterList.map((filter) => (
-              <div key={filter.id} className={styles.filterType}>
+            {filterList.map((filter, index) => (
+              <div key={filter.id + index} className={styles.filterType}>
                 <h5 className={styles.filterTypeLabel}>{filter.label}</h5>
                 {filter.options.map((option) => {
-                  const isSelected = filters[filter.id].includes(option.value)
+                  const isSelected = filters[filter.id].includes(
+                    `${option.queryPath || filter.queryPath}=${option.value}`
+                  )
                   return (
                     <Input
-                      key={option.value}
+                      key={option.value + option.queryPath}
                       name={option.label}
                       type="checkbox"
                       options={[option.label]}
                       checked={isSelected}
                       onChange={async () => {
-                        handleSelectedFilter(option.value, filter.id)
+                        handleSelectedFilter(
+                          option,
+                          filter.id,
+                          filter?.queryPath
+                        )
                       }}
                     />
                   )
@@ -210,8 +214,11 @@ export default function Filter({
         </Accordion>
       </div>
       <div className={styles.topPositioning}>
-        {filterList.map((filter) => (
-          <div key={filter.id} className={styles.compactFilterContainer}>
+        {filterList.map((filter, index) => (
+          <div
+            key={filter.id + index}
+            className={styles.compactFilterContainer}
+          >
             <Accordion
               title={filter.label}
               badgeNumber={filters[filter.id].length}
@@ -219,16 +226,23 @@ export default function Filter({
             >
               <div className={styles.compactOptionsContainer}>
                 {filter.options.map((option) => {
-                  const isSelected = filters[filter.id].includes(option.value)
+                  const isSelected = filters[filter.id].includes(
+                    `${option.queryPath || filter.queryPath}=${option.value}`
+                  )
+
                   return (
                     <Input
-                      key={option.value}
+                      key={option.value + option.queryPath}
                       name={option.label}
                       type="checkbox"
                       options={[option.label]}
                       checked={isSelected}
                       onChange={async () => {
-                        handleSelectedFilter(option.value, filter.id)
+                        handleSelectedFilter(
+                          option,
+                          filter.id,
+                          filter?.queryPath
+                        )
                       }}
                     />
                   )
