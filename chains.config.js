@@ -23,7 +23,7 @@ const chains = [
     metadataCacheUri: 'https://aquarius.pontus-x.eu',
     nodeUri: 'https://rpc.dev.pontus-x.eu',
     subgraphUri: 'https://subgraph.dev.pontus-x.eu',
-    explorerUri: 'https://explorer.pontus-x.eu/devnet/pontusx'
+    explorerUri: 'https://explorer.pontus-x.eu/pontusx/dev'
   },
   {
     chainId: 32457,
@@ -46,7 +46,7 @@ const chains = [
     metadataCacheUri: 'https://aquarius.pontus-x.eu',
     nodeUri: 'https://rpc.test.pontus-x.eu',
     subgraphUri: 'https://subgraph.test.pontus-x.eu',
-    explorerUri: 'https://explorer.pontus-x.eu/testnet/pontusx'
+    explorerUri: 'https://explorer.pontus-x.eu/pontusx/test'
   }
 ]
 
