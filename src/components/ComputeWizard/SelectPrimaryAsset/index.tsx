@@ -1,10 +1,9 @@
 'use client'
 
 import { ReactElement, useEffect, useMemo, useState } from 'react'
-import { Field, useFormikContext } from 'formik'
+import { useFormikContext } from 'formik'
 import { useAccount } from 'wagmi'
 import StepTitle from '@shared/StepTitle'
-import Input from '@shared/FormInput'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import DatasetSelection from '@shared/FormInput/InputElement/DatasetSelection'
 import { useCancelToken } from '@hooks/useCancelToken'
@@ -26,7 +25,7 @@ type DatasetService = {
   checked?: boolean
   isAccountIdWhitelisted?: boolean
   datetime?: string
-  userParameters?: any[]
+  userParameters?: unknown[]
 }
 
 type DatasetItem = {
@@ -133,6 +132,11 @@ export default function SelectPrimaryAsset({
       values.datasets?.map((dataset) => dataset.did ?? dataset.id) ?? []
     return ids.filter((identifier): identifier is string => Boolean(identifier))
   }, [values.datasets])
+  const datasetFlowSelectedIds = useMemo(() => {
+    const selected = values.algorithm
+    if (!selected) return []
+    return Array.isArray(selected) ? selected : [selected]
+  }, [values.algorithm])
 
   useEffect(() => {
     if (isDatasetFlow) return
@@ -197,27 +201,6 @@ export default function SelectPrimaryAsset({
     setFieldValue('datasets', selectedDatasets)
   }
 
-  if (isDatasetFlow) {
-    return (
-      <>
-        <StepTitle title="Select Algorithm" />
-        <div className={styles.algorithmSelection}>
-          <Field
-            component={Input}
-            name="algorithm"
-            type="assetSelection"
-            options={algorithms}
-            accountId={accountId}
-            selected={values.algorithm || []}
-            disabled={false}
-            priceOnRight
-            variant="compute"
-          />
-        </div>
-      </>
-    )
-  }
-
   const noDatasetClasses = [
     styles.noDatasetOption,
     values.withoutDataset ? styles.noDatasetOptionActive : ''
@@ -232,38 +215,114 @@ export default function SelectPrimaryAsset({
     .filter(Boolean)
     .join(' ')
 
+  const algorithmOptions = useMemo(() => {
+    if (!isDatasetFlow) return []
+    return (algorithms || []).map((algo) => {
+      const encodedId = JSON.stringify({
+        algoDid: algo.did,
+        serviceId: algo.serviceId
+      })
+      return {
+        did: algo.did,
+        value: encodedId,
+        name: algo.name,
+        description: algo.serviceDescription || algo.description,
+        serviceDescription: algo.serviceDescription,
+        serviceId: algo.serviceId,
+        serviceName: algo.serviceName,
+        tokenSymbol: algo.tokenSymbol || algo.symbol,
+        symbol: algo.symbol || '',
+        price: Number(algo.price ?? 0),
+        serviceType: algo.serviceType,
+        serviceDuration:
+          typeof algo.serviceDuration === 'number'
+            ? algo.serviceDuration
+            : Number(algo.serviceDuration ?? 0),
+        checked: datasetFlowSelectedIds.includes(encodedId),
+        isAccountIdWhitelisted: algo.isAccountIdWhitelisted
+      }
+    })
+  }, [algorithms, datasetFlowSelectedIds, isDatasetFlow])
+
+  const datasetsForSelection = useMemo(() => {
+    if (isDatasetFlow) return algorithmOptions
+    const mapped =
+      datasetsForCompute?.map((ds) => {
+        const svc = ds.services?.[0]
+        return {
+          did: ds.did,
+          value: ds.did,
+          name: ds.name,
+          description: ds.description,
+          serviceDescription: svc?.serviceDescription,
+          serviceId: svc?.serviceId || '',
+          serviceName: svc?.serviceName || '',
+          tokenSymbol: svc?.tokenSymbol || ds.symbol || '',
+          symbol: ds.symbol || '',
+          price: Number(svc?.price ?? 0),
+          serviceType: svc?.serviceType,
+          serviceDuration:
+            typeof svc?.serviceDuration === 'number'
+              ? svc.serviceDuration
+              : Number(svc?.serviceDuration ?? 0),
+          checked: Boolean(ds.checked),
+          isAccountIdWhitelisted: svc?.isAccountIdWhitelisted || false
+        }
+      }) || []
+    return mapped
+  }, [algorithmOptions, datasetsForCompute, isDatasetFlow])
+
+  const selectedIds = isDatasetFlow
+    ? datasetFlowSelectedIds
+    : selectedDatasetIds
+
+  const handleSelectionChange = (did: string) => {
+    if (isDatasetFlow) {
+      setFieldValue('algorithm', did)
+      return
+    }
+    handleDatasetSelect(did)
+  }
+
   return (
     <>
-      <StepTitle title="Select Datasets" />
+      <StepTitle
+        title={isDatasetFlow ? 'Select Algorithm' : 'Select Datasets'}
+      />
       <div className={styles.environmentSelection}>
-        <div className={noDatasetClasses}>
-          <label className={styles.noDatasetLabel}>
-            <span>Proceed without Dataset Selection</span>
-            <input
-              type="checkbox"
-              disabled
-              className={styles.noDatasetCheckbox}
-              checked={values.withoutDataset || false}
-              onChange={(e) => {
-                const { checked } = e.target
-                setFieldValue('withoutDataset', checked)
-                if (checked) setFieldValue('datasets', [])
-              }}
-            />
-          </label>
-        </div>
+        {!isDatasetFlow && (
+          <div className={noDatasetClasses}>
+            <label className={styles.noDatasetLabel}>
+              <span>Proceed without Dataset Selection</span>
+              <input
+                type="checkbox"
+                disabled
+                className={styles.noDatasetCheckbox}
+                checked={values.withoutDataset || false}
+                onChange={(e) => {
+                  const { checked } = e.target
+                  setFieldValue('withoutDataset', checked)
+                  if (checked) setFieldValue('datasets', [])
+                }}
+              />
+            </label>
+          </div>
+        )}
 
         <div className={selectionWrapperClasses}>
           <DatasetSelection
             asset={asset}
-            datasets={datasetsForCompute}
-            selected={selectedDatasetIds}
-            onChange={!values.withoutDataset ? handleDatasetSelect : undefined}
+            datasets={datasetsForSelection}
+            selected={selectedIds}
+            disabled={values.withoutDataset}
+            onChange={handleSelectionChange}
           />
-          <LoaderOverlay
-            visible={isLoadingDatasets}
-            message="Loading datasets..."
-          />
+          {!isDatasetFlow && (
+            <LoaderOverlay
+              visible={isLoadingDatasets}
+              message="Loading datasets..."
+            />
+          )}
         </div>
       </div>
     </>
