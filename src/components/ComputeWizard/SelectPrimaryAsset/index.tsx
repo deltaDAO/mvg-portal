@@ -296,13 +296,15 @@ export default function SelectPrimaryAsset({
               <span>Proceed without Dataset Selection</span>
               <input
                 type="checkbox"
-                disabled
                 className={styles.noDatasetCheckbox}
                 checked={values.withoutDataset || false}
                 onChange={(e) => {
                   const { checked } = e.target
                   setFieldValue('withoutDataset', checked)
-                  if (checked) setFieldValue('datasets', [])
+                  if (checked) {
+                    setFieldValue('datasets', [])
+                    setFieldValue('dataset', [])
+                  }
                 }}
               />
             </label>

@@ -153,7 +153,16 @@ export default function Steps({
 
   useEffect(() => {
     if (!asset || !service) return
-    if (!service.consumerParameters?.length) return
+    const hasParams = Boolean(service.consumerParameters?.length)
+    setFieldValue('isUserParameters', hasParams)
+
+    if (!hasParams) {
+      setFieldValue(
+        flow === 'dataset' ? 'datasetServiceParams' : 'algorithmServiceParams',
+        []
+      )
+      return
+    }
 
     const entries = service.consumerParameters.map(
       (param: ConsumerParameter): WizardUserParameter => ({
@@ -350,6 +359,149 @@ export default function Steps({
   }
 
   function renderAlgorithmFlow() {
+    if (values.withoutDataset) {
+      switch (currentStep) {
+        case 1:
+          return (
+            <SelectPrimaryAsset
+              flow="algorithm"
+              asset={asset}
+              service={service}
+              accessDetails={accessDetails}
+              algorithms={algorithms}
+            />
+          )
+        case 2:
+          return hasUserParamsStep ? (
+            <UserParametersStep flow={flow} asset={asset} service={service} />
+          ) : (
+            <SelectEnvironment computeEnvs={computeEnvs} />
+          )
+        case 3:
+          return hasUserParamsStep ? (
+            <SelectEnvironment computeEnvs={computeEnvs} />
+          ) : (
+            <ConfigureEnvironment
+              allResourceValues={allResourceValues}
+              setAllResourceValues={setAllResourceValues}
+            />
+          )
+        case 4:
+          return hasUserParamsStep ? (
+            <ConfigureEnvironment
+              allResourceValues={allResourceValues}
+              setAllResourceValues={setAllResourceValues}
+            />
+          ) : (
+            <Review
+              flow="algorithm"
+              asset={asset}
+              service={service}
+              signer={signer}
+              isRequestingPrice={false}
+              accessDetails={accessDetails}
+              isLoading={isLoading}
+              selectedDatasetAsset={selectedDatasetAsset}
+              setSelectedDatasetAsset={setSelectedDatasetAsset}
+              algorithms={algorithms}
+              selectedAlgorithmAsset={selectedAlgorithmAsset}
+              setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+              isComputeButtonDisabled={isComputeButtonDisabled}
+              hasPreviousOrder={hasPreviousOrder}
+              hasDatatoken={hasDatatoken}
+              dtBalance={dtBalance}
+              assetTimeout={assetTimeout}
+              hasPreviousOrderSelectedComputeAsset={
+                hasPreviousOrderSelectedComputeAsset
+              }
+              hasDatatokenSelectedComputeAsset={
+                hasDatatokenSelectedComputeAsset
+              }
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              datasetSymbol={
+                accessDetails.baseToken?.symbol ||
+                (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+              }
+              algorithmSymbol={algorithmSymbol}
+              providerFeesSymbol={providerFeesSymbol}
+              dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+              dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+              selectedComputeAssetType="algorithm"
+              selectedComputeAssetTimeout={selectedComputeAssetTimeout}
+              allResourceValues={allResourceValues}
+              setAllResourceValues={setAllResourceValues}
+              stepText={stepText}
+              isConsumable={isConsumable}
+              consumableFeedback={consumableFeedback}
+              datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+              algoOrderPriceAndFees={algoOrderPriceAndFees}
+              retry={retry}
+              computeEnvs={computeEnvs}
+              datasetProviderFeeProp={datasetProviderFeeProp}
+              algorithmProviderFeeProp={algorithmProviderFeeProp}
+              isBalanceSufficient={isBalanceSufficient}
+              setIsBalanceSufficient={setIsBalanceSufficient}
+            />
+          )
+        case 5:
+          return hasUserParamsStep ? (
+            <Review
+              flow="algorithm"
+              asset={asset}
+              service={service}
+              signer={signer}
+              isRequestingPrice={false}
+              accessDetails={accessDetails}
+              isLoading={isLoading}
+              selectedDatasetAsset={selectedDatasetAsset}
+              setSelectedDatasetAsset={setSelectedDatasetAsset}
+              algorithms={algorithms}
+              selectedAlgorithmAsset={selectedAlgorithmAsset}
+              setSelectedAlgorithmAsset={setSelectedAlgorithmAsset}
+              isComputeButtonDisabled={isComputeButtonDisabled}
+              hasPreviousOrder={hasPreviousOrder}
+              hasDatatoken={hasDatatoken}
+              dtBalance={dtBalance}
+              assetTimeout={assetTimeout}
+              hasPreviousOrderSelectedComputeAsset={
+                hasPreviousOrderSelectedComputeAsset
+              }
+              hasDatatokenSelectedComputeAsset={
+                hasDatatokenSelectedComputeAsset
+              }
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              datasetSymbol={
+                accessDetails.baseToken?.symbol ||
+                (asset.credentialSubject?.chainId === 137 ? 'mOCEAN' : 'OCEAN')
+              }
+              algorithmSymbol={algorithmSymbol}
+              providerFeesSymbol={providerFeesSymbol}
+              dtSymbolSelectedComputeAsset={dtSymbolSelectedComputeAsset}
+              dtBalanceSelectedComputeAsset={dtBalanceSelectedComputeAsset}
+              selectedComputeAssetType="algorithm"
+              selectedComputeAssetTimeout={selectedComputeAssetTimeout}
+              allResourceValues={allResourceValues}
+              setAllResourceValues={setAllResourceValues}
+              stepText={stepText}
+              isConsumable={isConsumable}
+              consumableFeedback={consumableFeedback}
+              datasetOrderPriceAndFees={datasetOrderPriceAndFees}
+              algoOrderPriceAndFees={algoOrderPriceAndFees}
+              retry={retry}
+              computeEnvs={computeEnvs}
+              datasetProviderFeeProp={datasetProviderFeeProp}
+              algorithmProviderFeeProp={algorithmProviderFeeProp}
+              isBalanceSufficient={isBalanceSufficient}
+              setIsBalanceSufficient={setIsBalanceSufficient}
+            />
+          ) : (
+            <div>Invalid step</div>
+          )
+        default:
+          return <div>Invalid step: {currentStep}</div>
+      }
+    }
+
     switch (currentStep) {
       case 1:
         return (
