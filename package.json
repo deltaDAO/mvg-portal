@@ -55,7 +55,7 @@
     "js-cookie": "^3.0.5",
     "match-sorter": "^6.3.1",
     "myetherwallet-blockies": "^0.1.1",
-    "next": "^15.2.6",
+    "next": "15.5.9",
     "normalize-url": "^8.1.0",
     "ohash": "^2.0.11",
     "query-string": "^8.1.0",
