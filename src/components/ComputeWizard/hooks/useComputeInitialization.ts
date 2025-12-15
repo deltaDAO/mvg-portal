@@ -34,6 +34,7 @@ type InitializeParams = {
   algoParams?: Record<string, any>
   datasetParams?: Record<string, any>
   accountId?: string
+  shouldDepositEscrow?: boolean
 }
 
 type InitializeResult = {
@@ -135,7 +136,8 @@ export function useComputeInitialization({
       algoIndex,
       algoParams,
       datasetParams,
-      accountId
+      accountId,
+      shouldDepositEscrow = true
     }: InitializeParams): Promise<InitializeResult> => {
       setIsInitLoading(true)
       setInitError(undefined)
@@ -179,7 +181,7 @@ export function useComputeInitialization({
           )
         )
 
-        if (selectedResources.mode === 'paid') {
+        if (shouldDepositEscrow && selectedResources.mode === 'paid') {
           if (!oceanTokenAddress || !web3Provider) {
             throw new Error('Missing token or provider for escrow payment')
           }
@@ -214,6 +216,7 @@ export function useComputeInitialization({
             escrow.contract.target ?? escrow.contract.address
           ).toString()
 
+          if (amountWei === BigInt(0)) return
           if (amountWei !== BigInt(0)) {
             const approveTx = await erc20.approve(escrowAddress, amountWei)
             await approveTx.wait()

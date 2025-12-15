@@ -282,7 +282,8 @@ export default function ComputeWizardController({
   }
   async function initPriceAndFees(
     datasetServices?: { asset: AssetExtended; service: Service }[],
-    formikValues?: FormComputeData
+    formikValues?: FormComputeData,
+    withEscrow = true
   ) {
     try {
       const formValues = formikValues || initialFormValues
@@ -377,7 +378,8 @@ export default function ComputeWizardController({
         algoIndex: actualSvcIndex,
         algoParams,
         datasetParams,
-        accountId
+        accountId,
+        shouldDepositEscrow: withEscrow
       })
 
       if (!initResult)
@@ -753,7 +755,7 @@ export default function ComputeWizardController({
     }
 
     try {
-      await initPriceAndFees(datasetServices, formikValues)
+      await initPriceAndFees(datasetServices, formikValues, false)
       toast.info('Compute provider initialized successfully.')
     } catch (err) {
       const message =
@@ -905,7 +907,7 @@ export default function ComputeWizardController({
                       algoOrderPriceAndFees={algoOrderPriceAndFees}
                       retry={retry}
                       onRunInitPriceAndFees={async () => {
-                        await initPriceAndFees(undefined, values)
+                        await initPriceAndFees(undefined, values, false)
                       }}
                       onCheckAlgoDTBalance={
                         isAlgorithmFlow
