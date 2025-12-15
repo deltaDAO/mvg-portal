@@ -412,7 +412,10 @@ export const getServiceInitialValues = (
       valid: true,
       custom: false
     },
-    files: [{ url: '', type: 'hidden' }],
+    files:
+      Array.isArray(service.files) && service.files.length > 0
+        ? service.files.map((f: FileInfo) => ({ ...f, valid: true }))
+        : [{ url: '', type: 'hidden', valid: true } as FileInfo],
     state: assetStateToString(service.state),
     timeout: secondsToString(service.timeout),
     usesConsumerParameters: service.consumerParameters

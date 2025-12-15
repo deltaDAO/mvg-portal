@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useState } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import Time from '@shared/atoms/Time'
 import Button from '@shared/atoms/Button'
 import styles from './Details.module.css'
@@ -42,7 +42,7 @@ function Asset({
         <span className={styles.symbol}>{symbol}</span>
         <span className={styles.divider}></span>
         <span className={styles.did} title={did}>
-          {did.slice(0, 50)}...
+          {did?.slice(0, 50)}...
         </span>
       </div>
     </div>
@@ -66,8 +66,10 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
           job.algorithm.documentId,
           newCancelToken()
         )) as AssetType
-        setAlgoDtSymbol(ddo.indexedMetadata.stats[0].symbol)
-        setAlgoName(ddo.credentialSubject.metadata.name)
+        if (ddo) {
+          setAlgoDtSymbol(ddo.indexedMetadata.stats[0].symbol)
+          setAlgoName(ddo.credentialSubject.metadata.name)
+        }
       }
     }
 
@@ -94,21 +96,35 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
     <>
       <div className={styles.assetListBox}>
         {datasetAssets.map(({ ddo, serviceId }) => (
-          <Asset
-            key={ddo.id}
-            title={ddo.credentialSubject.metadata.name}
-            symbol={ddo.indexedMetadata.stats[0].symbol}
-            did={ddo.id}
-            serviceId={serviceId}
-          />
+          <React.Fragment key={ddo?.id || serviceId}>
+            {ddo ? (
+              <Asset
+                title={ddo.credentialSubject?.metadata.name}
+                symbol={ddo.indexedMetadata?.stats[0]?.symbol}
+                did={ddo.id}
+                serviceId={serviceId}
+              />
+            ) : (
+              <div className={styles.assetNotAvailable}>
+                Dataset Asset Not Available
+              </div>
+            )}
+          </React.Fragment>
         ))}
+
         <hr className={styles.assetDivider} />
 
-        <Asset
-          title={algoName}
-          symbol={algoDtSymbol}
-          did={job.algorithm.documentId}
-        />
+        {algoName && algoDtSymbol ? (
+          <Asset
+            title={algoName}
+            symbol={algoDtSymbol}
+            did={job.algorithm.documentId}
+          />
+        ) : (
+          <div className={styles.assetNotAvailable}>
+            Algorithm Asset Not Available
+          </div>
+        )}
       </div>
     </>
   )
