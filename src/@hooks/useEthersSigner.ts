@@ -15,7 +15,7 @@ function clientToSigner(
   }
 
   const provider = new BrowserProvider(transport, network)
-  const signer = new JsonRpcSigner(provider, account.address)
+  const signer = new JsonRpcSigner(provider, account?.address)
 
   return signer
 }
