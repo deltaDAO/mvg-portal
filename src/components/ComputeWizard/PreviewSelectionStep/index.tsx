@@ -65,7 +65,17 @@ export default function PreviewSelectionStep({
     return (values.datasets || [])
       .map((d) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const selected = (d.services ?? []).filter((s: any) => s.checked)
+        const services = d.services ?? []
+        const hasExplicitSelection = services.some(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (s: any) => s.checked
+        )
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const selected = hasExplicitSelection
+          ? services.filter((s: any) => s.checked)
+          : services.length > 0
+          ? [services[0]]
+          : []
         if (!selected.length) return null
         return {
           id: d.did || d.id || '',

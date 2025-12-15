@@ -186,11 +186,29 @@ export default function SelectPrimaryAsset({
       : [...selectedDatasetIds, did]
 
     const updatedDatasets =
-      datasetsForCompute?.map((ds) => ({
-        ...ds,
-        checked: updatedDatasetIds.includes(ds.did),
-        expanded: updatedDatasetIds.includes(ds.did)
-      })) || []
+      datasetsForCompute?.map((ds) => {
+        const isSelected = updatedDatasetIds.includes(ds.did)
+        const servicesWithSelection =
+          ds.services?.map((svc) => ({
+            ...svc,
+            checked: isSelected ? svc.checked : false
+          })) || []
+
+        if (
+          isSelected &&
+          servicesWithSelection.length === 1 &&
+          !servicesWithSelection[0].checked
+        ) {
+          servicesWithSelection[0].checked = true
+        }
+
+        return {
+          ...ds,
+          checked: isSelected,
+          expanded: isSelected,
+          services: servicesWithSelection
+        }
+      }) || []
 
     setDatasetsForCompute(updatedDatasets)
 
@@ -199,6 +217,13 @@ export default function SelectPrimaryAsset({
     )
 
     setFieldValue('datasets', selectedDatasets)
+    const datasetPairs = selectedDatasets.map((ds) => {
+      const primaryService =
+        ds.services?.find((svc) => svc.checked) || ds.services?.[0]
+      const primaryServiceId = primaryService?.serviceId
+      return primaryServiceId ? `${ds.did}|${primaryServiceId}` : ds.did
+    })
+    setFieldValue('dataset', datasetPairs)
   }
 
   const noDatasetClasses = [

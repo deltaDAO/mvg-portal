@@ -8,7 +8,6 @@ export function useComputeStepCompletion(isAlgorithmFlow?: boolean) {
   const withoutDataset = Boolean(values.withoutDataset)
   const steps = getDatasetSteps(hasUserParamsStep, withoutDataset)
   const totalSteps = steps.length
-  console.log('Total Steps:', totalSteps)
   function getSuccessClass(step: number): boolean {
     const environmentSelected = Boolean(values.computeEnv)
     const configSet =

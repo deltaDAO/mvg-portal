@@ -67,6 +67,7 @@ type AlgorithmFlowValues = {
 type FormValues = DatasetFlowValues & AlgorithmFlowValues
 
 function normalizeDatasets(raw: DatasetItem[] = []): NormalizedAsset[] {
+  const onlyOneDataset = raw.length === 1
   return raw.map((d) => {
     const services = (d.services ?? []).map((s) => ({
       id: s.serviceId,
@@ -79,6 +80,9 @@ function normalizeDatasets(raw: DatasetItem[] = []): NormalizedAsset[] {
       symbol: s.tokenSymbol || 'OCEAN',
       checked: !!s.checked
     }))
+    if (onlyOneDataset && services.length === 1 && !services[0].checked) {
+      services[0].checked = true
+    }
     const all = services.every((s) => s.checked)
     const some = services.some((s) => s.checked)
     return {

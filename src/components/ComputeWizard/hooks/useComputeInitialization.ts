@@ -180,19 +180,17 @@ export function useComputeInitialization({
         )
 
         if (selectedResources.mode === 'paid') {
-          const escrowAddress = ethers.getAddress(
-            initializedProvider.payment.escrowAddress
-          )
+          if (!oceanTokenAddress || !web3Provider) {
+            throw new Error('Missing token or provider for escrow payment')
+          }
+
           const escrow = new EscrowContract(
-            escrowAddress,
+            ethers.getAddress(initializedProvider.payment.escrowAddress),
             signer,
             algorithmAsset.credentialSubject.chainId
           )
 
           const amountHuman = String(selectedResources.price || 0)
-          if (!oceanTokenAddress || !web3Provider) {
-            throw new Error('Missing token or provider for escrow payment')
-          }
           const tokenDetails = await getTokenInfo(
             oceanTokenAddress,
             web3Provider
@@ -212,21 +210,15 @@ export function useComputeInitialization({
           )
 
           const owner = await signer.getAddress()
-          const escrowAddressString = (
+          const escrowAddress = (
             escrow.contract.target ?? escrow.contract.address
           ).toString()
 
           if (amountWei !== BigInt(0)) {
-            const approveTx = await erc20.approve(
-              escrowAddressString,
-              amountWei
-            )
+            const approveTx = await erc20.approve(escrowAddress, amountWei)
             await approveTx.wait()
             while (true) {
-              const allowanceNow = await erc20.allowance(
-                owner,
-                escrowAddressString
-              )
+              const allowanceNow = await erc20.allowance(owner, escrowAddress)
               if (allowanceNow >= amountWei) {
                 break
               }

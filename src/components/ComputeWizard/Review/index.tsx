@@ -1114,11 +1114,17 @@ export default function Review({
         },
         {
           name: `MARKETPLACE ORDER FEE ALGORITHM`,
-          value: selectedAlgorithmAsset?.accessDetails?.[serviceIndex]?.isOwned
-            ? '0'
-            : new Decimal(
-                formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
-              ).toString()
+          value: (() => {
+            const algoAccessDetails =
+              selectedAlgorithmAsset?.accessDetails?.[serviceIndex]
+            const isOwned = algoAccessDetails?.isOwned
+            const feeValue = isOwned
+              ? '0'
+              : new Decimal(
+                  formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+                ).toString()
+            return feeValue
+          })()
         },
         {
           name: `OEC FEE DATASET`,
@@ -1138,11 +1144,15 @@ export default function Review({
         },
         {
           name: `MARKETPLACE ORDER FEE ALGORITHM`,
-          value: accessDetails?.isOwned
-            ? '0'
-            : new Decimal(
-                formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
-              ).toString()
+          value: (() => {
+            const isOwned = accessDetails?.isOwned
+            const feeValue = isOwned
+              ? '0'
+              : new Decimal(
+                  formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+                ).toString()
+            return feeValue
+          })()
         },
         {
           name: `OEC FEE DATASET`,
