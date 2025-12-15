@@ -539,7 +539,8 @@ export function AssetActionCheckCredentials({
           checkCredentialState === CheckCredentialState.Stop &&
           requiredCredentials?.length > 0 &&
           hasAnyCached &&
-          !error
+          !error &&
+          exchangeStateData.selectedDid !== ''
 
         if (showMissingWarning) return null
 
