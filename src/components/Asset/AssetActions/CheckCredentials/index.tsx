@@ -64,6 +64,9 @@ function isCredentialCached(
   cachedCredentials: SsiVerifiableCredential[],
   credentialType: string
 ): boolean {
+  if (!cachedCredentials) {
+    return false
+  }
   return cachedCredentials.some((credential) =>
     credential.parsedDocument.type.includes(credentialType)
   )
