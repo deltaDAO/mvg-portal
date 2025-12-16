@@ -178,6 +178,7 @@ export default function Review({
   const [algorithmProviderFee, setAlgorithmProviderFee] = useState(
     algorithmProviderFeeProp || null
   )
+  const [algoOrderPriceValue, setAlgoOrderPriceValue] = useState<string>()
   const [totalPrices, setTotalPrices] = useState<TotalPriceEntry[]>([])
   const [totalPriceToDisplay, setTotalPriceToDisplay] = useState<string>('0')
   const [algoLoadError, setAlgoLoadError] = useState<string>()
@@ -322,6 +323,14 @@ export default function Review({
     selectedAlgorithmAsset,
     selectedDatasetAsset
   ])
+
+  useEffect(() => {
+    if (algoOrderPriceAndFees?.price) {
+      setAlgoOrderPriceValue(algoOrderPriceAndFees.price)
+    } else if (accessDetails?.price) {
+      setAlgoOrderPriceValue(accessDetails.price)
+    }
+  }, [algoOrderPriceAndFees?.price, accessDetails?.price])
 
   useEffect(() => {
     if (computeEnvs?.length === 1 && !values.computeEnv) {
@@ -836,11 +845,14 @@ export default function Review({
       return
     }
 
-    if (!asset?.accessDetails || !selectedDatasetAsset?.length) return
-    const priceAlgo =
-      !algoOrderPriceAndFees?.price || hasPreviousOrder || hasDatatoken
-        ? new Decimal(0)
-        : new Decimal(algoOrderPriceAndFees.price).toDecimalPlaces(MAX_DECIMALS)
+    if (!asset?.accessDetails) return
+    const rawAlgoPrice =
+      hasPreviousOrder || hasDatatoken
+        ? '0'
+        : algoOrderPriceValue || accessDetails?.price || '0'
+    const priceAlgo = new Decimal(rawAlgoPrice || 0).toDecimalPlaces(
+      MAX_DECIMALS
+    )
     const feeAlgo = accessDetails.isOwned
       ? new Decimal(0)
       : new Decimal(
@@ -848,19 +860,21 @@ export default function Review({
         )
     let priceDataset = new Decimal(0)
     let feeDataset = new Decimal(0)
-    selectedDatasetAsset.forEach((dataset) => {
-      const index = dataset.serviceIndex || 0
-      const details = dataset.accessDetails?.[index]
-      const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
-      const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
-      const fee = details?.isOwned
-        ? new Decimal(0)
-        : new Decimal(
-            formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
-          )
-      priceDataset = priceDataset.add(price)
-      feeDataset = feeDataset.add(fee)
-    })
+    if (Array.isArray(selectedDatasetAsset)) {
+      selectedDatasetAsset.forEach((dataset) => {
+        const index = dataset.serviceIndex || 0
+        const details = dataset.accessDetails?.[index]
+        const rawPrice = details?.validOrderTx ? '0' : details?.price || '0'
+        const price = new Decimal(rawPrice).toDecimalPlaces(MAX_DECIMALS)
+        const fee = details?.isOwned
+          ? new Decimal(0)
+          : new Decimal(
+              formatUnits(consumeMarketOrderFee, tokenInfoState?.decimals)
+            )
+        priceDataset = priceDataset.add(price)
+        feeDataset = feeDataset.add(fee)
+      })
+    }
     const priceC2D = new Decimal(c2dPrice || 0).toDecimalPlaces(MAX_DECIMALS)
     const totalPricesLocal: TotalPriceEntry[] = []
     if (algorithmSymbol === providerFeesSymbol) {
@@ -937,6 +951,7 @@ export default function Review({
     hasPreviousOrder,
     hasDatatoken,
     algoOrderPriceAndFees?.price,
+    algoOrderPriceValue,
     datasetProviderFeeProp,
     datasetProviderFee,
     algorithmSymbol,
