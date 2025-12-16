@@ -216,7 +216,6 @@ export function useComputeInitialization({
             escrow.contract.target ?? escrow.contract.address
           ).toString()
 
-          if (amountWei === BigInt(0)) return
           if (amountWei !== BigInt(0)) {
             const approveTx = await erc20.approve(escrowAddress, amountWei)
             await approveTx.wait()

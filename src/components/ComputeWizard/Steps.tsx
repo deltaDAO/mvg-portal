@@ -543,6 +543,7 @@ export default function Steps({
             flow="algorithm"
             asset={asset}
             service={service}
+            signer={signer}
             totalPrices={[]}
             datasetOrderPrice="0"
             algoOrderPrice="0"
@@ -579,6 +580,7 @@ export default function Steps({
             flow="algorithm"
             asset={asset}
             service={service}
+            signer={signer}
             totalPrices={[]}
             datasetOrderPrice="0"
             algoOrderPrice="0"
