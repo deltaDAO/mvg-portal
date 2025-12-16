@@ -164,7 +164,7 @@ _Last updated: December 15, 2025_
 
 This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement**") constitutes a legally binding contract between you ("**Portal User**") and the Ocean Enterprise Collective e.V. seated at Carmerstrasse18, 10623 Berlin, Germany ("**Portal Operator**"), each a "**Party**", both jointly referred to as the "**Parties**". The Agreement applies to and governs Portal User's access to and use of the Portal Operator's Data Portal (as defined below).
 
-### **Definitions**
+### Definitions
 
 > **1.1 "Access Controllers"** means an infrastructure component of the Ocean Enterprise ecosystem managing access to Data.
 >
@@ -210,7 +210,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Registration, Access to, and Use of the Data Portal**
+### Registration, Access to, and Use of the Data Portal
 
 > **2.1** In order to access and use the Data Portal, Portal User must complete the registration process which includes, in particular, submitting any requested information and documents in the registration process. By registering with the Data Portal, Portal User agrees to be bound by this Agreement and the Agreement becomes effective.
 >
@@ -232,7 +232,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Portal User's Responsibilities**
+### Portal User's Responsibilities
 
 > **3.1** Portal User is responsible for all activities carried out via its Portal User Account, regardless of whether the activities are authorized by the Portal User or carried out by the Portal User itself, the Portal User's employees, or a third party (including the Portal User's contractors and agents). Portal User is obliged to ensure that only authorized staff of Portal User can access the Portal User Account. Portal User will be deemed to have taken any action performed via its Portal User Account.
 >
@@ -248,7 +248,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Fees and Payment**
+### Fees and Payment
 
 > **4.1** If a Portal User elects to publish or use Service Offerings on the Data Portal, which includes the generation and purchase of the respective Access Token, it will be conducted solely through EVM Compatible Blockchains via compatible Web3 wallets. Portal Operator will have no insight into or control over these activities, nor does Portal Operator have the ability to reverse any of these or any transaction resulting therefrom.
 >
@@ -260,7 +260,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Service Lifecycle States**
+### Service Lifecycle States
 
 > **5.1** Service Offerings are subject to the Lifecycle State Policy (**[Annex I](#annex-i)**).
 >
@@ -268,7 +268,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Security and Data Protection**
+### Security and Data Protection
 
 > **6.1** Without limiting the Portal User's obligations under Section 3, the Portal Operator may implement at its own discretion measures regarding the Access Controller to help the Portal User secure published Data against loss and accidental or unlawful access or disclosure.
 >
@@ -286,7 +286,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Intellectual Property Rights**
+### Intellectual Property Rights
 
 > **7.1** Except as provided in this Section 7, Portal Operator obtains no rights whatsoever under this Agreement from the Portal User (or Portal User's licensors) regarding published Data.
 >
@@ -302,7 +302,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Warranties and Indemnification**
+### Warranties and Indemnification
 
 > **8.1** The Data Portal is provided in the manner accessible to the Portal User. The Data Portal and/or Service Offerings may at times be unavailable. The Portal Operator shall use its best efforts to deal with errors in the software environment with as little impact as possible. However, Portal User agrees and acknowledges that the Data Portal may, at times, be unavailable in the cases of, without limitation, regularly scheduled maintenance, service upgrades, or other mechanical or electronic failures. In case of any long-term or permanent closure of the Data Portal that includes the loss of access to all Services Offerings, Portal Operator shall give all Portal Users at least 30 days notice in advance of the closure.
 >
@@ -320,7 +320,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Liability**
+### Liability
 
 > **9.1** Portal User waives all claims, whether in contract, tort or otherwise, for damages and consequential damages, in particular loss of profit, that may occur in connection with this Agreement unless it is established that such damages either (i) resulted from an injury to life, body or health or (ii) did arise from a culpable breach of material obligations by Portal Operator, its legal representatives or assistants in performance, i.e. obligations that form the essence of this Agreement, whose breach would jeopardize the purpose of this Agreement and on the performance of which the Licensee relied ("**Cardinal Obligations**"), or (iii) were caused by Portal Operator, its legal representatives or assistants in performance acting with intent or gross negligence or (iv) entitle Portal User to claims under applicable mandatory laws governing product liability or claims arising from any guarantee vis-à-vis the Product User. For damages arising from a breach of a cardinal duty as a result of simple negligence, Portal Operator can only be held liable to the extent the damages were reasonably foreseeable.
 >
@@ -348,7 +348,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Suspension**
+### Suspension
 
 > **10.1** Portal Operator may suspend all or parts of Portal User's right to access or use the Data Portal, including the display of any Service Offering of Portal User, immediately with no prior notice to the Portal User if Portal Operator determines that Portal User's or a third party's use of the Portal User Account:
 >
@@ -372,7 +372,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Term and Termination**
+### Term and Termination
 
 > **11.1** This Agreement is concluded for an unlimited term.
 >
@@ -386,7 +386,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Amendments**
+### Amendments
 
 > **12.1** Portal Operator shall be entitled to amend or modify this Agreement with a reasonable period of notice, at least one month before the changes take effect.
 >
@@ -396,7 +396,7 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-### **Miscellaneous**
+### Miscellaneous
 
 > **13.1** All general notifications and announcements by Portal Operator concerning the Service Offerings will be communicated via the Data Portal.
 >
@@ -416,9 +416,9 @@ This Ocean Enterprise Collective e.V. Data Portal Usage Agreement ("**Agreement*
 
 ---
 
-## **Annex I**
+## Annex I
 
-### **Lifecycle State Policy**
+### Lifecycle State Policy
 
 for the usage of the Data Portal.
 
@@ -426,7 +426,7 @@ _Version: February 2025_
 
 ---
 
-#### **1. Objective and Scope**
+#### 1. Objective and Scope
 
 This Lifecycle State Policy ("**Policy**") describes the assignment and transition of one Lifecycle State to another and sanctions for a violation of this Policy. This Policy supplements the Data Portal Usage Agreement between Portal User and Portal Operator, the Data Use Agreement, as updated from time to time, between Data User and Data Publisher or any other agreement between Data User and Data Publisher governing the usage of the Data Portal.
 
@@ -434,7 +434,7 @@ As outlined in the Data Portal Usage Agreement, **all Data Publishers and Data U
 
 ---
 
-#### **2. Definitions**
+#### 2. Definitions
 
 Capitalized terms shall have the meaning given to them in this agreement; and:
 
@@ -480,11 +480,11 @@ Capitalized terms shall have the meaning given to them in this agreement; and:
 
 ---
 
-#### **3. Service Offering Lifecycle states**
+#### 3. Service Offering Lifecycle states
 
 Service Offerings and Portal User Accounts are subject to the Service Lifecycle Management (SLM), a mechanism to deactivate Portal User Accounts and change the visibility and _consumability_ of any Service Offering from the Data Portal depending on the Lifecycle State. Being in a Lifecycle State has implications on how the Service Offering is displayed in the Data Portal, and what actions are permitted to be performed regarding the Service Offering or by the Portal User Account.
 
-##### **3.1 Set by the Data Publisher**
+##### 3.1 Set by the Data Publisher
 
 Lifecycle State means the following properties of metadata describing the state of Service Offerings _and Portal User Accounts_ throughout their lifecycle. The Lifecycle State is set by the Data Publisher.
 
@@ -523,7 +523,7 @@ The Lifecycle States set by the Data Publisher have the following properties:
 | **Consumption is temporary disabled** | Yes                             | No                      | Yes                      |
 | **Unlisted**                          | No                              | Yes                     | Yes                      |
 
-##### **3.2 Set by the Portal Operator**
+##### 3.2 Set by the Portal Operator
 
 Being in a Lifecycle State set by the Portal Operator has implications on how the Service Offering is _displayed_ in the Data Portal, and what actions are permitted to be performed on the Data Portal regarding the Service Offering or by the Portal User Account.
 
@@ -534,9 +534,9 @@ Being in a Lifecycle State set by the Portal Operator has implications on how th
 
 ---
 
-#### **4. Transition of Lifecycle States**
+#### 4. Transition of Lifecycle States
 
-##### **Deactivation**
+##### Deactivation
 
 > **Initiation by a Data Portal Participant**
 >
@@ -576,7 +576,7 @@ Being in a Lifecycle State set by the Portal Operator has implications on how th
 > > - Revoked
 > > - Consumption is temporarily disabled
 
-##### **Activation**
+##### Activation
 
 > Service Offerings and Portal User Accounts can revert to the default ("active") Lifecycle State if one of the following conditions is met:
 >
@@ -585,7 +585,7 @@ Being in a Lifecycle State set by the Portal Operator has implications on how th
 
 ---
 
-#### **5. Sanctions**
+#### 5. Sanctions
 
 Depending on the nature and severity of the violation of this Policy and related documents, Portal Users can be subject to the following sanctions imposed by the Portal Operator.
 
