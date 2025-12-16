@@ -10,6 +10,10 @@ Welcome to Ocean Enterprise! By accessing our website ("the Site") and using any
 
 The content on the Site, including but not limited to text, graphics, logos, images, and software, is the property of **Ocean Enterprise Collective e.V. (in the following OEC, we, us, our)** and is protected by copyright laws. You may download and print content for non-commercial purposes only, provided that you retain all copyright and other proprietary notices. The Ocean Enterprise logo, brand, and product names are trademarks of OEC.
 
+### Usage Agreement
+
+By using this website you acknowledge and agree that the use of any algorithm, datasets, APIs or related services made available through the website is governed by the [Data Portal Usage Agreement](#data-portal-usage-agreement).
+
 ### Disclaimer
 
 The information on the Site is provided "as is" and without warranty of any kind, either express or implied, including but not limited to warranties of merchantability or fitness for a particular purpose. OEC does not guarantee the accuracy, completeness, or timeliness of the information on the Site. OEC may make changes to the Site and the information on it at any time without notice.
