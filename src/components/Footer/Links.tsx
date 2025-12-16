@@ -115,6 +115,17 @@ export default function Links(): ReactElement {
           >
             Privacy Policy
           </a>
+          <a
+            className={styles.link}
+            href="#"
+            onClick={(event) => {
+              event.preventDefault()
+              router.push(`${privacyPolicySlug}#data-portal-usage-agreement`)
+            }}
+          >
+            Data Portal Usage Agreement
+          </a>
+
           {appConfig.privacyPreferenceCenter === 'true' && (
             <a
               className={styles.link}

@@ -43,7 +43,7 @@
           },
           {
             "name": "Docs",
-            "link": "https://github.com/OceanProtocolEnterprise/docs"
+            "link": "https://docs.oceanenterprise.io/"
           },
           {
             "name": "Medium",
@@ -82,6 +82,10 @@
           {
             "name": "Cookie Settings",
             "link": "/cookie-settings"
+          },
+          {
+            "name": "Data Portal Usage Agreement",
+            "link": "/privacy/en#ocean-enterprise-collective-ev-data-portal-usage-agreement"
           }
         ]
       }
