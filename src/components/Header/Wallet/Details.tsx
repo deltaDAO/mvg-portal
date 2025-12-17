@@ -73,10 +73,10 @@ export default function Details(): ReactElement {
               {/* <img className={styles.walletLogo} src={activeConnector?.logo} /> */}
               {activeConnector?.name}
             </span>
-            <AddNetwork
+            {/* <AddNetwork
               chainId={Number(activeConnector?.id)}
               networkName={activeConnector?.name}
-            />
+            /> */}
             {activeConnector?.name === 'MetaMask' && <AddTokenList />}
           </div>
           <div>

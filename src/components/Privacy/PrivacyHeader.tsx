@@ -25,7 +25,11 @@ export default function PrivacyPolicyHeader({
             label: 'Terms and Conditions',
             anchor: 'terms-and-conditions'
           },
-          { label: 'Privacy Policy', anchor: 'privacy-policy' }
+          { label: 'Privacy Policy', anchor: 'privacy-policy' },
+          {
+            label: 'Data Portal Usage Agreement',
+            anchor: 'data-portal-usage-agreement'
+          }
         ]}
       />
       <p>
