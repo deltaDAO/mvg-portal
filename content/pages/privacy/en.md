@@ -156,9 +156,9 @@ This privacy policy will be amended from time to time. You can see the date of t
 
 ---
 
-## Ocean Enterprise Collective e.V
-
 ## Data Portal Usage Agreement
+
+**Ocean Enterprise Collective e.V.**
 
 _Last updated: December 15, 2025_
 
