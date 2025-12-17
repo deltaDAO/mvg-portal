@@ -5,13 +5,14 @@ import MinimizeIcon from '@images/minimize.svg'
 import ExpandIcon from '@images/expand.svg'
 import styles from './index.module.css'
 import { Asset } from 'src/@types/Asset'
-import { Service } from 'src/@types/ddo/Service'
 import { ComputeFlow } from '../_types'
 import { getOceanConfig } from '@utils/ocean'
 import { getDummySigner, getTokenInfo } from '@utils/wallet'
 import LoaderOverlay from '../LoaderOverlay'
+import External from '@images/external.svg'
 
 type DatasetService = {
+  id?: string
   serviceId?: string
   serviceName?: string
   serviceDescription?: string
@@ -42,6 +43,7 @@ type NormalizedService = {
   price: number
   symbol: string
   checked: boolean
+  userParameters?: unknown[]
 }
 
 type NormalizedAsset = {
@@ -65,6 +67,49 @@ type AlgorithmFlowValues = {
 }
 
 type FormValues = DatasetFlowValues & AlgorithmFlowValues
+
+type AlgorithmSelectionValue = {
+  algoDid?: string
+  serviceId?: string
+}
+
+type AlgorithmSelectionInput =
+  | string
+  | AlgorithmSelectionValue
+  | AlgorithmSelectionValue[]
+
+function parseAlgorithmSelection(value: AlgorithmSelectionInput): {
+  algorithmId: string | null
+  serviceId: string | null
+} {
+  if (Array.isArray(value)) {
+    return parseAlgorithmSelection(
+      (value[0] ?? null) as AlgorithmSelectionInput
+    )
+  }
+
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value) as AlgorithmSelectionValue
+      return {
+        algorithmId: parsed?.algoDid ?? null,
+        serviceId: parsed?.serviceId ?? null
+      }
+    } catch {
+      return { algorithmId: value, serviceId: null }
+    }
+  }
+
+  if (value && typeof value === 'object') {
+    const parsed = value as AlgorithmSelectionValue
+    return {
+      algorithmId: parsed.algoDid ?? null,
+      serviceId: parsed.serviceId ?? null
+    }
+  }
+
+  return { algorithmId: null, serviceId: null }
+}
 
 function normalizeDatasets(raw: DatasetItem[] = []): NormalizedAsset[] {
   const onlyOneDataset = raw.length === 1
@@ -102,6 +147,11 @@ const extractString = (
   if (value && typeof value === 'object' && '@value' in value)
     return value['@value']
   return ''
+}
+
+const truncateDid = (did: string, visible = 6) => {
+  if (!did || did.length <= visible * 2) return did
+  return `${did.slice(0, visible)}...${did.slice(-visible)}`
 }
 
 const anyServiceSelected = (assets: NormalizedAsset[]) =>
@@ -143,12 +193,12 @@ function Row({
   asset,
   onToggleAsset,
   onToggleExpand,
-  isAlgorithmLayout
+  isDatasetFlow
 }: {
   asset: NormalizedAsset
   onToggleAsset: (id: string) => void
   onToggleExpand: (id: string) => void
-  isAlgorithmLayout: boolean
+  isDatasetFlow: boolean
 }) {
   const checkboxRef = useRef<HTMLInputElement>(null)
 
@@ -159,38 +209,51 @@ function Row({
   }, [asset.checked])
 
   return (
-    <div
-      className={isAlgorithmLayout ? styles.algorithmRow : styles.datasetRow}
-    >
-      <div className={styles.checkboxColumn}>
-        <input
-          ref={checkboxRef}
-          type="checkbox"
-          className={styles.checkboxInput}
-          checked={asset.checked === true}
-          onChange={() => onToggleAsset(asset.id)}
-          onClick={(e) => e.stopPropagation()}
-        />
-      </div>
+    <div className={styles.serviceRow}>
+      {isDatasetFlow ? (
+        <div className={styles.checkboxColumn} />
+      ) : (
+        <div className={styles.checkboxColumn}>
+          <input
+            ref={checkboxRef}
+            type="checkbox"
+            className={styles.checkboxInput}
+            checked={asset.checked === true}
+            onChange={() => onToggleAsset(asset.id)}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
+      {isDatasetFlow ? (
+        <></>
+      ) : (
+        <div
+          className={styles.expandCollapseIcon}
+          onClick={() => onToggleExpand(asset.id)}
+        >
+          {asset.expanded ? (
+            <MinimizeIcon className={styles.expandedIcon} />
+          ) : (
+            <ExpandIcon />
+          )}
+        </div>
+      )}
 
       <div
-        className={styles.expandCollapseIcon}
-        onClick={() => onToggleExpand(asset.id)}
-      >
-        {asset.expanded ? (
-          <MinimizeIcon className={styles.expandedIcon} />
-        ) : (
-          <ExpandIcon />
-        )}
-      </div>
-
-      <div
-        className={
-          isAlgorithmLayout ? styles.algorithmName : styles.datasetName
-        }
-        onClick={() => onToggleExpand(asset.id)}
+        className={styles.serviceName}
+        onClick={() => (isDatasetFlow ? undefined : onToggleExpand(asset.id))}
       >
         {asset.name}
+        <a
+          className={styles.externalLink}
+          href={`/asset/${encodeURIComponent(asset.id)}`}
+          target="_blank"
+          rel="noreferrer"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <External />
+        </a>
       </div>
 
       <div className={styles.titleColumn} />
@@ -205,49 +268,52 @@ function Row({
 function List({
   title,
   assets,
-  isAlgorithmLayout,
   onToggleAsset,
   onToggleService,
-  onToggleExpand
+  onToggleExpand,
+  isDatasetFlow,
+  onCopyDid,
+  copiedKey
 }: {
   title: string
   assets: NormalizedAsset[]
-  isAlgorithmLayout: boolean
   onToggleAsset: (id: string) => void
   onToggleService: (assetId: string, serviceId: string) => void
   onToggleExpand: (id: string) => void
+  isDatasetFlow: boolean
+  onCopyDid: (did: string, serviceId: string) => Promise<void> | void
+  copiedKey: string | null
 }): ReactElement {
   const headerTitle = title
-  const servicesColumnTitle = isAlgorithmLayout ? 'SERVICE' : 'SERVICES'
+  const servicesColumnTitle = isDatasetFlow ? 'SERVICE' : 'SERVICES'
 
   return (
     <div className={styles.container}>
-      {isAlgorithmLayout ? (
+      {isDatasetFlow ? (
         <StepTitle title={headerTitle} />
       ) : (
         <h1 className={styles.title}>{headerTitle}</h1>
       )}
       <div className={styles.boxModel}>
-        <div className={styles.header}>
-          <div className={styles.checkboxColumn} />
-          <div className={styles.servicesColumn}>{servicesColumnTitle}</div>
-          <div className={styles.titleColumn}>TITLE</div>
-          <div className={styles.descriptionColumn}>DESCRIPTION</div>
-          <div className={styles.typeColumn}>TYPE</div>
-          <div className={styles.durationColumn}>DURATION</div>
-          <div className={styles.priceColumn}>PRICE</div>
+        <div className={styles.headerWrapper}>
+          <div className={styles.header}>
+            <div className={styles.checkboxColumn} />
+            <div className={styles.servicesColumn}>{servicesColumnTitle}</div>
+            <div className={styles.titleColumn}>TITLE</div>
+            <div className={styles.descriptionColumn}>DESCRIPTION</div>
+            <div className={styles.typeColumn}>TYPE</div>
+            <div className={styles.durationColumn}>DURATION</div>
+            <div className={styles.priceColumn}>PRICE</div>
+          </div>
         </div>
 
         {assets.map((asset) => (
-          <div
-            key={asset.id}
-            className={isAlgorithmLayout ? styles.algorithm : styles.dataset}
-          >
+          <div key={asset.id} className={styles.dataset}>
             <Row
               asset={asset}
               onToggleAsset={onToggleAsset}
               onToggleExpand={onToggleExpand}
-              isAlgorithmLayout={isAlgorithmLayout}
+              isDatasetFlow={isDatasetFlow}
             />
 
             {asset.expanded && (
@@ -265,13 +331,41 @@ function List({
                     </div>
 
                     <div className={styles.servicesColumn}>
-                      {service.name.slice(0, 15)}
-                      {service.name.length > 15 ? '...' : ''}
+                      <button
+                        type="button"
+                        className={styles.didButton}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          onCopyDid(asset.id, service.id)
+                        }}
+                        title="Copy DID"
+                      >
+                        {truncateDid(asset.id, 8)}
+                      </button>
+                      {copiedKey === `${asset.id}:${service.id}` && (
+                        <span className={styles.copied}>
+                          <span className={styles.copiedText}>Copied!</span>
+                          <svg
+                            className={styles.copiedSpinner}
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className={styles.circle}
+                              cx="12"
+                              cy="12"
+                              r="10"
+                            />
+                          </svg>
+                        </span>
+                      )}
                     </div>
-                    <div className={styles.titleColumn}>{service.title}</div>
+                    <div className={styles.titleColumn}>
+                      <span className={styles.titleText}>{service.title}</span>
+                    </div>
                     <div className={styles.descriptionColumn}>
-                      {service.description.slice(0, 15)}
-                      {service.description.length > 15 ? '...' : ''}
+                      <span className={styles.descriptionText}>
+                        {service.description || ''}
+                      </span>
                     </div>
                     <div className={styles.typeColumn}>{service.type}</div>
                     <div className={styles.durationColumn}>
@@ -309,40 +403,44 @@ export default function SelectServicesStep({
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [assets, setAssets] = useState<NormalizedAsset[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [copiedKey, setCopiedKey] = useState<string | null>(null)
+
+  const handleCopyDid = async (did: string, serviceId: string) => {
+    if (!navigator?.clipboard?.writeText) return
+    try {
+      await navigator.clipboard.writeText(did)
+      const key = `${did}:${serviceId}`
+      setCopiedKey(key)
+      setTimeout(() => setCopiedKey(null), 1500)
+    } catch (error) {
+      console.warn('Copy DID failed', error)
+    }
+  }
 
   // dataset flow: fetch algorithm + single service
   useEffect(() => {
     if (!isDatasetFlow) return
-    if (!values.algorithm || assets.length > 0) return
+    if (!values.algorithm) {
+      setAssets([])
+      setFieldValue('serviceSelected', false)
+      return
+    }
+    setAssets([])
+    setFieldValue('serviceSelected', false)
 
     const fetchAlgorithm = async () => {
       setIsLoading(true)
       try {
-        let algorithmId: string
-        let serviceId: string | null = null
-        try {
-          const parsed = JSON.parse(values.algorithm as string)
-          algorithmId = parsed?.algoDid || (values.algorithm as string)
-          serviceId = parsed?.serviceId || null
-        } catch {
-          algorithmId = values.algorithm as string
-        }
+        const { algorithmId, serviceId } = parseAlgorithmSelection(
+          values.algorithm as AlgorithmSelectionInput
+        )
+        if (!algorithmId) return
         const assetDdo =
           ddoListAlgorithms.find((ddo) => ddo.id === algorithmId) || null
-        if (!assetDdo || !serviceId) return
+        if (!assetDdo) return
 
-        const idx = assetDdo.credentialSubject?.services?.findIndex(
-          (svc: Service) => svc.id === serviceId
-        )
-        const svc =
-          idx !== undefined && idx !== -1
-            ? assetDdo.credentialSubject.services[idx]
-            : undefined
-        const price =
-          idx !== undefined && idx !== -1
-            ? assetDdo.indexedMetadata.stats[idx].prices[0].price
-            : undefined
-        if (!svc) return
+        const effectiveServices = assetDdo.credentialSubject?.services || []
+        if (!effectiveServices.length) return
 
         const chainId = assetDdo.credentialSubject?.chainId
         if (!chainId) return
@@ -354,6 +452,20 @@ export default function SelectServicesStep({
           signer.provider
         )
 
+        const normalizedServices = effectiveServices.map((svc, idx) => ({
+          id: svc.id,
+          title: extractString(svc.name) || svc.type,
+          name: extractString(svc.name) || svc.type,
+          description:
+            extractString(svc.description) || `Service for ${svc.type}`,
+          type: svc.type,
+          duration: Number(svc.timeout ?? 0),
+          price: Number(assetDdo.indexedMetadata.stats[idx]?.prices[0]?.price),
+          symbol: tokenDetails.symbol,
+          checked: serviceId != null ? svc.id === serviceId : idx === 0, // default first if none selected
+          userParameters: svc.consumerParameters
+        }))
+
         const normalized: NormalizedAsset = {
           id: assetDdo.id,
           name:
@@ -361,20 +473,7 @@ export default function SelectServicesStep({
             'Selected Algorithm',
           expanded: true,
           checked: true,
-          services: [
-            {
-              id: svc.id,
-              title: extractString(svc.name) || svc.type,
-              name: extractString(svc.name) || svc.type,
-              description:
-                extractString(svc.description) || `Service for ${svc.type}`,
-              type: svc.type,
-              duration: Number(svc.timeout ?? 0),
-              price: Number(price ?? 0),
-              symbol: tokenDetails.symbol,
-              checked: true
-            }
-          ]
+          services: normalizedServices
         }
 
         setAssets([normalized])
@@ -386,20 +485,18 @@ export default function SelectServicesStep({
             'Algorithm service',
           expanded: true,
           checked: true,
-          services: [
-            {
-              id: svc.id,
-              name: normalized.services[0].name,
-              title: normalized.services[0].title,
-              serviceDescription: normalized.services[0].description,
-              type: normalized.services[0].type,
-              duration: normalized.services[0].duration,
-              price: normalized.services[0].price,
-              symbol: normalized.services[0].symbol,
-              checked: true,
-              userParameters: svc.consumerParameters
-            }
-          ]
+          services: normalizedServices.map((svc, idx) => ({
+            id: svc.id,
+            name: svc.name,
+            title: svc.title,
+            serviceDescription: svc.description,
+            type: svc.type,
+            duration: svc.duration,
+            price: svc.price,
+            symbol: svc.symbol,
+            checked: svc.checked,
+            userParameters: svc.userParameters
+          }))
         })
         setFieldValue('serviceSelected', true)
       } finally {
@@ -408,13 +505,7 @@ export default function SelectServicesStep({
     }
 
     fetchAlgorithm()
-  }, [
-    isDatasetFlow,
-    values.algorithm,
-    assets.length,
-    ddoListAlgorithms,
-    setFieldValue
-  ])
+  }, [isDatasetFlow, values.algorithm, ddoListAlgorithms, setFieldValue])
 
   // algorithm flow: normalize datasets
   useEffect(() => {
@@ -434,8 +525,8 @@ export default function SelectServicesStep({
       return {
         ...dataset,
         services: (dataset.services || []).map((svc) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const svcId = (svc as any).serviceId || (svc as any).id
+          const svcId =
+            svc.serviceId || (typeof svc.id === 'string' ? svc.id : undefined)
           const normalized = match.services.find((s) => s.id === svcId)
           if (!normalized) return svc
           return {
@@ -470,7 +561,7 @@ export default function SelectServicesStep({
   if (isDatasetFlow && assets.length === 0 && !isLoading) {
     return (
       <div className={styles.container}>
-        <StepTitle title="Select Algorithm Services" />
+        <StepTitle title="Select Algorithm Service" />
         <p>Please select an algorithm first</p>
       </div>
     )
@@ -479,12 +570,14 @@ export default function SelectServicesStep({
   return (
     <div className={styles.listWrapper}>
       <List
-        title={isDatasetFlow ? 'Select Algorithm Services' : 'Select Services'}
+        title={isDatasetFlow ? 'Select Algorithm Service' : 'Select Services'}
         assets={assets}
-        isAlgorithmLayout={isDatasetFlow}
         onToggleAsset={handleToggleAsset}
         onToggleService={handleToggleService}
         onToggleExpand={handleToggleExpand}
+        isDatasetFlow={isDatasetFlow}
+        onCopyDid={handleCopyDid}
+        copiedKey={copiedKey}
       />
       <LoaderOverlay
         visible={isLoading}

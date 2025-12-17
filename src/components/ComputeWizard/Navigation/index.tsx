@@ -20,7 +20,12 @@ export default function Navigation({ flow }: NavigationProps): ReactElement {
   const currentStep = values.user.stepCurrent
   const hasUserParamsStep = Boolean(values?.isUserParameters)
   const withoutDataset = Boolean(values?.withoutDataset)
-  const steps = getDatasetSteps(hasUserParamsStep, withoutDataset)
+  const steps = isAlgorithmFlow
+    ? getDatasetSteps(hasUserParamsStep, withoutDataset)
+    : getDatasetSteps(hasUserParamsStep, withoutDataset).map((step) => ({
+        ...step,
+        title: step.step === 1 ? 'Select Algorithm' : step.title
+      }))
   const lastCompletedStep = getLastCompletedStep()
   const progressTargetIdx = Math.min(lastCompletedStep + 1, steps.length)
   const { stepRefs, stepsRowRef, progressBarWidth } = useProgressBar({

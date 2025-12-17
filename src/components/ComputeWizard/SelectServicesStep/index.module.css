@@ -15,7 +15,7 @@
 .boxModel {
   border: 1px solid rgba(48, 48, 49, 0.1);
   border-radius: 20px;
-  padding: 20px;
+  padding: 0 20px 20px;
   max-width: 1080px;
   box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
   background: #fff;
@@ -42,9 +42,18 @@
   background: #fbcb05;
 }
 
+.headerWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #fff;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(48, 48, 49, 0.1);
+}
+
 .header {
   display: flex;
-  padding: 10px 0;
   font-family: var(--font-family);
   font-weight: 700;
   font-size: 14px;
@@ -58,20 +67,15 @@
   margin-bottom: 10px;
 }
 
-.datasetRow,
-.algorithmRow {
+.serviceRow {
   display: flex;
   cursor: pointer;
   align-items: center;
   border-bottom: 1px solid rgba(48, 48, 49, 0.2);
-  border-top: 1px solid rgba(48, 48, 49, 0.2);
-  padding: 16px 0 16px 0;
-  max-width: 1040px;
-  margin-top: 1rem;
+  padding: 10px 0;
 }
 
-.datasetName,
-.algorithmName {
+.serviceName {
   font-family: var(--font-family);
   font-weight: 700;
   font-size: 12px;
@@ -85,7 +89,7 @@
 
 .service {
   display: flex;
-  padding: 12px 15px;
+  padding: 10px 15px;
   border-bottom: 1px solid #eee;
   align-items: center;
   font-family: var(--font-family);
@@ -112,12 +116,31 @@
 }
 
 .titleColumn {
-  width: 15%;
+  width: 12%;
+  padding-right: 15px;
 }
 
 .descriptionColumn {
-  width: 25%;
-  padding-right: 15px;
+  flex: 1;
+  padding-right: 20px;
+}
+
+.descriptionText {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.titleText {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .typeColumn {
@@ -131,6 +154,64 @@
 .priceColumn {
   width: 10%;
   text-align: right;
+}
+
+.didButton {
+  border: none;
+  background: transparent;
+  color: var(--ocean-blue);
+  font-family: var(--font-family);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.didButton:hover {
+  color: #303031;
+  text-decoration: underline;
+}
+
+.copied {
+  margin-left: 6px;
+  font-size: 11px;
+  color: #4caf50;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.copiedText {
+  opacity: 1;
+}
+
+.copiedSpinner {
+  width: 12px;
+  height: 12px;
+  transform: rotate(-90deg);
+}
+
+.circle {
+  fill: none;
+  stroke: #4caf50;
+  stroke-width: 4px;
+
+  stroke-dasharray: 63;
+  stroke-dashoffset: 63;
+
+  animation: countdown 1.2s linear forwards;
+}
+
+@keyframes countdown {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.externalLink {
+  margin-left: 8px;
+  display: inline-flex;
+  vertical-align: middle;
 }
 
 .symbol {
@@ -196,8 +277,7 @@
   .service {
     font-size: 6px;
   }
-  .datasetName,
-  .algorithmName {
+  .serviceName {
     font-size: 8px;
   }
 }
