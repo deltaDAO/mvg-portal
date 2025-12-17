@@ -10,6 +10,7 @@ import { getOceanConfig } from '@utils/ocean'
 import { getDummySigner, getTokenInfo } from '@utils/wallet'
 import LoaderOverlay from '../LoaderOverlay'
 import External from '@images/external.svg'
+import { CopyToClipboard } from '@shared/CopyToClipboard'
 
 type DatasetService = {
   id?: string
@@ -149,11 +150,6 @@ const extractString = (
   return ''
 }
 
-const truncateDid = (did: string, visible = 6) => {
-  if (!did || did.length <= visible * 2) return did
-  return `${did.slice(0, visible)}...${did.slice(-visible)}`
-}
-
 const anyServiceSelected = (assets: NormalizedAsset[]) =>
   assets.some((a) => a.services.some((s) => s.checked))
 
@@ -271,9 +267,7 @@ function List({
   onToggleAsset,
   onToggleService,
   onToggleExpand,
-  isDatasetFlow,
-  onCopyDid,
-  copiedKey
+  isDatasetFlow
 }: {
   title: string
   assets: NormalizedAsset[]
@@ -281,8 +275,6 @@ function List({
   onToggleService: (assetId: string, serviceId: string) => void
   onToggleExpand: (id: string) => void
   isDatasetFlow: boolean
-  onCopyDid: (did: string, serviceId: string) => Promise<void> | void
-  copiedKey: string | null
 }): ReactElement {
   const headerTitle = title
   const servicesColumnTitle = isDatasetFlow ? 'SERVICE' : 'SERVICES'
@@ -331,33 +323,13 @@ function List({
                     </div>
 
                     <div className={styles.servicesColumn}>
-                      <button
-                        type="button"
-                        className={styles.didButton}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          onCopyDid(asset.id, service.id)
-                        }}
-                        title="Copy DID"
-                      >
-                        {truncateDid(asset.id, 8)}
-                      </button>
-                      {copiedKey === `${asset.id}:${service.id}` && (
-                        <span className={styles.copied}>
-                          <span className={styles.copiedText}>Copied!</span>
-                          <svg
-                            className={styles.copiedSpinner}
-                            viewBox="0 0 24 24"
-                          >
-                            <circle
-                              className={styles.circle}
-                              cx="12"
-                              cy="12"
-                              r="10"
-                            />
-                          </svg>
-                        </span>
-                      )}
+                      <CopyToClipboard
+                        value={asset.id}
+                        truncate={8}
+                        className={styles.copyWrapper}
+                        textClassName={styles.didButton}
+                        showCopyButton={false}
+                      />
                     </div>
                     <div className={styles.titleColumn}>
                       <span className={styles.titleText}>{service.title}</span>
@@ -403,20 +375,6 @@ export default function SelectServicesStep({
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [assets, setAssets] = useState<NormalizedAsset[]>([])
   const [isLoading, setIsLoading] = useState(false)
-  const [copiedKey, setCopiedKey] = useState<string | null>(null)
-
-  const handleCopyDid = async (did: string, serviceId: string) => {
-    if (!navigator?.clipboard?.writeText) return
-    try {
-      await navigator.clipboard.writeText(did)
-      const key = `${did}:${serviceId}`
-      setCopiedKey(key)
-      setTimeout(() => setCopiedKey(null), 1500)
-    } catch (error) {
-      console.warn('Copy DID failed', error)
-    }
-  }
-
   // dataset flow: fetch algorithm + single service
   useEffect(() => {
     if (!isDatasetFlow) return
@@ -576,8 +534,6 @@ export default function SelectServicesStep({
         onToggleService={handleToggleService}
         onToggleExpand={handleToggleExpand}
         isDatasetFlow={isDatasetFlow}
-        onCopyDid={handleCopyDid}
-        copiedKey={copiedKey}
       />
       <LoaderOverlay
         visible={isLoading}

@@ -59,3 +59,25 @@
   font-family: monospace;
   font-size: 0.9rem;
 }
+
+.jobIdRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.jobIdValue {
+  font-family: monospace;
+  font-size: 0.9rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jobIdCopy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

@@ -7,27 +7,41 @@ import MetaItem from '../../../Asset/AssetContent/MetaItem'
 import { useCancelToken } from '@hooks/useCancelToken'
 import { useMarketMetadata } from '@context/MarketMetadata'
 import { getAsset } from '@utils/aquarius'
+import { getServiceById } from '@utils/ddo'
+import { CopyToClipboard } from '@shared/CopyToClipboard'
 import { Asset as AssetType } from 'src/@types/Asset'
 import External from '@images/external.svg'
 import CloseIcon from '@images/closeIcon.svg'
 import useIsMobile from '@hooks/useIsMobile'
 
+const extractString = (
+  value: string | { '@value': string } | undefined
+): string => {
+  if (typeof value === 'string') return value
+  if (value && typeof value === 'object' && '@value' in value)
+    return value['@value']
+  return ''
+}
+
 function Asset({
   title,
   symbol,
   did,
-  serviceId
+  serviceName
 }: {
   title: string
   symbol: string
   did: string
   serviceId?: string
+  serviceName?: string
 }) {
   return (
     <div className={styles.assetBox}>
       <div className={styles.assetHeader}>
         <h3 className={styles.assetTitle}>
-          {title}{' '}
+          <span className={styles.assetTitleText} title={title}>
+            {title}
+          </span>
           <a
             className={styles.assetLink}
             href={`/asset/${did}`}
@@ -41,9 +55,22 @@ function Asset({
       <div className={styles.assetDetails}>
         <span className={styles.symbol}>{symbol}</span>
         <span className={styles.divider}></span>
-        <span className={styles.did} title={did}>
-          {did?.slice(0, 50)}...
-        </span>
+        {serviceName && (
+          <>
+            <span className={styles.serviceName} title={serviceName}>
+              {serviceName}
+            </span>
+            <span className={styles.divider}></span>
+          </>
+        )}
+        <div className={styles.didContainer}>
+          <CopyToClipboard
+            value={did}
+            truncate={10}
+            textClassName={styles.did}
+            className={styles.didCopy}
+          />
+        </div>
       </div>
     </div>
   )
@@ -56,7 +83,7 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
   const [algoName, setAlgoName] = useState<string>()
   const [algoDtSymbol, setAlgoDtSymbol] = useState<string>()
   const [datasetAssets, setDatasetAssets] = useState<
-    { ddo: AssetType; serviceId?: string }[]
+    { ddo: AssetType; serviceId?: string; serviceName?: string }[]
   >([])
 
   useEffect(() => {
@@ -81,7 +108,14 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
               asset.documentId,
               newCancelToken()
             )) as AssetType
-            return { ddo, serviceId: asset.serviceId }
+            let serviceName: string | undefined
+            if (ddo && asset.serviceId) {
+              const service = getServiceById(ddo, asset.serviceId)
+              if (service) {
+                serviceName = extractString(service.name) || undefined
+              }
+            }
+            return { ddo, serviceId: asset.serviceId, serviceName }
           })
         )
         setDatasetAssets(allAssets)
@@ -95,7 +129,7 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
   return (
     <>
       <div className={styles.assetListBox}>
-        {datasetAssets.map(({ ddo, serviceId }) => (
+        {datasetAssets.map(({ ddo, serviceId, serviceName }) => (
           <React.Fragment key={ddo?.id || serviceId}>
             {ddo ? (
               <Asset
@@ -103,6 +137,7 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
                 symbol={ddo.indexedMetadata?.stats[0]?.symbol}
                 did={ddo.id}
                 serviceId={serviceId}
+                serviceName={serviceName}
               />
             ) : (
               <div className={styles.assetNotAvailable}>

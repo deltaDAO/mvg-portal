@@ -1,6 +1,8 @@
 import { ReactElement } from 'react'
 import SuccessConfetti from '@shared/SuccessConfetti'
 import Button from '@shared/atoms/Button'
+import styles from './index.module.css'
+import { CopyToClipboard } from '@shared/CopyToClipboard'
 
 interface SuccessStateProps {
   jobId?: string
@@ -27,9 +29,17 @@ export default function SuccessState({
         <p>Your compute job is now running and processing your data.</p>
         {jobId && jobId !== 'N/A' && (
           <div className={jobIdContainerClassName}>
-            <p>
-              <strong>Job ID:</strong> {jobId}
-            </p>
+            <div className={styles.jobIdRow}>
+              <strong>Job ID:</strong>
+              <CopyToClipboard
+                value={jobId}
+                truncate={8}
+                className={styles.jobIdCopy}
+                textClassName={styles.jobIdValue}
+                showCopyButton
+                copyButtonLabel="Copy"
+              />
+            </div>
           </div>
         )}
         <p>
