@@ -34,6 +34,7 @@ import { useSsiWallet } from '@context/SsiWallet'
 import { secondsToString } from '@utils/ddo'
 import {
   getAlgorithmAssetSelectionList,
+  getAlgorithmAssetSelectionListForComputeWizard,
   getAlgorithmsForAsset
 } from '@utils/compute'
 import { getAlgorithmDatasetsForCompute } from '@utils/aquarius'
@@ -443,11 +444,12 @@ export default function ComputeWizardController({
             newCancelToken()
           )
           if (!cancelled) setDdoAlgorithmList(algorithmsAssets)
-          const algorithmSelectionList = await getAlgorithmAssetSelectionList(
-            service,
-            algorithmsAssets,
-            accountId
-          )
+          const algorithmSelectionList =
+            await getAlgorithmAssetSelectionListForComputeWizard(
+              service,
+              algorithmsAssets,
+              accountId
+            )
           if (!cancelled) setAlgorithmList(algorithmSelectionList)
         }
         if (!cancelled) setError(undefined)
