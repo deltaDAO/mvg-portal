@@ -143,7 +143,7 @@ export default function Steps({
   const hasUserParamsStep = Boolean(values.isUserParameters)
   useEffect(() => {
     if (!asset || !service) return
-
+    setFieldValue('dataset', [`${asset.id}|${service.id}`])
     if (service.consumerParameters?.length) {
       const algoParams = service.consumerParameters.map(
         (p: any): UserParameter => ({
@@ -157,7 +157,6 @@ export default function Steps({
           value: p.default ?? ''
         })
       )
-
       setFieldValue('datasetServiceParams', [
         {
           did: asset.id,
