@@ -243,11 +243,11 @@ export default function Review({
       }
       if (
         selectedAlgorithmAsset &&
-        !selectedAlgorithmAsset.accessDetails[0].isOwned
+        !selectedAlgorithmAsset.accessDetails[serviceIndex].isOwned
       ) {
         try {
           const algoFixed = await getFixedBuyPrice(
-            selectedAlgorithmAsset?.accessDetails[0],
+            selectedAlgorithmAsset?.accessDetails[serviceIndex],
             selectedAlgorithmAsset?.credentialSubject.chainId,
             signer
           )
