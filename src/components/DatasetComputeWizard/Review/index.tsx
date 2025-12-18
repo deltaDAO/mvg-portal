@@ -333,8 +333,8 @@ export default function Review({
         price: rawPrice,
         duration: '1 day',
         name:
-          selectedAlgorithmAsset.credentialSubject?.services?.[0]?.name ||
-          'Algorithm'
+          selectedAlgorithmAsset.credentialSubject?.services?.[serviceIndex]
+            ?.name || 'Algorithm'
       })
     }
 
