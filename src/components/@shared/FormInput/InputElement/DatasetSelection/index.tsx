@@ -5,11 +5,13 @@ import styles from './index.module.css'
 import SearchSection from '@shared/SearchSection'
 import Button from '../../../atoms/Button'
 import NetworkName from '@shared/NetworkName'
+import External from '@images/external.svg'
 import { AssetSelectionAsset } from '@shared/FormInput/InputElement/AssetSelection'
 import { AssetExtended } from 'src/@types/AssetExtended'
 
 export interface DatasetSelectionDataset extends AssetSelectionAsset {
   checked: boolean
+  value?: string
 }
 
 export function Empty({ message }: { message: string }) {
@@ -24,13 +26,15 @@ export default function DatasetSelection({
   onChange
 }: {
   asset?: AssetExtended
-  datasets?: any[]
+  datasets?: DatasetSelectionDataset[]
   selected?: string[]
   disabled?: boolean
   onChange?: (value: string) => void
 }): JSX.Element {
   const [searchValue, setSearchValue] = useState('')
-  const [filteredDatasets, setfilteredDatasets] = useState<any[]>([])
+  const [filteredDatasets, setfilteredDatasets] = useState<
+    DatasetSelectionDataset[]
+  >([])
 
   useEffect(() => {
     const realDatasets = datasets && Array.isArray(datasets) ? datasets : []
@@ -67,22 +71,45 @@ export default function DatasetSelection({
           <Empty message="No datasets found." />
         ) : (
           <>
-            {filteredDatasets.map((dataset, index) => {
-              const isSelected = selected.includes(dataset.did)
+            {filteredDatasets.map((dataset) => {
+              const selectionValue = dataset.value || dataset.did
+              const isSelected = selected.includes(selectionValue)
+              const descriptionText =
+                dataset.description ||
+                dataset.serviceDescription ||
+                'No description available.'
               return (
                 <div
-                  key={dataset.did}
+                  key={selectionValue}
                   className={`${styles.datasetCard} ${
                     isSelected ? styles.selected : ''
                   }`}
-                  onClick={() => !disabled && handleDatasetSelect(dataset.did)}
+                  onClick={() =>
+                    !disabled && handleDatasetSelect(selectionValue)
+                  }
                 >
                   <div className={styles.cardHeader}>
                     <div className={styles.titleSection}>
                       <h3 className={styles.title}>{dataset.name}</h3>
                       <div className={styles.envId}>
                         {truncateDid(dataset.did)}
+                        {dataset.did && (
+                          <a
+                            href={`/asset/${encodeURIComponent(dataset.did)}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={styles.externalLink}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <External />
+                          </a>
+                        )}
                       </div>
+                      {dataset.tokenSymbol && (
+                        <div className={styles.tokenSymbol}>
+                          {dataset.tokenSymbol}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <NetworkName
@@ -93,20 +120,15 @@ export default function DatasetSelection({
                   </div>
                   <div className={styles.cardContent}>
                     <p className={styles.description}>
-                      {(
-                        dataset.description || 'No description available.'
-                      ).slice(0, 30)}
-                      {(dataset.description || 'No description available.')
-                        .length > 30
-                        ? '...'
-                        : ''}
+                      {descriptionText.slice(0, 30)}
+                      {descriptionText.length > 30 ? '...' : ''}
                     </p>
 
                     <div className={styles.cardActions}>
                       <Button
                         type="button"
                         style="slim"
-                        onClick={() => onChange?.(dataset.did)}
+                        onClick={() => onChange?.(selectionValue)}
                       >
                         {isSelected ? 'Selected' : 'Select'}
                       </Button>

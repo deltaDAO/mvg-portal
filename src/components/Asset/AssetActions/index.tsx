@@ -1,5 +1,4 @@
 import { ReactElement, useEffect, useState } from 'react'
-import Compute from './Compute'
 import Download from './Download'
 import { FileInfo, LoggerInstance, Datatoken } from '@oceanprotocol/lib'
 import { compareAsBN } from '@utils/numbers'
@@ -24,8 +23,7 @@ import FileSVG from '@images/file.svg'
 import { AssetActionCheckCredentials } from './CheckCredentials'
 import { useSsiWallet } from '@context/SsiWallet'
 import appConfig from 'app.config.cjs'
-import ComputeWizard from '@components/DatasetComputeWizard'
-import AlgorithmComputeWizard from '@components/AlgorithmComputeWizard'
+import ComputeWizard from '@components/ComputeWizard'
 import { JsonRpcProvider } from 'ethers'
 import { useEthersSigner } from '@hooks/useEthersSigner'
 
@@ -363,37 +361,19 @@ export default function AssetActions({
             >
               &times;
             </button>
-            {asset?.credentialSubject?.metadata?.type === 'algorithm' ? (
-              <AlgorithmComputeWizard
-                accountId={accountId}
-                signer={signer as any}
-                asset={asset}
-                service={service}
-                accessDetails={accessDetails}
-                dtBalance={dtBalance}
-                isAccountIdWhitelisted={isAccountIdWhitelisted}
-                file={fileMetadata}
-                // fileIsLoading={fileIsLoading}
-                consumableFeedback={consumableFeedback}
-                onClose={closeComputePopup}
-                onComputeJobCreated={onComputeJobCreated}
-              />
-            ) : (
-              <ComputeWizard
-                accountId={accountId}
-                signer={signer as any}
-                asset={asset}
-                service={service}
-                accessDetails={accessDetails}
-                dtBalance={dtBalance}
-                isAccountIdWhitelisted={isAccountIdWhitelisted}
-                file={fileMetadata}
-                // fileIsLoading={fileIsLoading}
-                consumableFeedback={consumableFeedback}
-                onClose={closeComputePopup}
-                onComputeJobCreated={onComputeJobCreated}
-              />
-            )}
+            <ComputeWizard
+              accountId={accountId}
+              signer={signer}
+              asset={asset}
+              service={service}
+              accessDetails={accessDetails}
+              dtBalance={dtBalance}
+              isAccountIdWhitelisted={isAccountIdWhitelisted}
+              file={fileMetadata}
+              consumableFeedback={consumableFeedback}
+              onClose={closeComputePopup}
+              onComputeJobCreated={onComputeJobCreated}
+            />
           </div>
         </div>
       )}
