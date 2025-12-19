@@ -57,7 +57,7 @@ type NormalizedAsset = {
 
 type DatasetFlowValues = {
   algorithm?: string
-  algorithms?: Algorithm
+  algorithms?: AlgorithmFormState
   serviceSelected?: boolean
 }
 
@@ -67,7 +67,37 @@ type AlgorithmFlowValues = {
   serviceSelected?: boolean
 }
 
-type FormValues = DatasetFlowValues & AlgorithmFlowValues
+type FormValues = DatasetFlowValues &
+  AlgorithmFlowValues & {
+    algorithmServiceParams?: Array<{
+      did: string
+      serviceId: string
+      userParameters?: unknown[]
+    }>
+    isUserParameters?: boolean
+  }
+
+type AlgorithmServiceForm = {
+  id: string
+  name: string
+  title: string
+  serviceDescription?: string
+  type: string
+  duration: number
+  price: number
+  symbol: string
+  checked?: boolean
+  userParameters?: unknown[]
+}
+
+type AlgorithmFormState = {
+  id: string
+  name: string
+  description?: string
+  expanded?: boolean
+  checked?: boolean
+  services?: AlgorithmServiceForm[]
+}
 
 type AlgorithmSelectionValue = {
   algoDid?: string
@@ -267,7 +297,8 @@ function List({
   onToggleAsset,
   onToggleService,
   onToggleExpand,
-  isDatasetFlow
+  isDatasetFlow,
+  isLoading
 }: {
   title: string
   assets: NormalizedAsset[]
@@ -275,9 +306,11 @@ function List({
   onToggleService: (assetId: string, serviceId: string) => void
   onToggleExpand: (id: string) => void
   isDatasetFlow: boolean
+  isLoading?: boolean
 }): ReactElement {
   const headerTitle = title
   const servicesColumnTitle = isDatasetFlow ? 'SERVICE' : 'SERVICES'
+  const skeletonItems = Array.from({ length: 3 })
 
   return (
     <div className={styles.container}>
@@ -299,65 +332,105 @@ function List({
           </div>
         </div>
 
-        {assets.map((asset) => (
-          <div key={asset.id} className={styles.dataset}>
-            <Row
-              asset={asset}
-              onToggleAsset={onToggleAsset}
-              onToggleExpand={onToggleExpand}
-              isDatasetFlow={isDatasetFlow}
-            />
-
-            {asset.expanded && (
-              <div className={styles.servicesContainer}>
-                {asset.services.map((service) => (
-                  <div key={service.id} className={styles.service}>
-                    <div className={styles.checkboxColumn}>
-                      <input
-                        type="checkbox"
-                        className={styles.checkboxInput}
-                        checked={service.checked || false}
-                        onChange={() => onToggleService(asset.id, service.id)}
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    </div>
-
-                    <div className={styles.servicesColumn}>
-                      <CopyToClipboard
-                        value={asset.id}
-                        truncate={8}
-                        className={styles.copyWrapper}
-                        textClassName={styles.didButton}
-                        showCopyButton={false}
-                      />
-                    </div>
-                    <div className={styles.titleColumn}>
-                      <span className={styles.titleText}>{service.title}</span>
-                    </div>
-                    <div className={styles.descriptionColumn}>
-                      <span className={styles.descriptionText}>
-                        {service.description || ''}
-                      </span>
-                    </div>
-                    <div className={styles.typeColumn}>{service.type}</div>
-                    <div className={styles.durationColumn}>
-                      {Number(service.duration) === 0 ||
-                      Number.isNaN(Number(service.duration))
-                        ? 'Forever'
-                        : `${Math.floor(
-                            Number(service.duration) / (60 * 60 * 24)
-                          )} days`}
-                    </div>
-                    <div className={styles.priceColumn}>
-                      {service.price}{' '}
-                      <span className={styles.symbol}>{service.symbol}</span>
-                    </div>
-                  </div>
-                ))}
+        {isLoading
+          ? skeletonItems.map((_, idx) => (
+              <div key={`skeleton-${idx}`} className={styles.skeletonRow}>
+                <div className={styles.checkboxColumn}>
+                  <div className={styles.skeletonBox} />
+                </div>
+                <div className={styles.servicesColumn}>
+                  <div
+                    className={`${styles.skeletonBox} ${styles.skeletonWide}`}
+                  />
+                </div>
+                <div className={styles.titleColumn}>
+                  <div className={styles.skeletonBox} />
+                </div>
+                <div className={styles.descriptionColumn}>
+                  <div
+                    className={`${styles.skeletonBox} ${styles.skeletonWide}`}
+                  />
+                </div>
+                <div className={styles.typeColumn}>
+                  <div
+                    className={`${styles.skeletonBox} ${styles.skeletonNarrow}`}
+                  />
+                </div>
+                <div className={styles.durationColumn}>
+                  <div
+                    className={`${styles.skeletonBox} ${styles.skeletonNarrow}`}
+                  />
+                </div>
+                <div className={styles.priceColumn}>
+                  <div className={styles.skeletonBox} />
+                </div>
               </div>
-            )}
-          </div>
-        ))}
+            ))
+          : assets.map((asset) => (
+              <div key={asset.id} className={styles.dataset}>
+                <Row
+                  asset={asset}
+                  onToggleAsset={onToggleAsset}
+                  onToggleExpand={onToggleExpand}
+                  isDatasetFlow={isDatasetFlow}
+                />
+
+                {asset.expanded && (
+                  <div className={styles.servicesContainer}>
+                    {asset.services.map((service) => (
+                      <div key={service.id} className={styles.service}>
+                        <div className={styles.checkboxColumn}>
+                          <input
+                            type="checkbox"
+                            className={styles.checkboxInput}
+                            checked={service.checked || false}
+                            onChange={() =>
+                              onToggleService(asset.id, service.id)
+                            }
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+
+                        <div className={styles.servicesColumn}>
+                          <CopyToClipboard
+                            value={asset.id}
+                            truncate={8}
+                            className={styles.copyWrapper}
+                            textClassName={styles.didButton}
+                            showCopyButton={false}
+                          />
+                        </div>
+                        <div className={styles.titleColumn}>
+                          <span className={styles.titleText}>
+                            {service.title}
+                          </span>
+                        </div>
+                        <div className={styles.descriptionColumn}>
+                          <span className={styles.descriptionText}>
+                            {service.description || ''}
+                          </span>
+                        </div>
+                        <div className={styles.typeColumn}>{service.type}</div>
+                        <div className={styles.durationColumn}>
+                          {Number(service.duration) === 0 ||
+                          Number.isNaN(Number(service.duration))
+                            ? 'Forever'
+                            : `${Math.floor(
+                                Number(service.duration) / (60 * 60 * 24)
+                              )} days`}
+                        </div>
+                        <div className={styles.priceColumn}>
+                          {service.price}{' '}
+                          <span className={styles.symbol}>
+                            {service.symbol}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
       </div>
     </div>
   )
@@ -375,6 +448,18 @@ export default function SelectServicesStep({
   const { values, setFieldValue } = useFormikContext<FormValues>()
   const [assets, setAssets] = useState<NormalizedAsset[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const loadingStartRef = useRef<number>(0)
+  const loadingTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const MIN_LOADING_DURATION_MS = 1000
+
+  useEffect(
+    () => () => {
+      if (loadingTimerRef.current) {
+        clearTimeout(loadingTimerRef.current)
+      }
+    },
+    []
+  )
   // dataset flow: fetch algorithm + single service
   useEffect(() => {
     if (!isDatasetFlow) return
@@ -387,6 +472,8 @@ export default function SelectServicesStep({
     setFieldValue('serviceSelected', false)
 
     const fetchAlgorithm = async () => {
+      if (loadingTimerRef.current) clearTimeout(loadingTimerRef.current)
+      loadingStartRef.current = Date.now()
       setIsLoading(true)
       try {
         const { algorithmId, serviceId } = parseAlgorithmSelection(
@@ -410,6 +497,12 @@ export default function SelectServicesStep({
           signer.provider
         )
 
+        const existingSelectedServiceId =
+          (values.algorithms as any)?.id === algorithmId
+            ? (values.algorithms as any)?.services?.find((s: any) => s.checked)
+                ?.id
+            : null
+
         const normalizedServices = effectiveServices.map((svc, idx) => ({
           id: svc.id,
           title: extractString(svc.name) || svc.type,
@@ -420,7 +513,12 @@ export default function SelectServicesStep({
           duration: Number(svc.timeout ?? 0),
           price: Number(assetDdo.indexedMetadata.stats[idx]?.prices[0]?.price),
           symbol: tokenDetails.symbol,
-          checked: serviceId != null ? svc.id === serviceId : idx === 0, // default first if none selected
+          checked:
+            existingSelectedServiceId != null
+              ? svc.id === existingSelectedServiceId
+              : serviceId != null
+              ? svc.id === serviceId
+              : idx === 0,
           userParameters: svc.consumerParameters
         }))
 
@@ -443,7 +541,7 @@ export default function SelectServicesStep({
             'Algorithm service',
           expanded: true,
           checked: true,
-          services: normalizedServices.map((svc, idx) => ({
+          services: normalizedServices.map((svc) => ({
             id: svc.id,
             name: svc.name,
             title: svc.title,
@@ -457,12 +555,24 @@ export default function SelectServicesStep({
           }))
         })
         setFieldValue('serviceSelected', true)
+
+        const selectedService = normalizedServices.find((s) => s.checked)
+        const hasUserParams = !!(
+          selectedService?.userParameters &&
+          selectedService.userParameters.length > 0
+        )
+        setFieldValue('isUserParameters', hasUserParams)
       } finally {
-        setIsLoading(false)
+        const elapsed = Date.now() - loadingStartRef.current
+        const remaining = Math.max(0, MIN_LOADING_DURATION_MS - elapsed)
+        loadingTimerRef.current = setTimeout(() => {
+          setIsLoading(false)
+        }, remaining)
       }
     }
 
     fetchAlgorithm()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDatasetFlow, values.algorithm, ddoListAlgorithms, setFieldValue])
 
   // algorithm flow: normalize datasets
@@ -500,12 +610,91 @@ export default function SelectServicesStep({
     if (hasChanged) {
       setFieldValue('datasets', updatedDatasets)
     }
-  }, [assets, isDatasetFlow, setFieldValue, values.datasets])
 
-  // sync serviceSelected
+    const anyDatasetServiceHasUserParams = updatedDatasets.some((dataset) =>
+      (dataset.services || []).some(
+        (svc) =>
+          svc.checked && svc.userParameters && svc.userParameters.length > 0
+      )
+    )
+    const hasAlgoParams = !!(
+      values.algorithmServiceParams && values.algorithmServiceParams.length > 0
+    )
+    const shouldSetUserParams = hasAlgoParams || anyDatasetServiceHasUserParams
+
+    if (values.isUserParameters !== shouldSetUserParams) {
+      setFieldValue('isUserParameters', shouldSetUserParams)
+    }
+  }, [
+    assets,
+    isDatasetFlow,
+    setFieldValue,
+    values.datasets,
+    values.algorithmServiceParams,
+    values.isUserParameters
+  ])
+
+  // sync serviceSelected and isUserParameters for dataset flow
   useEffect(() => {
     setFieldValue('serviceSelected', anyServiceSelected(assets))
-  }, [assets, setFieldValue])
+
+    if (!isDatasetFlow || assets.length === 0) return
+
+    const [algoAsset] = assets
+    const updatedServices = algoAsset.services.map((svc) => ({
+      id: svc.id,
+      name: svc.name,
+      title: svc.title,
+      serviceDescription: svc.description,
+      type: svc.type,
+      duration: svc.duration,
+      price: svc.price,
+      symbol: svc.symbol,
+      checked: svc.checked,
+      userParameters: svc.userParameters
+    }))
+
+    const selectedService = updatedServices.find((s) => s.checked)
+    const hasUserParams = Boolean(
+      selectedService?.userParameters &&
+        selectedService.userParameters.length > 0
+    )
+    setFieldValue('isUserParameters', hasUserParams)
+
+    const updatedAlgorithm = {
+      ...(values.algorithms || {}),
+      id: algoAsset.id,
+      name: values.algorithms?.name ?? algoAsset.name,
+      description: values.algorithms?.description,
+      expanded: true,
+      checked: true,
+      services: updatedServices
+    }
+
+    if (
+      JSON.stringify(values.algorithms) !== JSON.stringify(updatedAlgorithm)
+    ) {
+      setFieldValue('algorithms', updatedAlgorithm)
+    }
+
+    if (selectedService?.id) {
+      const encodedSelection = JSON.stringify({
+        algoDid: algoAsset.id,
+        serviceId: selectedService.id
+      })
+      const currentSelection =
+        typeof values.algorithm === 'string' ? values.algorithm : ''
+      if (currentSelection !== encodedSelection) {
+        setFieldValue('algorithm', encodedSelection)
+      }
+    }
+  }, [
+    assets,
+    setFieldValue,
+    isDatasetFlow,
+    values.algorithms,
+    values.algorithm
+  ])
 
   const handleToggleExpand = (id: string) =>
     setAssets((prev) => toggleExpand(prev, id))
@@ -534,6 +723,7 @@ export default function SelectServicesStep({
         onToggleService={handleToggleService}
         onToggleExpand={handleToggleExpand}
         isDatasetFlow={isDatasetFlow}
+        isLoading={isLoading}
       />
       <LoaderOverlay
         visible={isLoading}

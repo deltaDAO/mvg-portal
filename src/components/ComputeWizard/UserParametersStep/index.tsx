@@ -24,6 +24,7 @@ interface DatasetAlgorithmService {
   id: string
   name: string
   userParameters: UserParameter[]
+  checked?: boolean
 }
 
 interface DatasetAlgorithmEntry {
@@ -106,7 +107,8 @@ export default function UserParametersStep({
         }
       }
 
-      const algoService = algo.services?.[0]
+      const algoService =
+        algo.services?.find((s) => s.checked) || algo.services?.[0]
       if (!algoService) {
         return {
           entries: [],

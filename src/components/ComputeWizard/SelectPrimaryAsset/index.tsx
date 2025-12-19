@@ -66,6 +66,25 @@ type RawDatasetEntry = {
   userParameters?: DatasetService['userParameters']
 }
 
+function parseAlgorithmSelection(value: string | unknown): {
+  algorithmId: string | null
+  serviceId: string | null
+} {
+  if (typeof value !== 'string') {
+    return { algorithmId: null, serviceId: null }
+  }
+
+  try {
+    const parsed = JSON.parse(value) as { algoDid?: string; serviceId?: string }
+    return {
+      algorithmId: parsed?.algoDid ?? null,
+      serviceId: parsed?.serviceId ?? null
+    }
+  } catch {
+    return { algorithmId: value, serviceId: null }
+  }
+}
+
 function transformDatasets(
   datasets: RawDatasetEntry[],
   selectedIds: string[] = []
@@ -135,8 +154,19 @@ export default function SelectPrimaryAsset({
   const datasetFlowSelectedIds = useMemo(() => {
     const selected = values.algorithm
     if (!selected) return []
-    return Array.isArray(selected) ? selected : [selected]
-  }, [values.algorithm])
+    const selectionValue = Array.isArray(selected) ? selected[0] : selected
+    const { algorithmId } = parseAlgorithmSelection(selectionValue)
+    if (!algorithmId) return [selectionValue]
+
+    const matchingOption = algorithms.find((algo) => algo.did === algorithmId)
+    if (!matchingOption) return [selectionValue]
+
+    const encodedId = JSON.stringify({
+      algoDid: matchingOption.did,
+      serviceId: matchingOption.serviceId
+    })
+    return [encodedId]
+  }, [values.algorithm, algorithms])
 
   useEffect(() => {
     if (isDatasetFlow) return

@@ -153,14 +153,43 @@ export default function Steps({
 
   useEffect(() => {
     if (!asset || !service) return
+    setFieldValue('dataset', [`${asset.id}|${service.id}`])
+
     const hasParams = Boolean(service.consumerParameters?.length)
+
+    if (flow === 'dataset') {
+      if (!hasParams) {
+        setFieldValue('datasetServiceParams', [])
+        return
+      }
+
+      const entries = service.consumerParameters.map(
+        (param: ConsumerParameter): WizardUserParameter => ({
+          name: param.name,
+          label: param.label ?? param.name,
+          description: param.description,
+          type: param.type ?? 'text',
+          default: param.default,
+          required: param.required ?? false,
+          options: param.options ?? [],
+          value: param.default ?? ''
+        })
+      )
+
+      setFieldValue('datasetServiceParams', [
+        {
+          did: asset.id,
+          serviceId: service.id,
+          userParameters: entries
+        }
+      ])
+      return
+    }
+
     setFieldValue('isUserParameters', hasParams)
 
     if (!hasParams) {
-      setFieldValue(
-        flow === 'dataset' ? 'datasetServiceParams' : 'algorithmServiceParams',
-        []
-      )
+      setFieldValue('algorithmServiceParams', [])
       return
     }
 
@@ -177,23 +206,13 @@ export default function Steps({
       })
     )
 
-    if (flow === 'dataset') {
-      setFieldValue('datasetServiceParams', [
-        {
-          did: asset.id,
-          serviceId: service.id,
-          userParameters: entries
-        }
-      ])
-    } else {
-      setFieldValue('algorithmServiceParams', [
-        {
-          did: asset.id,
-          serviceId: service.id,
-          userParameters: entries
-        }
-      ])
-    }
+    setFieldValue('algorithmServiceParams', [
+      {
+        did: asset.id,
+        serviceId: service.id,
+        userParameters: entries
+      }
+    ])
   }, [asset, service, setFieldValue, flow])
 
   useEffect(() => {

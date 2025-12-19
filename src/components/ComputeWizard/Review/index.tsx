@@ -196,7 +196,6 @@ export default function Review({
     c2dPriceRaw != null ? Math.round(Number(c2dPriceRaw) * 100) / 100 : 0
 
   const errorMessages: string[] = []
-
   const formatDuration = (seconds: number): string => {
     const d = Math.floor(seconds / 86400)
     const h = Math.floor((seconds % 86400) / 3600)
@@ -250,12 +249,13 @@ export default function Review({
       if (
         isDatasetFlow &&
         selectedAlgorithmAsset &&
-        !selectedAlgorithmAsset.accessDetails?.[0]?.isOwned &&
+        selectedAlgorithmAsset.accessDetails?.[serviceIndex] &&
+        !selectedAlgorithmAsset.accessDetails[serviceIndex].isOwned &&
         signer
       ) {
         try {
           const algoFixed = await getFixedBuyPrice(
-            selectedAlgorithmAsset.accessDetails?.[0],
+            selectedAlgorithmAsset.accessDetails[serviceIndex],
             selectedAlgorithmAsset.credentialSubject?.chainId,
             signer
           )
@@ -321,7 +321,8 @@ export default function Review({
     accessDetails,
     signer,
     selectedAlgorithmAsset,
-    selectedDatasetAsset
+    selectedDatasetAsset,
+    serviceIndex
   ])
 
   useEffect(() => {
@@ -524,7 +525,9 @@ export default function Review({
           index: queue.length,
           price: rawPrice,
           duration: '1 day',
-          name: algoService?.name || 'Algorithm'
+          name:
+            selectedAlgorithmAsset.credentialSubject?.services?.[serviceIndex]
+              ?.name || 'Algorithm'
         })
       }
     } else {
@@ -1204,8 +1207,8 @@ export default function Review({
   }
   if (
     selectedAlgorithmAsset?.accessDetails &&
-    selectedAlgorithmAsset.accessDetails[0] &&
-    !selectedAlgorithmAsset.accessDetails[0].isPurchasable
+    selectedAlgorithmAsset.accessDetails[serviceIndex] &&
+    !selectedAlgorithmAsset.accessDetails[serviceIndex].isPurchasable
   ) {
     errorMessages.push('The selected algorithm asset is not purchasable.')
   }

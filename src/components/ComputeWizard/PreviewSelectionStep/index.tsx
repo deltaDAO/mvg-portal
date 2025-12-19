@@ -45,7 +45,7 @@ export default function PreviewSelectionStep({
   const algoPreview: AlgoPreview | null = useMemo(() => {
     if (!isDatasetFlow || !values.algorithms) return null
     const algo = values.algorithms
-    const svc = algo.services?.[0]
+    const svc = algo.services?.find((s) => s.checked) || algo.services?.[0]
     if (!svc) return null
     return {
       id: algo.id,
@@ -99,9 +99,14 @@ export default function PreviewSelectionStep({
 
   useEffect(() => {
     if (isDatasetFlow) {
-      const svc = values.algorithms?.services?.[0]
+      const selectedAlgoService = values.algorithms?.services?.find(
+        (s) => s.checked
+      )
       const hasUserParams =
-        !!(svc?.userParameters && svc.userParameters.length > 0) ||
+        !!(
+          selectedAlgoService?.userParameters &&
+          selectedAlgoService.userParameters.length > 0
+        ) ||
         !!(
           values.datasetServiceParams && values.datasetServiceParams.length > 0
         )
@@ -117,8 +122,10 @@ export default function PreviewSelectionStep({
     const anyUserParams = datasetPreview.some((d) =>
       d.services.some((s) => s.userParameters && s.userParameters.length > 0)
     )
-    const isAlgoParams = !!values.algorithmServiceParams
-    const shouldSetUserParams = isAlgoParams || anyUserParams
+    const hasAlgoParams =
+      Array.isArray(values.algorithmServiceParams) &&
+      values.algorithmServiceParams.length > 0
+    const shouldSetUserParams = hasAlgoParams || anyUserParams
 
     if (values.isUserParameters !== shouldSetUserParams) {
       setFieldValue('isUserParameters', shouldSetUserParams)
