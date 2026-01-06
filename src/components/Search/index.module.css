@@ -22,7 +22,7 @@
   }
   .filterContainer {
     flex-direction: column;
-    width: 15rem;
+    width: 16rem;
     border-right: 1px solid var(--border-color);
   }
   .filterContainer > div {

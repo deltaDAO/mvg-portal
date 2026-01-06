@@ -5,6 +5,7 @@ import {
 import { getServiceByName, isAddressWhitelisted } from './ddo'
 import normalizeUrl from 'normalize-url'
 import { Asset } from 'src/@types/Asset'
+import { Service } from 'src/@types/ddo/Service'
 
 export async function transformAssetToAssetSelection(
   datasetProviderEndpoint: string,
@@ -278,6 +279,7 @@ export async function transformAssetToAssetSelectionForComputeWizard(
 ): Promise<AssetSelectionAsset[]> {
   if (!assets) return []
   const algorithmList: AssetSelectionAsset[] = []
+  const seen = new Set<string>()
   for (const asset of assets) {
     const algoService =
       getServiceByName(asset, 'compute') || getServiceByName(asset, 'access')
@@ -301,7 +303,9 @@ export async function transformAssetToAssetSelectionForComputeWizard(
 
       const { services } = asset.credentialSubject
 
-      // only loop through those services that appear in selectedAlgorithms
+      if (seen.has(asset.id)) continue
+
+      let preferred: { service: Service; idx: number } | null = null
       services.forEach((service, idx) => {
         const key = `${asset.id}|${service.id}`
         if (
@@ -310,7 +314,17 @@ export async function transformAssetToAssetSelectionForComputeWizard(
           !isAllAlgorithmsAllowed &&
           !matches.has(key)
         )
-          return // <-- skip any service that wasn't in selectedAlgorithms
+          return
+        if (!preferred) {
+          preferred = { service, idx }
+        }
+        if (service.type === 'compute' && !preferred?.service?.type) {
+          preferred = { service, idx }
+        }
+      })
+
+      if (preferred) {
+        const { service, idx } = preferred
         const assetEntry: AssetSelectionAsset = {
           did: asset.id,
           serviceId: service.id,
@@ -326,9 +340,9 @@ export async function transformAssetToAssetSelectionForComputeWizard(
             : true,
           datetime: asset.indexedMetadata.event.datetime
         }
-        // put selected ones up front
-        algorithmList.unshift(assetEntry)
-      })
+        algorithmList.push(assetEntry)
+        seen.add(asset.id)
+      }
     }
   }
   algorithmList.sort((a, b) => {

@@ -97,6 +97,29 @@
   font-weight: 400;
   font-size: 12px;
   color: var(--clr-slate-50);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.externalLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.externalLink svg {
+  width: 14px;
+  height: 14px;
+}
+
+.tokenSymbol {
+  font-family: var(--font-family);
+  font-weight: 600;
+  font-size: 12px;
+  color: #303031;
 }
 
 .statusTags {

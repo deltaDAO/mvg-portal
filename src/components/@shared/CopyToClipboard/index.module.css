@@ -1,0 +1,72 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.textButton {
+  border: none;
+  background: transparent;
+  color: rgba(76, 163, 211, 0.9);
+  font-family: var(--font-family);
+  font-size: 14px;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.textButton:hover {
+  color: #303031;
+  text-decoration: underline;
+}
+
+.text {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copyButton {
+  border: 1px solid var(--border-color);
+  background: #f7f7f7;
+  color: #303031;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.copyButton:hover {
+  background: #ececec;
+}
+
+.badge {
+  color: #4caf50;
+  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.spinner {
+  width: 12px;
+  height: 12px;
+  transform: rotate(-90deg);
+}
+
+.circle {
+  fill: none;
+  stroke: #4caf50;
+  stroke-width: 4px;
+  stroke-dasharray: 62.83;
+  stroke-dashoffset: 62.83;
+  animation: drawCircle 1.2s ease-in-out forwards;
+}
+
+@keyframes drawCircle {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

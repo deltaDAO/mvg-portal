@@ -79,7 +79,7 @@ export const wagmiConfig = (() => {
     chains,
     ssr: true,
     storage: createStorage({ storage: cookieStorage }),
-    connectors: [injected()],
+    connectors: [],
     transports: chains.reduce(
       (acc, chain) => ({
         ...acc,

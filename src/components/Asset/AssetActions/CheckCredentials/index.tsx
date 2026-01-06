@@ -64,6 +64,9 @@ function isCredentialCached(
   cachedCredentials: SsiVerifiableCredential[],
   credentialType: string
 ): boolean {
+  if (!cachedCredentials) {
+    return false
+  }
   return cachedCredentials.some((credential) =>
     credential.parsedDocument.type.includes(credentialType)
   )
@@ -536,7 +539,8 @@ export function AssetActionCheckCredentials({
           checkCredentialState === CheckCredentialState.Stop &&
           requiredCredentials?.length > 0 &&
           hasAnyCached &&
-          !error
+          !error &&
+          exchangeStateData.selectedDid !== ''
 
         if (showMissingWarning) return null
 

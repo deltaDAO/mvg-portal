@@ -1,0 +1,83 @@
+.containerOuter {
+  padding: 60px;
+}
+
+.container {
+  padding: var(--sp-10);
+}
+
+.form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.error {
+  color: red;
+  margin: 1rem 0;
+}
+
+.successContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  min-height: 400px;
+}
+
+.successDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.successDetails h3 {
+  margin: 1rem 0;
+  color: var(--font-color-heading);
+  font-size: 1.5rem;
+}
+
+.successDetails p {
+  margin: 0.5rem 0;
+  color: var(--font-color-text);
+}
+
+.jobIdContainer {
+  background: var(--background-highlight);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.jobIdContainer p {
+  margin: 0;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.jobIdRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.jobIdValue {
+  font-family: monospace;
+  font-size: 0.9rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jobIdCopy {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

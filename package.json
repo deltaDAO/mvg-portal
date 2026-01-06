@@ -20,7 +20,8 @@
     "lint:fix": "eslint --ignore-path .gitignore --ext .ts,.tsx . --fix",
     "format": "prettier --ignore-path .gitignore './**/*.{css,yml,js,ts,tsx,json}' --write",
     "type-check": "tsc --noEmit",
-    "postinstall": "husky install"
+    "postinstall": "husky install",
+    "devops": "op run --env-file=./.env npm run pregenerate && next dev -p 8008"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",

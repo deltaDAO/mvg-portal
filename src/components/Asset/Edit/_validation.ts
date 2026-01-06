@@ -249,14 +249,35 @@ export const serviceValidationSchema = Yup.object().shape({
       `Must have maximum ${MAX_DECIMALS} decimal digits`,
       (param) => getMaxDecimalsValidation(MAX_DECIMALS).test(param?.toString())
     ),
-  files: Yup.array<FileInfo[]>()
+  files: Yup.array()
     .of(
       Yup.object().shape({
         url: Yup.string().nullable(),
+        type: Yup.string().nullable(),
         valid: Yup.boolean().nullable()
       })
     )
-    .nullable(),
+    .test('files-validation', 'Please provide a valid file', function (files) {
+      const fileList = files || []
+      const hasEncryptedFile = fileList.some(
+        (file: any) =>
+          file?.type === 'hidden' && (!file?.url || file.url.trim() === '')
+      )
+
+      if (hasEncryptedFile) {
+        return true
+      }
+      if (fileList.length === 0) {
+        return this.createError({ message: 'At least one file is required' })
+      }
+      const hasValidFile = fileList.some(
+        (file: any) => file?.url?.trim() && file.valid !== false
+      )
+      return (
+        hasValidFile ||
+        this.createError({ message: 'Please provide a valid file URL' })
+      )
+    }),
   timeout: Yup.string().required('Required'),
   usesConsumerParameters: Yup.boolean(),
   consumerParameters: Yup.array().when('usesConsumerParameters', {

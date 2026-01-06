@@ -1,0 +1,290 @@
+.container {
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  padding: 20px;
+  padding-left: 0; /* dataset variant */
+}
+
+.title {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 22px;
+  color: #303031;
+}
+
+.boxModel {
+  border: 1px solid rgba(48, 48, 49, 0.1);
+  border-radius: 20px;
+  padding: 0 20px 20px;
+  max-width: 1080px;
+  min-height: 260px;
+  box-shadow: 1px 4px 8px 0 rgba(0, 0, 0, 0.15);
+  background: #fff;
+  max-height: 510px;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar */
+.boxModel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.boxModel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 20px;
+}
+
+.boxModel::-webkit-scrollbar-thumb {
+  background: #fdd655;
+  border-radius: 20px;
+}
+
+.boxModel::-webkit-scrollbar-thumb:hover {
+  background: #fbcb05;
+}
+
+.headerWrapper {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: #fff;
+  padding: 20px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(48, 48, 49, 0.1);
+}
+
+.header {
+  display: flex;
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 114%;
+  text-transform: uppercase;
+  color: #303031;
+}
+
+.dataset,
+.algorithm {
+  margin-bottom: 10px;
+}
+
+.serviceRow {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  border-bottom: 1px solid rgba(48, 48, 49, 0.2);
+  padding: 10px 0;
+}
+
+.serviceName {
+  font-family: var(--font-family);
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 117%;
+  color: #303031;
+}
+
+.servicesContainer {
+  background-color: white;
+}
+
+.service {
+  display: flex;
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+  font-family: var(--font-family);
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 117%;
+  color: #303031;
+}
+
+.service:last-child {
+  border-bottom: none;
+}
+
+.checkboxColumn {
+  width: 40px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.servicesColumn {
+  width: 20%;
+  padding-right: 15px;
+}
+
+.titleColumn {
+  width: 12%;
+  padding-right: 15px;
+}
+
+.descriptionColumn {
+  flex: 1;
+  padding-right: 20px;
+}
+
+.descriptionText {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+}
+
+.titleText {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.typeColumn {
+  width: 10%;
+}
+
+.durationColumn {
+  width: 10%;
+}
+
+.priceColumn {
+  width: 10%;
+  text-align: right;
+}
+
+.didButton {
+  border: none;
+  background: transparent;
+  color: var(--ocean-blue);
+  font-family: var(--font-family);
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+}
+
+.didButton:hover {
+  color: #303031;
+  text-decoration: underline;
+}
+
+.externalLink {
+  margin-left: 8px;
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.symbol {
+  color: #00adb2;
+}
+
+.checkboxInput {
+  cursor: pointer;
+  border-radius: 2px;
+  width: 16px;
+  height: 16px;
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #d1d1d1;
+  position: relative;
+}
+
+.checkboxInput:checked {
+  background-color: #fdd655;
+  border-color: #fdd655;
+}
+
+.checkboxInput:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.expandCollapseIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expandCollapseIcon svg {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.2s ease;
+}
+
+.expandedIcon svg {
+  transform: rotate(180deg);
+}
+
+.listWrapper {
+  position: relative;
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  gap: 16px;
+}
+
+.skeletonBox {
+  width: 100%;
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.08) 25%,
+    rgba(0, 0, 0, 0.15) 37%,
+    rgba(0, 0, 0, 0.08) 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.skeletonColumn {
+  flex: 1;
+}
+
+.skeletonWide {
+  flex: 2;
+}
+
+.skeletonNarrow {
+  flex: 0.7;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media screen and (min-width: 600px) and (max-width: 1028px) {
+  .header {
+    font-size: 8px;
+  }
+  .service {
+    font-size: 6px;
+  }
+  .serviceName {
+    font-size: 8px;
+  }
+}

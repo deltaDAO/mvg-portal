@@ -2,10 +2,9 @@ import React, { FormEvent, ReactElement, RefObject } from 'react'
 import Button from '@shared/atoms/Button'
 import styles from './index.module.css'
 import { FormikContextType, useFormikContext } from 'formik'
-import Loader from '@shared/atoms/Loader'
-import { FormComputeData } from '@components/DatasetComputeWizard/_types'
+import { FormComputeData } from '@components/ComputeWizard/_types'
 import ButtonBuy from '@components/Asset/AssetActions/ButtonBuy'
-import { getDatasetSteps } from '@components/AlgorithmComputeWizard/_constants'
+import { getDatasetSteps } from '@components/ComputeWizard/_steps'
 
 interface WizardActionsProps {
   disabled?: boolean
