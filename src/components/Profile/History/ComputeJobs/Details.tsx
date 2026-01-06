@@ -82,6 +82,7 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
 
   const [algoName, setAlgoName] = useState<string>()
   const [algoDtSymbol, setAlgoDtSymbol] = useState<string>()
+  const [algoServiceName, setAlgoServiceName] = useState<string>()
   const [datasetAssets, setDatasetAssets] = useState<
     { ddo: AssetType; serviceId?: string; serviceName?: string }[]
   >([])
@@ -96,6 +97,12 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
         if (ddo) {
           setAlgoDtSymbol(ddo.indexedMetadata.stats[0].symbol)
           setAlgoName(ddo.credentialSubject.metadata.name)
+          if (job.algorithm.serviceId) {
+            const service = getServiceById(ddo, job.algorithm.serviceId)
+            if (service) {
+              setAlgoServiceName(extractString(service.name) || undefined)
+            }
+          }
         }
       }
     }
@@ -154,6 +161,7 @@ function DetailsAssets({ job }: { job: ComputeJobMetaData }) {
             title={algoName}
             symbol={algoDtSymbol}
             did={job.algorithm.documentId}
+            serviceName={algoServiceName}
           />
         ) : (
           <div className={styles.assetNotAvailable}>
