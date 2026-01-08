@@ -20,8 +20,7 @@
     "lint:fix": "eslint --ignore-path .gitignore --ext .ts,.tsx . --fix",
     "format": "prettier --ignore-path .gitignore './**/*.{css,yml,js,ts,tsx,json}' --write",
     "type-check": "tsc --noEmit",
-    "postinstall": "husky install",
-    "devops": "op run --env-file=./.env npm run pregenerate && next dev -p 8008"
+    "postinstall": "husky install"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
@@ -49,6 +48,7 @@
     "ethers": "^6.15.0",
     "filesize": "^10.0.7",
     "formik": "^2.4.2",
+    "graphql": "^16.12.0",
     "gray-matter": "^4.0.3",
     "is-ipfs": "^8.0.1",
     "is-url-superb": "^6.1.0",
@@ -81,6 +81,7 @@
     "remark-toc": "^9.0.0",
     "remove-markdown": "^0.5.0",
     "slugify": "^1.6.6",
+    "styled-components": "^6.2.0",
     "url-loader": "^4.1.1",
     "urql": "^3.0.3",
     "use-debounce": "^9.0.4",
