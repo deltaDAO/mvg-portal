@@ -20,3 +20,4 @@ __snapshots__
 storybook-static
 .qodo
 next-env.d.ts
+public/runtime-config.js
