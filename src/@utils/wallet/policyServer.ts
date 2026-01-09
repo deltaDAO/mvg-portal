@@ -3,6 +3,7 @@ import { ProviderInstance } from '@oceanprotocol/lib'
 import { customProviderUrl } from 'app.config.cjs'
 import axios from 'axios'
 import { Asset } from 'src/@types/Asset'
+import crypto from 'crypto'
 import {
   PolicyServerResponse,
   PolicyServerCheckSessionIdAction,
