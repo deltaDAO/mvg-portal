@@ -1,13 +1,12 @@
 'use client'
 
 import { LoggerInstance } from '@oceanprotocol/lib'
-import { cookieStorage, createConfig, createStorage, injected } from 'wagmi'
+import { cookieStorage, createConfig, createStorage } from 'wagmi'
 import { erc20Abi, http } from 'viem'
 import { localhost, type Chain } from 'wagmi/chains'
 import {
   ethers,
   Contract,
-  Signer,
   formatEther,
   JsonRpcProvider,
   Provider,
@@ -17,7 +16,7 @@ import { getNetworkDisplayName } from '@hooks/useNetworkMetadata'
 import { getOceanConfig } from '../ocean'
 import { getSupportedChains } from './chains'
 import { chainIdsSupported } from '../../../app.config.cjs'
-import { walletConnect } from 'wagmi/connectors'
+import { getRuntimeConfig } from '../runtimeConfig'
 
 export async function getDummySigner(chainId: number): Promise<Wallet> {
   const config = getOceanConfig(chainId)
@@ -36,8 +35,9 @@ export async function getDummySigner(chainId: number): Promise<Wallet> {
 ------------------------------------------ */
 function getWagmiChains(): readonly [Chain, ...Chain[]] {
   const baseChains: Chain[] = [...getSupportedChains(chainIdsSupported)]
+  const runtimeConfig = getRuntimeConfig()
 
-  if (process.env.NEXT_PUBLIC_MARKET_DEVELOPMENT === 'true') {
+  if (runtimeConfig.NEXT_PUBLIC_MARKET_DEVELOPMENT === 'true') {
     baseChains.push({ ...localhost, id: 11155420 })
   }
 

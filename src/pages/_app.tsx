@@ -1,5 +1,6 @@
 'use client'
 import type { AppProps } from 'next/app'
+import Script from 'next/script'
 import { ReactElement, useEffect, useState } from 'react'
 import { UserPreferencesProvider } from '@context/UserPreferences'
 import UrqlProvider from '@context/UrqlProvider'
@@ -31,6 +32,7 @@ function MyApp({ Component, pageProps }: AppProps): ReactElement {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Script src="/runtime-config.js" strategy="beforeInteractive" />
       <WagmiProvider config={wagmiConfig}>
         <ConnectKitProvider
           options={{ initialChainId: 0 }}

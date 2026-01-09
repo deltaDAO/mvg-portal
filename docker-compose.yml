@@ -30,6 +30,8 @@ services:
     container_name: ocean-market
     ports:
       - '8008:8008'
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
     restart: unless-stopped

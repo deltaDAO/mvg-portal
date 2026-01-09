@@ -1,3 +1,5 @@
+import { getRuntimeConfig } from './runtimeConfig'
+
 export interface CredentialStatus {
   isValid: boolean
   expiresAt?: number
@@ -5,8 +7,10 @@ export interface CredentialStatus {
   needsRefresh: boolean
 }
 
+const runtimeConfig = getRuntimeConfig()
 const CREDENTIAL_VALIDITY_DURATION =
-  Number(process.env.NEXT_PUBLIC_CREDENTIAL_VALIDITY_DURATION) || 5 * 60 * 1000
+  Number(runtimeConfig.NEXT_PUBLIC_CREDENTIAL_VALIDITY_DURATION) ||
+  5 * 60 * 1000
 
 export function createCredentialStatus(
   isValid: boolean,
