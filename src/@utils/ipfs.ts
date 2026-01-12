@@ -30,6 +30,7 @@ export async function serverSideUploadToIpfs(
     const pinataContent = {
       pinataContent: data
     }
+    console.log('Trying to upload to Pinata..')
     const response = await axios.post(
       'https://api.pinata.cloud/pinning/pinJSONToIPFS',
       pinataContent,
@@ -42,7 +43,6 @@ export async function serverSideUploadToIpfs(
       }
     )
 
-    // Pinata API response structure is { IpfsHash, PinSize, ... }
     return response.data.IpfsHash
   } catch (error) {
     throw new Error(`[serverSideUploadToIpfs] ${error.message}`)

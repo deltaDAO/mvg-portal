@@ -15,10 +15,11 @@ export default async function handler(
       )
       res.status(200).json({ success: true, data })
     } catch (error) {
+      console.log('Error uploading to IPFS:', error)
       LoggerInstance.error(error.message)
       res.status(500).json({
         success: false,
-        error: 'Could not upload the file to the IPFS provider'
+        error: error.message || 'Could not upload the file to the IPFS provider'
       })
     }
   } else if (req.method === 'DELETE') {
