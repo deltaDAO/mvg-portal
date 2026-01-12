@@ -24,7 +24,7 @@ export async function serverSideUploadToIpfs(
   }
 
   if (!ipfsJWT) {
-    throw new Error('[serverSideUploadToIpfs] Set NEXT_PUBLIC_IPFS_JWT')
+    throw new Error('[serverSideUploadToIpfs] Set IPFS_JWT')
   }
 
   try {
@@ -52,7 +52,7 @@ export async function serverSideUploadToIpfs(
 export async function uploadToIPFS(data: any): Promise<string> {
   try {
     const runtimeConfig = getRuntimeConfig()
-    const ipfsJWT = runtimeConfig.NEXT_PUBLIC_IPFS_JWT
+    const ipfsJWT = runtimeConfig.IPFS_JWT
     const res = await fetch('/api/ipfs', {
       method: 'POST',
       headers: ipfsJWT ? { 'x-ipfs-jwt': ipfsJWT } : undefined,
@@ -80,7 +80,7 @@ export async function serverSideDeleteIpfsFile(
   }
 
   if (!ipfsJWT) {
-    throw new Error('[serverSideDeleteIpfsFile] Set NEXT_PUBLIC_IPFS_JWT')
+    throw new Error('[serverSideDeleteIpfsFile] Set IPFS_JWT')
   }
 
   try {
@@ -98,7 +98,7 @@ export async function serverSideDeleteIpfsFile(
 export async function deleteIpfsFile(ipfsHash: string) {
   try {
     const runtimeConfig = getRuntimeConfig()
-    const ipfsJWT = runtimeConfig.NEXT_PUBLIC_IPFS_JWT
+    const ipfsJWT = runtimeConfig.IPFS_JWT
     const res = await fetch('/api/ipfs', {
       method: 'DELETE',
       headers: ipfsJWT ? { 'x-ipfs-jwt': ipfsJWT } : undefined,
