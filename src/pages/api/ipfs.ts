@@ -16,7 +16,6 @@ export default async function handler(
       const data = await serverSideUploadToIpfs(JSON.parse(req.body), ipfsJWT)
       res.status(200).json({ success: true, data })
     } catch (error) {
-      console.log('Error uploading to IPFS:', error)
       LoggerInstance.error(error.message)
       res.status(500).json({
         success: false,
