@@ -7,13 +7,12 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const headerValue = req.headers['x-ipfs-jwt']
-  const headerToken = Array.isArray(headerValue) ? headerValue[0] : headerValue
-  const ipfsJWT = headerToken || appConfig.ipfsJWT
-
   if (req.method === 'POST') {
     try {
-      const data = await serverSideUploadToIpfs(JSON.parse(req.body), ipfsJWT)
+      const data = await serverSideUploadToIpfs(
+        JSON.parse(req.body),
+        appConfig.ipfsJWT
+      )
       res.status(200).json({ success: true, data })
     } catch (error) {
       LoggerInstance.error(error.message)
@@ -24,7 +23,7 @@ export default async function handler(
     }
   } else if (req.method === 'DELETE') {
     try {
-      await serverSideDeleteIpfsFile(req.body, ipfsJWT)
+      await serverSideDeleteIpfsFile(req.body, appConfig.ipfsJWT)
       res.status(200).json({ success: true })
     } catch (error) {
       LoggerInstance.error(error.message)

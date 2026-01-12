@@ -152,7 +152,7 @@ module.exports = {
     process.env.NEXT_PUBLIC_SSI_DEFAULT_POLICIES_URL ||
     'https://raw.githubusercontent.com/OceanProtocolEnterprise/policy-server/refs/heads/main/default-verification-policies',
 
-  ipfsJWT: getEnv('IPFS_JWT') || process.env.IPFS_JWT,
+  ipfsJWT: getEnv('NEXT_PUBLIC_IPFS_JWT') || process.env.NEXT_PUBLIC_IPFS_JWT,
   ipfsGateway:
     getEnv('NEXT_PUBLIC_IPFS_GATEWAY') || process.env.NEXT_PUBLIC_IPFS_GATEWAY,
   ipfsUnpinFiles:
