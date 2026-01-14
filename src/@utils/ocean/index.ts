@@ -3,6 +3,7 @@ import {
   Config,
   getOceanArtifactsAddressesByChainId
 } from '@oceanprotocol/lib'
+import { getRuntimeConfig } from '../runtimeConfig'
 
 /**
   This function takes a Config object as an input and returns a new sanitized Config object
@@ -12,31 +13,33 @@ import {
   @returns {Config} A new Config object
 */
 export function sanitizeDevelopmentConfig(config: Config): Config {
+  const runtimeConfig = getRuntimeConfig()
   return {
     nodeUri: config.nodeUri,
-    oceanNodeUri: process.env.NEXT_PUBLIC_PROVIDER_URL || config.oceanNodeUri,
+    oceanNodeUri: runtimeConfig.NEXT_PUBLIC_PROVIDER_URL || config.oceanNodeUri,
     fixedRateExchangeAddress:
-      process.env.NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS,
-    dispenserAddress: process.env.NEXT_PUBLIC_DISPENSER_ADDRESS,
+      runtimeConfig.NEXT_PUBLIC_FIXED_RATE_EXCHANGE_ADDRESS,
+    dispenserAddress: runtimeConfig.NEXT_PUBLIC_DISPENSER_ADDRESS,
     oceanTokenAddress: config.oceanTokenAddress,
-    nftFactoryAddress: process.env.NEXT_PUBLIC_NFT_FACTORY_ADDRESS,
-    routerFactoryAddress: process.env.NEXT_PUBLIC_ROUTER_FACTORY_ADDRESS,
+    nftFactoryAddress: runtimeConfig.NEXT_PUBLIC_NFT_FACTORY_ADDRESS,
+    routerFactoryAddress: runtimeConfig.NEXT_PUBLIC_ROUTER_FACTORY_ADDRESS,
     accessListFactory:
       config.accessListFactory ||
-      process.env.NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS
+      runtimeConfig.NEXT_PUBLIC_ACCESS_LIST_FACTORY_ADDRESS
   } as Config
 }
 
 export function getOceanConfig(network: string | number): any {
+  const runtimeConfig = getRuntimeConfig()
   // Load the RPC map from .env
-  const rpcMap: Record<string, string> = process.env.NEXT_PUBLIC_NODE_URI_MAP
-    ? JSON.parse(process.env.NEXT_PUBLIC_NODE_URI_MAP)
+  const rpcMap: Record<string, string> = runtimeConfig.NEXT_PUBLIC_NODE_URI_MAP
+    ? JSON.parse(runtimeConfig.NEXT_PUBLIC_NODE_URI_MAP)
     : {}
 
-  const erc20Map: Record<string, string> = process.env
-    .NEXT_PUBLIC_ERC20_ADDRESSES
-    ? JSON.parse(process.env.NEXT_PUBLIC_ERC20_ADDRESSES)
-    : {}
+  const erc20Map: Record<string, string> =
+    runtimeConfig.NEXT_PUBLIC_ERC20_ADDRESSES
+      ? JSON.parse(runtimeConfig.NEXT_PUBLIC_ERC20_ADDRESSES)
+      : {}
 
   if (!network) {
     console.warn('[getOceanConfig] No network provided yet.')
@@ -52,7 +55,7 @@ export function getOceanConfig(network: string | number): any {
       network === 56 ||
       network === 8996
       ? undefined
-      : process.env.NEXT_PUBLIC_INFURA_PROJECT_ID
+      : runtimeConfig.NEXT_PUBLIC_INFURA_PROJECT_ID
   ) as any
   if (network === 8996) {
     config = { ...config, ...sanitizeDevelopmentConfig(config) }

@@ -2,6 +2,7 @@ import * as isIPFS from 'is-ipfs'
 import { FileItem } from '@utils/fileItem'
 import { RemoteSource } from '../@types/ddo/RemoteSource'
 import axios from 'axios'
+import { getRuntimeConfig } from './runtimeConfig'
 
 export interface IpfsRemoteDocument {
   content: string
@@ -42,7 +43,6 @@ export async function serverSideUploadToIpfs(
       }
     )
 
-    // Pinata API response structure is { IpfsHash, PinSize, ... }
     return response.data.IpfsHash
   } catch (error) {
     throw new Error(`[serverSideUploadToIpfs] ${error.message}`)
@@ -51,8 +51,11 @@ export async function serverSideUploadToIpfs(
 
 export async function uploadToIPFS(data: any): Promise<string> {
   try {
+    const runtimeConfig = getRuntimeConfig()
+    const ipfsJWT = runtimeConfig.NEXT_PUBLIC_IPFS_JWT
     const res = await fetch('/api/ipfs', {
       method: 'POST',
+      headers: ipfsJWT ? { 'x-ipfs-jwt': ipfsJWT } : undefined,
       body: JSON.stringify(data)
     })
 
@@ -94,8 +97,11 @@ export async function serverSideDeleteIpfsFile(
 
 export async function deleteIpfsFile(ipfsHash: string) {
   try {
+    const runtimeConfig = getRuntimeConfig()
+    const ipfsJWT = runtimeConfig.NEXT_PUBLIC_IPFS_JWT
     const res = await fetch('/api/ipfs', {
       method: 'DELETE',
+      headers: ipfsJWT ? { 'x-ipfs-jwt': ipfsJWT } : undefined,
       body: ipfsHash
     })
 

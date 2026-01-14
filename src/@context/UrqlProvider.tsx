@@ -50,9 +50,6 @@ export default function UrqlClientProvider({
     const newClient = createUrqlClient(oceanConfig.nodeUri)
     urqlClient = newClient
     setClient(newClient)
-    LoggerInstance.log(
-      `[URQL] Client connected to ${oceanConfig.nodeUri} (chainId: ${chainId})`
-    )
   }, [chainId]) // re-run when chain changes
 
   return client ? <Provider value={client}>{children}</Provider> : <></>

@@ -22,7 +22,10 @@ export async function requestCredentialPresentation(
   policyServerData: PolicyServerInitiateActionData
 }> {
   try {
-    const sessionId = crypto.randomUUID()
+    const sessionId =
+      typeof globalThis.crypto?.randomUUID === 'function'
+        ? globalThis.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(16).slice(2)}`
     const policyServer: PolicyServerInitiateActionData = {
       sessionId,
       successRedirectUri: ``,
