@@ -1,5 +1,10 @@
 {
-  "title": "Good job! You are ready to explore the portal, scroll down to see more.",
+  "learnMore": {
+    "text": "You want to learn more about Pontus-X?",
+    "link": "https://docs.pontus-x.eu/docs/introduction/overview",
+    "linkLabel": "Read the documentation"
+  },
+  "title": "Good job! You are now ready to consume or publish your first assets on Pontus-X.",
   "body": "One last thing: we are never going to ask for your private key, remember to never share it with anyone!",
   "image": "/images/onboarding/ready.png"
 }

@@ -5,17 +5,13 @@ import Main from './Main'
 import Navigation from './Navigation'
 import Container from '../atoms/Container'
 import Stepper from './Stepper'
-import DownloadMetamask from './Steps/DownloadMetamask'
-import ConnectAccount from './Steps/ConnectAccount'
-import ImportCustomTokens from './Steps/ImportCustomTokens'
+import OnboardingApp from './Steps/OnboardingApp'
 import Ready from './Steps/Ready'
 import { useAccount, useNetwork, useProvider } from 'wagmi'
 import { useUserPreferences } from '@context/UserPreferences'
 import useBalance from '@hooks/useBalance'
-import ImportWallet from './Steps/ImportWallet'
-import AutomationWalletState from './Steps/AutomationWalletState'
 import { getSupportedChainIds } from '../../../../chains.config'
-import Faucet from './Steps/Faucet'
+import ImportWallet from './Steps/ImportWallet'
 
 export interface OnboardingStep {
   title: string
@@ -27,12 +23,8 @@ export interface OnboardingStep {
 }
 
 const steps = [
-  { shortLabel: 'MetaMask', component: <DownloadMetamask /> },
-  { shortLabel: 'Connect', component: <ConnectAccount /> },
-  { shortLabel: 'Tokens', component: <ImportCustomTokens /> },
-  { shortLabel: 'Import', component: <ImportWallet /> },
-  { shortLabel: 'Automation', component: <AutomationWalletState /> },
-  { shortLabel: 'Faucet', component: <Faucet /> },
+  { shortLabel: 'Onboarding', component: <OnboardingApp /> },
+  { shortLabel: 'Connect', component: <ImportWallet /> },
   { shortLabel: 'Ready', component: <Ready /> }
 ]
 
@@ -41,7 +33,11 @@ export enum NavigationDirections {
   NEXT = 'next'
 }
 
-export default function OnboardingSection(): ReactElement {
+export default function OnboardingSection({
+  showHideButton
+}: {
+  showHideButton?: boolean
+}): ReactElement {
   const { address: accountId } = useAccount()
   const { balance } = useBalance()
   const web3Provider = useProvider()
@@ -68,7 +64,7 @@ export default function OnboardingSection(): ReactElement {
 
   return (
     <div className={styles.wrapper}>
-      <Header />
+      <Header showHideButton={showHideButton} />
       <Container className={styles.cardWrapper}>
         <div className={styles.cardContainer}>
           <Stepper
