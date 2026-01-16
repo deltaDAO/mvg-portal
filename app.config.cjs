@@ -166,8 +166,8 @@ module.exports = {
     getEnv('NEXT_PUBLIC_OPA_SERVER_URL') ||
     process.env.NEXT_PUBLIC_OPA_SERVER_URL,
   showOnboardingModuleByDefault:
-    (getEnv('NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT') ||
-      process.env.NEXT_PUBLIC_SHOW_ONBOARDING_MODULE_BY_DEFAULT) === 'false',
+    (getEnv('NEXT_PUBLIC_HIDE_ONBOARDING_MODULE_BY_DEFAULT') ||
+      process.env.NEXT_PUBLIC_HIDE_ONBOARDING_MODULE_BY_DEFAULT) === 'false',
   nodeUriIndex:
     getEnv('NEXT_PUBLIC_NODE_URI_INDEXED') ||
     process.env.NEXT_PUBLIC_NODE_URI_INDEXED
