@@ -3,6 +3,7 @@ services:
   ocean-market:
     image: oceanenterprise/market:latest
     container_name: ocean-market
+    pull_policy: always
     ports:
       - '8008:8008'
     env_file:
