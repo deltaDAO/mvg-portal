@@ -1,5 +1,5 @@
 {
-  "title": "Import your wallet",
+  "title": "Provide Credential Wallet",
   "subtitle": "Import the wallet you created with the Onboarding App to identify your Organization on the portal.",
   "body": "Click on the button to import the wallet you created in the Onboarding App, you will be asked to provide the encrypted json file and the password to unlock it.",
   "image": "/images/onboarding/wallet_import.png",
