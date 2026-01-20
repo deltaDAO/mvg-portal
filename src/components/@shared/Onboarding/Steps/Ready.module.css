@@ -60,6 +60,12 @@
   max-height: 25rem;
 }
 
+@media screen and (min-width: 60rem) {
+  .image {
+    max-height: 15rem;
+  }
+}
+
 .footer {
   max-width: var(--break-point--small);
   margin: 0 auto;
