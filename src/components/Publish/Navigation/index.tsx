@@ -20,14 +20,20 @@ export default function Navigation(): ReactElement {
   }
 
   function getSuccessClass(step: number) {
-    const isSuccessMetadata = errors.metadata === undefined
-    const isSuccessServices = errors.services === undefined
-    const isSuccessPolices = errors.policies === undefined
+    // Only mark steps as successful if they are BEFORE the current step
+    // and their respective validations have no errors. This avoids showing
+    // checks on initial load before the user interacts with the form.
+    const isPastStep = values.user.stepCurrent > step
+
+    const isSuccessMetadata = isPastStep && errors.metadata === undefined
+    const isSuccessServices = isPastStep && errors.services === undefined
+    const isSuccessPolices = isPastStep && errors.policies === undefined
     const isSuccessPricing =
+      isPastStep &&
       errors.pricing === undefined &&
       (touched.pricing?.price || touched.pricing?.freeAgreement)
     const isSuccessPreview =
-      isSuccessMetadata && isSuccessServices && isSuccessPricing
+      isPastStep && isSuccessMetadata && isSuccessServices && isSuccessPricing
 
     const isSuccess =
       (step === 1 && isSuccessMetadata) ||

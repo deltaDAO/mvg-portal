@@ -14,7 +14,7 @@ export default function PageVerify(): ReactElement {
       <Page
         title={content.title}
         description={content.description}
-        uri={router.route}
+        uri={router.pathname}
       >
         <Verify didQueryString={did as string} />
       </Page>

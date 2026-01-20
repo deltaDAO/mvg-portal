@@ -1,4 +1,4 @@
-import { ReactElement, useEffect } from 'react'
+import { ReactElement, useEffect, useMemo } from 'react'
 import classNames from 'classnames/bind'
 import { addExistingParamsToUrl } from './utils'
 import Button from '@shared/atoms/Button'
@@ -92,9 +92,17 @@ export default function Filter({
 
   const router = useRouter()
 
-  const parsedUrl = queryString.parse(location.search, {
-    arrayFormat: 'separator'
-  })
+  const search =
+    typeof window !== 'undefined'
+      ? window.location.search
+      : router?.asPath?.includes('?')
+      ? `?${router.asPath.split('?')[1]}`
+      : ''
+
+  const parsedUrl = useMemo(
+    () => queryString.parse(search, { arrayFormat: 'separator' }),
+    [search]
+  )
 
   useEffect(() => {
     const initialFilters = getInitialFilters(parsedUrl, Object.keys(filters))

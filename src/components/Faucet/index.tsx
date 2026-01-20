@@ -48,6 +48,8 @@ const FaucetPage = (): ReactElement => {
   const [isRequestingTokens, setIsRequestingTokens] = useState(false)
   const [message, setMessage] = useState<string>()
   const [error, setError] = useState<string>()
+  // Ensure SSR/CSR markup matches: render placeholders until mounted
+  const [mounted, setMounted] = useState(false)
 
   const { address: accountAddress } = useAccount()
   const { chain } = useNetwork()
@@ -59,6 +61,10 @@ const FaucetPage = (): ReactElement => {
     isSuccess: signMessageSuccess,
     signMessage
   } = useSignMessage()
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleVerify = useCallback(async () => {
     setIsLoading(true)
@@ -144,14 +150,22 @@ const FaucetPage = (): ReactElement => {
         </ol>
       </div>
       <div className={styles.address}>
-        <strong>{cardNetworkAddress}:</strong> {accountAddress}
+        <strong>{cardNetworkAddress}:</strong>{' '}
+        {mounted && accountAddress ? accountAddress : '—'}
       </div>
       <div className={styles.network}>
-        <strong>{cardNetwork}:</strong> <NetworkName networkId={chain?.id} />
+        <strong>{cardNetwork}:</strong>{' '}
+        {mounted && chain?.id ? (
+          <NetworkName networkId={chain.id} />
+        ) : (
+          <span>—</span>
+        )}
       </div>
       <form className={styles.form} onSubmit={handleSearchStart}>
         <Button
-          disabled={!accountAddress || isLoading || isRequestingTokens}
+          disabled={
+            !mounted || !accountAddress || isLoading || isRequestingTokens
+          }
           style="primary"
           size="small"
           type="submit"

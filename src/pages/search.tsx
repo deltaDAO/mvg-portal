@@ -48,7 +48,7 @@ export default function PageSearch(): ReactElement {
           ? '**Results displayed are limited to the first 10k, please refine your search.**'
           : undefined
       }
-      uri={router.route}
+      uri={router.pathname}
     >
       <Search
         setTotalResults={setTotalResults}

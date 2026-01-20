@@ -10,6 +10,7 @@ import { useCancelToken } from '@hooks/useCancelToken'
 import { LoggerInstance } from '@oceanprotocol/lib'
 import { useAccount } from 'wagmi'
 import { useAutomation } from '../../../@context/Automation/AutomationProvider'
+import { useRouter } from 'next/router'
 
 interface HistoryTab {
   title: string
@@ -65,6 +66,7 @@ export default function HistoryPage({
 }: {
   accountIdentifier: string
 }): ReactElement {
+  const router = useRouter()
   const { address: accountId } = useAccount()
   const { autoWallet } = useAutomation()
   const { chainIds } = useUserPreferences()
@@ -123,8 +125,14 @@ export default function HistoryPage({
   }, [accountId, refetchJobs, fetchJobs])
 
   const getDefaultIndex = useCallback((): number => {
-    const url = new URL(location.href)
-    const defaultTabString = url.searchParams.get('defaultTab')
+    const search =
+      typeof window !== 'undefined'
+        ? window.location.search
+        : router?.asPath?.includes('?')
+        ? `?${router.asPath.split('?')[1]}`
+        : ''
+    const params = new URLSearchParams(search)
+    const defaultTabString = params.get('defaultTab')
     const defaultTabIndex = tabsIndexList?.[defaultTabString]
 
     if (!defaultTabIndex) return 0
@@ -135,7 +143,7 @@ export default function HistoryPage({
       return 0
 
     return defaultTabIndex
-  }, [accountId, accountIdentifier])
+  }, [accountId, accountIdentifier, router?.asPath])
 
   useEffect(() => {
     setTabIndex(getDefaultIndex())
