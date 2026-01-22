@@ -43,6 +43,7 @@ export const getObjectPropertyByPath = (object: any, path = '') => {
 }
 
 export function triggerDownload(url: string, filename?: string): void {
+  if (!isBrowser) return
   const link = document.createElement('a')
   link.href = url
   link.download = filename || 'download'
