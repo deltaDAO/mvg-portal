@@ -23,6 +23,7 @@ import { Signer } from 'ethers'
 import { getValidUntilTime } from './compute'
 import { toast } from 'react-toastify'
 import { OCEAN_ERROR_STATES } from '../@constants/errors'
+import { triggerDownload } from '.'
 
 export async function initializeProviderForCompute(
   dataset: AssetExtended,
@@ -241,9 +242,8 @@ export async function downloadFile(
   validOrderTx?: string,
   userCustomParameters?: UserCustomParameters
 ) {
-  let downloadUrl
   try {
-    downloadUrl = await ProviderInstance.getDownloadUrl(
+    const downloadUrl = await ProviderInstance.getDownloadUrl(
       asset.id,
       asset.services[0].id,
       0,
@@ -252,12 +252,12 @@ export async function downloadFile(
       signer,
       userCustomParameters
     )
+    triggerDownload(downloadUrl, asset.metadata?.name)
   } catch (error) {
     const message = getErrorMessage(error.message)
     LoggerInstance.error('[Provider Get download url] Error:', message)
     toast.error(message)
   }
-  await downloadFileBrowser(downloadUrl)
 }
 
 export async function checkValidProvider(
