@@ -1,9 +1,16 @@
 {
-  "learnMore": {
-    "text": "You want to learn more about Pontus-X?",
-    "link": "https://docs.pontus-x.eu/docs/introduction/overview",
-    "linkLabel": "Read the documentation"
-  },
+  "buttons": [
+    {
+      "text": "You want to learn how to publish use cases to Pontus-X?",
+      "link": "https://docs.pontus-x.eu/docs/getting-started/Publication-guide",
+      "linkLabel": "Go to the Use Case Publication Guide"
+    },
+    {
+      "text": "You want to learn more about Pontus-X in general?",
+      "link": "https://docs.pontus-x.eu/docs/introduction/overview",
+      "linkLabel": "Read the documentation"
+    }
+  ],
   "title": "Good job! You are now ready to consume or publish your first assets on Pontus-X.",
   "body": "One last thing: we are never going to ask for your private key, remember to never share it with anyone!",
   "image": "/images/onboarding/ready.png"
