@@ -3,11 +3,11 @@ import { animated, useSpringRef, useTransition } from 'react-spring'
 import styles from './Main.module.css'
 
 const translateMovements = {
-  fromTranslateLeft: 'translate3d(-100%,-50%,0)',
-  fromTranslateRight: 'translate3d(100%,-50%,0)',
-  leaveTranslateLeft: 'translate3d(50%,-50%,0)',
-  leaveTranslateRight: 'translate3d(-50%,-50%,0)',
-  startPosition: 'translate3d(0%,-50%,0)'
+  fromTranslateLeft: 'translate3d(-100%,0,0)',
+  fromTranslateRight: 'translate3d(100%,0,0)',
+  leaveTranslateLeft: 'translate3d(50%,0,0)',
+  leaveTranslateRight: 'translate3d(-50%,0,0)',
+  startPosition: 'translate3d(0%,0,0)'
 }
 
 export default function Main({
@@ -50,6 +50,7 @@ export default function Main({
     },
     config: { mass: 1, tension: 140, friction: 18 }
   })
+
   useEffect(() => {
     transRef.start()
   }, [currentStep])

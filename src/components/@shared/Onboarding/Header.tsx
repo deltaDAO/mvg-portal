@@ -12,7 +12,11 @@ interface OnboardingHeaderData {
   body: string
 }
 
-export default function Header(): ReactElement {
+export default function Header({
+  showHideButton
+}: {
+  showHideButton: boolean
+}): ReactElement {
   const { title, subtitle, body }: OnboardingHeaderData = content
 
   return (
@@ -23,9 +27,11 @@ export default function Header(): ReactElement {
         <Markdown text={body} className={styles.paragraph} />
       </div>
       <LightBulb />
-      <div className={styles.hideButtonContainer}>
-        <HideButton />
-      </div>
+      {showHideButton && (
+        <div className={styles.hideButtonContainer}>
+          <HideButton />
+        </div>
+      )}
     </Container>
   )
 }

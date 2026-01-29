@@ -84,7 +84,7 @@ export default function HomePage(): ReactElement {
     <>
       {showOnboardingModule && (
         <Container>
-          <OnboardingSection />
+          <OnboardingSection showHideButton />
         </Container>
       )}
       <Ecosystem />
