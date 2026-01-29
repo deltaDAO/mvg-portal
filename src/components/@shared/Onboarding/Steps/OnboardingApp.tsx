@@ -2,14 +2,14 @@ import { ReactElement } from 'react'
 import { OnboardingStep } from '..'
 import StepBody from '../StepBody'
 import StepHeader from '../StepHeader'
-import content from '../../../../../content/onboarding/steps/downloadMetamask.json'
+import content from '../../../../../content/onboarding/steps/onboardingApp.json'
 
-export default function DownloadMetamask(): ReactElement {
+export default function OnboardingApp(): ReactElement {
   const { title, subtitle, body, image, buttonLabel }: OnboardingStep = content
 
-  const downloadMetamask = () =>
+  const openOnboardingApp = () =>
     window.open(
-      'https://metamask.io/download/',
+      'https://onboarding.delta-dao.com/',
       '_blank',
       'noopener noreferrer'
     )
@@ -17,7 +17,7 @@ export default function DownloadMetamask(): ReactElement {
   const actions = [
     {
       buttonLabel,
-      buttonAction: () => downloadMetamask(),
+      buttonAction: () => openOnboardingApp(),
       loading: false,
       completed: false
     }
