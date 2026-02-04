@@ -114,7 +114,7 @@ module.exports = {
   },
 
   faucet: {
-    baseUri: 'https://faucet.api.pontus-x.eu'
+    baseUri: 'https://api.faucet.pontus-x.eu'
   },
 
   showOnboardingModuleByDefault:
