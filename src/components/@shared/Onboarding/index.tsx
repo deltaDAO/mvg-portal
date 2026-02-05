@@ -49,7 +49,7 @@ export default function OnboardingSection({
   const stepLabels = steps.map((step) => step.shortLabel)
 
   useEffect(() => {
-    if (onboardingStep > steps.length) setOnboardingStep(0)
+    if (onboardingStep >= steps.length) setOnboardingStep(0)
   }, [onboardingStep, setOnboardingStep])
 
   useEffect(() => {
