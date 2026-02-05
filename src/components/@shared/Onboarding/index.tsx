@@ -22,7 +22,7 @@ export interface OnboardingStep {
   buttonSuccess?: string
 }
 
-export const steps = [
+const steps = [
   { shortLabel: 'Onboarding', component: <OnboardingApp /> },
   { shortLabel: 'Connect', component: <ImportWallet /> },
   { shortLabel: 'Ready', component: <Ready /> }
@@ -49,7 +49,7 @@ export default function OnboardingSection({
   const stepLabels = steps.map((step) => step.shortLabel)
 
   useEffect(() => {
-    if (onboardingStep > steps.length) setOnboardingStep(0)
+    if (onboardingStep >= steps.length) setOnboardingStep(0)
   }, [onboardingStep, setOnboardingStep])
 
   useEffect(() => {

@@ -59,11 +59,11 @@ export default function Main({
     <div className={styles.container}>
       {moveAndFadeDiv((style, i) => (
         <animated.div
-          key={steps[i].shortLabel}
+          key={steps[i]?.shortLabel}
           style={style}
           className={styles.step}
         >
-          {steps[i].component}
+          {steps[i]?.component}
         </animated.div>
       ))}
     </div>
