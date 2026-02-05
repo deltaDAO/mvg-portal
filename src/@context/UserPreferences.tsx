@@ -16,6 +16,7 @@ import {
   setCookie,
   TWO_MONTHS_COOKIE_OPTIONS
 } from '@utils/cookies'
+import { steps } from '@components/@shared/Onboarding'
 
 interface UserPreferencesValue {
   debug: boolean
@@ -105,7 +106,9 @@ function UserPreferencesProvider({
   )
 
   const [onboardingStep, setOnboardingStep] = useState<number>(
-    typeof getCookieValue('onboardingModule') !== 'undefined'
+    typeof getCookieValue('onboardingModule') !== 'undefined' &&
+      Number(JSON.parse(getCookieValue('onboardingModule'))?.onboardingStep) <
+        steps.length
       ? Number(JSON.parse(getCookieValue('onboardingModule'))?.onboardingStep)
       : 0
   )

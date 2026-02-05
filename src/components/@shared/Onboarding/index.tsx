@@ -22,7 +22,7 @@ export interface OnboardingStep {
   buttonSuccess?: string
 }
 
-const steps = [
+export const steps = [
   { shortLabel: 'Onboarding', component: <OnboardingApp /> },
   { shortLabel: 'Connect', component: <ImportWallet /> },
   { shortLabel: 'Ready', component: <Ready /> }
