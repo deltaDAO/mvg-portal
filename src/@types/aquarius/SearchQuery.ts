@@ -32,6 +32,11 @@ export enum FilterByAccessOptions {
   Compute = 'compute'
 }
 
+export enum FILTER_VALUES {
+  MUST_EXIST = 'MUST_EXIST', // checks if the queryPath exists
+  MUST_EXISTS_AND_NON_EMPTY = 'MUST_EXISTS_AND_NON_EMPTY' // checks if the queryPath exists and is not empty
+}
+
 declare global {
   interface SortOptions {
     sortBy: SortTermOptions

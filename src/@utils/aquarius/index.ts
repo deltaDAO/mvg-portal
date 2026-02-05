@@ -4,6 +4,7 @@ import axios, { CancelToken, AxiosResponse } from 'axios'
 import { OrdersData_orders as OrdersData } from '../../@types/subgraph/OrdersData'
 import { metadataCacheUri, allowDynamicPricing } from '../../../app.config'
 import {
+  FILTER_VALUES,
   FilterByTypeOptions,
   SortDirectionOptions,
   SortTermOptions
@@ -49,36 +50,87 @@ export function getFilterTerm(
 ): FilterTerm {
   const isArray = Array.isArray(value)
   const useKey = key === 'term' ? (isArray ? 'terms' : 'term') : key
-  return {
-    [useKey]: {
-      [filterField]: value
+  const filters = []
+  let field
+  if (isArray) {
+    for (const val of value) {
+      if (typeof val === 'string' && val.includes('=')) {
+        const [fieldFilter, values] = val.split('=') as [string, string]
+        field = fieldFilter
+        filters.push(values)
+      }
     }
   }
+  if (filters.length > 0) {
+    return {
+      [useKey]: {
+        [field]: filters
+      }
+    }
+  } else if (filterField) {
+    return {
+      [useKey]: {
+        [filterField]: value
+      }
+    }
+  }
+}
+
+function splitArg(arg: string) {
+  return arg.split('=')
+}
+
+export function getFilter(args: string | string[]) {
+  let filters = []
+  if (typeof args === 'object') {
+    for (const arg of args) {
+      filters = [...filters, splitArg(arg)]
+    }
+  } else {
+    filters = [...filters, splitArg(args)]
+  }
+
+  let filter: (MustNotTermQuery<string> & MustExistQuery<string>)[] = []
+  filters.forEach((filterItem) => {
+    let query: MustNotTermQuery<string> & MustExistQuery<string> = {
+      must: {
+        exists: { field: filterItem[0] }
+      }
+    }
+    if (filterItem[1] === FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY) {
+      query = {
+        ...query,
+        must_not: {
+          term: { [filterItem[0] + '.keyword']: '' }
+        }
+      }
+    }
+    filter = [...filter, query]
+  })
+
+  return filter
 }
 
 export function parseFilters(
   filtersList: Filters,
   filterSets: { [key: string]: string[] }
 ): FilterTerm[] {
-  const filterQueryPath = {
-    accessType: 'services.type',
-    serviceType: 'metadata.type',
-    filterSet: 'metadata.tags.keyword'
-  }
-
   const filterTerms = Object.keys(filtersList)?.map((key) => {
+    filtersList[key] = filtersList[key].filter(
+      (filter) =>
+        !filter.includes(FILTER_VALUES.MUST_EXISTS_AND_NON_EMPTY) &&
+        !filter.includes(FILTER_VALUES.MUST_EXIST)
+    )
     if (key === 'filterSet') {
       const tags = filtersList[key].reduce(
         (acc, set) => [...acc, ...filterSets[set]],
         []
       )
       const uniqueTags = [...new Set(tags)]
-      return uniqueTags.length > 0
-        ? getFilterTerm(filterQueryPath[key], uniqueTags)
-        : undefined
+      return uniqueTags.length > 0 ? getFilterTerm(null, uniqueTags) : undefined
     }
     if (filtersList[key].length > 0)
-      return getFilterTerm(filterQueryPath[key], filtersList[key])
+      return getFilterTerm(null, filtersList[key])
 
     return undefined
   })
@@ -170,6 +222,10 @@ export function generateBaseQuery(
 
   if (baseQueryParams.aggs !== undefined) {
     generatedQuery.aggs = baseQueryParams.aggs
+  }
+
+  if (baseQueryParams.boolFilter !== undefined) {
+    generatedQuery.query.bool.filter.push(...baseQueryParams.boolFilter)
   }
 
   if (baseQueryParams.sortOptions !== undefined)
