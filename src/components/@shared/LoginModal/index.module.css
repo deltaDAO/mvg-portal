@@ -1,0 +1,31 @@
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacer);
+  padding: var(--spacer);
+}
+
+.loginOption {
+  width: 100%;
+}
+
+.input {
+  margin: 0;
+}
+
+.cancel {
+  margin-top: calc(var(--spacer) / 4);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--spacer) / 2);
+  width: 100%;
+}
+
+.info {
+  margin: 0;
+  font-size: var(--font-size-small);
+  color: var(--color-secondary);
+}
