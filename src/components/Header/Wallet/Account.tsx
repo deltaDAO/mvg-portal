@@ -43,7 +43,7 @@ const Account = forwardRef((props, ref: any) => {
           onClick={(e) => handleActivation(e)}
           className={styles.loginButton}
         >
-          <Login aria-hidden="true" className={styles.loginIcon} />
+          <Login aria-hidden="true" />
           Login
         </Button>
       )}

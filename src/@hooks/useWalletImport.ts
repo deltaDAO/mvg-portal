@@ -17,24 +17,47 @@ export function useWalletImport() {
 
       const reader = new FileReader()
 
-      reader.onload = async (event) => {
-        const fileContent = event.target?.result?.toString()
+      await new Promise<void>((resolve, reject) => {
+        reader.onload = async (event) => {
+          try {
+            const fileContent = event.target?.result?.toString()
 
-        if (!fileContent || !isValidEncryptedWalletJson(fileContent)) {
-          LoggerInstance.error(
-            '[WalletImport] Could not import file. Invalid content!'
-          )
-          toast.error(
-            'The provided file has unexpected content and cannot be imported.'
-          )
-          return
+            if (!fileContent || !isValidEncryptedWalletJson(fileContent)) {
+              LoggerInstance.error(
+                '[WalletImport] Could not import file. Invalid content!'
+              )
+              toast.error(
+                'The provided file has unexpected content and cannot be imported.'
+              )
+              resolve()
+              return
+            }
+
+            const imported = await importAutomationWallet(fileContent)
+
+            if (imported) {
+              onSuccess()
+            } else {
+              LoggerInstance.error(
+                '[WalletImport] Could not import wallet. importAutomationWallet returned false.'
+              )
+              toast.error('Failed to import wallet from the provided file.')
+            }
+            resolve()
+          } catch (error) {
+            reject(error)
+          }
         }
 
-        await importAutomationWallet(fileContent)
-        onSuccess()
-      }
+        reader.onerror = (event) => {
+          const error =
+            (event.target && (event.target as FileReader).error) ||
+            new Error('Failed to read wallet file.')
+          reject(error)
+        }
 
-      reader.readAsText(file)
+        reader.readAsText(file)
+      })
     } catch (e) {
       LoggerInstance.error('[WalletImport]', e)
       toast.error('Failed to import wallet file.')
