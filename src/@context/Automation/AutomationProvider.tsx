@@ -155,7 +155,7 @@ function AutomationProvider({ children }) {
     setIsAutomationEnabled(false)
     setAutoWallet(undefined)
     setAutoWalletAddress(undefined)
-    setAutomationWalletJSON(undefined)
+    setAutomationWalletJSON('')
     setBalance(undefined)
     jsonWalletConnector.disconnect()
     toast.info('The automation wallet was removed from your machine.')
