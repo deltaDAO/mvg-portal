@@ -83,3 +83,23 @@ svg.caret {
     margin-right: calc(var(--spacer) / 6);
   }
 }
+
+.loginButton {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--spacer) / 3);
+  height: 100%;
+  font-size: var(--font-size-base);
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: var(--menu-border-radius);
+  padding: calc(var(--spacer) / 4) calc(var(--spacer));
+  min-width: auto;
+  box-shadow: none;
+}
+
+.loginButton:hover,
+.loginButton:focus {
+  transform: none;
+  box-shadow: none;
+}

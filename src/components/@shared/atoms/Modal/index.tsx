@@ -22,6 +22,8 @@ export default function Modal({
       contentLabel={title}
       className={`${styles.modal} ${className}`}
       overlayClassName={styles.modalOverlay}
+      onRequestClose={onToggleModal}
+      shouldCloseOnOverlayClick={true}
       {...props}
     >
       <button
