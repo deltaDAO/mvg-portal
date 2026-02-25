@@ -13,8 +13,6 @@ import Button from '@components/@shared/atoms/Button'
 import UserPreferences from './UserPreferences'
 import Automation from './UserPreferences/Automation'
 import NetworkMenu from './NetworkMenu'
-import { useAccount } from 'wagmi'
-import { JSON_WALLET_CONNECTOR_ID } from '@utils/wallet/EthersWalletConnector'
 const Wallet = loadable(() => import('./Wallet'))
 
 const cx = classNames.bind(styles)
@@ -56,7 +54,6 @@ export function MenuLink({ name, link, className, isLive }: MenuItem) {
 
 export default function Menu(): ReactElement {
   const { appConfig, siteContent } = useMarketMetadata()
-  const { address: accountId, connector: activeConnector } = useAccount()
 
   return (
     <nav className={styles.menu}>
@@ -81,9 +78,9 @@ export default function Menu(): ReactElement {
         {appConfig.chainIdsSupported.length > 1 && <Networks />}
         <NetworkMenu />
         <Wallet />
-        {appConfig.automationConfig.enableAutomation === 'true' &&
-          accountId &&
-          activeConnector?.id === JSON_WALLET_CONNECTOR_ID && <Automation />}
+        {appConfig.automationConfig.enableAutomation === 'true' && (
+          <Automation />
+        )}
         <UserPreferences />
       </div>
     </nav>
