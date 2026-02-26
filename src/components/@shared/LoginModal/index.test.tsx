@@ -35,7 +35,7 @@ describe('@shared/LoginModal', () => {
     render(<LoginModal isOpen={true} onClose={mockOnClose} />)
     expect(screen.getByText('Choose Login Method')).toBeInTheDocument()
     expect(screen.getByText('Import Wallet JSON')).toBeInTheDocument()
-    expect(screen.getByText('Connect with MetaMask')).toBeInTheDocument()
+    expect(screen.getByText('Other connection methods')).toBeInTheDocument()
   })
 
   it('renders password view when opened with stored wallet', () => {
@@ -103,7 +103,7 @@ describe('@shared/LoginModal', () => {
   it('calls setOpen(true) when MetaMask option is clicked', () => {
     render(<LoginModal isOpen={true} onClose={mockOnClose} />)
 
-    const metaMaskButton = screen.getByText('Connect with MetaMask')
+    const metaMaskButton = screen.getByText('Other connection methods')
     fireEvent.click(metaMaskButton)
 
     expect(mockSetOpen).toHaveBeenCalledWith(true)
