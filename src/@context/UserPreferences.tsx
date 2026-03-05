@@ -86,7 +86,8 @@ function UserPreferencesProvider({
 
   const [automationWallet, setAutomationWallet] = useState<string>(
     typeof getCookieValue('automationWallet') !== 'undefined'
-      ? JSON.parse(getCookieValue('automationWallet'))?.automationWalletJSON
+      ? JSON.parse(getCookieValue('automationWallet'))?.automationWalletJSON ??
+          ''
       : ''
   )
 

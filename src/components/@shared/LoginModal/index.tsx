@@ -1,8 +1,9 @@
-import { ReactElement, useState } from 'react'
+import { ReactElement, useState, useEffect } from 'react'
 import Modal from '../atoms/Modal'
 import { useModal } from 'connectkit'
 import { useWalletImport } from '@hooks/useWalletImport'
 import { useWalletDecrypt } from '@hooks/useWalletDecrypt'
+import { useAutomation } from '@context/Automation/AutomationProvider'
 import LoginMethodSelection from './LoginMethodSelection'
 import WalletFileUpload from './WalletFileUpload'
 import WalletDecryptForm from './WalletDecryptForm'
@@ -26,12 +27,26 @@ export default function LoginModal({
   const { setOpen: setConnectKitOpen } = useModal()
   const { importFromFile } = useWalletImport()
   const { decrypt, isLoading } = useWalletDecrypt()
-  const [currentView, setCurrentView] = useState<ModalView>(
-    ModalView.METHOD_SELECTION
-  )
+  const { hasValidEncryptedWallet } = useAutomation()
+
+  const [currentView, setCurrentView] = useState<ModalView>(() => {
+    return hasValidEncryptedWallet
+      ? ModalView.PASSWORD_INPUT
+      : ModalView.METHOD_SELECTION
+  })
+
+  // Update view when modal opens based on stored wallet state
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentView(
+        hasValidEncryptedWallet
+          ? ModalView.PASSWORD_INPUT
+          : ModalView.METHOD_SELECTION
+      )
+    }
+  }, [isOpen, hasValidEncryptedWallet])
 
   const handleClose = () => {
-    setCurrentView(ModalView.METHOD_SELECTION)
     onClose()
   }
 

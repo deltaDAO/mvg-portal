@@ -3,9 +3,11 @@ import LoginModal from './index'
 import { useModal } from 'connectkit'
 import { useWalletImport } from '@hooks/useWalletImport'
 import { useWalletDecrypt } from '@hooks/useWalletDecrypt'
+import { useAutomation } from '@context/Automation/AutomationProvider'
 
 jest.mock('@hooks/useWalletImport')
 jest.mock('@hooks/useWalletDecrypt')
+jest.mock('@context/Automation/AutomationProvider')
 
 describe('@shared/LoginModal', () => {
   const mockSetOpen = jest.fn()
@@ -23,13 +25,38 @@ describe('@shared/LoginModal', () => {
       decrypt: mockDecrypt,
       isLoading: false
     })
+    ;(useAutomation as jest.Mock).mockReturnValue({
+      hasValidEncryptedWallet: false,
+      autoWalletAddress: undefined
+    })
   })
 
-  it('renders method selection view when opened', () => {
+  it('renders method selection view when opened with no stored wallet', () => {
     render(<LoginModal isOpen={true} onClose={mockOnClose} />)
     expect(screen.getByText('Choose Login Method')).toBeInTheDocument()
     expect(screen.getByText('Import Wallet JSON')).toBeInTheDocument()
-    expect(screen.getByText('Connect with MetaMask')).toBeInTheDocument()
+    expect(screen.getByText('Other connection methods')).toBeInTheDocument()
+  })
+
+  it('renders password view when opened with stored wallet', () => {
+    ;(useAutomation as jest.Mock).mockReturnValue({
+      hasValidEncryptedWallet: true,
+      autoWalletAddress: '0x1234567890abcdef1234567890abcdef12345678'
+    })
+
+    render(<LoginModal isOpen={true} onClose={mockOnClose} />)
+    expect(screen.getByText('Decrypt Wallet')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Password')).toBeInTheDocument()
+  })
+
+  it('displays truncated wallet address when stored wallet exists', () => {
+    ;(useAutomation as jest.Mock).mockReturnValue({
+      hasValidEncryptedWallet: true,
+      autoWalletAddress: '0x1234567890abcdef1234567890abcdef12345678'
+    })
+
+    render(<LoginModal isOpen={true} onClose={mockOnClose} />)
+    expect(screen.getByText(/0x1234…5678/)).toBeInTheDocument()
   })
 
   it('does not render when isOpen is false', () => {
@@ -37,7 +64,7 @@ describe('@shared/LoginModal', () => {
     expect(screen.queryByText('Choose Login Method')).not.toBeInTheDocument()
   })
 
-  it('resets view state when opening and closing', async () => {
+  it('resets view state when opening and closing (no stored wallet)', async () => {
     const { rerender } = render(
       <LoginModal isOpen={true} onClose={mockOnClose} />
     )
@@ -76,7 +103,7 @@ describe('@shared/LoginModal', () => {
   it('calls setOpen(true) when MetaMask option is clicked', () => {
     render(<LoginModal isOpen={true} onClose={mockOnClose} />)
 
-    const metaMaskButton = screen.getByText('Connect with MetaMask')
+    const metaMaskButton = screen.getByText('Other connection methods')
     fireEvent.click(metaMaskButton)
 
     expect(mockSetOpen).toHaveBeenCalledWith(true)
@@ -112,31 +139,18 @@ describe('@shared/LoginModal', () => {
   })
 
   it('closes modal after successful decrypt', async () => {
+    ;(useAutomation as jest.Mock).mockReturnValue({
+      hasValidEncryptedWallet: true,
+      autoWalletAddress: '0x1234567890abcdef1234567890abcdef12345678'
+    })
     mockDecrypt.mockResolvedValue(true)
 
     render(<LoginModal isOpen={true} onClose={mockOnClose} />)
 
-    // Navigate to password view (simulate having imported a file)
-    const jsonButton = screen.getByText('Import Wallet JSON')
-    fireEvent.click(jsonButton)
+    // Should start on password view since wallet is stored
+    expect(screen.getByText('Decrypt Wallet')).toBeInTheDocument()
 
-    // Mock successful import
-    mockImportFromFile.mockImplementation(async (target, onSuccess) => {
-      onSuccess()
-    })
-
-    const fileInput = screen.getByLabelText('Select file to import')
-    const mockFile = new File(['{}'], 'wallet.json', {
-      type: 'application/json'
-    })
-
-    fireEvent.change(fileInput, { target: { files: [mockFile] } })
-
-    await waitFor(() => {
-      expect(screen.getByText('Decrypt Wallet')).toBeInTheDocument()
-    })
-
-    // Enter password and decrypt using placeholder
+    // Enter password and decrypt
     const passwordInput = screen.getByPlaceholderText('Password')
     fireEvent.change(passwordInput, { target: { value: 'testpassword' } })
 
@@ -163,6 +177,25 @@ describe('@shared/LoginModal', () => {
     fireEvent.click(backButtons[0])
 
     // Should be back to method selection
+    expect(screen.getByText('Choose Login Method')).toBeInTheDocument()
+  })
+
+  it('allows navigation to method selection from stored wallet password view', () => {
+    ;(useAutomation as jest.Mock).mockReturnValue({
+      hasValidEncryptedWallet: true,
+      autoWalletAddress: '0x1234567890abcdef1234567890abcdef12345678'
+    })
+
+    render(<LoginModal isOpen={true} onClose={mockOnClose} />)
+
+    // Should start on password view
+    expect(screen.getByText('Decrypt Wallet')).toBeInTheDocument()
+
+    // Click "Use different login method"
+    const switchButton = screen.getByText('Use different login method')
+    fireEvent.click(switchButton)
+
+    // Should be on method selection
     expect(screen.getByText('Choose Login Method')).toBeInTheDocument()
   })
 })

@@ -21,7 +21,7 @@ export default function LoginMethodSelection({
         Import Wallet JSON
       </Button>
       <Button onClick={onMetaMaskClick} className={styles.loginOption}>
-        Connect with MetaMask
+        Other connection methods
       </Button>
     </>
   )
