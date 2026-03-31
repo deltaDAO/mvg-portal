@@ -164,7 +164,7 @@ const FaucetPage = (): ReactElement => {
       </form>
       {!isLoading && error && (
         <div className={styles.errorContainer}>
-          <Alert title="Error" text={error} state="error" />
+          <Alert title="Please try again later" text={error} state="error" />
         </div>
       )}
       {!isLoading && message && (

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import { faucet } from '../../../app.config'
 import { ethers } from 'ethers'
 
@@ -29,6 +29,12 @@ export async function getMessage(address: string): Promise<string> {
   }
 }
 
+interface FaucetResponse {
+  status: string
+  txHashes?: string[]
+  message?: string
+}
+
 export async function requestTokens(
   address: string,
   signature: string,
@@ -41,18 +47,23 @@ export async function requestTokens(
     }
     const network = availableNetworks[chainId]
 
-    const response = await axios.post<{
-      status: string
-      txHashes?: string[]
-      message?: string
-    }>(`${faucet.baseUri}/request_tokens/${network}`, { address, signature })
+    const response = await axios.post<FaucetResponse>(
+      `${faucet.baseUri}/request_tokens/${network}`,
+      { address, signature }
+    )
 
     if (response.data.status === 'error') {
       throw response.data.message
     }
 
     return response.data.txHashes
-  } catch (error) {
+  } catch (error: AxiosError<FaucetResponse> | unknown) {
+    if (error instanceof AxiosError) {
+      const message = error.response?.data.message || 'Unknown Error.'
+      throw new Error(
+        `Failed to request tokens for address ${address}: ${message}`
+      )
+    }
     throw new Error(`Failed to request tokens for address ${address}: ${error}`)
   }
 }
