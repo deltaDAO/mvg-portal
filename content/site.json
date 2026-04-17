@@ -110,11 +110,11 @@
           "isLive": true
         },
         {
-          "name": "Open Dataspace Lab",
-          "link": "https://www.opendataspacelab.eu/",
-          "description": "Open Dataspace Lab connects supply and demand for all types of data and AI algorithms.",
-          "image": "odl-logo.webp",
-          "category": "general",
+          "name": "GMN Data Marketplace",
+          "link": "https://gmn.pontus-x.eu/",
+          "description": "Gateway to high-precision industrial data and digital services. GMN is leader in spindles, bearings, freewheel clutches, seals, and motors.",
+          "image": "gmn_logo.svg",
+          "category": "manufacturing",
           "isLive": true
         },
         {
@@ -165,6 +165,10 @@
         {
           "name": "Documentation",
           "link": "https://docs.pontus-x.eu/"
+        },
+        {
+          "name": "Fast Track Onboarding",
+          "link": "https://onboarding.delta-dao.com/"
         },
         {
           "name": "Landing Page",
