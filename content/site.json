@@ -156,6 +156,14 @@
           "image": "PSNC.webp",
           "category": "agriculture",
           "isLive": true
+        },
+        {
+          "name": "AgrifoodTEF",
+          "link": "https://dataspace.agrifoodtef.eu/",
+          "description": "AgrifoodTEF empowers innovators with validation tools needed to bridge the gap between their brightest ideas and successful market products.",
+          "image": "agrifoodTEF.webp",
+          "category": "agriculture",
+          "isLive": true
         }
       ]
     },
