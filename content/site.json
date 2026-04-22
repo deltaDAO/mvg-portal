@@ -38,11 +38,27 @@
           "isLive": true
         },
         {
-          "name": "GX4FM moveID",
-          "link": "https://portal.moveid.eu/",
-          "description": "Gaia-X Lighthouse Gaia-X 4 Future Mobility aims to develop a decentralized digital mobility identity infrastructure for Europe.",
-          "image": "gx4fm_moveid.webp",
-          "category": "mobility",
+          "name": "AgrospAI",
+          "link": "https://agrospai.udl.cat/",
+          "description": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services.",
+          "image": "agrospai-logo.webp",
+          "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "ACCURATE",
+          "link": "https://accurate.pontus-x.eu",
+          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
+          "image": "accurate-logo.webp",
+          "category": "manufacturing",
+          "isLive": true
+        },
+        {
+          "name": "SENSE Cityverse",
+          "link": "https://sense.pontus-x.eu",
+          "description": "SENSE connects cities through immersive VR/AR, data space and metaverse technology.",
+          "image": "sense.webp",
+          "category": "smart city",
           "isLive": true
         },
         {
@@ -54,11 +70,11 @@
           "isLive": true
         },
         {
-          "name": "ACCURATE",
-          "link": "https://accurate.pontus-x.eu",
-          "description": "Gaia-X Lighthouse ACCURATE aims to boost the competitiveness of European manufacturing companies with DSS and Manufacturing as a Service frameworks. ",
-          "image": "accurate-logo.webp",
-          "category": "manufacturing",
+          "name": "GX4FM moveID",
+          "link": "https://portal.moveid.eu/",
+          "description": "Gaia-X Lighthouse Gaia-X 4 Future Mobility aims to develop a decentralized digital mobility identity infrastructure for Europe.",
+          "image": "gx4fm_moveid.webp",
+          "category": "mobility",
           "isLive": true
         },
         {
@@ -78,30 +94,6 @@
           "isLive": true
         },
         {
-          "name": "SENSE Cityverse",
-          "link": "https://sense.pontus-x.eu",
-          "description": "SENSE connects cities through immersive VR/AR, data space and metaverse technology.",
-          "image": "sense.webp",
-          "category": "smart city",
-          "isLive": true
-        },
-        {
-          "name": "Pontus-X Main Portal",
-          "link": "https://portal.main.pontus-x.eu/",
-          "description": "With deltaDAO's data and AI Marketplace, you have the freedom to decide how your data and AI services are offered.",
-          "image": "pontusx_deltadao.webp",
-          "category": "general",
-          "isLive": true
-        },
-        {
-          "name": "AgrospAI",
-          "link": "https://agrospai.udl.cat/",
-          "description": "Agri-food Data Space Demonstrator for Sovereign Data-Sharing and Artificial Intelligence Services.",
-          "image": "agrospai-logo.webp",
-          "category": "agriculture",
-          "isLive": true
-        },
-        {
           "name": "Clio-X",
           "link": "https://www.cliox.org/",
           "description": "ClioX is a new kind of privacy-first platform—built by and for researchers, archivists, and cultural institutions.",
@@ -115,6 +107,14 @@
           "description": "Gateway to high-precision industrial data and digital services. GMN is leader in spindles, bearings, freewheel clutches, seals, and motors.",
           "image": "gmn_logo.svg",
           "category": "manufacturing",
+          "isLive": true
+        },
+        {
+          "name": "Open Data Space Lab",
+          "link": "https://opendataspacelab.eu/",
+          "description": "Open Dataspace Lab connects supply and demand for all types of data and AI algorithms, enabling secure, privacy-friendly, and compliant data exchange..",
+          "image": "odl-logo.webp",
+          "category": "general",
           "isLive": true
         },
         {
@@ -154,6 +154,14 @@
           "link": "https://dataspaces.psnc.pl/",
           "description": "An open data space platform for sharing and marketing agri-related datasets guaranteeing data sovereignty.",
           "image": "PSNC.webp",
+          "category": "agriculture",
+          "isLive": true
+        },
+        {
+          "name": "AgrifoodTEF",
+          "link": "https://dataspace.agrifoodtef.eu/",
+          "description": "AgrifoodTEF empowers innovators with validation tools needed to bridge the gap between their brightest ideas and successful market products.",
+          "image": "agrifoodTEF.webp",
           "category": "agriculture",
           "isLive": true
         }
