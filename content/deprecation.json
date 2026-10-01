@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "banner": {
+    "text": "**Pontus-X v1 will be switched off in December 2026.** Explore [Pontus-X v2](https://market.delta-dao.com) or [contact deltaDAO](https://www.delta-dao.com/contact) to plan your migration.",
+    "action": "Learn more"
+  },
+  "modal": {
+    "badge": "Important notice",
+    "title": "Pontus-X v1 will be switched off in December 2026",
+    "text": "This portal and the Pontus-X v1 networks will be **switched off in December 2026**. After that, you will no longer be able to access assets, services or transactions on Pontus-X v1.\n\n**Access will be limited before then.** Pontus-X v1 will soon only be available to paying customers, and all other access will be switched off. Still need Pontus-X v1 until the shutdown? Please [contact deltaDAO](https://www.delta-dao.com/contact).\n\n**Using Pontus-X v1 to publish, consume or demo assets?** Please migrate to Pontus-X v2 before December to keep your services running without interruption.\n\n[Explore Pontus-X v2](https://market.delta-dao.com) or [contact deltaDAO](https://www.delta-dao.com/contact) for more information and help with your migration.",
+    "confirm": "I understand"
+  },
+  "reminderIntervalMinutes": 10
+}
