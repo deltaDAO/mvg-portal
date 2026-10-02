@@ -1,4 +1,4 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react'
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react'
 import ReactModal from 'react-modal'
 import Markdown from '@shared/Markdown'
 import Button from '@shared/atoms/Button'
@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== 'test') ReactModal.setAppElement('#__next')
 const STORAGE_KEY = 'pontusXV1DeprecationAcknowledgedAt'
 const CHECK_INTERVAL_MS = 30 * 1000
 
-function getAcknowledgedAt(): number {
+function getStoredAcknowledgedAt(): number {
   try {
     return Number(window.sessionStorage.getItem(STORAGE_KEY)) || 0
   } catch {
@@ -18,11 +18,11 @@ function getAcknowledgedAt(): number {
   }
 }
 
-function setAcknowledgedAt(timestamp: number): void {
+function storeAcknowledgedAt(timestamp: number): void {
   try {
     window.sessionStorage.setItem(STORAGE_KEY, String(timestamp))
   } catch {
-    // storage unavailable, modal will simply show again on next check
+    // storage unavailable, the in-memory value keeps the acknowledgement
   }
 }
 
@@ -30,11 +30,16 @@ function setAcknowledgedAt(timestamp: number): void {
 // `reminderIntervalMinutes`, so the notice also shows up during demos.
 export default function DeprecationNotice(): ReactElement {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  // fallback for when sessionStorage is blocked or throws
+  const acknowledgedAtRef = useRef(0)
   const reminderIntervalMs = content.reminderIntervalMinutes * 60 * 1000
 
   const checkReminder = useCallback(() => {
-    if (Date.now() - getAcknowledgedAt() >= reminderIntervalMs)
-      setIsModalOpen(true)
+    const acknowledgedAt = Math.max(
+      getStoredAcknowledgedAt(),
+      acknowledgedAtRef.current
+    )
+    if (Date.now() - acknowledgedAt >= reminderIntervalMs) setIsModalOpen(true)
   }, [reminderIntervalMs])
 
   useEffect(() => {
@@ -45,7 +50,9 @@ export default function DeprecationNotice(): ReactElement {
   }, [checkReminder])
 
   function acknowledge() {
-    setAcknowledgedAt(Date.now())
+    const now = Date.now()
+    acknowledgedAtRef.current = now
+    storeAcknowledgedAt(now)
     setIsModalOpen(false)
   }
 

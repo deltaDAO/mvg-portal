@@ -72,7 +72,9 @@
   inset: 0;
   z-index: 100;
   display: flex;
-  align-items: center;
+  /* flex-start + auto margins on .modal: centered when it fits,
+     scrollable from the top when it is taller than the viewport */
+  align-items: flex-start;
   justify-content: center;
   padding: var(--spacer);
   background: rgba(0, 21, 31, 0.75);
@@ -85,6 +87,7 @@
   position: relative;
   width: 100%;
   max-width: 36rem;
+  margin: auto 0;
   padding: calc(var(--spacer) * 1.5);
   background: var(--background-content);
   border-top: 8px solid var(--brand-alert-red);
@@ -121,6 +124,14 @@
 
 .confirm {
   min-width: 12rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon,
+  .overlay,
+  .modal {
+    animation: none;
+  }
 }
 
 @keyframes pulse {
