@@ -1,20 +1,19 @@
 .banner {
   position: sticky;
   top: 0;
-  z-index: 20;
+  /* below the shared Modal backdrop (z-index: 5) */
+  z-index: 4;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
   gap: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
-  min-height: 3.5rem;
-  padding: calc(var(--spacer) / 2) calc(var(--spacer) / 2);
-  background: repeating-linear-gradient(
+  padding: calc(var(--spacer) / 4) calc(var(--spacer) / 2);
+  background-color: var(--brand-alert-red);
+  background-image: repeating-linear-gradient(
     -45deg,
-    var(--brand-alert-red),
-    var(--brand-alert-red) 20px,
-    #c00505 20px,
-    #c00505 40px
+    transparent 0 20px,
+    rgba(0, 0, 0, 0.11) 20px 40px
   );
   color: var(--brand-white);
   text-align: center;
@@ -26,8 +25,8 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 1.4rem;
+  height: 1.4rem;
   border-radius: 50%;
   background: var(--brand-white);
   color: var(--brand-alert-red);
@@ -36,9 +35,25 @@
 }
 
 .text {
-  font-size: var(--font-size-large);
+  font-size: var(--font-size-small);
   margin: 0;
   color: inherit;
+}
+
+@media (min-width: 40rem) {
+  .banner {
+    min-height: 3.5rem;
+    padding: calc(var(--spacer) / 2);
+  }
+
+  .icon {
+    width: 1.8rem;
+    height: 1.8rem;
+  }
+
+  .text {
+    font-size: var(--font-size-large);
+  }
 }
 
 .text p {

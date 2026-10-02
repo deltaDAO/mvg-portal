@@ -12,7 +12,7 @@ const CHECK_INTERVAL_MS = 30 * 1000
 
 function getStoredAcknowledgedAt(): number {
   try {
-    return Number(window.sessionStorage.getItem(STORAGE_KEY)) || 0
+    return Number(window.localStorage.getItem(STORAGE_KEY)) || 0
   } catch {
     return 0
   }
@@ -20,7 +20,7 @@ function getStoredAcknowledgedAt(): number {
 
 function storeAcknowledgedAt(timestamp: number): void {
   try {
-    window.sessionStorage.setItem(STORAGE_KEY, String(timestamp))
+    window.localStorage.setItem(STORAGE_KEY, String(timestamp))
   } catch {
     // storage unavailable, the in-memory value keeps the acknowledgement
   }
@@ -30,7 +30,7 @@ function storeAcknowledgedAt(timestamp: number): void {
 // `reminderIntervalMinutes`, so the notice also shows up during demos.
 export default function DeprecationNotice(): ReactElement {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  // fallback for when sessionStorage is blocked or throws
+  // fallback for when localStorage is blocked or throws
   const acknowledgedAtRef = useRef(0)
   const reminderIntervalMs = content.reminderIntervalMinutes * 60 * 1000
 
@@ -60,7 +60,11 @@ export default function DeprecationNotice(): ReactElement {
 
   return (
     <>
-      <div className={styles.banner} role="alert">
+      <div
+        className={styles.banner}
+        role="region"
+        aria-label={content.modal.title}
+      >
         <span className={styles.icon} aria-hidden="true">
           !
         </span>

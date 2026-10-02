@@ -3,6 +3,14 @@ import ReactModal from 'react-modal'
 import DeprecationNotice from './'
 import content from '../../../../content/deprecation.json'
 
+let mockEnabled = true
+jest.mock('../../../../content/deprecation.json', () => ({
+  ...jest.requireActual('../../../../content/deprecation.json'),
+  get enabled() {
+    return mockEnabled
+  }
+}))
+
 const MINUTE = 60 * 1000
 const reminderIntervalMs = content.reminderIntervalMinutes * MINUTE
 
@@ -27,19 +35,21 @@ describe('@shared/DeprecationNotice', () => {
 
   beforeEach(() => {
     jest.useFakeTimers()
-    window.sessionStorage.clear()
+    window.localStorage.clear()
   })
 
   afterEach(() => {
     jest.useRealTimers()
     jest.restoreAllMocks()
-    content.enabled = true
+    mockEnabled = true
   })
 
   it('shows the banner and opens the modal on first visit', () => {
     render(<DeprecationNotice />)
 
-    expect(screen.getByRole('alert')).toBeInTheDocument()
+    expect(
+      screen.getByRole('region', { name: content.modal.title })
+    ).toBeInTheDocument()
     expect(isModalOpen()).toBe(true)
   })
 
@@ -64,7 +74,7 @@ describe('@shared/DeprecationNotice', () => {
     expect(isModalOpen()).toBe(false)
   })
 
-  it('keeps the acknowledgement when sessionStorage is unavailable', () => {
+  it('keeps the acknowledgement when storage is unavailable', () => {
     jest.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error('blocked')
     })
@@ -91,7 +101,7 @@ describe('@shared/DeprecationNotice', () => {
   })
 
   it('renders nothing when disabled', () => {
-    content.enabled = false
+    mockEnabled = false
     const { container } = render(<DeprecationNotice />)
 
     expect(container).toBeEmptyDOMElement()
