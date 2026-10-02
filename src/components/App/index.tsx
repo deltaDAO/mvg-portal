@@ -4,6 +4,7 @@ import Footer from '../Footer/Footer'
 import Header from '../Header'
 import { useAccountPurgatory } from '@hooks/useAccountPurgatory'
 import AnnouncementBanner from '@shared/AnnouncementBanner'
+import DeprecationNotice from '@shared/DeprecationNotice'
 import PrivacyPreferenceCenter from '../Privacy/PrivacyPreferenceCenter'
 import styles from './index.module.css'
 import { ToastContainer } from 'react-toastify'
@@ -27,6 +28,7 @@ export default function App({
 
   return (
     <div className={styles.app}>
+      <DeprecationNotice />
       {siteContent?.announcement.text !== '' && (
         <AnnouncementBanner
           state={siteContent?.announcement?.state}
