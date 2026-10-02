@@ -35,6 +35,14 @@
   animation: pulse 2s ease-in-out infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .icon,
+  .overlay,
+  .modal {
+    animation: none;
+  }
+}
+
 .text {
   font-size: var(--font-size-large);
   margin: 0;
