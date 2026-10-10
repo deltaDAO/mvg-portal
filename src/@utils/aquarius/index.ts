@@ -420,12 +420,14 @@ export async function getPublishedAssets(
 
   // we make sure to query only for service types that are expected
   // by Aqua ("dataset" or "algorithm") by removing "saas"
-  const sanitizedFilters = {
-    ...filtersList,
-    serviceType: filtersList.serviceType.filter(
-      (type) => type !== FilterByTypeOptions.Saas
-    )
-  }
+  const sanitizedFilters: Filters = filtersList
+    ? {
+        ...filtersList,
+        serviceType: (filtersList.serviceType || []).filter(
+          (type) => type !== FilterByTypeOptions.Saas
+        )
+      }
+    : ({} as Filters)
 
   parseFilters(sanitizedFilters, filterSets).forEach((term) =>
     filters.push(term)
